@@ -1,0 +1,612 @@
+{
+  "schema_version": 1,
+  "kind": "root_exact_compiler_repairs_v9_tree_proof",
+  "parent_commit": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+  "parent_tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+  "tree_without_this_proof": "f498ad034b9906fe7bf367c85e0a3ffceac8dacb",
+  "source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+  "source_manifest_entries": 199,
+  "source_changes": 12,
+  "qualification_changes": 48,
+  "complete_nontruncated_tree_comparison": true,
+  "all_modes_100644_blobs": true,
+  "exact_expected_paths_and_old_new_blobs": true,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "old": {
+        "sha": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "9d1788ec50a09a49c6ff7128934d44a23ffba876",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "old": {
+        "sha": "727aa866b73427d4f4109c67939465a64795988d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "d41f6e92f372cfd6880b10694e7e130bb3611426",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "old": {
+        "sha": "74e02f1b48a6f9f41b50856a0031c5e0330a054a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "3b2599c107fd6f7affeabd61d259d080ab8561e5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "old": {
+        "sha": "ef89df3a480222bbe04130f483b309303a0b0488",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "old": {
+        "sha": "19df3de847737d2009d6f8828bf96b78145d2603",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "old": {
+        "sha": "6b1fcb3a86a6c35fb44b18f959a1989bbadf4ac8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "old": {
+        "sha": "4df68f2c0b93fde792584827a3ab95f50af078d1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "old": null,
+      "new": {
+        "sha": "d55f99b6457aded2a762e98bb80e207289de8fd6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "old": {
+        "sha": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "387622da593b896a060713b617c6aaf7895ff3d6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "old": {
+        "sha": "9c4791b428ab4d8b77299ee75d89ab70bd679f20",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "b9753d53834659e46ebc9dfd5fdc5df9580152b8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "old": {
+        "sha": "96bab5870ba0e298093277e322be4a1aa3c80927",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "f848138793e8d6bbd8e81aed5e8cd688edbf91af",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "old": {
+        "sha": "e0c16a271fcad4986a60a3ae7e019830a8992f2c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "75fee38fb8331a667009f32bb5fe27a53624b582",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/INPUT_SOURCE_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "c4b447e17082a076c998cf71e43d7f006c286b06",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/app-clippy-delta.json",
+      "old": null,
+      "new": {
+        "sha": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/app-clippy-manifest.json",
+      "old": null,
+      "new": {
+        "sha": "b113fd91c1c08ebfc83e3a542df6891593610038",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/app-clippy-proof.json",
+      "old": null,
+      "new": {
+        "sha": "c8b361cd3e3b597694d405a39e6f7fd872cea2be",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/app-fmt-delta.json",
+      "old": null,
+      "new": {
+        "sha": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/app-fmt-manifest.json",
+      "old": null,
+      "new": {
+        "sha": "2a9f400d21b33e5141e68e8067bbc3ff219a4424",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/app-fmt-proof.json",
+      "old": null,
+      "new": {
+        "sha": "93192da5da9dacdf9af2ba5299d1522382c44343",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/boundaries.json",
+      "old": null,
+      "new": {
+        "sha": "34cdb564fedefe98c5c6a7dc78efa1cb9400d01a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/checkpoint.json",
+      "old": null,
+      "new": {
+        "sha": "69a2e7059112704ccc9bc5c2c968f9258d751fae",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/helpers.js",
+      "old": null,
+      "new": {
+        "sha": "f61f541a29cd4d6b5d1be96fbcce8c89bb47b2f5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/manual-guards.json",
+      "old": null,
+      "new": {
+        "sha": "e53ec9c7bfd88a831835d89a2aa5977a8c335c6f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/old-163-313-419-mapping.json",
+      "old": null,
+      "new": {
+        "sha": "4705c50427813702e14bcc1127d63de0fab694b8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/outcome-additive-annex.json",
+      "old": null,
+      "new": {
+        "sha": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/metadata-progress/whole-guards.json",
+      "old": null,
+      "new": {
+        "sha": "a26add0aa9233b723ea27604df5124eeaaa27916",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/OUTPUT_SOURCE_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/README.md",
+      "old": null,
+      "new": {
+        "sha": "575da2c63c3e2fa174df93b4dcda5a8810e990d5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/reviews/app-clippy-metadata.json",
+      "old": null,
+      "new": {
+        "sha": "d5fb86bbaa1b1cce094bb4bc70a6f512db62cebb",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/reviews/asyncfd.json",
+      "old": null,
+      "new": {
+        "sha": "8d999ed85f0af1e0c44bdcf2a3e07085b744800c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/reviews/identifiers.json",
+      "old": null,
+      "new": {
+        "sha": "2da3b40012af1e134bd4a5da8ed20ee0ddb7bb63",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/reviews/logging.json",
+      "old": null,
+      "new": {
+        "sha": "2a215867fad1f2c98f749bc05ac0731ca7cd5630",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/reviews/outcome.json",
+      "old": null,
+      "new": {
+        "sha": "c79fbf3eaf3436c7aa89129547ca93410f37dd3e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/reviews/tokio-host-link.json",
+      "old": null,
+      "new": {
+        "sha": "565af6d397325abf95ccfadf6734ac274259d8c6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/ROOT_SOURCE_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "2cf5796480062324c70aed9f2311520ac327ae13",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/authority_host_learning_profile.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "9d1788ec50a09a49c6ff7128934d44a23ffba876",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/circuit_q24_successor_worker.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "d41f6e92f372cfd6880b10694e7e130bb3611426",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/production_launcher_same_actor_completion.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "3b2599c107fd6f7affeabd61d259d080ab8561e5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/production_launcher_same_actor_owner.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/production_launcher_same_actor_run.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/production_launcher_same_actor_runtime.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/same_actor_q24_deployment_coordinator.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/same_actor_q24_deployment_outcome_data.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "d55f99b6457aded2a762e98bb80e207289de8fd6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/same_actor_q24_deployment_owner.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "387622da593b896a060713b617c6aaf7895ff3d6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/same_actor_q24_deployment_root_exit.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "b9753d53834659e46ebc9dfd5fdc5df9580152b8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/same_actor_q24_deployment_task.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "f848138793e8d6bbd8e81aed5e8cd688edbf91af",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-copies/same_actor_q24_deployment.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "75fee38fb8331a667009f32bb5fe27a53624b582",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-packets/asyncfd.json",
+      "old": null,
+      "new": {
+        "sha": "86d575cb94e626933c52eb4654fef64af047906f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-packets/identifiers.json",
+      "old": null,
+      "new": {
+        "sha": "681faecbd567786c3a2e346785fcd76fa664f115",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-packets/logging.json",
+      "old": null,
+      "new": {
+        "sha": "ac896f459fca0794bdc50232881e33c0f762b151",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-packets/outcome.json",
+      "old": null,
+      "new": {
+        "sha": "8aa906560477a5bb0595c592a850d50fa0d1bc59",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/source-packets/profile.json",
+      "old": null,
+      "new": {
+        "sha": "013acd6c03b89f40b4ec0d124d4c2685d048bfef",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/async_fd.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "3463439c9987132b95eb218119e7fe1fa93199b3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/prior-read-failure.json",
+      "old": null,
+      "new": {
+        "sha": "c3870a851fc329c2aac1ddfaf83bcc046c3a7c54",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/read-output.json",
+      "old": null,
+      "new": {
+        "sha": "8e4b0f4877954dcf795fb7db18695b402dfd4182",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/read-request.json",
+      "old": null,
+      "new": {
+        "sha": "34065cd6918c0e867ad1a1709f2d43049d4a69dd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/read-script.py",
+      "old": null,
+      "new": {
+        "sha": "1eec8d7c4de1123fe4e484eeae985fef44b9f122",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/read-start.json",
+      "old": null,
+      "new": {
+        "sha": "687d0ae88a2612de9002d518559e8766045a1f80",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/compiler-repairs-v9/tokio-actual-source/read-tool.json",
+      "old": null,
+      "new": {
+        "sha": "61d3ade28d8c98d2d6911a62d11d80c814f79a49",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+      "old": {
+        "sha": "c4b447e17082a076c998cf71e43d7f006c286b06",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    }
+  ],
+  "qualification_status": "NOT_RUN_NOT_PASS",
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "independent_c": false,
+  "real_daemon_root_restart": false
+}

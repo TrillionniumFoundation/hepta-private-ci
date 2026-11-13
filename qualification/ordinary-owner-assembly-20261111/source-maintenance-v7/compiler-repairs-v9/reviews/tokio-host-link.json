@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "host_registry_source_correspondence_addendum",
+  "status": "READ_ONLY_DEPENDENCY_EVIDENCE_NOT_QUALIFICATION",
+  "original_source_packet": {
+    "git_blob": "86d575cb94e626933c52eb4654fef64af047906f",
+    "bytes": 8158,
+    "sha256": "3d5b9ed98f4e6210f9082530cfa79fdc18f94d6e8bb69b998f5e28fb9fc629a1"
+  },
+  "original_packet_and_code_unchanged": true,
+  "root_stdout": {
+    "git_blob": "8e4b0f4877954dcf795fb7db18695b402dfd4182",
+    "bytes": 1619,
+    "sha256": "fc92f2b05cbdad58677e1a867adf8b65de80763a58419819aac2b7b437d1c897"
+  },
+  "root_tool_receipt": {
+    "git_blob": "61d3ade28d8c98d2d6911a62d11d80c814f79a49",
+    "bytes": 6277,
+    "sha256": "5f41ffe667d965e2aab78e0fea8c482c066c477b9bbcab918d8cd7ad7044a1ed"
+  },
+  "independent_git_review": {
+    "tool_hex_equals_exact_stdout_bytes": true,
+    "stdout_bytes": 1619,
+    "terminal_exit_code": 0,
+    "complete": true,
+    "lossy": false
+  },
+  "matched": {
+    "actual_cargo_lock": {
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "bytes": 421005,
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    "actual_tokio_async_fd_source": {
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+      "bytes": 62421,
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d"
+    },
+    "version": "1.53.3",
+    "upstream_commit": "a85c3f5baa298a6b554fd3700daf0342289881af",
+    "comparison": "For each of the actual Cargo.lock and actual registry async_fd.rs, Root's original read-only receipt gives length/Git/SHA256 equal to the exact Git bytes independently read for the source proposal."
+  },
+  "prior_failure_boundary": {
+    "root_receipt_records_missing_cargo_checksum_file": true,
+    "no_checksum_file_or_environment_created_or_modified": true,
+    "original_failed_read_not_reclassified_as_success": true
+  },
+  "limits": {
+    "does_not_verify_entire_crate_archive_or_checksum": true,
+    "no_native_qualification_run_by_this_review": true,
+    "no_source_checker_or_ref_changes": true,
+    "no_h_or_pty_by_this_agent": true,
+    "no_business_acceptance_count_change": true
+  },
+  "conclusion": "The source packet's previously separate host-registry correspondence is now linked to Root's immutable actual-read receipt. This adds dependency evidence only; the exact source patch and its no-execution status remain unchanged."
+}

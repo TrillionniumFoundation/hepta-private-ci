@@ -1,0 +1,2814 @@
+{
+  "schema_version": 1,
+  "kind": "chain_nextuse_actual_formatter_metadata_evidence",
+  "delta": {
+    "git_blob": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+    "bytes": 188820,
+    "sha256": "ffc5f9fd0916b9a1788d4b23e16031bd7e35728134d9feb7414d4747b7db5d70"
+  },
+  "replay_helper": {
+    "git_blob": "733b3c98676ff3d5eca29687fdb624f33ead6a33",
+    "bytes": 2970,
+    "sha256": "d002e3251520886c6e7ffa24d2beb1508c87179fbc22c68e4ba1ce95941bacfb"
+  },
+  "source_manifest": {
+    "git_blob": "2568ae7251360b252bebd965b1aa5a7ca5014635",
+    "bytes": 57520,
+    "sha256": "d7b4c9a994e1d5d0625208872e6f88b40c408d4f1b49e3dabbb966deac8c27b5"
+  },
+  "actual_formatter_source_receipt": {
+    "git_blob": "45dd61692ea769d3b65567df17da52c5f8d2a358",
+    "bytes": 37599,
+    "sha256": "758087cd54c2e26903a163bc649dbdf07c26b757307a47f623876398a2133e1d"
+  },
+  "source_records": [
+    {
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "source": {
+        "git_blob": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+        "bytes": 3525,
+        "sha256": "775f7a9af1875813baae5c69681459a9465755bfdadd69bd8f640aedc3f757d3"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "source": {
+        "git_blob": "c0b592e825e70a41c4c8afd6f1a40116423e8f32",
+        "bytes": 10650,
+        "sha256": "e594ec176b12357e7fec149301b83c9214c1f073de571e790c8aa869fd696abc"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/inherited_transport.rs",
+      "source": {
+        "git_blob": "3fc930e1e619661049f59b6aac815077031ab62d",
+        "bytes": 2324,
+        "sha256": "91953948330eb9a2dafa6e009bab71b5e53093722776f14943c06586a4e8914a"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "source": {
+        "git_blob": "b455314115dd2b2583e2f965a4ff80638b5d5a7a",
+        "bytes": 87215,
+        "sha256": "783acf4bd3f33e5f26d1d3f549f6406f06117294ac28659847da59f6bfbf9e33"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "source": {
+        "git_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+        "bytes": 82342,
+        "sha256": "89e75287c8cff52d209bac3001b5ce9fd38a3e7861159ce2dd1fd60d32e3e809"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "source": {
+        "git_blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+        "bytes": 2098,
+        "sha256": "4d19cd651afd092b00db18bada7cb5ad2e90ed7fea780e8ccd83213c684a50e7"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "source": {
+        "git_blob": "8769b6ff6912729589bb86f835621387ff7fddf2",
+        "bytes": 20134,
+        "sha256": "905ddaf5f3ad2002a4137f6e9f60f4f6e96e3335c1384d0457c36703710324ab"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "source": {
+        "git_blob": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "bytes": 34808,
+        "sha256": "37dde11fd47e6b59bbd22a59ab043c4ce10d8aa4e7cac22a8fde13d2ac0e5346"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "source": {
+        "git_blob": "19c6ea2229ab8875fbf5d67294c0e45bb09e1889",
+        "bytes": 252584,
+        "sha256": "b252391f271885c6f337a8e16c9a590ee23072a40f101a47c157a7e02073830a"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "source": {
+        "git_blob": "58600f5dd0cc51d399ca0b5369a6275ebcf8be03",
+        "bytes": 36747,
+        "sha256": "760e21bd27486a6bce74fdcc3bea810c2ba66c490504eb0dbb4f30fa75134d3f"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "source": {
+        "git_blob": "ae8cc0d9f8bbed23dd14ae926652ea078d957e5c",
+        "bytes": 23127,
+        "sha256": "f557798890c23a156adf42d9ea902b0816415d92a06229dde4778700541bd7a7"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "source": {
+        "git_blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+        "bytes": 17654,
+        "sha256": "c8a7de5471768871e117df543800e9ff4dec131a9ebad495cbfd7fb6393cb4ca"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "source": {
+        "git_blob": "182de411a4903855b7bc3c18e92481e4ce545e82",
+        "bytes": 23740,
+        "sha256": "87966b644bf71837c49aacbb75cc44cb31a1a886cc549519e2f51339303710e3"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "source": {
+        "git_blob": "67048d9a8a2c4a3c03982a94bff37dd969b2e6e7",
+        "bytes": 20655,
+        "sha256": "da0ade2e79701cc822844e400399d8b3809b69929299ffe23fe947a581cc0cb6"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "source": {
+        "git_blob": "6996fcb5bd53455c13cf5850f7146eb2a70a13f9",
+        "bytes": 6427,
+        "sha256": "aa26d4852c8b689df2147da35726ef282e154fc5d01a005d0d7e657e1fe5e08c"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "source": {
+        "git_blob": "93a091c6b7789e30bb3df8dd2fc77422dc9df759",
+        "bytes": 13378,
+        "sha256": "6693d1eef5ef2df2cd98ed003b1fadc4a833aee5a48844da776474f9ff462ade"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "source": {
+        "git_blob": "a0c1ad2c5c80ac98e9bb5023d3cd814e4599998d",
+        "bytes": 20420,
+        "sha256": "6b5fb0d4fccd48a5e6e36ecf357e6d340f697b7c46702bf469ad0e5667c37218"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "source": {
+        "git_blob": "181a02be51e3c64c5287b12b2b53734a0803bc33",
+        "bytes": 7445,
+        "sha256": "b7877b749f943a203fb09ac1afa058d0d67fe2a0ced1b9ac2003f0388202a56c"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "source": {
+        "git_blob": "d45540fc4caa55836d097364a97f2342ea4d2644",
+        "bytes": 24074,
+        "sha256": "447fb516a3c7802b61b4cc411c0009c365759d0b85313f7ef29e70345bd80e0c"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_joined.rs",
+      "source": {
+        "git_blob": "b074aa5a82b7b01ebc9d5eac22add5db3ffaab2c",
+        "bytes": 1986,
+        "sha256": "889dcb0d30af829d183082c7e1c39fb1c24aa367246b1cca9a9c6e62101f3c6d"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_purposes.rs",
+      "source": {
+        "git_blob": "51dfdf8f1a29d240978036faacda02f76452108c",
+        "bytes": 1722,
+        "sha256": "e38a9ddcad7448d582841c1066069703787a505c333e44a7bbf3cde78679fbc9"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+      "source": {
+        "git_blob": "a0fc2f0aa5640ffd436370a348a5637b98e28ee3",
+        "bytes": 19404,
+        "sha256": "17eb87314643204ddc93b1aa213b9f4df448cbe16e3bf78d3060eb3b712ba226"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "source": {
+        "git_blob": "3e9446183a443759d8e19edd3d50ad4bf518c57d",
+        "bytes": 15650,
+        "sha256": "29e2e397d82019755d11dd5fa83e67288027c7f485a57e82b246fe06a40a6847"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "source": {
+        "git_blob": "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "bytes": 40081,
+        "sha256": "3cb30d774a8c6947d66ebe6eebd96857a2c83452b9de3b972d2145b222f9375d"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "source": {
+        "git_blob": "a3af84b4a0481a0e3659959cd80af02b6bf5e485",
+        "bytes": 14874,
+        "sha256": "c37fd969f83ffd537424f6b4ce538c39c1bcc5803203961cf17b35c3df6cdda2"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "source": {
+        "git_blob": "a987d30eaf5a99707f39778e7fbb6750390ada86",
+        "bytes": 9307,
+        "sha256": "6e23a122ccb9633b9aa3e54cfbc6ea8f8fe7f47f7286591476d95a9161061034"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "source": {
+        "git_blob": "74e02f1b48a6f9f41b50856a0031c5e0330a054a",
+        "bytes": 8255,
+        "sha256": "3b31f65c213bf6a4a618d233461df8fea1810068ad082ae4dc3b4acfba22ced5"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+      "source": {
+        "git_blob": "a8ea1e987b2e9a12e0a3dcdf64e54a1602e66278",
+        "bytes": 6099,
+        "sha256": "2eab90064ab9c2b3506593dc6a6fcb8479566cc33123e8b1868b2ea3a69d9ce3"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "source": {
+        "git_blob": "ef89df3a480222bbe04130f483b309303a0b0488",
+        "bytes": 18599,
+        "sha256": "95e7467302b1dcde366dfadbaff81f7f039182663a0f9c250f850cac8f407a18"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "source": {
+        "git_blob": "ae5f7ca32780fc0b2b9288d14a2eb6f6a9b05c83",
+        "bytes": 7155,
+        "sha256": "004d00ab0ea412bfab6acd564d7fbfb8554d12fa60b6b2938fda31cd1307aa2d"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "source": {
+        "git_blob": "19df3de847737d2009d6f8828bf96b78145d2603",
+        "bytes": 6363,
+        "sha256": "5c8b4bad5b4e060af2354a4bbf47fcf3b1fd9398845f753380b9bf580e9b7a36"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "source": {
+        "git_blob": "6b1fcb3a86a6c35fb44b18f959a1989bbadf4ac8",
+        "bytes": 13096,
+        "sha256": "252ae77658bc89d2dc6bfc35fb3101894e373c8a202884876ff8316bbc061bc1"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "source": {
+        "git_blob": "33623dd3f41eda9c57d716395921475b7e55c908",
+        "bytes": 28015,
+        "sha256": "6a14605d946c6beb2719f209ee7adf77a2942d3643ff41b20f3d3f9eaac850f6"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "source": {
+        "git_blob": "7e6ac79c76b677bbffa68566df5da90f81ff007f",
+        "bytes": 23178,
+        "sha256": "6e8c68944b164bf3b0291425179d10d58e2af017aaf6fc9543526dec1fd15211"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "source": {
+        "git_blob": "32504a082d6849222dc62d5f92a37a8b7d8df210",
+        "bytes": 15857,
+        "sha256": "6313817f644c14658a922e10b53bb3fdc176ae863fddea53f46a4977f528c435"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "source": {
+        "git_blob": "5a6193f825e10f116eb57881640948d44a451f30",
+        "bytes": 3960,
+        "sha256": "66c6d9cab4a852bf4fe3c4d91eae9f003f3664cd62e98fcc3beb0d6408ef1dde"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "source": {
+        "git_blob": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+        "bytes": 32022,
+        "sha256": "7580096c9c949410372efccf18520e27a481141d798e09d2eaa68dc5291ba245"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "source": {
+        "git_blob": "bea528e80cd970f26e8c50e46bc0ccd696783de3",
+        "bytes": 6347,
+        "sha256": "374f7d151842ff400855d2232105cfe55b449e2a642767bd3c7f6b9167af6d1c"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "source": {
+        "git_blob": "bd1412791f559cbf281da0e2875b5949d04be228",
+        "bytes": 8927,
+        "sha256": "0a04b202425d40f4aeeeb26b04ff2047598d859b3661e4aa956b68cf924deddc"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "source": {
+        "git_blob": "3fcc166944e3b9b24f81434029766a1e1f2e8dbf",
+        "bytes": 12375,
+        "sha256": "27b4919518c746e1a85e389a352f67a3c396c92a3b1d7d08d439c7b02fcf94f7"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "source": {
+        "git_blob": "4df68f2c0b93fde792584827a3ab95f50af078d1",
+        "bytes": 17448,
+        "sha256": "1a2a93afa1c4194d1676290d8eed7cc9da709088ad0fd029c2890ae9b532bb69"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "source": {
+        "git_blob": "8d24df2100022ca7d5be5d12d282ddd59e1ed25b",
+        "bytes": 8733,
+        "sha256": "521b463a93539a1ae42244fd07163755b3296e4f663ea78d5f1c2907eeca786f"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "source": {
+        "git_blob": "f0c1e882c1141df4f2cfdec64a1d6cb13e3b80c9",
+        "bytes": 8819,
+        "sha256": "bb556bc5e56921210fa1ac2697e07ae1a1da3122f4b3b10fe055fc44b58332ad"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "source": {
+        "git_blob": "807a8d4622a10ac22f0817d93bf713b62129fb70",
+        "bytes": 13095,
+        "sha256": "6dcabc78edf97d174650331e59a4a43f3c0d6840274fa5094d79c240908dacee"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "source": {
+        "git_blob": "60cb37366410eaff6c2e6d6c23baf1c767378df0",
+        "bytes": 7126,
+        "sha256": "e846e2ea54625edb150451885139edd995216d018a6273940d68b7e10fc2fda4"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+      "source": {
+        "git_blob": "41b48a9b563a35c0160ce0da28ea6a192bdeb925",
+        "bytes": 6735,
+        "sha256": "cef0ea2fb92f5d9e60db2b19d7d099c2005bb9e80e24bcf3075bd4826d352c6f"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "source": {
+        "git_blob": "2b241f33e14241e3ff91b89a5566d792c5ded783",
+        "bytes": 19121,
+        "sha256": "574289c56c9da635804fa0ba0c493f5b26a2374d661acd28cd05bf00a5b970ff"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+      "source": {
+        "git_blob": "f773b59e86f34b9fb36956123db438efcd22fab5",
+        "bytes": 8126,
+        "sha256": "73f0d4e2f8a654c7c0200d3a5c21763f10470a2383dce85085b7656f59a616f4"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "source": {
+        "git_blob": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+        "bytes": 5349,
+        "sha256": "094fe7a218bb085c716b10d6f248a84f0550b9b37711ad76a4f21e651488cc85"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "source": {
+        "git_blob": "f34a121dd9ed4dc6733b5f60a484c9a4eb98cc4b",
+        "bytes": 4004,
+        "sha256": "b4b661ad03949457f029ca9c49b82102a73027fbec03c26df16302e49fedc8bc"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "source": {
+        "git_blob": "82a90d860bfb23d503a2d803a1a1a4400e15f850",
+        "bytes": 7396,
+        "sha256": "18f065cec1fe1603ad8d5c13b7b60639e5553d564e9f93dd259e6f4d19c395e1"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "source": {
+        "git_blob": "96bab5870ba0e298093277e322be4a1aa3c80927",
+        "bytes": 14100,
+        "sha256": "42ba8c8b5bcb73a525f85798dd4bbda6b44b07954a93f1ddf38cfc18091b2dd2"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "source": {
+        "git_blob": "5ecf868db5151c073b87240b92ee36cdf807d015",
+        "bytes": 11305,
+        "sha256": "4264eb49e47bb5af688bce87be01c670d3fa02ae75962cd25a6af0dbe2bbc1ed"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "source": {
+        "git_blob": "adf844364459b0369dae7e72401282fe14d3e55b",
+        "bytes": 22366,
+        "sha256": "d6c144b9806f340ea4cbb5b672a11c179a89223f3caf9d428ac90304e7f2c5ac"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "source": {
+        "git_blob": "0bcc8cbc8094c1350e412f2c6598c389fde6c2fa",
+        "bytes": 4948,
+        "sha256": "2e18ab974363615aad3b6670e3086135c40a0fbb48f085a5a203018a36ebf645"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+      "source": {
+        "git_blob": "4a01947532df45b8b61cd14b8af1fc97ae5707fa",
+        "bytes": 911,
+        "sha256": "ca364d383bdd559b0a294ca1fca17afb24ab053ce77945f79fe72915a275451d"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "source": {
+        "git_blob": "6a318dd7bb800d56939125055c37efb182e88fa4",
+        "bytes": 23007,
+        "sha256": "eaa5698ab16684be0c087698e31a44116d074a6229f8bf6c148262b56664de22"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "source": {
+        "git_blob": "e51513e8e9c31d9d27df39498f7c3b1393bf96c9",
+        "bytes": 16993,
+        "sha256": "d260c41b0ff0ed10b4b87d97264d7a60162862c90bea9ae609efd725f6b068bb"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "source": {
+        "git_blob": "57601ac5922d23b5f07aded1815613986e66a2f3",
+        "bytes": 6733,
+        "sha256": "583be3b4c376c5717f30c4c9633765a38180f9bae9481cebd5be6f10ad776138"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "source": {
+        "git_blob": "326ad2808cdd4e38b6b347e11afd1a2f92ddc0cc",
+        "bytes": 7487,
+        "sha256": "cd789a6ef129b181aa4925cb0017982c30fdb58b9ef0c9c59e14e10cbf1192b0"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "source": {
+        "git_blob": "24443d9e55e88076060a6d80e3f84cdf382520ad",
+        "bytes": 5737,
+        "sha256": "7f0e0d9ff773ba15115b9c960e0cfe5b5cc7bfe320bbbc1b7d3a93049053abee"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "source": {
+        "git_blob": "b6dddaa1be00534dc987699941238e10b9c9eefd",
+        "bytes": 13461,
+        "sha256": "fe9d2ff0c6048c60f4b7caf365e9e5b4fe838bff3adc955ca7b5115a0e744e2a"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "source": {
+        "git_blob": "2cbe42c91de941a1dd162bc72a9b472615dcd96c",
+        "bytes": 9851,
+        "sha256": "987cbd8d1f00f2247091ff628a18a82a493fb1e25541f21650ce076647b8e984"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+      "source": {
+        "git_blob": "cb48d3e0f44dfc67cb4e106cc3c5e2a0c0461548",
+        "bytes": 7155,
+        "sha256": "2002cf705fb8cd03b1f08af49856ce3d8af47c9c7c186c5743b602bc9650da19"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "source": {
+        "git_blob": "43d475cd4ecfebc62c2cdc1ee54523e975e332d2",
+        "bytes": 9621,
+        "sha256": "59d0859ba8e9a38408b313fa0093e05a4ddb1e50ca220729a35db02f36efc5a6"
+      },
+      "origin": {
+        "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "source": {
+        "git_blob": "cc2a731346ee5d7bee3b3bbc7644738f302d01c9",
+        "bytes": 18416,
+        "sha256": "283946c9317a22db0791799faab9390f5daf470a96013a4061bd0db17f5f6f4c"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "source": {
+        "git_blob": "fc3e224009323efad7b9c71234ccc6ec0c02c274",
+        "bytes": 8167,
+        "sha256": "41b0deec6a947f1f8681a9e49a8d4184e1db09f908c8cdea1c90c024ce187be5"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+      "source": {
+        "git_blob": "606efd34bc59bfb3bf825c196eb55f48d500bd6b",
+        "bytes": 13601,
+        "sha256": "33386e33467e2bf5de8cfd0b3e422ff762e42fb4b090cbc339665f634a669a3c"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client_control.rs",
+      "source": {
+        "git_blob": "a4d11e254df06a89b505a69e7bb298236afb2a6a",
+        "bytes": 5486,
+        "sha256": "5b50808e44bbd3c594317112e5eac3fa940b46bad736221a423e90987fc83aa1"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "source": {
+        "git_blob": "07f7bc8508c6a81068be9bec8dab1701e2ef5dde",
+        "bytes": 25887,
+        "sha256": "c40dd12bc9e2d5c9ec2d4007798cf06db2b404e44af9367d7df53118f7ba0f9c"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+      "source": {
+        "git_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+        "bytes": 5089,
+        "sha256": "53868d4fd06628467a384e21f10445f804b98f90f1db0f9f70f5a82dc0ce4eb8"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor.rs",
+      "source": {
+        "git_blob": "6ef608fb0cdcd8acbad836ff5dd80a8203272ab2",
+        "bytes": 2855,
+        "sha256": "9023ed1951f3d05b79d8a9c7a72d0c0ab02190141cac563ea679ac82ab59e05d"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+      "source": {
+        "git_blob": "269fd64c6d864c1be46f8257f3306ae7053b0ede",
+        "bytes": 8418,
+        "sha256": "42145c81c504aa5ef4adfd473759a747914e8b935beffe2a560de3917e366d31"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+      "source": {
+        "git_blob": "248d0ccbdba1590ec579bc3a58fb4c3210564c8a",
+        "bytes": 9376,
+        "sha256": "5d9ce6d99baf7895c7bfde7ef1aa6fe12b2daae396e416ffec65521f62eaa6af"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "source": {
+        "git_blob": "2cc5559aa536b127224e7a949de888dd83375510",
+        "bytes": 22151,
+        "sha256": "dec1e33a40d0776cc6d67b5733a76ad462b89eb333ad28d715027883c0a7b271"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "source": {
+        "git_blob": "d189af42af44d64dbc3e298c402d95254920e95f",
+        "bytes": 16450,
+        "sha256": "ee0f9bce8e55160f785924a20b3cbad3b243c454227faf00699968e120e1aa1b"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "source": {
+        "git_blob": "25513fb7db7a53ef735d48fdfa4cf3738ec3c125",
+        "bytes": 8143,
+        "sha256": "d2f1c23d05dcb20aa45e303b2decd03650b19ba512a8a50410ea854e5a2ec35a"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+      "source": {
+        "git_blob": "142fb7729e9254dc1ce6419c7f4a0a75aa932bcd",
+        "bytes": 14472,
+        "sha256": "c4bff2627c5d23922cf6a72205e4a6bd514edc8d06a01bdeb6ed30387a69d43a"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "source": {
+        "git_blob": "510e9780df64b404bf0b9f23afd8bc20d71b0b86",
+        "bytes": 9853,
+        "sha256": "a7374f4233e2a5309fbc57fb6eaf5600dca9ccc5515857c8d522847859366f5e"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "source": {
+        "git_blob": "fd9ae43a0fcbc63b228c55ca5c96a801ee3fe164",
+        "bytes": 13942,
+        "sha256": "c82dde1965fef818a83a93d87a1ad6a172436fe6deb2848d1b28ffe433fba765"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+      "source": {
+        "git_blob": "54e996dcf025cbf220baa914aa13980bb139e7aa",
+        "bytes": 10637,
+        "sha256": "b05ecf0855f87e9ab05a93477e2d428098676d4742aeaa0a0decc46480ee7d53"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+      "source": {
+        "git_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+        "bytes": 4960,
+        "sha256": "8ab8237504696c0f8835771c25c327e670d926306cfe5953838c5b0790c663f6"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "source": {
+        "git_blob": "0b64648d28f928dcba6b5dc249b955701d3e6e10",
+        "bytes": 10915,
+        "sha256": "cad35328e11cf15fc0eef8822887eea51012205d37abe0bcb4892da3dc609b05"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "source": {
+        "git_blob": "ab8912206bc97219f7d6a2bb5f7513ccd4250fce",
+        "bytes": 13379,
+        "sha256": "b08ae74c9da62d474f5669020000f15f538f10433f2eeda3da6b0a7218f50e11"
+      },
+      "origin": {
+        "fixed_base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      },
+      "get_verified": true
+    }
+  ],
+  "boundary_coverage": [
+    {
+      "id": "root_original_writer_purpose_receive",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:82",
+      "current_row_fingerprint": "f821ac2f025aa9335ca33260d1c7afd159ed9b15b0ea54577ccf7dd632561e36",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+      "definition_markers": 7,
+      "caller_markers": 0,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "agentd_original_root_writer_consume",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:83",
+      "current_row_fingerprint": "9d26ec0aff82987ec9756ad8dc546d8bc09154c4f661edfaa43aa07d6322b328",
+      "definition_path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+      "definition_markers": 8,
+      "caller_markers": 0,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "cell_learning_evaluation_profile_freeze",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:188",
+      "current_row_fingerprint": "b211dc9a64361052f120413ac2b456894e5bda6d9665f7d409376dc10f83105c",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "cell_original_evaluation_execution",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:192",
+      "current_row_fingerprint": "03b83f7fb07961b8f350ec97dda3de120347f32d8a52ca3a0e97b25db4530094",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "learning_original_evaluation_key",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:204",
+      "current_row_fingerprint": "9bc2e134b71461440cb2e6789d2e3d60c2d75078df2dd19fecbd7863cb279874",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "definition_markers": 3,
+      "caller_markers": 1,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "learning_original_feature_objective_reply",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:329",
+      "current_row_fingerprint": "347ef654943636b7f5c7c00531674dac3d92b53c66d0560745e6c2f4fdf8bcd3",
+      "definition_path": "codex-rs/hepta-agentd/src/client_control.rs",
+      "definition_markers": 1,
+      "caller_markers": 1,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_generation_connection_inputs_take",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:388",
+      "current_row_fingerprint": "6456dd53348dc9e46a37751edda68a4e446468dbe61d4bb582cdcbee6358ddc0",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 2,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_original_peer_channel_until",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:505",
+      "current_row_fingerprint": "81ef124c1dc925a8876170aed858ae6d58da31a5dfaf4ba85c38d21804792c94",
+      "definition_path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 9,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_same_actor_receive_start",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:591",
+      "current_row_fingerprint": "310e383d7bcc044a5633cda95369f3e3797132b3aeb744c28482d67e8784e6fa",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 2,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_same_actor_receive_inputs",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:592",
+      "current_row_fingerprint": "c65d8b93647c9104d6a04f7751d308b3525d37b8828ed6b3834f1b884763acee",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_same_actor_context_current",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:593",
+      "current_row_fingerprint": "94f8164b1256a1ab0c1c018fa267f08c86c6c60870c6af5ab1e0cd11d9765d8b",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 25,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_same_actor_take_start_rights",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:601",
+      "current_row_fingerprint": "f1b997a4c61592746ec90f90a77e4def59290fae535ba5a7cbd62895fb4b2131",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_same_actor_initial_connect",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:610",
+      "current_row_fingerprint": "8ac8f49b0feca68ca2d1ad875c5846f74faac34c32ae350d62efa77a7ac11223",
+      "definition_path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_same_actor_initial_install",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:623",
+      "current_row_fingerprint": "ff502b255152a4d9ac74567b50f5a630e53a6fd7201a4487c8849dc2363973fe",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_learning_normal_owners_binding",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:655",
+      "current_row_fingerprint": "9210d62650f87467d748701c72cb213a2588adc934f93c9326d66cfeedc42528",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "definition_markers": 4,
+      "caller_markers": 0,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_learning_normal_joined_binding",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:656",
+      "current_row_fingerprint": "8b2ea57556686c4602ef1b40e7533477dfc0df73327bf3946fe96da25e778702",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 4,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_learning_normal_joined_c",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:657",
+      "current_row_fingerprint": "90f9e1768c759d74c44ee58fa54788d83f205d1fe33877a9509af79ef1e9a0dd",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 2,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_purpose_learning_owners_retained",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:670",
+      "current_row_fingerprint": "7b8b9f6a4fd070dd9580c5d4d1e9432c907a2ab5558154ac25f8d20b6f48864f",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_purpose_learning_joined_close",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:671",
+      "current_row_fingerprint": "e881b2a50c9edea32e1544bcc3aa5b7649078f3eb7da0c5824cc0bd29122902d",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "product_file_holdout_original_open",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:711",
+      "current_row_fingerprint": "71f6c40e380499a264ae4569eb320cb67c1a27a0960252d88cb1befd2617b866",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "product_file_qualification_create",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:713",
+      "current_row_fingerprint": "b21acd86f8b2e39d1d06a7052f6cf6a20c6e6269447850557a4339b9fca0d0fe",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "product_file_qualification_recover",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:714",
+      "current_row_fingerprint": "597899d32424d9155b4311fae9f155371938b7ab88cf89ff83f6b32823fb82ac",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "product_file_qualification_readback",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:716",
+      "current_row_fingerprint": "74a638dd817269fbd89ab7fcca67bac797b1077125ed26abbe1dded4a4e630e4",
+      "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "q24_same_actor_run",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:622",
+      "current_row_fingerprint": "f092126778321ae0746239fdce86bb1d28122be7de63a4a90f27deac80233d91",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "definition_markers": 3,
+      "caller_markers": 0,
+      "declared_caller_files": 0,
+      "all_raw_markers_present": true,
+      "changed": true
+    },
+    {
+      "id": "app_server_original_owner_new",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:0",
+      "current_row_fingerprint": "16b8591a504753177d954dc52d08b3ea74a3089461abd11a9a8f32f1a0f37348",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_owner_stop",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:1",
+      "current_row_fingerprint": "c7ec7ec4168f8f4a1b0108b36d4dcc4b18801d14e469ec740faf21ed384af069",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_main_custody",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:2",
+      "current_row_fingerprint": "321cf56ab4681d993951f129751094c1de5af573c6794bbe15de98858adab24e",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_transport_registration",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:3",
+      "current_row_fingerprint": "807692ab01006e5b82b7ed7a2e1d7d1e1ad3446391bb9dbedc6aa2aff3723289",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_background_seal",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:4",
+      "current_row_fingerprint": "bab85fe181434f9d5d5428ea2dae62fa877768ce225e86e71841d5d032964ede",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_background_admission",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:5",
+      "current_row_fingerprint": "d42d9333151edf8b9493bd4ddd2cf3afaf734871ad81f3082f6287fa694ab9f7",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_processor_quarantine",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:6",
+      "current_row_fingerprint": "b852be4be4fbc9c0e56e54bdec84bfe53f464485c97888b1aaba3eb4ad2a2f20",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_failure_retention",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:7",
+      "current_row_fingerprint": "534ad8f45709d170e33b1ca534858099a0dcd3b131e293d472e767e88e93364b",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_processor_registration",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:8",
+      "current_row_fingerprint": "f44bfaaa1ee506556d502acc84673779671f2741ecf725fbd2bc3bb43ad32749",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_task_registration",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:9",
+      "current_row_fingerprint": "90f6999f5f9e1a99471bf1b1d8b8cb35b8e0e54eb080156c2118c00293e72ba9",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 5,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_optional_task",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:10",
+      "current_row_fingerprint": "a365e643e969e75f2d6160d76137c12eee077dfda4719fa595a95521ad53398d",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_group_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:11",
+      "current_row_fingerprint": "11ebfd34bab0fd9d7229be71757d7731d9ca4aa3907f0d58cbc23631ea810e48",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_processor_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:12",
+      "current_row_fingerprint": "8268c4746533a0766647e016bd57d85d57cbee71ca18aaf28543746698801483",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_owner_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:13",
+      "current_row_fingerprint": "13a307c4f05773cebc73e84e9fa29a725df629102a45fb7ef73bec0e4ac221af",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 3,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_joined_binding",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:14",
+      "current_row_fingerprint": "5bb8d915049dc243a457c2b28850fe42e338e7246c0befdd32188135bf6d1742",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 2,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_job_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:15",
+      "current_row_fingerprint": "60a41ba0c07eef87ec5919f6ca15ae73f898059232f7f4a69eb497a53e4f12fd",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_processor_new",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:16",
+      "current_row_fingerprint": "c65d3b98a565eb1c07bed2b50c19a2ff2c09223dd5fd08bcc832c7d19a2a865a",
+      "definition_path": "codex-rs/app-server/src/message_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_processor_prepare",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:17",
+      "current_row_fingerprint": "c9220efb835cea7cb48543e7f4938cb494864336e779f4d16a6d8d89721ffb9e",
+      "definition_path": "codex-rs/app-server/src/message_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_processor_owners_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:18",
+      "current_row_fingerprint": "932ad83e872ade6da420415c380d99fab020d56f4ebe8aaf0edce3b3de7581a8",
+      "definition_path": "codex-rs/app-server/src/message_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_connection_close",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:19",
+      "current_row_fingerprint": "81add8cb264607ed5ccb27e0ff916226401b1259c927bcbd5e70ffc3e728c2ec",
+      "definition_path": "codex-rs/app-server/src/message_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_threads_prepare",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:20",
+      "current_row_fingerprint": "55efd2eb2a7540d3bc8f414ada27e7b5e3b5606c0fc4227427e1ec25e5c17f2c",
+      "definition_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_thread_startups_drain",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:21",
+      "current_row_fingerprint": "99903100adcef0bffb9520725fe45cc7168cf78bd5f5f7e41a5d98dab72b5945",
+      "definition_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_thread_loops_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:22",
+      "current_row_fingerprint": "52be27a36a73b6a307cb622082312385a98422274cc73d651ca8f90be61169c2",
+      "definition_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_queues_new",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:23",
+      "current_row_fingerprint": "d833bb59c325ad9e575a62fbdccedb0e188e62d74f0465dd5593a141bb98e715",
+      "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_queues_binding",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:24",
+      "current_row_fingerprint": "93ba69103c5aa8c0351de24836582a9f0d8b838d9712701400695533340aed74",
+      "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_queues_seal",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:25",
+      "current_row_fingerprint": "87f88332252fc9e581b71e9e0c3a39fcedcb2c2589d08a3f842e2d2ce4c5dfff",
+      "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_queues_drained",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:26",
+      "current_row_fingerprint": "0d0f4cc199979b4cf50ae16251bfbf5cebef1e7822295c9bb51c9a57d5252061",
+      "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_thread_state_new",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:27",
+      "current_row_fingerprint": "1ff1311000b271df7f34f964497bd1c9bb41e74fe4a685f558c9b3cad0e0bab4",
+      "definition_path": "codex-rs/app-server/src/thread_state.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_thread_state_binding",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:28",
+      "current_row_fingerprint": "34b8cb43d539768d1a717dcf440900cc42bb07677f04dcdabcef403234178dc3",
+      "definition_path": "codex-rs/app-server/src/thread_state.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 2,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_connection_cleanup_new",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:29",
+      "current_row_fingerprint": "23816c81c321c9b3c2159533bb53676b788d585e6556f20c2f764f4591aca4e9",
+      "definition_path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_models_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:30",
+      "current_row_fingerprint": "78b56142249aaa3480c1b33ad4bcc1ca7255675eba02ab7a0187df9acfabc965",
+      "definition_path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_turn_cost_join",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:31",
+      "current_row_fingerprint": "060ad1ae2aa52d3fa7c010e09f6ce32eb4e1c5ce75fbd3a07bc974e0ca6792f0",
+      "definition_path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "agentd_original_app_server_custody_attach",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:32",
+      "current_row_fingerprint": "a8b08ae8bdfc0d3d6e60a9df2b0aba1c81119b55740974b810ec1b861b802cd6",
+      "definition_path": "codex-rs/hepta-agentd/src/config.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "agentd_original_app_server_custody_take",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:33",
+      "current_row_fingerprint": "9c70030699bff8121daead11eecfb432745bb529ae9ca86f08219528af06a5c8",
+      "definition_path": "codex-rs/hepta-agentd/src/config.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "agentd_original_app_server_socket_custody",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:34",
+      "current_row_fingerprint": "072ceb194a8349c881bf53f9e50cc9a8df40c0ee97aa2e9595bd4ef6a19add94",
+      "definition_path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "definition_markers": 2,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_entry",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:35",
+      "current_row_fingerprint": "f5be11345005f7ea30abc0c0160ac8c0e4f3d47f6d4f9ef61b3feb6bd9deecaf",
+      "definition_path": "codex-rs/app-server/src/lib.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_plugin_callback",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:36",
+      "current_row_fingerprint": "a82dbe146e8b6c6b5a6fbe1abfdaba40705e24ccdb13566c84561d26b88e416e",
+      "definition_path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "app_server_original_failure_aggregate",
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_boundary:37",
+      "current_row_fingerprint": "d33ffd3b3b5d43a95d07043aeebdb62907b1a687ad1f09f229c93a6186458106",
+      "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+      "origin": "c73360c67ed6dcca55da2902abfd50baed08a646#new_boundary:115",
+      "current_row_fingerprint": "4227a434e17af5149d199442aea554606cfab47108d759587380f59f57741dd6",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": 1,
+      "caller_markers": 0,
+      "declared_caller_files": 6,
+      "all_raw_markers_present": true,
+      "changed": false
+    },
+    {
+      "id": "root_q24_same_actor_factory_constructor",
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#boundary:523",
+      "current_row_fingerprint": "a2cd38377830bfd99d4eefba7d9c9f1bc0bccbdc9def52ce49140be0454b0247",
+      "definition_path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "definition_markers": 6,
+      "caller_markers": 6,
+      "declared_caller_files": 1,
+      "all_raw_markers_present": true,
+      "changed": true
+    }
+  ],
+  "protected_coverage": [
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "source": {
+        "git_blob": "8769b6ff6912729589bb86f835621387ff7fddf2",
+        "bytes": 20134,
+        "sha256": "905ddaf5f3ad2002a4137f6e9f60f4f6e96e3335c1384d0457c36703710324ab"
+      },
+      "functions": 25,
+      "structures": 11,
+      "required_literals": 6,
+      "forbidden_literals": 7,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:1",
+      "path": "codex-rs/app-server/src/lib.rs",
+      "source": {
+        "git_blob": "b455314115dd2b2583e2f965a4ff80638b5d5a7a",
+        "bytes": 87215,
+        "sha256": "783acf4bd3f33e5f26d1d3f549f6406f06117294ac28659847da59f6bfbf9e33"
+      },
+      "functions": 2,
+      "structures": 1,
+      "required_literals": 5,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:2",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "source": {
+        "git_blob": "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "bytes": 40081,
+        "sha256": "3cb30d774a8c6947d66ebe6eebd96857a2c83452b9de3b972d2145b222f9375d"
+      },
+      "functions": 3,
+      "structures": 0,
+      "required_literals": 4,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:3",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "source": {
+        "git_blob": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+        "bytes": 32022,
+        "sha256": "7580096c9c949410372efccf18520e27a481141d798e09d2eaa68dc5291ba245"
+      },
+      "functions": 1,
+      "structures": 0,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:4",
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "source": {
+        "git_blob": "182de411a4903855b7bc3c18e92481e4ce545e82",
+        "bytes": 23740,
+        "sha256": "87966b644bf71837c49aacbb75cc44cb31a1a886cc549519e2f51339303710e3"
+      },
+      "functions": 2,
+      "structures": 1,
+      "required_literals": 4,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "source": {
+        "git_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+        "bytes": 82342,
+        "sha256": "89e75287c8cff52d209bac3001b5ce9fd38a3e7861159ce2dd1fd60d32e3e809"
+      },
+      "functions": 6,
+      "structures": 1,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "source": {
+        "git_blob": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+        "bytes": 3525,
+        "sha256": "775f7a9af1875813baae5c69681459a9465755bfdadd69bd8f640aedc3f757d3"
+      },
+      "functions": 6,
+      "structures": 1,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:7",
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "source": {
+        "git_blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+        "bytes": 2098,
+        "sha256": "4d19cd651afd092b00db18bada7cb5ad2e90ed7fea780e8ccd83213c684a50e7"
+      },
+      "functions": 1,
+      "structures": 1,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:8",
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "source": {
+        "git_blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+        "bytes": 17654,
+        "sha256": "c8a7de5471768871e117df543800e9ff4dec131a9ebad495cbfd7fb6393cb4ca"
+      },
+      "functions": 1,
+      "structures": 0,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:9",
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "source": {
+        "git_blob": "ae8cc0d9f8bbed23dd14ae926652ea078d957e5c",
+        "bytes": 23127,
+        "sha256": "f557798890c23a156adf42d9ea902b0816415d92a06229dde4778700541bd7a7"
+      },
+      "functions": 2,
+      "structures": 1,
+      "required_literals": 1,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "source": {
+        "git_blob": "58600f5dd0cc51d399ca0b5369a6275ebcf8be03",
+        "bytes": 36747,
+        "sha256": "760e21bd27486a6bce74fdcc3bea810c2ba66c490504eb0dbb4f30fa75134d3f"
+      },
+      "functions": 6,
+      "structures": 1,
+      "required_literals": 2,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:11",
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "source": {
+        "git_blob": "19c6ea2229ab8875fbf5d67294c0e45bb09e1889",
+        "bytes": 252584,
+        "sha256": "b252391f271885c6f337a8e16c9a590ee23072a40f101a47c157a7e02073830a"
+      },
+      "functions": 4,
+      "structures": 0,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:12",
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "source": {
+        "git_blob": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "bytes": 34808,
+        "sha256": "37dde11fd47e6b59bbd22a59ab043c4ce10d8aa4e7cac22a8fde13d2ac0e5346"
+      },
+      "functions": 2,
+      "structures": 0,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:13",
+      "path": "codex-rs/app-server/src/inherited_transport.rs",
+      "source": {
+        "git_blob": "3fc930e1e619661049f59b6aac815077031ab62d",
+        "bytes": 2324,
+        "sha256": "91953948330eb9a2dafa6e009bab71b5e53093722776f14943c06586a4e8914a"
+      },
+      "functions": 2,
+      "structures": 0,
+      "required_literals": 1,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": false
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:14",
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "source": {
+        "git_blob": "c0b592e825e70a41c4c8afd6f1a40116423e8f32",
+        "bytes": 10650,
+        "sha256": "e594ec176b12357e7fec149301b83c9214c1f073de571e790c8aa869fd696abc"
+      },
+      "functions": 1,
+      "structures": 0,
+      "required_literals": 0,
+      "forbidden_literals": 0,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    },
+    {
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:410",
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "source": {
+        "git_blob": "32504a082d6849222dc62d5f92a37a8b7d8df210",
+        "bytes": 15857,
+        "sha256": "6313817f644c14658a922e10b53bb3fdc176ae863fddea53f46a4977f528c435"
+      },
+      "functions": 5,
+      "structures": 1,
+      "projection_no_exception": true,
+      "raw_required_and_forbidden_unchanged": true,
+      "changed": true
+    }
+  ],
+  "app64_function_pre_and_post_comparison": [
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn from_io(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 84,
+      "post_length": 105
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn from_join(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 99,
+      "post_length": 120
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn to_io(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 75,
+      "post_length": 75
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn unit(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 206,
+      "post_length": 206
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn result(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 222,
+      "post_length": 222
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn join_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 1091,
+      "post_length": 1091
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn require_original_success(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 279,
+      "post_length": 279
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn into_future(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 418,
+      "post_length": 371
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn require_original_custody(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 1010,
+      "post_length": 1172
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn new(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 176,
+      "post_length": 176
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn state(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 307,
+      "post_length": 307
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn request_stop(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 399,
+      "post_length": 439
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn run_original_main(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 1536,
+      "post_length": 1575
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn retain_original_transport(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 342,
+      "post_length": 382
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn seal_original_background(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 89,
+      "post_length": 89
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn spawn_original_background(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 549,
+      "post_length": 575
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn retain_unreleased_original_processor(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 210,
+      "post_length": 210
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn record_original_failure(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 137,
+      "post_length": 163
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn retain_original_processor(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 281,
+      "post_length": 281
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn retain_original_task(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 519,
+      "post_length": 539
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn optional_original_task(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 418,
+      "post_length": 418
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn join_original_group(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 642,
+      "post_length": 713
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn finish_original_processor(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 1816,
+      "post_length": 2056
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn join_original_app_server(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 2992,
+      "post_length": 3382
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn finish_original_failures(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 375,
+      "post_length": 387
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:1",
+      "path": "codex-rs/app-server/src/lib.rs",
+      "function": "fn run_main_with_original_owner_options(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 2065,
+      "post_length": 2096
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:1",
+      "path": "codex-rs/app-server/src/lib.rs",
+      "function": "fn run_main_with_transport_options_inner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 43942,
+      "post_length": 43995
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:2",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "function": "fn attach_original_app_server_custody(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 496,
+      "post_length": 496
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:2",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "function": "fn take_original_app_server_custody(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 192,
+      "post_length": 192
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:2",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "function": "fn load_with_writer_source(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 4704,
+      "post_length": 4704
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:3",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "function": "fn run_with_shutdown(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 19297,
+      "post_length": 19297
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:4",
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "function": "fn with_original_custody(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 673,
+      "post_length": 673
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:4",
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "function": "fn run_app_server(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 3915,
+      "post_length": 3915
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn new_original_owner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 201,
+      "post_length": 201
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn new_with_original_owner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 15321,
+      "post_length": 15321
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn prepare_original_shutdown(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 612,
+      "post_length": 629
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn finish_original_owners(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 4244,
+      "post_length": 4224
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn connection_closed_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 696,
+      "post_length": 696
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn dispatch_initialized_client_request(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 3042,
+      "post_length": 3042
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "function": "fn new_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 173,
+      "post_length": 173
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "function": "fn new(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 167,
+      "post_length": 167
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "function": "fn spawn(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 620,
+      "post_length": 620
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "function": "fn reap_next(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 656,
+      "post_length": 656
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "function": "fn drain(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 550,
+      "post_length": 550
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:6",
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "function": "fn abort(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 421,
+      "post_length": 421
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:7",
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "function": "fn join_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 137,
+      "post_length": 137
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:8",
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "function": "fn join_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 137,
+      "post_length": 137
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:9",
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "function": "fn new_original_owner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 204,
+      "post_length": 189
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:9",
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "function": "fn original_owner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 138,
+      "post_length": 138
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "function": "fn new_original_owner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 204,
+      "post_length": 189
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "function": "fn original_owner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 138,
+      "post_length": 138
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "function": "fn seal_original_queues(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 178,
+      "post_length": 178
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "function": "fn require_original_queues_drained(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 586,
+      "post_length": 586
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "function": "fn enqueue_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 1950,
+      "post_length": 1984
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "function": "fn enqueue(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 1467,
+      "post_length": 1467
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:11",
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "function": "fn prepare_original_shutdown(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": false,
+      "old_guard_same_actual": false,
+      "pre_length": 553,
+      "post_length": 599
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:11",
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "function": "fn drain_original_background_tasks(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 132,
+      "post_length": 132
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:11",
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "function": "fn shutdown_original_threads(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 147,
+      "post_length": 147
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:11",
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "function": "fn thread_start_inner(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 5942,
+      "post_length": 5942
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:12",
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "function": "fn ensure_listener_task_running(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 8726,
+      "post_length": 8726
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:12",
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "function": "fn unload_thread_without_subscribers(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 2754,
+      "post_length": 2754
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:13",
+      "path": "codex-rs/app-server/src/inherited_transport.rs",
+      "function": "fn run_main_with_transport_options(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 721,
+      "post_length": 721
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:13",
+      "path": "codex-rs/app-server/src/inherited_transport.rs",
+      "function": "fn run_main_with_inherited_unix_listener(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 839,
+      "post_length": 839
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:14",
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "function": "fn effective_plugins_changed_callback_original(",
+      "old_guard_complete_pre_code": true,
+      "pre_to_actual_post_same_tokens": true,
+      "old_guard_same_actual": true,
+      "pre_length": 3123,
+      "post_length": 2920
+    }
+  ],
+  "seven_actual_single_expression_block_changes": [
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn into_future(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": "Self::Original(job)=>{OriginalAppServerJob::join_original(&job).await.map_err(|error|error.to_io())}",
+          "new": "Self::Original(job)=>OriginalAppServerJob::join_original(&job).await.map_err(|error|error.to_io())",
+          "occurrences": 1
+        }
+      ],
+      "normalized_pre_fingerprint": "e56c7bc05f000e7721e214cdec93eb9c3b49a8520509e6d980f9315ea2312737",
+      "normalized_post_fingerprint": "ff4797d26cde3d8f81952701b2a52d27eae8956e856b48c72645471b5f1e30d8",
+      "whole_function_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn optional_original_task(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": "Some(original)=>OptionalAppServerTask::Original(Self::retain_original_task(original,kind,handle)),None",
+          "new": "Some(original)=>{OptionalAppServerTask::Original(Self::retain_original_task(original,kind,handle))}None",
+          "occurrences": 1
+        }
+      ],
+      "normalized_pre_fingerprint": "72996416341639a888e3f4329cbde91d9c33e0eb05f932d041602839e6797f9e",
+      "normalized_post_fingerprint": "c0156187424ad5e440fcffecb883eb4a497689efe913661aea11a4056decfc45",
+      "whole_function_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn join_original_app_server(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": ".ok_or_else(||{io::Error::other()})",
+          "new": ".ok_or_else(||io::Error::other())",
+          "occurrences": 2
+        }
+      ],
+      "normalized_pre_fingerprint": "7aee4fc9780f1b0ddcb1fb2d4143b047ccbf88ca3c5453cdd78d6a0a59434d54",
+      "normalized_post_fingerprint": "1eacb3f80637f7fd9ee0310e942e759c2551ae218bb8cffaaddcdee923e068a5",
+      "whole_function_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "function": "fn finish_original_failures(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": ".map(|(kind,error)|{(kind,OriginalAppServerFailure::from_io(error))})",
+          "new": ".map(|(kind,error)|(kind,OriginalAppServerFailure::from_io(error)))",
+          "occurrences": 1
+        }
+      ],
+      "normalized_pre_fingerprint": "0068be36890396e5ef5d0531fc867f3ff43bb48f84136bd7166652bf524e276e",
+      "normalized_post_fingerprint": "c333f9f004d4593f8ebbc8b6d8cdc970d3a92d8d173a6afa76edab5c5983c852",
+      "whole_function_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "function": "fn run_main_with_transport_options_inner(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": ".map(|handle|OriginalAppServerOwnerCustody::optional_original_task(original_owner.as_ref(),OriginalAppServerTaskKind::Acceptor,handle))",
+          "new": ".map(|handle|{OriginalAppServerOwnerCustody::optional_original_task(original_owner.as_ref(),OriginalAppServerTaskKind::Acceptor,handle)})",
+          "occurrences": 1
+        }
+      ],
+      "normalized_pre_fingerprint": "4a1f3c75abfd9502e3ce821ff1d52b151829ddd51c6dc34ef3f6cbe5f6e9ed6e",
+      "normalized_post_fingerprint": "70556cd2abd026937e7d1a3c2b333aabc233708a9480f707240d1cde7fd165c6",
+      "whole_function_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "function": "fn prepare_original_shutdown(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": ".ok_or_else(||{std::io::Error::other()})",
+          "new": ".ok_or_else(||std::io::Error::other())",
+          "occurrences": 1
+        }
+      ],
+      "normalized_pre_fingerprint": "66c4066ad3409951e3a1fe490847423299d73eb3930f66a3e0c2297ed75a1b6a",
+      "normalized_post_fingerprint": "d75b15ebd1d63bd9df4f619445126cf15d14ee7f7abffd424ee83490668acfb0",
+      "whole_function_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "function": "fn prepare_original_shutdown(",
+      "normalization": "Mask noncode using frozen projection, remove whitespace and optional trailing commas before closing delimiters; do not discard braces generally.",
+      "exact_expression_block_changes": [
+        {
+          "old": ".ok_or_else(||{std::io::Error::other()})",
+          "new": ".ok_or_else(||std::io::Error::other())",
+          "occurrences": 1
+        }
+      ],
+      "normalized_pre_fingerprint": "5e8022fb55780f3593a3c85374f7e237a235430cea2faac12201e4861c0d704e",
+      "normalized_post_fingerprint": "dd62b21454c8294fc24810e2fc5c331fd4e93265efbb9b91c6d18a5413f8b403",
+      "whole_function_forward_reverse_exact": true
+    }
+  ],
+  "replay": {
+    "exact_forward_reverse_serialized_rows": true,
+    "before_counts": {
+      "boundaries": 1010,
+      "protected_conjuncts": 598
+    },
+    "after_counts": {
+      "boundaries": 1010,
+      "protected_conjuncts": 598
+    },
+    "changed_boundary_rows": [
+      "root_q24_same_actor_factory_constructor",
+      "q24_same_actor_run"
+    ],
+    "changed_protected_origins": [
+      "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:410",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:1",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:9",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:10",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:11",
+      "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:14"
+    ],
+    "unchanged_boundary_rows": 1008,
+    "unchanged_protected_conjuncts": 590,
+    "all1010_product_caller_arrays_exact": true,
+    "all598_forbidden_arrays_exact": true,
+    "all789_original_ids_preserved": true,
+    "declared_required_ids_equal": true,
+    "before_fingerprints": {
+      "boundaries": "7a4b0fe6ffc0876db2fc855d5bbd0b3f19ff73ff7e1d16b6f4e5fa363590a2a7",
+      "protected": "71d9e19e2f4d42c8d700d607319506922b6c51d937b207b7818fd99917ca2e2a"
+    },
+    "after_this_slice_fingerprints": {
+      "boundaries": "dbc14b86be5ce410e0c989adfeb3b6c9c83962121c3233fa942425d87a8df987",
+      "protected": "45db54e69dbd1e1b4ca2e3e986eb2d6ad368a43d5142f44f0f01899d8552c81c"
+    },
+    "not_final_union": true
+  },
+  "scope": {
+    "covered_boundary_rows": 64,
+    "covered_protected_origins": 16,
+    "source_dependencies": 84,
+    "source197_dependencies": 65,
+    "unchanged_base_dependencies": 19,
+    "boundary_marker_presence_rule": "All definition markers checked in the exact definition raw text, and every caller marker in every declared caller raw text; no caller was removed to make a common marker pass.",
+    "protected_projection": "Frozen c82daa6 pure-V8 projection of the original mask/extent/order/forbidden logic, applied to all16 exact rows and exact source bytes. This is not execution of scripts/verify_hepta_callers.py.",
+    "projection_helper": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "global_callset_discovery": "Not performed or asserted by this slice; prior source-bound caller reconciliations and the two retain callers are retained exactly. No bounded absence implies a global empty caller set."
+  },
+  "particular_preservation": {
+    "old24": "Only q24_same_actor_run.definition_markers[2] changes for real formatting. The other23 reconciled rows remain exact; definition_markers[1] (actual owner start) is already present unchanged.",
+    "retained_gate_callers": "The existing retain row and all6 actual callers remain exact. The two original caller additions are not new declarations and are not dropped.",
+    "scoped_original410": "Only function index4, marker index6 changes to actual same receiver UFCS spelling. Other12 markers, other4 function rows, required_order, rawrequired and forbidden arrays remain exact.",
+    "appserver": "All15 protected origins retained; only7 have positive layout changes. Their full64 actual functions and18 complete structures remain guarded. Neither Configured/MCP/Core predecessor row nor another same-path conjunct is overwritten.",
+    "expression_blocks": "The7 special functions differ only by8 explicitly listed single-expression closure or match-arm block spellings after whitespace/trailing-comma normalization; whole normalized functions reconstruct both directions. Braces are not globally discarded.",
+    "tests": "No component tests were run; prior10 AppServer components remain unexecuted."
+  },
+  "qualification": {
+    "original_checker_executed": false,
+    "native_executed": false,
+    "h_or_pty": false,
+    "refs_mutated": false,
+    "final_callers_emitted": false,
+    "compile_or_business_pass_claim": false
+  }
+}

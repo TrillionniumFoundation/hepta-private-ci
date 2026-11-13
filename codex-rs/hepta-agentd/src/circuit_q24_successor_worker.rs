@@ -2,6 +2,7 @@
 //! immediately, then joins any original owner action already in progress.
 
 use super::*;
+use crate::AgentdIdentity;
 use crate::AgentdState;
 use codex_hepta_automation::AutomationStore;
 use tokio_util::sync::CancellationToken;

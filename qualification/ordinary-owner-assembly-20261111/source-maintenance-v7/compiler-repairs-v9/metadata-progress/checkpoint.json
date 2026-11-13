@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "incomplete_checkpoint",
+  "source_manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635",
+  "recipe": "291776cc203c29728e08b2589e684c0cac4047cb",
+  "generator": "eca89aa4bfff94d81346a3345974ea6c7ffd07c3",
+  "counts": {
+    "boundary": 1010,
+    "protected": 598,
+    "complete_generated_guards": 69,
+    "changed_generated_guards": 60,
+    "manual_guard_rows": 50,
+    "manual_rows_projection_pass": 26,
+    "manual_rows_pending": 24,
+    "boundary_literal_candidates": 54,
+    "boundary_author_ufcs_pending": 3
+  },
+  "blobs": [
+    {
+      "name": "whole_guard_progress",
+      "pin": "a26add0aa9233b723ea27604df5124eeaaa27916",
+      "bytes": 1643669,
+      "sha256": "cbfe4b5fdd911441d2fbec5a2ac6e8375fc3d03b16a47987bb8c56d9ba0465f8"
+    },
+    {
+      "name": "manual_guard_progress",
+      "pin": "e53ec9c7bfd88a831835d89a2aa5977a8c335c6f",
+      "bytes": 888696,
+      "sha256": "c26d0c7f465349317b8d6ebd0accdeae23af222b8099685c23695ba3da42d26b"
+    },
+    {
+      "name": "boundary_progress",
+      "pin": "34cdb564fedefe98c5c6a7dc78efa1cb9400d01a",
+      "bytes": 64510,
+      "sha256": "fa86e162c4f59ca296217f09c47506d454f5e9ed41ec9a924cbed75d092fe274"
+    },
+    {
+      "name": "helpers",
+      "pin": "f61f541a29cd4d6b5d1be96fbcce8c89bb47b2f5",
+      "bytes": 28423,
+      "sha256": "e5e4640bdac7eceacb34b1d8a5f05196f5590429fb2638578c4191dcd4cf727b"
+    }
+  ],
+  "external_delta": {
+    "chain": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+    "manifest": "2a9f400d21b33e5141e68e8067bbc3ff219a4424",
+    "not_yet_applied": true
+  },
+  "pending": [
+    "Old semantic guard rows 163,313,419 independent obligation mapping",
+    "27 complete old function sequences proven equal authored pre body: re-sample actual function next",
+    "9 partial function sequences require exact authored-source and formatting reconciliation",
+    "v8 fix101 three source postimages and further compiler diagnostics from Root",
+    "No final TOML/checker/compiler qualification produced"
+  ],
+  "permission": "Git CREATE/GET and V8 only; 0 h/native/ref"
+}

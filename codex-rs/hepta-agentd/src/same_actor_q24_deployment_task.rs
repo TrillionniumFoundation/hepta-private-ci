@@ -292,7 +292,7 @@ impl OriginalCircuitData {
         context: &Arc<OriginalSameActorRootContext>,
         files: &mut OriginalDeploymentFiles,
     ) -> Result<OriginalSameActorATaskInputsV1, AgentdError> {
-        let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;
+        let agent = AgentId::parse(&self.owner_agent_id).map_err(deployment_error)?;
         if agent != context.identity().agent_id
             || context.identity().spawn_generation.checked_add(1) != Some(self.generation)
         {

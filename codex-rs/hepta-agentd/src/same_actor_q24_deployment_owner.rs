@@ -2,6 +2,7 @@
 //! The one original Result remains in the retained thread handle until a real
 //! join consumes it; a closed Gate never substitutes for that join.
 
+use std::io::Write;
 use std::sync::Arc;
 use std::thread::JoinHandle;
 
@@ -100,7 +101,10 @@ impl Drop for OriginalDeploymentCoordinatorOwner {
             if let Err(error) = join_original_thread(thread) {
                 // Cancellation has no recipient for this original result.
                 // Keep its failure visible; never convert it into completion.
-                tracing::error!(error = %error, "original deployment coordinator stopped with failure");
+                let _ = writeln!(
+                    std::io::stderr().lock(),
+                    "hepta-agentd level=error error={error}: original deployment coordinator stopped with failure",
+                );
             }
         }
     }

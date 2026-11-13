@@ -2,6 +2,7 @@
 //! Root wire data, generic Runtime Ok, EOF and empty counts cannot construct
 //! this private result. The daemon's own OS exit remains externally observed.
 
+use std::io::Write;
 use std::sync::Arc;
 
 use super::super::owner::OriginalPhaseRunControl;
@@ -195,6 +196,9 @@ fn preserve_original_cleanup_failure(first: &mut Option<AgentdError>, error: Age
     if first.is_none() {
         *first = Some(error);
     } else {
-        tracing::error!(error = %error, "additional original terminal cleanup failure");
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "hepta-agentd level=error error={error}: additional original terminal cleanup failure",
+        );
     }
 }

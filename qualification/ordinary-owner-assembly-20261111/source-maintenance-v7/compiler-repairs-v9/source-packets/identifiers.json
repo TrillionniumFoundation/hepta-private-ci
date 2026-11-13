@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "kind": "two_original_v8_compile_errors_minimal_source_patch",
+  "status": "TWO SOURCE FIXES FROZEN; NOT COMPILED OR EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "failed_run_source": {
+    "commit": "230d771303b3775ea88126ff933a1d2e3452c948",
+    "tree": "880feb6979d16f878adc6091f700ef67ff4e57a0",
+    "manifest": {
+      "git_blob": "2568ae7251360b252bebd965b1aa5a7ca5014635",
+      "bytes": 57520,
+      "sha256": "d7b4c9a994e1d5d0625208872e6f88b40c408d4f1b49e3dabbb966deac8c27b5"
+    }
+  },
+  "current_clippy_input": {
+    "commit": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+    "manifest": {
+      "git_blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+      "bytes": 57520,
+      "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+    },
+    "both_preimages_remain_exact": true
+  },
+  "original_failure_log": {
+    "git_blob": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+    "bytes": 57049,
+    "sha256": "31ec46ca019e224f4b0d6345db3dc3d66f77cad3407f221e7be82d4c6183209d"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "pre": {
+        "git_blob": "727aa866b73427d4f4109c67939465a64795988d",
+        "bytes": 11336,
+        "sha256": "6df59643ad01dc9c4aee84ed8a5a2838cd0c4a9ba36083fb85b1ce3cb2ab2056"
+      },
+      "post": {
+        "git_blob": "d41f6e92f372cfd6880b10694e7e130bb3611426",
+        "bytes": 11363,
+        "sha256": "fb7e5b9b8c895dbb25e3353578462855ce0ae9d37874685ba934df1e31675f84"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use super::*;\nuse crate::AgentdState;\n",
+          "new": "use super::*;\nuse crate::AgentdIdentity;\nuse crate::AgentdState;\n",
+          "expected_occurrences": 1,
+          "purpose": "Import the actual public config::AgentdIdentity re-export used by the already-existing attempt field."
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true,
+      "create_get_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "git_blob": "96bab5870ba0e298093277e322be4a1aa3c80927",
+        "bytes": 14100,
+        "sha256": "42ba8c8b5bcb73a525f85798dd4bbda6b44b07954a93f1ddf38cfc18091b2dd2"
+      },
+      "post": {
+        "git_blob": "f848138793e8d6bbd8e81aed5e8cd688edbf91af",
+        "bytes": 14102,
+        "sha256": "30cce8870347ebe3865fdfb510547431e099cc18032bf742eef294bce44d9565"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "        let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;\n",
+          "new": "        let agent = AgentId::parse(&self.owner_agent_id).map_err(deployment_error)?;\n",
+          "expected_occurrences": 1,
+          "purpose": "Use the existing strict AgentId parser with the same input, error conversion and propagation before the unchanged actor/fence checks."
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true,
+      "create_get_exact": true
+    }
+  ],
+  "original_definition_evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "source": {
+        "git_blob": "c73f6c987b1b5c4da5e4c2f9fcb0301dc2e86120",
+        "bytes": 67473,
+        "sha256": "47a1be3afbaaf496f99f2c193406f153c1f98d6070199588162343d97ca3ddf0"
+      },
+      "actual": "pub use config::AgentdIdentity;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "source": {
+        "git_blob": "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "bytes": 40081,
+        "sha256": "3cb30d774a8c6947d66ebe6eebd96857a2c83452b9de3b972d2145b222f9375d"
+      },
+      "actual": "pub struct AgentdIdentity",
+      "relation": "The actual public re-export names this unchanged concrete identity type; no role/type is created by this import."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/agent_id.rs",
+      "source": {
+        "git_blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+        "bytes": 3196,
+        "sha256": "456b322e28ab0ab6f26f7ae5b2fde5d6d8a9a28b9bb467371664e185e2a88650"
+      },
+      "actual": "pub fn parse(value: impl Into<String>) -> Result<Self, AgentIdParseError>",
+      "relation": "Existing strict length/lowercase/hyphen/version/variant validation, followed by construction of the private String wrapper; no AgentId::new exists in this actual impl."
+    }
+  ],
+  "preserved": {
+    "worker": "Every byte below the existing imports remains exact, including the already-present identity field, original context identity clone, lifetime guards, cancellation checks and actual original run await.",
+    "deployment": "The same &self.owner_agent_id is passed; the same map_err(deployment_error)? stays. Actor equality, checked successor generation, original TaskFlowFence construction/validation, task files and context gates remain in the same order.",
+    "no_added_tests_or_fixtures": true,
+    "no_guard_or_checker_changes_in_source_packet": true,
+    "no_permissions_or_deadlines_changed": true,
+    "no_claim_of_previous_runtime_behavior": "AgentId::new did not compile; this correction uses the real existing validation API rather than assigning behavior to the nonexistent call."
+  },
+  "guard_impact": {
+    "inventory": "d83170eb4613f58cd8b57aad78bfcae4f98d5558",
+    "worker": {
+      "origins": [
+        "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:348",
+        "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:492"
+      ],
+      "effect": "Import-only; unchanged actual function/structure bodies and signatures. No body marker rewrite is caused by the import."
+    },
+    "task": {
+      "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:18",
+      "field": "required_function_order",
+      "function": "fn open_original_circuit(",
+      "original_sequence_index": 4,
+      "original_marker_index": 5,
+      "old": "let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;",
+      "new": "let agent = AgentId::parse(&self.owner_agent_id).map_err(deployment_error)?;",
+      "effect": "Update the actual-postimage successor of this exact row/marker; keep six rawrequired markers and explicit forbidden[] unchanged. Runtime owns this row; no whole-row/table override is included here."
+    },
+    "global_boundary_lookup": "Integration owner was asked to confirm any existing AgentId::parse boundary; absence is not inferred from a path-only or bounded source lookup. No boundary is deleted or fabricated by this packet."
+  },
+  "validation": {
+    "exact_unique_forward_reverse_ops": 2,
+    "source_paths": 2,
+    "postimages_created_and_get_verified": true,
+    "all_other_source_bytes_exact": true,
+    "formatter_executed": false,
+    "compiler_executed": false,
+    "checker_executed": false,
+    "native_executed": false,
+    "h_or_pty": false,
+    "refs_changed": false
+  }
+}

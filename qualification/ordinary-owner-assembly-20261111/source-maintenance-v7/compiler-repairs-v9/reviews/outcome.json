@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "kind": "independent_actual_v8_outcome_data_adapter_source_and_guard_review",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "NO CONFIRMED LOCAL STATIC BLOCKER; uncompiled and unqualified",
+  "source_packet": "8aa906560477a5bb0595c592a850d50fa0d1bc59",
+  "source_packet_bytes": 22263,
+  "source_packet_sha256": "f09198a2a3200500aeb0a167559ad8326a8eb892e9589b37161549755b1ce912",
+  "current_source_manifest": "c4b447e17082a076c998cf71e43d7f006c286b06",
+  "actual_failure_log": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+  "replay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "pre": null,
+      "post": "d55f99b6457aded2a762e98bb80e207289de8fd6",
+      "ops": 1,
+      "fullhash": true,
+      "F_R": true,
+      "pre_matches_current_inventory": "new path; independently absent in inventory"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "pre": "e0c16a271fcad4986a60a3ae7e019830a8992f2c",
+      "post": "75fee38fb8331a667009f32bb5fe27a53624b582",
+      "ops": 1,
+      "fullhash": true,
+      "F_R": true,
+      "pre_matches_current_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pre": "4df68f2c0b93fde792584827a3ab95f50af078d1",
+      "post": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+      "ops": 3,
+      "fullhash": true,
+      "F_R": true,
+      "pre_matches_current_inventory": true
+    }
+  ],
+  "new_path_evidence": "Fixed commit6e345aaef8bcdc2e6acb5e1825172b13e26fb437 fetch_file for new outcome_data.rs returned GitHub404; the same path is absent from its197 modified-source manifest. Existing two preimages match that manifest.",
+  "definitions_and_codecs_independently_get_hash_read": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+      "blob": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "bytes": 19100,
+      "sha256": "5ce584b61e976a8d3bb5f96a612531f367d1d14fb8f704233c87bb5451297f36"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "blob": "397d42abf6be08dd5a70f27bda531f629db14dfb",
+      "bytes": 50665,
+      "sha256": "49fc360f38e5a8f5d65da8ff7648b4b8836c1d52c74d1f7945d52b2f612b0c2c"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "bytes": 15660,
+      "sha256": "6b8f65d3324cd4531c0a5f94ac321068b4a2661132944472b8176838b335590a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_outcome_codec.rs",
+      "blob": "cf9df101ff30b86fd55faf56f11a8d42b6414bdc",
+      "bytes": 4348,
+      "sha256": "9788fa785b2cfa9048dc7d6181940eb481a3948e904914cfaa7c296b0799690d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "blob": "964b3aac267d58ba06dd967623d653effbb57268",
+      "bytes": 11584,
+      "sha256": "e47e0a0eb868cba79e8b7c54b2bb3ecf6f21b5e743c9fa839e567ad9f7d35d88"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "blob": "5758580b35717ec5dc51635cad310e15856b6b10",
+      "bytes": 10185,
+      "sha256": "bec36a7a3579f4f029ab12bb9eed2cc876011d52b76070adb1c21a1cc85ac558"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "blob": "f4be0fb2769ec29f72a6f643b07090d79e155c63",
+      "bytes": 14655,
+      "sha256": "a651c50b742d20a985b7749bd6f5f3a1f571a9fa7277da84cd4032114e9d2b5d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs",
+      "blob": "bedfe99c27719d2198cf7f8bbc24a863ce70dd6e",
+      "bytes": 12611,
+      "sha256": "7c2ece631c68351000e7e13f49066031ef9a655376edcd48507a535a53a283cd"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "blob": "3c2674dce405fd20f254f5f1816654aae99d7c13",
+      "bytes": 3717,
+      "sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f",
+      "bytes": 13344,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3"
+    }
+  ],
+  "additional_containing_data": {
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs",
+    "git_blob": "d1f0a89a716b10bee304f35b44c2283c47b14913",
+    "bytes": 3276,
+    "sha256": "b0bb74499a8a71f89738081098ad14135c9367fb6f5620c5609b37e835abd07b",
+    "finding": "Actual A/C response structs require Deserialize+Serialize only and refer to the new raw type. No Clone/Debug or ownership-cap constructor requirement is hidden here."
+  },
+  "full_original_field_inventory": [
+    {
+      "pin": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "name": "AuthenticatedOutcomeV1",
+      "fields": [
+        "record_id",
+        "outcome_id",
+        "episode_id",
+        "observer",
+        "observed_at",
+        "value",
+        "unit_profile_digest",
+        "support_digest",
+        "watermark"
+      ]
+    },
+    {
+      "pin": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "name": "OutcomeWatermarkV1",
+      "fields": [
+        "latest_observable_at",
+        "expected_delay_profile_digest",
+        "terminality",
+        "censoring_reason",
+        "correction_predecessor",
+        "finalized_at"
+      ]
+    },
+    {
+      "pin": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "name": "AuthenticatedPrincipalV1",
+      "fields": [
+        "principal_id",
+        "credential_chain_digest",
+        "signing_key_digest",
+        "scope_digest",
+        "authority_epoch",
+        "authenticated_at",
+        "expires_at"
+      ]
+    },
+    {
+      "pin": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "name": "SignedLearningEvidenceV1",
+      "fields": [
+        "evidence_id",
+        "principal_id",
+        "role",
+        "trust_digest",
+        "scope_digest",
+        "objective_digest",
+        "authority_epoch",
+        "issued_at",
+        "expires_at",
+        "payload_digest",
+        "signature"
+      ]
+    }
+  ],
+  "mapping_scope": "All9 Outcome members,6 watermark members,7 Observer principal members and11 signed-evidence members are preserved. The packet's33 mappings include the2 nested Outcome aggregate members; there are31 leaf members, not33 independent scalar values.",
+  "conversion_findings": [
+    "Original ID strings use the actual bounded StableId::new parser. Digest fields preserve all32 bytes; u64 times and authority epoch are not sampled or renewed.",
+    "Optional value carries exact signed i64 raw Q32 bits through FixedQ32::from_raw. The original implementation is Self(raw); no rounding, scale conversion, clamp or default is performed.",
+    "All5 nullable keys have the existing deserialize_with=required_option hook and no serde(default). Explicit null remains Option::None; the new source does not turn absent material into business data.",
+    "The3 terminality variants map exhaustively to the same Pending/Censored/Terminal variants. Accepting raw data for those variants does not grant completion; the unchanged actual task producer requires Terminal and rejects censor/correction/missing time/value.",
+    "Existing PrincipalData::original preserves all7 fields. Existing SignedEvidenceData::original preserves all11 fields and calls the existing exact64-byte try_into signature helper. No role, time, key, signature, payload digest or VerifiedLearningEvidence is manufactured.",
+    "OriginalSignedOutcomeData::into_original consumes only plain raw data, returns existing public raw-data structures, and remains pub(super) with private data fields. Actual parent module and sibling visibility are sufficient; no original private codec/helper visibility changes.",
+    "The complete original production-v2 signing encoder and retained decoder carry all Outcome fields and reject noncanonical or trailing bytes. The adapter does not replace that binary codec with JSON equality."
+  ],
+  "real_producer_chain": {
+    "A": "Actual coordinator checks schema/phase and pinned file, converts data, retains original preparation/freeze checks, sends CompleteOriginalA. Actual A first closes admission and awaits exact-A quiescence, then calls the original ledger producer; only Complete permits original prepare_learning.",
+    "C": "Actual coordinator checks schema/phase, pinned file and original live wait, sends ObserveOriginalC. Actual C retrieves the installed successor's mandatory original ledger, invokes the same producer and requires Complete before OutcomeAccepted.",
+    "authentication": "submit_original_terminal_outcome retains state/ledger capture, exact original Decision, require_outcome binding, complete canonical signing payload, immutable signed journal and source/witness checks. New append validates original Observer role/current trust/window/strict signature; authenticated_outcome_event requires principal equality, original objective/decision and independent actor. Historical replay uses original witnessed immutable record and signature, not new authorization.",
+    "limit": "No external Outcome was supplied or verified in this review. Data conversion, an event or an ACK is not business completion or end-to-end qualification."
+  },
+  "guard_review": {
+    "original_annex": "d44dce76ae8e32fd2c867725cdb59b4befe96a56",
+    "accepted_strengthening": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+    "strengthening_bytes": 9456,
+    "strengthening_sha256": "f8986e9c3a1e057e97c3531b9b855f04340f0fc7f0a13edd6fcb5285e01e0361",
+    "finding": "Original annex's one generic required_option raw string did not individually bind all5 masked attribute literals. Reviewer requested exact raw field association; final successor appends5 attr+field spans,3 full derive+deny_unknown struct prefixes and1 complete enum serialization prefix.",
+    "preservation": "All3 old required strings remain as exact prefix; all9 additions uniquely match actual source. The original forbidden, complete function/body/structure/top-level sequences, second protected conjunct, boundary ID/type/definition/caller and source pins are byte-identical.",
+    "boundary": "Exactly two actual qualified into_original calls in coordinator use the real owned fields. New declared caller is that actual file; method reconstructs data only.",
+    "integration": "Append-only1 boundary/2 conjuncts; preserve duplicate-parent-path conjunction. Existing coordinator full-function guard c981#new_protected:7 must be resampled at its2 actual UFCS sites. This review did not run the original checker or certify the global1011/600 union."
+  },
+  "checks": {
+    "new_source_forbidden_matches": [],
+    "full_pre_post_hash": true,
+    "unique_F_R_ops": 5,
+    "source_paths": 3,
+    "actual_static_field_inventory": true,
+    "compiler": false,
+    "formatter": false,
+    "tests": false,
+    "original_checker": false,
+    "native": false,
+    "h": false,
+    "ref_mutation": false
+  }
+}

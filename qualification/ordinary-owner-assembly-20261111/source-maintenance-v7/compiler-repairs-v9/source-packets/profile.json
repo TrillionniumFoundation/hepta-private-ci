@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v8_E0369_full_profile_structural_comparison_compile_fix",
+  "status": "SOURCE PROPOSAL FROZEN; NOT COMPILED OR EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+    "manifest": "c4b447e17082a076c998cf71e43d7f006c286b06",
+    "manifest_bytes": 57520,
+    "manifest_sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+  },
+  "actual_failure": {
+    "log": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+    "bytes": 57049,
+    "sha256": "31ec46ca019e224f4b0d6345db3dc3d66f77cad3407f221e7be82d4c6183209d",
+    "error": "E0369",
+    "location": "same_actor_q24_deployment_coordinator_materials.rs:80",
+    "expression": "if expected != profile {",
+    "diagnostic_type": "learning_iteration_checkpoint::profile::HostAuthorityLearningProfileV1",
+    "definition_location": "authority_host_learning_profile.rs:54"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "pre": {
+        "git_blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+        "bytes": 9377,
+        "sha256": "48b1cd2fbbc38f22b9ebfadc660d2f4071e23d4d3d61a3714959d09f1a0bebd1"
+      },
+      "post": {
+        "git_blob": "9d1788ec50a09a49c6ff7128934d44a23ffba876",
+        "bytes": 9399,
+        "sha256": "2846128a30a91f3b7a7bede4c6914108564ed1622b0c81178115b32e983af6ae"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningScopeV2 {",
+          "new": "#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningScopeV2 {",
+          "expected_occurrences": 1,
+          "purpose": "Derive structural PartialEq over every field of HostAuthorityLearningScopeV2; preserve field privacy and all validation bodies."
+        },
+        {
+          "kind": "replace",
+          "old": "#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningProfileV1 {",
+          "new": "#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningProfileV1 {",
+          "expected_occurrences": 1,
+          "purpose": "Derive structural PartialEq over every field of HostAuthorityLearningProfileV1; preserve field privacy and all validation bodies."
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true,
+      "create_get_exact": true
+    }
+  ],
+  "changed_path_scope": "One existing fixed-base source absent from the 197-file modified-source inventory; integration adds this file as the 198th modified-source entry. No coordinator source changes and no new source file.",
+  "comparison_contract": {
+    "profile": [
+      {
+        "field": "schema_version",
+        "type": "u32",
+        "comparison": "exact integer equality"
+      },
+      {
+        "field": "identity_digest",
+        "type": "String",
+        "comparison": "exact string equality"
+      },
+      {
+        "field": "writer_proof_digest",
+        "type": "String",
+        "comparison": "exact string equality"
+      },
+      {
+        "field": "initial_snapshot",
+        "type": "String",
+        "comparison": "exact encoded snapshot string equality"
+      },
+      {
+        "field": "update_scope",
+        "type": "Option<HostAuthorityLearningScopeV2>",
+        "comparison": "None/Some variant equality and all nested fields when Some"
+      }
+    ],
+    "scope": [
+      {
+        "field": "scope",
+        "type": "String",
+        "comparison": "exact string equality"
+      },
+      {
+        "field": "update_rule",
+        "type": "String",
+        "comparison": "exact string equality"
+      },
+      {
+        "field": "binding",
+        "type": "String",
+        "comparison": "exact string equality"
+      }
+    ],
+    "implementation": "Rust derived PartialEq on each existing struct compares all declared fields. No hand-selected fields, parser normalization, serde serialization, digest-only comparison or data-to-cap conversion is substituted. No Eq implementation or new comparison helper is added.",
+    "ownership": "PartialEq uses shared references; the existing != expression and subsequent profile encoding/transfer remain unchanged. No clone, new read, live check, clock, retry, lock or owner transfer is introduced."
+  },
+  "unchanged_caller": {
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+    "git_blob": "3fcc166944e3b9b24f81434029766a1e1f2e8dbf",
+    "bytes": 12375,
+    "sha256": "27b4919518c746e1a85e389a352f67a3c396c92a3b1d7d08d439c7b02fcf94f7",
+    "before_comparison": "CellQ24PreparedLearningV1::root_profile(&prepared, self.context.identity(), proof).map_err(deployment_error)?",
+    "comparison": "if expected != profile {",
+    "mismatch": "deployment_refused(\"APrepared profile differs from the original producer\")",
+    "after_comparison": "OriginalActorWait::for_original_prepared then existing actual material exchange",
+    "all_bytes_unchanged": true
+  },
+  "preserved": [
+    "All five Profile and three Scope fields and their visibility.",
+    "Clone/Debug/Deserialize/Serialize and serde deny_unknown_fields/default/skip_serializing_if.",
+    "Original constructors, require_binding, schema/version checks, exact identity/writer-proof comparison, canonical base64+codec snapshot validation and frozen scope validation.",
+    "Original coordinator read/prepare/compare/error/actor-wait sequence and full Result propagation.",
+    "Original 500ms starts, absolute ends, failure guards, actual owned files and request counts.",
+    "All tests, dependencies, environment, checker/helper and metadata bytes."
+  ],
+  "guard_impact": {
+    "old_metadata": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+    "row": "protected_file:151",
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+    "finding": "The complete old row was independently read. It does not mention either derive attribute. All required/forbidden/file-order/function-order/literal-call source substrings and actual function bodies are unchanged.",
+    "caller_guard": "The actual coordinator expected != profile guard expression is unchanged; no guard or boundary caller rewrite is needed for this fix.",
+    "final_metadata_note": "Any new inventory fingerprint or whole-struct source evidence must identify post9d1788. No final overall checker or metadata PASS asserted."
+  },
+  "validation": {
+    "fixed_file_get_sha_matches": true,
+    "post_create_get_exact": true,
+    "operations": 2,
+    "unique_forward_reverse": true,
+    "reverse_removes_only_two_PartialEq_entries": true,
+    "original_body_bytes_identical": true,
+    "changed_bytes": 22,
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "native": false,
+    "h": false,
+    "ref_mutation": false
+  },
+  "review_request": "Root to independently replay both exact operations and check the field-complete derives before actual isolated compile. Other actual v8 errors remain separately owned by runtime/chain."
+}

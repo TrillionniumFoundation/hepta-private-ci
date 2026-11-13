@@ -2,6 +2,8 @@
 //! The receiver is driven through its original awaits. Its two bootstrap
 //! blocking handles and Session tasks are also retained by that outer owner.
 
+use std::io::Write;
+
 use super::*;
 
 #[path = "production_launcher_same_actor_completion.rs"]
@@ -168,7 +170,10 @@ pub(super) async fn run_owned_original_phase(
     if let Some(coordinator) = coordinator.as_mut() {
         if let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {
             if result.is_ok() { return Err(error); }
-            tracing::error!(error = %error, "original deployment coordinator also failed");
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "hepta-agentd level=error error={error}: original deployment coordinator also failed",
+            );
         }
     }
     result

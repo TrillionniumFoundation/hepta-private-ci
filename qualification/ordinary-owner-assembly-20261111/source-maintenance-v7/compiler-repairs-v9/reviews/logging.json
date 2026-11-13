@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "kind": "independent_actual_v8_unlinked_tracing_compilefix_review",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "NO CONFIRMED LOCAL STATIC BLOCKER; not compiled or executed",
+  "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+  "packet_bytes": 17648,
+  "packet_sha256": "f37d0e2768699faf34e0a28717b2f58d9dd79a503e135132a4cf8b65e5551d3b",
+  "current_source_manifest": "c4b447e17082a076c998cf71e43d7f006c286b06",
+  "actual_log": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+  "actual_errors": [
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope",
+    "error[E0433]: cannot find module or crate `tracing` in this scope"
+  ],
+  "replay": [
+    {
+      "owner": "runtime",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "ops": 7,
+      "pre": "ef89df3a480222bbe04130f483b309303a0b0488",
+      "post": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+      "unique_F_R": true,
+      "current_manifest_match": true
+    },
+    {
+      "owner": "runtime",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "ops": 2,
+      "pre": "19df3de847737d2009d6f8828bf96b78145d2603",
+      "post": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+      "unique_F_R": true,
+      "current_manifest_match": true
+    },
+    {
+      "owner": "runtime",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "ops": 4,
+      "pre": "6b1fcb3a86a6c35fb44b18f959a1989bbadf4ac8",
+      "post": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+      "unique_F_R": true,
+      "current_manifest_match": true
+    },
+    {
+      "owner": "runtime",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "ops": 2,
+      "pre": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+      "post": "387622da593b896a060713b617c6aaf7895ff3d6",
+      "unique_F_R": true,
+      "current_manifest_match": true
+    },
+    {
+      "owner": "runtime",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "ops": 2,
+      "pre": "74e02f1b48a6f9f41b50856a0031c5e0330a054a",
+      "post": "3b2599c107fd6f7affeabd61d259d080ab8561e5",
+      "unique_F_R": true,
+      "current_manifest_match": true
+    }
+  ],
+  "counts": {
+    "files": 5,
+    "unique_ops": 17,
+    "imports": 5,
+    "diagnostic_sites": 12,
+    "observation_Debug": 2,
+    "error_Display": 10
+  },
+  "original_pattern_evidence": {
+    "cargo": {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+      "bytes": 4905,
+      "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417",
+      "actual_head": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+      "finding": "No tracing or log dependency; existing std stderr pattern used instead."
+    },
+    "runtime": {
+      "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+      "blob": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "bytes": 17929,
+      "sha256": "456a21ce0b186dc664b2af3877a9c6fa0a376b1dceb445d50e0d721f9de1b655",
+      "exact_pattern": "fn lifecycle_warning(name: &str, message: &str) {\n    use std::io::Write;\n    let _ = writeln!(\n        std::io::stderr().lock(),\n        \"hepta-agentd module={name}: {message}\"\n    );\n}\n"
+    }
+  },
+  "sites": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "level": "info",
+      "message": "actual original Circuit cleanup observed",
+      "field": "observation={observed:?}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "level": "info",
+      "message": "actual original Session cleanup observed",
+      "field": "observation={observed:?}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "level": "error",
+      "message": "original signal listener also failed",
+      "field": "error={signal}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "level": "error",
+      "message": "original phase also failed during physical cleanup",
+      "field": "error={cleanup}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "level": "error",
+      "message": "cancelled original phase owner finished with failure",
+      "field": "error={error}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "level": "error",
+      "message": "additional original cleanup failure",
+      "field": "error={error}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "level": "error",
+      "message": "original deployment coordinator also failed",
+      "field": "error={error}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "level": "error",
+      "message": "original Runtime cleanup also failed",
+      "field": "error={cleanup}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "level": "error",
+      "message": "original App Server cleanup also failed",
+      "field": "error={cleanup}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "level": "error",
+      "message": "original Runtime MCP cleanup also failed",
+      "field": "error={cleanup}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "level": "error",
+      "message": "original deployment coordinator stopped with failure",
+      "field": "error={error}",
+      "write_error": "ignored as original lifecycle_warning"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "level": "error",
+      "message": "additional original terminal cleanup failure",
+      "field": "error={error}",
+      "write_error": "ignored as original lifecycle_warning"
+    }
+  ],
+  "findings": [
+    "Every complete pre/post source was GET/hash checked; all five preimages match current c4b447 manifest. All 17 operations apply exactly once forward/reverse and reconstruct entire fixed postimages.",
+    "Actual Cargo.toml has no tracing/log dependency. The original runtime_tasks.rs lifecycle_warning uses std::io::Write, writeln!(std::io::stderr().lock(), ...) and intentionally ignores write failure; the patch uses this existing output approach without dependency/environment changes.",
+    "Each replacement is at the same original diagnostic point with the same observation/error value and message: two observations retain Debug formatting and ten errors retain Display formatting. All Write results are explicitly discarded.",
+    "The original failure selection remains intact: signal-plus-original error returns original; physical cleanup error never replaces original; first-error helpers keep first and log only later errors; coordinator returns its error if the result was previously Ok and otherwise keeps the original error; Drop paths still close/join before reporting.",
+    "Each stderr lock is local to a writeln statement, with no await or stored lock guard introduced. All actual owner handles, scope guards, Result branches, await order, deadline calculations and source code outside five imports/twelve diagnostic sites are byte-identical.",
+    "This is a logging implementation choice after a real unresolved-crate compile failure. It performs synchronous stderr output and does not claim zero I/O or bounded stderr latency. It does not make logger success part of any completion proof."
+  ],
+  "guard_impact": {
+    "origins": [
+      {
+        "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:7",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "functions": [
+          "fn close_and_join_original_resources(",
+          "fn start_original(",
+          "fn save_original_failure("
+        ]
+      },
+      {
+        "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:8",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+        "functions": [
+          "fn run_owned_original_phase("
+        ]
+      },
+      {
+        "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:9",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "functions": [
+          "fn release_original_after_root_exit(",
+          "fn run_original_same_actor_with_shutdown("
+        ]
+      },
+      {
+        "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:10",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+        "functions": [
+          "fn preserve_original_cleanup_failure("
+        ]
+      },
+      {
+        "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:5",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+        "functions": []
+      }
+    ],
+    "required": "Re-extract the exact actual masked diagnostic statements and affected whole Drop/impl spans at their original row origins after formatting. Preserve all other required/forbidden, original return/error/drop/await and closed-set fields. No metadata was changed by this peer.",
+    "extra": "The owner and coordinator Drop statements are affected even when not listed in the packet's function-only sublist; whole-item guards must use actual posts."
+  },
+  "execution": {
+    "source_static_only": true,
+    "formatter": false,
+    "compiler": false,
+    "checker": false,
+    "native": false,
+    "h": false,
+    "ref_mutation": false
+  }
+}

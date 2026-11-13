@@ -1,0 +1,429 @@
+{
+  "schema_version": 1,
+  "kind": "v8_missing_actual_outcome_raw_data_adapter_source_proposal",
+  "status": "Git_CREATED_GET_verified_not_compiled_or_business_qualified",
+  "base_head": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+  "source_manifest": "c4b447e17082a076c998cf71e43d7f006c286b06",
+  "actual_diagnostic": {
+    "log": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+    "kind": "E0432",
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs",
+    "line": 14,
+    "reason": "The actual parent had no outcome_data module and no concrete DTO definition. This is a missing data adapter implementation, not a path-only typo."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "pre": null,
+      "post": {
+        "blob": "d55f99b6457aded2a762e98bb80e207289de8fd6",
+        "bytes": 4323,
+        "sha256": "70152d99a78798c48a625b95cbe5f39bb348fb41033130c805584305dbd4531c"
+      },
+      "operations": [
+        {
+          "kind": "add",
+          "before": "",
+          "after": "//! Complete untrusted Outcome data supplied by the independent Observer.\n//! Conversion preserves the original production-v2 signing fields. It creates\n//! no verified evidence or receipt; the actual A/C producer still authenticates\n//! the supplied signature against its own current trust and task publication.\n\nuse codex_hepta_learning_ledger::AuthenticatedOutcomeV1;\nuse codex_hepta_learning_ledger::OutcomeTerminalityV1;\nuse codex_hepta_learning_ledger::OutcomeWatermarkV1;\nuse codex_hepta_learning_ledger::SignedLearningEvidenceV1;\nuse codex_hepta_types::Digest32;\nuse codex_hepta_types::FixedQ32;\nuse codex_hepta_types::StableId;\nuse serde::Deserialize;\nuse serde::Serialize;\n\nuse crate::AgentdError;\n\nuse super::deployment_error;\nuse super::learning_data::PrincipalData;\nuse super::learning_data::SignedEvidenceData;\nuse super::learning_data::required_option;\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalSignedOutcomeData {\n    outcome: OriginalOutcomeData,\n    signed: SignedEvidenceData,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalOutcomeData {\n    record_id: String,\n    outcome_id: String,\n    episode_id: String,\n    observer: PrincipalData,\n    #[serde(deserialize_with = \"required_option\")]\n    observed_at: Option<u64>,\n    /// Exact signed FixedQ32::raw() bits, without rounding or rescaling.\n    #[serde(deserialize_with = \"required_option\")]\n    value_raw_q32: Option<i64>,\n    unit_profile_digest: [u8; 32],\n    support_digest: [u8; 32],\n    watermark: OriginalOutcomeWatermarkData,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalOutcomeWatermarkData {\n    latest_observable_at: u64,\n    expected_delay_profile_digest: [u8; 32],\n    terminality: OriginalOutcomeTerminalityData,\n    #[serde(deserialize_with = \"required_option\")]\n    censoring_reason: Option<String>,\n    #[serde(deserialize_with = \"required_option\")]\n    correction_predecessor: Option<String>,\n    #[serde(deserialize_with = \"required_option\")]\n    finalized_at: Option<u64>,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\nenum OriginalOutcomeTerminalityData {\n    Pending,\n    Censored,\n    Terminal,\n}\n\nimpl OriginalSignedOutcomeData {\n    pub(super) fn into_original(\n        self,\n    ) -> Result<(AuthenticatedOutcomeV1, SignedLearningEvidenceV1), AgentdError> {\n        let data = self.outcome;\n        let watermark = data.watermark;\n        let outcome = AuthenticatedOutcomeV1 {\n            record_id: StableId::new(data.record_id).map_err(deployment_error)?,\n            outcome_id: StableId::new(data.outcome_id).map_err(deployment_error)?,\n            episode_id: StableId::new(data.episode_id).map_err(deployment_error)?,\n            observer: PrincipalData::original(&data.observer)?,\n            observed_at: data.observed_at,\n            value: data.value_raw_q32.map(FixedQ32::from_raw),\n            unit_profile_digest: Digest32::from_array(data.unit_profile_digest),\n            support_digest: Digest32::from_array(data.support_digest),\n            watermark: OutcomeWatermarkV1 {\n                latest_observable_at: watermark.latest_observable_at,\n                expected_delay_profile_digest: Digest32::from_array(\n                    watermark.expected_delay_profile_digest,\n                ),\n                terminality: match watermark.terminality {\n                    OriginalOutcomeTerminalityData::Pending => OutcomeTerminalityV1::Pending,\n                    OriginalOutcomeTerminalityData::Censored => OutcomeTerminalityV1::Censored,\n                    OriginalOutcomeTerminalityData::Terminal => OutcomeTerminalityV1::Terminal,\n                },\n                censoring_reason: watermark\n                    .censoring_reason\n                    .map(StableId::new)\n                    .transpose()\n                    .map_err(deployment_error)?,\n                correction_predecessor: watermark\n                    .correction_predecessor\n                    .map(StableId::new)\n                    .transpose()\n                    .map_err(deployment_error)?,\n                finalized_at: watermark.finalized_at,\n            },\n        };\n        let signed = SignedEvidenceData::original(&self.signed)?;\n        Ok((outcome, signed))\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "pre": {
+        "blob": "e0c16a271fcad4986a60a3ae7e019830a8992f2c",
+        "bytes": 3930,
+        "sha256": "cb214dd07bf01620d798d065bcd0ab6ab5718630d9761be344818df831d0d153"
+      },
+      "post": {
+        "blob": "75fee38fb8331a667009f32bb5fe27a53624b582",
+        "bytes": 4002,
+        "sha256": "b35ebbb63bd56cf92b419231cf68976a1072a489ede2b29cd33b40a91c9b1383"
+      },
+      "operations": [
+        {
+          "before": "#[path = \"same_actor_q24_deployment_owner.rs\"]\nmod owner;",
+          "after": "#[path = \"same_actor_q24_deployment_outcome_data.rs\"]\nmod outcome_data;\n#[path = \"same_actor_q24_deployment_owner.rs\"]\nmod owner;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pre": {
+        "blob": "4df68f2c0b93fde792584827a3ab95f50af078d1",
+        "bytes": 17448,
+        "sha256": "1a2a93afa1c4194d1676290d8eed7cc9da709088ad0fd029c2890ae9b532bb69"
+      },
+      "post": {
+        "blob": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+        "bytes": 17600,
+        "sha256": "da89aa6c5e895f690b784ad5878ed9b75d77bb646398839328da5fca0507ecdf"
+      },
+      "operations": [
+        {
+          "before": "use super::data::OriginalCOutcomeData;",
+          "after": "use super::data::OriginalCOutcomeData;\nuse super::outcome_data::OriginalSignedOutcomeData;"
+        },
+        {
+          "before": "let (outcome, signed) = completed.outcome.into_original()?;",
+          "after": "let (outcome, signed) =\n                        OriginalSignedOutcomeData::into_original(completed.outcome)?;"
+        },
+        {
+          "before": "let (outcome, signed) = data.outcome.into_original()?;",
+          "after": "let (outcome, signed) =\n                        OriginalSignedOutcomeData::into_original(data.outcome)?;"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "new_product_paths": 1,
+    "touched_existing_paths": 2,
+    "operations": 5,
+    "metadata_boundaries_append": 1,
+    "metadata_protected_conjuncts_append": 2
+  },
+  "source_evidence": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+      "blob": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "bytes": 19100,
+      "sha256": "5ce584b61e976a8d3bb5f96a612531f367d1d14fb8f704233c87bb5451297f36"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "blob": "397d42abf6be08dd5a70f27bda531f629db14dfb",
+      "bytes": 50665,
+      "sha256": "49fc360f38e5a8f5d65da8ff7648b4b8836c1d52c74d1f7945d52b2f612b0c2c"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "bytes": 15660,
+      "sha256": "6b8f65d3324cd4531c0a5f94ac321068b4a2661132944472b8176838b335590a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_outcome_codec.rs",
+      "blob": "cf9df101ff30b86fd55faf56f11a8d42b6414bdc",
+      "bytes": 4348,
+      "sha256": "9788fa785b2cfa9048dc7d6181940eb481a3948e904914cfaa7c296b0799690d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "blob": "964b3aac267d58ba06dd967623d653effbb57268",
+      "bytes": 11584,
+      "sha256": "e47e0a0eb868cba79e8b7c54b2bb3ecf6f21b5e743c9fa839e567ad9f7d35d88"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "blob": "5758580b35717ec5dc51635cad310e15856b6b10",
+      "bytes": 10185,
+      "sha256": "bec36a7a3579f4f029ab12bb9eed2cc876011d52b76070adb1c21a1cc85ac558"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "blob": "f4be0fb2769ec29f72a6f643b07090d79e155c63",
+      "bytes": 14655,
+      "sha256": "a651c50b742d20a985b7749bd6f5f3a1f571a9fa7277da84cd4032114e9d2b5d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs",
+      "blob": "bedfe99c27719d2198cf7f8bbc24a863ce70dd6e",
+      "bytes": 12611,
+      "sha256": "7c2ece631c68351000e7e13f49066031ef9a655376edcd48507a535a53a283cd"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "blob": "3c2674dce405fd20f254f5f1816654aae99d7c13",
+      "bytes": 3717,
+      "sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f",
+      "bytes": 13344,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3"
+    }
+  ],
+  "field_mapping": [
+    {
+      "wire": "outcome.record_id",
+      "original": "AuthenticatedOutcomeV1.record_id",
+      "conversion": "String -> StableId::new; original Stable identifier validation",
+      "default": false
+    },
+    {
+      "wire": "outcome.outcome_id",
+      "original": "AuthenticatedOutcomeV1.outcome_id",
+      "conversion": "String -> StableId::new; original Stable identifier validation",
+      "default": false
+    },
+    {
+      "wire": "outcome.episode_id",
+      "original": "AuthenticatedOutcomeV1.episode_id",
+      "conversion": "String -> StableId::new; original Stable identifier validation",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer",
+      "original": "AuthenticatedOutcomeV1.observer",
+      "conversion": "Existing PrincipalData::original, with every original assertion field preserved",
+      "default": false
+    },
+    {
+      "wire": "outcome.observed_at",
+      "original": "AuthenticatedOutcomeV1.observed_at",
+      "conversion": "Required JSON key; explicit null or unchanged u64",
+      "default": false
+    },
+    {
+      "wire": "outcome.value_raw_q32",
+      "original": "AuthenticatedOutcomeV1.value",
+      "conversion": "Required JSON key; explicit null or exact i64 -> FixedQ32::from_raw, no rescaling/clamp",
+      "default": false
+    },
+    {
+      "wire": "outcome.unit_profile_digest",
+      "original": "AuthenticatedOutcomeV1.unit_profile_digest",
+      "conversion": "Exact [u8;32] -> Digest32::from_array",
+      "default": false
+    },
+    {
+      "wire": "outcome.support_digest",
+      "original": "AuthenticatedOutcomeV1.support_digest",
+      "conversion": "Exact [u8;32] -> Digest32::from_array",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark",
+      "original": "AuthenticatedOutcomeV1.watermark",
+      "conversion": "Complete required nested OriginalOutcomeWatermarkData",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark.latest_observable_at",
+      "original": "OutcomeWatermarkV1.latest_observable_at",
+      "conversion": "Unchanged required u64",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark.expected_delay_profile_digest",
+      "original": "OutcomeWatermarkV1.expected_delay_profile_digest",
+      "conversion": "Exact [u8;32] -> Digest32::from_array",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark.terminality",
+      "original": "OutcomeWatermarkV1.terminality",
+      "conversion": "Exactly pending/censored/terminal -> the same three original variants; no default",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark.censoring_reason",
+      "original": "OutcomeWatermarkV1.censoring_reason",
+      "conversion": "Required JSON key; null or original StableId::new via Option::transpose",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark.correction_predecessor",
+      "original": "OutcomeWatermarkV1.correction_predecessor",
+      "conversion": "Required JSON key; null or original StableId::new via Option::transpose",
+      "default": false
+    },
+    {
+      "wire": "outcome.watermark.finalized_at",
+      "original": "OutcomeWatermarkV1.finalized_at",
+      "conversion": "Required JSON key; null or unchanged u64",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.principal_id",
+      "original": "AuthenticatedPrincipalV1.principal_id",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.credential_chain_digest",
+      "original": "AuthenticatedPrincipalV1.credential_chain_digest",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.signing_key_digest",
+      "original": "AuthenticatedPrincipalV1.signing_key_digest",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.scope_digest",
+      "original": "AuthenticatedPrincipalV1.scope_digest",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.authority_epoch",
+      "original": "AuthenticatedPrincipalV1.authority_epoch",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.authenticated_at",
+      "original": "AuthenticatedPrincipalV1.authenticated_at",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "outcome.observer.expires_at",
+      "original": "AuthenticatedPrincipalV1.expires_at",
+      "conversion": "Existing unchanged PrincipalData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.evidence_id",
+      "original": "SignedLearningEvidenceV1.evidence_id",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.principal_id",
+      "original": "SignedLearningEvidenceV1.principal_id",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.role",
+      "original": "SignedLearningEvidenceV1.role",
+      "conversion": "Existing exhaustive EvidenceRoleData conversion, with no role assignment or escalation",
+      "default": false
+    },
+    {
+      "wire": "signed.trust_digest",
+      "original": "SignedLearningEvidenceV1.trust_digest",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.scope_digest",
+      "original": "SignedLearningEvidenceV1.scope_digest",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.objective_digest",
+      "original": "SignedLearningEvidenceV1.objective_digest",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.authority_epoch",
+      "original": "SignedLearningEvidenceV1.authority_epoch",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.issued_at",
+      "original": "SignedLearningEvidenceV1.issued_at",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.expires_at",
+      "original": "SignedLearningEvidenceV1.expires_at",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.payload_digest",
+      "original": "SignedLearningEvidenceV1.payload_digest",
+      "conversion": "Existing unchanged SignedEvidenceData::original",
+      "default": false
+    },
+    {
+      "wire": "signed.signature",
+      "original": "SignedLearningEvidenceV1.signature",
+      "conversion": "Existing signature(&self.signature): try_into exactly [u8;64], otherwise original deployment refusal",
+      "default": false
+    }
+  ],
+  "required_nullable_fields": [
+    "outcome.observed_at",
+    "outcome.value_raw_q32",
+    "outcome.watermark.censoring_reason",
+    "outcome.watermark.correction_predecessor",
+    "outcome.watermark.finalized_at"
+  ],
+  "wire_contract": {
+    "outer": "OriginalSignedOutcomeData { outcome: all original raw Outcome fields, signed: all existing signed evidence fields }",
+    "unknown_fields": "deny_unknown_fields on all three new data structs; nested existing PrincipalData/SignedEvidenceData already deny unknown fields",
+    "nullable_fields": "Each has the existing required_option deserialize_with hook; no serde(default), so omitted data is not a business default.",
+    "numeric": "All original u64 fields remain u64. FixedQ32 value carries exact i64 raw bits, not a floating-point quantity.",
+    "signature": "Supplied bytes only, strict original 64-byte conversion. No signing key is accepted or generated.",
+    "authority": "Data reconstruction does not authenticate. Original identity assertions, role, times, signature, and payload digest remain supplied data until actual producer admission."
+  },
+  "actual_consumption": [
+    {
+      "stage": "A",
+      "source": "5758580b35717ec5dc51635cad310e15856b6b10",
+      "chain": [
+        "OriginalPinnedRead::parse_original<OriginalACompletionData>",
+        "actual schema_version and phase checks",
+        "OriginalSignedOutcomeData::into_original(completed.outcome)",
+        "unchanged preparation/source/trust freeze and pin check",
+        "Command::CompleteOriginalA(OriginalSameActorCompletedAInputsV1 { outcome, signed, ... })",
+        "actual A route admission cut and quiescence",
+        "OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome(&original.ledger, inputs.outcome, &inputs.signed)",
+        "require actual Complete status before prepare_learning"
+      ]
+    },
+    {
+      "stage": "C",
+      "source": "f4be0fb2769ec29f72a6f643b07090d79e155c63",
+      "chain": [
+        "OriginalActorWait waits for actual external outcome_c under original deadlines",
+        "OriginalPinnedRead::parse_original<OriginalCOutcomeData>",
+        "actual schema_version and phase checks",
+        "OriginalSignedOutcomeData::into_original(data.outcome)",
+        "unchanged original pin/live check",
+        "Command::ObserveOriginalC(OriginalSameActorCOutcomeInputsV1 { outcome, signed })",
+        "actual installed successor's mandatory original ledger",
+        "OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome(ledger.as_ref(), input.outcome, &input.signed)",
+        "require actual Complete status before OriginalCOutcomeAccepted"
+      ]
+    }
+  ],
+  "unchanged_authentication": {
+    "source": "bedfe99c27719d2198cf7f8bbc24a863ce70dd6e",
+    "facts": [
+      "Producer still captures original source/ledger and authenticates its original recorded Decision.",
+      "require_outcome still binds exact task record/outcome/episode/Observer/support/unit/expected-delay, Terminal status, no censor/correction, actual observed/finalized timestamps and existing value range.",
+      "Original outcome_signing_payload_v2 is still decoded by the existing strict canonical codec and compared to the complete original Outcome.",
+      "New append still invokes original LedgerWriter.validate_observed_outcome with original current verifier and original time; retained replay still checks exact immutable payload/signature/witness history.",
+      "No existing producer, verifier, signing codec, bound, timeout, clock or signature method changes."
+    ]
+  },
+  "visibility": {
+    "new_type": "pub(super) only; private fields; plain serde data, not a sealed owner/capability",
+    "new_method": "pub(super), consuming self; returns only two existing public raw-data types",
+    "existing_helpers": "No visibility change, no private codec export, no constructor authorization change."
+  },
+  "metadata": {
+    "pin": "d44dce76ae8e32fd2c867725cdb59b4befe96a56",
+    "status": "additive proposal; complete original 1010/598 table remains retained; adding only this annex yields 1011/600",
+    "actual_new_caller": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+    "exact_direct_calls": 2,
+    "existing_guard_to_resample": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:7"
+  },
+  "verification": {
+    "post_create_get_exact": true,
+    "operations_forward_reverse_unique": true,
+    "complete_source_hashes_verified": true,
+    "pure_v8_new_full_function_and_type_projection": true,
+    "original_checker_executed": false,
+    "compile_executed": false,
+    "tests_executed": false
+  },
+  "limits": [
+    "Requires real independently supplied A/C Outcome material and signatures; no operational Outcome, receipt, role, holdout, or success is fabricated.",
+    "This source proposal repairs the missing data bridge. It has not been formatted/compiled/run in native qualification.",
+    "Root review is required before integration; no branch/ref or environment changes were made."
+  ]
+}

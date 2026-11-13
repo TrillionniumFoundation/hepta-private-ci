@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "kind": "independent_actual_v8_AppServer_finish_original_owners_guard_successor_review",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "NO CONFIRMED LOCAL STATIC BLOCKER; source-bound metadata only, not original-checker/compiler/native PASS",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewed_manifest": {
+    "git_blob": "b113fd91c1c08ebfc83e3a542df6891593610038",
+    "bytes": 3683,
+    "sha256": "5de09da48dec2e9eaef5762fa862c4fbc8a1a957e521ed1c67311d3d652eaf06"
+  },
+  "reviewed_delta": {
+    "git_blob": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+    "bytes": 58987,
+    "sha256": "52833b4b78552622236471719a0d7746ceeabdfe5fa607b9fac9f60b560d727f"
+  },
+  "reviewed_author_proof": {
+    "git_blob": "c8b361cd3e3b597694d405a39e6f7fd872cea2be",
+    "bytes": 13839,
+    "sha256": "67eb34ecafbdfd26a3c3b325924b0dada67214570b8a3c2cb0727d9799660c69"
+  },
+  "must_apply_after": {
+    "git_blob": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+    "bytes": 188820,
+    "sha256": "ffc5f9fd0916b9a1788d4b23e16031bd7e35728134d9feb7414d4747b7db5d70"
+  },
+  "current_source": {
+    "commit": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+    "manifest": {
+      "git_blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+      "bytes": 57520,
+      "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+    }
+  },
+  "actual_source": {
+    "path": "codex-rs/app-server/src/message_processor.rs",
+    "pre": {
+      "git_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+      "bytes": 82342,
+      "sha256": "89e75287c8cff52d209bac3001b5ce9fd38a3e7861159ce2dd1fd60d32e3e809"
+    },
+    "post": {
+      "git_blob": "68ada589061cf74d714a89fc04657cd02cc5f4b6",
+      "bytes": 82330,
+      "sha256": "205c3dc044430550c58bc491d829a52de9bbf7815aaf0e831373dba557cae73b"
+    }
+  },
+  "actual_patch": {
+    "git_blob": "e6c1050136bf6562a85cafe14fe0685a38612758",
+    "bytes": 7341,
+    "sha256": "f1ca867f3aee84bc9b82b0c54474f68fcf0b2b56826a4ab34a44b841ead75595"
+  },
+  "source_review": {
+    "exact_replacement": {
+      "kind": "replace",
+      "old": "                if let Some(worker) = &mut processor.turn_cost_worker {\n                    if let Err(error) = TurnCostWorker::join_original(worker).await {\n                        failures.push((\"original turn cost\", std::io::Error::other(error)));\n                    }\n                }\n",
+      "new": "                if let Some(worker) = &mut processor.turn_cost_worker\n                    && let Err(error) = TurnCostWorker::join_original(worker).await\n                {\n                    failures.push((\"original turn cost\", std::io::Error::other(error)));\n                }\n",
+      "expected_occurrences": 1,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    "all_other_file_bytes_exact": true,
+    "actual_method_definition": {
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "git_blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+      "bytes": 17654,
+      "sha256": "c8a7de5471768871e117df543800e9ff4dec131a9ebad495cbfd7fb6393cb4ca",
+      "actual": "async fn join_original(&mut self) -> Result<(), tokio::task::JoinError>; self.shutdown.cancel(); (&mut self._task).await"
+    },
+    "semantic_findings": [
+      "Both forms first borrow the same Option<TurnCostWorker> mutably. None performs no join; Some passes the same &mut worker into the same original join_original call exactly once.",
+      "The actual join method cancels its same shutdown token and awaits the same stored JoinHandle<()> by mutable reference. The Clippy transformation introduces no handle take, respawn, abort, second await, clock or new stop signal.",
+      "Both forms append the same original JoinError converted through std::io::Error::other only on Err. Ok carries unit. The first pattern binds a mutable reference; the second moves the same Err into the unchanged failure vector. No extra owning temporary with a meaningful destructor is introduced or removed by this let-chain.",
+      "All previous real joins, queues/drain checks, login cancellation, Core shutdown and listener joins are byte-identical. The same Arc::try_unwrap transfers the actual processor after joins; its failed-unwrapping branch retains that processor and adds the same error.",
+      "The following drop(processor) and final finish_original_failures(failures) remain at exactly the original relative position. This change does not convert reference count, cancellation or an Ok marker into physical completion."
+    ]
+  },
+  "metadata_review": {
+    "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+    "path": "codex-rs/app-server/src/message_processor.rs",
+    "predecessor": "The complete old row equals exactly the matching new_row in875d82, not an earlier40133 template.",
+    "old_fingerprint": "7c2a80b97af960749bbdfbdb20d34bb3e45bfe09d710dcdc9025981c7ccd830f",
+    "new_fingerprint": "a5fec13fe1a6ef1af4819bf2bb51b051704456616c0b23a7b0813b9463a9d5b4",
+    "single_changed_field": "required_function_order",
+    "single_changed_function": "fn finish_original_owners(",
+    "sequence_index": 3,
+    "preserved": [
+      "All six function selectors in the same order.",
+      "Five other complete function entries byte-for-byte at canonical semantic representation.",
+      "The original None constructor file-order sequence and both of its markers.",
+      "All raw required and forbidden arrays, path and every other row field.",
+      "Empty boundary_changes: no caller set, definition marker, receiver, call_pattern, ID, required-ID inventory or source-root change.",
+      "All seven other protected row updates and both boundary rows represented by the875d predecessor remain unchanged by the actual semantic applier.",
+      "Existing same-path conjuncts remain selected by immutable origin, not by path overwrite."
+    ],
+    "sequence_preservation": {
+      "old_count": 92,
+      "new_count": 92,
+      "unchanged_prefix": 73,
+      "unchanged_suffix": 15,
+      "old_fragment": [
+        "if let Some(worker) = &mut processor.turn_cost_worker {",
+        "if let Err(error) = TurnCostWorker::join_original(worker).await {",
+        "failures.push((                    , std::io::Error::other(error)));",
+        "}"
+      ],
+      "new_fragment": [
+        "if let Some(worker) = &mut processor.turn_cost_worker",
+        "&& let Err(error) = TurnCostWorker::join_original(worker).await",
+        "{",
+        "failures.push((                    , std::io::Error::other(error)));"
+      ]
+    },
+    "complete_changed_function": "Both old and new sequences independently equal every nonempty trimmed masked code line in their corresponding unique actual fn extent. This is not a selective guard subset.",
+    "applier": {
+      "git_blob": "733b3c98676ff3d5eca29687fdb624f33ead6a33",
+      "bytes": 2970,
+      "sha256": "d002e3251520886c6e7ffa24d2beb1508c87179fbc22c68e4ba1ce95941bacfb",
+      "inspection": "Reads a unique immutable origin, verifies complete pre-row canonical equality and SHA fingerprint, allows only declared guard fields, preserves raw/negative/path/function-selector inventories, and checks complete post-row fingerprint. The selected predecessor row was applied forward and backward in the actual875d affected-row set; every unselected entry remained equal."
+    }
+  },
+  "independent_checks": {
+    "prior_row_exact": true,
+    "old_fingerprint": "7c2a80b97af960749bbdfbdb20d34bb3e45bfe09d710dcdc9025981c7ccd830f",
+    "new_fingerprint": "a5fec13fe1a6ef1af4819bf2bb51b051704456616c0b23a7b0813b9463a9d5b4",
+    "boundary_changes": 0,
+    "protected_changes": 1,
+    "changed_field": "required_function_order",
+    "changed_function_index": 3,
+    "old_marker_count": 92,
+    "new_marker_count": 92,
+    "unchanged_prefix_markers": 73,
+    "unchanged_suffix_markers": 15,
+    "old_changed": [
+      "if let Some(worker) = &mut processor.turn_cost_worker {",
+      "if let Err(error) = TurnCostWorker::join_original(worker).await {",
+      "failures.push((                    , std::io::Error::other(error)));",
+      "}"
+    ],
+    "new_changed": [
+      "if let Some(worker) = &mut processor.turn_cost_worker",
+      "&& let Err(error) = TurnCostWorker::join_original(worker).await",
+      "{",
+      "failures.push((                    , std::io::Error::other(error)));"
+    ],
+    "source_unique_FR": true,
+    "semantic_row_forward_reverse": true,
+    "retained_prior_rows": 7,
+    "retained_prior_boundaries": 2,
+    "retained_other_functions": 5,
+    "allOtherFieldsExact": true,
+    "old_row_post_rejection": "Error: order missing \"if let Some(worker) = &mut processor.turn_cost_worker {\"",
+    "projection_functions": [
+      {
+        "function": "fn new_original_owner(",
+        "start": 11976,
+        "end_exclusive": 12177,
+        "markers": 6
+      },
+      {
+        "function": "fn new_with_original_owner(",
+        "start": 12183,
+        "end_exclusive": 27504,
+        "markers": 354
+      },
+      {
+        "function": "fn prepare_original_shutdown(",
+        "start": 34212,
+        "end_exclusive": 34841,
+        "markers": 16
+      },
+      {
+        "function": "fn finish_original_owners(",
+        "start": 34864,
+        "end_exclusive": 39076,
+        "markers": 92
+      },
+      {
+        "function": "fn connection_closed_original(",
+        "start": 39099,
+        "end_exclusive": 39795,
+        "markers": 18
+      },
+      {
+        "function": "fn dispatch_initialized_client_request(",
+        "start": 43800,
+        "end_exclusive": 46842,
+        "markers": 75
+      }
+    ],
+    "code_markers": 561,
+    "file_order_sequences": 1,
+    "file_order_markers": 2,
+    "complete_old_and_new_changed_function": true
+  },
+  "projection_method": {
+    "artifact": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+    "artifact_bytes": 13481,
+    "artifact_sha256": "7b122c8a3c91495efa1e148fcb7890c17a9938694bb3c6293bf635c1c90be187",
+    "reference_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "reference_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "performed": "Read the original checker mask, cfg/test strip, item extent and function/order rules. Used the frozen pure-V8 transcription for this one row only. Old row matches old source; old row rejects actual post; new row matches actual post. All6 functions/561 ordered markers and1 file-order sequence/2 markers were checked.",
+    "not_performed": "No original checker/helper execution, no whole1010/598 union execution, no full-repository caller scan or broader protected-row revalidation."
+  },
+  "source_and_meta_write_scope": "Only this review artifact was created. No product source, metadata table, checker, test, environment or ref changed.",
+  "limits": [
+    "The original full native patch also has MCP changes; those two other source sections are outside this single-function AppServer metadata review.",
+    "Manifest counts1010/598 remain a structural expectation of the unchanged union, not a newly executed global result.",
+    "The10 existing AppServer components were not run here.",
+    "All input source and evidence blobs were independently GET/full Git hash/byte length/SHA256 checked; the source op and semantic complete-row op were independently reversible."
+  ],
+  "execution": {
+    "pure_v8": true,
+    "Git_GET_CREATE_only": true,
+    "formatter": false,
+    "compiler": false,
+    "original_checker": false,
+    "tests": false,
+    "native": false,
+    "h": false,
+    "ref_mutation": false
+  }
+}

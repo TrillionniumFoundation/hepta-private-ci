@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "kind": "independent_actual_v8_AsyncFd_register_error_compilefix_review",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "NO CONFIRMED LOCAL STATIC BLOCKER in the stated source/dependency scope; not compiled",
+  "packet": "86d575cb94e626933c52eb4654fef64af047906f",
+  "packet_bytes": 8158,
+  "packet_sha256": "3d5b9ed98f4e6210f9082530cfa79fdc18f94d6e8bb69b998f5e28fb9fc629a1",
+  "replay": {
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+    "pre": {
+      "git_blob": "9c4791b428ab4d8b77299ee75d89ab70bd679f20",
+      "bytes": 9671,
+      "sha256": "2281654d180f61303596b28e2d2401a384445691be09d11fe8bddf92af376a2e"
+    },
+    "post": {
+      "git_blob": "b9753d53834659e46ebc9dfd5fdc5df9580152b8",
+      "bytes": 9715,
+      "sha256": "0e49d5cebb4bc46a776f688325fc876484620ad8c7b2e886133c3ce29fbe3b7d"
+    },
+    "ops": 1,
+    "F_R": true,
+    "current_pre": true
+  },
+  "actual_log": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+  "cause": "Actual E0277: AsyncFdRegisterError<OwnedFd> has no direct From conversion to AgentdError.",
+  "change": ".map_err(std::io::Error::other)? after the original unsafe register_with_interest call; +44 bytes only.",
+  "read_evidence": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "bytes": 421005,
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    {
+      "path": "tokio/src/io/async_fd.rs",
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+      "bytes": 62421,
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d",
+      "upstream_commit": "a85c3f5baa298a6b554fd3700daf0342289881af"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/error.rs",
+      "git_blob": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf",
+      "bytes": 2813,
+      "sha256": "1131916265c0c1a27a2f9f87150f181e9701f56bf867a716f006595a6331287f"
+    }
+  ],
+  "findings": [
+    "Fixed Cargo.lock names Tokio1.53.3 and its registry checksum. The complete matching official-tag async_fd.rs copy was independently GET/hash checked and relevant API/error implementations read.",
+    "register_with_interest returns Ok with the same inner object, or Err(AsyncFdRegisterError { inner, cause }). The concrete original error implements Display/Debug/Error, and its source() returns the original io::Error.",
+    "For OwnedFd, the concrete error is an owned Send+Sync+'static error. io::Error::other boxes that same complete error; it does not stringify it or take only its cause. ? uses the existing transparent AgentdError::Io From<io::Error> conversion.",
+    "The original failed registration's OwnedFd remains inside that same error until its eventual drop. No raw fd, PID lookup, fd clone beyond the original clone, leak, premature success or synthetic Root-exit cap is introduced.",
+    "Outer io::ErrorKind is explicitly Other; the original inner io::Error/kind remains reachable inside the preserved AsyncFdRegisterError source. Do not claim top-level kind is unchanged.",
+    "On success, the same registered AsyncFd flows into the unchanged exact-peer shutdown, original Gate/end/readiness/poll loop and actual kernel-exit cap point. On failure, ? still exits through Err and original joined/failure guard remains armed.",
+    "Full pre/post bytes and unique forward/reverse operation were independently checked; all other bytes are identical and the preimage matches current c4b447 inventory."
+  ],
+  "guard_impact": {
+    "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:36",
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+    "field": "required_function_order",
+    "function": "fn wait_original_root_process_exit(",
+    "original_sequence_index": 2,
+    "prior_local_markers": [
+      "AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)",
+      "}?;"
+    ],
+    "successor_local_markers": [
+      "AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)",
+      "}",
+      ".map_err(std::io::Error::other)?;"
+    ],
+    "instruction": "The integration owner must recapture this same complete function in the actual-postimage successor of the exact origin. Keep all five raw required method markers, explicit forbidden[], other functions and other same-path conjuncts.",
+    "boundary_changes": "No boundary ID, signature, receiver, product caller set or existing privileged call changes. Only the unprivileged standard-library error wrapper is added.",
+    "metadata_not_modified_in_this_source_packet": true
+  },
+  "dependency_limit": "This peer read the immutable official-version source copied to Hepta and the actual fixed Cargo.lock. It did not access the host registry or prove registry-file byte identity; Root retains that independent installed-source check. No native/compiler result is inferred.",
+  "execution": {
+    "Git_static_only": true,
+    "compiler": false,
+    "formatter": false,
+    "tests": false,
+    "original_checker": false,
+    "native": false,
+    "h": false,
+    "ref_mutation": false
+  }
+}

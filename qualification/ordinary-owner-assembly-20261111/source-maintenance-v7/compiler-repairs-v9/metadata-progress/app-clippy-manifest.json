@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "kind": "app_server_actual_v8_clippy_guard_successor_manifest",
+  "status": "FROZEN SOURCE-BOUND METADATA ONLY; ORIGINAL CHECKER NOT EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "must_apply_after": {
+    "git_blob": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+    "bytes": 188820,
+    "sha256": "ffc5f9fd0916b9a1788d4b23e16031bd7e35728134d9feb7414d4747b7db5d70"
+  },
+  "semantic_delta": {
+    "git_blob": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+    "bytes": 58987,
+    "sha256": "52833b4b78552622236471719a0d7746ceeabdfe5fa607b9fac9f60b560d727f"
+  },
+  "evidence": {
+    "git_blob": "c8b361cd3e3b597694d405a39e6f7fd872cea2be",
+    "bytes": 13839,
+    "sha256": "67eb34ecafbdfd26a3c3b325924b0dada67214570b8a3c2cb0727d9799660c69"
+  },
+  "semantic_applier": {
+    "git_blob": "733b3c98676ff3d5eca29687fdb624f33ead6a33",
+    "bytes": 2970,
+    "sha256": "d002e3251520886c6e7ffa24d2beb1508c87179fbc22c68e4ba1ce95941bacfb"
+  },
+  "current_source": {
+    "commit": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+    "manifest": {
+      "git_blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+      "bytes": 57520,
+      "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+    }
+  },
+  "exact_source_pre": {
+    "git_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+    "bytes": 82342,
+    "sha256": "89e75287c8cff52d209bac3001b5ce9fd38a3e7861159ce2dd1fd60d32e3e809"
+  },
+  "exact_source_post": {
+    "git_blob": "68ada589061cf74d714a89fc04657cd02cc5f4b6",
+    "bytes": 82330,
+    "sha256": "205c3dc044430550c58bc491d829a52de9bbf7815aaf0e831373dba557cae73b"
+  },
+  "actual_clippy_patch": {
+    "git_blob": "e6c1050136bf6562a85cafe14fe0685a38612758",
+    "bytes": 7341,
+    "sha256": "f1ca867f3aee84bc9b82b0c54474f68fcf0b2b56826a4ab34a44b841ead75595"
+  },
+  "row": {
+    "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+    "path": "codex-rs/app-server/src/message_processor.rs",
+    "expected_full_row_fingerprint": "7c2a80b97af960749bbdfbdb20d34bb3e45bfe09d710dcdc9025981c7ccd830f",
+    "expected_new_full_row_fingerprint": "a5fec13fe1a6ef1af4819bf2bb51b051704456616c0b23a7b0813b9463a9d5b4",
+    "field": "required_function_order",
+    "function": "fn finish_original_owners(",
+    "sequence_index": 3,
+    "old_markers": 92,
+    "new_markers": 92,
+    "functions_preserved": 6,
+    "file_order_sequences_preserved": 1
+  },
+  "scope": {
+    "boundary_changes": 0,
+    "protected_changes": 1,
+    "functions_resequenced": 1,
+    "other_function_entries_unchanged": 5,
+    "all_raw_required_and_forbidden_exact": true,
+    "no_conjunctive_row_overwrite": true,
+    "no_product_source_changes": true,
+    "full_row_unique_semantic_forward_reverse": true,
+    "delta_and_evidence_create_get_exact": true
+  },
+  "reason": "The original V8 Clippy postimage collapses two nested if-let tests around the same actual TurnCostWorker::join_original(worker).await into one let-chain. The successor preserves both conditions, the same original error append and the subsequent actual processor drop.",
+  "limits": {
+    "static_projection": "All six unique function sequences and the retained None-constructor file order pass the frozen V8 masked-code projection against the actual postimage. This is not original verify_hepta_callers.py execution.",
+    "no_global_checker_claim": true,
+    "no_compiler_or_native_run": true,
+    "existing_ten_app_components": "Unchanged and still not executed by this agent.",
+    "business_acceptance_counts_unchanged": true,
+    "h_or_pty": false,
+    "refs_changed": false,
+    "source_write": false
+  }
+}

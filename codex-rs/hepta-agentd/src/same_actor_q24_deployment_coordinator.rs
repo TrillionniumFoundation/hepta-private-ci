@@ -27,6 +27,7 @@ use super::c::OriginalCResources;
 use super::client::OriginalDeploymentClient;
 use super::data::OriginalACompletionData;
 use super::data::OriginalCOutcomeData;
+use super::outcome_data::OriginalSignedOutcomeData;
 use super::data::OriginalDeploymentData;
 use super::deployment_refused;
 use super::exchange::OriginalActorWait;
@@ -259,7 +260,8 @@ impl OriginalDeploymentCoordinator {
                             "actual A completion file belongs to another phase",
                         ));
                     }
-                    let (outcome, signed) = completed.outcome.into_original()?;
+                    let (outcome, signed) =
+                        OriginalSignedOutcomeData::into_original(completed.outcome)?;
                     let preparation = completed
                         .preparation
                         .original(Arc::clone(&self.initial_model), &self.initial_bundle)?;
@@ -371,7 +373,8 @@ impl OriginalDeploymentCoordinator {
                             "actual C Outcome belongs to another phase",
                         ));
                     }
-                    let (outcome, signed) = data.outcome.into_original()?;
+                    let (outcome, signed) =
+                        OriginalSignedOutcomeData::into_original(data.outcome)?;
                     OriginalPinnedRead::require_original_pin(&response)?;
                     wait.require_original_live()?;
                     self.send_original(Command::ObserveOriginalC(Box::new(

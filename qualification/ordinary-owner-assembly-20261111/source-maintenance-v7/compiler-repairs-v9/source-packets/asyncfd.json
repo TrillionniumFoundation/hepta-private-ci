@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v8_async_fd_registration_error_compile_fix",
+  "status": "EXACT SOURCE PATCH FROZEN; NOT COMPILED OR EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "current_source": {
+    "commit": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+    "manifest": {
+      "git_blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+      "bytes": 57520,
+      "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+    }
+  },
+  "original_failure_log": {
+    "git_blob": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+    "bytes": 57049,
+    "sha256": "31ec46ca019e224f4b0d6345db3dc3d66f77cad3407f221e7be82d4c6183209d"
+  },
+  "diagnostic": "E0277 at same_actor_q24_deployment_root_exit.rs:139: ? cannot convert AsyncFdRegisterError<OwnedFd> directly to AgentdError.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "pre": {
+        "git_blob": "9c4791b428ab4d8b77299ee75d89ab70bd679f20",
+        "bytes": 9671,
+        "sha256": "2281654d180f61303596b28e2d2401a384445691be09d11fe8bddf92af376a2e"
+      },
+      "post": {
+        "git_blob": "b9753d53834659e46ebc9dfd5fdc5df9580152b8",
+        "bytes": 9715,
+        "sha256": "0e49d5cebb4bc46a776f688325fc876484620ad8c7b2e886133c3ce29fbe3b7d"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "            let root = unsafe {\n                AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)\n            }?;\n",
+          "new": "            let root = unsafe {\n                AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)\n            }\n            .map_err(std::io::Error::other)?;\n",
+          "expected_occurrences": 1
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true,
+      "post_create_get_exact": true
+    }
+  ],
+  "actual_dependency_evidence": {
+    "cargo_lock": {
+      "path": "codex-rs/Cargo.lock",
+      "source": {
+        "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+        "bytes": 421005,
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      "package": "tokio",
+      "version": "1.53.3",
+      "registry": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e"
+    },
+    "upstream_tag": {
+      "repository": "tokio-rs/tokio",
+      "response": {
+        "ref": "refs/tags/tokio-1.53.3",
+        "node_id": "MDM6UmVmNjc4MzY3ODk6cmVmcy90YWdzL3Rva2lvLTEuNTMuMw==",
+        "url": "https://api.github.com/repos/tokio-rs/tokio/git/refs/tags/tokio-1.53.3",
+        "object": {
+          "sha": "a85c3f5baa298a6b554fd3700daf0342289881af",
+          "type": "commit",
+          "url": "https://api.github.com/repos/tokio-rs/tokio/git/commits/a85c3f5baa298a6b554fd3700daf0342289881af"
+        }
+      },
+      "commit": "a85c3f5baa298a6b554fd3700daf0342289881af"
+    },
+    "source": {
+      "repository": "tokio-rs/tokio",
+      "commit": "a85c3f5baa298a6b554fd3700daf0342289881af",
+      "path": "tokio/src/io/async_fd.rs",
+      "blob": {
+        "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+        "bytes": 62421,
+        "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d"
+      },
+      "exact_original_bytes_copied_to_hepta_and_get_verified": true
+    },
+    "observed_api": {
+      "registration": "pub unsafe fn register_with_interest(inner: T, interest: Interest) -> Result<Self, AsyncFdRegisterError<T>>",
+      "failure_custody": "Err(cause) => Err(AsyncFdRegisterError { inner, cause })",
+      "error_fields": "inner: T; cause: io::Error",
+      "error_implementations": [
+        "impl<T> fmt::Display for AsyncFdRegisterError<T>",
+        "impl<T> fmt::Debug for AsyncFdRegisterError<T>",
+        "impl<T> Error for AsyncFdRegisterError<T>"
+      ],
+      "source_method": "fn source(&self) -> Option<&(dyn Error + 'static)> { Some(&self.cause) }",
+      "into_parts_observed_but_not_used": "pub fn into_parts(self) -> (T, io::Error)",
+      "direct_io_conversion_observed_but_not_used": "impl<T> From<AsyncFdRegisterError<T>> for io::Error returns value.cause, releasing inner; this patch retains the entire error instead."
+    },
+    "registry_boundary": "The fixed Cargo.lock and official matching version/tag source were read through Git. This agent did not read or execute the host registry; byte identity with Root's installed registry file is a separate check requested from Root. No crate archive/checksum reparse was performed by this agent."
+  },
+  "existing_agentd_conversion": {
+    "path": "codex-rs/hepta-agentd/src/error.rs",
+    "source": {
+      "git_blob": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf",
+      "bytes": 2813,
+      "sha256": "1131916265c0c1a27a2f9f87150f181e9701f56bf867a716f006595a6331287f"
+    },
+    "actual": "#[error(transparent)] Io(#[from] std::io::Error)",
+    "error_source_unchanged": true
+  },
+  "type_reasoning": "The actual AsyncFdRegisterError<T> implements Error, Debug and Display without a T bound. With T=OwnedFd, its only fields are the owned descriptor and io::Error; the concrete error is Send + Sync + 'static, allowing std::io::Error::other to box that same error. ? then uses AgentdError's existing From<io::Error>.",
+  "error_and_owner_scope": {
+    "whole_registration_error_retained": true,
+    "original_owned_fd_retained_inside_error_until_error_drop": true,
+    "original_io_cause_object_and_source_chain_retained": true,
+    "outer_io_error_kind": "Other (introduced wrapper); the original inner io::Error and its kind/source remain inside AsyncFdRegisterError. No claim that the outer kind is identical is made.",
+    "success_case": "The same successfully registered AsyncFd<OwnedFd> is returned without mapping; same pre-held pidfd clone, interest and unsafe call.",
+    "failure_case": "The original failure remains Err through the existing AgentdError::Io path. The async closure still drops its original joined/fault-custody owner on failure; no success/exit proof is constructed.",
+    "unchanged": [
+      "Original Root pidfd clone source and ownership",
+      "Same ACK2 provenance and exact final-peer checks",
+      "Same shutdown call ordering after successful registration",
+      "Original gate checks, deadline and wait loop",
+      "Original kernel poll proof and all error branches",
+      "Actual Root-exit proof creation point and subsequent joined-owner drop"
+    ]
+  },
+  "guard_impact": {
+    "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:36",
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+    "field": "required_function_order",
+    "function": "fn wait_original_root_process_exit(",
+    "original_sequence_index": 2,
+    "prior_local_markers": [
+      "AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)",
+      "}?;"
+    ],
+    "successor_local_markers": [
+      "AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)",
+      "}",
+      ".map_err(std::io::Error::other)?;"
+    ],
+    "instruction": "The integration owner must recapture this same complete function in the actual-postimage successor of the exact origin. Keep all five raw required method markers, explicit forbidden[], other functions and other same-path conjuncts.",
+    "boundary_changes": "No boundary ID, signature, receiver, product caller set or existing privileged call changes. Only the unprivileged standard-library error wrapper is added.",
+    "metadata_not_modified_in_this_source_packet": true
+  },
+  "verification": {
+    "source_paths": 1,
+    "exact_ops": 1,
+    "unique_forward_reverse": true,
+    "post_create_get_exact": true,
+    "official_dependency_source_get_verified": true,
+    "no_new_test_fixture": true,
+    "formatter_run": false,
+    "compiler_run": false,
+    "checker_run": false,
+    "native_run": false,
+    "h_or_pty": false,
+    "refs_changed": false,
+    "acceptance_counts_increased": false
+  }
+}

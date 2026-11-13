@@ -1,0 +1,592 @@
+{
+  "schema_version": 1,
+  "kind": "root_exact_compiler_repair_integration_review",
+  "status": "STATIC_SOURCE_REVIEW_ONLY_NOT_COMPILED_OR_QUALIFIED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "input": {
+    "head": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+    "manifest": "c4b447e17082a076c998cf71e43d7f006c286b06"
+  },
+  "output_manifest": {
+    "blob": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+    "bytes": 58109,
+    "sha256": "efd7d33be47101862e70eba63dec4b77aebaf4ebb24f0194a03bd2947dad1d4b",
+    "files": 199
+  },
+  "scope": {
+    "paths": 12,
+    "operations": 27,
+    "existing_manifest_paths_changed": 10,
+    "original_existing_path_added_to_manifest": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+    "new_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs"
+  },
+  "files": [
+    {
+      "packet": "681faecbd567786c3a2e346785fcd76fa664f115",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "pre": {
+        "git_blob": "727aa866b73427d4f4109c67939465a64795988d",
+        "bytes": 11336,
+        "sha256": "6df59643ad01dc9c4aee84ed8a5a2838cd0c4a9ba36083fb85b1ce3cb2ab2056",
+        "blob": "727aa866b73427d4f4109c67939465a64795988d"
+      },
+      "post": {
+        "git_blob": "d41f6e92f372cfd6880b10694e7e130bb3611426",
+        "bytes": 11363,
+        "sha256": "fb7e5b9b8c895dbb25e3353578462855ce0ae9d37874685ba934df1e31675f84",
+        "blob": "d41f6e92f372cfd6880b10694e7e130bb3611426"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use super::*;\nuse crate::AgentdState;\n",
+          "new": "use super::*;\nuse crate::AgentdIdentity;\nuse crate::AgentdState;\n"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "681faecbd567786c3a2e346785fcd76fa664f115",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "git_blob": "96bab5870ba0e298093277e322be4a1aa3c80927",
+        "bytes": 14100,
+        "sha256": "42ba8c8b5bcb73a525f85798dd4bbda6b44b07954a93f1ddf38cfc18091b2dd2",
+        "blob": "96bab5870ba0e298093277e322be4a1aa3c80927"
+      },
+      "post": {
+        "git_blob": "f848138793e8d6bbd8e81aed5e8cd688edbf91af",
+        "bytes": 14102,
+        "sha256": "30cce8870347ebe3865fdfb510547431e099cc18032bf742eef294bce44d9565",
+        "blob": "f848138793e8d6bbd8e81aed5e8cd688edbf91af"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "        let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;\n",
+          "new": "        let agent = AgentId::parse(&self.owner_agent_id).map_err(deployment_error)?;\n"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": {
+        "blob": "ef89df3a480222bbe04130f483b309303a0b0488",
+        "bytes": 18599,
+        "sha256": "95e7467302b1dcde366dfadbaff81f7f039182663a0f9c250f850cac8f407a18"
+      },
+      "post": {
+        "blob": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+        "bytes": 19368,
+        "sha256": "6dde6c2e47f715c8d8a2be5634094d1fe0fc48cb1f721ab430eb375c6cadaef5"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use std::future::Future;",
+          "new": "use std::future::Future;\nuse std::io::Write;"
+        },
+        {
+          "kind": "replace",
+          "old": "                    tracing::info!(observation = ?observed, \"actual original Circuit cleanup observed\");",
+          "new": "                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=info observation={observed:?}: actual original Circuit cleanup observed\",\n                    );"
+        },
+        {
+          "kind": "replace",
+          "old": "                tracing::info!(observation = ?observed, \"actual original Session cleanup observed\")",
+          "new": "                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=info observation={observed:?}: actual original Session cleanup observed\",\n                );"
+        },
+        {
+          "kind": "replace",
+          "old": "                                    tracing::error!(error = %signal, \"original signal listener also failed\");",
+          "new": "                                    let _ = writeln!(\n                                        std::io::stderr().lock(),\n                                        \"hepta-agentd level=error error={signal}: original signal listener also failed\",\n                                    );"
+        },
+        {
+          "kind": "replace",
+          "old": "                            tracing::error!(error = %cleanup, \"original phase also failed during physical cleanup\");",
+          "new": "                            let _ = writeln!(\n                                std::io::stderr().lock(),\n                                \"hepta-agentd level=error error={cleanup}: original phase also failed during physical cleanup\",\n                            );"
+        },
+        {
+          "kind": "replace",
+          "old": "                tracing::error!(error = %error, \"cancelled original phase owner finished with failure\");",
+          "new": "                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=error error={error}: cancelled original phase owner finished with failure\",\n                );"
+        },
+        {
+          "kind": "replace",
+          "old": "        tracing::error!(error = %error, \"additional original cleanup failure\");",
+          "new": "        let _ = writeln!(\n            std::io::stderr().lock(),\n            \"hepta-agentd level=error error={error}: additional original cleanup failure\",\n        );"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "blob": "19df3de847737d2009d6f8828bf96b78145d2603",
+        "bytes": 6363,
+        "sha256": "5c8b4bad5b4e060af2354a4bbf47fcf3b1fd9398845f753380b9bf580e9b7a36"
+      },
+      "post": {
+        "blob": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+        "bytes": 6482,
+        "sha256": "3aad289fbd793da1ae26f8dbbaf385ffc646919c5d427e6b46b55036f82be4be"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use super::*;",
+          "new": "use std::io::Write;\n\nuse super::*;"
+        },
+        {
+          "kind": "replace",
+          "old": "            tracing::error!(error = %error, \"original deployment coordinator also failed\");",
+          "new": "            let _ = writeln!(\n                std::io::stderr().lock(),\n                \"hepta-agentd level=error error={error}: original deployment coordinator also failed\",\n            );"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "blob": "6b1fcb3a86a6c35fb44b18f959a1989bbadf4ac8",
+        "bytes": 13096,
+        "sha256": "252ae77658bc89d2dc6bfc35fb3101894e373c8a202884876ff8316bbc061bc1"
+      },
+      "post": {
+        "blob": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+        "bytes": 13495,
+        "sha256": "4507671abdb155a2aef7bb9594ba3a25e4d0a8b5f1a817ec20cc64753f604829"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use super::*;",
+          "new": "use std::io::Write;\n\nuse super::*;"
+        },
+        {
+          "kind": "replace",
+          "old": "                    tracing::error!(error = %cleanup, \"original Runtime cleanup also failed\");",
+          "new": "                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=error error={cleanup}: original Runtime cleanup also failed\",\n                    );"
+        },
+        {
+          "kind": "replace",
+          "old": "                    tracing::error!(error = %cleanup, \"original App Server cleanup also failed\");",
+          "new": "                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=error error={cleanup}: original App Server cleanup also failed\",\n                    );"
+        },
+        {
+          "kind": "replace",
+          "old": "                        tracing::error!(error = %cleanup, \"original Runtime MCP cleanup also failed\");",
+          "new": "                        let _ = writeln!(\n                            std::io::stderr().lock(),\n                            \"hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed\",\n                        );"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "pre": {
+        "blob": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+        "bytes": 5349,
+        "sha256": "094fe7a218bb085c716b10d6f248a84f0550b9b37711ad76a4f21e651488cc85"
+      },
+      "post": {
+        "blob": "387622da593b896a060713b617c6aaf7895ff3d6",
+        "bytes": 5479,
+        "sha256": "cd50912bccf3f638b2c2321d9fce3dbd7554e6dadd127a4b9885da9eaecd3d30"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use std::sync::Arc;",
+          "new": "use std::io::Write;\nuse std::sync::Arc;"
+        },
+        {
+          "kind": "replace",
+          "old": "                tracing::error!(error = %error, \"original deployment coordinator stopped with failure\");",
+          "new": "                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=error error={error}: original deployment coordinator stopped with failure\",\n                );"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "pre": {
+        "blob": "74e02f1b48a6f9f41b50856a0031c5e0330a054a",
+        "bytes": 8255,
+        "sha256": "3b31f65c213bf6a4a618d233461df8fea1810068ad082ae4dc3b4acfba22ced5"
+      },
+      "post": {
+        "blob": "3b2599c107fd6f7affeabd61d259d080ab8561e5",
+        "bytes": 8361,
+        "sha256": "98ae2fcddcd66bdb5627bcb99b4cea2692df1fcdb8870bd1d35deb1ed17fcc97"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use std::sync::Arc;",
+          "new": "use std::io::Write;\nuse std::sync::Arc;"
+        },
+        {
+          "kind": "replace",
+          "old": "        tracing::error!(error = %error, \"additional original terminal cleanup failure\");",
+          "new": "        let _ = writeln!(\n            std::io::stderr().lock(),\n            \"hepta-agentd level=error error={error}: additional original terminal cleanup failure\",\n        );"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "86d575cb94e626933c52eb4654fef64af047906f",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "pre": {
+        "git_blob": "9c4791b428ab4d8b77299ee75d89ab70bd679f20",
+        "bytes": 9671,
+        "sha256": "2281654d180f61303596b28e2d2401a384445691be09d11fe8bddf92af376a2e",
+        "blob": "9c4791b428ab4d8b77299ee75d89ab70bd679f20"
+      },
+      "post": {
+        "git_blob": "b9753d53834659e46ebc9dfd5fdc5df9580152b8",
+        "bytes": 9715,
+        "sha256": "0e49d5cebb4bc46a776f688325fc876484620ad8c7b2e886133c3ce29fbe3b7d",
+        "blob": "b9753d53834659e46ebc9dfd5fdc5df9580152b8"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "            let root = unsafe {\n                AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)\n            }?;\n",
+          "new": "            let root = unsafe {\n                AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)\n            }\n            .map_err(std::io::Error::other)?;\n"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "013acd6c03b89f40b4ec0d124d4c2685d048bfef",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "pre": {
+        "git_blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+        "bytes": 9377,
+        "sha256": "48b1cd2fbbc38f22b9ebfadc660d2f4071e23d4d3d61a3714959d09f1a0bebd1",
+        "blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef"
+      },
+      "post": {
+        "git_blob": "9d1788ec50a09a49c6ff7128934d44a23ffba876",
+        "bytes": 9399,
+        "sha256": "2846128a30a91f3b7a7bede4c6914108564ed1622b0c81178115b32e983af6ae",
+        "blob": "9d1788ec50a09a49c6ff7128934d44a23ffba876"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningScopeV2 {",
+          "new": "#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningScopeV2 {"
+        },
+        {
+          "kind": "replace",
+          "old": "#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningProfileV1 {",
+          "new": "#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]\n#[serde(deny_unknown_fields)]\npub struct HostAuthorityLearningProfileV1 {"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "8aa906560477a5bb0595c592a850d50fa0d1bc59",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "pre": null,
+      "post": {
+        "blob": "d55f99b6457aded2a762e98bb80e207289de8fd6",
+        "bytes": 4323,
+        "sha256": "70152d99a78798c48a625b95cbe5f39bb348fb41033130c805584305dbd4531c"
+      },
+      "ops": [
+        {
+          "kind": "add",
+          "old": "",
+          "new": "//! Complete untrusted Outcome data supplied by the independent Observer.\n//! Conversion preserves the original production-v2 signing fields. It creates\n//! no verified evidence or receipt; the actual A/C producer still authenticates\n//! the supplied signature against its own current trust and task publication.\n\nuse codex_hepta_learning_ledger::AuthenticatedOutcomeV1;\nuse codex_hepta_learning_ledger::OutcomeTerminalityV1;\nuse codex_hepta_learning_ledger::OutcomeWatermarkV1;\nuse codex_hepta_learning_ledger::SignedLearningEvidenceV1;\nuse codex_hepta_types::Digest32;\nuse codex_hepta_types::FixedQ32;\nuse codex_hepta_types::StableId;\nuse serde::Deserialize;\nuse serde::Serialize;\n\nuse crate::AgentdError;\n\nuse super::deployment_error;\nuse super::learning_data::PrincipalData;\nuse super::learning_data::SignedEvidenceData;\nuse super::learning_data::required_option;\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalSignedOutcomeData {\n    outcome: OriginalOutcomeData,\n    signed: SignedEvidenceData,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalOutcomeData {\n    record_id: String,\n    outcome_id: String,\n    episode_id: String,\n    observer: PrincipalData,\n    #[serde(deserialize_with = \"required_option\")]\n    observed_at: Option<u64>,\n    /// Exact signed FixedQ32::raw() bits, without rounding or rescaling.\n    #[serde(deserialize_with = \"required_option\")]\n    value_raw_q32: Option<i64>,\n    unit_profile_digest: [u8; 32],\n    support_digest: [u8; 32],\n    watermark: OriginalOutcomeWatermarkData,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalOutcomeWatermarkData {\n    latest_observable_at: u64,\n    expected_delay_profile_digest: [u8; 32],\n    terminality: OriginalOutcomeTerminalityData,\n    #[serde(deserialize_with = \"required_option\")]\n    censoring_reason: Option<String>,\n    #[serde(deserialize_with = \"required_option\")]\n    correction_predecessor: Option<String>,\n    #[serde(deserialize_with = \"required_option\")]\n    finalized_at: Option<u64>,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\nenum OriginalOutcomeTerminalityData {\n    Pending,\n    Censored,\n    Terminal,\n}\n\nimpl OriginalSignedOutcomeData {\n    pub(super) fn into_original(\n        self,\n    ) -> Result<(AuthenticatedOutcomeV1, SignedLearningEvidenceV1), AgentdError> {\n        let data = self.outcome;\n        let watermark = data.watermark;\n        let outcome = AuthenticatedOutcomeV1 {\n            record_id: StableId::new(data.record_id).map_err(deployment_error)?,\n            outcome_id: StableId::new(data.outcome_id).map_err(deployment_error)?,\n            episode_id: StableId::new(data.episode_id).map_err(deployment_error)?,\n            observer: PrincipalData::original(&data.observer)?,\n            observed_at: data.observed_at,\n            value: data.value_raw_q32.map(FixedQ32::from_raw),\n            unit_profile_digest: Digest32::from_array(data.unit_profile_digest),\n            support_digest: Digest32::from_array(data.support_digest),\n            watermark: OutcomeWatermarkV1 {\n                latest_observable_at: watermark.latest_observable_at,\n                expected_delay_profile_digest: Digest32::from_array(\n                    watermark.expected_delay_profile_digest,\n                ),\n                terminality: match watermark.terminality {\n                    OriginalOutcomeTerminalityData::Pending => OutcomeTerminalityV1::Pending,\n                    OriginalOutcomeTerminalityData::Censored => OutcomeTerminalityV1::Censored,\n                    OriginalOutcomeTerminalityData::Terminal => OutcomeTerminalityV1::Terminal,\n                },\n                censoring_reason: watermark\n                    .censoring_reason\n                    .map(StableId::new)\n                    .transpose()\n                    .map_err(deployment_error)?,\n                correction_predecessor: watermark\n                    .correction_predecessor\n                    .map(StableId::new)\n                    .transpose()\n                    .map_err(deployment_error)?,\n                finalized_at: watermark.finalized_at,\n            },\n        };\n        let signed = SignedEvidenceData::original(&self.signed)?;\n        Ok((outcome, signed))\n    }\n}\n"
+        }
+      ],
+      "verified": {
+        "pre_get": false,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "8aa906560477a5bb0595c592a850d50fa0d1bc59",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "pre": {
+        "blob": "e0c16a271fcad4986a60a3ae7e019830a8992f2c",
+        "bytes": 3930,
+        "sha256": "cb214dd07bf01620d798d065bcd0ab6ab5718630d9761be344818df831d0d153"
+      },
+      "post": {
+        "blob": "75fee38fb8331a667009f32bb5fe27a53624b582",
+        "bytes": 4002,
+        "sha256": "b35ebbb63bd56cf92b419231cf68976a1072a489ede2b29cd33b40a91c9b1383"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "#[path = \"same_actor_q24_deployment_owner.rs\"]\nmod owner;",
+          "new": "#[path = \"same_actor_q24_deployment_outcome_data.rs\"]\nmod outcome_data;\n#[path = \"same_actor_q24_deployment_owner.rs\"]\nmod owner;"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    },
+    {
+      "packet": "8aa906560477a5bb0595c592a850d50fa0d1bc59",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pre": {
+        "blob": "4df68f2c0b93fde792584827a3ab95f50af078d1",
+        "bytes": 17448,
+        "sha256": "1a2a93afa1c4194d1676290d8eed7cc9da709088ad0fd029c2890ae9b532bb69"
+      },
+      "post": {
+        "blob": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+        "bytes": 17600,
+        "sha256": "da89aa6c5e895f690b784ad5878ed9b75d77bb646398839328da5fca0507ecdf"
+      },
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "use super::data::OriginalCOutcomeData;",
+          "new": "use super::data::OriginalCOutcomeData;\nuse super::outcome_data::OriginalSignedOutcomeData;"
+        },
+        {
+          "kind": "replace",
+          "old": "let (outcome, signed) = completed.outcome.into_original()?;",
+          "new": "let (outcome, signed) =\n                        OriginalSignedOutcomeData::into_original(completed.outcome)?;"
+        },
+        {
+          "kind": "replace",
+          "old": "let (outcome, signed) = data.outcome.into_original()?;",
+          "new": "let (outcome, signed) =\n                        OriginalSignedOutcomeData::into_original(data.outcome)?;"
+        }
+      ],
+      "verified": {
+        "pre_get": true,
+        "post_get": true,
+        "pins_exact": true,
+        "unique_forward_reverse": true,
+        "all_other_bytes_exact": true
+      }
+    }
+  ],
+  "tree_evidence": [
+    {
+      "root": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+      "trail": [
+        {
+          "tree": "70ef80c989c2831ff2acb85f6a2678c001791baf",
+          "entry": {
+            "path": "codex-rs",
+            "mode": "040000",
+            "type": "tree",
+            "sha": "57587b4971f298efb8b1bca625263ec6edc1fd46",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/57587b4971f298efb8b1bca625263ec6edc1fd46"
+          }
+        },
+        {
+          "tree": "57587b4971f298efb8b1bca625263ec6edc1fd46",
+          "entry": {
+            "path": "hepta-agentd",
+            "mode": "040000",
+            "type": "tree",
+            "sha": "ad1934a43603eb9deff59eead633350231d932ad",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/ad1934a43603eb9deff59eead633350231d932ad"
+          }
+        },
+        {
+          "tree": "ad1934a43603eb9deff59eead633350231d932ad",
+          "entry": {
+            "path": "src",
+            "mode": "040000",
+            "type": "tree",
+            "sha": "020547cc8eb9eafdc3b60d48c2d5736b7658f334",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/020547cc8eb9eafdc3b60d48c2d5736b7658f334"
+          }
+        }
+      ],
+      "complete_src_tree": "020547cc8eb9eafdc3b60d48c2d5736b7658f334",
+      "src_entry_count": 900,
+      "truncated": false,
+      "profile_entry": {
+        "path": "authority_host_learning_profile.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+        "size": 9377,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/912d6c81a84ecc50e2294b937eebbf86412e61ef"
+      },
+      "new_outcome_path_absent": true
+    },
+    {
+      "root": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+      "trail": [
+        {
+          "tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+          "entry": {
+            "path": "codex-rs",
+            "mode": "040000",
+            "type": "tree",
+            "sha": "97a4334460e612fd1799771bf5b0691ea0ce92ac",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/97a4334460e612fd1799771bf5b0691ea0ce92ac"
+          }
+        },
+        {
+          "tree": "97a4334460e612fd1799771bf5b0691ea0ce92ac",
+          "entry": {
+            "path": "hepta-agentd",
+            "mode": "040000",
+            "type": "tree",
+            "sha": "101d7ac371721f5fc5240eb71b28bf2e84b9836b",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/101d7ac371721f5fc5240eb71b28bf2e84b9836b"
+          }
+        },
+        {
+          "tree": "101d7ac371721f5fc5240eb71b28bf2e84b9836b",
+          "entry": {
+            "path": "src",
+            "mode": "040000",
+            "type": "tree",
+            "sha": "aac997c5c291478f5b21ec4e870c30bf1dfd4e36",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/aac997c5c291478f5b21ec4e870c30bf1dfd4e36"
+          }
+        }
+      ],
+      "complete_src_tree": "aac997c5c291478f5b21ec4e870c30bf1dfd4e36",
+      "src_entry_count": 822,
+      "truncated": false,
+      "profile_entry": {
+        "path": "authority_host_learning_profile.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+        "size": 9377,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/912d6c81a84ecc50e2294b937eebbf86412e61ef"
+      },
+      "new_outcome_path_absent": true
+    }
+  ],
+  "root_direct_read": {
+    "new_outcome": "d55f99b6457aded2a762e98bb80e207289de8fd6",
+    "original_contracts": [
+      "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "397d42abf6be08dd5a70f27bda531f629db14dfb",
+      "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "cf9df101ff30b86fd55faf56f11a8d42b6414bdc",
+      "bedfe99c27719d2198cf7f8bbc24a863ce70dd6e",
+      "964b3aac267d58ba06dd967623d653effbb57268"
+    ],
+    "outcome_findings": [
+      "Complete 9 Outcome members, 6 watermark members, 7 observer members and 11 signed-evidence members; 33 mapping entries include two nested containers and 31 leaves.",
+      "All 5 nullable keys have deserialize_with required_option and no serde(default). Three new structs deny unknown fields; terminality has exact three snake_case variants.",
+      "Raw i64 FixedQ32 bits, original u64 values and supplied strict 64-byte signature are preserved; no signing, clock sampling or Verified constructor occurs.",
+      "Original producer still requires actual task/outcome/episode, exact observer/support/unit/delay, Terminal state, observed/finalized times, bounded value, canonical complete preimage and original current Ledger verification for new append.",
+      "Retained history still requires immutable payload/signature, witnessed original active record and original issue time; no deadline/receipt/authorization renewal."
+    ]
+  },
+  "independent_reviews": {
+    "identifiers": "2da3b40012af1e134bd4a5da8ed20ee0ddb7bb63",
+    "logging": "2a215867fad1f2c98f749bc05ac0731ca7cd5630",
+    "outcome": "c79fbf3eaf3436c7aa89129547ca93410f37dd3e",
+    "asyncfd": "8d999ed85f0af1e0c44bdcf2a3e07085b744800c",
+    "tokio_host_link": "565af6d397325abf95ccfadf6734ac274259d8c6"
+  },
+  "material_semantics": [
+    "12 diagnostic sites use the existing non-panicking best-effort synchronous stderr pattern; this changes the sink and is not claimed to have zero I/O cost or a bound on stderr latency.",
+    "AsyncFd mapping wraps the complete original register error including OwnedFd; outer IoKind is Other while original cause remains in Error::source.",
+    "PartialEq derives compare all 5 Profile fields and all 3 nested Scope fields; original comparison call and validation bodies stay exact.",
+    "The Outcome bridge supplies raw data to actual existing producers; no independent actor, task, holdout, success, signature or receipt is manufactured."
+  ],
+  "tokio_host_byte_identity": {
+    "source": "3463439c9987132b95eb218119e7fe1fa93199b3",
+    "root_output": "8e4b0f4877954dcf795fb7db18695b402dfd4182",
+    "root_tool": "61d3ade28d8c98d2d6911a62d11d80c814f79a49",
+    "limit": "Exact host async_fd.rs byte identity only; no whole crate archive verification claimed."
+  },
+  "metadata": {
+    "outcome_annex": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+    "expected_boundaries": 1011,
+    "expected_protected_conjuncts": 600,
+    "final_adaptation_pending": true,
+    "full_original_checker_not_executed": true
+  },
+  "qualification": {
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "original_native_harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "unchanged": true,
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_c_accepted": false,
+    "real_daemon_root_restart_accepted": false
+  }
+}

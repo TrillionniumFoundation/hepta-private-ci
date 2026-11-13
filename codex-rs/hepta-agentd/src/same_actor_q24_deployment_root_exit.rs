@@ -136,7 +136,8 @@ impl OriginalRootWorkersJoined {
             // No raw ownership or alternate PID lookup is introduced.
             let root = unsafe {
                 AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)
-            }?;
+            }
+            .map_err(std::io::Error::other)?;
             RequiredSameActorPhaseChannel::shutdown_original_after_root_workers_joined(
                 &joined.intent.client.required,
                 &joined,

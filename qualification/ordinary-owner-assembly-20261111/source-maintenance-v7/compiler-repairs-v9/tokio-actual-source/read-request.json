@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "read-only-fixed-tokio-source-byte-match",
+  "supersedes_read_request": "4e8222c532bcc7d2802d23f63f90cd1a9322a2dc",
+  "prior_read_result": "c3870a851fc329c2aac1ddfaf83bcc046c3a7c54",
+  "reason": "The optional local .cargo-checksum.json does not exist. Read the observed exact actual source file and compare its full bytes with the independently retrieved fixed official source via length, Git ID and SHA-256; do not repair the environment.",
+  "script": {
+    "blob": "1eec8d7c4de1123fe4e484eeae985fef44b9f122",
+    "bytes": 2066,
+    "sha256": "572f7176ec30541e7e755e701a27e3b765248ea9865e9e9572938f629869bf7a"
+  },
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-u",
+      "-c",
+      "import hashlib,json,stat,tomllib\nfrom pathlib import Path\ndef blob(raw): return hashlib.sha1(b\"blob \"+str(len(raw)).encode()+bytes([0])+raw).hexdigest()\ndef read(path,limit):\n    before=path.lstat();assert stat.S_ISREG(before.st_mode) and not path.is_symlink() and before.st_size<=limit\n    raw=path.read_bytes();after=path.lstat()\n    assert (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns)\n    return raw,{\"path\":str(path),\"bytes\":len(raw),\"sha256\":hashlib.sha256(raw).hexdigest(),\"git_blob\":blob(raw),\"version\":[str(getattr(after,x)) for x in (\"st_dev\",\"st_ino\",\"st_size\",\"st_mtime_ns\",\"st_ctime_ns\")]}\nlock,lp=read(Path(\"/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/Cargo.lock\"),4*1024*1024)\nassert lp[\"git_blob\"]==\"025813e20504f31d12dae2092a0807a1a4066419\"\npackages=[p for p in tomllib.loads(lock.decode())[\"package\"] if p[\"name\"]==\"tokio\" and p[\"version\"]==\"1.53.3\"]\nassert len(packages)==1 and packages[0][\"checksum\"]==\"ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e\"\nraw,pin=read(Path(\"/home/qq/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/io/async_fd.rs\"),2*1024*1024)\nassert pin[\"bytes\"]==62421 and pin[\"git_blob\"]==\"3463439c9987132b95eb218119e7fe1fa93199b3\" and pin[\"sha256\"]==\"0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d\"\nprint(json.dumps({\"schema_version\":1,\"kind\":\"actual-locked-tokio-source-byte-comparison\",\"classification\":\"READ_ONLY_DEPENDENCY_EVIDENCE_NOT_QUALIFICATION\",\"lock\":lp,\"package\":packages[0],\"actual_source\":pin,\"fixed_upstream\":{\"repository\":\"tokio-rs/tokio\",\"commit\":\"a85c3f5baa298a6b554fd3700daf0342289881af\",\"path\":\"tokio/src/io/async_fd.rs\",\"git_blob\":\"3463439c9987132b95eb218119e7fe1fa93199b3\"},\"actual_source_length_git_sha256_all_match_fixed_upstream\":True,\"cargo_checksum_file_not_present_in_prior_read\":True,\"no_checksum_file_or_environment_created_or_modified\":True},sort_keys=True),flush=True)\n"
+    ],
+    "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8",
+    "idempotency_key": "af52-tokio-1533-original-api-read-v2",
+    "cols": 140,
+    "rows": 40
+  }
+}

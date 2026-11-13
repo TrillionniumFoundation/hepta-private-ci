@@ -3,6 +3,8 @@
 //! creates custody of the actual still-live attachment; it is not a join or
 //! a business-completion certificate.
 
+use std::io::Write;
+
 use super::*;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
@@ -48,7 +50,10 @@ impl OriginalRuntimeRootPurposesRetired {
             let cleanup = retained.stopped.close_original_runtime_resources().await;
             match (checked, cleanup) {
                 (Err(original), Err(cleanup)) => {
-                    tracing::error!(error = %cleanup, "original Runtime cleanup also failed");
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "hepta-agentd level=error error={cleanup}: original Runtime cleanup also failed",
+                    );
                     Err(original)
                 }
                 (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
@@ -265,7 +270,10 @@ impl AgentdProductionLaunch {
                     )
                     .await
                 {
-                    tracing::error!(error = %cleanup, "original App Server cleanup also failed");
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "hepta-agentd level=error error={cleanup}: original App Server cleanup also failed",
+                    );
                 }
                 drop(attachment.take());
                 if let Some(device) = device.take() {
@@ -275,7 +283,10 @@ impl AgentdProductionLaunch {
                     if let Err(cleanup) =
                         codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await
                     {
-                        tracing::error!(error = %cleanup, "original Runtime MCP cleanup also failed");
+                        let _ = writeln!(
+                            std::io::stderr().lock(),
+                            "hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed",
+                        );
                     }
                 }
                 return Err(error);

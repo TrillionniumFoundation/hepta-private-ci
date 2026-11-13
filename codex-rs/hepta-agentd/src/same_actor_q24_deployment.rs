@@ -51,6 +51,8 @@ mod learning_data;
 mod model;
 #[path = "same_actor_q24_deployment_observation_data.rs"]
 mod observation_data;
+#[path = "same_actor_q24_deployment_outcome_data.rs"]
+mod outcome_data;
 #[path = "same_actor_q24_deployment_owner.rs"]
 mod owner;
 #[path = "same_actor_q24_deployment_preparation.rs"]

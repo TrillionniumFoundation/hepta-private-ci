@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "kind": "v8_actual_compile_unlinked_tracing_existing_stderr_fix",
+  "status": "source_proposal_created_and_got_not_executed",
+  "base_head": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+  "source_manifest": "c4b447e17082a076c998cf71e43d7f006c286b06",
+  "native_log": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": {
+        "blob": "ef89df3a480222bbe04130f483b309303a0b0488",
+        "bytes": 18599,
+        "sha256": "95e7467302b1dcde366dfadbaff81f7f039182663a0f9c250f850cac8f407a18"
+      },
+      "post": {
+        "blob": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+        "bytes": 19368,
+        "sha256": "6dde6c2e47f715c8d8a2be5634094d1fe0fc48cb1f721ab430eb375c6cadaef5"
+      },
+      "operations": [
+        {
+          "before": "use std::future::Future;",
+          "after": "use std::future::Future;\nuse std::io::Write;"
+        },
+        {
+          "before": "                    tracing::info!(observation = ?observed, \"actual original Circuit cleanup observed\");",
+          "after": "                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=info observation={observed:?}: actual original Circuit cleanup observed\",\n                    );",
+          "diagnostic": {
+            "level": "info",
+            "message": "actual original Circuit cleanup observed",
+            "field": "observation={observed:?}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "                tracing::info!(observation = ?observed, \"actual original Session cleanup observed\")",
+          "after": "                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=info observation={observed:?}: actual original Session cleanup observed\",\n                );",
+          "diagnostic": {
+            "level": "info",
+            "message": "actual original Session cleanup observed",
+            "field": "observation={observed:?}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "                                    tracing::error!(error = %signal, \"original signal listener also failed\");",
+          "after": "                                    let _ = writeln!(\n                                        std::io::stderr().lock(),\n                                        \"hepta-agentd level=error error={signal}: original signal listener also failed\",\n                                    );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original signal listener also failed",
+            "field": "error={signal}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "                            tracing::error!(error = %cleanup, \"original phase also failed during physical cleanup\");",
+          "after": "                            let _ = writeln!(\n                                std::io::stderr().lock(),\n                                \"hepta-agentd level=error error={cleanup}: original phase also failed during physical cleanup\",\n                            );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original phase also failed during physical cleanup",
+            "field": "error={cleanup}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "                tracing::error!(error = %error, \"cancelled original phase owner finished with failure\");",
+          "after": "                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=error error={error}: cancelled original phase owner finished with failure\",\n                );",
+          "diagnostic": {
+            "level": "error",
+            "message": "cancelled original phase owner finished with failure",
+            "field": "error={error}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "        tracing::error!(error = %error, \"additional original cleanup failure\");",
+          "after": "        let _ = writeln!(\n            std::io::stderr().lock(),\n            \"hepta-agentd level=error error={error}: additional original cleanup failure\",\n        );",
+          "diagnostic": {
+            "level": "error",
+            "message": "additional original cleanup failure",
+            "field": "error={error}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        }
+      ],
+      "log_count": 6
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "blob": "19df3de847737d2009d6f8828bf96b78145d2603",
+        "bytes": 6363,
+        "sha256": "5c8b4bad5b4e060af2354a4bbf47fcf3b1fd9398845f753380b9bf580e9b7a36"
+      },
+      "post": {
+        "blob": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+        "bytes": 6482,
+        "sha256": "3aad289fbd793da1ae26f8dbbaf385ffc646919c5d427e6b46b55036f82be4be"
+      },
+      "operations": [
+        {
+          "before": "use super::*;",
+          "after": "use std::io::Write;\n\nuse super::*;"
+        },
+        {
+          "before": "            tracing::error!(error = %error, \"original deployment coordinator also failed\");",
+          "after": "            let _ = writeln!(\n                std::io::stderr().lock(),\n                \"hepta-agentd level=error error={error}: original deployment coordinator also failed\",\n            );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original deployment coordinator also failed",
+            "field": "error={error}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        }
+      ],
+      "log_count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "blob": "6b1fcb3a86a6c35fb44b18f959a1989bbadf4ac8",
+        "bytes": 13096,
+        "sha256": "252ae77658bc89d2dc6bfc35fb3101894e373c8a202884876ff8316bbc061bc1"
+      },
+      "post": {
+        "blob": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+        "bytes": 13495,
+        "sha256": "4507671abdb155a2aef7bb9594ba3a25e4d0a8b5f1a817ec20cc64753f604829"
+      },
+      "operations": [
+        {
+          "before": "use super::*;",
+          "after": "use std::io::Write;\n\nuse super::*;"
+        },
+        {
+          "before": "                    tracing::error!(error = %cleanup, \"original Runtime cleanup also failed\");",
+          "after": "                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=error error={cleanup}: original Runtime cleanup also failed\",\n                    );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original Runtime cleanup also failed",
+            "field": "error={cleanup}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "                    tracing::error!(error = %cleanup, \"original App Server cleanup also failed\");",
+          "after": "                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=error error={cleanup}: original App Server cleanup also failed\",\n                    );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original App Server cleanup also failed",
+            "field": "error={cleanup}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        },
+        {
+          "before": "                        tracing::error!(error = %cleanup, \"original Runtime MCP cleanup also failed\");",
+          "after": "                        let _ = writeln!(\n                            std::io::stderr().lock(),\n                            \"hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed\",\n                        );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original Runtime MCP cleanup also failed",
+            "field": "error={cleanup}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        }
+      ],
+      "log_count": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "pre": {
+        "blob": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+        "bytes": 5349,
+        "sha256": "094fe7a218bb085c716b10d6f248a84f0550b9b37711ad76a4f21e651488cc85"
+      },
+      "post": {
+        "blob": "387622da593b896a060713b617c6aaf7895ff3d6",
+        "bytes": 5479,
+        "sha256": "cd50912bccf3f638b2c2321d9fce3dbd7554e6dadd127a4b9885da9eaecd3d30"
+      },
+      "operations": [
+        {
+          "before": "use std::sync::Arc;",
+          "after": "use std::io::Write;\nuse std::sync::Arc;"
+        },
+        {
+          "before": "                tracing::error!(error = %error, \"original deployment coordinator stopped with failure\");",
+          "after": "                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=error error={error}: original deployment coordinator stopped with failure\",\n                );",
+          "diagnostic": {
+            "level": "error",
+            "message": "original deployment coordinator stopped with failure",
+            "field": "error={error}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        }
+      ],
+      "log_count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "pre": {
+        "blob": "74e02f1b48a6f9f41b50856a0031c5e0330a054a",
+        "bytes": 8255,
+        "sha256": "3b31f65c213bf6a4a618d233461df8fea1810068ad082ae4dc3b4acfba22ced5"
+      },
+      "post": {
+        "blob": "3b2599c107fd6f7affeabd61d259d080ab8561e5",
+        "bytes": 8361,
+        "sha256": "98ae2fcddcd66bdb5627bcb99b4cea2692df1fcdb8870bd1d35deb1ed17fcc97"
+      },
+      "operations": [
+        {
+          "before": "use std::sync::Arc;",
+          "after": "use std::io::Write;\nuse std::sync::Arc;"
+        },
+        {
+          "before": "        tracing::error!(error = %error, \"additional original terminal cleanup failure\");",
+          "after": "        let _ = writeln!(\n            std::io::stderr().lock(),\n            \"hepta-agentd level=error error={error}: additional original terminal cleanup failure\",\n        );",
+          "diagnostic": {
+            "level": "error",
+            "message": "additional original terminal cleanup failure",
+            "field": "error={error}",
+            "write_error": "ignored as original lifecycle_warning"
+          }
+        }
+      ],
+      "log_count": 1
+    }
+  ],
+  "counts": {
+    "paths": 5,
+    "operations": 17,
+    "original_observation_sites": 2,
+    "original_error_sites": 10
+  },
+  "evidence": {
+    "cargo": {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+      "bytes": 4905,
+      "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417",
+      "actual_head": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+      "finding": "No tracing or log dependency; existing std stderr pattern used instead."
+    },
+    "runtime": {
+      "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+      "blob": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "bytes": 17929,
+      "sha256": "456a21ce0b186dc664b2af3877a9c6fa0a376b1dceb445d50e0d721f9de1b655",
+      "exact_pattern": "fn lifecycle_warning(name: &str, message: &str) {\n    use std::io::Write;\n    let _ = writeln!(\n        std::io::stderr().lock(),\n        \"hepta-agentd module={name}: {message}\"\n    );\n}\n"
+    }
+  },
+  "guard_selectors": [
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:7",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "expected_full_row_fingerprint": "9c36b6a6b43590f845c3c2bb9b8ffe7d203b9f22fc94bf2f187fec36c4917443",
+      "affected_functions": [
+        {
+          "function": "fn close_and_join_original_resources(",
+          "markers": [
+            {
+              "j": 7,
+              "m": "tracing::info!(observation = ?observed,                                           );"
+            },
+            {
+              "j": 32,
+              "m": "Ok(observed) => tracing::info!(observation = ?observed,                                           ),"
+            }
+          ]
+        },
+        {
+          "function": "fn start_original(",
+          "markers": [
+            {
+              "j": 29,
+              "m": "tracing::error!(error = %signal,                                       );"
+            },
+            {
+              "j": 52,
+              "m": "tracing::error!(error = %cleanup,                                                     );"
+            }
+          ]
+        },
+        {
+          "function": "fn save_original_failure(",
+          "markers": [
+            {
+              "j": 2,
+              "m": "else { tracing::error!(error = %error,                                      ); }"
+            }
+          ]
+        }
+      ],
+      "require_actual_formatted_resample": true
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:8",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "expected_full_row_fingerprint": "182424bdf6d2e6ab31642ef3cc0fdcbfac5299ceeeb0afb30850a74b0356f2d7",
+      "affected_functions": [
+        {
+          "function": "fn run_owned_original_phase(",
+          "markers": [
+            {
+              "j": 132,
+              "m": "tracing::error!(error = %error,                                              );"
+            }
+          ]
+        }
+      ],
+      "require_actual_formatted_resample": true
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:9",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "expected_full_row_fingerprint": "bad8492d695a303a056b886a31e890d85c0ec9c93495c167205adf32123124ef",
+      "affected_functions": [
+        {
+          "function": "fn release_original_after_root_exit(",
+          "markers": [
+            {
+              "j": 12,
+              "m": "tracing::error!(error = %cleanup,                                       );"
+            }
+          ]
+        },
+        {
+          "function": "fn run_original_same_actor_with_shutdown(",
+          "markers": [
+            {
+              "j": 79,
+              "m": "tracing::error!(error = %cleanup,                                          );"
+            },
+            {
+              "j": 85,
+              "m": "tracing::error!(error = %cleanup,                                           );"
+            }
+          ]
+        }
+      ],
+      "require_actual_formatted_resample": true
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:10",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "expected_full_row_fingerprint": "63b974247122d1d4e9f683f3749e28140a2133cc028be665fc91ad26244c788c",
+      "affected_functions": [
+        {
+          "function": "fn preserve_original_cleanup_failure(",
+          "markers": [
+            {
+              "j": 4,
+              "m": "tracing::error!(error = %error,                                               );"
+            }
+          ]
+        }
+      ],
+      "require_actual_formatted_resample": true
+    },
+    {
+      "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:5",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "expected_full_row_fingerprint": "44ae80e1edabbf6e46c80a047ee4f07e1d49f060588fffd0bbeff9a5928875c1",
+      "affected_functions": [],
+      "require_actual_formatted_resample": true
+    }
+  ],
+  "preservation": [
+    "Every original message is preserved verbatim in the new diagnostic format.",
+    "Original observations retain Debug formatting; original errors retain Display formatting and borrow the same local value.",
+    "Each stderr write Result is explicitly ignored, as the existing runtime_tasks lifecycle diagnostic does. No diagnostic write panic or error replaces the original cause.",
+    "All non-diagnostic statement bytes and all existing branch conditions, awaits, returns, deadline operations, and Drop ordering are unchanged; only five imports and twelve output sites differ.",
+    "This replaces an unavailable tracing macro with the crate's existing std stderr convention; it does not claim identical tracing subscriber/filter behavior.",
+    "No Cargo.toml, Cargo.lock, original checker/helper, original deadlines, native harness or reference changed."
+  ],
+  "verification": {
+    "full_forward_reverse_unique": true,
+    "all_post_create_get_byte_equal": true,
+    "compile_executed": false,
+    "fmt_executed": false
+  },
+  "outcome_import_issue": "Separate missing data adapter proposal remains outstanding; this packet does not pretend to fix it."
+}

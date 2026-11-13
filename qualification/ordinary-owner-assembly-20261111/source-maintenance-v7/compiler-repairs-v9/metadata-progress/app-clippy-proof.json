@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "kind": "bounded_actual_v8_message_processor_guard_evidence",
+  "delta": {
+    "git_blob": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+    "bytes": 58987,
+    "sha256": "52833b4b78552622236471719a0d7746ceeabdfe5fa607b9fac9f60b560d727f"
+  },
+  "source_pre": {
+    "git_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+    "bytes": 82342,
+    "sha256": "89e75287c8cff52d209bac3001b5ce9fd38a3e7861159ce2dd1fd60d32e3e809"
+  },
+  "source_post": {
+    "git_blob": "68ada589061cf74d714a89fc04657cd02cc5f4b6",
+    "bytes": 82330,
+    "sha256": "205c3dc044430550c58bc491d829a52de9bbf7815aaf0e831373dba557cae73b"
+  },
+  "actual_source_map": {
+    "git_blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+    "bytes": 57520,
+    "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+  },
+  "actual_clippy_patch": {
+    "git_blob": "e6c1050136bf6562a85cafe14fe0685a38612758",
+    "bytes": 7341,
+    "sha256": "f1ca867f3aee84bc9b82b0c54474f68fcf0b2b56826a4ab34a44b841ead75595"
+  },
+  "source_exact_operation": {
+    "kind": "replace",
+    "old": "                if let Some(worker) = &mut processor.turn_cost_worker {\n                    if let Err(error) = TurnCostWorker::join_original(worker).await {\n                        failures.push((\"original turn cost\", std::io::Error::other(error)));\n                    }\n                }\n",
+    "new": "                if let Some(worker) = &mut processor.turn_cost_worker\n                    && let Err(error) = TurnCostWorker::join_original(worker).await\n                {\n                    failures.push((\"original turn cost\", std::io::Error::other(error)));\n                }\n",
+    "expected_occurrences": 1,
+    "unique_forward_reverse": true,
+    "all_other_bytes_exact": true
+  },
+  "metadata_replay": {
+    "applier": {
+      "git_blob": "733b3c98676ff3d5eca29687fdb624f33ead6a33",
+      "bytes": 2970,
+      "sha256": "d002e3251520886c6e7ffa24d2beb1508c87179fbc22c68e4ba1ce95941bacfb"
+    },
+    "whole_exact_row_forward_reverse": true,
+    "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:5",
+    "pre_fingerprint": "7c2a80b97af960749bbdfbdb20d34bb3e45bfe09d710dcdc9025981c7ccd830f",
+    "post_fingerprint": "a5fec13fe1a6ef1af4819bf2bb51b051704456616c0b23a7b0813b9463a9d5b4",
+    "changes": 1,
+    "field": "required_function_order",
+    "function": "fn finish_original_owners(",
+    "all_other_fields_exact": true,
+    "all_other_function_entries_exact": true,
+    "other_rows": "No other row is selected or rewritten; global union and original checker remain the integrator's later gate.",
+    "current_source_map_matches_post_exact": true
+  },
+  "actual_function_review": {
+    "guards": "Some selects the same &mut processor.turn_cost_worker; Err matches the same TurnCostWorker::join_original(worker).await result.",
+    "error": "The exact original failures.push((\"original turn cost\", std::io::Error::other(error))) statement is unchanged.",
+    "ordering": "All previous joins, the following drop(processor), retained-processor error branch and finish_original_failures call are exact outside the single source replacement.",
+    "raw_pre_function": "fn finish_original_owners(\n        processor: Arc<Self>,\n        original: &Arc<crate::OriginalAppServerOwnerCustody>,\n    ) -> std::io::Result<()> {\n        use crate::original_owned_shutdown::OriginalAppServerTaskKind;\n\n        let mut failures = Vec::new();\n        // Main has stopped RPC dispatch and closed each actual connection gate.\n        // A background callback must register before it can upgrade its manager.\n        crate::OriginalAppServerOwnerCustody::seal_original_background(original);\n        processor.models_refresh_worker.shutdown();\n        if let Some(worker) = &processor.turn_cost_worker {\n            worker.shutdown();\n        }\n        processor.skills_watcher.shutdown();\n        if let Err(error) = crate::OriginalAppServerOwnerCustody::join_original_group(\n            original,\n            OriginalAppServerTaskKind::PluginRefresh,\n        )\n        .await\n        {\n            failures.push((\"original plugin callbacks\", error));\n        }\n        RequestSerializationQueues::seal_original_queues(&processor.request_serialization_queues)\n            .await;\n        for kind in [\n            OriginalAppServerTaskKind::SerializedQueue,\n            OriginalAppServerTaskKind::Rpc,\n            OriginalAppServerTaskKind::ConnectionCleanup,\n        ] {\n            if let Err(error) =\n                crate::OriginalAppServerOwnerCustody::join_original_group(original, kind).await\n            {\n                failures.push((\"original admitted requests\", error));\n            }\n        }\n        if let Err(error) = RequestSerializationQueues::require_original_queues_drained(\n            &processor.request_serialization_queues,\n        )\n        .await\n        {\n            failures.push((\"original request owners\", error));\n        }\n        ThreadRequestProcessor::drain_original_background_tasks(&processor.thread_processor).await;\n        if let Err(error) = crate::OriginalAppServerOwnerCustody::join_original_group(\n            original,\n            OriginalAppServerTaskKind::ThreadStartup,\n        )\n        .await\n        {\n            failures.push((\"original thread startup\", error));\n        }\n        processor.cancel_active_login().await;\n        if let Err(error) =\n            ThreadRequestProcessor::shutdown_original_threads(&processor.thread_processor).await\n        {\n            failures.push((\"original Core loops\", error));\n        }\n        processor.clear_all_thread_listeners().await;\n        for kind in [\n            OriginalAppServerTaskKind::ThreadListener,\n            OriginalAppServerTaskKind::ThreadUnload,\n        ] {\n            if let Err(error) =\n                crate::OriginalAppServerOwnerCustody::join_original_group(original, kind).await\n            {\n                failures.push((\"original thread observer\", error));\n            }\n        }\n        // The actual awaited jobs have released their processor clones. This\n        // transfers the real owner so its own auxiliary handles can be awaited;\n        // it does not use reference counts as evidence of task completion.\n        match Arc::try_unwrap(processor) {\n            Ok(mut processor) => {\n                if let Err(error) =\n                    ModelsRefreshWorker::join_original(&mut processor.models_refresh_worker).await\n                {\n                    failures.push((\"original models refresh\", std::io::Error::other(error)));\n                }\n                if let Some(worker) = &mut processor.turn_cost_worker {\n                    if let Err(error) = TurnCostWorker::join_original(worker).await {\n                        failures.push((\"original turn cost\", std::io::Error::other(error)));\n                    }\n                }\n                drop(processor);\n            }\n            Err(processor) => {\n                crate::OriginalAppServerOwnerCustody::retain_unreleased_original_processor(\n                    original, processor,\n                );\n                failures.push((\n                    \"original processor ownership\",\n                    std::io::Error::other(\"actual processor still has an unjoined owner\"),\n                ));\n            }\n        }\n        crate::original_owned_shutdown::finish_original_failures(failures)\n    }",
+    "raw_post_function": "fn finish_original_owners(\n        processor: Arc<Self>,\n        original: &Arc<crate::OriginalAppServerOwnerCustody>,\n    ) -> std::io::Result<()> {\n        use crate::original_owned_shutdown::OriginalAppServerTaskKind;\n\n        let mut failures = Vec::new();\n        // Main has stopped RPC dispatch and closed each actual connection gate.\n        // A background callback must register before it can upgrade its manager.\n        crate::OriginalAppServerOwnerCustody::seal_original_background(original);\n        processor.models_refresh_worker.shutdown();\n        if let Some(worker) = &processor.turn_cost_worker {\n            worker.shutdown();\n        }\n        processor.skills_watcher.shutdown();\n        if let Err(error) = crate::OriginalAppServerOwnerCustody::join_original_group(\n            original,\n            OriginalAppServerTaskKind::PluginRefresh,\n        )\n        .await\n        {\n            failures.push((\"original plugin callbacks\", error));\n        }\n        RequestSerializationQueues::seal_original_queues(&processor.request_serialization_queues)\n            .await;\n        for kind in [\n            OriginalAppServerTaskKind::SerializedQueue,\n            OriginalAppServerTaskKind::Rpc,\n            OriginalAppServerTaskKind::ConnectionCleanup,\n        ] {\n            if let Err(error) =\n                crate::OriginalAppServerOwnerCustody::join_original_group(original, kind).await\n            {\n                failures.push((\"original admitted requests\", error));\n            }\n        }\n        if let Err(error) = RequestSerializationQueues::require_original_queues_drained(\n            &processor.request_serialization_queues,\n        )\n        .await\n        {\n            failures.push((\"original request owners\", error));\n        }\n        ThreadRequestProcessor::drain_original_background_tasks(&processor.thread_processor).await;\n        if let Err(error) = crate::OriginalAppServerOwnerCustody::join_original_group(\n            original,\n            OriginalAppServerTaskKind::ThreadStartup,\n        )\n        .await\n        {\n            failures.push((\"original thread startup\", error));\n        }\n        processor.cancel_active_login().await;\n        if let Err(error) =\n            ThreadRequestProcessor::shutdown_original_threads(&processor.thread_processor).await\n        {\n            failures.push((\"original Core loops\", error));\n        }\n        processor.clear_all_thread_listeners().await;\n        for kind in [\n            OriginalAppServerTaskKind::ThreadListener,\n            OriginalAppServerTaskKind::ThreadUnload,\n        ] {\n            if let Err(error) =\n                crate::OriginalAppServerOwnerCustody::join_original_group(original, kind).await\n            {\n                failures.push((\"original thread observer\", error));\n            }\n        }\n        // The actual awaited jobs have released their processor clones. This\n        // transfers the real owner so its own auxiliary handles can be awaited;\n        // it does not use reference counts as evidence of task completion.\n        match Arc::try_unwrap(processor) {\n            Ok(mut processor) => {\n                if let Err(error) =\n                    ModelsRefreshWorker::join_original(&mut processor.models_refresh_worker).await\n                {\n                    failures.push((\"original models refresh\", std::io::Error::other(error)));\n                }\n                if let Some(worker) = &mut processor.turn_cost_worker\n                    && let Err(error) = TurnCostWorker::join_original(worker).await\n                {\n                    failures.push((\"original turn cost\", std::io::Error::other(error)));\n                }\n                drop(processor);\n            }\n            Err(processor) => {\n                crate::OriginalAppServerOwnerCustody::retain_unreleased_original_processor(\n                    original, processor,\n                );\n                failures.push((\n                    \"original processor ownership\",\n                    std::io::Error::other(\"actual processor still has an unjoined owner\"),\n                ));\n            }\n        }\n        crate::original_owned_shutdown::finish_original_failures(failures)\n    }"
+  },
+  "projection": {
+    "implementation": {
+      "git_blob": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+      "bytes": 13481,
+      "sha256": "7b122c8a3c91495efa1e148fcb7890c17a9938694bb3c6293bf635c1c90be187"
+    },
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "predecessor_row_passes_pre_source": true,
+    "predecessor_row_rejected_actual_post": "Error: order missing \"if let Some(worker) = &mut processor.turn_cost_worker {\"",
+    "successor_row_passes_actual_post": true,
+    "functions": [
+      {
+        "function": "fn new_original_owner(",
+        "start": 11976,
+        "end": 12176,
+        "marker_count": 6
+      },
+      {
+        "function": "fn new_with_original_owner(",
+        "start": 12183,
+        "end": 27503,
+        "marker_count": 354
+      },
+      {
+        "function": "fn prepare_original_shutdown(",
+        "start": 34212,
+        "end": 34840,
+        "marker_count": 16
+      },
+      {
+        "function": "fn finish_original_owners(",
+        "start": 34864,
+        "end": 39075,
+        "marker_count": 92
+      },
+      {
+        "function": "fn connection_closed_original(",
+        "start": 39099,
+        "end": 39794,
+        "marker_count": 18
+      },
+      {
+        "function": "fn dispatch_initialized_client_request(",
+        "start": 43800,
+        "end": 46841,
+        "marker_count": 75
+      }
+    ],
+    "file_order_sequences": 1,
+    "whole_changed_function_sequence": "Both exact sequences equal every nonempty trimmed masked code line in the same unique function, 92 markers before and after."
+  },
+  "limits": {
+    "product_sources_modified": false,
+    "source_mutation_in_this_artifact": false,
+    "formatter_run": false,
+    "compiler_run": false,
+    "original_checker_run": false,
+    "native_run": false,
+    "h_or_pty": false,
+    "refs_changed": false,
+    "global_call_graph_proved": false,
+    "acceptance_counts_increased": false
+  }
+}

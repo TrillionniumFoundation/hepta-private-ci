@@ -4,6 +4,7 @@
 //! Notifications are not results and never certify completion.
 
 use std::future::Future;
+use std::io::Write;
 use std::panic::AssertUnwindSafe;
 use std::panic::catch_unwind;
 use std::pin::Pin;
@@ -259,7 +260,10 @@ impl OriginalPhaseRunControl {
         if let Some(circuit) = circuit {
             match circuit.stop_and_join_original_owner().await {
                 Ok(observed) => {
-                    tracing::info!(observation = ?observed, "actual original Circuit cleanup observed");
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "hepta-agentd level=info observation={observed:?}: actual original Circuit cleanup observed",
+                    );
                     if observed.admission_poisoned {
                         save_original_failure(
                             &mut failure,
@@ -298,7 +302,10 @@ impl OriginalPhaseRunControl {
         // is intentionally kept alive merely to make this observation succeed.
         match self.session.stop_and_join_retired_session_tasks().await {
             Ok(observed) => {
-                tracing::info!(observation = ?observed, "actual original Session cleanup observed")
+                let _ = writeln!(
+                    std::io::stderr().lock(),
+                    "hepta-agentd level=info observation={observed:?}: actual original Session cleanup observed",
+                );
             }
             Err(error) => save_original_failure(&mut failure, error),
         }
@@ -367,7 +374,10 @@ impl OriginalPhaseRunOwner {
                             let result = original.await;
                             match (signal, result) {
                                 (Err(signal), Err(original)) => {
-                                    tracing::error!(error = %signal, "original signal listener also failed");
+                                    let _ = writeln!(
+                                        std::io::stderr().lock(),
+                                        "hepta-agentd level=error error={signal}: original signal listener also failed",
+                                    );
                                     Err(original)
                                 }
                                 (Err(signal), Ok(_completed)) => Err(signal),
@@ -396,7 +406,10 @@ impl OriginalPhaseRunOwner {
                         // a cleanup error never replaces the original cause.
                         let cleanup = runtime.block_on(worker_control.close_and_join_original_resources());
                         if let Err(cleanup) = cleanup {
-                            tracing::error!(error = %cleanup, "original phase also failed during physical cleanup");
+                            let _ = writeln!(
+                                std::io::stderr().lock(),
+                                "hepta-agentd level=error error={cleanup}: original phase also failed during physical cleanup",
+                            );
                         }
                         Err(original)
                     }
@@ -431,7 +444,10 @@ impl Drop for OriginalPhaseRunOwner {
         OriginalPhaseRunControl::request_stop(&self.control);
         if let Some(thread) = self.thread.take() {
             if let Err(error) = join_original_owner(thread) {
-                tracing::error!(error = %error, "cancelled original phase owner finished with failure");
+                let _ = writeln!(
+                    std::io::stderr().lock(),
+                    "hepta-agentd level=error error={error}: cancelled original phase owner finished with failure",
+                );
             }
         }
     }
@@ -451,6 +467,9 @@ fn save_original_failure(first: &mut Option<AgentdError>, error: AgentdError) {
     if first.is_none() {
         *first = Some(error);
     } else {
-        tracing::error!(error = %error, "additional original cleanup failure");
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "hepta-agentd level=error error={error}: additional original cleanup failure",
+        );
     }
 }

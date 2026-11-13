@@ -15,7 +15,7 @@ pub const HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2: &str = "runtime.learning.bootstr
 
 /// Public scope description sealed by the original Root. The binding is
 /// reconstructed from the complete initial request and owners before use.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostAuthorityLearningScopeV2 {
     scope: String,
@@ -49,7 +49,7 @@ impl HostAuthorityLearningScopeV2 {
 
 /// Explicit Root0600 configuration for one exact iteration. The storage owner
 /// and directory are fixed by the Root service, never selected by this data.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostAuthorityLearningProfileV1 {
     pub(crate) schema_version: u32,

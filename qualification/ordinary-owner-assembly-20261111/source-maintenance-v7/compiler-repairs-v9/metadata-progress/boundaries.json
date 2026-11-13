@@ -1,0 +1,1258 @@
+{
+  "schema_version": 1,
+  "status": "incomplete_actual_source_metadata_working_checkpoint_not_final_or_checker_pass",
+  "source_manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635",
+  "name": "boundary_progress",
+  "payload": {
+    "missing": [
+      {
+        "id": "q24_same_actor_learning_route_custody",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+        "marker": "self.learning_work.set(Mutex::new(Some(work)))"
+      },
+      {
+        "id": "q24_learning_normal_take_stop",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+        "marker": "OriginalLearningStop { work: Arc::clone(self)"
+      },
+      {
+        "id": "q24_learning_normal_work_join",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+        "marker": "Ok(OriginalLearningWorkJoined { work: Arc::clone(self) })"
+      },
+      {
+        "id": "q24_purpose_checkpoint_close",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "marker": "phase.shutdown_original_after_root_intent(intent)?"
+      },
+      {
+        "id": "q24_purpose_runtime_assembly",
+        "field": "definition_markers",
+        "marker_index": 3,
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "marker": ".with_original_q24_stage_owners(stages)?"
+      },
+      {
+        "id": "q24_purpose_model_close",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "marker": "phase.shutdown_original_after_root_intent(intent)?"
+      },
+      {
+        "id": "q24_purpose_stage_close",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "marker": "self.inner.lane.try_acquire()"
+      },
+      {
+        "id": "q24_purpose_stage_close",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "marker": "self.inner.owners.try_lock()"
+      },
+      {
+        "id": "q24_purpose_loop_close",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "marker": "self.bootstrap.original_q24.as_ref()"
+      },
+      {
+        "id": "root_retirement_request_admission",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+        "marker": "state.active_requests.checked_add(1)"
+      },
+      {
+        "id": "root_retirement_five_bound",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "marker": "OriginalRootAuthorityLanesJoined { channels, _bound: bound }"
+      },
+      {
+        "id": "root_retirement_peer_transfer",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "marker": "OriginalRootRetainedDeployment { bound, files, retirement }"
+      },
+      {
+        "id": "same_actor_custody_c_quiescence_origin_require_slot",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "marker": "pub(crate) fn require_original_slot(\n        &self,\n        slot: &SuccessorSlot,\n    ) -> Result<(), AgentdError>"
+      },
+      {
+        "id": "same_actor_custody_root_session_pause_waiter_join_original_paused",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "marker": "pub(crate) fn join_original_paused(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootSessionPaused, AgentdError>>\n    + Send\n    + 'static"
+      },
+      {
+        "id": "mcp_owned_runtime_reserve_original_input",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "marker": "pub(crate) fn reserve_original_input(\n        self: &Arc<Self>, input: &McpRuntimeInput,\n    ) -> Result<OriginalMcpConstructionGuard> {"
+      },
+      {
+        "id": "mcp_owned_runtime_stop_and_join_original_runtime",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "marker": "pub fn stop_and_join_original_runtime(\n        self: &Arc<Self>,\n    ) -> impl std::future::Future<Output = Result<Arc<OriginalMcpRuntimeShutdownObservation>>> + Send + 'static {"
+      },
+      {
+        "id": "q24_original_run_control_retain_original_receive_gate",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(crate) fn retain_original_receive_gate(\n        &self, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_control_reserve_original_consumer",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(crate) fn reserve_original_consumer(\n        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_control_retain_original_context",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(super) fn retain_original_context(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_control_retain_original_circuit",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(super) fn retain_original_circuit(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n        custody: Arc<OriginalCircuitOwnerCustody>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_custody_original_mcp_custody",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in crate::production_launcher) fn original_mcp_custody(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<codex_app_server::OriginalMcpRuntimeShutdown>, AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_custody_original_app_server_custody",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in crate::production_launcher) fn original_app_server_custody(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<codex_app_server::OriginalAppServerOwnerCustody>, AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_custody_original_circuit_custody",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in super::super) fn original_circuit_custody(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<OriginalCircuitOwnerCustody>, AgentdError> {"
+      },
+      {
+        "id": "q24_original_run_custody_finish_original_component_owners_after_root_exit",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in super::super) async fn finish_original_component_owners_after_root_exit(\n        &self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(\n        Arc<codex_app_server::OriginalMcpRuntimeShutdownObservation>,\n        codex_app_server::OriginalAppServerJoined,\n    ), AgentdError> {"
+      },
+      {
+        "id": "q24_original_runtime_stopped_require_original_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "marker": "pub(crate) fn require_original_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "q24_original_runtime_retired_require_original_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "marker": "pub(crate) fn require_original_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "q24_original_completion_require_original_complete",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+        "marker": "pub(in super::super) fn require_original_complete(\n        &self, control: &OriginalPhaseRunControl,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "core_original_session_loop_retain_original_loop_shutdown",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/core/src/session/original_shutdown.rs",
+        "marker": "pub(crate) fn retain_original_loop_shutdown(\n        &self,\n    ) -> Arc<OriginalSessionLoopShutdown> {"
+      },
+      {
+        "id": "core_original_session_loop_join_join_original_loop",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/core/src/session/original_shutdown.rs",
+        "marker": "pub(crate) async fn join_original_loop(\n        &self,\n    ) -> Result<(), Arc<OriginalCoreTaskFailure>> {"
+      },
+      {
+        "id": "core_original_thread_admission_retain_original_thread_startup_handle",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+        "marker": "pub(super) fn retain_original_thread_startup_handle(\n        mut self,\n        handle: JoinHandle<()>,\n    ) {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_acknowledgement_require_original_request",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "marker": "pub(crate) fn require_original_request(&self, request: &OriginalDeploymentRequest) -> io::Result<()> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_acknowledgement_encode_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "marker": "pub(crate) fn encode_original(&self, request: &OriginalDeploymentRequest) -> io::Result<Vec<u8>> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_acknowledgement_decode_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "marker": "pub(crate) fn decode_original(bytes: &[u8], request: &OriginalDeploymentRequest) -> io::Result<Self> {"
+      },
+      {
+        "id": "root_ordinary_original_bootstrap_consumers_reserve",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+        "marker": "pub(super) fn reserve(\n        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_agentd_original_same_actor_deployment_startup_v1_run_original_deployment",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+        "marker": "pub async fn run_original_deployment(\n        self, arg0_paths: Arg0DispatchPaths,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_coordinator_at_c_outcome_require_original_retirement_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "marker": "pub(super) fn require_original_retirement_origin(\n        &self, identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_require_original_context",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "marker": "pub(super) fn require_original_context(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_run_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "marker": "pub(super) async fn run_original(mut self) -> Result<OriginalCoordinatorAtCOutcome, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_receive_original_decision",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "marker": "pub(super) fn receive_original_decision(\n        &mut self, snapshot: LearningIterationSnapshotV1,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_await_original_current_material",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "marker": "pub(super) fn await_original_current_material(\n        &mut self, canonical: &str, wait: &mut OriginalActorWait,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_files_retain_original_initial_file_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+        "marker": "pub(super) fn retain_original_initial_file_origin(\n        &mut self, file: &File, path: &Path,\n    ) -> Result<OriginalOwnerFileOrigin, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_owner_file_origin_capture_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+        "marker": "pub(super) fn capture_original(\n        file: &File, path: &Path, files: &mut OriginalDeploymentFiles,\n    ) -> Result<Self, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_owner_file_origin_reopen_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+        "marker": "pub(in super::super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<File, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_initial_data_open_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "marker": "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<(OriginalRootInitialFeatureTargetV1, OriginalInitialPredecessorFiles), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_initial_predecessor_files_reopen_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "marker": "pub(super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<crate::AgentdGenerationUpdatePredecessorFilesV1<codex_hepta_neuron::FileAnchorWitnessStore>, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_evaluation_journal_data_open_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<CellGenerationJournalV2<FileAnchorWitnessStore>, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_holdout_data_open_original_holdout",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original_holdout(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_evaluation_store_data_open_original_execution",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original_execution(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductEvaluationExecutionStoreV1, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_evaluation_store_data_open_original_sink",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original_sink(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_deployment_descriptor_from_original_arguments",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "marker": "pub(crate) fn from_original_arguments(path: PathBuf, digest: Digest32) -> Result<Self, AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_open_original_deployment",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "marker": "pub(crate) async fn open_original_deployment(\n    context: Arc<OriginalSameActorRootContext>,\n    descriptor: OriginalDeploymentDescriptor,\n) -> Result<(OriginalSameActorBusinessInputsV1, OriginalDeploymentCoordinatorOwner), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_root_retirement_intent_require_original_gate",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "marker": "pub(crate) fn require_original_gate(\n        &self, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_root_workers_joined_require_original_final_peer",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "marker": "pub(crate) fn require_original_final_peer(\n        &self, channel: &RequiredSameActorPhaseChannel,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_root_workers_joined_wait_original_root_process_exit",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "marker": "pub(crate) fn wait_original_root_process_exit(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static {"
+      },
+      {
+        "id": "root_ordinary_original_root_process_exited_require_original_cleanup_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "marker": "pub(crate) fn require_original_cleanup_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_require_disjoint_phase_descriptor_numbers",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "marker": "fn require_disjoint_phase_descriptor_numbers(\n    arguments: &[OsString], extra: [i32; 2],\n) -> Result<(), AgentdError> {"
+      },
+      {
+        "id": "root_ordinary_original_bootstrap_consumer_admission_retain_original_bootstrap_consumer_handle",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+        "marker": "pub(crate) fn retain_original_bootstrap_consumer_handle(\n        mut self, handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,\n    ) -> Arc<OriginalBootstrapConsumerJob> {"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "q24_same_actor_learning_route_custody",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+        "marker": "self.learning_work.set(Mutex::new(Some(work)))",
+        "new_marker": "self.learning_work\n                .set(Mutex::new(Some(work)))",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1443,
+            "end": 1506
+          }
+        ]
+      },
+      {
+        "id": "q24_learning_normal_take_stop",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+        "marker": "OriginalLearningStop { work: Arc::clone(self)",
+        "new_marker": "OriginalLearningStop {\n            work: Arc::clone(self)",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 9786,
+            "end": 9843
+          }
+        ]
+      },
+      {
+        "id": "q24_learning_normal_work_join",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+        "marker": "Ok(OriginalLearningWorkJoined { work: Arc::clone(self) })",
+        "new_marker": "Ok(OriginalLearningWorkJoined {\n            work: Arc::clone(self),\n        })",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 11278,
+            "end": 11356
+          }
+        ]
+      },
+      {
+        "id": "q24_purpose_stage_close",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "marker": "self.inner.lane.try_acquire()",
+        "new_marker": "self\n            .inner\n            .lane\n            .try_acquire()",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1407,
+            "end": 1475
+          }
+        ]
+      },
+      {
+        "id": "q24_purpose_stage_close",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "marker": "self.inner.owners.try_lock()",
+        "new_marker": "self\n            .inner\n            .owners\n            .try_lock()",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1584,
+            "end": 1651
+          }
+        ]
+      },
+      {
+        "id": "q24_purpose_loop_close",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "marker": "self.bootstrap.original_q24.as_ref()",
+        "new_marker": "self\n            .bootstrap\n            .original_q24\n            .as_ref()",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 2317,
+            "end": 2392
+          }
+        ]
+      },
+      {
+        "id": "root_retirement_request_admission",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+        "marker": "state.active_requests.checked_add(1)",
+        "new_marker": "state\n            .active_requests\n            .checked_add(1)",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 13904,
+            "end": 13966
+          }
+        ]
+      },
+      {
+        "id": "root_retirement_five_bound",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "marker": "OriginalRootAuthorityLanesJoined { channels, _bound: bound }",
+        "new_marker": "OriginalRootAuthorityLanesJoined {\n        channels,\n        _bound: bound,\n    }",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 14989,
+            "end": 15070
+          }
+        ]
+      },
+      {
+        "id": "root_retirement_peer_transfer",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "marker": "OriginalRootRetainedDeployment { bound, files, retirement }",
+        "new_marker": "OriginalRootRetainedDeployment {\n                bound,\n                files,\n                retirement,\n            }",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 16689,
+            "end": 16809
+          }
+        ]
+      },
+      {
+        "id": "same_actor_custody_c_quiescence_origin_require_slot",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "marker": "pub(crate) fn require_original_slot(\n        &self,\n        slot: &SuccessorSlot,\n    ) -> Result<(), AgentdError>",
+        "new_marker": "pub(crate) fn require_original_slot(&self, slot: &SuccessorSlot) -> Result<(), AgentdError>",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 3051,
+            "end": 3142
+          }
+        ]
+      },
+      {
+        "id": "same_actor_custody_root_session_pause_waiter_join_original_paused",
+        "field": "definition_markers",
+        "marker_index": 1,
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "marker": "pub(crate) fn join_original_paused(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootSessionPaused, AgentdError>>\n    + Send\n    + 'static",
+        "new_marker": "pub(crate) fn join_original_paused(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootSessionPaused, AgentdError>> + Send + 'static",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 12477,
+            "end": 12634
+          }
+        ]
+      },
+      {
+        "id": "mcp_owned_runtime_reserve_original_input",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "marker": "pub(crate) fn reserve_original_input(\n        self: &Arc<Self>, input: &McpRuntimeInput,\n    ) -> Result<OriginalMcpConstructionGuard> {",
+        "new_marker": "pub(crate) fn reserve_original_input(\n        self: &Arc<Self>,\n        input: &McpRuntimeInput,\n    ) -> Result<OriginalMcpConstructionGuard> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 3725,
+            "end": 3869
+          }
+        ]
+      },
+      {
+        "id": "mcp_owned_runtime_stop_and_join_original_runtime",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "marker": "pub fn stop_and_join_original_runtime(\n        self: &Arc<Self>,\n    ) -> impl std::future::Future<Output = Result<Arc<OriginalMcpRuntimeShutdownObservation>>> + Send + 'static {",
+        "new_marker": "pub fn stop_and_join_original_runtime(\n        self: &Arc<Self>,\n    ) -> impl std::future::Future<Output = Result<Arc<OriginalMcpRuntimeShutdownObservation>>>\n    + Send\n    + 'static {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 9337,
+            "end": 9523
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_control_retain_original_receive_gate",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(crate) fn retain_original_receive_gate(\n        &self, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(crate) fn retain_original_receive_gate(\n        &self,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 3614,
+            "end": 3747
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_control_reserve_original_consumer",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(crate) fn reserve_original_consumer(\n        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {",
+        "new_marker": "pub(crate) fn reserve_original_consumer(\n        &self,\n        kind: OriginalBootstrapConsumerKind,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 4319,
+            "end": 4530
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_control_retain_original_context",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(super) fn retain_original_context(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(super) fn retain_original_context(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 5172,
+            "end": 5313
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_control_retain_original_circuit",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "marker": "pub(super) fn retain_original_circuit(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n        custody: Arc<OriginalCircuitOwnerCustody>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(super) fn retain_original_circuit(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n        custody: Arc<OriginalCircuitOwnerCustody>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 6128,
+            "end": 6320
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_custody_original_mcp_custody",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in crate::production_launcher) fn original_mcp_custody(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<codex_app_server::OriginalMcpRuntimeShutdown>, AgentdError> {",
+        "new_marker": "pub(in crate::production_launcher) fn original_mcp_custody(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<codex_app_server::OriginalMcpRuntimeShutdown>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 414,
+            "end": 623
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_custody_original_app_server_custody",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in crate::production_launcher) fn original_app_server_custody(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<codex_app_server::OriginalAppServerOwnerCustody>, AgentdError> {",
+        "new_marker": "pub(in crate::production_launcher) fn original_app_server_custody(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<codex_app_server::OriginalAppServerOwnerCustody>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1418,
+            "end": 1637
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_custody_original_circuit_custody",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in super::super) fn original_circuit_custody(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<OriginalCircuitOwnerCustody>, AgentdError> {",
+        "new_marker": "pub(in super::super) fn original_circuit_custody(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<Arc<OriginalCircuitOwnerCustody>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 2446,
+            "end": 2628
+          }
+        ]
+      },
+      {
+        "id": "q24_original_run_custody_finish_original_component_owners_after_root_exit",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "marker": "pub(in super::super) async fn finish_original_component_owners_after_root_exit(\n        &self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(\n        Arc<codex_app_server::OriginalMcpRuntimeShutdownObservation>,\n        codex_app_server::OriginalAppServerJoined,\n    ), AgentdError> {",
+        "new_marker": "pub(in super::super) async fn finish_original_component_owners_after_root_exit(\n        &self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<\n        (\n            Arc<codex_app_server::OriginalMcpRuntimeShutdownObservation>,\n            codex_app_server::OriginalAppServerJoined,\n        ),\n        AgentdError,\n    > {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 5087,
+            "end": 5537
+          }
+        ]
+      },
+      {
+        "id": "q24_original_runtime_stopped_require_original_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "marker": "pub(crate) fn require_original_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 2842,
+            "end": 3005
+          },
+          {
+            "start": 3154,
+            "end": 3317
+          }
+        ]
+      },
+      {
+        "id": "q24_original_runtime_retired_require_original_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "marker": "pub(crate) fn require_original_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 2842,
+            "end": 3005
+          },
+          {
+            "start": 3154,
+            "end": 3317
+          }
+        ]
+      },
+      {
+        "id": "q24_original_completion_require_original_complete",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+        "marker": "pub(in super::super) fn require_original_complete(\n        &self, control: &OriginalPhaseRunControl,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(in super::super) fn require_original_complete(\n        &self,\n        control: &OriginalPhaseRunControl,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 2052,
+            "end": 2195
+          }
+        ]
+      },
+      {
+        "id": "core_original_session_loop_retain_original_loop_shutdown",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/core/src/session/original_shutdown.rs",
+        "marker": "pub(crate) fn retain_original_loop_shutdown(\n        &self,\n    ) -> Arc<OriginalSessionLoopShutdown> {",
+        "new_marker": "pub(crate) fn retain_original_loop_shutdown(&self) -> Arc<OriginalSessionLoopShutdown> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 2245,
+            "end": 2333
+          }
+        ]
+      },
+      {
+        "id": "core_original_session_loop_join_join_original_loop",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/core/src/session/original_shutdown.rs",
+        "marker": "pub(crate) async fn join_original_loop(\n        &self,\n    ) -> Result<(), Arc<OriginalCoreTaskFailure>> {",
+        "new_marker": "pub(crate) async fn join_original_loop(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 4243,
+            "end": 4334
+          }
+        ]
+      },
+      {
+        "id": "core_original_thread_admission_retain_original_thread_startup_handle",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+        "marker": "pub(super) fn retain_original_thread_startup_handle(\n        mut self,\n        handle: JoinHandle<()>,\n    ) {",
+        "new_marker": "pub(super) fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 7577,
+            "end": 7664
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_acknowledgement_require_original_request",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "marker": "pub(crate) fn require_original_request(&self, request: &OriginalDeploymentRequest) -> io::Result<()> {",
+        "new_marker": "pub(crate) fn require_original_request(\n        &self,\n        request: &OriginalDeploymentRequest,\n    ) -> io::Result<()> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 7945,
+            "end": 8070
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_acknowledgement_encode_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "marker": "pub(crate) fn encode_original(&self, request: &OriginalDeploymentRequest) -> io::Result<Vec<u8>> {",
+        "new_marker": "pub(crate) fn encode_original(\n        &self,\n        request: &OriginalDeploymentRequest,\n    ) -> io::Result<Vec<u8>> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 9264,
+            "end": 9385
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_acknowledgement_decode_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+        "marker": "pub(crate) fn decode_original(bytes: &[u8], request: &OriginalDeploymentRequest) -> io::Result<Self> {",
+        "new_marker": "pub(crate) fn decode_original(\n        bytes: &[u8],\n        request: &OriginalDeploymentRequest,\n    ) -> io::Result<Self> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 9475,
+            "end": 9600
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_bootstrap_consumers_reserve",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+        "marker": "pub(super) fn reserve(\n        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {",
+        "new_marker": "pub(super) fn reserve(\n        &self,\n        kind: OriginalBootstrapConsumerKind,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1603,
+            "end": 1796
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_agentd_original_same_actor_deployment_startup_v1_run_original_deployment",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+        "marker": "pub async fn run_original_deployment(\n        self, arg0_paths: Arg0DispatchPaths,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub async fn run_original_deployment(\n        self,\n        arg0_paths: Arg0DispatchPaths,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 4629,
+            "end": 4754
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_coordinator_at_c_outcome_require_original_retirement_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "marker": "pub(super) fn require_original_retirement_origin(\n        &self, identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(super) fn require_original_retirement_origin(\n        &self,\n        identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 3463,
+            "end": 3678
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_require_original_context",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "marker": "pub(super) fn require_original_context(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(super) fn require_original_context(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 5758,
+            "end": 5900
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_run_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "marker": "pub(super) async fn run_original(mut self) -> Result<OriginalCoordinatorAtCOutcome, AgentdError> {",
+        "new_marker": "pub(super) async fn run_original(\n        mut self,\n    ) -> Result<OriginalCoordinatorAtCOutcome, AgentdError> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 7279,
+            "end": 7392
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_receive_original_decision",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "marker": "pub(super) fn receive_original_decision(\n        &mut self, snapshot: LearningIterationSnapshotV1,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(super) fn receive_original_decision(\n        &mut self,\n        snapshot: LearningIterationSnapshotV1,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 7364,
+            "end": 7505
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_coordinator_await_original_current_material",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "marker": "pub(super) fn await_original_current_material(\n        &mut self, canonical: &str, wait: &mut OriginalActorWait,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(super) fn await_original_current_material(\n        &mut self,\n        canonical: &str,\n        wait: &mut OriginalActorWait,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 10719,
+            "end": 10882
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_files_retain_original_initial_file_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+        "marker": "pub(super) fn retain_original_initial_file_origin(\n        &mut self, file: &File, path: &Path,\n    ) -> Result<OriginalOwnerFileOrigin, AgentdError> {",
+        "new_marker": "pub(super) fn retain_original_initial_file_origin(\n        &mut self,\n        file: &File,\n        path: &Path,\n    ) -> Result<OriginalOwnerFileOrigin, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 15855,
+            "end": 16022
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_owner_file_origin_capture_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+        "marker": "pub(super) fn capture_original(\n        file: &File, path: &Path, files: &mut OriginalDeploymentFiles,\n    ) -> Result<Self, AgentdError> {",
+        "new_marker": "pub(super) fn capture_original(\n        file: &File,\n        path: &Path,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<Self, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1064,
+            "end": 1219
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_owner_file_origin_reopen_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+        "marker": "pub(in super::super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<File, AgentdError> {",
+        "new_marker": "pub(in super::super) fn reopen_original(\n        self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<File, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 2537,
+            "end": 2673
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_initial_data_open_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "marker": "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<(OriginalRootInitialFeatureTargetV1, OriginalInitialPredecessorFiles), AgentdError> {",
+        "new_marker": "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<\n        (\n            OriginalRootInitialFeatureTargetV1,\n            OriginalInitialPredecessorFiles,\n        ),\n        AgentdError,\n    > {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 4054,
+            "end": 4302
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_initial_predecessor_files_reopen_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "marker": "pub(super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<crate::AgentdGenerationUpdatePredecessorFilesV1<codex_hepta_neuron::FileAnchorWitnessStore>, AgentdError> {",
+        "new_marker": "pub(super) fn reopen_original(\n        self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<\n        crate::AgentdGenerationUpdatePredecessorFilesV1<codex_hepta_neuron::FileAnchorWitnessStore>,\n        AgentdError,\n    > {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 6461,
+            "end": 6697
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_evaluation_journal_data_open_original",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<CellGenerationJournalV2<FileAnchorWitnessStore>, AgentdError> {",
+        "new_marker": "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<CellGenerationJournalV2<FileAnchorWitnessStore>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 1570,
+            "end": 1738
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_holdout_data_open_original_holdout",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original_holdout(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>, AgentdError> {",
+        "new_marker": "pub(super) fn open_original_holdout(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 3855,
+            "end": 4043
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_evaluation_store_data_open_original_execution",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original_execution(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductEvaluationExecutionStoreV1, AgentdError> {",
+        "new_marker": "pub(super) fn open_original_execution(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductEvaluationExecutionStoreV1, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 7218,
+            "end": 7392
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_evaluation_store_data_open_original_sink",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "marker": "pub(super) fn open_original_sink(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError> {",
+        "new_marker": "pub(super) fn open_original_sink(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 8022,
+            "end": 8192
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_deployment_descriptor_from_original_arguments",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "marker": "pub(crate) fn from_original_arguments(path: PathBuf, digest: Digest32) -> Result<Self, AgentdError> {",
+        "new_marker": "pub(crate) fn from_original_arguments(\n        path: PathBuf,\n        digest: Digest32,\n    ) -> Result<Self, AgentdError> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 2661,
+            "end": 2785
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_open_original_deployment",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+        "marker": "pub(crate) async fn open_original_deployment(\n    context: Arc<OriginalSameActorRootContext>,\n    descriptor: OriginalDeploymentDescriptor,\n) -> Result<(OriginalSameActorBusinessInputsV1, OriginalDeploymentCoordinatorOwner), AgentdError> {",
+        "new_marker": "pub(crate) async fn open_original_deployment(\n    context: Arc<OriginalSameActorRootContext>,\n    descriptor: OriginalDeploymentDescriptor,\n) -> Result<\n    (\n        OriginalSameActorBusinessInputsV1,\n        OriginalDeploymentCoordinatorOwner,\n    ),\n    AgentdError,\n> {",
+        "classification": "optional_trailing_comma_candidate_needs_context_check",
+        "matches": [
+          {
+            "start": 3075,
+            "end": 3348
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_root_retirement_intent_require_original_gate",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "marker": "pub(crate) fn require_original_gate(\n        &self, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(crate) fn require_original_gate(\n        &self,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 6033,
+            "end": 6159
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_root_workers_joined_require_original_final_peer",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "marker": "pub(crate) fn require_original_final_peer(\n        &self, channel: &RequiredSameActorPhaseChannel,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(crate) fn require_original_final_peer(\n        &self,\n        channel: &RequiredSameActorPhaseChannel,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 4807,
+            "end": 4948
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_root_workers_joined_wait_original_root_process_exit",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "marker": "pub(crate) fn wait_original_root_process_exit(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static {",
+        "new_marker": "pub(crate) fn wait_original_root_process_exit(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static\n    {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 5703,
+            "end": 5877
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_root_process_exited_require_original_cleanup_origin",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "marker": "pub(crate) fn require_original_cleanup_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "new_marker": "pub(crate) fn require_original_cleanup_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 8339,
+            "end": 8510
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_require_disjoint_phase_descriptor_numbers",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "marker": "fn require_disjoint_phase_descriptor_numbers(\n    arguments: &[OsString], extra: [i32; 2],\n) -> Result<(), AgentdError> {",
+        "new_marker": "fn require_disjoint_phase_descriptor_numbers(\n    arguments: &[OsString],\n    extra: [i32; 2],\n) -> Result<(), AgentdError> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 5622,
+            "end": 5747
+          }
+        ]
+      },
+      {
+        "id": "root_ordinary_original_bootstrap_consumer_admission_retain_original_bootstrap_consumer_handle",
+        "field": "definition_markers",
+        "marker_index": 0,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+        "marker": "pub(crate) fn retain_original_bootstrap_consumer_handle(\n        mut self, handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,\n    ) -> Arc<OriginalBootstrapConsumerJob> {",
+        "new_marker": "pub(crate) fn retain_original_bootstrap_consumer_handle(\n        mut self,\n        handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,\n    ) -> Arc<OriginalBootstrapConsumerJob> {",
+        "classification": "whitespace_only_candidate",
+        "matches": [
+          {
+            "start": 3943,
+            "end": 4130
+          }
+        ]
+      }
+    ],
+    "unresolved": [
+      {
+        "id": "q24_purpose_checkpoint_close",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "marker": "phase.shutdown_original_after_root_intent(intent)?",
+        "variant_count": 0,
+        "variants": []
+      },
+      {
+        "id": "q24_purpose_runtime_assembly",
+        "field": "definition_markers",
+        "marker_index": 3,
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "marker": ".with_original_q24_stage_owners(stages)?",
+        "variant_count": 0,
+        "variants": []
+      },
+      {
+        "id": "q24_purpose_model_close",
+        "field": "definition_markers",
+        "marker_index": 2,
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "marker": "phase.shutdown_original_after_root_intent(intent)?",
+        "variant_count": 0,
+        "variants": []
+      }
+    ]
+  }
+}
