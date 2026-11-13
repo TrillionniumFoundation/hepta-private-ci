@@ -51,8 +51,12 @@ fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
 }
 
 fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
+    witness_from_file(opened(root, name)?, name)
+}
+
+fn witness_from_file(file: File, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
     Ok(FileAnchorWitnessStore::open(
-        opened(root, name)?,
+        file,
         JournalScope {
             scope_digest: cell::d(name),
             objective_digest: cell::d("original ordinary source"),
@@ -63,6 +67,7 @@ fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
 }
 
 fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
+    let root = root.canonicalize()?;
     let agent_id = AgentId::parse(cell::scope("A").agent_id.as_str())?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
     let layout = fleet.layout().agent(&agent_id);
@@ -157,9 +162,21 @@ fn cell_owner(
     root: &Path,
     inputs: &[CircuitTaskSourceInputV1],
 ) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
-    Ok(CellOwnerJournalV1::open(
+    cell_owner_from_files(
         opened(root, "cell-journal")?,
-        witness(root, "cell-witness")?,
+        opened(root, "cell-witness")?,
+        inputs,
+    )
+}
+
+fn cell_owner_from_files(
+    journal_file: File,
+    witness_file: File,
+    inputs: &[CircuitTaskSourceInputV1],
+) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
+    Ok(CellOwnerJournalV1::open(
+        journal_file,
+        witness_from_file(witness_file, "cell-witness")?,
         inputs
             .iter()
             .map(|input| CellJournalPartitionV1 {
@@ -277,9 +294,19 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         "cell-witness",
     ]
     .map(|name| fs::read(root.path().join(name)).expect("original files"));
+    let source_file = opened(root.path(), "source-journal")?;
+    let source_witness_file = opened(root.path(), "source-witness")?;
+    let cell_file = opened(root.path(), "cell-journal")?;
+    let cell_witness_file = opened(root.path(), "cell-witness")?;
+    let observers = [
+        source_file.try_clone()?,
+        source_witness_file.try_clone()?,
+        cell_file.try_clone()?,
+        cell_witness_file.try_clone()?,
+    ];
     let reopened = Source::recover(
-        opened(root.path(), "source-journal")?,
-        witness(root.path(), "source-witness")?,
+        source_file,
+        witness_from_file(source_witness_file, "source-witness")?,
         &identity,
         &fence,
         &registry()?,
@@ -302,7 +329,7 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         inputs: reopened.clone(),
         cells: AgentdCircuitCellOwnerV1::new(
             registry()?,
-            cell_owner(root.path(), &sources)?,
+            cell_owner_from_files(cell_file, cell_witness_file, &sources)?,
             model,
             cell::Encoder,
         ),
@@ -314,13 +341,9 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     reopened.publish_result(&identity, &record("A"), &recovered)?;
     assert_eq!(recovered_calls.load(Ordering::SeqCst), 0);
     assert_eq!(
-        [
-            "source-journal",
-            "source-witness",
-            "cell-journal",
-            "cell-witness"
-        ]
-        .map(|name| fs::read(root.path().join(name)).expect("same files")),
+        observers.each_ref().map(|file| {
+            crate::test_support::read_file_bytes(file).expect("same files")
+        }),
         original_files
     );
     let next = reopened.build(&identity, &record("C"))?;
@@ -384,8 +407,10 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
     let fence = fence(&identity)?;
     let store = AutomationStore::open(&identity.layout).await?;
     let sources = vec![source("A", b"source A")];
+    let source_file = opened(root.path(), "source-journal")?;
+    let source_observer = source_file.try_clone()?;
     let mut owner = Source::create(
-        opened(root.path(), "source-journal")?,
+        source_file,
         witness(root.path(), "source-witness")?,
         &identity,
         &fence,
@@ -395,7 +420,7 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
     let original = record("A");
     let request = owner.build(&identity, &original)?;
     let dispatch = dispatch(&store, &fence, &request).await?;
-    let before = fs::read(root.path().join("source-journal"))?;
+    let before = crate::test_support::read_file_bytes(&source_observer)?;
     assert_eq!(
         owner.resolve(
             &request,
@@ -406,14 +431,14 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         Err(Error::ReconciliationRequired)
     );
     assert!(owner.read_publication(&identity, &original).is_err());
-    assert_eq!(fs::read(root.path().join("source-journal"))?, before);
+    assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, before);
     let input = owner.resolve(
         &request,
         &dispatch,
         &BTreeMap::new(),
         CircuitTaskInputModeV1::Prepare,
     )?;
-    let retained = fs::read(root.path().join("source-journal"))?;
+    let retained = crate::test_support::read_file_bytes(&source_observer)?;
     let alterations: [fn(&mut RunStartRecordV1); 5] = [
         |r: &mut RunStartRecordV1| r.authentication.signature[0] ^= 1,
         |r: &mut RunStartRecordV1| r.admission.admitted_source_digest = cell::d("replacement"),
@@ -446,8 +471,9 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         )?,
         input
     );
-    assert_eq!(fs::read(root.path().join("source-journal"))?, retained);
+    assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, retained);
     drop(owner);
+    drop(source_observer);
     let mut substituted = sources.clone();
     substituted[0].candidates[0].allowed = false;
     assert!(
@@ -558,6 +584,7 @@ fn ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen() -> anyho
                 .read_run_publication(&identity, &cell::id("A"))
                 .is_err()
         );
+        drop(reopened);
         assert_eq!(fs::read(root.path().join("source-journal"))?, bytes);
     }
     Ok(())
@@ -605,6 +632,7 @@ fn ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_
             assert!(recovered.build(&identity, &record("A")).is_ok());
         }
         assert!(recovered.read_publication(&identity, &record("A")).is_err());
+        drop(recovered);
         assert_eq!(fs::read(root.path().join("source-journal"))?, bytes);
     }
     Ok(())
@@ -670,15 +698,17 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
         drop(driver);
         drop(owner);
         let unchanged = fs::read(root.path().join("source-journal"))?;
+        let source_file = opened(root.path(), "source-journal")?;
+        let source_observer = source_file.try_clone()?;
         let reopened = Source::recover(
-            opened(root.path(), "source-journal")?,
+            source_file,
             witness(root.path(), "source-witness")?,
             &identity,
             &fence,
             &registry()?,
             sources.clone(),
         )?;
-        assert_eq!(fs::read(root.path().join("source-journal"))?, unchanged);
+        assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, unchanged);
         let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
         let recovered_calls = Arc::clone(&model.calls);
         let mut driver = CircuitTaskDriverV1 {
@@ -729,7 +759,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
             usize::from(fail_sequence == 5)
         );
         if fail_sequence != 5 {
-            assert_eq!(fs::read(root.path().join("source-journal"))?, unchanged);
+            assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, unchanged);
         }
         drop(driver);
         drop(reopened);

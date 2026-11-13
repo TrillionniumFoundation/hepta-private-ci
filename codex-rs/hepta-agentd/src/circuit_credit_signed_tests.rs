@@ -57,7 +57,8 @@ async fn execute(owner: AgentId, run: &StableId, objective: Digest32) -> Execute
         /*generation*/ 1,
         "fence",
     ));
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let root = checked(directory.path().canonicalize());
+    let layout = checked(HeptaFleetRoot::parse(root.join("fleet")))
         .layout()
         .agent(&owner);
     let store = checked(AutomationStore::open(&layout).await);

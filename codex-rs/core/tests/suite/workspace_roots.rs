@@ -142,6 +142,19 @@ async fn remove_files(test: &TestCodex, paths: &[&PathUri]) -> Result<()> {
     Ok(())
 }
 
+fn assert_windows_patch_write_refused(output: Option<&str>, success: Option<bool>, path: &PathUri) {
+    let output = output.expect("patch refusal should have tool output");
+    assert_ne!(success, Some(true), "{output}");
+    assert!(output.contains("Exit code: 1"), "{output}");
+    assert!(
+        output.contains(&format!(
+            "Failed to write file {}",
+            path.inferred_native_path_string()
+        )),
+        "{output}"
+    );
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn workspace_roots_allow_file_and_command_writes() -> Result<()> {
     const PATCH_CONTENTS: &str = "workspace root patch access";
@@ -173,23 +186,44 @@ async fn workspace_roots_allow_file_and_command_writes() -> Result<()> {
     let request = response_mock
         .last_request()
         .context("model should receive both workspace-root tool results")?;
-    let (_, patch_success) = request
+    let (patch_output, patch_success) = request
         .custom_tool_call_output_content_and_success(PATCH_CALL_ID)
         .context("patch result should be present")?;
-    assert_ne!(patch_success, Some(false));
 
-    let (_, command_success) = request
+    let (command_output, command_success) = request
         .function_call_output_content_and_success(COMMAND_CALL_ID)
         .context("command result should be present")?;
-    assert_ne!(command_success, Some(false));
-    assert_eq!(
-        read_file(&test, &patch_path).await?,
-        format!("{PATCH_CONTENTS}\n")
-    );
-    assert_eq!(
-        read_file(&test, &command_path).await?.trim_end(),
-        COMMAND_CONTENTS
-    );
+    if cfg!(windows) {
+        assert_windows_patch_write_refused(patch_output.as_deref(), patch_success, &patch_path);
+        let command_output = command_output.context("command refusal should have tool output")?;
+        assert_ne!(command_success, Some(true), "{command_output}");
+        #[cfg(windows)]
+        assert!(
+            command_output.contains(
+                &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+            ),
+            "{command_output}"
+        );
+        for path in [&patch_path, &command_path] {
+            let error = test
+                .fs()
+                .get_metadata(path, Default::default(), /*sandbox*/ None)
+                .await
+                .expect_err("refused workspace-root write must not create a file");
+            assert_eq!(error.kind(), std::io::ErrorKind::NotFound);
+        }
+    } else {
+        assert_ne!(patch_success, Some(false));
+        assert_ne!(command_success, Some(false));
+        assert_eq!(
+            read_file(&test, &patch_path).await?,
+            format!("{PATCH_CONTENTS}\n")
+        );
+        assert_eq!(
+            read_file(&test, &command_path).await?.trim_end(),
+            COMMAND_CONTENTS
+        );
+    }
 
     remove_files(&test, &[&patch_path, &command_path]).await
 }
@@ -273,15 +307,25 @@ async fn workspace_roots_allow_apply_patch_in_secondary_root() -> Result<()> {
     let (patch_output, patch_success) = request
         .custom_tool_call_output_content_and_success(PATCH_CALL_ID)
         .context("patch result should be present")?;
-    assert_ne!(patch_success, Some(false), "{patch_output:?}");
-    assert!(
-        !patch_output
-            .as_deref()
-            .is_some_and(|output| output.contains("patch rejected")),
-        "{patch_output:?}"
-    );
     let patched_file = secondary_root.join("secondary-root-patch.txt")?;
-    assert_eq!(read_file(&test, &patched_file).await?, "secondary root\n");
+    if cfg!(windows) {
+        assert_windows_patch_write_refused(patch_output.as_deref(), patch_success, &patched_file);
+        let error = test
+            .fs()
+            .get_metadata(&patched_file, Default::default(), /*sandbox*/ None)
+            .await
+            .expect_err("refused secondary-root patch must not create a file");
+        assert_eq!(error.kind(), std::io::ErrorKind::NotFound);
+    } else {
+        assert_ne!(patch_success, Some(false), "{patch_output:?}");
+        assert!(
+            !patch_output
+                .as_deref()
+                .is_some_and(|output| output.contains("patch rejected")),
+            "{patch_output:?}"
+        );
+        assert_eq!(read_file(&test, &patched_file).await?, "secondary root\n");
+    }
 
     test.fs()
         .remove(

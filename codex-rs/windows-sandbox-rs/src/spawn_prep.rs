@@ -528,13 +528,13 @@ mod tests {
     }
 
     #[test]
-    fn legacy_spawn_env_applies_offline_network_rewrite() {
+    fn legacy_spawn_refusal_keeps_environment_unchanged() {
         let codex_home = TempDir::new().expect("tempdir");
         let cwd = TempDir::new().expect("tempdir");
         let mut env_map = HashMap::new();
         let workspace_roots = workspace_roots_for(cwd.path());
 
-        let _context = prepare_legacy_spawn_context(
+        let result = prepare_legacy_spawn_context(
             &PermissionProfile::workspace_write(),
             workspace_roots.as_slice(),
             codex_home.path(),
@@ -545,14 +545,10 @@ mod tests {
                 inherit_path: true,
                 add_git_safe_directory: false,
             },
-        )
-        .expect("legacy env prep");
-
-        assert_eq!(env_map.get("SBX_NONET_ACTIVE"), Some(&"1".to_string()));
-        assert_eq!(
-            env_map.get("HTTP_PROXY"),
-            Some(&"http://127.0.0.1:9".to_string())
         );
+        crate::legacy_admission_tests::assert_unavailable(result);
+        assert!(env_map.is_empty());
+        assert_eq!(std::fs::read_dir(codex_home.path()).expect("read home").count(), 0);
     }
 
     #[test]

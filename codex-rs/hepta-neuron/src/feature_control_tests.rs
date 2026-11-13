@@ -165,6 +165,7 @@ fn feature_control_exact_readback_reopens_without_work_clock_or_write() {
         Some(receipt.clone())
     );
     assert_eq!(checked(recovered.execute_feature(&request)), receipt);
+    drop(recovered);
     assert_eq!(checked(fs::read(fixture.path())), original_bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
@@ -209,6 +210,7 @@ fn feature_control_unknown_dispatch_remains_fenced_after_reopen() {
         fresh.execute_feature(&request),
         Err(NeuronModelError::Indeterminate)
     );
+    drop(fresh);
     assert_eq!(checked(fs::read(fixture.path())), pending_bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
@@ -306,6 +308,7 @@ fn feature_control_same_operation_changed_source_or_state_never_rebinds() {
         port.execute_feature(&alias),
         Err(NeuronModelError::Indeterminate)
     );
+    drop(port);
     assert_eq!(checked(fs::read(fixture.path())), original_bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
@@ -368,6 +371,7 @@ fn feature_control_original_cell_path_binds_admission_and_pending_recovery() {
         /*now_micros*/ 200,
     ));
     assert_eq!(reopened.output, original.output);
+    drop(recovered);
     assert_eq!(checked(fs::read(fixture.path())), bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }

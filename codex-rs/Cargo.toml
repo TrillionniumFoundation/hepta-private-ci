@@ -643,6 +643,11 @@ debug = "limited"
 [profile.dev.package.matrix-sdk-store-encryption]
 opt-level = 3
 
+# The locked KDF calls SHA-256 compression across this crate boundary.
+# Preserve its complete iteration count and original startup deadline.
+[profile.dev.package."sha2:0.11.1"]
+opt-level = 3
+
 # Original Root enrollment revalidates Ed25519 signatures within a fixed frame.
 # Optimize only the locked HEPTA crypto versions in development/test builds;
 # every signature check, physical read, and original deadline remains in place.

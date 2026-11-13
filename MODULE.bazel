@@ -392,6 +392,13 @@ crate.annotation(
     version = "0.19.1",
 )
 crate.annotation(
+    # Match the exact SHA-256 backend used by the full-strength Matrix KDF.
+    crate = "sha2",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.11.1",
+)
+crate.annotation(
     # Match Cargo's locked HEPTA crypto optimization within unchanged control deadlines.
     crate = "curve25519-dalek",
     repositories = ["crates"],

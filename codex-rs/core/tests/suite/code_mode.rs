@@ -4522,8 +4522,33 @@ await tools.exec_command({ cmd: "printf second", sandbox_permissions: "require_e
         ],
     )
     .await;
-    test.submit_text_turn(&format!("review a nested {repl_server} tool response"))
-        .await?;
+    let turn_result = test
+        .submit_text_turn(&format!("review a nested {repl_server} tool response"))
+        .await;
+    if let Err(error) = &turn_result {
+        // Retain the original error before MockServer's drop-time verification.
+        // Only known context labels are printable; tool/model content stays private.
+        const BUDGET_CONTEXT: &str =
+            "text turn completion and finish owner exceeded the original event budget";
+        let error_chain = error
+            .chain()
+            .take(8)
+            .map(|cause| {
+                if cause.is::<tokio::time::error::Elapsed>() {
+                    "deadline has elapsed"
+                } else if cause.to_string() == BUDGET_CONTEXT {
+                    BUDGET_CONTEXT
+                } else {
+                    "other error (message omitted to preserve tool/model privacy)"
+                }
+            })
+            .collect::<Vec<_>>();
+        eprintln!(
+            "CodeMode Guardian fixture failed: matched_requests={}/6; error_chain={error_chain:?}",
+            response_mock.requests().len()
+        );
+    }
+    turn_result?;
     let requests = response_mock.requests();
     let guardian_requests = requests
         .iter()

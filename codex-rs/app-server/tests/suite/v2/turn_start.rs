@@ -4540,52 +4540,124 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
         })
         .await?;
 
-    let started_file_change_2 = timeout(DEFAULT_READ_TIMEOUT, async {
-        loop {
-            let started: ItemStartedNotification = mcp.read_notification("item/started").await?;
-            if let ThreadItem::FileChange { .. } = started.item {
-                return Ok::<ThreadItem, anyhow::Error>(started.item);
-            }
-        }
-    })
-    .await??;
-    let ThreadItem::FileChange { id, status, .. } = started_file_change_2 else {
-        unreachable!("loop ensures we break on file change items");
-    };
-    assert_eq!(id, "patch-call-2");
-    assert_eq!(status, PatchApplyStatus::InProgress);
-
-    let completed_file_change = timeout(DEFAULT_READ_TIMEOUT, async {
-        loop {
-            match mcp.read_next_message().await? {
-                JSONRPCMessage::Request(request) => {
-                    anyhow::bail!("unexpected approval request for session-approved patch: {request:?}");
-                }
-                JSONRPCMessage::Notification(notification)
-                    if notification.method == "item/completed" =>
-                {
-                    let completed: ItemCompletedNotification = serde_json::from_value(
-                        notification.params.expect("item/completed params"),
-                    )?;
-                    if matches!(completed.item, ThreadItem::FileChange { ref id, .. } if id == "patch-call-2")
-                    {
-                        return Ok::<ItemCompletedNotification, anyhow::Error>(completed);
+    #[cfg(windows)]
+    {
+        let completed = timeout(DEFAULT_READ_TIMEOUT, async {
+            loop {
+                match mcp.read_next_message().await? {
+                    JSONRPCMessage::Request(request) => {
+                        anyhow::bail!(
+                            "unexpected approval request for session-approved patch: {request:?}"
+                        );
                     }
+                    JSONRPCMessage::Notification(notification)
+                        if matches!(notification.method.as_str(), "item/started" | "item/completed") =>
+                    {
+                        let params = notification.params.expect("item notification params");
+                        assert_ne!(
+                            params["item"]["id"].as_str().expect("item notification id"),
+                            "patch-call-2",
+                            "legacy isolation refusal must precede patch execution"
+                        );
+                    }
+                    JSONRPCMessage::Notification(notification)
+                        if notification.method == "turn/completed" =>
+                    {
+                        return Ok::<TurnCompletedNotification, anyhow::Error>(
+                            serde_json::from_value(
+                                notification.params.expect("turn/completed params"),
+                            )?,
+                        );
+                    }
+                    _ => {}
                 }
-                _ => {}
             }
-        }
-    })
-    .await??;
-    assert_eq!(completed_file_change.thread_id, thread.id);
-    assert_eq!(completed_file_change.turn_id, turn_2.id);
-    timeout(
-        DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_notification_message("turn/completed"),
-    )
-    .await??;
+        })
+        .await??;
+        assert_eq!(completed.thread_id, thread.id);
+        assert_eq!(completed.turn.id, turn_2.id);
+        assert_eq!(completed.turn.status, TurnStatus::Completed);
 
-    assert_eq!(std::fs::read_to_string(readme_path)?, "updated line\n");
+        let requests = server.received_requests().await.expect("read model requests");
+        let model_requests: Vec<_> = requests
+            .iter()
+            .filter(|request| {
+                request.method.as_str() == "POST"
+                    && request.url.path().ends_with("/responses")
+            })
+            .collect();
+        assert_eq!(model_requests.len(), 4);
+        let body = model_requests
+            .last()
+            .expect("final model request")
+            .body_json::<serde_json::Value>()?;
+        let output = body["input"]
+            .as_array()
+            .expect("model input")
+            .iter()
+            .find(|item| {
+                item["type"] == "function_call_output" && item["call_id"] == "patch-call-2"
+            })
+            .and_then(|item| item["output"].as_str())
+            .expect("second patch tool result");
+        assert!(
+            output.contains(
+                &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+            ),
+            "the second patch must report the exact unavailable legacy isolation"
+        );
+        assert_eq!(std::fs::read_to_string(&readme_path)?, "new line\n");
+    }
+
+    #[cfg(not(windows))]
+    {
+        let started_file_change_2 = timeout(DEFAULT_READ_TIMEOUT, async {
+            loop {
+                let started: ItemStartedNotification = mcp.read_notification("item/started").await?;
+                if let ThreadItem::FileChange { .. } = started.item {
+                    return Ok::<ThreadItem, anyhow::Error>(started.item);
+                }
+            }
+        })
+        .await??;
+        let ThreadItem::FileChange { id, status, .. } = started_file_change_2 else {
+            unreachable!("loop ensures we break on file change items");
+        };
+        assert_eq!(id, "patch-call-2");
+        assert_eq!(status, PatchApplyStatus::InProgress);
+
+        let completed_file_change = timeout(DEFAULT_READ_TIMEOUT, async {
+            loop {
+                match mcp.read_next_message().await? {
+                    JSONRPCMessage::Request(request) => {
+                        anyhow::bail!("unexpected approval request for session-approved patch: {request:?}");
+                    }
+                    JSONRPCMessage::Notification(notification)
+                        if notification.method == "item/completed" =>
+                    {
+                        let completed: ItemCompletedNotification = serde_json::from_value(
+                            notification.params.expect("item/completed params"),
+                        )?;
+                        if matches!(completed.item, ThreadItem::FileChange { ref id, .. } if id == "patch-call-2")
+                        {
+                            return Ok::<ItemCompletedNotification, anyhow::Error>(completed);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        })
+        .await??;
+        assert_eq!(completed_file_change.thread_id, thread.id);
+        assert_eq!(completed_file_change.turn_id, turn_2.id);
+        timeout(
+            DEFAULT_READ_TIMEOUT,
+            mcp.read_stream_until_notification_message("turn/completed"),
+        )
+        .await??;
+
+        assert_eq!(std::fs::read_to_string(readme_path)?, "updated line\n");
+    }
     let status = timeout(DEFAULT_READ_TIMEOUT, mcp.shutdown_gracefully()).await??;
     anyhow::ensure!(
         status.success(),

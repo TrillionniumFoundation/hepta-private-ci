@@ -370,7 +370,10 @@ impl FleetHarness {
     }
 }
 
-fn readiness_diagnostics(snapshot: Option<&AgentSupervisorSnapshot>, last_health: &str) -> String {
+pub(crate) fn readiness_diagnostics(
+    snapshot: Option<&AgentSupervisorSnapshot>,
+    last_health: &str,
+) -> String {
     let Some(snapshot) = snapshot else {
         return format!("supervisor snapshot missing; last_health={last_health}");
     };

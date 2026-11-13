@@ -262,7 +262,8 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
         });
     ensure!(
         last_exit.is_some_and(|exit| exit.success && exit.code == Some(0)),
-        "normal drain must keep control alive and exit successfully, not force recovery: {last_exit:?}"
+        "normal drain must keep control alive and exit successfully, not force recovery: {last_exit:?}; {}",
+        support::fleet::readiness_diagnostics(Some(&upgraded), &format!("{v2_health:?}"))
     );
     assert_peers_healthy_and_unchanged(&fleet, &agents[1..], &peer_baseline).await?;
 

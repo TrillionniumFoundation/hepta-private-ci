@@ -166,7 +166,7 @@ fn command() -> Vec<String> {
     .to_vec()
 }
 
-fn assert_unavailable<T>(result: Result<T>) {
+pub(crate) fn assert_unavailable<T>(result: Result<T>) {
     let Err(error) = result else {
         panic!("unqualified legacy backend admitted the request");
     };

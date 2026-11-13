@@ -165,25 +165,25 @@
       "package": "codex-windows-sandbox",
       "expectedTestCount": 7,
       "requiredTests": [
-        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "token::tests::workspace_token_refuses_multiple_capabilities_before_native_access",
         "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
         "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
         "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
-        "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch",
         "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
-        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+        "unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes"
       ],
-      "filter": "test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)"
+      "filter": "test(=token::tests::workspace_token_refuses_multiple_capabilities_before_native_access) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes)"
     },
     {
-      "id": "sandbox-native-delete-routes",
+      "id": "sandbox-legacy-delete-admission",
       "package": "codex-windows-sandbox",
       "expectedTestCount": 2,
       "requiredTests": [
-        "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
-        "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells"
+        "token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets",
+        "unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion"
       ],
-      "filter": "test(=token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells) | test(=unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells)"
+      "filter": "test(=token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets) | test(=unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion)"
     },
     {
       "id": "retained-windows-materialization",

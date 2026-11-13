@@ -117,8 +117,10 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
     let anchor = fixture.runner.product.holdout_anchor();
     let consumed = fixture.holdout_bytes();
     drop(fixture.runner);
+    let holdout_file = file(&fixture.directory.path().join("holdout"));
+    fixture.holdout_observer = checked(holdout_file.try_clone());
     let store = checked(LockedFileFinalHoldoutCasStoreV1::recover(
-        file(&fixture.directory.path().join("holdout")),
+        holdout_file,
         digest("binding"),
         Some(anchor),
     ));

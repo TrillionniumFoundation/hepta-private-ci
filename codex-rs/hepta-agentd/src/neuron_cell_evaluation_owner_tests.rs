@@ -100,13 +100,15 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
     let plan = checked(fixture.freeze());
     let config = signing_config(&plan);
     let path = fixture.directory.path().to_path_buf();
+    let signer_file = file(&path.join("original-evaluator"));
+    let signer_observer = checked(signer_file.try_clone());
     let mut signer = checked(OriginalCellEvaluationExecutionOwnerV1::create(
-        file(&path.join("original-evaluator")),
+        signer_file,
         witness(&path),
         config.clone(),
         SigningKey::from_bytes(&[78; 32]),
     ));
-    let empty = checked(std::fs::read(path.join("original-evaluator")));
+    let empty = checked(crate::test_support::read_file_bytes(&signer_observer));
     let mut executions = checked(LockedFileProductEvaluationExecutionStoreV1::create(
         file(&path.join("executions")),
         digest("execution-file"),
@@ -129,14 +131,16 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
         .principal(),
         &config.signer.principal,
     );
-    let bytes = checked(std::fs::read(path.join("original-evaluator")));
+    let bytes = checked(crate::test_support::read_file_bytes(&signer_observer));
     assert_ne!(bytes, empty);
     let original_calls = (fixture.provider.calls, fixture.provider.releases);
     let execution_anchor = executions.anchor();
     drop(signer);
     drop(executions);
+    let signer_file = file(&path.join("original-evaluator"));
+    let signer_observer = checked(signer_file.try_clone());
     let mut signer = checked(OriginalCellEvaluationExecutionOwnerV1::recover(
-        file(&path.join("original-evaluator")),
+        signer_file,
         witness(&path),
         config.clone(),
         SigningKey::from_bytes(&[78; 32]),
@@ -162,7 +166,7 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
         original_calls
     );
     assert_eq!(
-        checked(std::fs::read(path.join("original-evaluator"))),
+        checked(crate::test_support::read_file_bytes(&signer_observer)),
         bytes
     );
     drop(signer);
@@ -236,8 +240,10 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
                 Err(LearningOriginalOwnerErrorV1::CommitUncertain)
             ));
             drop(signer);
+            let signer_file = file(&path.join("original-evaluator"));
+            let signer_observer = checked(signer_file.try_clone());
             let mut reopened = checked(OriginalCellEvaluationExecutionOwnerV1::recover(
-                file(&path.join("original-evaluator")),
+                signer_file,
                 witness(&path),
                 config.clone(),
                 SigningKey::from_bytes(&[78; 32]),
@@ -251,7 +257,7 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
                 let original = checked(reopened.readback());
                 assert_eq!(checked(reopened.readback()), original);
             }
-            let before = checked(std::fs::read(path.join("original-evaluator")));
+            let before = checked(crate::test_support::read_file_bytes(&signer_observer));
             let calls = (fixture.provider.calls, fixture.provider.releases);
             assert!(matches!(
                 execute(&mut fixture, &plan, &config, &mut executions, &mut reopened),
@@ -260,7 +266,7 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
                 )),
             ));
             assert_eq!(
-                checked(std::fs::read(path.join("original-evaluator"))),
+                checked(crate::test_support::read_file_bytes(&signer_observer)),
                 before
             );
             assert_eq!((fixture.provider.calls, fixture.provider.releases), calls);

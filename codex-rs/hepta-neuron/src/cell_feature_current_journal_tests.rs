@@ -10,6 +10,22 @@ use crate::WitnessStoreError;
 use crate::cell_test_support as cell;
 use crate::commit_cell_step;
 use pretty_assertions::assert_eq;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+
+fn read_held_bytes(file: &mut std::fs::File) -> std::io::Result<Vec<u8>> {
+    // A duplicate of the original file shares its cursor. Restore it even if the read fails.
+    let original_cursor = file.stream_position()?;
+    let mut bytes = Vec::new();
+    let read_result = file
+        .seek(SeekFrom::Start(0))
+        .and_then(|_| file.read_to_end(&mut bytes));
+    let restore_result = file.seek(SeekFrom::Start(original_cursor));
+    read_result?;
+    restore_result?;
+    Ok(bytes)
+}
 
 #[path = "cell_feature_current_readback_tests.rs"]
 mod readback;
@@ -219,6 +235,7 @@ fn published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_
         )
     );
     assert_eq!(owner.pending_inference(&expected.scope).unwrap(), None);
+    drop(owner);
     assert_eq!(files.bytes(), bytes);
 }
 
@@ -227,8 +244,10 @@ fn published_feature_revoked_admission_does_not_create_pending_work() {
     let files = Files::new();
     let (specs, binding) = profile();
     let current = Arc::new(Current(Mutex::new((Some(binding.clone()), None))));
+    let file = files.file("journal");
+    let mut observation = file.try_clone().expect("retain original feature journal");
     let mut owner = CellOwnerJournalV1::open_guarded(
-        files.file("journal"),
+        file,
         files.witness(),
         specs,
         /*max_records*/ 16,
@@ -246,13 +265,13 @@ fn published_feature_revoked_admission_does_not_create_pending_work() {
     .unwrap();
     let admission =
         crate::cell_inference::admission_for_step(&prepared, /*now_micros*/ 11).unwrap();
-    let before = files.bytes();
+    let before = read_held_bytes(&mut observation).unwrap();
     *current.0.lock().unwrap() = (None, None);
     assert_eq!(
         owner.admit_inference(admission),
         Err(CellExecutionError::OwnerUnavailable)
     );
-    assert_eq!(files.bytes(), before);
+    assert_eq!(read_held_bytes(&mut observation).unwrap(), before);
     *current.0.lock().unwrap() = (Some(binding), None);
     assert_eq!(
         owner.pending_inference(&cell::scope("feature")).unwrap(),

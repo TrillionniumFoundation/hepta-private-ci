@@ -4,8 +4,10 @@
 use super::*;
 use std::fs;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -17,6 +19,7 @@ static NEXT: AtomicU64 = AtomicU64::new(0);
 
 struct OriginalCase {
     path: PathBuf,
+    observation: std::fs::File,
     fixture: Fixture,
     frozen: ProductFrozenEvaluationPlanV1,
     runner: ProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
@@ -35,6 +38,7 @@ impl OriginalCase {
             .write(true)
             .open(&path)
             .unwrap_or_else(|error| panic!("create original holdout fixture: {error}"));
+        let observation = file.try_clone().expect("retain original holdout handle");
         let fixture = fixture();
         let frozen = freeze_product_evaluation_plan_v1(
             fixture.cross_fold.clone(),
@@ -63,6 +67,7 @@ impl OriginalCase {
         );
         Self {
             path,
+            observation,
             fixture,
             frozen,
             runner: ProductEvaluationRunnerV1::new(owner),
@@ -71,7 +76,7 @@ impl OriginalCase {
 
     fn provider(&mut self, mode: ReleaseMode) -> OriginalProvider {
         OriginalProvider {
-            path: self.path.clone(),
+            observation: self.observation.try_clone().expect("observe original holdout"),
             plan: self.frozen.frozen_plan.clone(),
             inputs: self.fixture.provider.inputs.take(),
             mode,
@@ -111,7 +116,7 @@ enum ReleaseMode {
 }
 
 struct OriginalProvider {
-    path: PathBuf,
+    observation: std::fs::File,
     plan: CrossFoldPlanReceiptV1,
     inputs: Option<TemporalComparisonInputsV1>,
     mode: ReleaseMode,
@@ -125,36 +130,51 @@ struct OriginalProvider {
     original_bytes: Option<Vec<u8>>,
 }
 
-fn overwrite(path: &Path, bytes: &[u8]) {
-    let mut file = OpenOptions::new()
-        .write(true)
-        .open(path)
-        .unwrap_or_else(|error| panic!("open original inode for physical fault: {error}"));
-    file.write_all(bytes)
+fn read_held_bytes(file: &mut std::fs::File) -> std::io::Result<Vec<u8>> {
+    // A duplicate of the original file shares its cursor. Restore it even if the read fails.
+    let original_cursor = file.stream_position()?;
+    let mut bytes = Vec::new();
+    let read_result = file
+        .seek(SeekFrom::Start(0))
+        .and_then(|_| file.read_to_end(&mut bytes));
+    let restore_result = file.seek(SeekFrom::Start(original_cursor));
+    read_result?;
+    restore_result?;
+    Ok(bytes)
+}
+
+fn overwrite(file: &mut std::fs::File, bytes: &[u8]) {
+    let original_cursor = file.stream_position().expect("original holdout cursor");
+    let write_result = file
+        .seek(SeekFrom::Start(0))
+        .and_then(|_| file.write_all(bytes))
         .and_then(|()| file.set_len(bytes.len() as u64))
-        .and_then(|()| file.sync_all())
-        .unwrap_or_else(|error| panic!("persist actual fault or restoration: {error}"));
+        .and_then(|()| file.sync_all());
+    let restore_result = file.seek(SeekFrom::Start(original_cursor));
+    write_result.unwrap_or_else(|error| panic!("persist actual fault or restoration: {error}"));
+    restore_result.unwrap_or_else(|error| panic!("restore original holdout cursor: {error}"));
 }
 
 impl OriginalProvider {
     fn corrupt(&mut self) {
-        let original = fs::read(&self.path)
+        let original = read_held_bytes(&mut self.observation)
             .unwrap_or_else(|error| panic!("read original bytes before fault: {error}"));
         let mut corrupted = original.clone();
         corrupted[0] ^= 1;
         assert_eq!(corrupted.len(), original.len());
-        overwrite(&self.path, &corrupted);
+        overwrite(&mut self.observation, &corrupted);
         self.original_bytes = Some(original);
     }
 
-    fn restore(&self) {
+    fn restore(&mut self) {
         let original = self
             .original_bytes
             .as_ref()
             .unwrap_or_else(|| panic!("the first corrupting call did not execute"));
-        overwrite(&self.path, original);
+        overwrite(&mut self.observation, original);
         assert_eq!(
-            fs::read(&self.path).unwrap_or_else(|error| panic!("read restoration: {error}")),
+            read_held_bytes(&mut self.observation)
+                .unwrap_or_else(|error| panic!("read restoration: {error}")),
             *original
         );
     }

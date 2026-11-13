@@ -280,6 +280,7 @@ pub(super) struct Fixture {
     pub(super) candidate_temporal: TemporalEvaluationPlan,
     pub(super) baseline_temporal: TemporalEvaluationPlan,
     pub(super) provider: Provider,
+    pub(super) holdout_observer: File,
     pub(super) directory: tempfile::TempDir,
 }
 impl Fixture {
@@ -304,8 +305,10 @@ impl Fixture {
             digest("fixed-bundle").into_array(),
         );
         let path = directory.path().join("holdout");
+        let holdout_file = file(&path);
+        let holdout_observer = checked(holdout_file.try_clone());
         let store = checked(LockedFileFinalHoldoutCasStoreV1::create(
-            file(&path),
+            holdout_file,
             digest("binding"),
         ));
         let owner = checked(FencedFinalHoldoutOwnerV1::initialize(
@@ -331,6 +334,7 @@ impl Fixture {
                 path,
                 initial_bytes,
             },
+            holdout_observer,
             directory,
         }
     }
@@ -366,6 +370,6 @@ impl Fixture {
         )
     }
     pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+        checked(crate::test_support::read_file_bytes(&self.holdout_observer))
     }
 }

@@ -3,6 +3,7 @@
 
 #![cfg(test)]
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -10,6 +11,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
@@ -277,6 +279,7 @@ fn sign(
 }
 
 pub(super) struct LedgerFixture {
+    observers: Mutex<BTreeMap<String, File>>,
     directory: tempfile::TempDir,
 }
 
@@ -291,16 +294,19 @@ impl LedgerFixture {
                     .open(directory.path().join(name)),
             );
         }
-        Self { directory }
+        Self { observers: Mutex::new(BTreeMap::new()), directory }
     }
 
     fn file(&self, name: &str) -> File {
-        checked(
+        let file = checked(
             OpenOptions::new()
                 .read(true)
                 .write(true)
                 .open(self.directory.path().join(name)),
-        )
+        );
+        let _ = checked(self.observers.lock())
+            .insert(name.to_owned(), checked(file.try_clone()));
+        file
     }
 
     fn directory(&self) -> File {
@@ -351,10 +357,13 @@ impl LedgerFixture {
     }
 
     pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(fs::read(self.directory.path().join("ledger"))),
-            checked(fs::read(self.directory.path().join("witness"))),
-        ]
+        let observers = checked(self.observers.lock());
+        ["ledger", "witness"].map(|name| {
+            let file = observers
+                .get(name)
+                .unwrap_or_else(|| panic!("ledger owner has not opened {name}"));
+            checked(crate::test_support::read_file_bytes(file))
+        })
     }
 }
 

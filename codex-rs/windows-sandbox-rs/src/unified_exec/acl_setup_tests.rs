@@ -343,25 +343,10 @@ impl AclSetupFailureFixture {
     }
 
     fn assert_rejected(&self, error: anyhow::Error) {
-        assert_eq!(
-            (
-                error.to_string(),
-                // ACL repair retains one WRITE_DAC handle. This fixture must
-                // fail at that open, before any native setter or child spawn.
-                error
-                    .root_cause()
-                    .downcast_ref::<std::io::Error>()
-                    .and_then(std::io::Error::raw_os_error),
-                self.marker.try_exists().expect("inspect process marker"),
-            ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                Some(ERROR_ACCESS_DENIED as i32),
-                false,
-            ),
+        crate::legacy_admission_tests::assert_unavailable::<()>(Err(error));
+        assert!(
+            !self.marker.try_exists().expect("inspect process marker"),
+            "legacy admission must refuse before ACL setup or child launch"
         );
     }
 }
@@ -397,7 +382,7 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
             }
             Err(error) => Err(error),
         };
-        fixture.assert_rejected(result.expect_err("ACL setup failure must prevent session spawn"));
+        fixture.assert_rejected(result.expect_err("legacy admission must refuse before ACL setup or session spawn"));
     });
 }
 
@@ -422,6 +407,6 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     fixture.assert_rejected(
         result
             .map(|_| ())
-            .expect_err("ACL setup failure must prevent capture spawn"),
+            .expect_err("legacy admission must refuse before ACL setup or capture spawn"),
     );
 }

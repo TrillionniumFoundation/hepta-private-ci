@@ -82,6 +82,21 @@ pub(crate) fn is_unsupported_restricted_token_host<T>(result: &std::io::Result<T
     })
 }
 
+#[cfg(windows)]
+pub(crate) fn assert_legacy_windows_sandbox_unavailable<T>(result: &std::io::Result<T>) {
+    let error = result
+        .as_ref()
+        .err()
+        .expect("legacy Windows sandbox admission must refuse the request");
+    assert_eq!(error.kind(), std::io::ErrorKind::Other);
+    assert!(
+        error.to_string().ends_with(
+            "windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+        ),
+        "unexpected filesystem error: {error}"
+    );
+}
+
 pub(crate) fn absolute_path(path: std::path::PathBuf) -> AbsolutePathBuf {
     assert!(
         path.is_absolute(),

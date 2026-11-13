@@ -229,8 +229,10 @@ fn completed_cell_execution_reopens_with_original_evaluator() {
     let minimum = test.executions.inner.anchor();
     drop(test.fixture.runner);
     drop(test.executions);
+    let holdout_file = file(&test.fixture.directory.path().join("holdout"));
+    test.fixture.holdout_observer = checked(holdout_file.try_clone());
     let store = checked(LockedFileFinalHoldoutCasStoreV1::recover(
-        file(&test.fixture.directory.path().join("holdout")),
+        holdout_file,
         digest("binding"),
         Some(anchor),
     ));
@@ -435,9 +437,11 @@ fn stale_cell_owner_cannot_read_completed_signed_execution() {
     checked(test.run());
     let anchor = test.fixture.runner.product.holdout_anchor();
     drop(test.fixture.runner);
+    let holdout_file = file(&test.fixture.directory.path().join("holdout"));
+    test.fixture.holdout_observer = checked(holdout_file.try_clone());
     let store = SharedHoldout(Arc::new(Mutex::new(checked(
         LockedFileFinalHoldoutCasStoreV1::recover(
-            file(&test.fixture.directory.path().join("holdout")),
+            holdout_file,
             digest("binding"),
             Some(anchor),
         ),

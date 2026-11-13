@@ -343,3 +343,22 @@ fn now_seconds() -> TestResult<i64> {
     let seconds = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     Ok(i64::try_from(seconds)?)
 }
+
+/// Observe an idle test owner's original file without reopening its locked path.
+#[cfg(test)]
+pub(crate) fn read_file_bytes(file: &std::fs::File) -> std::io::Result<Vec<u8>> {
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
+
+    let mut observer = file.try_clone()?;
+    let position = observer.stream_position()?;
+    let mut bytes = Vec::new();
+    let read = observer
+        .seek(SeekFrom::Start(0))
+        .and_then(|_| observer.read_to_end(&mut bytes));
+    let restore = observer.seek(SeekFrom::Start(position));
+    read?;
+    restore?;
+    Ok(bytes)
+}

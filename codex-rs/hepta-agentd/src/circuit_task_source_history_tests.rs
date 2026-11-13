@@ -84,9 +84,11 @@ async fn history_reopens_original_publication_without_a_writer_or_runtime() -> a
         )
         .is_err()
     );
+    let witness_file = opened(root.path(), "source-witness")?;
+    let witness_observer = witness_file.try_clone()?;
     let mut history = HistoricalCircuitTaskSourceV1::open(
         File::open(root.path().join("source-journal"))?,
-        NoWriteWitness(witness(root.path(), "source-witness")?),
+        NoWriteWitness(witness_from_file(witness_file, "source-witness")?),
         &identity,
         &fence,
         &registry()?,
@@ -111,7 +113,13 @@ async fn history_reopens_original_publication_without_a_writer_or_runtime() -> a
             "cell-witness"
         ]
         .into_iter()
-        .map(|name| fs::read(root.path().join(name)))
+        .map(|name| {
+            if name == "source-witness" {
+                crate::test_support::read_file_bytes(&witness_observer)
+            } else {
+                fs::read(root.path().join(name))
+            }
+        })
         .collect::<std::io::Result<Vec<_>>>()?,
         original
     );

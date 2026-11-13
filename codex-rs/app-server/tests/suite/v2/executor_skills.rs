@@ -13,10 +13,18 @@ use codex_app_server_protocol::SelectedCapabilityRoot;
 use codex_app_server_protocol::ServerRequest;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
+use codex_app_server_protocol::TurnEnvironmentParams;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::UserInput;
 use codex_app_server_protocol::WarningNotification;
 use codex_exec_server::CreateDirectoryOptions;
+use codex_exec_server::FileSystemSandboxContext;
+use codex_protocol::models::PermissionProfile;
+use codex_protocol::permissions::FileSystemAccessMode;
+use codex_protocol::permissions::FileSystemPath;
+use codex_protocol::permissions::FileSystemSandboxEntry;
+use codex_protocol::permissions::FileSystemSandboxPolicy;
+use codex_protocol::permissions::NetworkSandboxPolicy;
 use codex_utils_path_uri::PathUri;
 use core_test_support::responses;
 use core_test_support::skip_if_remote;
@@ -159,12 +167,15 @@ stream_max_retries = 0
         .await?;
     let auto_env = app_server.auto_env()?;
     let environment_id = auto_env.selection().environment_id.clone();
-    let plugin_dir = auto_env.selection().cwd.join("plugin")?;
+    let file_system = auto_env.environment().get_filesystem();
+    let fixture_cwd = file_system
+        .canonicalize(&auto_env.selection().cwd, /*sandbox*/ None)
+        .await?;
+    let plugin_dir = fixture_cwd.join("plugin")?;
     let manifest_dir = plugin_dir.join(".codex-plugin")?;
     let skill_dir = plugin_dir.join("skills/deploy")?;
     let agents_dir = skill_dir.join("agents")?;
     let reference_dir = skill_dir.join("references")?;
-    let file_system = auto_env.environment().get_filesystem();
     for directory in [&manifest_dir, &agents_dir, &reference_dir] {
         file_system
             .create_directory(
@@ -217,10 +228,52 @@ stream_max_retries = 0
         ),
         file_system.write_file(
             &reference_path,
-            reference_contents.into_bytes(),
+            reference_contents.as_bytes().to_vec(),
             Default::default(), /*sandbox*/ None,
         ),
     )?;
+    // Establish the result for one valid reference before arranging any denied symlink.
+    // A typed Unsupported response is distinct from a permissions or fixture failure.
+    let file_system_policy = if restricted {
+        FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
+            FileSystemPath::Path {
+                path: fixture_cwd.clone(),
+            },
+            FileSystemAccessMode::Read,
+        )])
+    } else {
+        FileSystemSandboxPolicy::read_only()
+    };
+    let sandbox = FileSystemSandboxContext::from_permission_profile_with_cwd(
+        PermissionProfile::from_runtime_permissions(
+            &file_system_policy,
+            NetworkSandboxPolicy::Restricted,
+        ),
+        fixture_cwd.clone(),
+    );
+    let advertised_stable_read = auto_env
+        .environment()
+        .info()
+        .await?
+        .capabilities
+        .stable_handle_authorized_read;
+    let reference_read_supported = match file_system
+        .read_file_bounded_authorized(&reference_path, &sandbox, reference_contents.len())
+        .await
+    {
+        Ok(bytes) => {
+            assert_eq!(bytes, reference_contents.as_bytes());
+            true
+        }
+        Err(error) => {
+            assert!(
+                !advertised_stable_read,
+                "an executor advertising stable authorized reads must read this valid reference"
+            );
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+            false
+        }
+    };
     #[cfg(unix)]
     if scenario == ExecutorSkillScenario::RestrictedDeniedReference {
         let external_reference_dir = codex_home.path().join("external-reference");
@@ -379,8 +432,13 @@ stream_max_retries = 0
     timeout(READ_TIMEOUT, app_server.initialize()).await??;
 
     let request_id = app_server
-        .send_thread_start_request_with_auto_env(ThreadStartParams {
+        .send_thread_start_request(ThreadStartParams {
             model: Some("mock-model".to_string()),
+            environments: Some(vec![TurnEnvironmentParams {
+                environment_id: environment_id.clone(),
+                cwd: fixture_cwd.clone().into(),
+                runtime_workspace_roots: Some(vec![fixture_cwd.into()]),
+            }]),
             selected_capability_roots: Some(vec![SelectedCapabilityRoot {
                 id: "demo-plugin@1".to_string(),
                 location: CapabilityRootLocation::Environment {
@@ -584,7 +642,18 @@ stream_max_retries = 0
         let approved_reference_output = requests[5]
             .function_call_output_text("approved-reference")
             .expect("approved skill reference output");
-        assert!(approved_reference_output.contains(REFERENCE_MARKER));
+        if reference_read_supported {
+            assert!(approved_reference_output.contains(REFERENCE_MARKER));
+        } else {
+            assert_eq!(approved_reference_output, "failed to read skill resource");
+            assert!(!approved_reference_output.contains(REFERENCE_MARKER));
+            assert!(!approved_reference_output.contains("DENIED_REFERENCE_MARKER"));
+        }
+        return Ok(());
+    }
+    if !reference_read_supported {
+        assert_eq!(reference_output_text, "failed to read skill resource");
+        assert!(!reference_output_text.contains(REFERENCE_MARKER));
         return Ok(());
     }
     let reference_output = serde_json::from_str::<serde_json::Value>(&reference_output_text)?;

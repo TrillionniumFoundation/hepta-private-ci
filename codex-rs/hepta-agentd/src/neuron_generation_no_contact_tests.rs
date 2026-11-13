@@ -177,8 +177,11 @@ fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
 }
 
 fn durable_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
-    ["generation-journal", "generation-witness", CONTROL_FILE]
-        .map(|name| checked(fs::read(fixture.directory.path().join(name))))
+    [
+        fixture.bytes("generation-journal"),
+        fixture.bytes("generation-witness"),
+        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
+    ]
 }
 
 #[tokio::test]

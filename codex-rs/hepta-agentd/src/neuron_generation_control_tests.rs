@@ -1,7 +1,6 @@
 //! Real private socket, Fleet fence, service queue, journal and witness tests.
 //! The file control fixture isolates transport/recovery from model quality.
 
-use std::fs;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
@@ -175,13 +174,12 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let durable = fs::read(&journal_path)?;
+    let durable = fixture.bytes("generation-journal");
     assert_eq!(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(fixture.bytes("generation-journal"), durable);
     assert!(status(&serving.client).await?.drained);
 
     fixture.ticks.store(20_000, Ordering::SeqCst);
@@ -195,7 +193,7 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         reopened.client.generation(acknowledgement).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(fixture.bytes("generation-journal"), durable);
     let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
         return Err(std::io::Error::other("expected task cost").into());
     };
@@ -216,15 +214,14 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     let fixture = Fixture::new().await;
     let serving = Serving::start(&fixture).await?;
     let initial = status(&serving.client).await?;
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let pristine = fs::read(&journal_path)?;
+    let pristine = fixture.bytes("generation-journal");
     let mut oversized = step(&fixture, &initial, "oversized");
     let Request::Step { request } = &mut oversized else {
         unreachable!()
     };
     request.input = vec![1; MAX_GENERATION_CONTROL_INPUT_BYTES + 1];
     assert!(serving.client.generation(oversized).await.is_err());
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(fixture.bytes("generation-journal"), pristine);
     let stale_client = AgentdClient::new(
         fixture.directory.path().join("generation.ctl"),
         fixture.identity.agent_id.clone(),
@@ -236,10 +233,10 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(fixture.bytes("generation-journal"), pristine);
     let original = step(&fixture, &initial, "same-client-key");
     serving.client.generation(original.clone()).await?;
-    let committed = fs::read(&journal_path)?;
+    let committed = fixture.bytes("generation-journal");
     let mut changed = original;
     let Request::Step { request } = &mut changed else {
         unreachable!()
@@ -260,7 +257,7 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     ] {
         assert!(serving.client.generation(request).await.is_err());
     }
-    assert_eq!(fs::read(&journal_path)?, committed);
+    assert_eq!(fixture.bytes("generation-journal"), committed);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }
@@ -418,7 +415,7 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
     };
     owner.step(typed, fixture.clock())?;
     drop(owner);
-    let before = fs::read(fixture.directory.path().join("generation-journal"))?;
+    let before = fixture.bytes("generation-journal");
     let serving = Serving::start(&fixture).await?;
     assert!(
         serving
@@ -430,7 +427,7 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
             .is_err()
     );
     assert_eq!(
-        fs::read(fixture.directory.path().join("generation-journal"))?,
+        fixture.bytes("generation-journal"),
         before
     );
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
@@ -492,8 +489,7 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
         .signals
         .readable
         .store(true, Ordering::SeqCst);
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let before = fs::read(&journal_path)?;
+    let before = fixture.bytes("generation-journal");
     let serving = Serving::start(&fixture).await?;
     assert_eq!(
         status(&serving.client).await?.pending,
@@ -508,7 +504,7 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, before);
+    assert_eq!(fixture.bytes("generation-journal"), before);
     assert_eq!(
         status(&serving.client).await?.pending,
         Some(pending.clone())

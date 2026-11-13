@@ -1,4 +1,5 @@
 use std::fs;
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -23,14 +24,14 @@ fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
 }
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
-struct Fixture(PathBuf);
+struct Fixture(PathBuf, Mutex<Option<File>>);
 impl Fixture {
     fn new() -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
         let path =
             std::env::temp_dir().join(format!("agentd-generation-{}-{serial}", std::process::id()));
         checked(fs::create_dir(&path));
-        Self(path)
+        Self(path, Mutex::new(None))
     }
     fn owner(&self, model: Model) -> AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model> {
         let file = |name: &str| {
@@ -95,8 +96,10 @@ impl Fixture {
             prefix: Vec::new(),
             stopped: false,
         };
+        let journal_file = file("journal");
+        let journal_observer = checked(journal_file.try_clone());
         let journal = checked(CellGenerationJournalV2::open(
-            file("journal"),
+            journal_file,
             witness,
             CellGenerationConfigV2 {
                 manifest,
@@ -106,11 +109,24 @@ impl Fixture {
             },
             /*max_records*/ 64,
         ));
+        *checked(self.1.lock()) = Some(journal_observer);
         AgentdNeuronGenerationOwnerV2::new(journal, model)
+    }
+
+    fn journal_bytes(&self) -> Vec<u8> {
+        let observer = checked(self.1.lock());
+        match observer.as_ref() {
+            Some(file) => checked(crate::test_support::read_file_bytes(file)),
+            None => panic!("open the generation owner before inspecting its journal"),
+        }
     }
 }
 impl Drop for Fixture {
     fn drop(&mut self) {
+        self.1
+            .get_mut()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .take();
         let _ = fs::remove_dir_all(&self.0);
     }
 }
@@ -306,24 +322,24 @@ fn expiration_during_admission_settles_known_no_contact_without_calling_model() 
     );
     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = fixture.journal_bytes();
     assert_eq!(
         checked(owner.step(req.clone(), || panic!(
             "exact replay must not sample a clock"
         ))),
         receipt
     );
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(fixture.journal_bytes(), journal_bytes);
     assert!(checked(owner.drain()));
     drop(owner);
     let mut owner = fixture.owner(model.clone());
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = fixture.journal_bytes();
     assert_eq!(
         checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
         receipt
     );
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(fixture.journal_bytes(), journal_bytes);
     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
 }
 

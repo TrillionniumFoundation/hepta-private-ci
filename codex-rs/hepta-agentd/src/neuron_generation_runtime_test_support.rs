@@ -3,13 +3,16 @@
 
 #![cfg(test)]
 
+use std::collections::BTreeMap;
 use std::fs;
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::future::Future;
 use std::io::Write;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::AtomicUsize;
@@ -180,6 +183,7 @@ pub(super) fn request(
 }
 
 pub(super) struct Fixture {
+    observers: Mutex<BTreeMap<String, File>>,
     pub directory: tempfile::TempDir,
     pub identity: AgentdIdentity,
     pub registry: FleetRegistry,
@@ -236,6 +240,7 @@ impl Fixture {
         };
         let config = journal_config(identity.agent_id.as_str());
         let fixture = Self {
+            observers: Mutex::new(BTreeMap::new()),
             directory,
             identity,
             registry,
@@ -311,8 +316,11 @@ impl Fixture {
             options.write(true);
             checked(options.open(self.directory.path().join(name)))
         };
+        let witness_name = format!("{stem}-witness");
+        let witness_file = open(&witness_name);
+        let witness_observer = checked(witness_file.try_clone());
         let witness = checked(FileAnchorWitnessStore::open(
-            open(&format!("{stem}-witness")),
+            witness_file,
             JournalScope {
                 scope_digest: Digest32::of_bytes(b"generation-service"),
                 objective_digest: Digest32::of_bytes(b"generation-task"),
@@ -320,12 +328,28 @@ impl Fixture {
             generation(1),
             /*max_records*/ 256,
         ));
-        checked(CellGenerationJournalV2::open(
-            open(&format!("{stem}-journal")),
+        let journal_name = format!("{stem}-journal");
+        let journal_file = open(&journal_name);
+        let journal_observer = checked(journal_file.try_clone());
+        let journal = checked(CellGenerationJournalV2::open(
+            journal_file,
             witness,
             config,
             /*max_records*/ 256,
-        ))
+        ));
+        checked(self.observers.lock()).extend([
+            (journal_name, journal_observer),
+            (witness_name, witness_observer),
+        ]);
+        journal
+    }
+
+    pub(super) fn bytes(&self, name: &str) -> Vec<u8> {
+        let observers = checked(self.observers.lock());
+        let file = observers
+            .get(name)
+            .unwrap_or_else(|| panic!("fixture owner has not opened {name}"));
+        checked(crate::test_support::read_file_bytes(file))
     }
 
     pub(super) fn clock(&self) -> impl FnMut() -> u64 + Send + 'static {

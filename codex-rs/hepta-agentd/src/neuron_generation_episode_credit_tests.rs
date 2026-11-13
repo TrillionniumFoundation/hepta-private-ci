@@ -107,9 +107,7 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
     };
     assert_eq!(partial.disposition, AppendDisposition::Appended);
     assert_eq!(checked(writer.records()).len(), 2);
-    let generation_after = checked(std::fs::read(
-        fixture.directory.path().join("generation-journal"),
-    ));
+    let generation_after = fixture.bytes("generation-journal");
     tasks.shutdown().await;
     drop(handle);
     drop(writer);
@@ -166,9 +164,7 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
     assert_eq!(replay.closure_digest, recovered.closure_digest);
     assert_eq!(ledger_fixture.bytes(), after);
     assert_eq!(
-        checked(std::fs::read(
-            fixture.directory.path().join("generation-journal")
-        )),
+        fixture.bytes("generation-journal"),
         generation_after
     );
     assert_eq!(control.calls.load(Ordering::SeqCst), 1);
