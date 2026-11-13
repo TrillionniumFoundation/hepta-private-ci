@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-n256-independent-oracle-source-readback-v1",
+  "source_commit": "77f344bfd662630e8a93572cd5deba672a8e70b1",
+  "pull_request": 6300,
+  "workflow_run": 43400466515,
+  "workflow_job": 131801744012,
+  "workflow_conclusion": "success",
+  "artifact_id": 14024796808,
+  "artifact_size_bytes": 1717,
+  "artifact_sha256": "bc825c0223ae2e42f2e0ecf8f146afbc1e81508f1f385217eb6491479602ac76",
+  "members": {
+    "COUNTS.json": "83f652c43140ec1e40be7c90c053b2891008b4af2eb6f73d322791b571c193ce",
+    "REPORT.json": "70f87cd4f4b7c176a851b3538f30bac0ac26a79a1c3f4938060ef1863fe141e5",
+    "TEST_STDERR.txt": "65852ec6cd8357a329600b56fd103cfa95f039c8a9b950f1c686680e14713c8b",
+    "TEST_STDOUT.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+  "status": "PASS_SOURCE_ONLY_HOLD_NUMERICAL",
+  "counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "oracle_numerical_qualification": false,
+  "largegrid_qualification": false,
+  "all_closed": false
+}
