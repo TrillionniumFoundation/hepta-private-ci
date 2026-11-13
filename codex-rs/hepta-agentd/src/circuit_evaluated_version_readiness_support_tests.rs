@@ -203,5 +203,55 @@ fn record_readiness_failure(stage: ReadinessDiagnosticStage, error: &Error) {
             }
         };
         let _ = std::io::Write::write(&mut stderr, nested);
+
+        if let PublicationError::Evaluation(evaluation) = original {
+            use crate::OriginalCellEvaluationCommandErrorV1 as EvaluationError;
+
+            // Classify the borrowed variant without exposing its data.
+            // One more write can block and delay error cleanup; original bounds still apply.
+            let detail: &[u8] = match evaluation {
+                EvaluationError::Binding(_) => b"owner_diag_v3 stage=version_eval class=binding\n",
+                EvaluationError::Unavailable => {
+                    b"owner_diag_v3 stage=version_eval class=unavailable\n"
+                }
+                EvaluationError::CommitUncertain => {
+                    b"owner_diag_v3 stage=version_eval class=commit_uncertain\n"
+                }
+                EvaluationError::ReadbackRequired => {
+                    b"owner_diag_v3 stage=version_eval class=readback_required\n"
+                }
+                EvaluationError::Busy => b"owner_diag_v3 stage=version_eval class=busy\n",
+                EvaluationError::Missing => b"owner_diag_v3 stage=version_eval class=missing\n",
+                EvaluationError::Pending => b"owner_diag_v3 stage=version_eval class=pending\n",
+                EvaluationError::PredecessorUnavailable => {
+                    b"owner_diag_v3 stage=version_eval class=predecessor_unavailable\n"
+                }
+                EvaluationError::DeadlineExceeded => {
+                    b"owner_diag_v3 stage=version_eval class=deadline_exceeded\n"
+                }
+                EvaluationError::Transport(_) => {
+                    b"owner_diag_v3 stage=version_eval class=transport\n"
+                }
+                EvaluationError::Receipt(_) => b"owner_diag_v3 stage=version_eval class=receipt\n",
+                EvaluationError::Panel(_) => b"owner_diag_v3 stage=version_eval class=panel\n",
+                EvaluationError::Qualification(_) => {
+                    b"owner_diag_v3 stage=version_eval class=qualification\n"
+                }
+                EvaluationError::Journal(_) => b"owner_diag_v3 stage=version_eval class=journal\n",
+                EvaluationError::Iteration(_) => {
+                    b"owner_diag_v3 stage=version_eval class=iteration\n"
+                }
+                EvaluationError::Evidence(_) => {
+                    b"owner_diag_v3 stage=version_eval class=evidence\n"
+                }
+                EvaluationError::Checkpoint(_) => {
+                    b"owner_diag_v3 stage=version_eval class=checkpoint\n"
+                }
+                EvaluationError::Encoding(_) => {
+                    b"owner_diag_v3 stage=version_eval class=encoding\n"
+                }
+            };
+            let _ = std::io::Write::write(&mut stderr, detail);
+        }
     }
 }
