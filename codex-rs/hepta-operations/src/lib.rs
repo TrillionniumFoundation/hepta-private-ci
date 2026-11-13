@@ -20,8 +20,8 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
-mod sqlite;
 mod split_receipt_gate;
+mod sqlite;
 
 pub use cell_split_receipt_gate::CellSplitReceiptGate;
 pub use cell_split_receipt_gate::SplitGateError;
