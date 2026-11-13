@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-n256-sparse-dynamic-source-freeze-v1",
+  "identity": "hcsn-n256-sparse-dynamic-source-20261113-c06d-001",
+  "base_commit": "cc85c55f71939b1a1857774a419bb173a692c577",
+  "parent_draft": 6297,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-sparse-dynamic-intent.yml": "1ea01d528bf9e64904f77d8d152ac9c8f9a29a54e3b57b945b7d5214ad877249",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/__init__.py": "1844e1c5cca8b7ed9a3f332d0488cede4ec29fc7284e1a3e6aff65536afd5abe",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/admission.py": "37cb6b1cae1e05f07e12a91cba4d2643263e6aae97ef3f1c564b7f438f4f6514",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/sparse_dynamic.py": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/static_inspector.py": "778d8eb33b4c407aa66bda13b7deea0625abc02d42e7c9c48e064eb7eb889f34",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/test_static.py": "4b70b5a776202d6ec7488dc19cb2f31e49c255ef3371469f0418e0707ef02d59",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/REQUEST.json": "02b535c78d6afba2a072f0a707556f73a2b62d245eb716f3d7267b3387eb2d5f",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/README.md": "9cbc319b573791302614aca8a1def02b1b097734408127904e3c99aa8461599d"
+  },
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "implementation": {
+    "candidate": "sparse scipy.sparse.linalg.expm_multiply action",
+    "dense_expm_forbidden": true,
+    "lazy_numeric_import_after_admission": true,
+    "warm_coarse_cold_schedule": true,
+    "complete_conceptual_denominator": 18225028
+  },
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "unresolved": [
+    "runtime profile",
+    "current host and ancestor-cgroup snapshots",
+    "allocation, concurrency, and calendar",
+    "independent numerical oracle source",
+    "canonical serializer and cold loader source",
+    "N256 numerical execution and full-state comparison"
+  ],
+  "status": "PASS_SOURCE_ONLY_HOLD_NUMERICAL",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

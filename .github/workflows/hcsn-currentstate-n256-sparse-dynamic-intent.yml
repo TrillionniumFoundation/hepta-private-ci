@@ -1,0 +1,67 @@
+name: hcsn-currentstate-n256-sparse-dynamic-intent
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_sparse_dynamic_intent/**"
+      - ".github/workflows/hcsn-currentstate-n256-sparse-dynamic-intent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-source-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify fail-closed source without numerical imports
+        run: |
+          set -euo pipefail
+          mkdir -p qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact
+          /usr/bin/time -v python -m unittest \
+            qualification.hcsn_currentstate_n256_sparse_dynamic_intent.test_static -v \
+            > qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact/TEST_STDOUT.txt \
+            2> qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact/TEST_STDERR.txt
+          python qualification/hcsn_currentstate_n256_sparse_dynamic_intent/static_inspector.py \
+            --source qualification/hcsn_currentstate_n256_sparse_dynamic_intent/sparse_dynamic.py \
+            --admission qualification/hcsn_currentstate_n256_sparse_dynamic_intent/admission.py \
+            --request qualification/hcsn_currentstate_n256_sparse_dynamic_intent/REQUEST.json \
+            > qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact/REPORT.json
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          report = json.loads(Path("qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact/REPORT.json").read_text())
+          if report["status"] != "PASS_SOURCE_ONLY_HOLD_NUMERICAL":
+              raise SystemExit("unexpected status")
+          if any(name in sys.modules for name in ("numpy", "scipy")):
+              raise SystemExit("numeric module imported by static admission")
+          Path("qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact/COUNTS.json").write_text(
+              json.dumps(
+                  {
+                      "dynamic_runs": 0,
+                      "matrix_exponential_actions": 0,
+                      "oracle_calls": 0,
+                      "serializer_calls": 0,
+                      "torch_calls": 0,
+                      "optimizer_steps": 0,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              ) + "\n"
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hcsn-n256-sparse-dynamic-source-${{ github.sha }}
+          path: qualification/hcsn_currentstate_n256_sparse_dynamic_intent/ci-artifact
+          if-no-files-found: error
+          retention-days: 30
