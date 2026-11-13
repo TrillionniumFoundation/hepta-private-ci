@@ -2,6 +2,7 @@
 //! deliberately returns an unknown result; no model execution is qualified.
 
 use std::fs;
+use std::io::Read;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
@@ -176,17 +177,31 @@ fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
     original
 }
 
-fn durable_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
+fn journal_bytes(fixture: &Fixture) -> [Vec<u8>; 2] {
     [
         fixture.bytes("generation-journal"),
         fixture.bytes("generation-witness"),
-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
     ]
+}
+
+fn control_bytes(fixture: &Fixture) -> Vec<u8> {
+    // Open only the original file, then prove its real owner has released the lock.
+    // A missing file or a live owner fails here without recreating or unlocking it.
+    let mut original = checked(fs::File::open(fixture.directory.path().join(CONTROL_FILE)));
+    checked(original.try_lock());
+    let mut bytes = Vec::new();
+    checked(original.read_to_end(&mut bytes));
+    bytes
 }
 
 #[tokio::test]
 async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost() {
     let mut fixture = Fixture::new().await;
+    drop(checked(DurableInferenceControl::open(
+        fixture.directory.path().join(CONTROL_FILE),
+        /*capacity*/ 32,
+    )));
+    let control_before = control_bytes(&fixture);
     let clock = clock();
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
     let worker = Arc::new(UnknownWorker::default());
@@ -198,7 +213,6 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         Arc::clone(&contacts),
     )
     .await;
-    let control_before = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
     let original = original(&fixture, &clock);
     let receipt = checked(handle.step(original.clone()).await);
     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
@@ -228,9 +242,9 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let mut expected = fixture.config.initial.clone();
     expected.revision = 1;
     assert_eq!(checked(handle.snapshot().await), expected);
-    let bytes = durable_bytes(&fixture);
+    let bytes = journal_bytes(&fixture);
     assert_eq!(checked(handle.step(original.clone()).await), receipt);
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(journal_bytes(&fixture), bytes);
     assert!(checked(handle.drain().await));
     assert_eq!(
         checked(fixture.state().neuron_generation_drain_blockers()),
@@ -243,9 +257,10 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         )
         .await,
     ));
-    let drained_bytes = durable_bytes(&fixture);
+    let drained_bytes = journal_bytes(&fixture);
     tasks.shutdown().await;
     drop(handle);
+    assert_eq!(control_bytes(&fixture), control_before);
 
     fixture.reopen_state().await;
     let (handle, mut tasks) = start(
@@ -259,14 +274,12 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.task_cost().await), receipt.cost);
     assert_eq!(checked(handle.snapshot().await), expected);
     assert!(checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), drained_bytes);
-    assert_eq!(
-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
-        control_before
-    );
+    assert_eq!(journal_bytes(&fixture), drained_bytes);
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
+    drop(handle);
+    assert_eq!(control_bytes(&fixture), control_before);
 }
 
 #[tokio::test]
@@ -291,6 +304,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     assert!(checked(fixture.state().is_fenced()));
     tasks.shutdown().await;
     drop(handle);
+    let control_before = control_bytes(&fixture);
     {
         let journal = fixture.journal();
         assert_eq!(checked(journal.pending_request()), Some(&original));
@@ -309,7 +323,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         Arc::clone(&contacts),
     )
     .await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = journal_bytes(&fixture);
     assert_eq!(
         handle.reconcile(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Pending)
@@ -318,7 +332,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         handle.step(original.clone()).await,
         Err(CellGenerationErrorV2::Pending)
     );
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(journal_bytes(&fixture), bytes);
     assert_eq!(
         handle.cancel(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Conflict)
@@ -331,6 +345,8 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
+    drop(handle);
+    assert_eq!(control_bytes(&fixture), control_before);
 }
 
 #[tokio::test]
@@ -375,6 +391,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
     drop(handle);
+    let control_before = control_bytes(&fixture);
     {
         let control = open_control(&fixture).await;
         assert!(checked(control.generation_has_unresolved()));
@@ -383,7 +400,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     fixture.reopen_state().await;
     let (handle, mut tasks) =
         start(&fixture, clock, Arc::clone(&worker), Arc::clone(&contacts)).await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = journal_bytes(&fixture);
     assert_eq!(
         handle.reconcile(digest).await,
         Err(CellGenerationErrorV2::Pending)
@@ -394,7 +411,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     );
     assert_eq!(checked(handle.pending_request().await), Some(original));
     assert!(!checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(journal_bytes(&fixture), bytes);
     assert_eq!(contacts.load(Ordering::SeqCst), 1);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     assert!(checked(handle.pending_output().await).is_none());
@@ -403,4 +420,6 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
         None
     );
     tasks.shutdown().await;
+    drop(handle);
+    assert_eq!(control_bytes(&fixture), control_before);
 }
