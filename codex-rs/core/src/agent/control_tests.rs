@@ -3070,17 +3070,30 @@ async fn spawn_child_completion_notifies_parent_history() {
 
 #[tokio::test]
 async fn multi_agent_v2_completion_ignores_dead_direct_parent() {
+    // Write directly so libtest capture cannot hide progress if Bazel terminates this process.
+    let stage = |phase: &str| {
+        use std::io::Write as _;
+        let _ = writeln!(
+            std::io::stderr(),
+            "[core-lifecycle] multi_agent_v2_completion_ignores_dead_direct_parent: {phase}"
+        );
+    };
+    stage("harness.create:before");
     let harness = AgentControlHarness::new().await;
+    stage("harness.create:after");
     let mut config = harness.config.clone();
     let _ = config.features.enable(Feature::MultiAgentV2);
+    stage("root.start:before");
     let root = harness
         .manager
         .start_thread(StartThreadOptions::new(config.clone()))
         .await
         .expect("root thread should start");
+    stage("root.start:after");
     let root_thread_id = root.thread_id;
     let root_thread = root.thread;
     let worker_path = AgentPath::root().join("worker_a").expect("worker path");
+    stage("worker.spawn:before");
     let worker_thread_id = harness
         .control
         .spawn_agent(
@@ -3096,7 +3109,9 @@ async fn multi_agent_v2_completion_ignores_dead_direct_parent() {
         )
         .await
         .expect("worker spawn should succeed");
+    stage("worker.spawn:after");
     let tester_path = worker_path.join("tester").expect("tester path");
+    stage("tester.spawn:before");
     let tester_thread_id = harness
         .control
         .spawn_agent(
@@ -3112,18 +3127,26 @@ async fn multi_agent_v2_completion_ignores_dead_direct_parent() {
         )
         .await
         .expect("tester spawn should succeed");
+    stage("tester.spawn:after");
+    stage("worker.shutdown:before");
     harness
         .control
         .shutdown_live_agent(worker_thread_id)
         .await
         .expect("worker shutdown should succeed");
+    stage("worker.shutdown:after");
 
+    stage("tester.lookup:before");
     let tester_thread = harness
         .manager
         .get_thread(tester_thread_id)
         .await
         .expect("tester thread should exist");
+    stage("tester.lookup:after");
+    stage("tester.turn_context:before");
     let tester_turn = tester_thread.session.new_default_turn().await;
+    stage("tester.turn_context:after");
+    stage("tester.completion_event:before");
     tester_thread
         .session
         .send_event(
@@ -3139,8 +3162,11 @@ async fn multi_agent_v2_completion_ignores_dead_direct_parent() {
             }),
         )
         .await;
+    stage("tester.completion_event:after");
 
+    stage("notification.settle:before");
     sleep(Duration::from_millis(100)).await;
+    stage("notification.settle:after");
 
     assert!(
         !harness
@@ -3159,7 +3185,9 @@ async fn multi_agent_v2_completion_ignores_dead_direct_parent() {
             })
     );
 
+    stage("root.history:before");
     let root_history = root_thread.session.clone_history().await;
+    stage("root.history:after");
     assert!(!history_contains_assistant_inter_agent_communication(
         root_history.raw_items(),
         &InterAgentCommunication::new(
@@ -3171,6 +3199,7 @@ async fn multi_agent_v2_completion_ignores_dead_direct_parent() {
         )
     ));
     assert!(!has_subagent_notification(root_history.raw_items()));
+    stage("test.complete");
 }
 
 #[tokio::test]
@@ -3735,11 +3764,24 @@ async fn resume_agent_from_paginated_rollout_loads_model_context() {
 
 #[tokio::test]
 async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants() {
+    // Write directly so libtest capture cannot hide progress if Bazel terminates this process.
+    let stage = |phase: &str| {
+        use std::io::Write as _;
+        let _ = writeln!(
+            std::io::stderr(),
+            "[core-lifecycle] list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants: {phase}"
+        );
+    };
+    stage("harness.create:before");
     let harness = AgentControlHarness::new().await;
+    stage("harness.create:after");
+    stage("parent.start:before");
     let (parent_thread_id, _parent_thread) = harness.start_thread().await;
+    stage("parent.start:after");
     let worker_path = AgentPath::root().join("worker").expect("worker path");
     let reviewer_path = AgentPath::root().join("reviewer").expect("reviewer path");
 
+    stage("worker.spawn:before");
     let worker_thread_id = harness
         .control
         .spawn_agent(
@@ -3755,6 +3797,8 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         )
         .await
         .expect("worker spawn should succeed");
+    stage("worker.spawn:after");
+    stage("worker_child.spawn:before");
     let worker_child_thread_id = harness
         .control
         .spawn_agent(
@@ -3774,6 +3818,8 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         )
         .await
         .expect("worker child spawn should succeed");
+    stage("worker_child.spawn:after");
+    stage("anonymous_child.spawn:before");
     let no_path_child_thread_id = harness
         .control
         .spawn_agent(
@@ -3789,6 +3835,8 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         )
         .await
         .expect("no-path child spawn should succeed");
+    stage("anonymous_child.spawn:after");
+    stage("anonymous_grandchild.spawn:before");
     let no_path_grandchild_thread_id = harness
         .control
         .spawn_agent(
@@ -3804,6 +3852,8 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         )
         .await
         .expect("no-path grandchild spawn should succeed");
+    stage("anonymous_grandchild.spawn:after");
+    stage("reviewer.spawn:before");
     let _reviewer_thread_id = harness
         .control
         .spawn_agent(
@@ -3819,18 +3869,23 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         )
         .await
         .expect("reviewer spawn should succeed");
+    stage("reviewer.spawn:after");
 
+    stage("anonymous_grandchild.shutdown:before");
     let _ = harness
         .control
         .shutdown_live_agent(no_path_grandchild_thread_id)
         .await
         .expect("no-path grandchild shutdown should succeed");
+    stage("anonymous_grandchild.shutdown:after");
 
+    stage("worker.subtree_query:before");
     let mut worker_subtree_thread_ids = harness
         .manager
         .list_agent_subtree_thread_ids(worker_thread_id)
         .await
         .expect("worker subtree thread ids should load");
+    stage("worker.subtree_query:after");
     worker_subtree_thread_ids.sort_by_key(ToString::to_string);
     let mut expected_worker_subtree_thread_ids = vec![
         worker_thread_id,
@@ -3844,11 +3899,13 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         expected_worker_subtree_thread_ids
     );
 
+    stage("anonymous_child.subtree_query:before");
     let mut no_path_child_subtree_thread_ids = harness
         .manager
         .list_agent_subtree_thread_ids(no_path_child_thread_id)
         .await
         .expect("no-path subtree thread ids should load");
+    stage("anonymous_child.subtree_query:after");
     no_path_child_subtree_thread_ids.sort_by_key(ToString::to_string);
     let mut expected_no_path_child_subtree_thread_ids =
         vec![no_path_child_thread_id, no_path_grandchild_thread_id];
@@ -3857,6 +3914,7 @@ async fn list_agent_subtree_thread_ids_includes_anonymous_and_closed_descendants
         no_path_child_subtree_thread_ids,
         expected_no_path_child_subtree_thread_ids
     );
+    stage("test.complete");
 }
 
 #[tokio::test]
