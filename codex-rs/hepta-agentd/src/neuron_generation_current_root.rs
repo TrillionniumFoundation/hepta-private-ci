@@ -14,7 +14,10 @@ impl NeuronGenerationCurrentOwnerV1 {
         gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
         store::CurrentStore::retire_original_root_client_after_intent(
-            &self.store, intent, identity, gate,
+            &self.store,
+            intent,
+            identity,
+            gate,
         )
     }
 

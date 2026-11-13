@@ -69,9 +69,7 @@ pub(crate) struct OriginalSessionLoopShutdown {
 }
 
 impl SessionIo {
-    pub(crate) fn retain_original_loop_shutdown(
-        &self,
-    ) -> Arc<OriginalSessionLoopShutdown> {
+    pub(crate) fn retain_original_loop_shutdown(&self) -> Arc<OriginalSessionLoopShutdown> {
         Arc::new(OriginalSessionLoopShutdown::new(
             self.tx_sub.clone(),
             self.session_loop_termination.clone(),
@@ -87,7 +85,10 @@ impl OriginalSessionLoopShutdown {
         outcome: Option<Arc<OriginalSessionLoopOutcome>>,
     ) -> Self {
         let completion = async move {
-            if outcome.as_ref().is_none_or(|outcome| outcome.result.get().is_none()) {
+            if outcome
+                .as_ref()
+                .is_none_or(|outcome| outcome.result.get().is_none())
+            {
                 // A closed submission channel has the same cleanup meaning as
                 // ordinary SessionIo::shutdown_and_wait's InternalAgentDied.
                 // It never substitutes for the actual loop join below.
@@ -105,9 +106,7 @@ impl OriginalSessionLoopShutdown {
             termination.await;
             match outcome.as_ref().and_then(|outcome| outcome.result.get()) {
                 Some(Ok(())) => Ok(()),
-                Some(Err(error)) => Err(Arc::new(OriginalCoreTaskFailure::Join(
-                    Arc::clone(error),
-                ))),
+                Some(Err(error)) => Err(Arc::new(OriginalCoreTaskFailure::Join(Arc::clone(error)))),
                 None => Err(Arc::new(OriginalCoreTaskFailure::State(
                     "the original Session loop completed without its real outcome",
                 ))),
@@ -120,9 +119,7 @@ impl OriginalSessionLoopShutdown {
 
     /// A cancelled waiter drops only this Shared clone. The registry retains
     /// the actual shutdown/join future; another waiter does not submit again.
-    pub(crate) async fn join_original_loop(
-        &self,
-    ) -> Result<(), Arc<OriginalCoreTaskFailure>> {
+    pub(crate) async fn join_original_loop(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {
         self.completion.clone().await
     }
 }

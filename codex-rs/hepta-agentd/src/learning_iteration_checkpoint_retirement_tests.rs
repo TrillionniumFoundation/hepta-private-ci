@@ -25,7 +25,13 @@ fn original_retirement_idle_admission_keeps_exact_transport_and_sequence() -> an
         ));
     }
     assert_eq!(
-        client.channel.lock().unwrap().as_ref().unwrap().next_request_id,
+        client
+            .channel
+            .lock()
+            .unwrap()
+            .as_ref()
+            .unwrap()
+            .next_request_id,
         1
     );
     assert!(matches!(
@@ -43,14 +49,10 @@ fn original_retirement_admission_refuses_busy_and_unfinished_slots() -> anyhow::
     let (client, mut peer) = client(&history[0]);
     peer.set_nonblocking(true)?;
     let mut held = client.channel.lock().unwrap();
-    assert!(
-        AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client).is_err()
-    );
+    assert!(AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client).is_err());
     let actual_in_flight = held.take().unwrap();
     drop(held);
-    assert!(
-        AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client).is_err()
-    );
+    assert!(AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&client).is_err());
     assert!(client.channel.lock().unwrap().is_none());
     // The unfinished exchange still owns its real transport. Refusal neither
     // puts it back nor claims that a missing slot was a successful close.

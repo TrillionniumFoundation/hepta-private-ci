@@ -19,13 +19,13 @@ mod material;
 mod same_actor_phase;
 pub use generation_initial::RootSameActorInitialEnrollmentCapabilityV1;
 pub use generation_publication::RootSameActorPublicationEnrollmentCapabilityV1;
-pub use same_actor_phase::PreparedRootSameActorQ24PhaseV1;
 pub(crate) use same_actor_phase::OriginalRootRetiredChannel;
 pub(crate) use same_actor_phase::OriginalRootRetirementLane;
 pub(crate) use same_actor_phase::OriginalRootRetirementPurpose;
 pub(crate) use same_actor_phase::OriginalRootRetirementScope;
-pub use same_actor_phase::RootSameActorHostAcknowledgementV1;
+pub use same_actor_phase::PreparedRootSameActorQ24PhaseV1;
 pub use same_actor_phase::RootSameActorDeploymentHandoffsV1;
+pub use same_actor_phase::RootSameActorHostAcknowledgementV1;
 pub use same_actor_phase::RootSameActorHostCommandV1;
 pub use same_actor_phase::RootSameActorHostInputsV1;
 pub use same_actor_phase::RootSameActorPhaseStartV1;
@@ -54,12 +54,12 @@ pub use generation_publication::RootGenerationPublicationEnrollmentCapabilityV1;
 pub use generation_publication::RootGenerationPublicationRegistrationV1;
 
 // Raw data only. Root metadata ownership/pin checks remain in the original readers.
+pub(crate) use generation_publication::deployment::data::CurrentData as OriginalDeploymentCurrentData;
 pub(crate) use generation_publication::deployment::data::ObserverData as OriginalDeploymentObserverData;
 pub(crate) use generation_publication::deployment::data::OwnerTrustData as OriginalDeploymentOwnerTrustData;
-pub(crate) use generation_publication::deployment::data::SelectorTrustData as OriginalDeploymentSelectorTrustData;
-pub(crate) use generation_publication::deployment::data::CurrentData as OriginalDeploymentCurrentData;
-pub(crate) use generation_publication::deployment::data::WithdrawalData as OriginalDeploymentWithdrawalData;
 pub(crate) use generation_publication::deployment::data::SelectionData as OriginalDeploymentSelectionData;
+pub(crate) use generation_publication::deployment::data::SelectorTrustData as OriginalDeploymentSelectorTrustData;
+pub(crate) use generation_publication::deployment::data::WithdrawalData as OriginalDeploymentWithdrawalData;
 
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional

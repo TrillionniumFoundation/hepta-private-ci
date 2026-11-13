@@ -147,7 +147,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .remove(std::ffi::OsStr::new("--root-pidfd"))
             .ok_or("original Root pidfd required")?;
         if !options.is_empty() || !pidfd_stdin {
-            return Err("same-actor phase requires exact original deployment and pre-held owner pidfd".into());
+            return Err(
+                "same-actor phase requires exact original deployment and pre-held owner pidfd"
+                    .into(),
+            );
         }
         // Preserve the original claim-before-open discipline for all four
         // rights. This explicit command sends the actual three-right purpose.
@@ -168,7 +171,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .build()?;
         runtime.block_on(
             codex_hepta_agentd::PreparedRootSameActorQ24PhaseV1::serve_fresh_original_deployment(
-                &config, &registration, owner, &deployment, handoffs,
+                &config,
+                &registration,
+                owner,
+                &deployment,
+                handoffs,
             ),
         )?;
     } else if command == "serve-session" || command == "serve-fresh-session" {
@@ -473,9 +480,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 (None, Some((file, pidfd))) => {
                     prepared.serve_with_text_and_ready(file, pidfd, ready)
                 }
-                (None, None) => {
-                    codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(prepared, ready)
-                }
+                (None, None) => codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(
+                    prepared, ready,
+                ),
                 (Some(_), Some(_)) => {
                     Err(std::io::Error::other("exclusive native/text UI options"))
                 }

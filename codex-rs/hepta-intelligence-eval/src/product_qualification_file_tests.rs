@@ -84,7 +84,9 @@ fn committed_publication_is_exact_and_conflict_never_changes_the_journal() {
     let (journal, mut sink) = ComponentJournal::create();
     let decision = decision();
     let execution = digest("component-execution");
-    let publication = sink.persist(execution, &decision).expect("actual fsynced publication");
+    let publication = sink
+        .persist(execution, &decision)
+        .expect("actual fsynced publication");
     let anchor = sink.anchor();
     let bytes = std::fs::read(&journal.0).expect("actual journal");
     assert_eq!(anchor.sequence, 2);
@@ -92,8 +94,14 @@ fn committed_publication_is_exact_and_conflict_never_changes_the_journal() {
     assert_eq!(sink.anchor(), anchor);
     let mut conflicting = decision.clone();
     conflicting.authentication_digest = digest("different-authentication");
-    assert_eq!(sink.persist(execution, &conflicting), Err(SinkError::Rejected));
-    assert_eq!(sink.readback(execution, &conflicting), Err(SinkError::Rejected));
+    assert_eq!(
+        sink.persist(execution, &conflicting),
+        Err(SinkError::Rejected)
+    );
+    assert_eq!(
+        sink.readback(execution, &conflicting),
+        Err(SinkError::Rejected)
+    );
     let mut renamed = decision.clone();
     renamed.decision.evaluation_id =
         StableId::new("different-evaluation-id").expect("component alternate ID");
@@ -105,7 +113,10 @@ fn committed_publication_is_exact_and_conflict_never_changes_the_journal() {
     let mut recovered = journal.recover(anchor).expect("exact witnessed recovery");
     assert_eq!(recovered.persist(execution, &decision), Ok(publication));
     assert_eq!(recovered.anchor(), anchor);
-    assert_eq!(std::fs::read(&journal.0).expect("unchanged readback"), bytes);
+    assert_eq!(
+        std::fs::read(&journal.0).expect("unchanged readback"),
+        bytes
+    );
 }
 
 #[test]
@@ -121,11 +132,22 @@ fn durable_pending_is_not_completed_by_recovery_or_repeat_publication() {
     let anchor = sink.anchor();
     let bytes = std::fs::read(&journal.0).expect("actual fsynced pending claim");
     drop(sink);
-    let mut recovered = journal.recover(anchor).expect("recover pending state, not success");
-    assert_eq!(recovered.persist(execution, &decision), Err(SinkError::Indeterminate));
-    assert_eq!(recovered.readback(execution, &decision), Err(SinkError::Indeterminate));
+    let mut recovered = journal
+        .recover(anchor)
+        .expect("recover pending state, not success");
+    assert_eq!(
+        recovered.persist(execution, &decision),
+        Err(SinkError::Indeterminate)
+    );
+    assert_eq!(
+        recovered.readback(execution, &decision),
+        Err(SinkError::Indeterminate)
+    );
     assert_eq!(recovered.anchor(), anchor);
-    assert_eq!(std::fs::read(&journal.0).expect("pending stays original"), bytes);
+    assert_eq!(
+        std::fs::read(&journal.0).expect("pending stays original"),
+        bytes
+    );
 }
 
 #[test]
@@ -147,10 +169,16 @@ fn original_lock_and_recovery_anchor_refuse_busy_rollback_and_torn_history() {
     let committed = std::fs::read(&journal.0).expect("complete original history");
     drop(sink);
     std::fs::write(&journal.0, &initial).expect("simulate old backup");
-    assert_eq!(journal.recover(committed_anchor).err(), Some(FileError::Rollback));
+    assert_eq!(
+        journal.recover(committed_anchor).err(),
+        Some(FileError::Rollback)
+    );
     std::fs::write(&journal.0, &committed[..committed.len() - 1])
         .expect("simulate torn committed frame");
-    assert_eq!(journal.recover(initial_anchor).err(), Some(FileError::Corrupt));
+    assert_eq!(
+        journal.recover(initial_anchor).err(),
+        Some(FileError::Corrupt)
+    );
 }
 
 #[test]
@@ -163,9 +191,18 @@ fn changed_file_length_fences_publication_and_never_turns_into_success() {
         .open()
         .set_len(initial.len() as u64 + 1)
         .expect("simulate noncooperating file mutation");
-    assert_eq!(sink.persist(execution, &decision), Err(SinkError::Indeterminate));
+    assert_eq!(
+        sink.persist(execution, &decision),
+        Err(SinkError::Indeterminate)
+    );
     std::fs::write(&journal.0, &initial).expect("restore bytes cannot clear poisoned owner");
-    assert_eq!(sink.persist(execution, &decision), Err(SinkError::Indeterminate));
-    assert_eq!(sink.readback(execution, &decision), Err(SinkError::Indeterminate));
+    assert_eq!(
+        sink.persist(execution, &decision),
+        Err(SinkError::Indeterminate)
+    );
+    assert_eq!(
+        sink.readback(execution, &decision),
+        Err(SinkError::Indeterminate)
+    );
     assert_eq!(sink.anchor().sequence, 0);
 }

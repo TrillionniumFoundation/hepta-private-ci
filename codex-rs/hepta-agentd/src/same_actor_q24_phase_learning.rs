@@ -26,12 +26,12 @@ mod worker;
 pub(crate) use work::OriginalJobReceiveError;
 pub(crate) use work::OriginalLearningStop;
 pub(crate) use work::OriginalLearningWorkJoined;
-pub(crate) use worker::OriginalRetiredLearningOwners;
-pub(crate) use worker::OriginalRetiredLearningPurposes;
-pub(crate) use worker::OriginalSameActorLearningPurposesRetired;
-pub(crate) use worker::OriginalSameActorLearningJoined;
 pub(crate) use work::OriginalSameActorLearningCleanup;
 pub(crate) use work::OriginalSameActorLearningWork;
+pub(crate) use worker::OriginalRetiredLearningOwners;
+pub(crate) use worker::OriginalRetiredLearningPurposes;
+pub(crate) use worker::OriginalSameActorLearningJoined;
+pub(crate) use worker::OriginalSameActorLearningPurposesRetired;
 pub(crate) use worker::OriginalSameActorLearningWorker;
 
 /// The caller retains cleanup() and attaches its real Work to the same task

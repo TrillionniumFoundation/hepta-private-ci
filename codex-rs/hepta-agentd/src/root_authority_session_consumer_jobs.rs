@@ -79,7 +79,9 @@ impl OriginalConsumerJobs {
             self.gate.close();
             AgentdRootAuthorityError::Unavailable
         })?;
-        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        self.gate
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if state.stopped {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -104,7 +106,9 @@ impl OriginalConsumerJobs {
             self.gate.close();
             AgentdRootAuthorityError::Unavailable
         })?;
-        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        self.gate
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if state.first_observed_failure.is_some() || state.worker_failure.is_some() {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -116,29 +120,36 @@ impl OriginalConsumerJobs {
         &self,
     ) -> Result<OriginalConsumerJoinSummary, AgentdRootAuthorityError> {
         loop {
-            self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            self.gate
+                .require_open()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             let (job, summary) = {
                 let state = self.state.lock().map_err(|_| {
                     self.gate.close();
                     AgentdRootAuthorityError::Unavailable
                 })?;
-                if !state.stopped || state.worker_failure.is_some()
+                if !state.stopped
+                    || state.worker_failure.is_some()
                     || state.first_observed_failure.is_some()
                 {
                     return Err(AgentdRootAuthorityError::Unavailable);
                 }
-                (state.retained.first().cloned(), OriginalConsumerJoinSummary {
-                    registered: state.registered,
-                    joined: state.joined,
-                    first_observed_failure: state.first_observed_failure,
-                    admission_poisoned: false,
-                })
+                (
+                    state.retained.first().cloned(),
+                    OriginalConsumerJoinSummary {
+                        registered: state.registered,
+                        joined: state.joined,
+                        first_observed_failure: state.first_observed_failure,
+                        admission_poisoned: false,
+                    },
+                )
             };
             let Some(job) = job else {
                 if summary.registered != summary.joined {
                     return Err(AgentdRootAuthorityError::Unavailable);
                 }
-                self.gate.require_open()
+                self.gate
+                    .require_open()
                     .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
                 return Ok(summary);
             };
@@ -169,7 +180,8 @@ impl OriginalConsumerJobs {
             first_observed_failure: state.first_observed_failure,
             admission_poisoned: false,
         };
-        if !state.stopped || !state.retained.is_empty()
+        if !state.stopped
+            || !state.retained.is_empty()
             || state.worker_failure.is_some()
             || actual != *expected
             || actual.registered != actual.joined
@@ -183,7 +195,10 @@ impl OriginalConsumerJobs {
 
     pub(in super::super) fn close(&self) {
         self.gate.close();
-        self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner).stopped = true;
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .stopped = true;
     }
 
     pub(in super::super) fn record_worker_failure(&self, error: AgentdRootAuthorityError) {
@@ -212,10 +227,11 @@ impl OriginalConsumerJobs {
         match outcome {
             Ok(()) => Ok(()),
             Err(OriginalConsumerFailure::Owner(error)) => Err(error),
-            Err(OriginalConsumerFailure::Cancelled | OriginalConsumerFailure::Panicked
-                | OriginalConsumerFailure::MissingHandle) => {
-                Err(AgentdRootAuthorityError::Unavailable)
-            }
+            Err(
+                OriginalConsumerFailure::Cancelled
+                | OriginalConsumerFailure::Panicked
+                | OriginalConsumerFailure::MissingHandle,
+            ) => Err(AgentdRootAuthorityError::Unavailable),
         }
     }
 
@@ -226,8 +242,15 @@ impl OriginalConsumerJobs {
     ) {
         // Recovery is bookkeeping of an already observed actual join. It
         // cannot admit, repeat or restore a consumer operation.
-        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-        if let Some(index) = state.retained.iter().position(|entry| Arc::ptr_eq(entry, job)) {
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if let Some(index) = state
+            .retained
+            .iter()
+            .position(|entry| Arc::ptr_eq(entry, job))
+        {
             state.retained.remove(index);
             state.joined += 1;
             if let Err(error) = outcome {
@@ -241,12 +264,19 @@ impl OriginalConsumerJobs {
     ) -> Result<OriginalConsumerJoinSummary, AgentdRootAuthorityError> {
         self.close();
         loop {
-            let job = self.state.lock()
+            let job = self
+                .state
+                .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner)
-                .retained.first().cloned();
+                .retained
+                .first()
+                .cloned();
             let Some(job) = job else {
                 let poisoned = self.state.is_poisoned();
-                let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+                let state = self
+                    .state
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
                 if state.joined != state.registered {
                     return Err(AgentdRootAuthorityError::Unavailable);
                 }

@@ -13,9 +13,11 @@ impl OriginalSameActorRootContext {
     ) -> Result<(), AgentdError> {
         exited.require_original_cleanup_origin(&self.identity, &self.gate)?;
         let watch = {
-            self._deadline_watch.lock()
+            self._deadline_watch
+                .lock()
                 .map_err(|_| refused("actual deadline watcher custody is poisoned"))?
-                .take().ok_or_else(|| refused("actual deadline watcher was already taken"))?
+                .take()
+                .ok_or_else(|| refused("actual deadline watcher was already taken"))?
         };
         crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch::finish_original_after_root_exit(watch, exited, &self.identity)
     }
@@ -29,19 +31,23 @@ impl OriginalSameActorRootContext {
         // This is the same Arc returned by the actual ReadHead constructor,
         // before its protected inputs moved into the ordinary Runtime.
         AgentdUnixCognitiveCheckpointTransport::retire_original_root_checkpoint_purpose(
-            self.checkpoint_transport.as_ref(), intent,
+            self.checkpoint_transport.as_ref(),
+            intent,
         )?;
         AgentdUnixFinalUseGrantProvider::retire_original_root_grant_purpose(
-            self.grants.as_ref(), intent,
+            self.grants.as_ref(),
+            intent,
         )?;
         // Both references came from the exact required objects moved into the
         // original consumer frontier closures. Their real jobs and consumer
         // barriers have already joined before the four-cap Intent exists.
         OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(
-            &self.device_retirement, intent,
+            &self.device_retirement,
+            intent,
         )?;
         OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(
-            &self.notes_retirement, intent,
+            &self.notes_retirement,
+            intent,
         )?;
         intent.require_original_origin(&self.identity, &self.gate)?;
         closing.disarm();

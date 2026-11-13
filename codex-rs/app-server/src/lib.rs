@@ -107,11 +107,11 @@ mod command_exec;
 mod config_layer;
 mod config_manager;
 mod configured_mcp_runtime;
+pub use codex_mcp::OriginalMcpRuntimeShutdown;
+pub use codex_mcp::OriginalMcpRuntimeShutdownObservation;
 pub use configured_mcp_runtime::ConfiguredMcpRuntime;
 pub use configured_mcp_runtime::initialize_configured_mcp_server;
 pub use configured_mcp_runtime::initialize_configured_mcp_server_with_owned_shutdown;
-pub use codex_mcp::OriginalMcpRuntimeShutdown;
-pub use codex_mcp::OriginalMcpRuntimeShutdownObservation;
 mod config_manager_service;
 mod connection_cleanup;
 mod connection_rpc_gate;
@@ -133,9 +133,9 @@ mod mcp_refresh;
 mod message_processor;
 mod models;
 mod models_refresh_worker;
+mod original_owned_shutdown;
 mod otel_reloader;
 mod outgoing_message;
-mod original_owned_shutdown;
 pub use original_owned_shutdown::OriginalAppServerJoined;
 pub use original_owned_shutdown::OriginalAppServerOwnerCustody;
 use original_owned_shutdown::OriginalAppServerTaskKind;
@@ -585,7 +585,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 &self.install_shutdown_signal_handler,
             )
             .field("graceful_drain", &self.graceful_drain.is_some())
-            .field("original_owner_custody", &self.original_owner_custody.is_some())
+            .field(
+                "original_owner_custody",
+                &self.original_owner_custody.is_some(),
+            )
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
@@ -699,7 +702,11 @@ async fn run_main_with_original_owner_options(
     runtime_options: AppServerRuntimeOptions,
     inherited_socket: Option<InheritedControlSocket>,
 ) -> IoResult<()> {
-    if let Some(original) = runtime_options.original_owner_custody.as_ref().map(Arc::clone) {
+    if let Some(original) = runtime_options
+        .original_owner_custody
+        .as_ref()
+        .map(Arc::clone)
+    {
         if !cfg!(target_os = "linux")
             || inherited_socket.is_none()
             || !matches!(transport, AppServerTransport::UnixSocket { .. })
@@ -760,7 +767,10 @@ async fn run_main_with_transport_options_inner(
     runtime_options: AppServerRuntimeOptions,
     mut inherited_socket: Option<InheritedControlSocket>,
 ) -> IoResult<()> {
-    let original_owner = runtime_options.original_owner_custody.as_ref().map(Arc::clone);
+    let original_owner = runtime_options
+        .original_owner_custody
+        .as_ref()
+        .map(Arc::clone);
     validate_hepta_local_lifecycle_runtime_options(&runtime_options)?;
     let loader_overrides = loader_overrides_with_test_user_config_file(
         loader_overrides,
@@ -1102,11 +1112,13 @@ async fn run_main_with_transport_options_inner(
     }
     let mut transport_accept_handles = transport_accept_handles
         .into_iter()
-        .map(|handle| OriginalAppServerOwnerCustody::optional_original_task(
-            original_owner.as_ref(),
-            OriginalAppServerTaskKind::Acceptor,
-            handle,
-        ))
+        .map(|handle| {
+            OriginalAppServerOwnerCustody::optional_original_task(
+                original_owner.as_ref(),
+                OriginalAppServerTaskKind::Acceptor,
+                handle,
+            )
+        })
         .collect::<Vec<_>>();
     drop(unix_socket_startup_lock);
 
@@ -1178,13 +1190,11 @@ async fn run_main_with_transport_options_inner(
             ));
         }
     }
-    transport_accept_handles.push(
-        OriginalAppServerOwnerCustody::optional_original_task(
-            original_owner.as_ref(),
-            OriginalAppServerTaskKind::Acceptor,
-            remote_control_accept_handle,
-        ),
-    );
+    transport_accept_handles.push(OriginalAppServerOwnerCustody::optional_original_task(
+        original_owner.as_ref(),
+        OriginalAppServerTaskKind::Acceptor,
+        remote_control_accept_handle,
+    ));
 
     let otel_reloader_handle = otel_reloader::spawn(
         otel,
@@ -1623,7 +1633,8 @@ async fn run_main_with_transport_options_inner(
                             &connection.session,
                         )
                     },
-                )).await;
+                ))
+                .await;
                 connection_cleanup_tasks.drain().await;
                 if shutdown_state.forced() {
                     OriginalAppServerOwnerCustody::record_original_failure(

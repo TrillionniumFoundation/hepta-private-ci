@@ -210,7 +210,6 @@ fn receive_host_value<T>(
     }
 }
 
-
 pub(super) struct OriginalRootHostJoined {
     _registrations: (
         crate::RootGenerationInitialRegistrationV1,

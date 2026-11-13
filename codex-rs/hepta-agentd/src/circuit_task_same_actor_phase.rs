@@ -522,14 +522,12 @@ impl CircuitTaskRuntimeBootstrapV1 {
         worker: crate::same_actor_q24_phase::OriginalSameActorTaskWorker,
     ) -> Result<Self, AgentdError> {
         route.require_identity(identity)?;
-        let custody = OriginalCircuitOwnerCustody::from_original_phase(
-            identity,
-            Arc::clone(&route.gate),
-        )?;
-        let worker = crate::same_actor_q24_phase::OriginalSameActorTaskWorker::with_original_outer_custody(
-            worker,
-            &custody,
-        )?;
+        let custody =
+            OriginalCircuitOwnerCustody::from_original_phase(identity, Arc::clone(&route.gate))?;
+        let worker =
+            crate::same_actor_q24_phase::OriginalSameActorTaskWorker::with_original_outer_custody(
+                worker, &custody,
+            )?;
         Ok(Self {
             identity: identity.clone(),
             handle: CircuitTaskHandleV1 {

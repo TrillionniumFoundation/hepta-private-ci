@@ -2,16 +2,18 @@
 //! These descriptions carry no receipt constructor, task admission or Root
 //! authority. Independent actors must reconcile them with their real sources.
 
-use std::sync::Arc;
-use codex_hepta_learning_artifacts::{
-    LearningIterationSnapshotV1, learning_iteration_receipt_signing_bytes_v1,
-};
-use serde::Serialize;
-use crate::{AgentdError, CellQ24TrainingOutcomeV1, LoadedCellQ24ModelV1,
-    OriginalCellQ24TrainingMaterialV1};
 use super::bundle_data::OriginalBundleData;
+use super::deployment_error;
+use super::deployment_refused;
 use super::learning_data::SignedEvidenceData;
-use super::{deployment_error, deployment_refused};
+use crate::AgentdError;
+use crate::CellQ24TrainingOutcomeV1;
+use crate::LoadedCellQ24ModelV1;
+use crate::OriginalCellQ24TrainingMaterialV1;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
+use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
+use serde::Serialize;
+use std::sync::Arc;
 
 #[derive(Serialize)]
 #[serde(deny_unknown_fields)]
@@ -41,14 +43,18 @@ impl OriginalTrainingNotice {
         material: OriginalCellQ24TrainingMaterialV1,
     ) -> Result<(Self, Arc<LoadedCellQ24ModelV1>), AgentdError> {
         if material.training() != snapshot {
-            return Err(deployment_refused("Training notice differs from its actual readback"));
+            return Err(deployment_refused(
+                "Training notice differs from its actual readback",
+            ));
         }
         let dataset_head = material.dataset().head_digest.into_array();
         let completion = material.into_completion();
         let CellQ24TrainingOutcomeV1::Candidate(candidate) = completion.outcome else {
             // An authenticated NoUpdate follows the existing Decision branch;
             // it is not reclassified as a candidate for an independent B run.
-            return Err(deployment_refused("actual NoUpdate has no independent-B candidate"));
+            return Err(deployment_refused(
+                "actual NoUpdate has no independent-B candidate",
+            ));
         };
         let candidate = *candidate;
         let notice = Self {
@@ -56,10 +62,10 @@ impl OriginalTrainingNotice {
             purpose: "hepta.same-actor-q24-deployment.original-training.v1",
             phase: phase.to_owned(),
             learning_operation: snapshot.request.operation_id.as_str().to_owned(),
-            dataset_head, training_head: snapshot.head_digest.into_array(),
-            receipt_signing_bytes: learning_iteration_receipt_signing_bytes_v1(
-                &completion.receipt,
-            ).map_err(deployment_error)?,
+            dataset_head,
+            training_head: snapshot.head_digest.into_array(),
+            receipt_signing_bytes: learning_iteration_receipt_signing_bytes_v1(&completion.receipt)
+                .map_err(deployment_error)?,
             attestation: SignedEvidenceData::from_original(&completion.attestation),
             candidate_bundle: OriginalBundleData::from_original(&candidate.bundle),
             heads: candidate.heads,
@@ -87,7 +93,8 @@ pub(super) struct OriginalDecisionNotice {
 }
 impl OriginalDecisionNotice {
     pub(super) fn from_original(
-        phase: &str, snapshot: &LearningIterationSnapshotV1,
+        phase: &str,
+        snapshot: &LearningIterationSnapshotV1,
     ) -> Result<Self, AgentdError> {
         Ok(Self {
             schema_version: 1,
@@ -95,9 +102,12 @@ impl OriginalDecisionNotice {
             phase: phase.to_owned(),
             learning_operation: snapshot.request.operation_id.as_str().to_owned(),
             actual_head: snapshot.head_digest.into_array(),
-            original_receipt_signing_bytes: snapshot.receipts.iter()
+            original_receipt_signing_bytes: snapshot
+                .receipts
+                .iter()
                 .map(learning_iteration_receipt_signing_bytes_v1)
-                .collect::<Result<Vec<_>, _>>().map_err(deployment_error)?,
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(deployment_error)?,
         })
     }
 }

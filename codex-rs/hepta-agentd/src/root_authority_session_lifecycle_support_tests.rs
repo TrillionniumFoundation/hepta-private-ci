@@ -19,9 +19,7 @@ pub(super) struct PhaseConnection {
     pub(super) gate: Arc<SameActorPhaseGate>,
 }
 
-pub(super) async fn phase_connection(
-    custody: &OriginalRootSessionCustodySlot,
-) -> PhaseConnection {
+pub(super) async fn phase_connection(custody: &OriginalRootSessionCustodySlot) -> PhaseConnection {
     let (trust, proof) = fixture();
     let key = trust.verifying_key;
     let gate = SameActorPhaseGate::from_original_deadline(
@@ -71,7 +69,9 @@ pub(super) async fn phase_connection(
     let base = boottime_ns().unwrap();
     let peer_boot = boot_id.clone();
     let peer = std::thread::spawn(move || {
-        server.set_read_timeout(Some(Duration::from_secs(5))).unwrap();
+        server
+            .set_read_timeout(Some(Duration::from_secs(5)))
+            .unwrap();
         loop {
             let mut prefix = [0; 4];
             if server.read_exact(&mut prefix).is_err() {
@@ -100,13 +100,18 @@ pub(super) async fn phase_connection(
                 sample.observed_unix_ms = 2_000 + elapsed;
                 sample.revocations.revision = next_head.load(Ordering::Acquire);
                 if sample.revocations.revision > 1 {
-                    sample.revocations.revoked_grant_ids.insert("revoked-effect".into());
+                    sample
+                        .revocations
+                        .revoked_grant_ids
+                        .insert("revoked-effect".into());
                 }
                 sample.writer.store_revision = 7 + sample.revocations.revision;
                 replies.fetch_add(1, Ordering::AcqRel);
                 serde_json::to_vec(&sample).unwrap()
             };
-            if server.write_all(&(response.len() as u32).to_be_bytes()).is_err()
+            if server
+                .write_all(&(response.len() as u32).to_be_bytes())
+                .is_err()
                 || server.write_all(&response).is_err()
             {
                 return;
@@ -123,7 +128,14 @@ pub(super) async fn phase_connection(
         custody,
     )
     .await;
-    PhaseConnection { session, head, observation_replies, peer, key, gate }
+    PhaseConnection {
+        session,
+        head,
+        observation_replies,
+        peer,
+        key,
+        gate,
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -143,7 +155,10 @@ struct BlockingFrontier {
 
 impl AuthorityFrontierStore<FinalUseFrontier> for BlockingFrontier {
     fn load(&self, _: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
-        self.value.lock().map(|value| *value).map_err(|_| AuthorityTrustError::Unavailable)
+        self.value
+            .lock()
+            .map(|value| *value)
+            .map_err(|_| AuthorityTrustError::Unavailable)
     }
 
     fn compare_and_set(
@@ -155,17 +170,30 @@ impl AuthorityFrontierStore<FinalUseFrontier> for BlockingFrontier {
         if self.load("component-original-frontier")? != *expected {
             return Err(AuthorityTrustError::Conflict);
         }
-        let _held = self.held.lock().map_err(|_| AuthorityTrustError::Unavailable)?
-            .take().ok_or(AuthorityTrustError::Unavailable)?;
-        self.entered.lock().map_err(|_| AuthorityTrustError::Unavailable)?
-            .take().ok_or(AuthorityTrustError::Unavailable)?
-            .send(()).map_err(|_| AuthorityTrustError::Unavailable)?;
-        self.release.lock().map_err(|_| AuthorityTrustError::Unavailable)?
+        let _held = self
+            .held
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?
+            .take()
+            .ok_or(AuthorityTrustError::Unavailable)?;
+        self.entered
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?
+            .take()
+            .ok_or(AuthorityTrustError::Unavailable)?
+            .send(())
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        self.release
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?
             .recv_timeout(Duration::from_secs(5))
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         match self.outcome {
             BlockedOutcome::Committed => {
-                *self.value.lock().map_err(|_| AuthorityTrustError::Unavailable)? = *next;
+                *self
+                    .value
+                    .lock()
+                    .map_err(|_| AuthorityTrustError::Unavailable)? = *next;
                 Ok(())
             }
             BlockedOutcome::Refused => Err(AuthorityTrustError::Unavailable),
@@ -217,7 +245,13 @@ pub(super) fn blocking_consumer(
         frontier,
     )
     .unwrap();
-    BlockingConsumer { owner, directory, entered: notified, release, probe }
+    BlockingConsumer {
+        owner,
+        directory,
+        entered: notified,
+        release,
+        probe,
+    }
 }
 
 pub(super) fn takes_lock(file: &File) -> Result<bool, Box<dyn Error>> {
@@ -232,5 +266,8 @@ pub(super) fn takes_lock(file: &File) -> Result<bool, Box<dyn Error>> {
 }
 
 pub(super) async fn join_peer(peer: std::thread::JoinHandle<()>) {
-    tokio::task::spawn_blocking(move || peer.join()).await.unwrap().unwrap();
+    tokio::task::spawn_blocking(move || peer.join())
+        .await
+        .unwrap()
+        .unwrap();
 }

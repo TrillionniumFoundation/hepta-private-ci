@@ -41,7 +41,8 @@ fn intent_request() -> OriginalRootRetirementRequest {
         binding: binding(),
         sequence: 1,
         stage: OriginalRootRetirementStage::AuthorizeRootRetirement,
-        current_registration: Digest32::of_bytes(b"component-current-registration-data").to_string(),
+        current_registration: Digest32::of_bytes(b"component-current-registration-data")
+            .to_string(),
         current_request: Digest32::of_bytes(b"component-current-request-data").to_string(),
         original_intent: None,
     }
@@ -49,9 +50,9 @@ fn intent_request() -> OriginalRootRetirementRequest {
 
 fn gate() -> io::Result<Arc<SameActorPhaseGate>> {
     // A stop/deadline component only; this creates no issuer or Root scope.
-    SameActorPhaseGate::from_original_deadline(
-        SameActorPhaseDeadline::at_original_service_start(std::time::Duration::from_secs(30))?,
-    )
+    SameActorPhaseGate::from_original_deadline(SameActorPhaseDeadline::at_original_service_start(
+        std::time::Duration::from_secs(30),
+    )?)
 }
 
 #[test]
@@ -82,7 +83,8 @@ fn retirement_data_requires_exact_original_incarnation_and_current() {
     changed.binding.identity = Digest32::of_bytes(b"other-identity-data").to_string();
     assert!(require(changed).is_err());
     let mut changed = intent_request();
-    changed.current_registration = Digest32::of_bytes(b"other-current-registration-data").to_string();
+    changed.current_registration =
+        Digest32::of_bytes(b"other-current-registration-data").to_string();
     assert!(require(changed).is_err());
     let mut changed = intent_request();
     changed.current_request = Digest32::of_bytes(b"other-current-request-data").to_string();
@@ -107,10 +109,14 @@ fn retirement_data_refuses_progress_purpose_skipped_intent_and_noncanonical_fram
     raw.push(b' ');
     assert!(OriginalRootRetirementRequest::decode_original(&raw).is_err());
     let mut value = serde_json::to_value(&original).unwrap();
-    value.as_object_mut().unwrap().insert("completion_proof".into(), serde_json::json!(true));
-    assert!(OriginalRootRetirementRequest::decode_original(
-        &serde_json::to_vec(&value).unwrap()
-    ).is_err());
+    value
+        .as_object_mut()
+        .unwrap()
+        .insert("completion_proof".into(), serde_json::json!(true));
+    assert!(
+        OriginalRootRetirementRequest::decode_original(&serde_json::to_vec(&value).unwrap())
+            .is_err()
+    );
     assert!(OriginalRootRetirementRequest::decode_original(&[]).is_err());
     assert!(OriginalRootRetirementRequest::decode_original(&vec![b'x'; 65_537]).is_err());
 }
@@ -133,18 +139,30 @@ fn retirement_acknowledgement_is_bound_to_one_original_intent_and_request() {
         original_intent: intent_digest.clone(),
     };
     // This codec roundtrip remains data; it cannot construct any actual owner.
-    let raw = acknowledgement.encode_original(&joined, &intent_digest).unwrap();
-    assert!(OriginalRootRetirementAcknowledgement::decode_original(
-        &raw, &joined, &intent_digest
-    ).is_ok());
-    assert!(OriginalRootRetirementAcknowledgement::decode_original(
-        &raw, &intent, &intent_digest
-    ).is_err());
+    let raw = acknowledgement
+        .encode_original(&joined, &intent_digest)
+        .unwrap();
+    assert!(
+        OriginalRootRetirementAcknowledgement::decode_original(&raw, &joined, &intent_digest)
+            .is_ok()
+    );
+    assert!(
+        OriginalRootRetirementAcknowledgement::decode_original(&raw, &intent, &intent_digest)
+            .is_err()
+    );
     acknowledgement.original_intent = Digest32::of_bytes(b"other-intent-data").to_string();
-    assert!(acknowledgement.require_original_request(&joined, &intent_digest).is_err());
+    assert!(
+        acknowledgement
+            .require_original_request(&joined, &intent_digest)
+            .is_err()
+    );
     acknowledgement.original_intent = intent_digest.clone();
     acknowledgement.original_request = intent_digest.clone();
-    assert!(acknowledgement.require_original_request(&joined, &intent_digest).is_err());
+    assert!(
+        acknowledgement
+            .require_original_request(&joined, &intent_digest)
+            .is_err()
+    );
 }
 
 #[test]
@@ -189,8 +207,7 @@ fn root_owned_retirement_mode_has_no_implicit_or_unknown_value() {
         .as_object_mut()
         .unwrap()
         .insert("root_worker_retirement".into(), serde_json::Value::Null);
-    let explicitly_disabled: DeploymentData =
-        serde_json::from_value(explicitly_disabled).unwrap();
+    let explicitly_disabled: DeploymentData = serde_json::from_value(explicitly_disabled).unwrap();
     assert!(explicitly_disabled.root_worker_retirement.is_none());
     assert_eq!(serde_json::to_vec(&explicitly_disabled).unwrap(), default);
     assert_ne!(Digest32::of_bytes(&encoded), Digest32::of_bytes(&default));
@@ -201,7 +218,10 @@ fn root_owned_retirement_mode_has_no_implicit_or_unknown_value() {
     );
     assert!(serde_json::from_value::<DeploymentData>(rejected).is_err());
     let mut rejected = original;
-    rejected.as_object_mut().unwrap().insert("ordinary_completed".into(), serde_json::json!(true));
+    rejected
+        .as_object_mut()
+        .unwrap()
+        .insert("ordinary_completed".into(), serde_json::json!(true));
     assert!(serde_json::from_value::<DeploymentData>(rejected).is_err());
 }
 
@@ -212,12 +232,14 @@ fn physical_root_join_retains_its_actual_returned_owner_until_drop() -> io::Resu
     peer.set_nonblocking(true)?;
     std::thread::scope(|scope| -> io::Result<()> {
         let worker = scope.spawn(move || Ok::<_, io::Error>(owned));
-        let returned = join_original_retirement_thread(
-            worker, &gate, "component owned worker panicked",
-        )?;
+        let returned =
+            join_original_retirement_thread(worker, &gate, "component owned worker panicked")?;
         gate.require_open()?;
         let mut byte = [0; 1];
-        assert_eq!(peer.read(&mut byte).unwrap_err().kind(), io::ErrorKind::WouldBlock);
+        assert_eq!(
+            peer.read(&mut byte).unwrap_err().kind(),
+            io::ErrorKind::WouldBlock
+        );
         drop(returned);
         assert_eq!(peer.read(&mut byte)?, 0);
         Ok(())
@@ -225,7 +247,8 @@ fn physical_root_join_retains_its_actual_returned_owner_until_drop() -> io::Resu
 }
 
 #[test]
-fn physical_root_join_error_closes_the_actual_retained_peer_and_preserves_cause() -> io::Result<()> {
+fn physical_root_join_error_closes_the_actual_retained_peer_and_preserves_cause() -> io::Result<()>
+{
     let gate = gate()?;
     let (endpoint, mut peer) = UnixStream::pair()?;
     let _retained = gate.retain_original_stream(&endpoint)?;
@@ -241,9 +264,9 @@ fn physical_root_join_error_closes_the_actual_retained_peer_and_preserves_cause(
                 "component original worker refused",
             ))
         });
-        let error = join_original_retirement_thread(
-            failed, &gate, "component original worker panicked",
-        ).unwrap_err();
+        let error =
+            join_original_retirement_thread(failed, &gate, "component original worker panicked")
+                .unwrap_err();
         assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
         assert_eq!(error.to_string(), "component original worker refused");
         assert!(gate.require_open().is_err());
@@ -262,9 +285,9 @@ fn physical_root_join_panic_cannot_leave_the_final_peer_open() -> io::Result<()>
         let panicked = scope.spawn(|| -> io::Result<()> {
             panic!("component actual worker panic");
         });
-        let error = join_original_retirement_thread(
-            panicked, &gate, "component original worker panicked",
-        ).unwrap_err();
+        let error =
+            join_original_retirement_thread(panicked, &gate, "component original worker panicked")
+                .unwrap_err();
         assert_eq!(error.kind(), io::ErrorKind::Other);
         assert_eq!(error.to_string(), "component original worker panicked");
         assert!(gate.require_open().is_err());

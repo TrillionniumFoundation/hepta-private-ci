@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "kind": "isolated-maintenance-v5-no-local-git-publication-proposal",
+  "status": "SOURCE PROPOSAL ONLY; actual next-head/config selection belongs to Root; not executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "evidence": {
+    "original_script": {
+      "git_blob": "e2d34b4941544a829e493ff5c90631207c319af5",
+      "bytes": 21115,
+      "sha256": "9375589a56fbfcdeb2ecd335c590fca2c7ddea3708ea1c82166463c5dfe061a4"
+    },
+    "actual_commit_identity_failure": {
+      "git_blob": "0298068bfe0f006ace2ab749aaa2fb95c22689f6",
+      "bytes": 326,
+      "sha256": "3b5a5063cd290409f2aa31a15ceaa8e59ddfb22086fafdda3938a062b618cd92"
+    },
+    "failure_interpretation": "The actual local git commit refused absent author identity. This proposal does not modify identity, environment or credentials."
+  },
+  "script": {
+    "pre": {
+      "git_blob": "e2d34b4941544a829e493ff5c90631207c319af5",
+      "bytes": 21115,
+      "sha256": "9375589a56fbfcdeb2ecd335c590fca2c7ddea3708ea1c82166463c5dfe061a4"
+    },
+    "post": {
+      "git_blob": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "bytes": 18684,
+      "sha256": "51700c6c620252280a279526b53ff7e9a07b52ca2d6cdbab7ed9114ce64e89a3",
+      "create_get_verified": true
+    }
+  },
+  "operations": [
+    {
+      "id": "explicit_nonpublication_status",
+      "old": "\"publication_status\":\"not_attempted\"",
+      "new": "\"publication_status\":\"not_attempted_root_will_transfer_verified_postimages\"",
+      "reason": "Every execution path reports that this local script does not attempt publication; Root will transfer independently verified postimages."
+    },
+    {
+      "id": "remove_final_local_publication",
+      "old": "    if R[\"completion_unknown\"]: raise RuntimeError(\"publication refused after unknown completion\")\n    if changed:\n        R[\"publication_status\"]=\"checking-original-remote\"\n        remote=git_read(\"ls-remote\",URL,\"refs/heads/\"+C[\"branch\"]).decode().strip().split()\n        assert len(remote)==2 and remote[0]==C[\"head\"] and remote[1]==\"refs/heads/\"+C[\"branch\"],\"maintenance remote branch changed\"\n        command(\"stage-reviewed-path-scope\",[\"git\",\"add\",\"--\",*changed],120)\n        commit_code,_=command(\"retain-maintenance-commit\",[\"git\",\"commit\",\"-m\",\"wip: retain actual source formatter and compiler feedback\\n\\nUnqualified source maintenance only; original checker and behavioral/native tests remain pending.\"],120,required=False)\n        if commit_code==0:\n            R[\"publication_status\"]=\"local-commit-retained\"\n            local=identity(SOURCE);assert local[\"status\"]==\"\"\n            assert git_read(\"rev-parse\",\"HEAD^\").decode().strip()==C[\"head\"]\n            R[\"local_maintenance_commit\"]=local\n            push_code,_=command(\"publish-isolated-maintenance\",[\"git\",\"push\",\"--porcelain\",URL,\"HEAD:refs/heads/\"+C[\"branch\"]],600,required=False)\n            R[\"publish_exit_code\"]=push_code\n            R[\"publication_status\"]=\"awaiting-remote-confirmation\"\n            remote_after=git_read(\"ls-remote\",URL,\"refs/heads/\"+C[\"branch\"]).decode().strip().split()\n            R[\"remote_after_publish\"]=remote_after\n            if len(remote_after)==2 and remote_after[0]==local[\"head\"] and remote_after[1]==\"refs/heads/\"+C[\"branch\"]:\n                R[\"published_maintenance_commit\"]=local\n                R[\"publication_status\"]=\"confirmed\"\n            else: R[\"publication_status\"]=\"failed-or-unconfirmed\"\n        else:\n            R[\"local_commit_failed\"]=True\n            R[\"publication_status\"]=\"local-commit-failed\"\n            command(\"restore-only-own-staged-paths\",[\"git\",\"restore\",\"--staged\",\"--source=HEAD\",\"--\",*changed],120)\n    else:\n        remote_after=git_read(\"ls-remote\",URL,\"refs/heads/\"+C[\"branch\"]).decode().strip().split()\n        R[\"remote_without_source_changes\"]=remote_after\n        if len(remote_after)==2 and remote_after[0]==C[\"head\"] and remote_after[1]==\"refs/heads/\"+C[\"branch\"]:\n            R[\"published_maintenance_commit\"]=R[\"initial_source\"];R[\"publication_status\"]=\"confirmed\"\n        else: R[\"publication_status\"]=\"failed-or-unconfirmed\"\n    if R[\"maintenance_checks_passed\"] and R[\"publication_status\"]!=\"confirmed\": R[\"status\"]=\"source-maintenance-passed-publication-unconfirmed\"\n",
+      "new": "    if R[\"completion_unknown\"]: raise RuntimeError(\"publication refused after unknown completion\")\n",
+      "reason": "Remove only the final remote branch lookups and local add/commit/push/staged-restore/publication-state logic. Preserve the preceding completion-unknown refusal exactly."
+    },
+    {
+      "id": "maintenance_only_exit_predicate",
+      "old": "sys.exit(0 if R[\"maintenance_checks_passed\"] and R[\"publication_status\"]==\"confirmed\" and not R[\"completion_unknown\"] and not R[\"errors\"] else 1)",
+      "new": "sys.exit(0 if R[\"maintenance_checks_passed\"] and not R[\"completion_unknown\"] and not R[\"errors\"] else 1)",
+      "reason": "Exit zero means maintenance checks passed with no completion-unknown flag and no recorded errors. Publication is neither attempted nor a success prerequisite."
+    }
+  ],
+  "counts": {
+    "source_artifacts": 1,
+    "exact_operations": 3,
+    "removed_mutating_publication_commands": 4,
+    "removed_final_remote_reads": 3,
+    "new_remote_or_git_mutation_commands": 0
+  },
+  "replay": {
+    "forward_unique_each_operation": true,
+    "reverse_unique_each_operation": true,
+    "forward_complete_postimage": true,
+    "reverse_complete_preimage": true,
+    "exact_source_difference": "Only the three declared replacements; helper functions and all unowned code remain byte-identical."
+  },
+  "preservation": {
+    "helper_and_supervisor_block_equal": true,
+    "main_checks_through_unknown_refusal_equal": true,
+    "exception_finally_evidence_and_summary_equal": true,
+    "no_unknown_guard_removed": true,
+    "original_command_labels": [
+      "isolated-clone",
+      "fetch-exact-source",
+      "checkout-exact-source",
+      "format-base-ancestry",
+      "operator-rustc",
+      "fmt-before",
+      "fix-eleven-crates",
+      "fmt-after",
+      "bins-check",
+      "stage-reviewed-path-scope",
+      "retain-maintenance-commit",
+      "publish-isolated-maintenance",
+      "restore-only-own-staged-paths"
+    ],
+    "retained_command_labels": [
+      "isolated-clone",
+      "fetch-exact-source",
+      "checkout-exact-source",
+      "format-base-ancestry",
+      "operator-rustc",
+      "fmt-before",
+      "fix-eleven-crates",
+      "fmt-after",
+      "bins-check"
+    ],
+    "removed_command_labels": [
+      "stage-reviewed-path-scope",
+      "retain-maintenance-commit",
+      "publish-isolated-maintenance",
+      "restore-only-own-staged-paths"
+    ],
+    "explicit_final_nonpublication_status": true,
+    "command_spelling_counts": {
+      "\"ls-remote\"": {
+        "pre": 3,
+        "post": 0
+      },
+      "\"git\",\"add\"": {
+        "pre": 1,
+        "post": 0
+      },
+      "\"git\",\"commit\"": {
+        "pre": 1,
+        "post": 0
+      },
+      "\"git\",\"push\"": {
+        "pre": 1,
+        "post": 0
+      },
+      "\"git\",\"restore\"": {
+        "pre": 1,
+        "post": 0
+      },
+      "\"fetch-exact-source\"": {
+        "pre": 1,
+        "post": 1
+      },
+      "\"fix-eleven-crates\"": {
+        "pre": 1,
+        "post": 1
+      },
+      "\"bins-check\"": {
+        "pre": 1,
+        "post": 1
+      }
+    }
+  },
+  "semantics": {
+    "publication_status": "not_attempted_root_will_transfer_verified_postimages",
+    "status_reachability": "This value is present from result initialization, including early failure paths. No later code marks publication confirmed or sets published_maintenance_commit.",
+    "successful_exit_predicate": "R[\"maintenance_checks_passed\"] and not R[\"completion_unknown\"] and not R[\"errors\"]",
+    "checks_predicate_unchanged": "fix_code==0 and fmt_code==0 and bins_code==0 and not R[\"completion_unknown\"] and not any(step[\"timed_out\"] for step in R[\"steps\"])",
+    "exit_zero_meaning": "Only successful isolated maintenance checks with no unknown completion or recorded errors. It does not mean source publication, original checker approval, behavior/native qualification or business completion.",
+    "no_source_changes_case": "Same maintenance-only exit predicate and explicit nonpublication status; no remote branch query or synthetic publication confirmation.",
+    "changed_source_case": "Verified patch/postimages and source-scope records remain in the isolated records directory for Root to transfer; no git add/commit/push/staged-restore step is run.",
+    "evidence_fields_preserved": "Original capture and finally evidence code is unchanged, including the legacy publication_allowed scope observation. That Boolean only records absence of outside/untracked changes, not actual publication. The unchanged final summary has published:null because no published_maintenance_commit is set.",
+    "unknown_completion": "The exact existing unknown-completion refusal, supervision and final failure predicate remain. No timeout or unknown child result is converted to success."
+  },
+  "unchanged": {
+    "supervisor_process_ownership_and_signals": true,
+    "overall_and_evidence_deadlines": true,
+    "formatter_commands": true,
+    "eleven_package_fix_and_bins": true,
+    "source_and_reference_identity_checks": true,
+    "source_scope_and_tool_hash_checks": true,
+    "patch_postimage_and_failure_evidence": true,
+    "original_qualification_harness": true,
+    "original_checker_and_typed_helper": true,
+    "actual_config_assertions": true,
+    "environment_and_git_identity": true
+  },
+  "pending_root_configuration": {
+    "required_before_execution": true,
+    "note": "No head/tree/branch/work-directory/package/tool values were invented or updated. The v4 fixed assertions and source-manifest binding are intentionally preserved in this proposal; Root must pin its actual next head and configuration separately.",
+    "baseline_head_assertion": "7434600f61293543f11b3ccd2e2c7102e32b3f3c",
+    "baseline_tree_assertion": "d0a887edbd797583b2ba3d08cd1bb66ea4ae324d",
+    "baseline_source_manifest": "b2227120620c86ce7634e97a7b11dd74ab313489"
+  },
+  "authority": {
+    "h": 0,
+    "native_or_shell_execution": 0,
+    "ref_mutations": 0,
+    "environment_repair": 0,
+    "qualification_harness_changes": 0
+  },
+  "validation_limits": "Pure V8 byte/hash/exact-replay review. The Python script was not executed, compiled, or used to launch maintenance."
+}

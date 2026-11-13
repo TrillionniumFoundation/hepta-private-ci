@@ -1,8 +1,8 @@
 //! Actual task/FD/cancellation custody components only. No authenticated
 //! task, A/C result, phase completion or Root shutdown is synthesized here.
 
-use std::io::Read;
 use std::io::ErrorKind;
+use std::io::Read;
 use std::os::unix::net::UnixStream;
 use std::sync::mpsc;
 use std::time::Duration;
@@ -21,7 +21,10 @@ fn custody() -> (tempfile::TempDir, Arc<OriginalCircuitOwnerCustody>) {
     let directory = tempfile::tempdir().unwrap();
     let agent_id = AgentId::parse("blocking-custody-component").unwrap();
     let fleet_root = directory.path().join("fleet");
-    let layout = HeptaFleetRoot::parse(fleet_root.clone()).unwrap().layout().agent(&agent_id);
+    let layout = HeptaFleetRoot::parse(fleet_root.clone())
+        .unwrap()
+        .layout()
+        .agent(&agent_id);
     let identity = AgentdIdentity {
         agent_id,
         home_root: layout.home_root().to_path_buf(),
@@ -36,7 +39,8 @@ fn custody() -> (tempfile::TempDir, Arc<OriginalCircuitOwnerCustody>) {
     };
     let gate = SameActorPhaseGate::from_original_deadline(
         SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(30)).unwrap(),
-    ).unwrap();
+    )
+    .unwrap();
     let original = OriginalCircuitOwnerCustody::from_original_phase(&identity, gate).unwrap();
     (directory, original)
 }
@@ -62,7 +66,9 @@ async fn cancelled_runtime_wait_keeps_actual_blocking_handle_fd_and_original_err
     let (release, wait) = mpsc::channel();
     let marker = Arc::new(());
     let original_marker = Arc::clone(&marker);
-    let admission = custody.reserve_original_start(cancellation.clone()).unwrap();
+    let admission = custody
+        .reserve_original_start(cancellation.clone())
+        .unwrap();
     let handle = tokio::task::spawn_blocking(move || {
         let _held = held;
         entered.send(()).unwrap();
@@ -79,7 +85,10 @@ async fn cancelled_runtime_wait_keeps_actual_blocking_handle_fd_and_original_err
     assert!(receiver.await.unwrap_err().is_cancelled());
     assert!(cancellation.is_cancelled());
     let mut byte = [0];
-    assert_eq!(observed.read(&mut byte).unwrap_err().kind(), ErrorKind::WouldBlock);
+    assert_eq!(
+        observed.read(&mut byte).unwrap_err().kind(),
+        ErrorKind::WouldBlock
+    );
 
     // Poll the real join while its closure is still blocked, then cancel this
     // cleanup wait too. The second wait must retain the same actual handle.
@@ -87,29 +96,56 @@ async fn cancelled_runtime_wait_keeps_actual_blocking_handle_fd_and_original_err
     std::future::poll_fn(|context| {
         assert!(first_join.as_mut().poll(context).is_pending());
         std::task::Poll::Ready(())
-    }).await;
+    })
+    .await;
     drop(first_join);
-    assert_eq!(observed.read(&mut byte).unwrap_err().kind(), ErrorKind::WouldBlock);
+    assert_eq!(
+        observed.read(&mut byte).unwrap_err().kind(),
+        ErrorKind::WouldBlock
+    );
     release.send(()).unwrap();
     let joined = tokio::time::timeout(WAIT, custody.stop_and_join_original_owner())
-        .await.unwrap().unwrap();
-    assert_eq!(joined, OriginalCircuitJoinObservation {
-        status: OriginalCircuitJoinStatus::Joined {
-            outcome: OriginalCircuitOwnerOutcome::ReturnedErr,
-            delivery: OriginalCircuitResultDelivery::Abandoned,
-        },
-        admission_poisoned: false,
-    });
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        joined,
+        OriginalCircuitJoinObservation {
+            status: OriginalCircuitJoinStatus::Joined {
+                outcome: OriginalCircuitOwnerOutcome::ReturnedErr,
+                delivery: OriginalCircuitResultDelivery::Abandoned,
+            },
+            admission_poisoned: false,
+        }
+    );
     assert_eq!(observed.read(&mut byte).unwrap(), 0);
-    let result = custody.take_abandoned_original_result().await.unwrap().unwrap();
+    let result = custody
+        .take_abandoned_original_result()
+        .await
+        .unwrap()
+        .unwrap();
     let Err(AgentdError::Io(error)) = result else {
         panic!("the original I/O error was replaced");
     };
     assert_eq!(error.kind(), ErrorKind::PermissionDenied);
-    let original = error.get_ref().unwrap().downcast_ref::<OriginalFailure>().unwrap();
+    let original = error
+        .get_ref()
+        .unwrap()
+        .downcast_ref::<OriginalFailure>()
+        .unwrap();
     assert!(Arc::ptr_eq(&original.0, &marker));
-    assert!(custody.take_abandoned_original_result().await.unwrap().is_none());
-    assert!(custody.reserve_original_start(CancellationToken::new()).is_err());
+    assert!(
+        custody
+            .take_abandoned_original_result()
+            .await
+            .unwrap()
+            .is_none()
+    );
+    assert!(
+        custody
+            .reserve_original_start(CancellationToken::new())
+            .is_err()
+    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -117,7 +153,9 @@ async fn joined_runtime_error_is_delivered_once_and_never_relabelled_success() {
     let (_directory, custody) = custody();
     let marker = Arc::new(());
     let original_marker = Arc::clone(&marker);
-    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();
+    let admission = custody
+        .reserve_original_start(CancellationToken::new())
+        .unwrap();
     let handle = tokio::task::spawn_blocking(move || {
         Err(AgentdError::Io(std::io::Error::new(
             ErrorKind::PermissionDenied,
@@ -125,17 +163,26 @@ async fn joined_runtime_error_is_delivered_once_and_never_relabelled_success() {
         )))
     });
     let job = admission.retain_original_circuit_owner_handle(handle);
-    let result = tokio::time::timeout(WAIT, job.receive_original_result()).await.unwrap();
+    let result = tokio::time::timeout(WAIT, job.receive_original_result())
+        .await
+        .unwrap();
     let Err(AgentdError::Io(error)) = result else {
         panic!("Runtime did not receive its original error");
     };
-    let original = error.get_ref().unwrap().downcast_ref::<OriginalFailure>().unwrap();
+    let original = error
+        .get_ref()
+        .unwrap()
+        .downcast_ref::<OriginalFailure>()
+        .unwrap();
     assert!(Arc::ptr_eq(&original.0, &marker));
     let joined = custody.stop_and_join_original_owner().await.unwrap();
-    assert_eq!(joined.status, OriginalCircuitJoinStatus::Joined {
-        outcome: OriginalCircuitOwnerOutcome::ReturnedErr,
-        delivery: OriginalCircuitResultDelivery::RuntimeDelivered,
-    });
+    assert_eq!(
+        joined.status,
+        OriginalCircuitJoinStatus::Joined {
+            outcome: OriginalCircuitOwnerOutcome::ReturnedErr,
+            delivery: OriginalCircuitResultDelivery::RuntimeDelivered,
+        }
+    );
     assert!(custody.take_abandoned_original_result().await.is_err());
 }
 
@@ -146,7 +193,9 @@ async fn an_unpolled_receiver_and_real_worker_panic_remain_explicit_join_failure
     observed.set_nonblocking(true).unwrap();
     let (entered, ready) = tokio::sync::oneshot::channel();
     let (release, wait) = mpsc::channel();
-    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();
+    let admission = custody
+        .reserve_original_start(CancellationToken::new())
+        .unwrap();
     let handle = tokio::task::spawn_blocking(move || -> Result<(), AgentdError> {
         let _held = held;
         entered.send(()).unwrap();
@@ -158,15 +207,23 @@ async fn an_unpolled_receiver_and_real_worker_panic_remain_explicit_join_failure
     tokio::time::timeout(WAIT, ready).await.unwrap().unwrap();
     release.send(()).unwrap();
     let joined = tokio::time::timeout(WAIT, custody.stop_and_join_original_owner())
-        .await.unwrap().unwrap();
-    assert_eq!(joined.status, OriginalCircuitJoinStatus::Joined {
-        outcome: OriginalCircuitOwnerOutcome::JoinFailed,
-        delivery: OriginalCircuitResultDelivery::Abandoned,
-    });
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        joined.status,
+        OriginalCircuitJoinStatus::Joined {
+            outcome: OriginalCircuitOwnerOutcome::JoinFailed,
+            delivery: OriginalCircuitResultDelivery::Abandoned,
+        }
+    );
     let mut byte = [0];
     assert_eq!(observed.read(&mut byte).unwrap(), 0);
-    let Err(AgentdError::Protocol(error)) =
-        custody.take_abandoned_original_result().await.unwrap().unwrap()
+    let Err(AgentdError::Protocol(error)) = custody
+        .take_abandoned_original_result()
+        .await
+        .unwrap()
+        .unwrap()
     else {
         panic!("the original JoinError mapping was lost");
     };
@@ -180,7 +237,9 @@ async fn natural_join_observation_waits_for_the_real_fd_owner_and_does_not_take_
     observed.set_nonblocking(true).unwrap();
     let (entered, ready) = tokio::sync::oneshot::channel();
     let (release, wait) = mpsc::channel();
-    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();
+    let admission = custody
+        .reserve_original_start(CancellationToken::new())
+        .unwrap();
     let handle = tokio::task::spawn_blocking(move || {
         let _held = held;
         entered.send(()).unwrap();
@@ -196,17 +255,32 @@ async fn natural_join_observation_waits_for_the_real_fd_owner_and_does_not_take_
     std::future::poll_fn(|context| {
         assert!(first.as_mut().poll(context).is_pending());
         std::task::Poll::Ready(())
-    }).await;
+    })
+    .await;
     drop(first);
     let mut byte = [0];
-    assert_eq!(observed.read(&mut byte).unwrap_err().kind(), ErrorKind::WouldBlock);
+    assert_eq!(
+        observed.read(&mut byte).unwrap_err().kind(),
+        ErrorKind::WouldBlock
+    );
     release.send(()).unwrap();
-    tokio::time::timeout(WAIT, job.join_original_returned_ok()).await.unwrap().unwrap();
+    tokio::time::timeout(WAIT, job.join_original_returned_ok())
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(observed.read(&mut byte).unwrap(), 0);
     custody.gate.require_open().unwrap();
     assert_eq!(job.delivery(), OriginalCircuitResultDelivery::Waiting);
-    assert!(tokio::time::timeout(WAIT, job.receive_original_result()).await.unwrap().is_ok());
-    assert_eq!(job.delivery(), OriginalCircuitResultDelivery::RuntimeDelivered);
+    assert!(
+        tokio::time::timeout(WAIT, job.receive_original_result())
+            .await
+            .unwrap()
+            .is_ok()
+    );
+    assert_eq!(
+        job.delivery(),
+        OriginalCircuitResultDelivery::RuntimeDelivered
+    );
     assert!(custody.take_abandoned_original_result().await.is_err());
 }
 
@@ -215,7 +289,9 @@ async fn natural_join_refusal_keeps_the_original_error_for_its_actual_runtime_re
     let (_directory, custody) = custody();
     let marker = Arc::new(());
     let original_marker = Arc::clone(&marker);
-    let admission = custody.reserve_original_start(CancellationToken::new()).unwrap();
+    let admission = custody
+        .reserve_original_start(CancellationToken::new())
+        .unwrap();
     let handle = tokio::task::spawn_blocking(move || {
         Err(AgentdError::Io(std::io::Error::new(
             ErrorKind::PermissionDenied,
@@ -223,14 +299,28 @@ async fn natural_join_refusal_keeps_the_original_error_for_its_actual_runtime_re
         )))
     });
     let job = admission.retain_original_circuit_owner_handle(handle);
-    assert!(tokio::time::timeout(WAIT, job.join_original_returned_ok()).await.unwrap().is_err());
+    assert!(
+        tokio::time::timeout(WAIT, job.join_original_returned_ok())
+            .await
+            .unwrap()
+            .is_err()
+    );
     assert_eq!(job.delivery(), OriginalCircuitResultDelivery::Waiting);
-    let result = tokio::time::timeout(WAIT, job.receive_original_result()).await.unwrap();
+    let result = tokio::time::timeout(WAIT, job.receive_original_result())
+        .await
+        .unwrap();
     let Err(AgentdError::Io(error)) = result else {
         panic!("natural observation replaced the original Runtime error");
     };
     assert_eq!(error.kind(), ErrorKind::PermissionDenied);
-    let original = error.get_ref().unwrap().downcast_ref::<OriginalFailure>().unwrap();
+    let original = error
+        .get_ref()
+        .unwrap()
+        .downcast_ref::<OriginalFailure>()
+        .unwrap();
     assert!(Arc::ptr_eq(&original.0, &marker));
-    assert_eq!(job.delivery(), OriginalCircuitResultDelivery::RuntimeDelivered);
+    assert_eq!(
+        job.delivery(),
+        OriginalCircuitResultDelivery::RuntimeDelivered
+    );
 }

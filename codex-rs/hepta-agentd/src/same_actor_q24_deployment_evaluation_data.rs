@@ -2,24 +2,41 @@
 //! and Product operation over actual drained journals and supplied temporal
 //! inputs. No private plan or qualification receipt is deserialized here.
 
-use codex_hepta_intelligence_eval::{
-    CrossFoldPartitionV1, CrossFoldPlanV1, EvaluationClaimScopeV1, EvaluationDirectionV1,
-    MetricContractV1, MetricRoleContractV2, MetricRoleV2, ProductMetricSourceContractV1,
-    ProductMetricSourceV1, ProductQualificationContextV1,
-};
-use codex_hepta_types::{Digest32, FixedQ32, StableId};
-use serde::{Deserialize, Serialize};
-use crate::{AgentdError, CellEvaluationRegistrationV1};
-use super::{deployment_error, deployment_refused};
 use super::comparison_data::OriginalComparisonData;
-use super::learning_data::{PrincipalData, required_option};
+use super::deployment_error;
+use super::deployment_refused;
+use super::learning_data::PrincipalData;
+use super::learning_data::required_option;
+use crate::AgentdError;
+use crate::CellEvaluationRegistrationV1;
+use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
+use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
+use codex_hepta_intelligence_eval::EvaluationDirectionV1;
+use codex_hepta_intelligence_eval::MetricContractV1;
+use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::MetricRoleV2;
+use codex_hepta_intelligence_eval::ProductMetricSourceContractV1;
+use codex_hepta_intelligence_eval::ProductMetricSourceV1;
+use codex_hepta_intelligence_eval::ProductQualificationContextV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum OriginalClaimScopeData { Qualification, SystemLongitudinal }
+pub(super) enum OriginalClaimScopeData {
+    Qualification,
+    SystemLongitudinal,
+}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum OriginalDirectionData { Maximize, Minimize }
+pub(super) enum OriginalDirectionData {
+    Maximize,
+    Minimize,
+}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum OriginalMetricRoleData {
@@ -29,7 +46,11 @@ pub(super) enum OriginalMetricRoleData {
 }
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum OriginalMetricSourceData { Ips, Snips, DoublyRobust }
+pub(super) enum OriginalMetricSourceData {
+    Ips,
+    Snips,
+    DoublyRobust,
+}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct OriginalMetricData {
@@ -76,7 +97,9 @@ impl OriginalEvaluationRegistrationData {
         // This loader has no original longitudinal timing owner. Refuse that
         // mode explicitly instead of manufacturing elapsed-window evidence.
         if !matches!(self.claim_scope, OriginalClaimScopeData::Qualification) {
-            return Err(deployment_refused("original longitudinal timing owner is not supplied"));
+            return Err(deployment_refused(
+                "original longitudinal timing owner is not supplied",
+            ));
         }
         let mut contracts = Vec::with_capacity(self.metrics.len());
         let mut roles = Vec::with_capacity(self.metrics.len());
@@ -94,14 +117,16 @@ impl OriginalEvaluationRegistrationData {
             roles.push(MetricRoleContractV2 {
                 metric_id: id.clone(),
                 role: match metric.role {
-                    OriginalMetricRoleData::PrimarySuperiority { minimum_improvement_q32 } =>
-                        MetricRoleV2::PrimarySuperiority {
-                            minimum_improvement: FixedQ32::from_raw(minimum_improvement_q32),
-                        },
-                    OriginalMetricRoleData::NonInferiority { maximum_regression_q32 } =>
-                        MetricRoleV2::NonInferiority {
-                            maximum_regression: FixedQ32::from_raw(maximum_regression_q32),
-                        },
+                    OriginalMetricRoleData::PrimarySuperiority {
+                        minimum_improvement_q32,
+                    } => MetricRoleV2::PrimarySuperiority {
+                        minimum_improvement: FixedQ32::from_raw(minimum_improvement_q32),
+                    },
+                    OriginalMetricRoleData::NonInferiority {
+                        maximum_regression_q32,
+                    } => MetricRoleV2::NonInferiority {
+                        maximum_regression: FixedQ32::from_raw(maximum_regression_q32),
+                    },
                     OriginalMetricRoleData::AbsoluteConstraint => MetricRoleV2::AbsoluteConstraint,
                 },
             });
@@ -114,17 +139,23 @@ impl OriginalEvaluationRegistrationData {
                 },
             });
         }
-        let folds = self.folds.iter().map(|fold| Ok(CrossFoldPartitionV1 {
-            fold_id: StableId::new(&fold.fold_id).map_err(deployment_error)?,
-            training_principals: original_ids(&fold.training_principals)?,
-            training_episodes: original_ids(&fold.training_episodes)?,
-            training_windows: original_ids(&fold.training_windows)?,
-            holdout_principals: original_ids(&fold.holdout_principals)?,
-            holdout_episodes: original_ids(&fold.holdout_episodes)?,
-            holdout_windows: original_ids(&fold.holdout_windows)?,
-            model_digest: Digest32::from_array(fold.model_digest),
-            predictions_digest: Digest32::from_array(fold.predictions_digest),
-        })).collect::<Result<Vec<_>, AgentdError>>()?;
+        let folds = self
+            .folds
+            .iter()
+            .map(|fold| {
+                Ok(CrossFoldPartitionV1 {
+                    fold_id: StableId::new(&fold.fold_id).map_err(deployment_error)?,
+                    training_principals: original_ids(&fold.training_principals)?,
+                    training_episodes: original_ids(&fold.training_episodes)?,
+                    training_windows: original_ids(&fold.training_windows)?,
+                    holdout_principals: original_ids(&fold.holdout_principals)?,
+                    holdout_episodes: original_ids(&fold.holdout_episodes)?,
+                    holdout_windows: original_ids(&fold.holdout_windows)?,
+                    model_digest: Digest32::from_array(fold.model_digest),
+                    predictions_digest: Digest32::from_array(fold.predictions_digest),
+                })
+            })
+            .collect::<Result<Vec<_>, AgentdError>>()?;
         Ok(CellEvaluationRegistrationV1 {
             product: CrossFoldPlanV1 {
                 plan_id: StableId::new(&self.plan_id).map_err(deployment_error)?,
@@ -134,13 +165,16 @@ impl OriginalEvaluationRegistrationData {
                 objective_digest: Digest32::from_array(self.objective_digest),
                 dataset_digest: Digest32::from_array(self.dataset_digest),
                 estimand_digest: Digest32::from_array(self.estimand_digest),
-                metric_contracts: contracts, family_alpha_ppm: self.family_alpha_ppm,
-                simultaneous_comparisons: self.simultaneous_comparisons, folds,
+                metric_contracts: contracts,
+                family_alpha_ppm: self.family_alpha_ppm,
+                simultaneous_comparisons: self.simultaneous_comparisons,
+                folds,
                 final_holdout_window_id: StableId::new(&self.final_holdout_window_id)
                     .map_err(deployment_error)?,
                 final_holdout_digest: Digest32::from_array(self.final_holdout_digest),
             },
-            metric_roles: roles, metric_sources: sources,
+            metric_roles: roles,
+            metric_sources: sources,
             comparison: self.comparison.original()?,
         })
     }
@@ -159,12 +193,18 @@ impl OriginalQualificationContextData {
         Ok(ProductQualificationContextV1 {
             generator: self.generator.original()?,
             evaluator: self.evaluator.original()?,
-            retention_receipt_digests: self.retention_receipt_digests.iter()
-                .copied().map(Digest32::from_array).collect(),
+            retention_receipt_digests: self
+                .retention_receipt_digests
+                .iter()
+                .copied()
+                .map(Digest32::from_array)
+                .collect(),
             unlearning_receipt_digest: Digest32::from_array(self.unlearning_receipt_digest),
         })
     }
 }
 fn original_ids(data: &[String]) -> Result<Vec<StableId>, AgentdError> {
-    data.iter().map(|value| StableId::new(value).map_err(deployment_error)).collect()
+    data.iter()
+        .map(|value| StableId::new(value).map_err(deployment_error))
+        .collect()
 }

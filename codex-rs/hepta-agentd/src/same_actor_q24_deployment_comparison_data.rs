@@ -1,12 +1,18 @@
 //! Supplied comparison declarations and actual cost-coverage requirements.
 //! No count, matched budget, role or measured cost is filled in by this loader.
 
-use codex_hepta_types::StableId;
-use serde::{Deserialize, Serialize};
-use crate::{AgentdError, CellComparisonContractV1, CellCostCoverageV1,
-    CellParameterCapacityV1, CellRequiredCostMetricV1, CellSelectiveUpdateV1,
-    CellTrainingBudgetV1, CellTrainingObservationV1};
 use super::deployment_error;
+use crate::AgentdError;
+use crate::CellComparisonContractV1;
+use crate::CellCostCoverageV1;
+use crate::CellParameterCapacityV1;
+use crate::CellRequiredCostMetricV1;
+use crate::CellSelectiveUpdateV1;
+use crate::CellTrainingBudgetV1;
+use crate::CellTrainingObservationV1;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -65,7 +71,8 @@ impl OriginalTrainingObservationData {
                 schedule_digest: self.selective_update.schedule_digest,
                 maximum_parameters_per_step: self.selective_update.maximum_parameters_per_step,
             },
-            structure_before: self.structure_before, structure_after: self.structure_after,
+            structure_before: self.structure_before,
+            structure_after: self.structure_after,
             training_receipt_digest: self.training_receipt_digest,
         })
     }
@@ -73,7 +80,13 @@ impl OriginalTrainingObservationData {
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(super) enum OriginalCostMetricData {
-    Wall, Cpu, Energy, StorageRead, StorageWrite, StorageRetention, Communication,
+    Wall,
+    Cpu,
+    Energy,
+    StorageRead,
+    StorageWrite,
+    StorageRetention,
+    Communication,
 }
 impl OriginalCostMetricData {
     fn original(self) -> CellRequiredCostMetricV1 {
@@ -103,8 +116,12 @@ impl OriginalComparisonData {
             fixed_expert: self.fixed_expert.original()?,
             cost_coverage: CellCostCoverageV1 {
                 metering_contract_digest: self.metering_contract_digest,
-                required_metrics: self.required_metrics.iter().copied()
-                    .map(OriginalCostMetricData::original).collect(),
+                required_metrics: self
+                    .required_metrics
+                    .iter()
+                    .copied()
+                    .map(OriginalCostMetricData::original)
+                    .collect(),
             },
         })
     }

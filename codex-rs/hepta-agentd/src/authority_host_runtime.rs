@@ -40,12 +40,12 @@ pub(crate) use listeners::validate_runtime_lanes;
 
 #[path = "authority_host_session.rs"]
 mod session;
-pub use session::PreparedHostAuthoritySession;
-pub use session::PreparedRootSameActorQ24PhaseV1;
 pub(crate) use session::OriginalRootRetiredChannel;
 pub(crate) use session::OriginalRootRetirementLane;
 pub(crate) use session::OriginalRootRetirementPurpose;
 pub(crate) use session::OriginalRootRetirementScope;
+pub use session::PreparedHostAuthoritySession;
+pub use session::PreparedRootSameActorQ24PhaseV1;
 pub use session::RootGenerationInitialDeploymentFilesV1;
 pub use session::RootGenerationInitialDeploymentSessionV1;
 pub use session::RootGenerationInitialDeploymentV1;
@@ -56,8 +56,8 @@ pub use session::RootGenerationPublicationDeploymentV1;
 pub use session::RootGenerationPublicationEnrollmentCapabilityV1;
 pub use session::RootGenerationPublicationRegistrationV1;
 pub use session::RootNotesPolicyPredecessor;
-pub use session::RootSameActorHostAcknowledgementV1;
 pub use session::RootSameActorDeploymentHandoffsV1;
+pub use session::RootSameActorHostAcknowledgementV1;
 pub use session::RootSameActorHostCommandV1;
 pub use session::RootSameActorHostInputsV1;
 pub use session::RootSameActorInitialEnrollmentCapabilityV1;
@@ -67,12 +67,12 @@ pub use session::RootSameActorScopeEnrollmentCapabilityV1;
 pub use session::RootSameActorScopedEnrollmentV1;
 
 // Ordinary deployment reuses these original data conversions, not Root read capabilities.
+pub(crate) use session::OriginalDeploymentCurrentData;
 pub(crate) use session::OriginalDeploymentObserverData;
 pub(crate) use session::OriginalDeploymentOwnerTrustData;
-pub(crate) use session::OriginalDeploymentSelectorTrustData;
-pub(crate) use session::OriginalDeploymentCurrentData;
-pub(crate) use session::OriginalDeploymentWithdrawalData;
 pub(crate) use session::OriginalDeploymentSelectionData;
+pub(crate) use session::OriginalDeploymentSelectorTrustData;
+pub(crate) use session::OriginalDeploymentWithdrawalData;
 
 #[path = "authority_host_writer_rotate.rs"]
 mod writer_rotation;

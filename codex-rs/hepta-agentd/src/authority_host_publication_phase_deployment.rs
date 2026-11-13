@@ -60,7 +60,11 @@ impl OriginalCurrentPhaseFiles {
         ];
         files::require_absolute(&data.trigger)?;
         files::require_absolute(&data.late_material)?;
-        let original = Self { descriptor, data, directories };
+        let original = Self {
+            descriptor,
+            data,
+            directories,
+        };
         original.require_current_phase_files()?;
         Ok(original)
     }
@@ -95,7 +99,10 @@ impl OriginalCurrentPhaseFiles {
         consumer_uid: u32,
         material_digest: Digest32,
         observed_material: &[u8],
-    ) -> io::Result<(crate::RootGenerationPublicationEnrollmentV1, OriginalCurrentPhaseObservation)> {
+    ) -> io::Result<(
+        crate::RootGenerationPublicationEnrollmentV1,
+        OriginalCurrentPhaseObservation,
+    )> {
         self.require_current_phase_files()?;
         let (material_file, bytes) = MetadataFile::open_metadata(&self.data.late_material)?;
         let material: LateMaterial = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
@@ -118,11 +125,12 @@ impl OriginalCurrentPhaseFiles {
             target_witness: OriginalFile::open_original(&self.data.target_witness)?,
             withdrawal: OriginalFile::open_original(&self.data.withdrawal_file)?,
         };
-        let (inputs, artifacts) = original.enrollment_inputs(
-            &self.data, &material, consumer_uid,
-        )?;
+        let (inputs, artifacts) =
+            original.enrollment_inputs(&self.data, &material, consumer_uid)?;
         let observation = OriginalCurrentPhaseObservation {
-            inputs: original, material: material_file, artifacts,
+            inputs: original,
+            material: material_file,
+            artifacts,
         };
         self.require_current_phase_observation(&observation)?;
         Ok((inputs, observation))

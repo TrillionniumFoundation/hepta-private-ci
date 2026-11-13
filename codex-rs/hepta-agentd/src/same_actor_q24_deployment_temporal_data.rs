@@ -2,12 +2,17 @@
 //! Original canonical-digest, support and evidence validation remains in the
 //! original runner; none of these data structures is a sealed evaluation.
 
-use codex_hepta_intelligence_eval::{ClusterConfidencePlan, OpePlan, TemporalEvaluationPlan,
-    TemporalFoldPlan};
-use codex_hepta_types::{Digest32, FixedQ32, StableId};
-use serde::{Deserialize, Serialize};
-use crate::AgentdError;
 use super::deployment_error;
+use crate::AgentdError;
+use codex_hepta_intelligence_eval::ClusterConfidencePlan;
+use codex_hepta_intelligence_eval::OpePlan;
+use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
+use codex_hepta_intelligence_eval::TemporalFoldPlan;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

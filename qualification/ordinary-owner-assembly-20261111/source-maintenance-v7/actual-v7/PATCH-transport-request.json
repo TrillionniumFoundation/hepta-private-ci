@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "kind": "read-only-original-evidence-compressed-byte-transfer",
+  "script": {
+    "blob": "5e6e05edf99486b2ca01e0e5c1c305080445392c",
+    "bytes": 1440,
+    "sha256": "a1ceb5b5d1a66dc743cbc23b4aaddf08114afcf672afee6f089efb77e57f9499"
+  },
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-u",
+      "-c",
+      "import base64,hashlib,json,stat,zlib\nfrom pathlib import Path\np=Path(\"/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v7/records/final.patch\")\ns=p.lstat()\nassert stat.S_ISREG(s.st_mode) and s.st_nlink==1 and not p.is_symlink()\nraw=p.read_bytes()\nt=p.lstat()\nassert (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns)==(t.st_dev,t.st_ino,t.st_size,t.st_mtime_ns,t.st_ctime_ns)\nassert len(raw)==756178\nassert hashlib.sha256(raw).hexdigest()==\"e776f38c799c1aee19828c33e8262963341990b6c936cfe0eed64841c4037cf0\"\nassert hashlib.sha1(b\"blob \"+str(len(raw)).encode()+bytes([0])+raw).hexdigest()==\"7f8e1205d896062566a5f95fbdbe41195d714d9b\"\nencoder=zlib.compressobj(level=9,wbits=-15)\ncompressed=encoder.compress(raw)+encoder.flush()\nassert zlib.decompress(compressed,wbits=-15)==raw\nprint(json.dumps({\"schema_version\":1,\"classification\":\"READ_ONLY_ORIGINAL_EVIDENCE_BYTE_TRANSPORT_NOT_QUALIFICATION\",\"original_path\":str(p),\"original_bytes\":len(raw),\"original_sha256\":hashlib.sha256(raw).hexdigest(),\"original_git_blob\":\"7f8e1205d896062566a5f95fbdbe41195d714d9b\",\"original_version\":[str(getattr(t,x)) for x in (\"st_dev\",\"st_ino\",\"st_size\",\"st_mtime_ns\",\"st_ctime_ns\")],\"encoding\":\"raw-deflate-base64\",\"compressed_bytes\":len(compressed),\"compressed_sha256\":hashlib.sha256(compressed).hexdigest(),\"python_roundtrip_exact\":True,\"data_base64\":base64.b64encode(compressed).decode(\"ascii\")},sort_keys=True),flush=True)\n"
+    ],
+    "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v7/records",
+    "idempotency_key": "af52-future-197-maintenance-v7-patch-deflate-v1",
+    "cols": 140,
+    "rows": 40
+  }
+}

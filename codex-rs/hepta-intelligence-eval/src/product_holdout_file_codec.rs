@@ -65,7 +65,10 @@ pub fn encode_file_final_holdout_material_v1(
         writer.bytes(&row.decision_at.to_be_bytes())?;
         writer.ids(&row.actions, MAX_ACTIONS)?;
     }
-    for rows in [&inputs.candidate_observations, &inputs.baseline_observations] {
+    for rows in [
+        &inputs.candidate_observations,
+        &inputs.baseline_observations,
+    ] {
         writer.count(rows.len(), MAX_ROWS)?;
         for row in rows {
             writer.id(&row.decision_id)?;
@@ -240,9 +243,8 @@ impl Reader<'_> {
     }
 
     fn count(&mut self, limit: usize) -> Result<usize, FileError> {
-        let count = u32::from_be_bytes(
-            self.take(4)?.try_into().map_err(|_| FileError::Corrupt)?,
-        ) as usize;
+        let count =
+            u32::from_be_bytes(self.take(4)?.try_into().map_err(|_| FileError::Corrupt)?) as usize;
         if count > limit || count > self.0.len() {
             return Err(FileError::Capacity);
         }
@@ -250,9 +252,8 @@ impl Reader<'_> {
     }
 
     fn id(&mut self) -> Result<StableId, FileError> {
-        let count = u16::from_be_bytes(
-            self.take(2)?.try_into().map_err(|_| FileError::Corrupt)?,
-        ) as usize;
+        let count =
+            u16::from_be_bytes(self.take(2)?.try_into().map_err(|_| FileError::Corrupt)?) as usize;
         if !(1..=128).contains(&count) {
             return Err(FileError::Corrupt);
         }

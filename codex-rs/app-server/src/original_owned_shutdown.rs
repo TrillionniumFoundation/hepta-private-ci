@@ -28,11 +28,15 @@ pub(crate) struct OriginalAppServerFailure {
 
 impl OriginalAppServerFailure {
     fn from_io(error: io::Error) -> Self {
-        Self { error: Arc::new(error) }
+        Self {
+            error: Arc::new(error),
+        }
     }
 
     fn from_join(error: tokio::task::JoinError) -> Self {
-        Self { error: Arc::new(error) }
+        Self {
+            error: Arc::new(error),
+        }
     }
 
     pub(crate) fn to_io(&self) -> io::Error {
@@ -58,7 +62,9 @@ struct OriginalAppServerFailures(Vec<(&'static str, OriginalAppServerFailure)>);
 impl fmt::Display for OriginalAppServerFailures {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (index, (kind, error)) in self.0.iter().enumerate() {
-            if index != 0 { write!(formatter, "; ")?; }
+            if index != 0 {
+                write!(formatter, "; ")?;
+            }
             write!(formatter, "{kind}: {error}")?;
         }
         Ok(())
@@ -159,11 +165,9 @@ impl IntoFuture for OptionalAppServerTask {
         Box::pin(async move {
             match self {
                 Self::Ordinary(handle) => handle.await.map_err(io::Error::other),
-                Self::Original(job) => {
-                    OriginalAppServerJob::join_original(&job)
-                        .await
-                        .map_err(|error| error.to_io())
-                }
+                Self::Original(job) => OriginalAppServerJob::join_original(&job)
+                    .await
+                    .map_err(|error| error.to_io()),
             }
         })
     }
@@ -206,7 +210,9 @@ impl OriginalAppServerJoined {
         original: &Arc<OriginalAppServerOwnerCustody>,
     ) -> io::Result<()> {
         if !Arc::ptr_eq(&self.original, original) {
-            return Err(io::Error::other("App Server observation has another actual owner"));
+            return Err(io::Error::other(
+                "App Server observation has another actual owner",
+            ));
         }
         self.main.require_original_success()?;
         self.processor_cleanup.require_original_success()?;
@@ -214,14 +220,22 @@ impl OriginalAppServerJoined {
             task.require_original_success()?;
         }
         let state = original.state();
-        if state.poisoned || !state.sealed || !state.failures.is_empty()
+        if state.poisoned
+            || !state.sealed
+            || !state.failures.is_empty()
             || !state.unreleased_processors.is_empty()
             || state.tasks.len() != self.tasks.len()
-            || state.tasks.iter().zip(&self.tasks).any(|(actual, recorded)| {
-                actual.0 != recorded.0 || !Arc::ptr_eq(&actual.1, &recorded.1)
-            })
+            || state
+                .tasks
+                .iter()
+                .zip(&self.tasks)
+                .any(|(actual, recorded)| {
+                    actual.0 != recorded.0 || !Arc::ptr_eq(&actual.1, &recorded.1)
+                })
         {
-            return Err(io::Error::other("App Server task custody changed after terminal join"));
+            return Err(io::Error::other(
+                "App Server task custody changed after terminal join",
+            ));
         }
         Ok(())
     }
@@ -253,8 +267,12 @@ impl OriginalAppServerOwnerCustody {
             state.background_closed = true;
             (state.drain.clone(), state.transports.clone())
         };
-        if let Some(drain) = drain { drain.request_drain(); }
-        for transport in transports { transport.cancel(); }
+        if let Some(drain) = drain {
+            drain.request_drain();
+        }
+        for transport in transports {
+            transport.cancel();
+        }
     }
 
     pub(crate) async fn run_original_main(
@@ -265,7 +283,9 @@ impl OriginalAppServerOwnerCustody {
         let main = {
             let mut state = self.state();
             if state.poisoned || state.main.is_some() || self.stopping.load(Ordering::Acquire) {
-                return Err(io::Error::other("original App Server invocation cannot start again"));
+                return Err(io::Error::other(
+                    "original App Server invocation cannot start again",
+                ));
             }
             state.drain = Some(drain);
             let job = OriginalAppServerJob::result(tokio::spawn(future));
@@ -294,11 +314,15 @@ impl OriginalAppServerOwnerCustody {
 
     pub(crate) fn retain_original_transport(&self, token: &CancellationToken) {
         let mut state = self.state();
-        if !state.transports.is_empty() { state.poisoned = true; }
+        if !state.transports.is_empty() {
+            state.poisoned = true;
+        }
         state.transports.push(token.clone());
         let stopped = self.stopping.load(Ordering::Acquire);
         drop(state);
-        if stopped { token.cancel(); }
+        if stopped {
+            token.cancel();
+        }
     }
 
     pub(crate) fn seal_original_background(&self) {
@@ -316,7 +340,9 @@ impl OriginalAppServerOwnerCustody {
             return;
         }
         let job = OriginalAppServerJob::unit(tokio::spawn(future));
-        state.tasks.push((OriginalAppServerTaskKind::PluginRefresh, job));
+        state
+            .tasks
+            .push((OriginalAppServerTaskKind::PluginRefresh, job));
     }
 
     pub(crate) fn retain_unreleased_original_processor(&self, processor: Arc<MessageProcessor>) {
@@ -326,7 +352,9 @@ impl OriginalAppServerOwnerCustody {
     }
 
     pub(crate) fn record_original_failure(&self, error: io::Error) {
-        self.state().failures.push(OriginalAppServerFailure::from_io(error));
+        self.state()
+            .failures
+            .push(OriginalAppServerFailure::from_io(error));
     }
 
     pub(crate) fn retain_original_processor(&self, processor: Arc<MessageProcessor>) {
@@ -346,7 +374,9 @@ impl OriginalAppServerOwnerCustody {
         let mut state = self.state();
         // Cleanup keeps the handle even if a programming error starts work
         // after sealing; that error can never produce a successful observation.
-        if state.sealed { state.poisoned = true; }
+        if state.sealed {
+            state.poisoned = true;
+        }
         state.tasks.push((kind, Arc::clone(&job)));
         job
     }
@@ -357,9 +387,9 @@ impl OriginalAppServerOwnerCustody {
         handle: JoinHandle<()>,
     ) -> OptionalAppServerTask {
         match original {
-            Some(original) => OptionalAppServerTask::Original(
-                Self::retain_original_task(original, kind, handle),
-            ),
+            Some(original) => {
+                OptionalAppServerTask::Original(Self::retain_original_task(original, kind, handle))
+            }
             None => OptionalAppServerTask::Ordinary(handle),
         }
     }
@@ -368,7 +398,10 @@ impl OriginalAppServerOwnerCustody {
         &self,
         kind: OriginalAppServerTaskKind,
     ) -> io::Result<()> {
-        let tasks = self.state().tasks.iter()
+        let tasks = self
+            .state()
+            .tasks
+            .iter()
             .filter(|(actual, _)| *actual == kind)
             .map(|(_, task)| Arc::clone(task))
             .collect::<Vec<_>>();
@@ -378,8 +411,11 @@ impl OriginalAppServerOwnerCustody {
                 failures.push(("actual inner task", error));
             }
         }
-        if failures.is_empty() { Ok(()) }
-        else { Err(io::Error::other(OriginalAppServerFailures(failures))) }
+        if failures.is_empty() {
+            Ok(())
+        } else {
+            Err(io::Error::other(OriginalAppServerFailures(failures)))
+        }
     }
 
     pub(crate) async fn finish_original_processor(self: &Arc<Self>) -> io::Result<()> {
@@ -396,20 +432,28 @@ impl OriginalAppServerOwnerCustody {
                     let duplicate = processors.len() != 1;
                     let mut failures = Vec::new();
                     for processor in processors {
-                        if let Err(error) = MessageProcessor::finish_original_owners(
-                            processor,
-                            &original,
-                        ).await {
-                            failures.push(("actual MessageProcessor owners", OriginalAppServerFailure::from_io(error)));
+                        if let Err(error) =
+                            MessageProcessor::finish_original_owners(processor, &original).await
+                        {
+                            failures.push((
+                                "actual MessageProcessor owners",
+                                OriginalAppServerFailure::from_io(error),
+                            ));
                         }
                     }
                     if duplicate {
-                        failures.push(("processor identity", OriginalAppServerFailure::from_io(
-                            io::Error::other("original App Server has more than one processor"),
-                        )));
+                        failures.push((
+                            "processor identity",
+                            OriginalAppServerFailure::from_io(io::Error::other(
+                                "original App Server has more than one processor",
+                            )),
+                        ));
                     }
-                    if failures.is_empty() { Ok(()) }
-                    else { Err(io::Error::other(OriginalAppServerFailures(failures))) }
+                    if failures.is_empty() {
+                        Ok(())
+                    } else {
+                        Err(io::Error::other(OriginalAppServerFailures(failures)))
+                    }
                 }));
                 state.processor_cleanup = Some(Arc::clone(&job));
                 Some(job)
@@ -417,34 +461,41 @@ impl OriginalAppServerOwnerCustody {
         };
         match cleanup {
             Some(cleanup) => OriginalAppServerJob::join_original(&cleanup)
-                .await.map_err(|error| error.to_io()),
+                .await
+                .map_err(|error| error.to_io()),
             None => Ok(()),
         }
     }
 
-    pub async fn join_original_app_server(
-        self: &Arc<Self>,
-    ) -> io::Result<OriginalAppServerJoined> {
+    pub async fn join_original_app_server(self: &Arc<Self>) -> io::Result<OriginalAppServerJoined> {
         self.request_stop();
-        let main = self.state().main.clone().ok_or_else(|| {
-            io::Error::other("original App Server main was never started")
-        })?;
+        let main = self
+            .state()
+            .main
+            .clone()
+            .ok_or_else(|| io::Error::other("original App Server main was never started"))?;
         let mut failures = Vec::new();
         if let Err(error) = OriginalAppServerJob::join_original(&main).await {
             failures.push(("actual main", error));
         }
         if let Err(error) = Self::finish_original_processor(self).await {
-            failures.push(("processor cleanup", OriginalAppServerFailure::from_io(error)));
+            failures.push((
+                "processor cleanup",
+                OriginalAppServerFailure::from_io(error),
+            ));
         }
         // The actual main and processor cleanup have ended. Their retained
         // producer tasks are joined in order by finish_original_owners; no
         // background count or zero Arc count substitutes for these awaits.
         let mut observed = 0;
         loop {
-            let tasks = self.state().tasks[observed..].iter()
+            let tasks = self.state().tasks[observed..]
+                .iter()
                 .map(|(kind, task)| (*kind, Arc::clone(task)))
                 .collect::<Vec<_>>();
-            if tasks.is_empty() { break; }
+            if tasks.is_empty() {
+                break;
+            }
             for (_, task) in &tasks {
                 if let Err(error) = OriginalAppServerJob::join_original(task).await {
                     failures.push(("actual retained inner task", error));
@@ -455,11 +506,20 @@ impl OriginalAppServerOwnerCustody {
         let (tasks, processor_cleanup) = {
             let mut state = self.state();
             state.sealed = true;
-            failures.extend(state.failures.iter().cloned().map(|error| ("original owner", error)));
+            failures.extend(
+                state
+                    .failures
+                    .iter()
+                    .cloned()
+                    .map(|error| ("original owner", error)),
+            );
             if state.poisoned {
-                failures.push(("custody", OriginalAppServerFailure::from_io(
-                    io::Error::other("original App Server custody poisoned"),
-                )));
+                failures.push((
+                    "custody",
+                    OriginalAppServerFailure::from_io(io::Error::other(
+                        "original App Server custody poisoned",
+                    )),
+                ));
             }
             for required in [
                 OriginalAppServerTaskKind::Acceptor,
@@ -468,9 +528,12 @@ impl OriginalAppServerOwnerCustody {
                 OriginalAppServerTaskKind::Telemetry,
             ] {
                 if !state.tasks.iter().any(|(kind, _)| *kind == required) {
-                    failures.push(("startup", OriginalAppServerFailure::from_io(
-                        io::Error::other(format!("original App Server task absent: {required:?}")),
-                    )));
+                    failures.push((
+                        "startup",
+                        OriginalAppServerFailure::from_io(io::Error::other(format!(
+                            "original App Server task absent: {required:?}"
+                        ))),
+                    ));
                 }
             }
             (state.tasks.clone(), state.processor_cleanup.clone())
@@ -478,11 +541,13 @@ impl OriginalAppServerOwnerCustody {
         if !failures.is_empty() {
             return Err(io::Error::other(OriginalAppServerFailures(failures)));
         }
-        let processor_cleanup = processor_cleanup.ok_or_else(|| {
-            io::Error::other("original App Server processor was never owned")
-        })?;
+        let processor_cleanup = processor_cleanup
+            .ok_or_else(|| io::Error::other("original App Server processor was never owned"))?;
         let joined = OriginalAppServerJoined {
-            original: Arc::clone(self), main, processor_cleanup, tasks,
+            original: Arc::clone(self),
+            main,
+            processor_cleanup,
+            tasks,
         };
         OriginalAppServerJoined::require_original_custody(&joined, self)?;
         Ok(joined)
@@ -500,16 +565,15 @@ impl Drop for StopOriginalAppServerOnDrop {
 }
 
 /// Aggregate original sources without replacing actual failures by success.
-pub(crate) fn finish_original_failures(
-    failures: Vec<(&'static str, io::Error)>,
-) -> io::Result<()> {
+pub(crate) fn finish_original_failures(failures: Vec<(&'static str, io::Error)>) -> io::Result<()> {
     if failures.is_empty() {
         Ok(())
     } else {
         Err(io::Error::other(OriginalAppServerFailures(
-            failures.into_iter().map(|(kind, error)| {
-                (kind, OriginalAppServerFailure::from_io(error))
-            }).collect(),
+            failures
+                .into_iter()
+                .map(|(kind, error)| (kind, OriginalAppServerFailure::from_io(error)))
+                .collect(),
         )))
     }
 }

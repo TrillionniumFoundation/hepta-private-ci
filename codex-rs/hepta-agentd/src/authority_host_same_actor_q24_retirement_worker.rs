@@ -37,7 +37,9 @@ impl OriginalRootPhaseWorkersJoined {
         retirement: &crate::OriginalRootRetirementScope,
     ) -> io::Result<()> {
         if !std::ptr::eq(self.business.retirement.as_ref(), retirement) {
-            return Err(io::Error::other("Root joined scope replaced its original retirement owner"));
+            return Err(io::Error::other(
+                "Root joined scope replaced its original retirement owner",
+            ));
         }
         self.business.lanes.require_original(retirement)?;
         self.business.scoped.channels.require_original(retirement)

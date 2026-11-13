@@ -36,7 +36,9 @@ impl OriginalLearningLoopRetired {
             )
         {
             work.gate().close();
-            return Err(refused("retired Learning bootstrap differs from its terminal owner"));
+            return Err(refused(
+                "retired Learning bootstrap differs from its terminal owner",
+            ));
         }
         // This is the retained immutable scope/ports binding. It does not
         // reopen a stopped lane or request a new current-authority observation.
@@ -55,7 +57,10 @@ impl OriginalLearningLoopRetired {
     ) -> Result<(), AgentdError> {
         OriginalLearningLoopRetired::require_original_work(self, work)?;
         intent.require_original_origin(identity, work.gate())?;
-        let owners = self.bootstrap.original_q24.as_ref()
+        let owners = self
+            .bootstrap
+            .original_q24
+            .as_ref()
             .ok_or_else(|| refused("retired Learning lost its actual aggregate"))?;
         OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose(
             owners, intent, identity, work,
@@ -88,7 +93,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 &attempt.state,
                 &attempt.cancellation,
                 &attempt.work,
-            ).await;
+            )
+            .await;
             let stop = match result {
                 Ok(stop) => stop,
                 Err(error) => {
@@ -156,10 +162,12 @@ impl LearningIterationRuntimeBootstrapV1 {
                     command = self.receiver.recv() => command,
                 };
                 if let Some(command) = remaining {
-                    let _ = command.response.send(Err(
-                        LearningIterationRuntimeErrorV1::CommitUncertain,
+                    let _ = command
+                        .response
+                        .send(Err(LearningIterationRuntimeErrorV1::CommitUncertain));
+                    return Err(refused(
+                        "an original Learning reservation survived the terminal cut",
                     ));
-                    return Err(refused("an original Learning reservation survived the terminal cut"));
                 }
                 OriginalLearningStop::require_original_work(&stop, work)?;
                 return Ok(stop);
@@ -176,7 +184,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                 command = self.receiver.recv() => command,
             };
             let Some(command) = command else {
-                return Err(refused("original Learning queue closed without its terminal stop"));
+                return Err(refused(
+                    "original Learning queue closed without its terminal stop",
+                ));
             };
             let LearningIterationCommandV1 {
                 mode,
@@ -184,7 +194,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                 mut response,
             } = command;
             if response.is_closed() {
-                return Err(refused("original Learning caller disappeared before dispatch"));
+                return Err(refused(
+                    "original Learning caller disappeared before dispatch",
+                ));
             }
             // Keep the original process and original per-request budget. This
             // outer bound is the unchanged receive's absolute phase end.

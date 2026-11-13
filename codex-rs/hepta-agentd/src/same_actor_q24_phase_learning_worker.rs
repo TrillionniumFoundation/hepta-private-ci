@@ -9,9 +9,9 @@ use tokio_util::sync::CancellationToken;
 use crate::AgentdError;
 use crate::AgentdState;
 use crate::LearningIterationRuntimeBootstrapV1;
-use crate::learning_iteration_checkpoint::OriginalLearningCheckpointRetirement;
 use crate::circuit_q24_successor::PendingSuccessorOwner;
 use crate::learning_iteration::CircuitLearningDeliveryRuntimeV1;
+use crate::learning_iteration_checkpoint::OriginalLearningCheckpointRetirement;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 
@@ -164,5 +164,5 @@ impl OriginalSameActorLearningWorker {
 mod retirement;
 pub(crate) use retirement::OriginalRetiredLearningOwners;
 pub(crate) use retirement::OriginalRetiredLearningPurposes;
-pub(crate) use retirement::OriginalSameActorLearningPurposesRetired;
 pub(crate) use retirement::OriginalSameActorLearningJoined;
+pub(crate) use retirement::OriginalSameActorLearningPurposesRetired;

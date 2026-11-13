@@ -21,18 +21,18 @@ use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 #[path = "root_authority_session_consumer_jobs.rs"]
 mod consumer_jobs;
 pub(super) use consumer_jobs::OriginalConsumerAdmission;
-pub(super) use consumer_jobs::OriginalConsumerJobs;
 pub(crate) use consumer_jobs::OriginalConsumerFailure;
+pub(super) use consumer_jobs::OriginalConsumerJobs;
 pub(crate) use consumer_jobs::OriginalConsumerJoinSummary;
 
 #[path = "root_authority_session_normal.rs"]
 mod normal;
 pub(super) use normal::OriginalPausedObservationResources;
-pub(super) use normal::OriginalSessionPauseControl;
+pub(crate) use normal::OriginalRootSessionFullyRetired;
+pub(crate) use normal::OriginalRootSessionObservationRetired;
 pub(crate) use normal::OriginalRootSessionPauseWaiter;
 pub(crate) use normal::OriginalRootSessionPaused;
-pub(crate) use normal::OriginalRootSessionObservationRetired;
-pub(crate) use normal::OriginalRootSessionFullyRetired;
+pub(super) use normal::OriginalSessionPauseControl;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum OriginalRootWorkerTermination {
@@ -147,7 +147,12 @@ impl OriginalRootSessionCustodySlot {
             original.request_stop();
             AgentdRootAuthorityError::Unavailable
         })?;
-        if state.stopped || !state.original.as_ref().is_some_and(|cap| Arc::ptr_eq(cap, original)) {
+        if state.stopped
+            || !state
+                .original
+                .as_ref()
+                .is_some_and(|cap| Arc::ptr_eq(cap, original))
+        {
             original.request_stop();
             return Err(AgentdRootAuthorityError::Refused);
         }
@@ -173,13 +178,18 @@ impl OriginalRootSessionCustodySlot {
             // successful bootstrap or normal phase termination.
             return Ok(OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned });
         };
-        original.join_original_retired_session_custody(slot_poisoned).await
+        original
+            .join_original_retired_session_custody(slot_poisoned)
+            .await
     }
 }
 
 impl Drop for OriginalRootSessionCustodySlot {
     fn drop(&mut self) {
-        let state = self.state.get_mut().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let state = self
+            .state
+            .get_mut()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         state.stopped = true;
         if let Some(original) = &state.original {
             original.request_stop();
@@ -243,7 +253,9 @@ impl OriginalRootSessionCustody {
     }
 
     pub(super) fn retirement_notice(self: &Arc<Self>) -> OriginalSessionRetirement {
-        OriginalSessionRetirement { custody: Arc::clone(self) }
+        OriginalSessionRetirement {
+            custody: Arc::clone(self),
+        }
     }
 
     fn request_stop(&self) {
@@ -261,14 +273,18 @@ impl OriginalRootSessionCustody {
     ) -> Result<OriginalRootSessionJoinObservation, AgentdError> {
         self.request_stop();
         if !self.session_retired.load(Ordering::Acquire) {
-            return Err(join_error("actual Session must be dropped before joining its retired tasks"));
+            return Err(join_error(
+                "actual Session must be dropped before joining its retired tasks",
+            ));
         }
         let worker = {
             let mut state = self.worker.lock().await;
             if let Some(observed) = state.observed {
                 observed
             } else {
-                let handle = state.handle.as_mut()
+                let handle = state
+                    .handle
+                    .as_mut()
                     .ok_or_else(|| join_error("actual Root observation handle is unavailable"))?;
                 let observed = match handle.await {
                     Ok(()) => OriginalRootWorkerTermination::Returned,
@@ -286,7 +302,11 @@ impl OriginalRootSessionCustody {
         self.pause.discard_after_actual_worker_join();
         // Its earlier ConsumerSyncJob closures may still be running, so join
         // every retained actual handle too. No serial/owner mutex is held.
-        let consumers = self.consumers.join_stopped_consumers().await.map_err(join_error)?;
+        let consumers = self
+            .consumers
+            .join_stopped_consumers()
+            .await
+            .map_err(join_error)?;
         Ok(OriginalRootSessionJoinObservation::Joined {
             slot_poisoned,
             worker,
@@ -350,14 +370,21 @@ impl super::AgentdRootAuthoritySession {
         &self,
         slot: &OriginalRootSessionCustodySlot,
     ) -> Result<(), AgentdRootAuthorityError> {
-        let original = self.worker.phase_custody().ok_or(AgentdRootAuthorityError::Refused)?;
-        if !self.live.phase.as_ref().is_some_and(|phase| Arc::ptr_eq(phase, &original.gate)) {
+        let original = self
+            .worker
+            .phase_custody()
+            .ok_or(AgentdRootAuthorityError::Refused)?;
+        if !self
+            .live
+            .phase
+            .as_ref()
+            .is_some_and(|phase| Arc::ptr_eq(phase, &original.gate))
+        {
             original.request_stop();
             return Err(AgentdRootAuthorityError::Refused);
         }
         slot.require_original(original)
     }
-
 }
 
 fn join_error(error: impl std::fmt::Display) -> AgentdError {

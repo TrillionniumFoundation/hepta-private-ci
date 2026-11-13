@@ -2,15 +2,15 @@
 //! and natural Circuit join. A pause retains the same stream and its failure
 //! guards; it grants no Root retirement permission and releases no purpose FD.
 
-use super::*;
 use super::super::FenceOnDrop;
 use super::super::RootObservationStream;
 use super::super::SameActorPhaseStream;
 use super::super::check_lifetime;
+use super::*;
 use crate::AgentdIdentity;
-use crate::same_actor_q24_deployment::OriginalRootRetirementIntent;
 use crate::circuit_task::OriginalCircuitNaturalJoin;
 use crate::circuit_task::OriginalSameActorCJoined;
+use crate::same_actor_q24_deployment::OriginalRootRetirementIntent;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 use tokio::sync::Notify;
 
@@ -111,7 +111,9 @@ impl OriginalSessionPauseControl {
         resources: OriginalPausedObservationResources,
         consumers: &Arc<OriginalConsumerJobs>,
     ) -> Result<(), AgentdRootAuthorityError> {
-        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        self.gate
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         let serial = tokio::select! {
             permit = resources.live.serial.acquire() =>
                 permit.map_err(|_| AgentdRootAuthorityError::Unavailable)?,
@@ -120,11 +122,17 @@ impl OriginalSessionPauseControl {
                 self.gate.deadline().instant(),
             )) => return Err(AgentdRootAuthorityError::Unavailable),
         };
-        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        self.gate
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         check_lifetime(resources.live.root.get_ref())?;
         if !resources.live.active.load(Ordering::Acquire)
             || consumers.worker_failure().is_some()
-            || !resources.live.phase.as_ref().is_some_and(|gate| Arc::ptr_eq(gate, &self.gate))
+            || !resources
+                .live
+                .phase
+                .as_ref()
+                .is_some_and(|gate| Arc::ptr_eq(gate, &self.gate))
         {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -133,10 +141,15 @@ impl OriginalSessionPauseControl {
         consumers.stop_original_normal_admission()?;
         resources.live.active.store(false, Ordering::Release);
         resources.live.cache.fence();
-        self.gate.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        self.gate
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         check_lifetime(resources.live.root.get_ref())?;
         drop(serial);
-        let mut state = self.state.lock().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if !matches!(*state, OriginalPauseState::Requested) {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -150,19 +163,25 @@ impl OriginalSessionPauseControl {
         let mut state = self.state.lock().map_err(join_error)?;
         self.gate.require_open().map_err(join_error)?;
         if !matches!(*state, OriginalPauseState::Parked(_)) {
-            return Err(join_error("actual observation worker did not park its original resources"));
+            return Err(join_error(
+                "actual observation worker did not park its original resources",
+            ));
         }
         let OriginalPauseState::Parked(resources) =
             std::mem::replace(&mut *state, OriginalPauseState::Taken)
         else {
-            return Err(join_error("actual paused Session resources changed under their lock"));
+            return Err(join_error(
+                "actual paused Session resources changed under their lock",
+            ));
         };
         Ok(*resources)
     }
 
     pub(super) fn discard_after_actual_worker_join(&self) {
         let previous = {
-            let mut state = self.state.lock()
+            let mut state = self
+                .state
+                .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
             std::mem::replace(&mut *state, OriginalPauseState::Taken)
         };
@@ -218,9 +237,13 @@ impl OriginalRootSessionCustodySlot {
         let original = {
             let state = self.state.lock().map_err(join_error)?;
             if state.stopped {
-                return Err(join_error("fault-stopped Session cannot request normal pause"));
+                return Err(join_error(
+                    "fault-stopped Session cannot request normal pause",
+                ));
             }
-            state.original.clone()
+            state
+                .original
+                .clone()
                 .ok_or_else(|| join_error("normal pause has no original Session custody"))?
         };
         original.require_original_pause_origin(identity, gate)?;
@@ -244,8 +267,13 @@ impl OriginalRootSessionCustodySlot {
     ) -> Result<OriginalRootSessionPauseWaiter, AgentdError> {
         let gate = {
             let state = self.state.lock().map_err(join_error)?;
-            Arc::clone(&state.original.as_ref()
-                .ok_or_else(|| join_error("component has no real Session"))?.gate)
+            Arc::clone(
+                &state
+                    .original
+                    .as_ref()
+                    .ok_or_else(|| join_error("component has no real Session"))?
+                    .gate,
+            )
         };
         let closing = CloseSameActorPhaseOnDrop::new(&gate);
         self.request_original_pause_waiter(identity, &gate, closing)
@@ -262,15 +290,26 @@ impl OriginalRootSessionCustody {
             || self.session_retired.load(Ordering::Acquire)
             || self._writer_file.get().is_none()
         {
-            return Err(join_error("normal pause differs from the retained original Session"));
+            return Err(join_error(
+                "normal pause differs from the retained original Session",
+            ));
         }
         self.gate.require_open().map_err(join_error)?;
-        let live = self.live.upgrade()
+        let live = self
+            .live
+            .upgrade()
             .ok_or_else(|| join_error("normal pause lost its original LiveRoot"))?;
-        if !live.proof.matches_registered_process(&identity.agent_id, identity.spawn_generation)
-            || !live.phase.as_ref().is_some_and(|phase| Arc::ptr_eq(phase, gate))
+        if !live
+            .proof
+            .matches_registered_process(&identity.agent_id, identity.spawn_generation)
+            || !live
+                .phase
+                .as_ref()
+                .is_some_and(|phase| Arc::ptr_eq(phase, gate))
         {
-            return Err(join_error("normal pause differs from the original registered process"));
+            return Err(join_error(
+                "normal pause differs from the original registered process",
+            ));
         }
         check_lifetime(live.root.get_ref()).map_err(join_error)?;
         // No ordinary current() call: intentional pause fences that cache.
@@ -281,15 +320,14 @@ impl OriginalRootSessionCustody {
 impl OriginalRootSessionPauseWaiter {
     pub(crate) fn join_original_paused(
         self,
-    ) -> impl std::future::Future<Output = Result<OriginalRootSessionPaused, AgentdError>>
-    + Send
-    + 'static {
+    ) -> impl std::future::Future<Output = Result<OriginalRootSessionPaused, AgentdError>> + Send + 'static
+    {
         let attempt = self;
         async move {
             let mut attempt = attempt;
-            attempt.original.require_original_pause_origin(
-                &attempt.identity, &attempt.original.gate,
-            )?;
+            attempt
+                .original
+                .require_original_pause_origin(&attempt.identity, &attempt.original.gate)?;
             let worker = {
                 let mut state = attempt.original.worker.lock().await;
                 if let Some(observed) = state.observed {
@@ -302,7 +340,9 @@ impl OriginalRootSessionPauseWaiter {
                     // leaves it available to the actual outer fault custodian.
                     let observed = match handle.await {
                         Ok(()) => OriginalRootWorkerTermination::Returned,
-                        Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,
+                        Err(error) if error.is_cancelled() => {
+                            OriginalRootWorkerTermination::Cancelled
+                        }
                         Err(_) => OriginalRootWorkerTermination::Panicked,
                     };
                     state.handle = None;
@@ -313,18 +353,26 @@ impl OriginalRootSessionPauseWaiter {
             if worker != OriginalRootWorkerTermination::Returned
                 || attempt.original.consumers.worker_failure().is_some()
             {
-                return Err(join_error("original observation worker failed instead of pausing"));
+                return Err(join_error(
+                    "original observation worker failed instead of pausing",
+                ));
             }
-            let consumers = attempt.original.consumers.join_original_paused_consumers().await
+            let consumers = attempt
+                .original
+                .consumers
+                .join_original_paused_consumers()
+                .await
                 .map_err(join_error)?;
-            attempt.original.require_original_pause_origin(
-                &attempt.identity, &attempt.original.gate,
-            )?;
+            attempt
+                .original
+                .require_original_pause_origin(&attempt.identity, &attempt.original.gate)?;
             let resources = attempt.original.pause.take_original_parked()?;
             if !Arc::ptr_eq(&resources._writer_file, &attempt.original._writer_file)
                 || resources.live.active.load(Ordering::Acquire)
             {
-                return Err(join_error("paused observation resources differ or remain active"));
+                return Err(join_error(
+                    "paused observation resources differ or remain active",
+                ));
             }
             let paused = OriginalRootSessionPaused {
                 _closing: CloseSameActorPhaseOnDrop::new(&attempt.original.gate),
@@ -334,7 +382,9 @@ impl OriginalRootSessionPauseWaiter {
                 consumers,
             };
             OriginalRootSessionPaused::require_original_origin(
-                &paused, &paused.identity, &paused.original.gate,
+                &paused,
+                &paused.identity,
+                &paused.original.gate,
             )?;
             attempt.closing.disarm();
             Ok(paused)
@@ -349,7 +399,9 @@ impl OriginalRootSessionPaused {
         gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
         if self.resources._stream.is_none() || self.resources._stop.is_none() {
-            return Err(join_error("original paused observation purpose was already consumed"));
+            return Err(join_error(
+                "original paused observation purpose was already consumed",
+            ));
         }
         self.require_original_joined_custody(identity, gate)
     }
@@ -363,7 +415,10 @@ impl OriginalRootSessionPaused {
             || !Arc::ptr_eq(&self.resources._writer_file, &self.original._writer_file)
             || !Arc::ptr_eq(
                 &self.resources.live,
-                &self.original.live.upgrade()
+                &self
+                    .original
+                    .live
+                    .upgrade()
                     .ok_or_else(|| join_error("paused Session lost its original LiveRoot"))?,
             )
             || self.resources.live.active.load(Ordering::Acquire)
@@ -389,17 +444,25 @@ impl OriginalRootSessionPaused {
         intent: &OriginalRootRetirementIntent,
     ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {
         OriginalRootSessionPaused::require_original_origin(
-            &self, &self.identity, &self.original.gate,
+            &self,
+            &self.identity,
+            &self.original.gate,
         )?;
         OriginalRootRetirementIntent::require_original_origin(
-            intent, &self.identity, &self.original.gate,
+            intent,
+            &self.identity,
+            &self.original.gate,
         )?;
         let retired = self.release_original_observation_resources()?;
         OriginalRootRetirementIntent::require_original_origin(
-            intent, &retired.original.identity, &retired.original.original.gate,
+            intent,
+            &retired.original.identity,
+            &retired.original.original.gate,
         )?;
         OriginalRootSessionObservationRetired::require_original_origin(
-            &retired, &retired.original.identity, &retired.original.original.gate,
+            &retired,
+            &retired.original.identity,
+            &retired.original.original.gate,
         )?;
         Ok(retired)
     }
@@ -408,11 +471,19 @@ impl OriginalRootSessionPaused {
         mut self,
     ) -> Result<OriginalRootSessionObservationRetired, AgentdError> {
         OriginalRootSessionPaused::require_original_origin(
-            &self, &self.identity, &self.original.gate,
+            &self,
+            &self.identity,
+            &self.original.gate,
         )?;
-        let stream = self.resources._stream.take()
+        let stream = self
+            .resources
+            ._stream
+            .take()
             .ok_or_else(|| join_error("original observation stream is missing"))?;
-        let stop = self.resources._stop.take()
+        let stop = self
+            .resources
+            ._stop
+            .take()
             .ok_or_else(|| join_error("original observation shutdown alias is missing"))?;
         // These are the actual original descriptors, after real worker and
         // consumer joins. No mutex, frame or owner callback remains in flight.
@@ -421,7 +492,9 @@ impl OriginalRootSessionPaused {
         drop(stop);
         let retired = OriginalRootSessionObservationRetired { original: self };
         OriginalRootSessionObservationRetired::require_original_origin(
-            &retired, &retired.original.identity, &retired.original.original.gate,
+            &retired,
+            &retired.original.identity,
+            &retired.original.original.gate,
         )?;
         Ok(retired)
     }

@@ -67,9 +67,7 @@ pub(crate) struct ObserverData {
 }
 
 impl ObserverData {
-    pub(crate) fn original_observer_config(
-        &self,
-    ) -> io::Result<CellGenerationObserverConfigV1> {
+    pub(crate) fn original_observer_config(&self) -> io::Result<CellGenerationObserverConfigV1> {
         Ok(CellGenerationObserverConfigV1 {
             generation: self.generation.clone(),
             journal_records: self.journal_records,
@@ -136,9 +134,7 @@ pub(crate) struct OwnerTrustData {
 }
 
 impl OwnerTrustData {
-    pub(crate) fn original_owner_trust(
-        &self,
-    ) -> io::Result<ArtifactOwnerTrustV1> {
+    pub(crate) fn original_owner_trust(&self) -> io::Result<ArtifactOwnerTrustV1> {
         Ok(ArtifactOwnerTrustV1 {
             registry_id: StableId::new(&self.registry_id).map_err(io::Error::other)?,
             withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),
@@ -209,9 +205,7 @@ pub(crate) struct CurrentData {
 }
 
 impl CurrentData {
-    pub(crate) fn original_current(
-        &self,
-    ) -> io::Result<SignedCurrentArtifactHeadV1> {
+    pub(crate) fn original_current(&self) -> io::Result<SignedCurrentArtifactHeadV1> {
         Ok(SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),
             binding: Digest32::from_array(self.binding),
@@ -290,9 +284,7 @@ pub(crate) enum ModelKind {
 }
 
 impl SelectionData {
-    pub(crate) fn original_selection(
-        &self,
-    ) -> io::Result<SignedArtifactSelectionV1> {
+    pub(crate) fn original_selection(&self) -> io::Result<SignedArtifactSelectionV1> {
         Ok(SignedArtifactSelectionV1 {
             selection_id: StableId::new(&self.selection_id).map_err(io::Error::other)?,
             artifact_id: StableId::new(&self.artifact_id).map_err(io::Error::other)?,

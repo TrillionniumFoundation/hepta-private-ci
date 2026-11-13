@@ -35,8 +35,8 @@ pub(crate) use same_actor::OriginalSameActorSuccessorTaskParts;
 pub(crate) use same_actor::prepare_original_same_actor_successor;
 use state::CloseOnDrop;
 use state::InstallationWork;
-pub(crate) use state::SuccessorSlot;
 pub(crate) use state::OriginalSuccessorWorkerJoined;
+pub(crate) use state::SuccessorSlot;
 pub(crate) use worker::PendingSuccessorOwner;
 
 /// The original preparation may already be durable. The cause is retained;

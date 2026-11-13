@@ -11,8 +11,7 @@ use serde::Serialize;
 use crate::same_actor_q24_deployment_protocol::FRAME_BOUND;
 use crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;
 
-pub(crate) const RETIREMENT_PURPOSE: &str =
-    "hepta.same-actor-q24-deployment.root-retirement.v1";
+pub(crate) const RETIREMENT_PURPOSE: &str = "hepta.same-actor-q24-deployment.root-retirement.v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -47,7 +46,11 @@ impl OriginalRootRetirementRequest {
             (2, OriginalRootRetirementStage::ObserveRootWorkersJoined, Some(intent)) => {
                 require_digest(intent)?;
             }
-            _ => return Err(io::Error::other("original Root retirement sequence differs")),
+            _ => {
+                return Err(io::Error::other(
+                    "original Root retirement sequence differs",
+                ));
+            }
         }
         encode_bounded(self)
     }
@@ -58,7 +61,9 @@ impl OriginalRootRetirementRequest {
         }
         let request: Self = serde_json::from_slice(bytes).map_err(io::Error::other)?;
         if request.encode_original()? != bytes {
-            return Err(io::Error::other("canonical Root retirement request required"));
+            return Err(io::Error::other(
+                "canonical Root retirement request required",
+            ));
         }
         Ok(request)
     }
@@ -86,7 +91,9 @@ impl OriginalRootRetirementRequest {
             || self.stage != stage
             || self.original_intent.as_deref() != original_intent
         {
-            return Err(io::Error::other("original Root retirement correlation changed"));
+            return Err(io::Error::other(
+                "original Root retirement correlation changed",
+            ));
         }
         Ok(())
     }
@@ -122,7 +129,9 @@ impl OriginalRootRetirementAcknowledgement {
             || self.original_request != request.digest()?
             || self.original_intent != intent
         {
-            return Err(io::Error::other("original Root retirement acknowledgement differs"));
+            return Err(io::Error::other(
+                "original Root retirement acknowledgement differs",
+            ));
         }
         Ok(())
     }
@@ -142,11 +151,15 @@ impl OriginalRootRetirementAcknowledgement {
         intent: &str,
     ) -> io::Result<Self> {
         if bytes.is_empty() || bytes.len() > FRAME_BOUND {
-            return Err(io::Error::other("bounded Root retirement acknowledgement required"));
+            return Err(io::Error::other(
+                "bounded Root retirement acknowledgement required",
+            ));
         }
         let response: Self = serde_json::from_slice(bytes).map_err(io::Error::other)?;
         if response.encode_original(request, intent)? != bytes {
-            return Err(io::Error::other("canonical Root retirement acknowledgement required"));
+            return Err(io::Error::other(
+                "canonical Root retirement acknowledgement required",
+            ));
         }
         Ok(response)
     }
@@ -155,7 +168,9 @@ impl OriginalRootRetirementAcknowledgement {
 fn require_digest(value: &str) -> io::Result<()> {
     let digest = value.parse::<Digest32>().map_err(io::Error::other)?;
     if digest.is_zero() || digest.to_string() != value {
-        return Err(io::Error::other("canonical original Root retirement digest required"));
+        return Err(io::Error::other(
+            "canonical original Root retirement digest required",
+        ));
     }
     Ok(())
 }
@@ -163,7 +178,9 @@ fn require_digest(value: &str) -> io::Result<()> {
 fn encode_bounded(value: &impl Serialize) -> io::Result<Vec<u8>> {
     let bytes = serde_json::to_vec(value).map_err(io::Error::other)?;
     if bytes.is_empty() || bytes.len() > FRAME_BOUND {
-        return Err(io::Error::other("Root retirement frame exceeds its original bound"));
+        return Err(io::Error::other(
+            "Root retirement frame exceeds its original bound",
+        ));
     }
     Ok(bytes)
 }

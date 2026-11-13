@@ -416,7 +416,6 @@ fn run_original_scoped_phase(
     )
 }
 
-
 #[path = "authority_host_same_actor_q24_retirement_worker.rs"]
 mod retirement_worker;
 pub(super) use retirement_worker::OriginalRootPhaseWorkersJoined;

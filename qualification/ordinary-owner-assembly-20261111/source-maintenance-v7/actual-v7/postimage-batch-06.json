@@ -1,0 +1,1063 @@
+{
+  "schema_version": 1,
+  "kind": "actual_formatter_postimage_batch_receipt",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "batch": 6,
+  "source_manifest": {
+    "git_blob": "d7550e33b1c46ca58c73fa81ea037abbc902f7b5",
+    "bytes": 144091,
+    "sha256": "15a824b764ac38b13541507bf45e1822ce2bcfb440ca7ae1dd60efa2915f8155"
+  },
+  "patch": {
+    "git_blob": "7f8e1205d896062566a5f95fbdbe41195d714d9b",
+    "bytes": 756178,
+    "sha256": "e776f38c799c1aee19828c33e8262963341990b6c936cfe0eed64841c4037cf0"
+  },
+  "reconstructor": {
+    "git_blob": "37994ecccbb147ce5ed41ddb9077e158c16e2704",
+    "bytes": 6769,
+    "sha256": "337032e08b69b3c0e69796c702be1f0c29686a0771a160422a09b20ff7139396"
+  },
+  "range": {
+    "start_inclusive": 120,
+    "end_exclusive": 140,
+    "total": 159
+  },
+  "previous_batch": {
+    "git_blob": "63f1454ac4c4a8e9da60ddacfd8a8f5d0d9958c4",
+    "bytes": 35849,
+    "sha256": "2b72c29008d432b236480f66cdab85619d461ef8c36fda509dec3284feecc7a3"
+  },
+  "files": [
+    {
+      "ordinal": 120,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "pre": {
+        "git_blob": "307446354758465d91a01ec6ba8dc4832b731049",
+        "bytes": 2874,
+        "sha256": "b6de56fcae3f541a251e114e45f79e88c474e8c40bcb1e462d700ed1c9f604fd"
+      },
+      "post": {
+        "git_blob": "280ff9a1009900edd9d006d08d6873c5e1be3f3d",
+        "bytes": 3186,
+        "sha256": "894f6b4f34135a3f5cb16690634ec9f303aee23e9da2da3d7d395e2ddc3d0d18"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 1,
+          "old_count": 15,
+          "new_start": 1,
+          "new_count": 19,
+          "patch_header_line": 13007
+        },
+        {
+          "old_start": 33,
+          "old_count": 24,
+          "new_start": 37,
+          "new_count": 43,
+          "patch_header_line": 13033
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "280ff9a1009900edd9d006d08d6873c5e1be3f3d",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 121,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_observation_data.rs",
+      "pre": {
+        "git_blob": "a895514e7f23a9ab66a265478bea2122eebfa7d7",
+        "bytes": 4533,
+        "sha256": "b00a4a945e0758290198c32bc3c7510c0a5455453ed3335fe7ec1e668da67404"
+      },
+      "post": {
+        "git_blob": "d97cb55900a609bba4edb07ea2edab299ef1fd49",
+        "bytes": 4715,
+        "sha256": "ec95200e92bf06addfa50a12a513c1d7e689ad9e51c392218bfb71e05918e9d3"
+      },
+      "hunk_count": 5,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 2,
+          "old_count": 16,
+          "new_start": 2,
+          "new_count": 18,
+          "patch_header_line": 13090
+        },
+        {
+          "old_start": 41,
+          "old_count": 14,
+          "new_start": 43,
+          "new_count": 18,
+          "patch_header_line": 13117
+        },
+        {
+          "old_start": 56,
+          "old_count": 10,
+          "new_start": 62,
+          "new_count": 10,
+          "patch_header_line": 13138
+        },
+        {
+          "old_start": 87,
+          "old_count": 7,
+          "new_start": 93,
+          "new_count": 8,
+          "patch_header_line": 13153
+        },
+        {
+          "old_start": 95,
+          "old_count": 9,
+          "new_start": 102,
+          "new_count": 12,
+          "patch_header_line": 13163
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "d97cb55900a609bba4edb07ea2edab299ef1fd49",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 122,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "pre": {
+        "git_blob": "76475a83fd3680c9601a6582749e649d626979b8",
+        "bytes": 5290,
+        "sha256": "0d37d9c9922f2eea29ecebd92388011d954979ca92a928f5aea14259a1f578db"
+      },
+      "post": {
+        "git_blob": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+        "bytes": 5349,
+        "sha256": "094fe7a218bb085c716b10d6f248a84f0550b9b37711ad76a4f21e651488cc85"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 71,
+          "old_count": 7,
+          "new_start": 71,
+          "new_count": 10,
+          "patch_header_line": 13182
+        },
+        {
+          "old_start": 79,
+          "old_count": 7,
+          "new_start": 82,
+          "new_count": 9,
+          "patch_header_line": 13194
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "9a9f55ab5783e9f922fab93f21342b4d968badf0",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 123,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_preparation.rs",
+      "pre": {
+        "git_blob": "55a6c955fa9f416a81bf570181fbc3fe11f9876e",
+        "bytes": 7354,
+        "sha256": "bb9e53e099b1e5e43ef5e51e0e7b9f280f0b82c18a0c8a5cbc21e183e618906e"
+      },
+      "post": {
+        "git_blob": "05ff1cdcdaca6620c72bbab02b410663607569fd",
+        "bytes": 7772,
+        "sha256": "48d3b92c4dd6c3ea9b54056d9d240ec3cfb368d8c0921f297ef9fc349a3119d3"
+      },
+      "hunk_count": 5,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 2,
+          "old_count": 14,
+          "new_start": 2,
+          "new_count": 24,
+          "patch_header_line": 13209
+        },
+        {
+          "old_start": 33,
+          "old_count": 7,
+          "new_start": 43,
+          "new_count": 8,
+          "patch_header_line": 13241
+        },
+        {
+          "old_start": 97,
+          "old_count": 13,
+          "new_start": 108,
+          "new_count": 17,
+          "patch_header_line": 13251
+        },
+        {
+          "old_start": 116,
+          "old_count": 7,
+          "new_start": 131,
+          "new_count": 8,
+          "patch_header_line": 13271
+        },
+        {
+          "old_start": 136,
+          "old_count": 18,
+          "new_start": 152,
+          "new_count": 25,
+          "patch_header_line": 13281
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "05ff1cdcdaca6620c72bbab02b410663607569fd",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 124,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "pre": {
+        "git_blob": "aabe32bbce2e3e88aaf55173b61ec6c57ddd9fe7",
+        "bytes": 9900,
+        "sha256": "2e67ad83582dcd45d18926296cf9567f68dab58462ce076dc09876309d4034b3"
+      },
+      "post": {
+        "git_blob": "aaea31796c64cf5cce9b902b0aad0e77ec5e1a0d",
+        "bytes": 10609,
+        "sha256": "16cc297ebeb28ddf7a21fea553365e18ec9f17242ec5d0f1efbb5e4977a6fb02"
+      },
+      "hunk_count": 8,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 48,
+          "old_count": 16,
+          "new_start": 48,
+          "new_count": 27,
+          "patch_header_line": 13315
+        },
+        {
+          "old_start": 65,
+          "old_count": 7,
+          "new_start": 76,
+          "new_count": 9,
+          "patch_header_line": 13351
+        },
+        {
+          "old_start": 83,
+          "old_count": 8,
+          "new_start": 96,
+          "new_count": 12,
+          "patch_header_line": 13362
+        },
+        {
+          "old_start": 115,
+          "old_count": 24,
+          "new_start": 132,
+          "new_count": 34,
+          "patch_header_line": 13377
+        },
+        {
+          "old_start": 144,
+          "old_count": 7,
+          "new_start": 171,
+          "new_count": 9,
+          "patch_header_line": 13418
+        },
+        {
+          "old_start": 153,
+          "old_count": 7,
+          "new_start": 182,
+          "new_count": 8,
+          "patch_header_line": 13429
+        },
+        {
+          "old_start": 190,
+          "old_count": 38,
+          "new_start": 220,
+          "new_count": 62,
+          "patch_header_line": 13439
+        },
+        {
+          "old_start": 230,
+          "old_count": 7,
+          "new_start": 284,
+          "new_count": 9,
+          "patch_header_line": 13513
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "aaea31796c64cf5cce9b902b0aad0e77ec5e1a0d",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 125,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "pre": {
+        "git_blob": "6d953d086a4f554ace72c1ab3a211be24447123f",
+        "bytes": 3883,
+        "sha256": "93191c2b143ae1583f24c0b547e981068de3c01458c82f6a404fc5323200e8b4"
+      },
+      "post": {
+        "git_blob": "f34a121dd9ed4dc6733b5f60a484c9a4eb98cc4b",
+        "bytes": 4004,
+        "sha256": "b4b661ad03949457f029ca9c49b82102a73027fbec03c26df16302e49fedc8bc"
+      },
+      "hunk_count": 3,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 27,
+          "old_count": 11,
+          "new_start": 27,
+          "new_count": 15,
+          "patch_header_line": 13528
+        },
+        {
+          "old_start": 52,
+          "old_count": 9,
+          "new_start": 56,
+          "new_count": 12,
+          "patch_header_line": 13546
+        },
+        {
+          "old_start": 69,
+          "old_count": 9,
+          "new_start": 76,
+          "new_count": 10,
+          "patch_header_line": 13561
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "f34a121dd9ed4dc6733b5f60a484c9a4eb98cc4b",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 126,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "pre": {
+        "git_blob": "55c1386d733cbb96bf6ce771b3010debc634ffd7",
+        "bytes": 7305,
+        "sha256": "675dd88c0fa4030aee47c480b256cd6ea733a853b89beefcbeb2c490aea124e6"
+      },
+      "post": {
+        "git_blob": "82a90d860bfb23d503a2d803a1a1a4400e15f850",
+        "bytes": 7396,
+        "sha256": "18f065cec1fe1603ad8d5c13b7b60639e5553d564e9f93dd259e6f4d19c395e1"
+      },
+      "hunk_count": 6,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 24,
+          "old_count": 8,
+          "new_start": 24,
+          "new_count": 8,
+          "patch_header_line": 13579
+        },
+        {
+          "old_start": 66,
+          "old_count": 7,
+          "new_start": 66,
+          "new_count": 9,
+          "patch_header_line": 13589
+        },
+        {
+          "old_start": 84,
+          "old_count": 11,
+          "new_start": 86,
+          "new_count": 13,
+          "patch_header_line": 13600
+        },
+        {
+          "old_start": 101,
+          "old_count": 7,
+          "new_start": 105,
+          "new_count": 8,
+          "patch_header_line": 13617
+        },
+        {
+          "old_start": 118,
+          "old_count": 7,
+          "new_start": 123,
+          "new_count": 8,
+          "patch_header_line": 13627
+        },
+        {
+          "old_start": 137,
+          "old_count": 7,
+          "new_start": 143,
+          "new_count": 8,
+          "patch_header_line": 13637
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "82a90d860bfb23d503a2d803a1a1a4400e15f850",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 127,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "pre": {
+        "git_blob": "1e372ebdd687f38d718433a1fcd096c39260d151",
+        "bytes": 9436,
+        "sha256": "a43ffb0d11c4606a7dbff4cff92d1e7cf854455aee02f4dd9bde1bee5434f704"
+      },
+      "post": {
+        "git_blob": "9c4791b428ab4d8b77299ee75d89ab70bd679f20",
+        "bytes": 9671,
+        "sha256": "2281654d180f61303596b28e2d2401a384445691be09d11fe8bddf92af376a2e"
+      },
+      "hunk_count": 8,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 71,
+          "old_count": 7,
+          "new_start": 71,
+          "new_count": 9,
+          "patch_header_line": 13651
+        },
+        {
+          "old_start": 84,
+          "old_count": 8,
+          "new_start": 86,
+          "new_count": 13,
+          "patch_header_line": 13662
+        },
+        {
+          "old_start": 94,
+          "old_count": 17,
+          "new_start": 101,
+          "new_count": 19,
+          "patch_header_line": 13678
+        },
+        {
+          "old_start": 113,
+          "old_count": 7,
+          "new_start": 122,
+          "new_count": 8,
+          "patch_header_line": 13703
+        },
+        {
+          "old_start": 128,
+          "old_count": 14,
+          "new_start": 138,
+          "new_count": 17,
+          "patch_header_line": 13713
+        },
+        {
+          "old_start": 164,
+          "old_count": 9,
+          "new_start": 177,
+          "new_count": 12,
+          "patch_header_line": 13733
+        },
+        {
+          "old_start": 178,
+          "old_count": 7,
+          "new_start": 194,
+          "new_count": 9,
+          "patch_header_line": 13748
+        },
+        {
+          "old_start": 190,
+          "old_count": 10,
+          "new_start": 208,
+          "new_count": 11,
+          "patch_header_line": 13759
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "9c4791b428ab4d8b77299ee75d89ab70bd679f20",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 128,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "git_blob": "a34a30406eb5e1092af7aaf5b464b1632a0261cd",
+        "bytes": 12670,
+        "sha256": "e54a0bbafea7769f58128915c0928eb5a77d00a2fcf7c0f8b941fdc4bc1fb09b"
+      },
+      "post": {
+        "git_blob": "96bab5870ba0e298093277e322be4a1aa3c80927",
+        "bytes": 14100,
+        "sha256": "42ba8c8b5bcb73a525f85798dd4bbda6b44b07954a93f1ddf38cfc18091b2dd2"
+      },
+      "hunk_count": 10,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 2,
+          "old_count": 27,
+          "new_start": 2,
+          "new_count": 46,
+          "patch_header_line": 13778
+        },
+        {
+          "old_start": 56,
+          "old_count": 12,
+          "new_start": 75,
+          "new_count": 17,
+          "patch_header_line": 13840
+        },
+        {
+          "old_start": 82,
+          "old_count": 19,
+          "new_start": 106,
+          "new_count": 34,
+          "patch_header_line": 13863
+        },
+        {
+          "old_start": 104,
+          "old_count": 10,
+          "new_start": 143,
+          "new_count": 20,
+          "patch_header_line": 13902
+        },
+        {
+          "old_start": 120,
+          "old_count": 17,
+          "new_start": 169,
+          "new_count": 28,
+          "patch_header_line": 13927
+        },
+        {
+          "old_start": 158,
+          "old_count": 10,
+          "new_start": 218,
+          "new_count": 20,
+          "patch_header_line": 13961
+        },
+        {
+          "old_start": 184,
+          "old_count": 11,
+          "new_start": 254,
+          "new_count": 19,
+          "patch_header_line": 13986
+        },
+        {
+          "old_start": 218,
+          "old_count": 23,
+          "new_start": 296,
+          "new_count": 42,
+          "patch_header_line": 14010
+        },
+        {
+          "old_start": 251,
+          "old_count": 10,
+          "new_start": 348,
+          "new_count": 13,
+          "patch_header_line": 14062
+        },
+        {
+          "old_start": 263,
+          "old_count": 7,
+          "new_start": 363,
+          "new_count": 10,
+          "patch_header_line": 14079
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "96bab5870ba0e298093277e322be4a1aa3c80927",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 129,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_temporal_data.rs",
+      "pre": {
+        "git_blob": "1a5f75d2e392b0c5f16a7f52adb16388430c8b16",
+        "bytes": 3321,
+        "sha256": "4e8b1834245f4c9c009eba1d6b8bfd7491f6fb22eba60da32f3773191a155c5b"
+      },
+      "post": {
+        "git_blob": "756ed41e4d9114a0afc826807ccb48ac6b747dd6",
+        "bytes": 3473,
+        "sha256": "591c61d9b2bf101d364e7a2a5ba2dc8ccab70677b286af1ed6bd383a1625acda"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 2,
+          "old_count": 12,
+          "new_start": 2,
+          "new_count": 17,
+          "patch_header_line": 14095
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "756ed41e4d9114a0afc826807ccb48ac6b747dd6",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 130,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+      "pre": {
+        "git_blob": "3a89520c8c07521eb3370a291732dc8ac282c89e",
+        "bytes": 1971,
+        "sha256": "45c73f1b7e73ddd73693e74556fae1fc2d68e71ca0fb3253064e7978c09eed2e"
+      },
+      "post": {
+        "git_blob": "b35e3fa2cce6be171eb29e632ebcbbb55b061b5b",
+        "bytes": 1952,
+        "sha256": "bd4df1b51e5f243d98a9f24d45c75c6edc75f5b0a4014d15365fd5bc0efbaa72"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 39,
+          "old_count": 10,
+          "new_start": 39,
+          "new_count": 8,
+          "patch_header_line": 14122
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "b35e3fa2cce6be171eb29e632ebcbbb55b061b5b",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 131,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "pre": {
+        "git_blob": "4ef3f49734c60efac985b75216e6ac8463b3aae4",
+        "bytes": 13372,
+        "sha256": "5f2814ceaf835e5b41b7cdc2c499269ef957971b3a07b4930ebc6ecb91f18b33"
+      },
+      "post": {
+        "git_blob": "b6dddaa1be00534dc987699941238e10b9c9eefd",
+        "bytes": 13461,
+        "sha256": "fe9d2ff0c6048c60f4b7caf365e9e5b4fe838bff3adc955ca7b5115a0e744e2a"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 207,
+          "old_count": 7,
+          "new_start": 207,
+          "new_count": 9,
+          "patch_header_line": 14139
+        },
+        {
+          "old_start": 258,
+          "old_count": 8,
+          "new_start": 260,
+          "new_count": 13,
+          "patch_header_line": 14150
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "b6dddaa1be00534dc987699941238e10b9c9eefd",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 132,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs",
+      "pre": {
+        "git_blob": "b4ca8e174be906350d1206e5a8cdf92f1a700518",
+        "bytes": 10172,
+        "sha256": "d8e5161220dc3d92b9b052bd9752d688638d90d88c28ccef157b1c81b1096281"
+      },
+      "post": {
+        "git_blob": "5758580b35717ec5dc51635cad310e15856b6b10",
+        "bytes": 10185,
+        "sha256": "bec36a7a3579f4f029ab12bb9eed2cc876011d52b76070adb1c21a1cc85ac558"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 229,
+          "old_count": 7,
+          "new_start": 229,
+          "new_count": 8,
+          "patch_header_line": 14170
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "5758580b35717ec5dc51635cad310e15856b6b10",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 133,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "pre": {
+        "git_blob": "3d5c2b9fd2beef6533205759af0ea88a89175fd7",
+        "bytes": 11414,
+        "sha256": "e3867fdd5ac3d9a3d6b7fdde89d40ca9b0989b35736a934a05812288a9fb3e1b"
+      },
+      "post": {
+        "git_blob": "5ecf868db5151c073b87240b92ee36cdf807d015",
+        "bytes": 11305,
+        "sha256": "4264eb49e47bb5af688bce87be01c670d3fa02ae75962cd25a6af0dbe2bbc1ed"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 224,
+          "old_count": 25,
+          "new_start": 224,
+          "new_count": 17,
+          "patch_header_line": 14184
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "5ecf868db5151c073b87240b92ee36cdf807d015",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 134,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pre": {
+        "git_blob": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+        "bytes": 22140,
+        "sha256": "11c7b42c83211ec7fad8b5c3a05576bb9cdd5166957f373d9c7b5cbe129266ab"
+      },
+      "post": {
+        "git_blob": "adf844364459b0369dae7e72401282fe14d3e55b",
+        "bytes": 22366,
+        "sha256": "d6c144b9806f340ea4cbb5b672a11c179a89223f3caf9d428ac90304e7f2c5ac"
+      },
+      "hunk_count": 3,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 188,
+          "old_count": 7,
+          "new_start": 188,
+          "new_count": 8,
+          "patch_header_line": 14220
+        },
+        {
+          "old_start": 201,
+          "old_count": 14,
+          "new_start": 202,
+          "new_count": 24,
+          "patch_header_line": 14230
+        },
+        {
+          "old_start": 613,
+          "old_count": 7,
+          "new_start": 624,
+          "new_count": 9,
+          "patch_header_line": 14258
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "adf844364459b0369dae7e72401282fe14d3e55b",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 135,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "pre": {
+        "git_blob": "d032ef016d8b45df1eb15f3d25c95c9c30282e57",
+        "bytes": 4883,
+        "sha256": "48d7398c3249e33806be8175bc20dd1d1dc3814f0ed12714879242485af79f0c"
+      },
+      "post": {
+        "git_blob": "0bcc8cbc8094c1350e412f2c6598c389fde6c2fa",
+        "bytes": 4948,
+        "sha256": "2e18ab974363615aad3b6670e3086135c40a0fbb48f085a5a203018a36ebf645"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 11,
+          "old_count": 7,
+          "new_start": 11,
+          "new_count": 13,
+          "patch_header_line": 14273
+        },
+        {
+          "old_start": 125,
+          "old_count": 7,
+          "new_start": 131,
+          "new_count": 11,
+          "patch_header_line": 14288
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "0bcc8cbc8094c1350e412f2c6598c389fde6c2fa",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 136,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "pre": {
+        "git_blob": "26c4d7d2120bd753f107db7d93827e30794ca3e0",
+        "bytes": 7487,
+        "sha256": "d5bfb96d2fbe363366e9479d5ab2916000c640683f5b31b5bdedf41a8f759c44"
+      },
+      "post": {
+        "git_blob": "326ad2808cdd4e38b6b347e11afd1a2f92ddc0cc",
+        "bytes": 7487,
+        "sha256": "cd789a6ef129b181aa4925cb0017982c30fdb58b9ef0c9c59e14e10cbf1192b0"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 26,
+          "old_count": 12,
+          "new_start": 26,
+          "new_count": 12,
+          "patch_header_line": 14305
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "326ad2808cdd4e38b6b347e11afd1a2f92ddc0cc",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 137,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_normal_work_tests.rs",
+      "pre": {
+        "git_blob": "d185ec05ea6ee2ef5b99ae31ce24b1e619776268",
+        "bytes": 6020,
+        "sha256": "fa175834eab5e86ba2ad010191789a8588f4eb46ec75ca74e289b2cef5c22c2f"
+      },
+      "post": {
+        "git_blob": "d10964eda80f490bc36434cb1168d9af48e29a7f",
+        "bytes": 6216,
+        "sha256": "b29bcb3b78b8b6053e159fc738d27b6db570067812322db37b7d21806c6af728"
+      },
+      "hunk_count": 8,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 7,
+          "old_count": 7,
+          "new_start": 7,
+          "new_count": 8,
+          "patch_header_line": 14325
+        },
+        {
+          "old_start": 15,
+          "old_count": 13,
+          "new_start": 16,
+          "new_count": 19,
+          "patch_header_line": 14335
+        },
+        {
+          "old_start": 38,
+          "old_count": 18,
+          "new_start": 45,
+          "new_count": 27,
+          "patch_header_line": 14358
+        },
+        {
+          "old_start": 74,
+          "old_count": 7,
+          "new_start": 90,
+          "new_count": 10,
+          "patch_header_line": 14389
+        },
+        {
+          "old_start": 82,
+          "old_count": 7,
+          "new_start": 101,
+          "new_count": 8,
+          "patch_header_line": 14401
+        },
+        {
+          "old_start": 90,
+          "old_count": 14,
+          "new_start": 110,
+          "new_count": 16,
+          "patch_header_line": 14411
+        },
+        {
+          "old_start": 109,
+          "old_count": 7,
+          "new_start": 131,
+          "new_count": 9,
+          "patch_header_line": 14430
+        },
+        {
+          "old_start": 141,
+          "old_count": 7,
+          "new_start": 165,
+          "new_count": 8,
+          "patch_header_line": 14441
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "d10964eda80f490bc36434cb1168d9af48e29a7f",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 138,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+      "pre": {
+        "git_blob": "69ae313a6b592de998636cc8f7a39476525e0424",
+        "bytes": 888,
+        "sha256": "22c434605a778d1c65a703df528942878f17a37eae54c0204412088021b2c0a8"
+      },
+      "post": {
+        "git_blob": "4a01947532df45b8b61cd14b8af1fc97ae5707fa",
+        "bytes": 911,
+        "sha256": "ca364d383bdd559b0a294ca1fca17afb24ab053ce77945f79fe72915a275451d"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 20,
+          "old_count": 8,
+          "new_start": 20,
+          "new_count": 9,
+          "patch_header_line": 14455
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "4a01947532df45b8b61cd14b8af1fc97ae5707fa",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 139,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+      "pre": {
+        "git_blob": "a3220069dd7f4d481fbd04e9aec733f371d7322e",
+        "bytes": 11908,
+        "sha256": "ebd31388dbb8c51fff531fc30c309dff4d2f5d2f03f6b9d24e4b3e5b4c8213d0"
+      },
+      "post": {
+        "git_blob": "9d69a2d89ecf57ef14074e5503faa1fe7d7aee61",
+        "bytes": 12509,
+        "sha256": "a4734dd65a6d774396258b201b82648702686d8ed853b132435ef3ca2282eb03"
+      },
+      "hunk_count": 10,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 3,
+          "old_count": 10,
+          "new_start": 3,
+          "new_count": 10,
+          "patch_header_line": 14471
+        },
+        {
+          "old_start": 52,
+          "old_count": 7,
+          "new_start": 52,
+          "new_count": 9,
+          "patch_header_line": 14484
+        },
+        {
+          "old_start": 63,
+          "old_count": 13,
+          "new_start": 65,
+          "new_count": 15,
+          "patch_header_line": 14495
+        },
+        {
+          "old_start": 81,
+          "old_count": 11,
+          "new_start": 85,
+          "new_count": 16,
+          "patch_header_line": 14514
+        },
+        {
+          "old_start": 100,
+          "old_count": 7,
+          "new_start": 109,
+          "new_count": 9,
+          "patch_header_line": 14534
+        },
+        {
+          "old_start": 132,
+          "old_count": 16,
+          "new_start": 143,
+          "new_count": 24,
+          "patch_header_line": 14545
+        },
+        {
+          "old_start": 166,
+          "old_count": 21,
+          "new_start": 185,
+          "new_count": 26,
+          "patch_header_line": 14573
+        },
+        {
+          "old_start": 213,
+          "old_count": 10,
+          "new_start": 237,
+          "new_count": 15,
+          "patch_header_line": 14606
+        },
+        {
+          "old_start": 225,
+          "old_count": 8,
+          "new_start": 254,
+          "new_count": 12,
+          "patch_header_line": 14624
+        },
+        {
+          "old_start": 237,
+          "old_count": 10,
+          "new_start": 270,
+          "new_count": 16,
+          "patch_header_line": 14639
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "9d69a2d89ecf57ef14074e5503faa1fe7d7aee61",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    }
+  ],
+  "complete_uploaded_prefix": 140,
+  "claims": {
+    "actual_preimage_get_or_verified_cached_get": true,
+    "positioned_forward_reverse_exact": true,
+    "actual_manifest_post_hashes_exact": true,
+    "immutable_post_blobs_created_and_get_verified": true,
+    "source_semantic_or_compilation_claim": false,
+    "refs_modified": false,
+    "native_executed": false
+  }
+}

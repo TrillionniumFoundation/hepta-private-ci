@@ -71,7 +71,9 @@ impl OriginalRootRetirementIntent {
             .map_err(uncertain)?;
         let acknowledgement = (|| {
             let acknowledgement = OriginalRootRetirementAcknowledgement::decode_original(
-                &response, &request, &intent.intent_digest,
+                &response,
+                &request,
+                &intent.intent_digest,
             )?;
             // Root still holds its real joined owners and process until the
             // final peer EOF below. Preserve every original postcheck.
@@ -84,8 +86,13 @@ impl OriginalRootRetirementIntent {
             coordinator.require_original_origin(&identity, &gate)?;
             gate.require_open()?;
             Ok::<_, AgentdError>(acknowledgement)
-        })().map_err(uncertain)?;
-        Ok(OriginalRootWorkersJoined { intent, request, acknowledgement })
+        })()
+        .map_err(uncertain)?;
+        Ok(OriginalRootWorkersJoined {
+            intent,
+            request,
+            acknowledgement,
+        })
     }
 }
 
@@ -94,17 +101,19 @@ impl OriginalRootWorkersJoined {
     /// Comparing the real field address prevents this ACK2 from closing any
     /// different channel, even another purpose under the same Gate.
     pub(crate) fn require_original_final_peer(
-        &self, channel: &RequiredSameActorPhaseChannel,
+        &self,
+        channel: &RequiredSameActorPhaseChannel,
     ) -> Result<(), AgentdError> {
         if !std::ptr::eq(channel, &self.intent.client.required) {
             self.intent.client.context.gate().close();
             return Err(refused("actual final retirement peer differs"));
         }
-        self.acknowledgement.require_original_request(
-            &self.request, &self.intent.intent_digest,
-        )?;
+        self.acknowledgement
+            .require_original_request(&self.request, &self.intent.intent_digest)?;
         OriginalRootRetirementIntent::require_original_origin(
-            &self.intent, self.intent.client.context.identity(), self.intent.client.context.gate(),
+            &self.intent,
+            self.intent.client.context.identity(),
+            self.intent.client.context.gate(),
         )
     }
 
@@ -113,7 +122,8 @@ impl OriginalRootWorkersJoined {
     /// only then do we observe actual Root process exit on its original pidfd.
     pub(crate) fn wait_original_root_process_exit(
         self,
-    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static {
+    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static
+    {
         let joined = self;
         async move {
             let joined = joined;
@@ -128,14 +138,17 @@ impl OriginalRootWorkersJoined {
                 AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)
             }?;
             RequiredSameActorPhaseChannel::shutdown_original_after_root_workers_joined(
-                &joined.intent.client.required, &joined,
+                &joined.intent.client.required,
+                &joined,
             )?;
             loop {
                 let remaining = gate.require_open()?;
                 if original_pidfd_has_exited(root.get_ref())? {
                     gate.require_open()?;
                     let exited = OriginalRootProcessExited {
-                        identity, gate: Arc::clone(&gate), root,
+                        identity,
+                        gate: Arc::clone(&gate),
+                        root,
                     };
                     // Expected final cleanup begins only AFTER the actual
                     // kernel exit proof. All fault guards remain armed;
@@ -164,9 +177,12 @@ impl OriginalRootProcessExited {
     /// Cleanup-only provenance. Gate was intentionally closed after the
     /// proven exit; this method cannot refresh Current or reopen a purpose.
     pub(crate) fn require_original_cleanup_origin(
-        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
-        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate)
+        if &self.identity != identity
+            || !Arc::ptr_eq(&self.gate, gate)
             || !original_pidfd_has_exited(self.root.get_ref())?
         {
             self.gate.close();
@@ -178,7 +194,9 @@ impl OriginalRootProcessExited {
 
 fn original_pidfd_has_exited(fd: &OwnedFd) -> Result<bool, AgentdError> {
     let mut pollfd = libc::pollfd {
-        fd: fd.as_raw_fd(), events: libc::POLLIN, revents: 0,
+        fd: fd.as_raw_fd(),
+        events: libc::POLLIN,
+        revents: 0,
     };
     // SAFETY: one initialized pollfd points to this still-owned, already
     // verified pidfd. This is a nonblocking kernel exit observation, not an
@@ -190,10 +208,11 @@ fn original_pidfd_has_exited(fd: &OwnedFd) -> Result<bool, AgentdError> {
     if observed == 0 {
         return Ok(false);
     }
-    if pollfd.revents & (libc::POLLERR | libc::POLLNVAL) != 0
-        || pollfd.revents & libc::POLLIN == 0
+    if pollfd.revents & (libc::POLLERR | libc::POLLNVAL) != 0 || pollfd.revents & libc::POLLIN == 0
     {
-        return Err(refused("original Root pidfd reported invalid exit readiness"));
+        return Err(refused(
+            "original Root pidfd reported invalid exit readiness",
+        ));
     }
     Ok(true)
 }

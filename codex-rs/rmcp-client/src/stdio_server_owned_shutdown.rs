@@ -200,8 +200,7 @@ impl OriginalStdioShutdownCustody {
         self.stopping.store(true, Ordering::Release);
         let mut state = self.state();
         if !state.termination_attempted
-            && let (Some(process_id), Some(runtime)) =
-                (state.process_id, state.runtime.clone())
+            && let (Some(process_id), Some(runtime)) = (state.process_id, state.runtime.clone())
         {
             self.start_termination(&mut state, process_id, &runtime);
         }
@@ -238,9 +237,9 @@ impl OriginalStdioShutdownCustody {
                         io::Error::other("owned stdio termination thread already taken")
                     })?;
                     drop(slot);
-                    let result = thread.join().map_err(|_| {
-                        io::Error::other("owned stdio termination thread panicked")
-                    })?;
+                    let result = thread
+                        .join()
+                        .map_err(|_| io::Error::other("owned stdio termination thread panicked"))?;
                     if poisoned {
                         if let Err(error) = result {
                             return Err(io::Error::other(format!(
@@ -293,7 +292,9 @@ impl OriginalStdioShutdownCustody {
                     state.result = Some(Err(error));
                     Err(returned)
                 }
-                None => Err(io::Error::other("owned stdio launch result already consumed")),
+                None => Err(io::Error::other(
+                    "owned stdio launch result already consumed",
+                )),
             }
         }
         .boxed()
@@ -310,7 +311,9 @@ impl OriginalStdioShutdownCustody {
         let runtime = Handle::try_current().map_err(io::Error::other)?;
         let mut state = self.state();
         if state.poisoned || state.launch.is_some() || self.stopping.load(Ordering::Acquire) {
-            return Err(io::Error::other("owned stdio launch is closed or already attempted"));
+            return Err(io::Error::other(
+                "owned stdio launch is closed or already attempted",
+            ));
         }
         let original = Arc::clone(self);
         let launch = OwnedJob::track(runtime.spawn_blocking(move || {
@@ -329,9 +332,8 @@ impl OriginalStdioShutdownCustody {
             )));
             return Err(io::Error::other("owned stdio attempted a second process"));
         }
-        let process_id = process_id.ok_or_else(|| {
-            io::Error::other("actual owned stdio child has no process id")
-        })?;
+        let process_id = process_id
+            .ok_or_else(|| io::Error::other("actual owned stdio child has no process id"))?;
         state.process_id = Some(process_id);
         drop(state);
         if self.stopping.load(Ordering::Acquire) {
@@ -419,10 +421,16 @@ impl OriginalStdioShutdownCustody {
                 Err(error) => {
                     let failure = RecordedFailure::io(error);
                     if let Err(kill_error) = child.kill().await {
-                        original.state().failures.push(RecordedFailure::io(kill_error));
+                        original
+                            .state()
+                            .failures
+                            .push(RecordedFailure::io(kill_error));
                     }
                     if let Err(wait_error) = child.wait().await {
-                        original.state().failures.push(RecordedFailure::io(wait_error));
+                        original
+                            .state()
+                            .failures
+                            .push(RecordedFailure::io(wait_error));
                         original.state().failed_child_owners.push(Box::new(child));
                     }
                     Err(failure.to_io())
@@ -443,7 +451,9 @@ impl OriginalStdioShutdownCustody {
         let Some(launch) = launch else {
             let state = self.state();
             if state.poisoned {
-                return Err(io::Error::other("owned stdio custody poisoned before launch"));
+                return Err(io::Error::other(
+                    "owned stdio custody poisoned before launch",
+                ));
             }
             return Ok(OriginalStdioShutdownObservation {
                 process_id: None,
@@ -500,9 +510,10 @@ impl OriginalStdioShutdownCustody {
             match child_state.result.as_ref() {
                 Some(Ok(exit)) => status = Some(*exit),
                 Some(Err(error)) => failures.push(("child wait", error.clone())),
-                None => failures.push(("child wait", RecordedFailure::io(io::Error::other(
-                    "owned stdio child result missing",
-                )))),
+                None => failures.push((
+                    "child wait",
+                    RecordedFailure::io(io::Error::other("owned stdio child result missing")),
+                )),
             }
         }
         for reader in &stderr {
@@ -518,16 +529,26 @@ impl OriginalStdioShutdownCustody {
             }
         }
         let state = self.state();
-        failures.extend(state.failures.iter().cloned().map(|error| ("custody", error)));
+        failures.extend(
+            state
+                .failures
+                .iter()
+                .cloned()
+                .map(|error| ("custody", error)),
+        );
         if state.poisoned {
-            failures.push(("custody", RecordedFailure::io(io::Error::other(
-                "owned stdio custody mutex poisoned",
-            ))));
+            failures.push((
+                "custody",
+                RecordedFailure::io(io::Error::other("owned stdio custody mutex poisoned")),
+            ));
         }
         if process_id.is_some() && (children.len() != 1 || stderr.len() != 1) {
-            failures.push(("custody", RecordedFailure::io(io::Error::other(
-                "owned stdio did not retain exactly one child and stderr reader",
-            ))));
+            failures.push((
+                "custody",
+                RecordedFailure::io(io::Error::other(
+                    "owned stdio did not retain exactly one child and stderr reader",
+                )),
+            ));
         }
         if !failures.is_empty() {
             return Err(io::Error::other(ShutdownFailures(failures)));
@@ -642,15 +663,22 @@ impl LocalStdioServerLauncher {
             child: Some(child),
             custody: Arc::clone(&custody),
         };
-        let child = transport.child.as_mut().ok_or_else(|| {
-            io::Error::other("owned stdio lost its newly spawned child")
-        })?;
+        let child = transport
+            .child
+            .as_mut()
+            .ok_or_else(|| io::Error::other("owned stdio lost its newly spawned child"))?;
         custody.register_process(child.id())?;
-        let stdin = child.stdin.take()
+        let stdin = child
+            .stdin
+            .take()
             .ok_or_else(|| io::Error::other("owned stdio stdin missing"))?;
-        let stdout = child.stdout.take()
+        let stdout = child
+            .stdout
+            .take()
             .ok_or_else(|| io::Error::other("owned stdio stdout missing"))?;
-        let stderr = child.stderr.take()
+        let stderr = child
+            .stderr
+            .take()
             .ok_or_else(|| io::Error::other("owned stdio stderr missing"))?;
         transport.transport = Some(AsyncRwTransport::new(stdout, stdin));
         custody.retain_stderr(stderr, program_name.clone())?;

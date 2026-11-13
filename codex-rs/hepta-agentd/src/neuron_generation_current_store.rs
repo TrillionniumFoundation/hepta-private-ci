@@ -125,7 +125,9 @@ impl CurrentStore {
             }
             _ => {
                 gate.close();
-                Err(invalid("retirement requires the original scoped CURRENT client"))
+                Err(invalid(
+                    "retirement requires the original scoped CURRENT client",
+                ))
             }
         }
     }

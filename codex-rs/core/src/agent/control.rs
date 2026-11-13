@@ -149,7 +149,8 @@ impl AgentControl {
         thread_id_generator: ThreadIdGenerator,
         rollout_budget: Option<RolloutBudgetConfig>,
     ) -> Self {
-        let original_shutdown = manager.upgrade()
+        let original_shutdown = manager
+            .upgrade()
             .map(|manager| manager.original_session_shutdown_origin());
         let control = Self {
             session_id: SessionId::default(),

@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "kind": "independent_narrow_review_maintenance_v5_remove_local_publication",
+  "reviewer": "/root/hepta_audit",
+  "disposition": "NO CONFIRMED LOCAL STATIC BLOCKER in the exact three-operation proposal. This is a source-only maintenance script change, not approval of a yet-unprovided next configuration or an execution result.",
+  "scope": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "proposal": {
+      "blob": "713e3fa2370fff3732761a24007caa251fd99709",
+      "bytes": 10668,
+      "sha256": "2fd77535159a6eea6f30d29e94a53d046e35ad00f2609b1dd678648ff5eac2d1"
+    },
+    "pre": {
+      "git_blob": "e2d34b4941544a829e493ff5c90631207c319af5",
+      "bytes": 21115,
+      "sha256": "9375589a56fbfcdeb2ecd335c590fca2c7ddea3708ea1c82166463c5dfe061a4"
+    },
+    "post": {
+      "git_blob": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "bytes": 18684,
+      "sha256": "51700c6c620252280a279526b53ff7e9a07b52ca2d6cdbab7ed9114ce64e89a3",
+      "create_get_verified": true
+    },
+    "prior_v4_review": "2215d6d456777bcca7378d6dca7b7b18c79c3d30",
+    "no_repeat_full_v4_review": true,
+    "no_h_native_shell_python_checker_or_ref_mutation": true
+  },
+  "evidence": {
+    "actual_identity_failure": {
+      "git_blob": "0298068bfe0f006ace2ab749aaa2fb95c22689f6",
+      "bytes": 326,
+      "sha256": "3b5a5063cd290409f2aa31a15ceaa8e59ddfb22086fafdda3938a062b618cd92"
+    },
+    "observation": "Independently GET/full-hash/read the 326-byte actual git failure: author identity unknown and unable to auto-detect email. The log's suggested git-config commands are not adopted or executed.",
+    "proposal_and_post_independent_get_verified": true,
+    "pre_reused_from_prior_independent_get_and_full_hash_rechecked": true,
+    "replay": {
+      "receipts": [
+        {
+          "id": "explicit_nonpublication_status",
+          "forward_matches": 1,
+          "old_bytes": 36,
+          "new_bytes": 75,
+          "reverse_matches": 1
+        },
+        {
+          "id": "remove_final_local_publication",
+          "forward_matches": 1,
+          "old_bytes": 2528,
+          "new_bytes": 99,
+          "reverse_matches": 1
+        },
+        {
+          "id": "maintenance_only_exit_predicate",
+          "forward_matches": 1,
+          "old_bytes": 145,
+          "new_bytes": 104,
+          "reverse_matches": 1
+        }
+      ],
+      "forward_exact": true,
+      "reverse_exact": true
+    }
+  },
+  "findings": [
+    {
+      "change": "Explicit nonpublication status",
+      "verified": "The result is initialized to not_attempted_root_will_transfer_verified_postimages. No remaining code overwrites it with confirmed or assigns published_maintenance_commit. This applies on early failure as well as no-change and changed-source paths."
+    },
+    {
+      "change": "Remove end-of-run local publication",
+      "verified": "Only the final remote branch lookups and local add/commit/push/staged-restore/publication-result block are removed. The existing completion_unknown refusal immediately preceding the old block remains exact. No replacement Git mutation, identity or credential repair is introduced.",
+      "command_spelling_inventory": [
+        {
+          "spelling": "\"ls-remote\"",
+          "pre": 3,
+          "post": 0
+        },
+        {
+          "spelling": "\"git\",\"add\"",
+          "pre": 1,
+          "post": 0
+        },
+        {
+          "spelling": "\"git\",\"commit\"",
+          "pre": 1,
+          "post": 0
+        },
+        {
+          "spelling": "\"git\",\"push\"",
+          "pre": 1,
+          "post": 0
+        },
+        {
+          "spelling": "\"git\",\"restore\"",
+          "pre": 1,
+          "post": 0
+        }
+      ]
+    },
+    {
+      "change": "Maintenance-only success predicate",
+      "verified": "Exit zero now requires maintenance_checks_passed AND NOT completion_unknown AND no errors. The original checks predicate still requires fix=0, format_after=0, bins=0, no unknown completion and no timed-out recorded step. Final evidence/reference errors still append errors and prevent exit zero."
+    },
+    {
+      "preservation": "Complete other script bytes",
+      "verified": "Unique forward replay of all three replacements equals the complete postimage; unique reverse replay equals the complete v4 preimage. Therefore all code outside these exact spans, including signal/process-group supervision, Popen exception handling, work/evidence budgets, helper functions, source/reference/tool identity checks, eleven-package fix, formatter/bins commands and captures, remains byte-identical."
+    },
+    {
+      "preservation": "Final error and evidence processing",
+      "verified": "The full outer except/finally body through summary emission is also independently sliced and compared byte-for-byte equal. Separate one-time evidence cleanup, completion-unknown exclusions and raw failure capture remain unchanged."
+    },
+    {
+      "meaning": "No publication or qualification claim",
+      "verified": "The legacy publication_allowed field remains only the original scope observation; it does not establish publication. The final published summary is null because no published_maintenance_commit is assigned. Source-maintenance exit zero is neither a commit/push result, original checker approval nor behavioral/native/business qualification."
+    }
+  ],
+  "configuration_limit": {
+    "current_fixed_head": "7434600f61293543f11b3ccd2e2c7102e32b3f3c",
+    "current_fixed_tree": "d0a887edbd797583b2ba3d08cd1bb66ea4ae324d",
+    "current_fixed_manifest": "b2227120620c86ce7634e97a7b11dd74ab313489",
+    "unchanged": "This proposal intentionally retains the original fixed input assertions and scope. Before a next run, Root must separately bind the actual next head/tree/manifest/config and keep the script's matching assertions consistent. No new request/config was provided or approved by this review."
+  },
+  "limits": {
+    "Python_execution": 0,
+    "Python_compilation": 0,
+    "source_maintenance_execution": 0,
+    "original_checker_execution": 0,
+    "native_qualification_execution": 0,
+    "product_tests": 0,
+    "environment_repairs": 0,
+    "reference_mutations": 0,
+    "note": "The review covers the declared publication removal only. It neither reopens the completed v4 supervisor review nor asserts future formatter/compiler output will pass."
+  }
+}

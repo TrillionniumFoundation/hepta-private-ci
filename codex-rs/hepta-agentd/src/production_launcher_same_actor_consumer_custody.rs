@@ -2,16 +2,22 @@
 //! receiving future. A cancelled receive cannot discard either real handle
 //! or an owner which the closure has opened but not yet delivered.
 
-use std::future::Future;
-use std::sync::{Arc, Mutex, MutexGuard};
-use codex_hepta_contracts::FinalUseAuthority;
-use tokio::task::JoinHandle;
-use crate::AgentdError;
-use crate::same_actor_q24_phase_gate::{CloseSameActorPhaseOnDrop, SameActorPhaseGate};
 use super::refused;
+use crate::AgentdError;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use codex_hepta_contracts::FinalUseAuthority;
+use std::future::Future;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use tokio::task::JoinHandle;
 
 #[derive(Clone, Copy)]
-pub(crate) enum OriginalBootstrapConsumerKind { Device, Notes }
+pub(crate) enum OriginalBootstrapConsumerKind {
+    Device,
+    Notes,
+}
 
 struct ConsumersState {
     claimed: u8,
@@ -19,7 +25,9 @@ struct ConsumersState {
     jobs: Vec<Arc<OriginalBootstrapConsumerJob>>,
 }
 
-pub(super) struct OriginalBootstrapConsumers { state: Mutex<ConsumersState> }
+pub(super) struct OriginalBootstrapConsumers {
+    state: Mutex<ConsumersState>,
+}
 
 pub(crate) struct OriginalBootstrapConsumerAdmission<'a> {
     state: MutexGuard<'a, ConsumersState>,
@@ -41,15 +49,27 @@ pub(crate) struct OriginalBootstrapConsumerJob {
 
 impl OriginalBootstrapConsumers {
     pub(super) fn new() -> Self {
-        Self { state: Mutex::new(ConsumersState { claimed: 0, closed: false, jobs: Vec::new() }) }
+        Self {
+            state: Mutex::new(ConsumersState {
+                claimed: 0,
+                closed: false,
+                jobs: Vec::new(),
+            }),
+        }
     }
 
     pub(super) fn reserve(
-        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        kind: OriginalBootstrapConsumerKind,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {
-        let bit = match kind { OriginalBootstrapConsumerKind::Device => 1, OriginalBootstrapConsumerKind::Notes => 2 };
+        let bit = match kind {
+            OriginalBootstrapConsumerKind::Device => 1,
+            OriginalBootstrapConsumerKind::Notes => 2,
+        };
         let mut state = self.state.lock().map_err(|_| {
-            gate.close(); refused("original bootstrap consumer custody poisoned")
+            gate.close();
+            refused("original bootstrap consumer custody poisoned")
         })?;
         gate.require_open()?;
         if state.closed || state.claimed & bit != 0 {
@@ -58,13 +78,19 @@ impl OriginalBootstrapConsumers {
         }
         // Claim before the one actual spawn. Failure never re-arms this bit.
         state.claimed |= bit;
-        Ok(OriginalBootstrapConsumerAdmission { state, gate: Arc::clone(gate), armed: true })
+        Ok(OriginalBootstrapConsumerAdmission {
+            state,
+            gate: Arc::clone(gate),
+            armed: true,
+        })
     }
 
     pub(super) fn close(&self) {
         let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
         state.closed = true;
-        for job in &state.jobs { job.gate.close(); }
+        for job in &state.jobs {
+            job.gate.close();
+        }
     }
 
     pub(super) async fn join_and_release(&self) -> Result<(), AgentdError> {
@@ -96,11 +122,15 @@ impl OriginalBootstrapConsumers {
 
 impl OriginalBootstrapConsumerAdmission<'_> {
     pub(crate) fn retain_original_bootstrap_consumer_handle(
-        mut self, handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,
+        mut self,
+        handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,
     ) -> Arc<OriginalBootstrapConsumerJob> {
         let job = Arc::new(OriginalBootstrapConsumerJob {
             state: tokio::sync::Mutex::new(ConsumerJobState {
-                handle: Some(handle), output: None, joined: false, receiving: false,
+                handle: Some(handle),
+                output: None,
+                joined: false,
+                receiving: false,
             }),
             gate: Arc::clone(&self.gate),
         });
@@ -111,19 +141,24 @@ impl OriginalBootstrapConsumerAdmission<'_> {
 }
 impl Drop for OriginalBootstrapConsumerAdmission<'_> {
     fn drop(&mut self) {
-        if self.armed { self.state.closed = true; self.gate.close(); }
+        if self.armed {
+            self.state.closed = true;
+            self.gate.close();
+        }
     }
 }
 
 impl OriginalBootstrapConsumerJob {
     async fn join_locked(&self, state: &mut ConsumerJobState) {
-        if state.joined { return; }
+        if state.joined {
+            return;
+        }
         let result = match state.handle.as_mut() {
             Some(handle) => match handle.await {
                 Ok(result) => result,
-                Err(error) => Err(AgentdError::Protocol(
-                    format!("original Root production inputs: {error}"),
-                )),
+                Err(error) => Err(AgentdError::Protocol(format!(
+                    "original Root production inputs: {error}"
+                ))),
             },
             None => Err(refused("actual bootstrap consumer handle missing")),
         };
@@ -142,11 +177,15 @@ impl OriginalBootstrapConsumerJob {
         async move {
             let mut state = job.state.lock().await;
             if state.receiving {
-                return Err(refused("original bootstrap consumer result was already received"));
+                return Err(refused(
+                    "original bootstrap consumer result was already received",
+                ));
             }
             state.receiving = true;
             job.join_locked(&mut state).await;
-            let output = state.output.take()
+            let output = state
+                .output
+                .take()
                 .ok_or_else(|| refused("original bootstrap consumer output missing"))?;
             let owner = output?;
             job.gate.require_open()?;

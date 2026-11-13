@@ -12,9 +12,9 @@ use crate::OriginalCellQ24TaskLedgerStatusV1;
 use crate::OriginalQ24InstalledSuccessorV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::circuit_q24_successor::OriginalSuccessorWorkerJoined;
-use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
 use crate::same_actor_q24_phase_learning::OriginalRetiredLearningOwners;
 use crate::same_actor_q24_phase_learning::OriginalRetiredLearningPurposes;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
 
 /// Only the actual C drain below creates this origin. It holds weak route and
 /// slot references: the route's retained Work must not form an ownership cycle.
@@ -72,10 +72,7 @@ struct OriginalCDrainPayload {
 }
 
 impl OriginalCQuiescenceOrigin {
-    pub(crate) fn require_original_slot(
-        &self,
-        slot: &SuccessorSlot,
-    ) -> Result<(), AgentdError> {
+    pub(crate) fn require_original_slot(&self, slot: &SuccessorSlot) -> Result<(), AgentdError> {
         self.gate.require_open().map_err(phase_error)?;
         if !self
             .slot
@@ -95,7 +92,9 @@ impl OriginalCQuiescenceOrigin {
     ) -> Result<(), AgentdError> {
         if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {
             self.gate.close();
-            return Err(retirement_error("original C retirement identity or Gate differs"));
+            return Err(retirement_error(
+                "original C retirement identity or Gate differs",
+            ));
         }
         self.gate.require_open().map_err(phase_error)?;
         Ok(())
@@ -194,7 +193,9 @@ impl OriginalSameActorCQuiescence {
                 return Err(retirement_error("original C route is not closing"));
             };
             if state.closed || state.tickets != 0 || !Arc::ptr_eq(slot, &self.slot) {
-                return Err(retirement_error("original C route still has work or differs"));
+                return Err(retirement_error(
+                    "original C route still has work or differs",
+                ));
             }
             let mut attachment = route
                 .learning_work
@@ -249,9 +250,8 @@ impl OriginalSameActorCJoined {
             work,
             learning,
         } = self;
-        let learning = OriginalRetiredLearningOwners::retire_original_root_purposes(
-            learning, intent,
-        )?;
+        let learning =
+            OriginalRetiredLearningOwners::retire_original_root_purposes(learning, intent)?;
         crate::PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent(
             &OriginalQ24InstalledSuccessorV1::published_task(&original.installed),
             intent,
@@ -306,10 +306,7 @@ impl SameActorTaskRoute {
         Ok(slot)
     }
 
-    fn require_closing_original_c(
-        &self,
-        expected: &Arc<SuccessorSlot>,
-    ) -> Result<(), AgentdError> {
+    fn require_closing_original_c(&self, expected: &Arc<SuccessorSlot>) -> Result<(), AgentdError> {
         self.gate.require_open().map_err(phase_error)?;
         let state = self.state.lock().map_err(|_| poisoned_route())?;
         let Phase::ClosingC { slot, .. } = &state.phase else {
@@ -363,7 +360,8 @@ impl SameActorTaskRoute {
         installed: OriginalQ24InstalledSuccessorV1,
         status: OriginalCellQ24TaskLedgerStatusV1,
         work: Arc<OriginalSameActorLearningWork>,
-    ) -> impl Future<Output = Result<OriginalSameActorCQuiescence, AgentdError>> + Send + 'static {
+    ) -> impl Future<Output = Result<OriginalSameActorCQuiescence, AgentdError>> + Send + 'static
+    {
         let attempt = OriginalCDrainAttempt {
             closing: CloseSameActorPhaseOnDrop::new(&self.gate),
             route: Arc::clone(self),
@@ -384,16 +382,19 @@ impl SameActorTaskRoute {
             )?;
             let original_work = route.original_learning_work()?;
             if !Arc::ptr_eq(&original_work, &work)
-                || !matches!(attempt.status, OriginalCellQ24TaskLedgerStatusV1::Complete { .. })
+                || !matches!(
+                    attempt.status,
+                    OriginalCellQ24TaskLedgerStatusV1::Complete { .. }
+                )
             {
                 return Err(retirement_error("original C completion or Work differs"));
             }
             let slot = route.begin_closing_original_c(&attempt.installed)?;
             route.wait_original_c_tickets(&slot).await?;
             let job = {
-                let admission = work.reserve_original_blocking().map_err(|error| {
-                    AgentdError::GenerationFenced(error.to_string())
-                })?;
+                let admission = work
+                    .reserve_original_blocking()
+                    .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
                 let actual_route = Arc::clone(&route);
                 let actual_slot = Arc::clone(&slot);
                 let payload = OriginalCDrainPayload {
@@ -407,10 +408,11 @@ impl SameActorTaskRoute {
                         &payload.installed,
                         &actual_route.identity,
                     )?;
-                    let ledger = OriginalQ24InstalledSuccessorV1::original_task_ledger(
-                        &payload.installed,
-                    )
-                    .ok_or_else(|| retirement_error("original C completion has no actual Ledger"))?;
+                    let ledger =
+                        OriginalQ24InstalledSuccessorV1::original_task_ledger(&payload.installed)
+                            .ok_or_else(|| {
+                            retirement_error("original C completion has no actual Ledger")
+                        })?;
                     if OriginalCellQ24TaskLedgerProducerV1::readback(ledger.as_ref())
                         .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?
                         != payload.status
@@ -429,19 +431,19 @@ impl SameActorTaskRoute {
                         .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?
                         != payload.status
                     {
-                        return Err(retirement_error("original C Ledger changed across task drain"));
+                        return Err(retirement_error(
+                            "original C Ledger changed across task drain",
+                        ));
                     }
                     actual_route.require_closing_original_c(&actual_slot)?;
                     Ok::<_, AgentdError>((payload, completion))
                 });
                 admission.retain_original_handle(handle)
             };
-            let (payload, completion) = OriginalSameActorLearningWork::receive_original_job_with_join_cause(
-                &work,
-                job,
-            )
-                .await
-                .map_err(|error| AgentdError::Io(std::io::Error::other(error)))??;
+            let (payload, completion) =
+                OriginalSameActorLearningWork::receive_original_job_with_join_cause(&work, job)
+                    .await
+                    .map_err(|error| AgentdError::Io(std::io::Error::other(error)))??;
             route.require_closing_original_c(&slot)?;
             let origin = Arc::new(OriginalCQuiescenceOrigin {
                 identity: route.identity.clone(),

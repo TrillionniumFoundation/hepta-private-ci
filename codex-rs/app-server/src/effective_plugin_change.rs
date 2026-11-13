@@ -112,52 +112,49 @@ pub(crate) fn effective_plugins_changed_callback_original(
         let outgoing = Arc::clone(&outgoing);
         let analytics_events_client = analytics_events_client.clone();
         let request_serialization_queues = request_serialization_queues.clone();
-        crate::OriginalAppServerOwnerCustody::spawn_original_background(
-            &original,
-            async move {
-                let Some(thread_manager) = thread_manager.upgrade() else {
+        crate::OriginalAppServerOwnerCustody::spawn_original_background(&original, async move {
+            let Some(thread_manager) = thread_manager.upgrade() else {
+                return;
+            };
+            thread_manager.plugins_manager().clear_cache();
+            thread_manager.skills_service().clear_cache();
+            let refresh_thread_manager = Arc::clone(&thread_manager);
+            let refresh = async move {
+                refresh_thread_manager.invalidate_mcp_runtimes().await;
+                refresh_thread_manager.refresh_hook_runtimes().await;
+            };
+            let trust = async move {
+                if change.materialized_remote_plugins.is_empty() {
                     return;
-                };
-                thread_manager.plugins_manager().clear_cache();
-                thread_manager.skills_service().clear_cache();
-                let refresh_thread_manager = Arc::clone(&thread_manager);
-                let refresh = async move {
-                    refresh_thread_manager.invalidate_mcp_runtimes().await;
-                    refresh_thread_manager.refresh_hook_runtimes().await;
-                };
-                let trust = async move {
-                    if change.materialized_remote_plugins.is_empty() {
-                        return;
-                    }
-                    request_serialization_queues
-                        .enqueue_background(
-                            RequestSerializationQueueKey::Global("config"),
-                            RequestSerializationAccess::Exclusive,
-                            async move {
-                                let config_processor = ConfigRequestProcessor::new(
-                                    outgoing,
-                                    config_manager.clone(),
-                                    Arc::clone(&thread_manager),
-                                    analytics_events_client,
-                                );
-                                if let Err(err) = trust_materialized_plugin_hooks(
-                                    change.materialized_remote_plugins,
-                                    &auth_manager,
-                                    &thread_manager,
-                                    &config_manager,
-                                    &config_processor,
-                                )
-                                .await
-                                {
-                                    warn!(error = %err, "failed to trust materialized plugin hooks");
-                                }
-                            },
-                        )
-                        .await;
-                };
-                tokio::join!(refresh, trust);
-            },
-        );
+                }
+                request_serialization_queues
+                    .enqueue_background(
+                        RequestSerializationQueueKey::Global("config"),
+                        RequestSerializationAccess::Exclusive,
+                        async move {
+                            let config_processor = ConfigRequestProcessor::new(
+                                outgoing,
+                                config_manager.clone(),
+                                Arc::clone(&thread_manager),
+                                analytics_events_client,
+                            );
+                            if let Err(err) = trust_materialized_plugin_hooks(
+                                change.materialized_remote_plugins,
+                                &auth_manager,
+                                &thread_manager,
+                                &config_manager,
+                                &config_processor,
+                            )
+                            .await
+                            {
+                                warn!(error = %err, "failed to trust materialized plugin hooks");
+                            }
+                        },
+                    )
+                    .await;
+            };
+            tokio::join!(refresh, trust);
+        });
     })
 }
 

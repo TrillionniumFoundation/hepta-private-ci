@@ -79,7 +79,9 @@ impl OriginalSameActorTaskWorker {
             self.context.gate(),
         )?;
         if self.outer_custody.is_some() {
-            return Err(phase_refused("original Circuit worker custody was already bound"));
+            return Err(phase_refused(
+                "original Circuit worker custody was already bound",
+            ));
         }
         self.outer_custody = Some(Arc::downgrade(custody));
         Ok(self)
@@ -108,9 +110,9 @@ impl OriginalSameActorTaskWorker {
             state,
             cancellation,
         };
-        let custody = outer_custody.and_then(|original| original.upgrade()).ok_or_else(|| {
-            phase_refused("original Circuit worker lost its external custody")
-        })?;
+        let custody = outer_custody
+            .and_then(|original| original.upgrade())
+            .ok_or_else(|| phase_refused("original Circuit worker lost its external custody"))?;
         OriginalCircuitOwnerCustody::require_original_origin(
             &custody,
             execution.context.identity(),

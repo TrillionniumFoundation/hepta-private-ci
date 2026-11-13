@@ -858,13 +858,15 @@ impl MessageProcessor {
     ) -> std::io::Result<()> {
         let attached =
             RequestSerializationQueues::original_owner(&self.request_serialization_queues)
-                .ok_or_else(|| {
-                    std::io::Error::other("original serialization owner is absent")
-                })?;
+                .ok_or_else(|| std::io::Error::other("original serialization owner is absent"))?;
         if !Arc::ptr_eq(&attached, original) {
-            return Err(std::io::Error::other("original serialization owner mismatch"));
+            return Err(std::io::Error::other(
+                "original serialization owner mismatch",
+            ));
         }
-        self.thread_processor.prepare_original_shutdown(original).await
+        self.thread_processor
+            .prepare_original_shutdown(original)
+            .await
     }
 
     pub(crate) async fn finish_original_owners(
@@ -955,8 +957,7 @@ impl MessageProcessor {
             }
             Err(processor) => {
                 crate::OriginalAppServerOwnerCustody::retain_unreleased_original_processor(
-                    original,
-                    processor,
+                    original, processor,
                 );
                 failures.push((
                     "original processor ownership",

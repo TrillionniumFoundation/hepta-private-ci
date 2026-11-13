@@ -86,54 +86,60 @@ pub(crate) async fn run_codex_thread_interactive(
     } else {
         Arc::clone(&parent_session.services.extensions)
     };
-    let (session, io) = Box::pin(crate::agent::AgentControl::spawn_original_delegate_session(&parent_session.services.agent_control, SessionSpawnArgs {
-        config,
-        allow_provider_model_fallback: false,
-        user_instructions,
-        installation_id: parent_session.installation_id.clone(),
-        auth_manager,
-        models_manager,
-        environment_manager: parent_session
-            .services
-            .turn_environments
-            .environment_manager(),
-        skills_service: Arc::clone(&parent_session.services.skills_service),
-        plugins_manager: Arc::clone(&parent_session.services.plugins_manager),
-        mcp_manager: Arc::clone(&parent_session.services.mcp_manager),
-        code_mode_session_provider: parent_session.services.code_mode_service.session_provider(),
-        extensions,
-        conversation_history,
-        requested_history_mode: None,
-        fork_persistence: ForkPersistence::Copied,
-        session_source,
-        forked_from_thread_id,
-        parent_thread_id: Some(parent_session.thread_id),
-        thread_source: Some(if is_guardian_reviewer {
-            ThreadSource::GuardianReview
-        } else {
-            ThreadSource::Subagent
-        }),
-        originator: parent_ctx.originator.clone(),
-        agent_control: parent_session.services.agent_control.clone(),
-        dynamic_tools: Vec::new(),
-        metrics_service_name: None,
-        user_shell_override: None,
-        inherited_environments: Some(parent_environments.clone()),
-        inherited_exec_policy: Some(Arc::clone(&parent_session.services.exec_policy)),
-        parent_rollout_thread_trace: codex_rollout_trace::ThreadTraceContext::disabled(),
-        parent_trace: None,
-        environment_selections: parent_environments.to_selections(),
-        thread_extension_init: codex_extension_api::ExtensionDataInit::default(),
-        client_mcp_extensions: parent_session.services.client_mcp_extensions.clone(),
-        reserved_thread_id: None,
-        analytics_events_client: Some(parent_session.services.analytics_events_client.clone()),
-        thread_store: Arc::clone(&parent_session.services.thread_store),
-        attestation_provider: parent_session.services.attestation_provider.clone(),
-        external_time_provider: Some(Arc::clone(&parent_session.services.time_provider)),
-        inherited_multi_agent_version: Some(MultiAgentVersion::Disabled),
-        git_enrichment_policy,
-        windows_sandbox_proxy_settings_mode,
-    }))
+    let (session, io) = Box::pin(crate::agent::AgentControl::spawn_original_delegate_session(
+        &parent_session.services.agent_control,
+        SessionSpawnArgs {
+            config,
+            allow_provider_model_fallback: false,
+            user_instructions,
+            installation_id: parent_session.installation_id.clone(),
+            auth_manager,
+            models_manager,
+            environment_manager: parent_session
+                .services
+                .turn_environments
+                .environment_manager(),
+            skills_service: Arc::clone(&parent_session.services.skills_service),
+            plugins_manager: Arc::clone(&parent_session.services.plugins_manager),
+            mcp_manager: Arc::clone(&parent_session.services.mcp_manager),
+            code_mode_session_provider: parent_session
+                .services
+                .code_mode_service
+                .session_provider(),
+            extensions,
+            conversation_history,
+            requested_history_mode: None,
+            fork_persistence: ForkPersistence::Copied,
+            session_source,
+            forked_from_thread_id,
+            parent_thread_id: Some(parent_session.thread_id),
+            thread_source: Some(if is_guardian_reviewer {
+                ThreadSource::GuardianReview
+            } else {
+                ThreadSource::Subagent
+            }),
+            originator: parent_ctx.originator.clone(),
+            agent_control: parent_session.services.agent_control.clone(),
+            dynamic_tools: Vec::new(),
+            metrics_service_name: None,
+            user_shell_override: None,
+            inherited_environments: Some(parent_environments.clone()),
+            inherited_exec_policy: Some(Arc::clone(&parent_session.services.exec_policy)),
+            parent_rollout_thread_trace: codex_rollout_trace::ThreadTraceContext::disabled(),
+            parent_trace: None,
+            environment_selections: parent_environments.to_selections(),
+            thread_extension_init: codex_extension_api::ExtensionDataInit::default(),
+            client_mcp_extensions: parent_session.services.client_mcp_extensions.clone(),
+            reserved_thread_id: None,
+            analytics_events_client: Some(parent_session.services.analytics_events_client.clone()),
+            thread_store: Arc::clone(&parent_session.services.thread_store),
+            attestation_provider: parent_session.services.attestation_provider.clone(),
+            external_time_provider: Some(Arc::clone(&parent_session.services.time_provider)),
+            inherited_multi_agent_version: Some(MultiAgentVersion::Disabled),
+            git_enrichment_policy,
+            windows_sandbox_proxy_settings_mode,
+        },
+    ))
     .or_cancel(&cancel_token)
     .await??;
     let thread_config = session.thread_config_snapshot().await;

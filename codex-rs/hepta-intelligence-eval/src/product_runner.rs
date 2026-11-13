@@ -426,12 +426,11 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 ));
             }
         }
-        let mut inputs = provider.release_original_consumption(
-            OriginalFinalHoldoutReleasePermitV1 {
+        let mut inputs =
+            provider.release_original_consumption(OriginalFinalHoldoutReleasePermitV1 {
                 plan: product_plan,
                 receipt: &holdout,
-            },
-        )?;
+            })?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
         validate_comparable_observations(
             &inputs.candidate_observations,

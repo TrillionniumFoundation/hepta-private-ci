@@ -125,8 +125,7 @@ impl LockedFileFinalHoldoutProviderV1 {
             .map_err(io_error)?;
         if bytes.len() as u64 != self.material_length
             || File::metadata(file).map_err(io_error)?.len() != self.material_length
-            || Digest32::of_bytes(&bytes)
-                != self.expected_product.frozen_plan.final_holdout_digest
+            || Digest32::of_bytes(&bytes) != self.expected_product.frozen_plan.final_holdout_digest
         {
             return Err(FileError::Corrupt);
         }

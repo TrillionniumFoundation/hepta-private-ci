@@ -12,15 +12,25 @@ impl OriginalRequiredPurposeRetirement {
     ) -> Result<(), crate::AgentdError> {
         let checked = (|| {
             intent.require_original_gate(&self.gate)?;
-            if self.retired.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err() {
+            if self
+                .retired
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
+            {
                 return Err(refused("original purpose retirement was already consumed").into());
             }
             {
-                let mut state = self.gate.state.lock()
+                let mut state = self
+                    .gate
+                    .state
+                    .lock()
                     .map_err(|_| refused("original purpose Gate is poisoned"))?;
                 self.gate.check_locked(&mut state)?;
-                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self.id) else {
-                    return Err(refused("original purpose stream registration is unavailable").into());
+                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self.id)
+                else {
+                    return Err(
+                        refused("original purpose stream registration is unavailable").into(),
+                    );
                 };
                 // The registered alias is a clone of the actual owner's
                 // socket. shutdown affects that same socket and every clone;

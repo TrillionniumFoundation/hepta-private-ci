@@ -30,7 +30,10 @@ impl OriginalRootSessionCustodySlot {
         )?;
         let finished = self.finish_original_retired_fields(retired)?;
         OriginalRootSessionFullyRetired::require_original_cleanup_origin(
-            &finished, &finished.identity, &finished.gate, exited,
+            &finished,
+            &finished.identity,
+            &finished.gate,
+            exited,
         )?;
         Ok(finished)
     }
@@ -44,33 +47,60 @@ impl OriginalRootSessionCustodySlot {
         let summary = retired.original.consumers;
         let mut state = self.state.lock().map_err(join_error)?;
         if state.stopped {
-            return Err(join_error("fault-stopped Session cannot become normal retirement"));
+            return Err(join_error(
+                "fault-stopped Session cannot become normal retirement",
+            ));
         }
-        let original = state.original.as_ref()
+        let original = state
+            .original
+            .as_ref()
             .ok_or_else(|| join_error("actual Session custody was never registered or consumed"))?;
         if !Arc::ptr_eq(original, &retired.original.original)
             || !original.session_retired.load(Ordering::Acquire)
             || retired.original.resources._stream.is_some()
             || retired.original.resources._stop.is_some()
-            || retired.original.resources.live.active.load(Ordering::Acquire)
-            || !Arc::ptr_eq(&original._writer_file, &retired.original.resources._writer_file)
+            || retired
+                .original
+                .resources
+                .live
+                .active
+                .load(Ordering::Acquire)
+            || !Arc::ptr_eq(
+                &original._writer_file,
+                &retired.original.resources._writer_file,
+            )
             || !original.pause.requested()
         {
-            return Err(join_error("actual Session fields or observation purpose remain live"));
+            return Err(join_error(
+                "actual Session fields or observation purpose remain live",
+            ));
         }
-        if !retired.original.resources.live.proof.matches_registered_process(
-            &identity.agent_id, identity.spawn_generation,
-        ) || !retired.original.resources.live.phase.as_ref()
-            .is_some_and(|phase| Arc::ptr_eq(phase, &gate))
+        if !retired
+            .original
+            .resources
+            .live
+            .proof
+            .matches_registered_process(&identity.agent_id, identity.spawn_generation)
+            || !retired
+                .original
+                .resources
+                .live
+                .phase
+                .as_ref()
+                .is_some_and(|phase| Arc::ptr_eq(phase, &gate))
         {
-            return Err(join_error("retired Session has a different original process or Gate"));
+            return Err(join_error(
+                "retired Session has a different original process or Gate",
+            ));
         }
         {
             let worker = original.worker.try_lock().map_err(join_error)?;
             if worker.handle.is_some()
                 || worker.observed != Some(OriginalRootWorkerTermination::Returned)
             {
-                return Err(join_error("original Session worker has no normal observed join"));
+                return Err(join_error(
+                    "original Session worker has no normal observed join",
+                ));
             }
         }
         OriginalConsumerJobs::require_original_joined_summary(&original.consumers, &summary)
@@ -78,7 +108,9 @@ impl OriginalRootSessionCustodySlot {
         {
             let paused = original.pause.state.lock().map_err(join_error)?;
             if !matches!(*paused, OriginalPauseState::Taken) {
-                return Err(join_error("original observation resources are still parked"));
+                return Err(join_error(
+                    "original observation resources are still parked",
+                ));
             }
         }
 
@@ -89,12 +121,17 @@ impl OriginalRootSessionCustodySlot {
         // strong custody share during this synchronous transition.
         drop(retired);
         {
-            let original = Arc::get_mut(state.original.as_mut()
-                .ok_or_else(|| join_error("original Session custody disappeared"))?)
-                .ok_or_else(|| join_error("another actual Session custodian is still held"))?;
+            let original = Arc::get_mut(
+                state
+                    .original
+                    .as_mut()
+                    .ok_or_else(|| join_error("original Session custody disappeared"))?,
+            )
+            .ok_or_else(|| join_error("another actual Session custodian is still held"))?;
             let writer = Arc::get_mut(&mut original._writer_file)
                 .ok_or_else(|| join_error("another original writer custody share is still held"))?;
-            let file = writer.get_mut()
+            let file = writer
+                .get_mut()
                 .ok_or_else(|| join_error("original writer File was never retained"))?;
             // Exclusive access checks a real retained object, not a count
             // used as a replacement for task completion. Any extra strong or
@@ -102,7 +139,9 @@ impl OriginalRootSessionCustodySlot {
             Arc::get_mut(file)
                 .ok_or_else(|| join_error("another owner of the original writer File remains"))?;
         }
-        let original = state.original.take()
+        let original = state
+            .original
+            .take()
             .ok_or_else(|| join_error("original Session custody cannot be consumed twice"))?;
         state.stopped = true;
         drop(state);
@@ -110,7 +149,11 @@ impl OriginalRootSessionCustodySlot {
         // every actual task was already joined. The original field order
         // drops worker/consumers/pause before its last writer File field.
         drop(original);
-        Ok(OriginalRootSessionFullyRetired { identity, gate, consumers: summary })
+        Ok(OriginalRootSessionFullyRetired {
+            identity,
+            gate,
+            consumers: summary,
+        })
     }
 
     /// Exercise the same actual fields/File transition in same-UID component
@@ -131,7 +174,8 @@ impl OriginalRootSessionFullyRetired {
         gate: &Arc<SameActorPhaseGate>,
         exited: &OriginalRootProcessExited,
     ) -> Result<(), AgentdError> {
-        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate)
+        if &self.identity != identity
+            || !Arc::ptr_eq(&self.gate, gate)
             || self.consumers.registered != self.consumers.joined
             || self.consumers.first_observed_failure.is_some()
             || self.consumers.admission_poisoned

@@ -5,7 +5,8 @@
 
 use super::*;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
-use crate::same_actor_q24_phase_gate::{CloseSameActorPhaseOnDrop, SameActorPhaseGate};
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 
 /// No public constructor, Clone or wire representation. Only the actual
 /// run_with_shutdown Ok branch below constructs this owner. Keeping this
@@ -37,7 +38,8 @@ impl OriginalRuntimeRootPurposesRetired {
         exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,
     ) -> impl std::future::Future<Output = Result<(), AgentdError>> + 'static {
         let checked = exited.require_original_cleanup_origin(
-            self.stopped.context.identity(), self.stopped.context.gate(),
+            self.stopped.context.identity(),
+            self.stopped.context.gate(),
         );
         async move {
             let retained = self;
@@ -56,7 +58,9 @@ impl OriginalRuntimeRootPurposesRetired {
     }
 
     pub(crate) fn require_original_origin(
-        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
         OriginalSameActorRuntimeStopped::require_original_origin(&self.stopped, identity, gate)
     }
@@ -64,19 +68,26 @@ impl OriginalRuntimeRootPurposesRetired {
 
 impl OriginalSameActorRuntimeStopped {
     pub(crate) fn require_original_origin(
-        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
-        if self.context.identity() != identity || !Arc::ptr_eq(self.context.gate(), gate)
-            || self.attachment.is_none() || self.device.is_none() || self.mcp.is_none()
+        if self.context.identity() != identity
+            || !Arc::ptr_eq(self.context.gate(), gate)
+            || self.attachment.is_none()
+            || self.device.is_none()
+            || self.mcp.is_none()
         {
             SameActorPhaseGate::close(self.context.gate());
             return Err(runtime_refused("actual stopped Runtime custody differs"));
         }
-        self.app_server_joined.require_original_custody(&self.app_server)
+        self.app_server_joined
+            .require_original_custody(&self.app_server)
             .map_err(|error| AgentdError::Protocol(format!("original App Server join: {error}")))?;
         self.context.gate().require_open()?;
-        crate::root_observation_stream::check_lifetime(&self.root_pidfd)
-            .map_err(|error| AgentdError::Protocol(format!("original stopped Root lifetime: {error}")))
+        crate::root_observation_stream::check_lifetime(&self.root_pidfd).map_err(|error| {
+            AgentdError::Protocol(format!("original stopped Root lifetime: {error}"))
+        })
     }
 
     pub(crate) fn retire_original_root_purposes(
@@ -96,12 +107,18 @@ impl OriginalSameActorRuntimeStopped {
     pub(super) async fn close_original_runtime_resources(mut self) -> Result<(), AgentdError> {
         SameActorPhaseGate::close(self.context.gate());
         drop(self.attachment.take());
-        if let Some(device) = self.device.take() { device.invalidate(); }
-        let mcp = self.mcp.take()
+        if let Some(device) = self.device.take() {
+            device.invalidate();
+        }
+        let mcp = self
+            .mcp
+            .take()
             .ok_or_else(|| runtime_refused("actual Runtime MCP owner is missing"))?;
-        codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await.map_err(|error| {
-            AgentdError::Protocol(format!("original Runtime MCP cleanup: {error}"))
-        })?;
+        codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("original Runtime MCP cleanup: {error}"))
+            })?;
         // Keep the shared close responsibility armed, including cancellation.
         let _ = &self.closing;
         Ok(())
@@ -111,7 +128,9 @@ impl OriginalSameActorRuntimeStopped {
 impl Drop for OriginalSameActorRuntimeStopped {
     fn drop(&mut self) {
         SameActorPhaseGate::close(self.context.gate());
-        if let Some(device) = &self.device { device.invalidate(); }
+        if let Some(device) = &self.device {
+            device.invalidate();
+        }
         // Synchronous Drop requests failure and retains no false join claim.
         // The actual outer owner normally drives the explicit async cleanup.
     }
@@ -131,18 +150,30 @@ impl AgentdProductionLaunch {
         OriginalSameActorRootContext::require_current(&context)?;
         let root_pidfd = context.root_pidfd()?;
         config.require_root_learning_assembled()?;
-        if config.identity() != context.identity() || self.initial_publication.is_some()
-            || self.publication.is_some() || self.q24_model.is_some()
+        if config.identity() != context.identity()
+            || self.initial_publication.is_some()
+            || self.publication.is_some()
+            || self.q24_model.is_some()
         {
             return Err(runtime_refused(
                 "actual phase Runtime has unresolved original handoffs or identity",
             ));
         }
-        let RuntimeInputs { primary, notes, notes_ui } = self.inputs;
+        let RuntimeInputs {
+            primary,
+            notes,
+            notes_ui,
+        } = self.inputs;
         if notes_ui.is_some() {
             return Err(runtime_refused("phase Circuit profile forbids Notes UI"));
         }
-        let PrimaryInputs::Android { server, environment, payload, deadline } = primary else {
+        let PrimaryInputs::Android {
+            server,
+            environment,
+            payload,
+            deadline,
+        } = primary
+        else {
             return Err(runtime_refused("phase requires the actual Android Primary"));
         };
         let app_server = stop.original_app_server_custody(&context)?;
@@ -158,9 +189,16 @@ impl AgentdProductionLaunch {
             let workspace = AbsolutePathBuf::from_absolute_path(&config.identity().workspace)
                 .map_err(|error| AgentdError::Invalid(error.to_string()))?;
             let original = codex_app_server::initialize_configured_mcp_server_with_owned_shutdown(
-                home, workspace, arg0_paths.clone(), &server, &environment,
-                (remaining(deadline)?, context.gate().deadline().instant()), &mcp_custody,
-            ).await.map_err(|error| {
+                home,
+                workspace,
+                arg0_paths.clone(),
+                &server,
+                &environment,
+                (remaining(deadline)?, context.gate().deadline().instant()),
+                &mcp_custody,
+            )
+            .await
+            .map_err(|error| {
                 AgentdError::Protocol(format!("original Runtime MCP startup: {error}"))
             })?;
             mcp = Some(original);
@@ -168,51 +206,89 @@ impl AgentdProductionLaunch {
                 AgentdError::Protocol("original MCP startup handle disappeared".into())
             })?;
             let android = AgentdAndroidRuntimeInputs::from_mcp_binding(
-                original.binding(), &server, &environment, tokio::runtime::Handle::current(),
-                payload_json, deadline,
-            ).await?;
+                original.binding(),
+                &server,
+                &environment,
+                tokio::runtime::Handle::current(),
+                payload_json,
+                deadline,
+            )
+            .await?;
             let (target, actual_device) = crate::prepare_android_runtime_target(android)?;
             device = Some(actual_device);
             let target: Arc<dyn FinalUseProductionOutboxTarget> = target;
-            attachment = Some(crate::attach_root_production_operation_host_with_startup(
-                &mut config, self.root, target, notes, Duration::from_millis(100), None,
-            ).await?);
+            attachment = Some(
+                crate::attach_root_production_operation_host_with_startup(
+                    &mut config,
+                    self.root,
+                    target,
+                    notes,
+                    Duration::from_millis(100),
+                    None,
+                )
+                .await?,
+            );
             remaining(deadline)?;
             OriginalSameActorRootContext::require_current(&context)?;
             // This exact original Runtime still owns ordinary readiness,
             // signed ingress, reconciliation and all original shutdown rules.
             crate::run_with_shutdown(config, arg0_paths, stop.wait_original_shutdown()).await?;
-            let joined = codex_app_server::OriginalAppServerOwnerCustody::join_original_app_server(&app_server).await.map_err(|error| {
+            let joined = codex_app_server::OriginalAppServerOwnerCustody::join_original_app_server(
+                &app_server,
+            )
+            .await
+            .map_err(|error| {
                 AgentdError::Protocol(format!("original App Server owners did not join: {error}"))
             })?;
-            codex_app_server::OriginalAppServerJoined::require_original_custody(&joined, &app_server).map_err(|error| {
+            codex_app_server::OriginalAppServerJoined::require_original_custody(
+                &joined,
+                &app_server,
+            )
+            .map_err(|error| {
                 AgentdError::Protocol(format!("original App Server joined custody: {error}"))
             })?;
             context.gate().require_open()?;
-            crate::root_observation_stream::check_lifetime(&root_pidfd)
-                .map_err(|error| AgentdError::Protocol(format!("original stopped Root lifetime: {error}")))?;
+            crate::root_observation_stream::check_lifetime(&root_pidfd).map_err(|error| {
+                AgentdError::Protocol(format!("original stopped Root lifetime: {error}"))
+            })?;
             Ok::<_, AgentdError>(joined)
-        }.await;
+        }
+        .await;
         let app_server_joined = match result {
             Ok(joined) => joined,
             Err(error) => {
-            SameActorPhaseGate::close(context.gate());
-            codex_app_server::OriginalAppServerOwnerCustody::request_stop(&app_server);
-            if let Err(cleanup) = codex_app_server::OriginalAppServerOwnerCustody::join_original_app_server(&app_server).await {
-                tracing::error!(error = %cleanup, "original App Server cleanup also failed");
-            }
-            drop(attachment.take());
-            if let Some(device) = device.take() { device.invalidate(); }
-            if let Some(mcp) = mcp.take() {
-                if let Err(cleanup) = codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await {
-                    tracing::error!(error = %cleanup, "original Runtime MCP cleanup also failed");
+                SameActorPhaseGate::close(context.gate());
+                codex_app_server::OriginalAppServerOwnerCustody::request_stop(&app_server);
+                if let Err(cleanup) =
+                    codex_app_server::OriginalAppServerOwnerCustody::join_original_app_server(
+                        &app_server,
+                    )
+                    .await
+                {
+                    tracing::error!(error = %cleanup, "original App Server cleanup also failed");
                 }
-            }
-            return Err(error);
+                drop(attachment.take());
+                if let Some(device) = device.take() {
+                    device.invalidate();
+                }
+                if let Some(mcp) = mcp.take() {
+                    if let Err(cleanup) =
+                        codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await
+                    {
+                        tracing::error!(error = %cleanup, "original Runtime MCP cleanup also failed");
+                    }
+                }
+                return Err(error);
             }
         };
         let stopped = OriginalSameActorRuntimeStopped {
-            context, root_pidfd, attachment, device, mcp, app_server, app_server_joined,
+            context,
+            root_pidfd,
+            attachment,
+            device,
+            mcp,
+            app_server,
+            app_server_joined,
             closing: CloseSameActorPhaseOnDrop::new(&gate),
         };
         OriginalSameActorRuntimeStopped::require_original_origin(&stopped, &identity, &gate)?;

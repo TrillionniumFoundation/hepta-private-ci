@@ -71,7 +71,10 @@ impl OriginalDeploymentCoordinatorOwner {
                 })
             })
             .map_err(deployment_error)?;
-        let owner = Self { context, thread: Some(thread) };
+        let owner = Self {
+            context,
+            thread: Some(thread),
+        };
         OriginalSameActorRootContext::require_current(&owner.context)?;
         closing.disarm();
         Ok(owner)
@@ -79,7 +82,9 @@ impl OriginalDeploymentCoordinatorOwner {
 
     pub(crate) fn stop_and_join_original(&mut self) -> Result<(), AgentdError> {
         self.context.gate().close();
-        let thread = self.thread.take()
+        let thread = self
+            .thread
+            .take()
             .ok_or_else(|| deployment_refused("original coordinator result already consumed"))?;
         join_original_thread(thread).map(drop)
     }

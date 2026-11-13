@@ -42,16 +42,19 @@ impl AgentdLearningCheckpointClientV1 {
     ) -> Result<(Arc<Self>, OriginalLearningCheckpointRetirement), AgentdError> {
         let closing = work.original_failure_scope();
         work.require_original_retirement_identity(identity, work.gate())?;
-        let phase = self.phase.as_ref().ok_or_else(|| {
-            refused("retirable checkpoint requires its actual phase channel")
-        })?;
+        let phase = self
+            .phase
+            .as_ref()
+            .ok_or_else(|| refused("retirable checkpoint requires its actual phase channel"))?;
         if !Arc::ptr_eq(phase.gate(), work.gate()) {
             return Err(refused("checkpoint and Work have different original Gates"));
         }
         phase.require_open()?;
         work.require_original_delivery_request(&self.initial.request, &self.initial.owners)?;
         if self.scope.is_none() {
-            return Err(refused("retirable checkpoint requires the original frozen scope"));
+            return Err(refused(
+                "retirable checkpoint requires the original frozen scope",
+            ));
         }
         let client = Arc::new(self);
         let retirement = OriginalLearningCheckpointRetirement {
@@ -84,9 +87,10 @@ impl OriginalLearningCheckpointRetirement {
         let mut closing = self.work.original_failure_scope();
         self.require_original_work(&self.work)?;
         intent.require_original_origin(&self.identity, self.work.gate())?;
-        let phase = self.client.phase.as_ref().ok_or_else(|| {
-            refused("retirable checkpoint lost its original required channel")
-        })?;
+        let phase =
+            self.client.phase.as_ref().ok_or_else(|| {
+                refused("retirable checkpoint lost its original required channel")
+            })?;
         if !Arc::ptr_eq(phase.gate(), self.work.gate()) {
             return Err(refused("checkpoint retirement phase differs"));
         }
@@ -94,17 +98,15 @@ impl OriginalLearningCheckpointRetirement {
         // and semantic validation. A competing or failed exchange is refused,
         // never converted to a normal EOF. Keep the same slot held throughout
         // the actual socket shutdown; do not drop its transport or guard.
-        let held = AgentdLearningCheckpointClientV1::lock_original_retirement_channel(
-            &self.client,
-        )?;
-        let channel = held.as_ref()
+        let held =
+            AgentdLearningCheckpointClientV1::lock_original_retirement_channel(&self.client)?;
+        let channel = held
+            .as_ref()
             .ok_or_else(|| refused("checkpoint retirement has an uncertain exchange"))?;
         let root = RootObservationStream::root_lifetime(&channel.transport);
-        crate::root_observation_stream::check_lifetime(root.get_ref())
-            .map_err(refused)?;
+        crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;
         crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;
-        crate::root_observation_stream::check_lifetime(root.get_ref())
-            .map_err(refused)?;
+        crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;
         intent.require_original_origin(&self.identity, self.work.gate())?;
         // RequiredSameActorPhaseChannel retains its alias and armed guard.
         // Its one-way retired state rejects every subsequent business call.

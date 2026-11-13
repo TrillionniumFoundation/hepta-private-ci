@@ -5,40 +5,51 @@
 
 use std::sync::Arc;
 
-use codex_hepta_intelligence_eval::{
-    LockedFileFinalHoldoutProviderV1, LockedFileProductQualificationEvidenceSinkV1,
-    ProductEvaluationExecutionRequestV1,
-    ProductEvaluationRunnerV1, ProductProviderErrorV1, ProductTimingEvidenceV1,
-    evaluation_signing_payload_v2, product_evaluation_execution_key_v1,
-};
+use codex_hepta_intelligence_eval::LockedFileFinalHoldoutProviderV1;
+use codex_hepta_intelligence_eval::LockedFileProductQualificationEvidenceSinkV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionRequestV1;
+use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;
+use codex_hepta_intelligence_eval::ProductProviderErrorV1;
+use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_intelligence_eval::product_evaluation_execution_key_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_types::Digest32;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    AgentdError, CellEvaluationJournalsV1, CellEvaluationQualificationRequestV1,
-    CellEvaluationRunnerV1, CellQ24PreparedLearningV1,
-    OriginalCellEvaluationSigningConfigV1, OriginalCellEvaluationTrainerV1,
-    OriginalCellQ24EvaluationInputsV1, OriginalCellQ24EvaluationTimingV1,
-    OriginalCellQ24LearningOpenV1, OriginalCellQ24TrainingReadbackV1,
-    freeze_cell_learning_evaluation_plan_v1,
-};
+use crate::AgentdError;
+use crate::CellEvaluationJournalsV1;
+use crate::CellEvaluationQualificationRequestV1;
+use crate::CellEvaluationRunnerV1;
+use crate::CellQ24PreparedLearningV1;
+use crate::OriginalCellEvaluationSigningConfigV1;
+use crate::OriginalCellEvaluationTrainerV1;
+use crate::OriginalCellQ24EvaluationInputsV1;
+use crate::OriginalCellQ24EvaluationTimingV1;
+use crate::OriginalCellQ24LearningOpenV1;
+use crate::OriginalCellQ24TrainingReadbackV1;
+use crate::freeze_cell_learning_evaluation_plan_v1;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 
-use super::evaluation_data::{OriginalEvaluationRegistrationData, OriginalQualificationContextData};
-use super::evaluation_signing::{
-    OriginalExecutionAttestor, OriginalQualificationSigningRequest,
-    request_original_qualification,
-};
-use super::evaluation_storage::{
-    OriginalEvaluationJournalData, OriginalEvaluationStoreData, OriginalHoldoutData,
-};
-use super::exchange::{OriginalActorExchangeData, OriginalActorWait};
-use super::files::{OriginalDeploymentFiles, PinnedFileData};
-use super::learning::{OriginalDeploymentLearning, OriginalSignedOwnerFilesData};
+use super::deployment_error;
+use super::deployment_refused;
+use super::evaluation_data::OriginalEvaluationRegistrationData;
+use super::evaluation_data::OriginalQualificationContextData;
+use super::evaluation_signing::OriginalExecutionAttestor;
+use super::evaluation_signing::OriginalQualificationSigningRequest;
+use super::evaluation_signing::request_original_qualification;
+use super::evaluation_storage::OriginalEvaluationJournalData;
+use super::evaluation_storage::OriginalEvaluationStoreData;
+use super::evaluation_storage::OriginalHoldoutData;
+use super::exchange::OriginalActorExchangeData;
+use super::exchange::OriginalActorWait;
+use super::files::OriginalDeploymentFiles;
+use super::files::PinnedFileData;
+use super::learning::OriginalDeploymentLearning;
+use super::learning::OriginalSignedOwnerFilesData;
 use super::temporal_data::OriginalTemporalPlanData;
 use super::witness::require_fresh_original_file;
-use super::{deployment_error, deployment_refused};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -74,27 +85,31 @@ impl OriginalEvaluationData {
         learning: &OriginalDeploymentLearning,
         files: &mut OriginalDeploymentFiles,
     ) -> Result<OriginalExecutedEvaluation, AgentdError> {
-        let mut wait = OriginalActorWait::for_original_prepared(
-            Arc::clone(context), prepared,
-        )?;
+        let mut wait = OriginalActorWait::for_original_prepared(Arc::clone(context), prepared)?;
         let qualification_context = self.qualification_context.original()?;
         let now = wait.require_original_live()?;
         let generator = learning.require_original_signer(
             qualification_context.generator.principal_id.as_str(),
-            LearningEvidenceRoleV1::Generator, now,
+            LearningEvidenceRoleV1::Generator,
+            now,
         )?;
         let evaluator = learning.require_original_signer(
             qualification_context.evaluator.principal_id.as_str(),
-            LearningEvidenceRoleV1::Evaluator, now,
+            LearningEvidenceRoleV1::Evaluator,
+            now,
         )?;
         if generator.principal != qualification_context.generator
             || evaluator.principal != qualification_context.evaluator
             || evaluator.principal.principal_id.as_str() != self.receipt.principal
         {
-            return Err(deployment_refused("B principals differ from actual enrolled owners"));
+            return Err(deployment_refused(
+                "B principals differ from actual enrolled owners",
+            ));
         }
-        let candidate = OriginalEvaluationJournalData::open_original(&self.candidate_journal, files)?;
-        let fixed_expert = OriginalEvaluationJournalData::open_original(&self.fixed_expert_journal, files)?;
+        let candidate =
+            OriginalEvaluationJournalData::open_original(&self.candidate_journal, files)?;
+        let fixed_expert =
+            OriginalEvaluationJournalData::open_original(&self.fixed_expert_journal, files)?;
         let candidate_plan = self.candidate_plan.original()?;
         let baseline_plan = self.baseline_plan.original()?;
         wait.require_original_live()?;
@@ -102,14 +117,22 @@ impl OriginalEvaluationData {
         // a later B data file cannot replace its original evaluation protocol.
         let plan = freeze_cell_learning_evaluation_plan_v1(
             self.registration.original()?,
-            CellEvaluationJournalsV1 { candidate: &candidate, fixed_expert: &fixed_expert },
-            &candidate_plan, &baseline_plan, prepared.initial().request.evaluation_profile,
-        ).map_err(deployment_error)?;
+            CellEvaluationJournalsV1 {
+                candidate: &candidate,
+                fixed_expert: &fixed_expert,
+            },
+            &candidate_plan,
+            &baseline_plan,
+            prepared.initial().request.evaluation_profile,
+        )
+        .map_err(deployment_error)?;
         let material = files.read_original(&self.holdout_material, 16 * 1024 * 1024)?;
         wait.require_original_live()?;
         let mut provider = LockedFileFinalHoldoutProviderV1::open(
-            super::files::OriginalPinnedRead::clone_original_file(&material)?, plan.product_plan(),
-        ).map_err(deployment_error)?;
+            super::files::OriginalPinnedRead::clone_original_file(&material)?,
+            plan.product_plan(),
+        )
+        .map_err(deployment_error)?;
         super::files::OriginalPinnedRead::require_original_pin(&material)?;
         let holdout = self.holdout.open_original_holdout(files)?;
         let mut executions = self.executions.open_original_execution(files)?;
@@ -119,17 +142,21 @@ impl OriginalEvaluationData {
             self.evidence_store.open_original_sink(files)?;
         let mut runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(holdout));
         let key = product_evaluation_execution_key_v1(
-            plan.product_plan(), Digest32::from_array(self.holdout.binding),
+            plan.product_plan(),
+            Digest32::from_array(self.holdout.binding),
             &qualification_context.evaluator,
-        ).map_err(deployment_error)?;
+        )
+        .map_err(deployment_error)?;
         let business_expiry = prepared.initial().request.envelope.expiry_unix_seconds;
         let actual_clock = context.clock();
         let clock_context = Arc::clone(context);
         let clock = move || {
             OriginalSameActorRootContext::require_current(&clock_context)
                 .map_err(|_| ProductProviderErrorV1::Unavailable)?;
-            let now = actual_clock.now_unix_ms()
-                .map_err(|_| ProductProviderErrorV1::Unavailable)? / 1_000;
+            let now = actual_clock
+                .now_unix_ms()
+                .map_err(|_| ProductProviderErrorV1::Unavailable)?
+                / 1_000;
             if now >= business_expiry {
                 return Err(ProductProviderErrorV1::Unavailable);
             }
@@ -138,19 +165,32 @@ impl OriginalEvaluationData {
             Ok(now)
         };
         let request = ProductEvaluationExecutionRequestV1 {
-            plan: plan.product_plan(), candidate_plan: &candidate_plan,
-            baseline_plan: &baseline_plan, evaluator: &qualification_context.evaluator,
-            verifier: learning.verifier(), clock: &clock,
+            plan: plan.product_plan(),
+            candidate_plan: &candidate_plan,
+            baseline_plan: &baseline_plan,
+            evaluator: &qualification_context.evaluator,
+            verifier: learning.verifier(),
+            clock: &clock,
         };
         let receipt = {
             let mut attestor = OriginalExecutionAttestor::new(
-                Arc::clone(context), prepared, key, self.execution_signing.clone(),
-                files, &mut wait,
+                Arc::clone(context),
+                prepared,
+                key,
+                self.execution_signing.clone(),
+                files,
+                &mut wait,
             )?;
             let result = runner.evaluate_or_readback(
-                &plan, CellEvaluationJournalsV1 {
-                    candidate: &candidate, fixed_expert: &fixed_expert,
-                }, &request, &mut provider, &mut executions, &mut attestor,
+                &plan,
+                CellEvaluationJournalsV1 {
+                    candidate: &candidate,
+                    fixed_expert: &fixed_expert,
+                },
+                &request,
+                &mut provider,
+                &mut executions,
+                &mut attestor,
             );
             // Preserve the actual external actor error as well as the
             // original runner's Pending semantics; never dispatch again.
@@ -161,34 +201,48 @@ impl OriginalEvaluationData {
         };
         super::files::OriginalPinnedRead::require_original_pin(&material)?;
         wait.require_original_live()?;
-        let bundle = runner.qualification_bundle(&receipt, &qualification_context)
+        let bundle = runner
+            .qualification_bundle(&receipt, &qualification_context)
             .map_err(deployment_error)?;
-        let evaluator_payload = evaluation_signing_payload_v2(
-            &bundle, &plan.product_plan().metric_roles,
-        ).map_err(deployment_error)?;
+        let evaluator_payload =
+            evaluation_signing_payload_v2(&bundle, &plan.product_plan().metric_roles)
+                .map_err(deployment_error)?;
         let evidence = request_original_qualification(
             OriginalQualificationSigningRequest {
-                context, prepared, plan: &plan,
+                context,
+                prepared,
+                plan: &plan,
                 execution_digest: receipt.temporal().execution_digest,
                 evaluator_payload: &evaluator_payload,
             },
-            self.qualification_signing.clone(), files, &mut wait,
+            self.qualification_signing.clone(),
+            files,
+            &mut wait,
         )?;
         let now = wait.require_original_live()?;
-        let qualification = runner.qualify_and_persist(
-            &receipt,
-            CellEvaluationQualificationRequestV1 {
-                context: &qualification_context, evidence: &evidence,
-                timing: ProductTimingEvidenceV1::Qualification,
-                verifier: learning.verifier(), now,
-            },
-            &mut sink,
-        ).map_err(deployment_error)?;
-        let persisted = sink.readback(
-            receipt.temporal().execution_digest, &qualification.product().decision,
-        ).map_err(deployment_error)?;
+        let qualification = runner
+            .qualify_and_persist(
+                &receipt,
+                CellEvaluationQualificationRequestV1 {
+                    context: &qualification_context,
+                    evidence: &evidence,
+                    timing: ProductTimingEvidenceV1::Qualification,
+                    verifier: learning.verifier(),
+                    now,
+                },
+                &mut sink,
+            )
+            .map_err(deployment_error)?;
+        let persisted = sink
+            .readback(
+                receipt.temporal().execution_digest,
+                &qualification.product().decision,
+            )
+            .map_err(deployment_error)?;
         if persisted != qualification.product().publication_digest {
-            return Err(deployment_refused("actual B evidence sink readback differs"));
+            return Err(deployment_refused(
+                "actual B evidence sink readback differs",
+            ));
         }
         // Only the actual runner return can enter this concrete handoff.
         // The original Stage re-reads signed execution and authenticates the
@@ -198,25 +252,43 @@ impl OriginalEvaluationData {
         require_fresh_original_file(&self.receipt.witness.file)?;
         let key = files.read_original_signing_key(&self.receipt.key)?;
         if key.verifying_key().to_bytes() != evaluator.verifying_key {
-            return Err(deployment_refused("B receipt key differs from its actual enrolled Evaluator"));
+            return Err(deployment_refused(
+                "B receipt key differs from its actual enrolled Evaluator",
+            ));
         }
         let receipt_file = files.open_original_owner(&self.receipt.journal)?;
-        let receipt_witness = super::witness::OriginalWitnessData::open_original(&self.receipt.witness, files)?;
+        let receipt_witness =
+            super::witness::OriginalWitnessData::open_original(&self.receipt.witness, files)?;
         let signing = OriginalCellEvaluationSigningConfigV1 {
             plan: plan.product_plan().clone(),
             execution_namespace: Digest32::from_array(self.holdout.binding),
-            signer: evaluator, verifier: learning.verifier().clone(),
+            signer: evaluator,
+            verifier: learning.verifier().clone(),
             maximum_signature_lifetime_seconds: self.receipt.maximum_signature_lifetime_seconds,
         };
         wait.require_original_live()?;
         let inputs = OriginalCellQ24EvaluationInputsV1 {
-            plan, runner, candidate, fixed_expert, candidate_plan, baseline_plan,
-            executions, qualification, context: qualification_context, evidence,
+            plan,
+            runner,
+            candidate,
+            fixed_expert,
+            candidate_plan,
+            baseline_plan,
+            executions,
+            qualification,
+            context: qualification_context,
+            evidence,
             timing: OriginalCellQ24EvaluationTimingV1::Qualification,
             trainer: OriginalCellEvaluationTrainerV1::OriginalQ24(trainer),
-            receipt_file, receipt_witness, signing, key,
+            receipt_file,
+            receipt_witness,
+            signing,
+            key,
             mode: OriginalCellQ24LearningOpenV1::Create,
         };
-        Ok(OriginalExecutedEvaluation { inputs, evidence_owner: sink })
+        Ok(OriginalExecutedEvaluation {
+            inputs,
+            evidence_owner: sink,
+        })
     }
 }

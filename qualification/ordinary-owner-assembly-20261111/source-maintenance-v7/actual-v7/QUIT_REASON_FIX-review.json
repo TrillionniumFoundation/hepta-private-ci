@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "independent_static_review_actual_non_exhaustive_quit_reason_fix",
+  "reviewer": "/root/hepta_audit",
+  "disposition": "NO CONFIRMED LOCAL STATIC BLOCKER for this one-arm fail-closed correction on the exact actual formatted preimage. The corrected source has not been compiled by this reviewer.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "packet": {
+    "blob": "d8dd2edb206d423117873be98a2c5915d69cfc58",
+    "bytes": 6007,
+    "sha256": "ae95ecffa58274f40f0351927fa9ea7d5bf1d78178b60f2e2d2e52d81618b08e"
+  },
+  "file": {
+    "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+    "pre": {
+      "git_blob": "829fdc44f86bcd1267f1535068bd47293966ed70",
+      "bytes": 13987,
+      "sha256": "24550bafc469abff7990c9487778463dc2d70a37709cb9594c2c933cf018f325",
+      "create_get_verified": true
+    },
+    "post": {
+      "git_blob": "4c0c34579b757db415f6e7f7851b2418c8a8c987",
+      "bytes": 14084,
+      "sha256": "3c0909ca80b10aff5648b42101ca651c89a16e9d111c6964bb207ba8af08d321",
+      "create_get_verified": true
+    }
+  },
+  "actual_failure": {
+    "log": {
+      "git_blob": "439e7a7b3d7d06c3019ccd7824feba83f856d855",
+      "bytes": 26344,
+      "sha256": "77ef104ab84d6e1a945ee4f15199504444119e40e089572da35506ba2626fa7b"
+    },
+    "error_code": "E0004",
+    "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+    "line": 289,
+    "diagnosis": "match service.cancel().await does not cover Ok(_) for #[non_exhaustive] rmcp::service::QuitReason.",
+    "actual_type": "std::result::Result<rmcp::service::QuitReason, tokio::task::JoinError>",
+    "limitation": "The actual compiler diagnostic supplies this type/exhaustiveness evidence; this review does not fabricate a separate SDK enum source pin or infer future stages passed.",
+    "independently_get_and_full_hash_verified": true,
+    "independently_read": "The log explicitly reports E0004 at service.cancel().await, identifies Result<rmcp::service::QuitReason,tokio::task::JoinError>, says QuitReason is non-exhaustive, and requires Ok(_). The same log reports one prior compile error and seven warnings.",
+    "enum_source_not_separately_fetched": true
+  },
+  "exact_verification": {
+    "independent_pre_post_get_hash_and_full_bytes": true,
+    "forward_matches": 1,
+    "reverse_matches": 1,
+    "forward_full_bytes_equal": true,
+    "reverse_full_bytes_equal": true,
+    "sole_added_utf8_bytes": 97,
+    "sole_added_line": "                    Ok(_) => Err(\"original MCP service returned an unknown quit reason\".into()),",
+    "deleting_added_line_restores_complete_preimage": true,
+    "original_cancelled_closed_subtask_joinerror_and_outer_joinerror_arms_exact": true,
+    "complete_other_source_bytes_exact": true
+  },
+  "semantic_review": [
+    "The new Ok(_) pattern follows the three known Ok variants and precedes the existing outer Err arm. It handles only unrecognized QuitReason variants, never intercepts the known Cancelled/Closed/JoinError variants and does not match the outer JoinError.",
+    "It returns the function's existing Err(String), so an unknown reason cannot construct OriginalDriverJoined::Cancelled or ::Closed and cannot be reported as a successful driver observation.",
+    "The unknown payload is discarded; no Debug, Clone, Display or serialization requirement is introduced.",
+    "The same service.cancel().await is evaluated once. Arc::try_unwrap, cancellation, the retained-service loop, 1 ms wait, borrowed actual JoinHandle, terminal result caching and original error propagation are unchanged.",
+    "join_original_client still retains the first driver failure and joins original stdio custody before returning its original result aggregation. This patch adds no short-circuit around stdio cleanup and does not create any process-exit proof.",
+    "No request retry, new clock, budget, deadline renewal, native timeout change, default/None branch, API, caller policy, dependency, test or ref change occurs."
+  ],
+  "affected_guard": {
+    "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:0",
+    "expected_current_row_fingerprint": "37873f8eecf0fb0b505b0347779f1a8de02d926dd589fb7209656aff815b3a54",
+    "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+    "field": "required_function_order",
+    "function": "fn join_actual_original_service(",
+    "sequence_index": 8,
+    "independent_current_row_fingerprint": "37873f8eecf0fb0b505b0347779f1a8de02d926dd589fb7209656aff815b3a54",
+    "independent_target_selector_exact": true,
+    "old_forbidden_exact": [
+      "std::mem::forget(",
+      "SigningKey::generate(",
+      ".abort_all(",
+      ".detach("
+    ],
+    "added_obligation": "When actual final postimages are reconciled, retain every original cancel/unwrap/await/result/loop guard and additionally require the actual Ok(_) -> Err(String) arm within the unique join_actual_original_service function.",
+    "unique_masked_function_count": 1,
+    "new_arm_actual_masked_line": "Ok(_) => Err(                                                      .into()),",
+    "boundary_ids_caller_sets_receiver_policies_unchanged": true,
+    "metadata_ops_created_by_this_review": 0,
+    "not_a_final_guard_pass": "The saved template originated before formatting. All formatter layout changes, including its already-formatted JoinError block, must be reconciled from actual postimages separately; adding one string to a stale template is not a final checker result."
+  },
+  "limits": {
+    "h": 0,
+    "native": 0,
+    "compiler": 0,
+    "formatter": 0,
+    "original_checker": 0,
+    "original_typed_helper": 0,
+    "ref_mutations": 0,
+    "source_edits": 0,
+    "qualified_business": 0
+  }
+}

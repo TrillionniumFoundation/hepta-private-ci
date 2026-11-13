@@ -5,21 +5,28 @@
 
 use std::sync::Arc;
 
-use codex_hepta_intelligence_eval::{
-    ProductEvaluationExecutionAttestationRequestV1, ProductEvaluationExecutionAttestorV1,
-    ProductEvaluationExecutionKeyV1, ProductProviderErrorV1, SignedEvaluationEvidenceV1,
-};
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionAttestationRequestV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionAttestorV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
+use codex_hepta_intelligence_eval::ProductProviderErrorV1;
+use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{AgentdError, CellEvaluationPlanV1, CellQ24PreparedLearningV1};
+use crate::AgentdError;
+use crate::CellEvaluationPlanV1;
+use crate::CellQ24PreparedLearningV1;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 
-use super::exchange::{OriginalActorExchange, OriginalActorExchangeData, OriginalActorWait};
+use super::deployment_error;
+use super::deployment_refused;
+use super::exchange::OriginalActorExchange;
+use super::exchange::OriginalActorExchangeData;
+use super::exchange::OriginalActorWait;
 use super::files::OriginalDeploymentFiles;
 use super::learning_data::SignedEvidenceData;
-use super::{deployment_error, deployment_refused};
 
 #[derive(Serialize)]
 #[serde(deny_unknown_fields)]
@@ -64,9 +71,13 @@ impl<'a> OriginalExecutionAttestor<'a> {
         OriginalSameActorRootContext::require_current(&context)?;
         prepared.revalidate_source().map_err(deployment_error)?;
         Ok(Self {
-            context, prepared, expected,
+            context,
+            prepared,
+            expected,
             exchange: Some(OriginalActorExchange::new(exchange)?),
-            files, wait, failure: None,
+            files,
+            wait,
+            failure: None,
         })
     }
 
@@ -80,9 +91,13 @@ impl<'a> OriginalExecutionAttestor<'a> {
     ) -> Result<SignedLearningEvidenceV1, AgentdError> {
         self.wait.require_original_live()?;
         if request.key() != &self.expected {
-            return Err(deployment_refused("actual evaluator request differs from its original key"));
+            return Err(deployment_refused(
+                "actual evaluator request differs from its original key",
+            ));
         }
-        let exchange = self.exchange.take()
+        let exchange = self
+            .exchange
+            .take()
             .ok_or_else(|| deployment_refused("original evaluator operation already consumed"))?;
         let raw = OriginalExecutionSigningData {
             schema_version: 1,
@@ -94,13 +109,17 @@ impl<'a> OriginalExecutionAttestor<'a> {
             execution_digest: request.execution().execution_digest.into_array(),
             payload: request.signing_payload(),
         };
-        let (digest, response) = OriginalActorExchange::exchange_original(exchange, &raw, self.files, self.wait)?;
-        let signed: OriginalExecutionResponseData = super::files::OriginalPinnedRead::parse_original(&response)?;
+        let (digest, response) =
+            OriginalActorExchange::exchange_original(exchange, &raw, self.files, self.wait)?;
+        let signed: OriginalExecutionResponseData =
+            super::files::OriginalPinnedRead::parse_original(&response)?;
         if signed.schema_version != 1
             || signed.request_digest != digest.into_array()
             || signed.execution_digest != raw.execution_digest
         {
-            return Err(deployment_refused("original evaluator response binding differs"));
+            return Err(deployment_refused(
+                "original evaluator response binding differs",
+            ));
         }
         let evidence = signed.signed.original()?;
         super::files::OriginalPinnedRead::require_original_pin(&response)?;
@@ -178,14 +197,24 @@ pub(super) fn request_original_qualification(
         frozen_plan_digest: generator.into_array(),
         generator_payload: generator.as_array(),
         evaluator_payload: original.evaluator_payload,
-        actual_cell_record: serde_json::to_value(original.plan.record()).map_err(deployment_error)?,
+        actual_cell_record: serde_json::to_value(original.plan.record())
+            .map_err(deployment_error)?,
     };
-    let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(exchange)?, &request, files, wait)?;
-    let signed: OriginalQualificationResponseData = super::files::OriginalPinnedRead::parse_original(&response)?;
-    if signed.schema_version != 1 || signed.request_digest != digest.into_array()
+    let (digest, response) = OriginalActorExchange::exchange_original(
+        OriginalActorExchange::new(exchange)?,
+        &request,
+        files,
+        wait,
+    )?;
+    let signed: OriginalQualificationResponseData =
+        super::files::OriginalPinnedRead::parse_original(&response)?;
+    if signed.schema_version != 1
+        || signed.request_digest != digest.into_array()
         || signed.execution_digest != request.execution_digest
     {
-        return Err(deployment_refused("actual qualification response binding differs"));
+        return Err(deployment_refused(
+            "actual qualification response binding differs",
+        ));
     }
     let evidence = SignedEvaluationEvidenceV1 {
         generator_plan: signed.generator_plan.original()?,

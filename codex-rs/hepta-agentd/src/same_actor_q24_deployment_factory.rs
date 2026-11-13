@@ -2,27 +2,31 @@
 //! This factory returns actual business inputs AND their concrete coordinator;
 //! it cannot return an unconsumed placeholder channel as a configured phase.
 
-use std::sync::Arc;
-use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
-use codex_hepta_types::Digest32;
-use crate::{AgentdError, AuthBusObjectiveIngress, LoadedCellQ24ModelV1,
-    load_plasticity_process_bootstrap_v1};
+use crate::AgentdError;
+use crate::AuthBusObjectiveIngress;
+use crate::LoadedCellQ24ModelV1;
+use crate::load_plasticity_process_bootstrap_v1;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 use crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;
-use crate::same_actor_q24_phase::{
-    OriginalSameActorBusinessInputsV1, original_same_actor_deployment_host_channel,
-};
+use crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;
+use crate::same_actor_q24_phase::original_same_actor_deployment_host_channel;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
+use codex_hepta_types::Digest32;
+use std::sync::Arc;
 
 use super::artifacts::OriginalDeploymentArtifacts;
 use super::client::OriginalDeploymentClient;
 use super::coordinator::OriginalDeploymentCoordinator;
 use super::data::OriginalDeploymentData;
-use super::files::{OriginalDeploymentFiles, OriginalPinnedRead, PinnedFileData};
+use super::deployment_error;
+use super::deployment_refused;
+use super::files::OriginalDeploymentFiles;
+use super::files::OriginalPinnedRead;
+use super::files::PinnedFileData;
 use super::ingress::OriginalOrdinaryTaskIngress;
 use super::learning::OriginalDeploymentLearning;
 use super::task::OriginalInitialPredecessorFiles;
-use super::{deployment_error, deployment_refused};
 
 pub(super) struct OriginalLoadedDeployment {
     pub business: OriginalSameActorBusinessInputsV1,
@@ -55,7 +59,9 @@ pub(super) async fn load_original_deployment(
     if data.schema_version != 1
         || data.binding != OriginalDeploymentBinding::from_original_phase(context.descriptor())?
     {
-        return Err(deployment_refused("deployment does not bind this actual original Root phase"));
+        return Err(deployment_refused(
+            "deployment does not bind this actual original Root phase",
+        ));
     }
     let now = context.clock().now_unix_ms().map_err(deployment_error)? / 1_000;
     let authbus = files.read_root_descriptor(&data.authbus_trust, 1024 * 1024)?;
@@ -66,7 +72,9 @@ pub(super) async fn load_original_deployment(
     // Plasticity bootstrap is supplied for the phase's readiness check.
     files.require_original_context()?;
     let plasticity = load_plasticity_process_bootstrap_v1(
-        &data.plasticity.path, Digest32::from_array(data.plasticity.sha256), context.identity(),
+        &data.plasticity.path,
+        Digest32::from_array(data.plasticity.sha256),
+        context.identity(),
     )?;
     OriginalPinnedRead::require_original_pin(&plasticity_data)?;
     let checkpoint = files.open_original_owner(&data.authbus_checkpoint)?;
@@ -75,42 +83,73 @@ pub(super) async fn load_original_deployment(
     drop(checkpoint);
     let objective_a_file = files.read_original(&data.objective_a, 1024 * 1024)?;
     let objective_c_file = files.read_original(&data.objective_c, 1024 * 1024)?;
-    let objective_a: AuthBusObjectiveIngress = OriginalPinnedRead::parse_original(&objective_a_file)?;
-    let objective_c: AuthBusObjectiveIngress = OriginalPinnedRead::parse_original(&objective_c_file)?;
+    let objective_a: AuthBusObjectiveIngress =
+        OriginalPinnedRead::parse_original(&objective_a_file)?;
+    let objective_c: AuthBusObjectiveIngress =
+        OriginalPinnedRead::parse_original(&objective_c_file)?;
     if objective_a.body.run_id == objective_c.body.run_id {
-        return Err(deployment_refused("original A and C require distinct actual signed runs"));
+        return Err(deployment_refused(
+            "original A and C require distinct actual signed runs",
+        ));
     }
-    let (artifacts, selected) = OriginalDeploymentArtifacts::open_original(
-        &data.artifacts, &mut files, now,
-    )?;
-    let (initial, predecessor) = super::task::OriginalInitialData::open_original(&data.initial, &mut files)?;
+    let (artifacts, selected) =
+        OriginalDeploymentArtifacts::open_original(&data.artifacts, &mut files, now)?;
+    let (initial, predecessor) =
+        super::task::OriginalInitialData::open_original(&data.initial, &mut files)?;
     let initial_model = Arc::clone(&initial.model);
     let initial_bundle = initial.bundle.clone();
     let task = data.task.open_original_circuit(&context, &mut files)?;
-    let (learning, ledger) = OriginalDeploymentLearning::open_original(
-        data.learning.clone(), &mut files, now,
-    )?;
+    let (learning, ledger) =
+        OriginalDeploymentLearning::open_original(data.learning.clone(), &mut files, now)?;
     let (commands, events, host) = original_same_actor_deployment_host_channel(data.host_capacity)?;
     let ingress = OriginalOrdinaryTaskIngress::for_original_context(Arc::clone(&context))?;
     let client = OriginalDeploymentClient::connect_original(Arc::clone(&context)).await?;
     let business = OriginalSameActorBusinessInputsV1 {
-        artifacts: Arc::clone(OriginalDeploymentArtifacts::owner(&artifacts)), selected, initial, task, ledger,
+        artifacts: Arc::clone(OriginalDeploymentArtifacts::owner(&artifacts)),
+        selected,
+        initial,
+        task,
+        ledger,
         authbus_trust_file: data.authbus_trust.path.clone(),
         authbus_checkpoint_file: data.authbus_checkpoint.path.clone(),
         objective_profile_file: data.objective_profile.path.clone(),
-        plasticity, host,
+        plasticity,
+        host,
     };
-    let pins = vec![pinned, authbus, objective_profile, plasticity_data,
-        objective_a_file, objective_c_file];
-    for pin in &pins { OriginalPinnedRead::require_original_pin(pin)?; }
+    let pins = vec![
+        pinned,
+        authbus,
+        objective_profile,
+        plasticity_data,
+        objective_a_file,
+        objective_c_file,
+    ];
+    for pin in &pins {
+        OriginalPinnedRead::require_original_pin(pin)?;
+    }
     OriginalSameActorRootContext::require_current(&context)?;
     let coordinator = OriginalDeploymentCoordinator::new_original(
-        Arc::clone(&context), client, ingress, commands, events,
+        Arc::clone(&context),
+        client,
+        ingress,
+        commands,
+        events,
         OriginalCoordinatorMaterials {
-            data, files, artifacts, learning, initial_model, initial_bundle,
-            predecessor, objective_a, objective_c, pins,
+            data,
+            files,
+            artifacts,
+            learning,
+            initial_model,
+            initial_bundle,
+            predecessor,
+            objective_a,
+            objective_c,
+            pins,
         },
     )?;
     closing.disarm();
-    Ok(OriginalLoadedDeployment { business, coordinator })
+    Ok(OriginalLoadedDeployment {
+        business,
+        coordinator,
+    })
 }

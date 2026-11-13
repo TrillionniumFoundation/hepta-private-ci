@@ -89,8 +89,10 @@ impl OriginalOrdinaryTaskIngress {
             ));
         }
         if stage == OriginalOrdinaryTaskStage::C {
-            if !matches!(self.acknowledged[0].as_ref(), Some(ObjectiveStartOutcome::Admitted { .. }))
-                || self.run_ids[0].as_ref() == Some(&request.body.run_id)
+            if !matches!(
+                self.acknowledged[0].as_ref(),
+                Some(ObjectiveStartOutcome::Admitted { .. })
+            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id)
             {
                 return Err(deployment_refused(
                     "ordinary C requires an original A admission and a distinct real run",

@@ -85,8 +85,8 @@ fn file_runner() -> (
 ) {
     let (journal, file) = ComponentFile::create("holdout", &[]);
     let binding = digest("component holdout namespace");
-    let store = LockedFileFinalHoldoutCasStoreV1::create(file, binding)
-        .expect("original locked-file CAS");
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::create(file, binding).expect("original locked-file CAS");
     let owner = FencedFinalHoldoutOwnerV1::initialize(
         store,
         binding,
@@ -213,7 +213,9 @@ fn a_copied_receipt_and_consumption_replay_never_release_a_fresh_file_owner() {
             &fixture.baseline_plan,
             &mut fresh,
         ),
-        Err(ProductEvaluationError::Binding("final holdout already consumed"))
+        Err(ProductEvaluationError::Binding(
+            "final holdout already consumed"
+        ))
     ));
     assert_eq!(runner.holdout_anchor(), anchor);
     assert_eq!(
@@ -248,7 +250,9 @@ fn a_real_permit_for_another_complete_frozen_plan_consumes_no_rows() {
             &fixture.baseline_plan,
             &mut provider,
         ),
-        Err(ProductEvaluationError::Provider(ProductProviderErrorV1::Rejected))
+        Err(ProductEvaluationError::Provider(
+            ProductProviderErrorV1::Rejected
+        ))
     ));
     // The real CAS happened, but the mismatched provider never decodes/releases.
     assert_eq!(runner.holdout_anchor().record_count, 1);
@@ -277,7 +281,9 @@ fn changed_material_refuses_before_consumption_and_bad_encoding_cannot_rearm() {
             &fixture.baseline_plan,
             &mut provider,
         ),
-        Err(ProductEvaluationError::Provider(ProductProviderErrorV1::Rejected))
+        Err(ProductEvaluationError::Provider(
+            ProductProviderErrorV1::Rejected
+        ))
     ));
     assert_eq!(runner.holdout_anchor().record_count, 0);
     assert_eq!(
@@ -298,7 +304,9 @@ fn changed_material_refuses_before_consumption_and_bad_encoding_cannot_rearm() {
             &fixture.baseline_plan,
             &mut malformed_provider,
         ),
-        Err(ProductEvaluationError::Provider(ProductProviderErrorV1::Rejected))
+        Err(ProductEvaluationError::Provider(
+            ProductProviderErrorV1::Rejected
+        ))
     ));
     assert_eq!(runner.holdout_anchor().record_count, 1);
     let mut reopened =
@@ -311,6 +319,8 @@ fn changed_material_refuses_before_consumption_and_bad_encoding_cannot_rearm() {
             &fixture.baseline_plan,
             &mut reopened,
         ),
-        Err(ProductEvaluationError::Binding("final holdout already consumed"))
+        Err(ProductEvaluationError::Binding(
+            "final holdout already consumed"
+        ))
     ));
 }

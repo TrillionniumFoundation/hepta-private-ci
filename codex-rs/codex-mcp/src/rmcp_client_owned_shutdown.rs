@@ -23,11 +23,16 @@ pub(super) async fn make_original_owned_rmcp_client(
     }
     // Preserve the original environment resolution refusal even though local
     // launch, exactly as before, uses the original local cwd and launcher.
-    let _resolved_environment = resolved_environment
-        .map_err(|error| StartupOutcomeError::from(anyhow!(error)))?;
+    let _resolved_environment =
+        resolved_environment.map_err(|error| StartupOutcomeError::from(anyhow!(error)))?;
     let McpServerTransportConfig::Stdio {
-        command, args, env, env_vars, cwd,
-    } = config.transport else {
+        command,
+        args,
+        env,
+        env_vars,
+        cwd,
+    } = config.transport
+    else {
         return Err(StartupOutcomeError::from(anyhow!(
             "original owned MCP transport is not local stdio"
         )));
@@ -40,7 +45,9 @@ pub(super) async fn make_original_owned_rmcp_client(
             .collect::<HashMap<_, _>>()
     });
     let cwd = cwd.map(codex_utils_path_uri::LegacyAppPathString::into_string);
-    let custody = owner.original_client_custody().map_err(StartupOutcomeError::from)?;
+    let custody = owner
+        .original_client_custody()
+        .map_err(StartupOutcomeError::from)?;
     RmcpClient::new_stdio_client_with_owned_shutdown(
         command_os, args_os, env_os, &env_vars, cwd, custody,
     )

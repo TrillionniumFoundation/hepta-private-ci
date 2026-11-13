@@ -2,15 +2,29 @@
 //! These conversions copy values; the original model, Cell and CURRENT owners
 //! validate the complete definition and all executable/resource bindings.
 
-use codex_hepta_neuron::{NeuronCalibrationProfileV1, NeuronResourceEnvelopeV1, NeuronRuntimeConfigV1, SparseConfig, InhibitoryEdge, CellCandidateV1, CellDefinitionV1, CellCandidateKindV1};
-use codex_hepta_types::{Digest32, Generation, StableId};
-use serde::{Deserialize, Serialize};
-use crate::AgentdError;
 use super::deployment_error;
+use crate::AgentdError;
+use codex_hepta_neuron::CellCandidateKindV1;
+use codex_hepta_neuron::CellCandidateV1;
+use codex_hepta_neuron::CellDefinitionV1;
+use codex_hepta_neuron::InhibitoryEdge;
+use codex_hepta_neuron::NeuronCalibrationProfileV1;
+use codex_hepta_neuron::NeuronResourceEnvelopeV1;
+use codex_hepta_neuron::NeuronRuntimeConfigV1;
+use codex_hepta_neuron::SparseConfig;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum OriginalCandidateKindData { Action, Abstain, SlowPath }
+pub(super) enum OriginalCandidateKindData {
+    Action,
+    Abstain,
+    SlowPath,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -157,7 +171,11 @@ impl OriginalSparseData {
             top_k: self.top_k,
             temporal_decay_q24: self.temporal_decay_q24,
             inhibition_gain_q24: self.inhibition_gain_q24,
-            inhibition: self.inhibition.iter().map(OriginalInhibitoryEdgeData::original).collect::<Result<_, _>>()?,
+            inhibition: self
+                .inhibition
+                .iter()
+                .map(OriginalInhibitoryEdgeData::original)
+                .collect::<Result<_, _>>()?,
             activity_decay_q24: self.activity_decay_q24,
             target_activity_q24: self.target_activity_q24,
             threshold_rate_q24: self.threshold_rate_q24,
@@ -199,7 +217,11 @@ impl OriginalCandidateData {
         Ok(CellCandidateV1 {
             candidate_id: StableId::new(&self.candidate_id).map_err(deployment_error)?,
             activation_index: self.activation_index,
-            kind: match self.kind { OriginalCandidateKindData::Action => CellCandidateKindV1::Action, OriginalCandidateKindData::Abstain => CellCandidateKindV1::Abstain, OriginalCandidateKindData::SlowPath => CellCandidateKindV1::SlowPath },
+            kind: match self.kind {
+                OriginalCandidateKindData::Action => CellCandidateKindV1::Action,
+                OriginalCandidateKindData::Abstain => CellCandidateKindV1::Abstain,
+                OriginalCandidateKindData::SlowPath => CellCandidateKindV1::SlowPath,
+            },
         })
     }
 }
@@ -226,11 +248,14 @@ impl OriginalCellDefinitionData {
             state_schema_digest: Digest32::from_array(self.state_schema_digest),
             runtime: self.runtime.original()?,
             native: self.native.original()?,
-            candidates: self.candidates.iter().map(OriginalCandidateData::original).collect::<Result<_, _>>()?,
+            candidates: self
+                .candidates
+                .iter()
+                .map(OriginalCandidateData::original)
+                .collect::<Result<_, _>>()?,
             max_input_bytes: self.max_input_bytes,
             max_queue_age_micros: self.max_queue_age_micros,
             max_resident_bytes: self.max_resident_bytes,
         })
     }
 }
-

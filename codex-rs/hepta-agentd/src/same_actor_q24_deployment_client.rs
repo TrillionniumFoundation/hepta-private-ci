@@ -26,9 +26,9 @@ use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
 
 #[path = "same_actor_q24_deployment_retirement.rs"]
 mod retirement;
+pub(crate) use retirement::OriginalRootProcessExited;
 pub(crate) use retirement::OriginalRootRetirementIntent;
 pub(crate) use retirement::OriginalRootWorkersJoined;
-pub(crate) use retirement::OriginalRootProcessExited;
 
 const ORIGINAL_FRAME_TIMEOUT: Duration = Duration::from_millis(500);
 
@@ -79,9 +79,11 @@ impl OriginalDeploymentClient {
         };
         OriginalSameActorRootContext::require_current(&context)?;
         let stream = stream.into_std()?;
-        let required = crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(
-            context.gate(), &stream,
-        )?;
+        let required =
+            crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(
+                context.gate(),
+                &stream,
+            )?;
         let root_pidfd = OriginalSameActorRootContext::root_pidfd(&context)?;
         let root_exit_pidfd = root_pidfd.try_clone()?;
         let channel = HostAuthorityPeerChannel::from_stream_until(
@@ -126,7 +128,9 @@ impl OriginalDeploymentClient {
     ) -> Result<OriginalDeploymentAcknowledgement, AgentdError> {
         let mut closing = self.required.failure_scope();
         OriginalSameActorRootContext::require_current(&self.context)?;
-        let expected = self.next.take()
+        let expected = self
+            .next
+            .take()
             .ok_or_else(|| refused("original deployment stage was already consumed"))?;
         if progress.stage() != expected {
             return Err(refused("original deployment stages arrived out of order"));
@@ -148,21 +152,22 @@ impl OriginalDeploymentClient {
         HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;
         // From the actual call onward a missing, invalid or overdue reply
         // cannot establish that Root performed no registration.
-        let response = HostAuthorityPeerChannel::request(&mut self.channel, &bytes)
-            .map_err(uncertain)?;
+        let response =
+            HostAuthorityPeerChannel::request(&mut self.channel, &bytes).map_err(uncertain)?;
         let acknowledged = (|| {
             let acknowledgement =
                 OriginalDeploymentAcknowledgement::decode_original(&response, &request)?;
-            HostAuthorityPeerChannel::check_peer_lifetime(&self.channel)
-                .map_err(owner_error)?;
+            HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;
             OriginalSameActorRootContext::require_current(&self.context)?;
             self.required.require_open()?;
             Ok::<_, AgentdError>(acknowledgement)
-        })().map_err(uncertain)?;
+        })()
+        .map_err(uncertain)?;
         if expected == OriginalDeploymentStage::Current {
             self.current_registration = Some(OriginalDeploymentCurrentRegistration {
-                registration: acknowledged.registration_binding.clone()
-                    .ok_or_else(|| uncertain(refused("actual Current acknowledgement has no binding")))?,
+                registration: acknowledged.registration_binding.clone().ok_or_else(|| {
+                    uncertain(refused("actual Current acknowledgement has no binding"))
+                })?,
                 request: acknowledged.original_request.clone(),
             });
         }
@@ -177,7 +182,6 @@ impl OriginalDeploymentClient {
 
     // After Current, the same client transfers through the actual joined
     // coordinator owner. Only its private retirement path consumes it.
-
 }
 
 fn refused(message: &str) -> AgentdError {

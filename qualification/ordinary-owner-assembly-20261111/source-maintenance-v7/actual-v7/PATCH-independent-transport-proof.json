@@ -1,0 +1,457 @@
+{
+  "schema_version": 1,
+  "kind": "pure-v8-raw-deflate-evidence-transfer-decoder-and-actual-patch-proof",
+  "author": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "purpose": "Decode the immutable compressed evidence payload only. This is not product code, a product test, the original checker or a native qualification.",
+  "function": {
+    "pin": "8c163840421d6ca7acb2f7b30be9732f5ecb569b",
+    "bytes": 7674,
+    "sha256": "2a14a46e65c8d24d6eec01c5412618f29db734561b46644374d51f20099d273d"
+  },
+  "usage": {
+    "source_is": "Exactly inflateRawDeflate.toString(), a self-contained named function expression/declaration.",
+    "evaluate": "const inflate = Function('return (' + verifiedFunctionSource + ');')();",
+    "call": "const bytes = inflate(compressedUint8ArrayOrByteArray, expectedUncompressedLength);",
+    "returns": "Uint8Array of exactly expectedUncompressedLength or throws.",
+    "dependencies": "Standard ECMAScript built-ins only; no Node, import, filesystem, network, native codec or platform decompressor."
+  },
+  "contract": {
+    "format": "One raw DEFLATE stream, as produced by Python zlib.compressobj(level=9, wbits=-15). No zlib/gzip wrapper or preset dictionary.",
+    "supported_blocks": [
+      "stored",
+      "fixed Huffman",
+      "dynamic Huffman"
+    ],
+    "valid_cases": [
+      "Canonical Huffman codes decode in transmitted most-significant code-bit order while raw fields/byte packing use least-significant-bit order.",
+      "Dynamic code-length repeats 16/17/18, including zero-length runs and bounded alphabet repetition.",
+      "An unused empty distance alphabet is accepted; using a distance from it is rejected.",
+      "Overlapping LZ77 references copy forward and preserve history across block boundaries.",
+      "Distances up to 32768 and lengths up to 258.",
+      "Unused padding bits in the last byte are ignored; any complete trailing byte after the final block is rejected."
+    ],
+    "throws_on": [
+      "Invalid byte input or expected length.",
+      "Any input truncation encountered by bit/byte decoding.",
+      "Reserved block type, reserved literal/length symbols or reserved distance symbols.",
+      "Stored LEN/NLEN mismatch.",
+      "Oversubscribed Huffman trees, disallowed incomplete trees, empty code-length/literal trees, invalid Huffman codes and missing end-of-block.",
+      "Repeat16 without a predecessor, or any code-length repeat past the declared combined literal/distance alphabet.",
+      "Back-reference distance before the beginning of output history.",
+      "Output beyond expected length or a final output shorter than expected.",
+      "Trailing complete bytes after the final block."
+    ],
+    "allocation_bound": "Output allocation and writes are bounded by the caller's validated expectedLength; allocation failure also throws.",
+    "integrity_rule": "Successful inflation alone is not acceptance. Require exact uncompressed length, full Git blob ID and SHA-256 against independently retained original evidence before parsing or replaying the patch."
+  },
+  "original_target": {
+    "bytes": 756178,
+    "git_blob": "7f8e1205d896062566a5f95fbdbe41195d714d9b",
+    "sha256": "e776f38c799c1aee19828c33e8262963341990b6c936cfe0eed64841c4037cf0"
+  },
+  "actual_execution": {
+    "function": {
+      "pin": "8c163840421d6ca7acb2f7b30be9732f5ecb569b",
+      "bytes": 7674,
+      "sha256": "2a14a46e65c8d24d6eec01c5412618f29db734561b46644374d51f20099d273d"
+    },
+    "envelope": {
+      "blob": "eabfb6315486d45951381e083de483822c2db503",
+      "bytes": 183954,
+      "sha256": "408726b8b73f79970b3321e5d5c2d754bea43f20febde86928885d2a6555822b"
+    },
+    "compressed": {
+      "bytes": 137435,
+      "sha256": "3a49a866eea5b8bfb673e53d79733b1375edb9c34e86888ff9a9e977accaa9da"
+    },
+    "output": {
+      "blob": "7f8e1205d896062566a5f95fbdbe41195d714d9b",
+      "bytes": 756178,
+      "sha256": "e776f38c799c1aee19828c33e8262963341990b6c936cfe0eed64841c4037cf0"
+    },
+    "actual_output_matches_all_three_original_pins": true,
+    "utf8_roundtrip_exact": true,
+    "peer_vectors": [
+      {
+        "name": "peer-independent fixed hello",
+        "compressed_bytes": 7,
+        "output_bytes": 5,
+        "exact": true
+      },
+      {
+        "name": "peer-independent fixed overlap d1",
+        "compressed_bytes": 4,
+        "output_bytes": 259,
+        "exact": true
+      },
+      {
+        "name": "peer-independent dynamic repeat18",
+        "compressed_bytes": 13,
+        "output_bytes": 1,
+        "exact": true
+      },
+      {
+        "name": "peer-independent stored hello",
+        "compressed_bytes": 10,
+        "output_bytes": 5,
+        "exact": true
+      }
+    ],
+    "original_patch_create_get_exact": true
+  },
+  "envelope_metadata": {
+    "classification": "READ_ONLY_ORIGINAL_EVIDENCE_BYTE_TRANSPORT_NOT_QUALIFICATION",
+    "compressed_bytes": 137435,
+    "compressed_sha256": "3a49a866eea5b8bfb673e53d79733b1375edb9c34e86888ff9a9e977accaa9da",
+    "encoding": "raw-deflate-base64",
+    "original_bytes": 756178,
+    "original_git_blob": "7f8e1205d896062566a5f95fbdbe41195d714d9b",
+    "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v7/records/final.patch",
+    "original_sha256": "e776f38c799c1aee19828c33e8262963341990b6c936cfe0eed64841c4037cf0",
+    "original_version": [
+      "66306",
+      "78299262",
+      "756178",
+      "1794527325390454016",
+      "1794527325390454016"
+    ],
+    "python_roundtrip_exact": true,
+    "schema_version": 1
+  },
+  "finite_v8_analysis": {
+    "initial_vectors": [
+      {
+        "name": "empty fixed",
+        "ok": true,
+        "input": [
+          3,
+          0
+        ],
+        "expected": []
+      },
+      {
+        "name": "fixed hello",
+        "ok": true,
+        "input": [
+          203,
+          72,
+          205,
+          201,
+          201,
+          7,
+          0
+        ],
+        "expected": [
+          104,
+          101,
+          108,
+          108,
+          111
+        ]
+      },
+      {
+        "name": "stored hello",
+        "ok": true,
+        "input": [
+          1,
+          5,
+          0,
+          250,
+          255,
+          104,
+          101,
+          108,
+          108,
+          111
+        ],
+        "expected": [
+          104,
+          101,
+          108,
+          108,
+          111
+        ]
+      }
+    ],
+    "independently_supplied_peer_vectors": [
+      {
+        "name": "peer-independent fixed hello",
+        "compressed_bytes": 7,
+        "output_bytes": 5,
+        "exact": true
+      },
+      {
+        "name": "peer-independent fixed overlap d1",
+        "compressed_bytes": 4,
+        "output_bytes": 259,
+        "exact": true
+      },
+      {
+        "name": "peer-independent dynamic repeat18",
+        "compressed_bytes": 13,
+        "output_bytes": 1,
+        "exact": true
+      },
+      {
+        "name": "peer-independent stored hello",
+        "compressed_bytes": 10,
+        "output_bytes": 5,
+        "exact": true
+      }
+    ],
+    "further_case_counts": {
+      "exact_output": 3,
+      "rejected": 27
+    },
+    "cases": [
+      {
+        "name": "dynamic repeat16+17+18 and canonical MSB codes",
+        "status": "exact_output",
+        "input_bytes": 17,
+        "output_bytes": 5
+      },
+      {
+        "name": "stored-to-fixed history with distance32768 and length258",
+        "status": "exact_output",
+        "input_bytes": 32778,
+        "output_bytes": 33026
+      },
+      {
+        "name": "legal unused final-byte padding",
+        "status": "exact_output",
+        "input_bytes": 2,
+        "output_bytes": 0
+      },
+      {
+        "name": "empty truncated stream",
+        "status": "rejected",
+        "input_bytes": 0,
+        "expected_length": 0,
+        "error": "raw DEFLATE: truncated input"
+      },
+      {
+        "name": "reserved block type",
+        "status": "rejected",
+        "input_bytes": 1,
+        "expected_length": 0,
+        "error": "raw DEFLATE: reserved block type"
+      },
+      {
+        "name": "stored complement mismatch",
+        "status": "rejected",
+        "input_bytes": 6,
+        "expected_length": 1,
+        "error": "raw DEFLATE: stored block length complement mismatch"
+      },
+      {
+        "name": "stored data truncation",
+        "status": "rejected",
+        "input_bytes": 6,
+        "expected_length": 2,
+        "error": "raw DEFLATE: truncated stored block"
+      },
+      {
+        "name": "fixed code truncation",
+        "status": "rejected",
+        "input_bytes": 6,
+        "expected_length": 5,
+        "error": "raw DEFLATE: truncated input"
+      },
+      {
+        "name": "fixed output exceeds manifest",
+        "status": "rejected",
+        "input_bytes": 7,
+        "expected_length": 4,
+        "error": "raw DEFLATE: output exceeds expected length"
+      },
+      {
+        "name": "fixed output shorter than manifest",
+        "status": "rejected",
+        "input_bytes": 7,
+        "expected_length": 6,
+        "error": "raw DEFLATE: output length differs from expected length"
+      },
+      {
+        "name": "whole trailing byte",
+        "status": "rejected",
+        "input_bytes": 3,
+        "expected_length": 0,
+        "error": "raw DEFLATE: trailing bytes after final block"
+      },
+      {
+        "name": "invalid byte array",
+        "status": "rejected",
+        "input_bytes": 1,
+        "expected_length": 0,
+        "error": "raw DEFLATE: input contains a non-byte value"
+      },
+      {
+        "name": "negative expected length",
+        "status": "rejected",
+        "input_bytes": 2,
+        "expected_length": -1,
+        "error": "raw DEFLATE: expected output length must be a nonnegative safe integer"
+      },
+      {
+        "name": "fractional expected length",
+        "status": "rejected",
+        "input_bytes": 2,
+        "expected_length": 0.5,
+        "error": "raw DEFLATE: expected output length must be a nonnegative safe integer"
+      },
+      {
+        "name": "distance before any history",
+        "status": "rejected",
+        "input_bytes": 2,
+        "expected_length": 3,
+        "error": "raw DEFLATE: distance precedes output history"
+      },
+      {
+        "name": "reserved distance code",
+        "status": "rejected",
+        "input_bytes": 3,
+        "expected_length": 4,
+        "error": "raw DEFLATE: reserved distance symbol"
+      },
+      {
+        "name": "reserved fixed length code",
+        "status": "rejected",
+        "input_bytes": 2,
+        "expected_length": 3,
+        "error": "raw DEFLATE: reserved length symbol"
+      },
+      {
+        "name": "oversubscribed code-length tree",
+        "status": "rejected",
+        "input_bytes": 4,
+        "expected_length": 0,
+        "error": "raw DEFLATE: oversubscribed Huffman tree"
+      },
+      {
+        "name": "incomplete code-length tree",
+        "status": "rejected",
+        "input_bytes": 4,
+        "expected_length": 0,
+        "error": "raw DEFLATE: incomplete Huffman tree"
+      },
+      {
+        "name": "empty code-length tree",
+        "status": "rejected",
+        "input_bytes": 4,
+        "expected_length": 0,
+        "error": "raw DEFLATE: empty Huffman tree"
+      },
+      {
+        "name": "repeat16 at alphabet start",
+        "status": "rejected",
+        "input_bytes": 4,
+        "expected_length": 0,
+        "error": "raw DEFLATE: repeat code has no predecessor"
+      },
+      {
+        "name": "repeat18 past complete alphabet",
+        "status": "rejected",
+        "input_bytes": 6,
+        "expected_length": 0,
+        "error": "raw DEFLATE: code-length repeat exceeds alphabet"
+      },
+      {
+        "name": "dynamic no end-of-block symbol",
+        "status": "rejected",
+        "input_bytes": 6,
+        "expected_length": 0,
+        "error": "raw DEFLATE: missing end-of-block code"
+      },
+      {
+        "name": "incomplete literal tree",
+        "status": "rejected",
+        "input_bytes": 12,
+        "expected_length": 0,
+        "error": "raw DEFLATE: incomplete Huffman tree"
+      },
+      {
+        "name": "invalid code in allowed singleton literal tree",
+        "status": "rejected",
+        "input_bytes": 12,
+        "expected_length": 0,
+        "error": "raw DEFLATE: invalid Huffman code"
+      },
+      {
+        "name": "match with empty distance alphabet",
+        "status": "rejected",
+        "input_bytes": 12,
+        "expected_length": 3,
+        "error": "raw DEFLATE: distance used with an empty tree"
+      },
+      {
+        "name": "reserved dynamic alphabet length",
+        "status": "rejected",
+        "input_bytes": 3,
+        "expected_length": 0,
+        "error": "raw DEFLATE: reserved literal/length alphabet size"
+      },
+      {
+        "name": "actual compressed payload truncated by one byte",
+        "status": "rejected",
+        "input_bytes": 137434,
+        "expected_length": 756178,
+        "error": "raw DEFLATE: truncated input"
+      },
+      {
+        "name": "actual output exceeds wrong manifest by one byte",
+        "status": "rejected",
+        "input_bytes": 137435,
+        "expected_length": 756177,
+        "error": "raw DEFLATE: output exceeds expected length"
+      },
+      {
+        "name": "actual output shorter than wrong manifest by one byte",
+        "status": "rejected",
+        "input_bytes": 137435,
+        "expected_length": 756179,
+        "error": "raw DEFLATE: output length differs from expected length"
+      }
+    ],
+    "dynamic_repeat16_17_18_vector": {
+      "compressed": [
+        5,
+        192,
+        183,
+        0,
+        0,
+        0,
+        0,
+        3,
+        48,
+        182,
+        110,
+        127,
+        153,
+        191,
+        89,
+        161,
+        28
+      ],
+      "expected": [
+        71,
+        70,
+        65,
+        67,
+        69
+      ]
+    },
+    "note": "Finite pure V8 algorithm checks only, not execution of product/native tests. The independent real compressed payload supplies the decisive target byte-identity check."
+  },
+  "verification": {
+    "function_create_get_exact": true,
+    "envelope_get_full_git_size_sha_verified": true,
+    "compressed_size_sha_verified": true,
+    "actual_inflate_size_git_sha_all_match_original": true,
+    "output_utf8_roundtrip_exact": true,
+    "original_patch_create_get_exact": true,
+    "product_or_metadata_source_changed": false,
+    "h_or_pty_or_native_executed": false,
+    "reference_mutation": false
+  }
+}

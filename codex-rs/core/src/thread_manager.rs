@@ -721,7 +721,9 @@ impl ThreadManager {
         Self {
             state: Arc::new(ThreadManagerState {
                 thread_registry: Arc::new(RwLock::new(ThreadRegistryState::default())),
-                original_shutdown: Arc::new(original_shutdown::OriginalThreadShutdownCustody::default()),
+                original_shutdown: Arc::new(
+                    original_shutdown::OriginalThreadShutdownCustody::default(),
+                ),
                 thread_created_tx,
                 thread_id_generator: default_thread_id_generator(),
                 models_manager,
@@ -874,7 +876,9 @@ impl ThreadManager {
         Self {
             state: Arc::new(ThreadManagerState {
                 thread_registry: Arc::new(RwLock::new(ThreadRegistryState::default())),
-                original_shutdown: Arc::new(original_shutdown::OriginalThreadShutdownCustody::default()),
+                original_shutdown: Arc::new(
+                    original_shutdown::OriginalThreadShutdownCustody::default(),
+                ),
                 thread_created_tx,
                 thread_id_generator: default_thread_id_generator(),
                 models_manager: create_model_provider(provider, Some(auth_manager.clone()))

@@ -318,7 +318,8 @@ impl BoundPublication {
     )> {
         let (phase, retirement) = mode;
         retirement.require_original(phase.gate)?;
-        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+        let mut closing =
+            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
         let end = phase.gate.deadline().instant();
         let receiver = self
             .runtime

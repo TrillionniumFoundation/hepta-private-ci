@@ -75,8 +75,12 @@ pub struct OriginalMcpClientShutdownObservation {
 
 impl OriginalMcpClientShutdownObservation {
     pub fn require_original_ready_client_joined(&self) -> Result<()> {
-        ensure!(self.driver.is_some(), "original MCP service never became an owned driver");
-        self.stdio.require_original_child_exited()
+        ensure!(
+            self.driver.is_some(),
+            "original MCP service never became an owned driver"
+        );
+        self.stdio
+            .require_original_child_exited()
             .map_err(|error| anyhow!("original MCP child was not joined: {error}"))
     }
 }
@@ -112,7 +116,9 @@ impl OriginalMcpClientShutdown {
     }
 
     fn reserve_original_constructor(&self) -> Result<()> {
-        let mut state = self.state.lock()
+        let mut state = self
+            .state
+            .lock()
             .map_err(|_| anyhow!("original MCP client custody is poisoned"))?;
         ensure!(
             !self.stopped.load(Ordering::Acquire) && !state.constructor_used,
@@ -123,10 +129,14 @@ impl OriginalMcpClientShutdown {
     }
 
     fn retain_original_client(&self, client: &Arc<RmcpClient>) -> Result<()> {
-        let mut state = self.state.lock()
+        let mut state = self
+            .state
+            .lock()
             .map_err(|_| anyhow!("original MCP client custody is poisoned"))?;
-        ensure!(state.constructor_used && state.client.is_none(),
-            "original MCP client cannot be replaced");
+        ensure!(
+            state.constructor_used && state.client.is_none(),
+            "original MCP client cannot be replaced"
+        );
         state.client = Some(Arc::downgrade(client));
         Ok(())
     }
@@ -142,8 +152,7 @@ impl OriginalMcpClientShutdown {
         } else {
             state.service = Some(Arc::clone(service));
         }
-        if poisoned || !state.constructor_used || duplicate
-            || self.stopped.load(Ordering::Acquire)
+        if poisoned || !state.constructor_used || duplicate || self.stopped.load(Ordering::Acquire)
         {
             service.cancellation_token().cancel();
             return Err(anyhow!("original MCP service publication was refused"));
@@ -153,7 +162,9 @@ impl OriginalMcpClientShutdown {
 
     fn start_original_driver_join(&self) -> Option<Arc<OriginalDriverJob>> {
         let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
-        if let Some(job) = &state.driver { return Some(Arc::clone(job)); }
+        if let Some(job) = &state.driver {
+            return Some(Arc::clone(job));
+        }
         let service = state.service.take()?;
         let extra_services = std::mem::take(&mut state.extra_services);
         // The outer registry has already joined the actual startup work.
@@ -166,25 +177,34 @@ impl OriginalMcpClientShutdown {
             actual.push(service);
             actual.extend(extra_services);
             let mut primary = None;
-            let mut first_error = duplicate.then(|| {
-                "original MCP startup produced more than one service".to_string()
-            });
+            let mut first_error = duplicate
+                .then(|| "original MCP startup produced more than one service".to_string());
             for service in actual {
                 match join_actual_original_service(service).await {
                     Ok(joined) => {
-                        if primary.is_none() { primary = Some(joined); }
+                        if primary.is_none() {
+                            primary = Some(joined);
+                        }
                     }
                     Err(error) => {
-                        if first_error.is_none() { first_error = Some(error); }
-                        else { tracing::error!(error = %error, "additional original service join failure"); }
+                        if first_error.is_none() {
+                            first_error = Some(error);
+                        } else {
+                            tracing::error!(error = %error, "additional original service join failure");
+                        }
                     }
                 }
             }
-            if let Some(error) = first_error { return Err(error); }
+            if let Some(error) = first_error {
+                return Err(error);
+            }
             primary.ok_or_else(|| "original service join result missing".into())
         });
         let job = Arc::new(OriginalDriverJob {
-            state: Mutex::new(OriginalDriverState { handle: Some(handle), result: None }),
+            state: Mutex::new(OriginalDriverState {
+                handle: Some(handle),
+                result: None,
+            }),
         });
         state.driver = Some(Arc::clone(&job));
         Some(job)
@@ -194,10 +214,17 @@ impl OriginalMcpClientShutdown {
     /// It then retains the actual cleanup task which drives this method.
     pub async fn join_original_client(&self) -> Result<OriginalMcpClientShutdownObservation> {
         self.request_stop();
-        let mut first_error = self.state.is_poisoned()
+        let mut first_error = self
+            .state
+            .is_poisoned()
             .then(|| anyhow!("original MCP client custody was poisoned"));
-        let client = self.state.lock().unwrap_or_else(|error| error.into_inner())
-            .client.as_ref().and_then(Weak::upgrade);
+        let client = self
+            .state
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .client
+            .as_ref()
+            .and_then(Weak::upgrade);
         if let Some(client) = client {
             // Only the client retained synchronously by our constructor is
             // reachable; no caller-supplied replacement is accepted.
@@ -206,11 +233,14 @@ impl OriginalMcpClientShutdown {
                 std::mem::replace(&mut *state, ClientState::Closed)
             };
             match previous {
-                ClientState::Connecting { transport: Some(PendingTransport::Stdio { mut transport }) } => {
+                ClientState::Connecting {
+                    transport: Some(PendingTransport::Stdio { mut transport }),
+                } => {
                     use rmcp::transport::Transport;
                     if let Err(error) = transport.close().await {
                         if first_error.is_none() {
-                            first_error = Some(anyhow!("original pending MCP transport close: {error}"));
+                            first_error =
+                                Some(anyhow!("original pending MCP transport close: {error}"));
                         }
                     }
                 }
@@ -223,13 +253,18 @@ impl OriginalMcpClientShutdown {
             Some(job) => match job.join_original().await {
                 Ok(joined) => Some(joined),
                 Err(error) => {
-                    if first_error.is_none() { first_error = Some(anyhow!(error)); }
+                    if first_error.is_none() {
+                        first_error = Some(anyhow!(error));
+                    }
                     None
                 }
             },
             None => None,
         };
-        let stdio = self.stdio.join_original_stdio().await
+        let stdio = self
+            .stdio
+            .join_original_stdio()
+            .await
             .map_err(|error| anyhow!("original MCP stdio owners did not join: {error}"));
         match (first_error, stdio) {
             (Some(error), Err(cleanup)) => {
@@ -254,9 +289,10 @@ async fn join_actual_original_service(
                 return match service.cancel().await {
                     Ok(QuitReason::Cancelled) => Ok(OriginalDriverJoined::Cancelled),
                     Ok(QuitReason::Closed) => Ok(OriginalDriverJoined::Closed),
-                    Ok(QuitReason::JoinError(error)) => Err(format!(
-                        "original MCP service subtask failed: {error}"
-                    )),
+                    Ok(QuitReason::JoinError(error)) => {
+                        Err(format!("original MCP service subtask failed: {error}"))
+                    }
+                    Ok(_) => Err("original MCP service returned an unknown quit reason".into()),
                     Err(error) => Err(format!(
                         "actual original MCP service driver failed to join: {error}"
                     )),
@@ -274,7 +310,9 @@ async fn join_actual_original_service(
 impl OriginalDriverJob {
     async fn join_original(&self) -> Result<OriginalDriverJoined, String> {
         let mut state = self.state.lock().await;
-        if let Some(result) = &state.result { return result.clone(); }
+        if let Some(result) = &state.result {
+            return result.clone();
+        }
         let result = match state.handle.as_mut() {
             Some(handle) => match handle.await {
                 Ok(result) => result,
@@ -289,7 +327,9 @@ impl OriginalDriverJob {
 }
 
 impl Drop for OriginalMcpClientShutdown {
-    fn drop(&mut self) { self.request_stop(); }
+    fn drop(&mut self) {
+        self.request_stop();
+    }
 }
 
 impl RmcpClient {
@@ -308,18 +348,29 @@ impl RmcpClient {
                 "owned MCP shutdown requires the Linux local Legacy profile",
             ));
         }
-        owner.reserve_original_constructor().map_err(std::io::Error::other)?;
-        let launcher: Arc<dyn StdioServerLauncher> = Arc::new(
-            LocalStdioServerLauncher::new_with_owned_shutdown(
-                owner.fallback_cwd.clone(), Arc::clone(&owner.stdio),
-            ),
-        );
+        owner
+            .reserve_original_constructor()
+            .map_err(std::io::Error::other)?;
+        let launcher: Arc<dyn StdioServerLauncher> =
+            Arc::new(LocalStdioServerLauncher::new_with_owned_shutdown(
+                owner.fallback_cwd.clone(),
+                Arc::clone(&owner.stdio),
+            ));
         let mut client = Self::new_stdio_client_with_protocol_mode(
-            program, args, env, env_vars, cwd, launcher, McpProtocolMode::Legacy,
-        ).await?;
+            program,
+            args,
+            env,
+            env_vars,
+            cwd,
+            launcher,
+            McpProtocolMode::Legacy,
+        )
+        .await?;
         client.original_owned_shutdown = Some(Arc::clone(&owner));
         let client = Arc::new(client);
-        owner.retain_original_client(&client).map_err(std::io::Error::other)?;
+        owner
+            .retain_original_client(&client)
+            .map_err(std::io::Error::other)?;
         Ok(client)
     }
 }

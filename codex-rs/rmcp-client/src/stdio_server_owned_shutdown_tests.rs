@@ -17,7 +17,9 @@ fn original_command(directory: &Path, script: &str) -> StdioServerCommand {
     )
 }
 
-async fn joined(custody: &OriginalStdioShutdownCustody) -> io::Result<OriginalStdioShutdownObservation> {
+async fn joined(
+    custody: &OriginalStdioShutdownCustody,
+) -> io::Result<OriginalStdioShutdownObservation> {
     tokio::time::timeout(Duration::from_secs(30), custody.join_original_stdio())
         .await
         .expect("actual child/helper cleanup did not finish")
@@ -37,7 +39,10 @@ async fn require_actual_handles_joined(custody: &OriginalStdioShutdownCustody) {
     let launch = launch.state.lock().await;
     assert!(launch.joined);
     assert!(launch.handle.is_none());
-    assert!(launch.result.is_none(), "actual transport must leave launch output");
+    assert!(
+        launch.result.is_none(),
+        "actual transport must leave launch output"
+    );
     drop(launch);
     assert_eq!(children.len(), 1);
     assert_eq!(stderr.len(), 1);
@@ -100,7 +105,13 @@ async fn unsupported_modern_mode_refuses_before_an_actual_launch() {
     };
     assert_eq!(error.kind(), io::ErrorKind::Unsupported);
     assert!(custody.state().launch.is_none());
-    assert!(joined(&custody).await.unwrap().require_original_child_exited().is_err());
+    assert!(
+        joined(&custody)
+            .await
+            .unwrap()
+            .require_original_child_exited()
+            .is_err()
+    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -111,7 +122,10 @@ async fn abandoned_actual_launch_output_is_taken_and_its_child_reaped() {
     // this is the state left by cancellation of the launch waiter.
     let launch = custody
         .start_launch(
-            original_command(directory.path(), "printf 'original-stderr\\n' >&2; exec sleep 30"),
+            original_command(
+                directory.path(),
+                "printf 'original-stderr\\n' >&2; exec sleep 30",
+            ),
             directory.path().to_path_buf(),
         )
         .unwrap();
@@ -168,7 +182,10 @@ async fn actual_stderr_error_is_preserved_after_child_and_helper_joins() {
         Arc::clone(&custody),
     );
     let transport = launcher
-        .launch(original_command(directory.path(), "printf '\\377\\n' >&2; exec sleep 30"))
+        .launch(original_command(
+            directory.path(),
+            "printf '\\377\\n' >&2; exec sleep 30",
+        ))
         .await
         .unwrap();
     let reader = custody.state().stderr[0].clone();

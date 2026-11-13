@@ -3,11 +3,11 @@
 //! checkpoint response, durable ACK transaction and exact local retirement.
 
 use super::*;
-use std::sync::Arc;
 use crate::AgentdError;
 use crate::AgentdState;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
+use std::sync::Arc;
 
 pub(crate) struct OriginalDurableLearningAcknowledgement {
     _closing: CloseSameActorPhaseOnDrop,
@@ -63,7 +63,8 @@ pub(crate) async fn deliver_original_same_actor_ack(
         Some(Box::pin(async move {
             source_work.require_original_work_entry()?;
             AgentdState::require_circuit_learning_source(&source_state, &source_request)
-                .await.map_err(|_| Error::WrongScope)?;
+                .await
+                .map_err(|_| Error::WrongScope)?;
             source_work.require_original_work_entry()
         })),
     )

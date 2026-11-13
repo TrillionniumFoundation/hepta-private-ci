@@ -42,16 +42,16 @@ use tokio::io::unix::AsyncFd;
 
 #[path = "root_authority_session_lifecycle.rs"]
 mod lifecycle;
-use lifecycle::OriginalSessionWorker;
 pub(crate) use lifecycle::OriginalConsumerFailure;
 pub(crate) use lifecycle::OriginalConsumerJoinSummary;
 pub(crate) use lifecycle::OriginalRootSessionCustodySlot;
+pub(crate) use lifecycle::OriginalRootSessionFullyRetired;
 pub(crate) use lifecycle::OriginalRootSessionJoinObservation;
-pub(crate) use lifecycle::OriginalRootWorkerTermination;
+pub(crate) use lifecycle::OriginalRootSessionObservationRetired;
 pub(crate) use lifecycle::OriginalRootSessionPauseWaiter;
 pub(crate) use lifecycle::OriginalRootSessionPaused;
-pub(crate) use lifecycle::OriginalRootSessionObservationRetired;
-pub(crate) use lifecycle::OriginalRootSessionFullyRetired;
+pub(crate) use lifecycle::OriginalRootWorkerTermination;
+use lifecycle::OriginalSessionWorker;
 
 struct LiveRoot {
     proof: VerifiedRootWriterProof,
@@ -340,15 +340,18 @@ impl AgentdRootAuthoritySession {
                 let _fence = FenceOnDrop(Arc::clone(&background));
                 loop {
                     tokio::time::sleep(Duration::from_millis(100)).await;
-                    if refresh(&background, &stream, &background_file, /*phase_jobs*/ None)
-                        .await
-                        .inspect_err(|_error| {
-                            #[cfg(test)]
-                            eprintln!(
-                                "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
-                            );
-                        })
-                        .is_err()
+                    if refresh(
+                        &background,
+                        &stream,
+                        &background_file,
+                        /*phase_jobs*/ None,
+                    )
+                    .await
+                    .inspect_err(|_error| {
+                        #[cfg(test)]
+                        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}");
+                    })
+                    .is_err()
                     {
                         return;
                     }
@@ -473,12 +476,19 @@ impl AgentdRootAuthoritySession {
                     tokio::pin!(changed);
                     changed.as_mut().enable();
                     if background_pause.requested() {
-                        let resources = lifecycle::OriginalPausedObservationResources::from_original_worker(
-                            worker_close, fence, stream, stream_stop, background, background_file,
-                        );
-                        if let Err(error) = background_pause.park_original_worker(
-                            resources, &background_jobs,
-                        ).await {
+                        let resources =
+                            lifecycle::OriginalPausedObservationResources::from_original_worker(
+                                worker_close,
+                                fence,
+                                stream,
+                                stream_stop,
+                                background,
+                                background_file,
+                            );
+                        if let Err(error) = background_pause
+                            .park_original_worker(resources, &background_jobs)
+                            .await
+                        {
                             background_jobs.record_worker_failure(error);
                         }
                         return;
@@ -492,16 +502,19 @@ impl AgentdRootAuthoritySession {
                     if background_pause.requested() {
                         continue;
                     }
-                    if refresh(&background, &stream, &background_file, Some(&background_jobs))
-                        .await
-                        .inspect_err(|_error| {
-                            background_jobs.record_worker_failure(*_error);
-                            #[cfg(test)]
-                            eprintln!(
-                                "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
-                            );
-                        })
-                        .is_err()
+                    if refresh(
+                        &background,
+                        &stream,
+                        &background_file,
+                        Some(&background_jobs),
+                    )
+                    .await
+                    .inspect_err(|_error| {
+                        background_jobs.record_worker_failure(*_error);
+                        #[cfg(test)]
+                        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}");
+                    })
+                    .is_err()
                     {
                         return;
                     }
@@ -510,7 +523,12 @@ impl AgentdRootAuthoritySession {
             _writer_file: Arc::clone(&writer_file),
         });
         let custody = lifecycle::OriginalRootSessionCustody::from_original_worker(
-            &live, &phase, consumer_jobs, pause, worker, &writer_file,
+            &live,
+            &phase,
+            consumer_jobs,
+            pause,
+            worker,
+            &writer_file,
         );
         let session = Self {
             live,
@@ -659,9 +677,9 @@ impl AgentdRootAuthoritySession {
             observation.revocations.clone(),
             started,
             &self.writer_file,
-            self.worker.phase_custody().map(|original| {
-                lifecycle::OriginalRootSessionCustody::consumers(original)
-            }),
+            self.worker
+                .phase_custody()
+                .map(|original| lifecycle::OriginalRootSessionCustody::consumers(original)),
         )
         .await?;
         *self
@@ -867,9 +885,10 @@ async fn synchronize_consumers(
             .filter(|remaining| *remaining > 0)
             .ok_or(AgentdRootAuthorityError::Unavailable)?;
         let handle = tokio::task::spawn_blocking(move || job.run());
-        let retained = lifecycle::OriginalConsumerAdmission::retain_original_session_consumer_handle(
-            admission, handle,
-        );
+        let retained =
+            lifecycle::OriginalConsumerAdmission::retain_original_session_consumer_handle(
+                admission, handle,
+            );
         tokio::time::timeout(
             Duration::from_nanos(remaining),
             phase_jobs.receive_original_consumer(&retained),

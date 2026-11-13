@@ -8,13 +8,19 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_types::Digest32;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{AgentdError, CellQ24PreparedLearningV1};
+use crate::AgentdError;
+use crate::CellQ24PreparedLearningV1;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 
-use super::files::{MutableFileData, OriginalDeploymentFiles, OriginalFileMode, OriginalPinnedRead};
-use super::{deployment_error, deployment_refused};
+use super::deployment_error;
+use super::deployment_refused;
+use super::files::MutableFileData;
+use super::files::OriginalDeploymentFiles;
+use super::files::OriginalFileMode;
+use super::files::OriginalPinnedRead;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -38,14 +44,18 @@ impl OriginalActorWait {
     ) -> Result<Self, AgentdError> {
         OriginalSameActorRootContext::require_current(&context)?;
         prepared.revalidate_source().map_err(deployment_error)?;
-        let business_expiry_unix_seconds =
-            prepared.initial().request.envelope.expiry_unix_seconds;
-        let last_unix_seconds = context.clock().now_unix_ms()
-            .map_err(deployment_error)? / 1_000;
+        let business_expiry_unix_seconds = prepared.initial().request.envelope.expiry_unix_seconds;
+        let last_unix_seconds = context.clock().now_unix_ms().map_err(deployment_error)? / 1_000;
         if business_expiry_unix_seconds <= last_unix_seconds {
-            return Err(deployment_refused("original signing business deadline has elapsed"));
+            return Err(deployment_refused(
+                "original signing business deadline has elapsed",
+            ));
         }
-        let mut wait = Self { context, business_expiry_unix_seconds, last_unix_seconds };
+        let mut wait = Self {
+            context,
+            business_expiry_unix_seconds,
+            last_unix_seconds,
+        };
         wait.require_original_live()?;
         Ok(wait)
     }
@@ -57,10 +67,10 @@ impl OriginalActorWait {
         original_expiry_unix_seconds: u64,
     ) -> Result<Self, AgentdError> {
         OriginalSameActorRootContext::require_current(&context)?;
-        let last_unix_seconds = context.clock().now_unix_ms()
-            .map_err(deployment_error)? / 1_000;
+        let last_unix_seconds = context.clock().now_unix_ms().map_err(deployment_error)? / 1_000;
         let mut wait = Self {
-            context, business_expiry_unix_seconds: original_expiry_unix_seconds,
+            context,
+            business_expiry_unix_seconds: original_expiry_unix_seconds,
             last_unix_seconds,
         };
         wait.require_original_live()?;
@@ -69,9 +79,16 @@ impl OriginalActorWait {
 
     pub(super) fn require_original_live(&mut self) -> Result<u64, AgentdError> {
         OriginalSameActorRootContext::require_current(&self.context)?;
-        let now = self.context.clock().now_unix_ms().map_err(deployment_error)? / 1_000;
+        let now = self
+            .context
+            .clock()
+            .now_unix_ms()
+            .map_err(deployment_error)?
+            / 1_000;
         if now < self.last_unix_seconds || now >= self.business_expiry_unix_seconds {
-            return Err(deployment_refused("original actor deadline expired or clock regressed"));
+            return Err(deployment_refused(
+                "original actor deadline expired or clock regressed",
+            ));
         }
         self.last_unix_seconds = now;
         OriginalSameActorRootContext::require_current(&self.context)?;
@@ -118,7 +135,9 @@ impl OriginalActorExchange {
         if !matches!(data.request.mode, OriginalFileMode::CreateNew)
             || data.request.path == data.response
         {
-            return Err(deployment_refused("original actor exchange requires a fresh request path"));
+            return Err(deployment_refused(
+                "original actor exchange requires a fresh request path",
+            ));
         }
         Ok(Self { data })
     }
@@ -132,7 +151,9 @@ impl OriginalActorExchange {
         wait.require_original_live()?;
         let bytes = serde_json::to_vec(request).map_err(deployment_error)?;
         if bytes.is_empty() || bytes.len() > 1024 * 1024 {
-            return Err(deployment_refused("original signing request exceeds its data bound"));
+            return Err(deployment_refused(
+                "original signing request exceeds its data bound",
+            ));
         }
         // A response already at this unique original path is not a reply to
         // the request we have yet to publish. Never adopt a precomputed reply.
@@ -141,8 +162,7 @@ impl OriginalActorExchange {
             Ok(_) => return Err(deployment_refused("original response path already exists")),
             Err(error) => return Err(error.into()),
         }
-        let (mut file, directory) =
-            files.open_original_owner_with_directory(&self.data.request)?;
+        let (mut file, directory) = files.open_original_owner_with_directory(&self.data.request)?;
         wait.require_original_live()?;
         file.write_all(&bytes)?;
         file.sync_all()?;

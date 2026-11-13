@@ -207,7 +207,9 @@ pub fn original_same_actor_phase_host_channel_v1(
         send,
         receive,
         OriginalSameActorPhaseHostV1 {
-            commands, events, await_prepared_materials_before_retirement: false,
+            commands,
+            events,
+            await_prepared_materials_before_retirement: false,
         },
     ))
 }
@@ -258,8 +260,13 @@ impl OriginalSameActorPhaseHostV1 {
             received = self.receive_original(context) => received,
             result = expired => result,
         }?;
-        if !matches!(ready, OriginalSameActorPhaseCommandV1::OriginalPreparedMaterialsReady) {
-            return Err(phase_refused("original prepared-material notification is missing"));
+        if !matches!(
+            ready,
+            OriginalSameActorPhaseCommandV1::OriginalPreparedMaterialsReady
+        ) {
+            return Err(phase_refused(
+                "original prepared-material notification is missing",
+            ));
         }
         require_original_material_time(context, expiry)?;
         closing.disarm();

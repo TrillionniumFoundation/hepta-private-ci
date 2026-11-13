@@ -2,28 +2,32 @@
 //! decision and selected-C boundaries. A ready response is only data; Root,
 //! original Artifact, Selector and Evaluation owners still authenticate it.
 
-use std::sync::Arc;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_types::Digest32;
 use serde::Serialize;
+use std::sync::Arc;
 
 use super::OriginalDeploymentCoordinator;
-use crate::{
-    AgentdError, CellQ24PreparedLearningV1, HostAuthorityLearningProfileV1,
-    OriginalCellQ24TrainingMaterialV1, OriginalCellQ24TrainingReadbackV1,
-};
+use crate::AgentdError;
+use crate::CellQ24PreparedLearningV1;
+use crate::HostAuthorityLearningProfileV1;
+use crate::OriginalCellQ24TrainingMaterialV1;
+use crate::OriginalCellQ24TrainingReadbackV1;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
 use crate::same_actor_q24_deployment_protocol::OriginalDeploymentProgress;
 use crate::same_actor_q24_phase::OriginalSameActorPhaseCommandV1 as Command;
 
-use super::super::data::{
-    OriginalArtifactResponse, OriginalEvaluationResponse, OriginalMaterialReady,
-    OriginalSelectionResponse,
-};
+use super::super::data::OriginalArtifactResponse;
+use super::super::data::OriginalEvaluationResponse;
+use super::super::data::OriginalMaterialReady;
+use super::super::data::OriginalSelectionResponse;
+use super::super::deployment_error;
+use super::super::deployment_refused;
 use super::super::evaluation::OriginalExecutedEvaluation;
-use super::super::exchange::{OriginalActorExchange, OriginalActorWait};
-use super::super::observation_data::{OriginalDecisionNotice, OriginalTrainingNotice};
-use super::super::{deployment_error, deployment_refused};
+use super::super::exchange::OriginalActorExchange;
+use super::super::exchange::OriginalActorWait;
+use super::super::observation_data::OriginalDecisionNotice;
+use super::super::observation_data::OriginalTrainingNotice;
 
 #[derive(Serialize)]
 #[serde(deny_unknown_fields)]
@@ -61,28 +65,40 @@ impl OriginalDeploymentCoordinator {
         if self.prepared.is_some() {
             return Err(deployment_refused("actual Prepared was already consumed"));
         }
-        let proof = self.context.bootstrap().writer_proof.sha256()?
-            .as_str().parse::<Digest32>().map_err(deployment_error)?.into_array();
-        let expected = CellQ24PreparedLearningV1::root_profile(
-            &prepared, self.context.identity(), proof,
-        ).map_err(deployment_error)?;
+        let proof = self
+            .context
+            .bootstrap()
+            .writer_proof
+            .sha256()?
+            .as_str()
+            .parse::<Digest32>()
+            .map_err(deployment_error)?
+            .into_array();
+        let expected =
+            CellQ24PreparedLearningV1::root_profile(&prepared, self.context.identity(), proof)
+                .map_err(deployment_error)?;
         if expected != profile {
-            return Err(deployment_refused("APrepared profile differs from the original producer"));
+            return Err(deployment_refused(
+                "APrepared profile differs from the original producer",
+            ));
         }
-        let mut wait = OriginalActorWait::for_original_prepared(
-            Arc::clone(&self.context), &prepared,
-        )?;
+        let mut wait =
+            OriginalActorWait::for_original_prepared(Arc::clone(&self.context), &prepared)?;
         let encoded = serde_json::to_vec(&profile).map_err(deployment_error)?;
         let material_digest = Digest32::of_bytes(&encoded);
         let notice = OriginalPreparedMaterialNotice {
             schema_version: 1,
             purpose: "hepta.same-actor-q24-deployment.prepared-material.v1",
             phase: &self.context.descriptor().phase,
-            material_digest: material_digest.into_array(), actual_profile: &profile,
+            material_digest: material_digest.into_array(),
+            actual_profile: &profile,
         };
-        let (request, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(
-            self.data.scoped_material_ready.clone(),
-        )?, &notice, &mut self.files, &mut wait)?;
+        let (request, response) = OriginalActorExchange::exchange_original(
+            OriginalActorExchange::new(self.data.scoped_material_ready.clone())?,
+            &notice,
+            &mut self.files,
+            &mut wait,
+        )?;
         require_original_material_ready(&response, request, material_digest)?;
         wait.require_original_live()?;
         // This data-only signal is BEFORE A captures its original first
@@ -92,11 +108,14 @@ impl OriginalDeploymentCoordinator {
         // ACKs, drops A's original owners and receives the scoped rights.
         // This synchronous frame has its OWN unchanged original 500 ms end.
         super::super::client::OriginalDeploymentClient::exchange_original(
-            self.original_client_mut()?, OriginalDeploymentProgress::OriginalAPrepared { profile },
+            self.original_client_mut()?,
+            OriginalDeploymentProgress::OriginalAPrepared { profile },
         )?;
         wait.require_original_live()?;
         let inputs = self.learning.open_original_scoped_inputs(
-            Arc::clone(&prepared), &mut self.files, wait.require_original_live()?,
+            Arc::clone(&prepared),
+            &mut self.files,
+            wait.require_original_live()?,
         )?;
         self.prepared = Some(prepared);
         self.send_original(Command::Learning(Box::new(inputs)))
@@ -109,32 +128,52 @@ impl OriginalDeploymentCoordinator {
         readback: OriginalCellQ24TrainingReadbackV1,
     ) -> Result<(), AgentdError> {
         let prepared = self.prepared()?;
-        prepared.scope().validate_snapshot(&snapshot).map_err(deployment_error)?;
+        prepared
+            .scope()
+            .validate_snapshot(&snapshot)
+            .map_err(deployment_error)?;
         if snapshot.request != prepared.initial().request
-            || material.scope() != prepared.scope() || material.training() != &snapshot
-            || self.trained_model.is_some() || self.evidence_owner.is_some()
+            || material.scope() != prepared.scope()
+            || material.training() != &snapshot
+            || self.trained_model.is_some()
+            || self.evidence_owner.is_some()
         {
-            return Err(deployment_refused("independent B differs from the actual single Training cut"));
+            return Err(deployment_refused(
+                "independent B differs from the actual single Training cut",
+            ));
         }
-        let mut wait = OriginalActorWait::for_original_prepared(
-            Arc::clone(&self.context), &prepared,
-        )?;
+        let mut wait =
+            OriginalActorWait::for_original_prepared(Arc::clone(&self.context), &prepared)?;
         let (notice, model) = OriginalTrainingNotice::from_original(
-            &self.context.descriptor().phase, &snapshot, material,
+            &self.context.descriptor().phase,
+            &snapshot,
+            material,
         )?;
-        let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(
-            self.data.independent_training.clone(),
-        )?, &notice, &mut self.files, &mut wait)?;
-        let data: OriginalEvaluationResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;
+        let (digest, response) = OriginalActorExchange::exchange_original(
+            OriginalActorExchange::new(self.data.independent_training.clone())?,
+            &notice,
+            &mut self.files,
+            &mut wait,
+        )?;
+        let data: OriginalEvaluationResponse =
+            super::super::files::OriginalPinnedRead::parse_original(&response)?;
         if data.schema_version != 1 || data.request_digest != digest.into_array() {
-            return Err(deployment_refused("independent B input does not bind this actual Training"));
+            return Err(deployment_refused(
+                "independent B input does not bind this actual Training",
+            ));
         }
         super::super::files::OriginalPinnedRead::require_original_pin(&response)?;
         wait.require_original_live()?;
-        let OriginalExecutedEvaluation { inputs, evidence_owner } =
-            data.original.execute_original(
-                &self.context, &prepared, readback, &self.learning, &mut self.files,
-            )?;
+        let OriginalExecutedEvaluation {
+            inputs,
+            evidence_owner,
+        } = data.original.execute_original(
+            &self.context,
+            &prepared,
+            readback,
+            &self.learning,
+            &mut self.files,
+        )?;
         // These are the actual retained model and sink, not reconstructed
         // capabilities from the external notification or private receipt bytes.
         self.trained_model = Some(model);
@@ -143,26 +182,40 @@ impl OriginalDeploymentCoordinator {
     }
 
     pub(super) fn receive_original_decision(
-        &mut self, snapshot: LearningIterationSnapshotV1,
+        &mut self,
+        snapshot: LearningIterationSnapshotV1,
     ) -> Result<(), AgentdError> {
         let prepared = self.prepared()?;
-        prepared.scope().validate_snapshot(&snapshot).map_err(deployment_error)?;
+        prepared
+            .scope()
+            .validate_snapshot(&snapshot)
+            .map_err(deployment_error)?;
         if snapshot.request != prepared.initial().request || self.decision_head.is_some() {
-            return Err(deployment_refused("actual decision belongs to another original request"));
+            return Err(deployment_refused(
+                "actual decision belongs to another original request",
+            ));
         }
-        let mut wait = OriginalActorWait::for_original_prepared(
-            Arc::clone(&self.context), &prepared,
+        let mut wait =
+            OriginalActorWait::for_original_prepared(Arc::clone(&self.context), &prepared)?;
+        let notice =
+            OriginalDecisionNotice::from_original(&self.context.descriptor().phase, &snapshot)?;
+        let (digest, response) = OriginalActorExchange::exchange_original(
+            OriginalActorExchange::new(self.data.artifact_decision.clone())?,
+            &notice,
+            &mut self.files,
+            &mut wait,
         )?;
-        let notice = OriginalDecisionNotice::from_original(
-            &self.context.descriptor().phase, &snapshot,
-        )?;
-        let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.artifact_decision.clone())?, &notice, &mut self.files, &mut wait)?;
-        let data: OriginalArtifactResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;
+        let data: OriginalArtifactResponse =
+            super::super::files::OriginalPinnedRead::parse_original(&response)?;
         if data.schema_version != 1 || data.request_digest != digest.into_array() {
-            return Err(deployment_refused("Artifact input differs from the actual decision"));
+            return Err(deployment_refused(
+                "Artifact input differs from the actual decision",
+            ));
         }
         let command = self.artifacts.original_artifact_command(
-            &data.original, &mut self.files, wait.require_original_live()?,
+            &data.original,
+            &mut self.files,
+            wait.require_original_live()?,
         )?;
         super::super::files::OriginalPinnedRead::require_original_pin(&response)?;
         self.decision_head = Some(snapshot.head_digest);
@@ -171,23 +224,32 @@ impl OriginalDeploymentCoordinator {
 
     pub(super) fn receive_original_artifact(&mut self) -> Result<(), AgentdError> {
         let prepared = self.prepared()?;
-        let head = self.decision_head
+        let head = self
+            .decision_head
             .ok_or_else(|| deployment_refused("original Artifact has no observed decision"))?;
-        let mut wait = OriginalActorWait::for_original_prepared(
-            Arc::clone(&self.context), &prepared,
-        )?;
+        let mut wait =
+            OriginalActorWait::for_original_prepared(Arc::clone(&self.context), &prepared)?;
         let notice = OriginalArtifactNotice {
             schema_version: 1,
             purpose: "hepta.same-actor-q24-deployment.artifact-available.v1",
-            phase: &self.context.descriptor().phase, original_decision_head: head.into_array(),
+            phase: &self.context.descriptor().phase,
+            original_decision_head: head.into_array(),
         };
-        let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.independent_selection.clone())?, &notice, &mut self.files, &mut wait)?;
-        let data: OriginalSelectionResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;
+        let (digest, response) = OriginalActorExchange::exchange_original(
+            OriginalActorExchange::new(self.data.independent_selection.clone())?,
+            &notice,
+            &mut self.files,
+            &mut wait,
+        )?;
+        let data: OriginalSelectionResponse =
+            super::super::files::OriginalPinnedRead::parse_original(&response)?;
         if data.schema_version != 1 || data.request_digest != digest.into_array() {
             return Err(deployment_refused("independent Selection response differs"));
         }
         let (selection, digest) = self.artifacts.open_original_selection(
-            &data.original, &mut self.files, wait.require_original_live()?,
+            &data.original,
+            &mut self.files,
+            wait.require_original_live()?,
         )?;
         super::super::files::OriginalPinnedRead::require_original_pin(&response)?;
         self.original_selection = Some((data.original, digest));
@@ -195,18 +257,24 @@ impl OriginalDeploymentCoordinator {
     }
 
     pub(super) fn await_original_current_material(
-        &mut self, canonical: &str, wait: &mut OriginalActorWait,
+        &mut self,
+        canonical: &str,
+        wait: &mut OriginalActorWait,
     ) -> Result<(), AgentdError> {
         let material = Digest32::of_bytes(canonical.as_bytes());
         let notice = OriginalSelectionMaterialNotice {
             schema_version: 1,
             purpose: "hepta.same-actor-q24-deployment.selected-current-material.v1",
-            phase: &self.context.descriptor().phase, material_digest: material.into_array(),
+            phase: &self.context.descriptor().phase,
+            material_digest: material.into_array(),
             canonical_material: canonical,
         };
-        let (request, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(
-            self.data.current_material_ready.clone(),
-        )?, &notice, &mut self.files, wait)?;
+        let (request, response) = OriginalActorExchange::exchange_original(
+            OriginalActorExchange::new(self.data.current_material_ready.clone())?,
+            &notice,
+            &mut self.files,
+            wait,
+        )?;
         require_original_material_ready(&response, request, material)?;
         wait.require_original_live()?;
         OriginalSameActorRootContext::require_current(&self.context)
@@ -215,10 +283,12 @@ impl OriginalDeploymentCoordinator {
 
 fn require_original_material_ready(
     response: &super::super::files::OriginalPinnedRead,
-    request: Digest32, material: Digest32,
+    request: Digest32,
+    material: Digest32,
 ) -> Result<(), AgentdError> {
     let ready: OriginalMaterialReady = response.parse_original()?;
-    if ready.schema_version != 1 || ready.request_digest != request.into_array()
+    if ready.schema_version != 1
+        || ready.request_digest != request.into_array()
         || ready.material_digest != material.into_array()
     {
         return Err(deployment_refused("external material-ready data differs"));

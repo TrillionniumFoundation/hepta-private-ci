@@ -20,8 +20,9 @@ impl OriginalSameActorLearningPurposesRetired {
         gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
         crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(
-            &self.original, identity, gate,
+            &self.original,
+            identity,
+            gate,
         )
     }
 }
-

@@ -24,8 +24,8 @@ use crate::same_actor_q24_root_retirement_protocol::RETIREMENT_PURPOSE;
 
 #[path = "same_actor_q24_deployment_root_exit.rs"]
 mod root_exit;
-pub(crate) use root_exit::OriginalRootWorkersJoined;
 pub(crate) use root_exit::OriginalRootProcessExited;
+pub(crate) use root_exit::OriginalRootWorkersJoined;
 
 /// Only the actual exchange below can construct this non-Clone, non-serde
 /// owner. The same progress channel, original Root pidfd, required-stream
@@ -66,7 +66,9 @@ impl OriginalDeploymentClient {
         if self.next.is_some() {
             return Err(refused("actual deployment registrations are incomplete"));
         }
-        let current = self.current_registration.take()
+        let current = self
+            .current_registration
+            .take()
             .ok_or_else(|| refused("actual Current registration acknowledgement is unavailable"))?;
         let request = OriginalRootRetirementRequest {
             schema_version: 1,
@@ -84,11 +86,13 @@ impl OriginalDeploymentClient {
         HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;
         // The original channel captures its single 500 ms request deadline
         // here, after all local pause/join checks. No new session end is made.
-        let response = HostAuthorityPeerChannel::request(&mut self.channel, &bytes)
-            .map_err(uncertain)?;
+        let response =
+            HostAuthorityPeerChannel::request(&mut self.channel, &bytes).map_err(uncertain)?;
         let acknowledgement = (|| {
             let acknowledgement = OriginalRootRetirementAcknowledgement::decode_original(
-                &response, &request, &intent_digest,
+                &response,
+                &request,
+                &intent_digest,
             )?;
             HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;
             self.required.require_open()?;
@@ -101,7 +105,8 @@ impl OriginalDeploymentClient {
             session.require_original_origin(&identity, &gate)?;
             self.required.require_open()?;
             Ok::<_, AgentdError>(acknowledgement)
-        })().map_err(uncertain)?;
+        })()
+        .map_err(uncertain)?;
         let intent = OriginalRootRetirementIntent {
             _closing: closing,
             client: self,
@@ -118,7 +123,8 @@ impl OriginalRootRetirementIntent {
     /// A close-only owner of a real channel may compare the exact Gate; the
     /// identity remains the one held by this actual acknowledged client.
     pub(crate) fn require_original_gate(
-        &self, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
         self.require_original_origin(self.client.context.identity(), gate)
     }
@@ -137,7 +143,8 @@ impl OriginalRootRetirementIntent {
             {
                 return Err(refused("actual Root retirement origin differs"));
             }
-            self.acknowledgement.require_original_request(&self.request, &self.intent_digest)?;
+            self.acknowledgement
+                .require_original_request(&self.request, &self.intent_digest)?;
             self.client.required.require_open()?;
             HostAuthorityPeerChannel::check_peer_lifetime(&self.client.channel)
                 .map_err(owner_error)?;

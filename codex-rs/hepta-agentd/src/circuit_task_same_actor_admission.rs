@@ -210,11 +210,8 @@ impl SameActorTaskAdmission {
                 }
                 let invocation: &Arc<dyn AgentdCircuitTaskInvocationProviderV1> =
                     &original.original.invocation;
-                let ready = invocation.observe_learning(
-                    &original.route.identity,
-                    &original.record,
-                    &trace,
-                );
+                let ready =
+                    invocation.observe_learning(&original.route.identity, &original.record, &trace);
                 Ok(if original.require_original_admission().is_err() {
                     CircuitTaskLearningReadinessV1::Pending(
                         CircuitTaskLearningPendingV1::OwnerUnavailable,
@@ -268,9 +265,7 @@ impl SameActorTaskAdmission {
 
     pub(crate) fn finish_original_task(mut self) -> Result<(), AgentdError> {
         self.require_original_phase_execution()?;
-        if self.original.phase == TaskPhase::C
-            && !self.observation_joined.load(Ordering::Acquire)
-        {
+        if self.original.phase == TaskPhase::C && !self.observation_joined.load(Ordering::Acquire) {
             self.original.route.close();
             return Err(task_error(Error::CommitUncertain));
         }

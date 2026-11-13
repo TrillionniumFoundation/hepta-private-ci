@@ -13,8 +13,8 @@ use codex_hepta_types::Digest32;
 
 use crate::root_production_handoff::same_actor_phase::OriginalSameActorPhaseHandoff;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
-use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
 use crate::same_actor_q24_phase_gate::OriginalRequiredPurposeRetirement;
+use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
 
 #[path = "root_production_same_actor_retirement.rs"]
 mod retirement;
@@ -130,7 +130,8 @@ pub(crate) struct OriginalSameActorRootContext {
     scoped_consumed: AtomicBool,
     initial_lifetime: Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,
     _closing: CloseSameActorPhaseOnDrop,
-    _deadline_watch: std::sync::Mutex<Option<crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch>>,
+    _deadline_watch:
+        std::sync::Mutex<Option<crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch>>,
 }
 
 pub(crate) struct OriginalSameActorProductionInputs {
@@ -363,7 +364,9 @@ pub(crate) async fn receive_original_same_actor_inputs(
         crate::production_launcher::OriginalBootstrapConsumerKind::Notes,
     )
     .await?;
-    session.require_original_phase_task_custody(custody.session_slot()).map_err(protocol)?;
+    session
+        .require_original_phase_task_custody(custody.session_slot())
+        .map_err(protocol)?;
     session
         .activate_original_phase_final_use_owners(vec![device.clone(), notes.clone()])
         .await
@@ -593,7 +596,8 @@ async fn open_original_phase_consumer(
         Ok(owner)
     });
     let job = crate::production_launcher::OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle(admission, worker);
-    let owner = crate::production_launcher::OriginalBootstrapConsumerJob::receive_original(&job).await?;
+    let owner =
+        crate::production_launcher::OriginalBootstrapConsumerJob::receive_original(&job).await?;
     gate.require_open()?;
     closing.disarm();
     Ok((owner, retirement))

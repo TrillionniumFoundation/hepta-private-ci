@@ -264,7 +264,6 @@ pub(super) fn serve_bound_phase_lanes_until(
 #[path = "authority_host_listeners_tests.rs"]
 mod tests;
 
-
 pub(super) struct OriginalRootAuthorityLanesJoined {
     channels: Vec<(HostAuthorityLane, crate::OriginalRootRetiredChannel)>,
     // Keep the exact original listening sockets and inode-removal guard.
@@ -277,19 +276,31 @@ impl OriginalRootAuthorityLanesJoined {
         retirement: &crate::OriginalRootRetirementScope,
     ) -> io::Result<()> {
         if self.channels.len() != 5 {
-            return Err(io::Error::other("the actual original five Root lanes are not joined"));
+            return Err(io::Error::other(
+                "the actual original five Root lanes are not joined",
+            ));
         }
         let mut purposes = 0u8;
         for (lane, channel) in &self.channels {
             let (bit, purpose) = match lane {
-                HostAuthorityLane::Observation => (1, crate::OriginalRootRetirementPurpose::Observation),
+                HostAuthorityLane::Observation => {
+                    (1, crate::OriginalRootRetirementPurpose::Observation)
+                }
                 HostAuthorityLane::Issuer => (2, crate::OriginalRootRetirementPurpose::Issuer),
-                HostAuthorityLane::Checkpoint => (4, crate::OriginalRootRetirementPurpose::Checkpoint),
-                HostAuthorityLane::DeviceConsumerFrontier => (8, crate::OriginalRootRetirementPurpose::DeviceFrontier),
-                HostAuthorityLane::NotesConsumerFrontier => (16, crate::OriginalRootRetirementPurpose::NotesFrontier),
+                HostAuthorityLane::Checkpoint => {
+                    (4, crate::OriginalRootRetirementPurpose::Checkpoint)
+                }
+                HostAuthorityLane::DeviceConsumerFrontier => {
+                    (8, crate::OriginalRootRetirementPurpose::DeviceFrontier)
+                }
+                HostAuthorityLane::NotesConsumerFrontier => {
+                    (16, crate::OriginalRootRetirementPurpose::NotesFrontier)
+                }
             };
             if purposes & bit != 0 {
-                return Err(io::Error::other("original Root lane join duplicated a purpose"));
+                return Err(io::Error::other(
+                    "original Root lane join duplicated a purpose",
+                ));
             }
             purposes |= bit;
             channel.require_original(retirement, purpose)?;
@@ -348,13 +359,20 @@ pub(super) fn serve_bound_phase_lanes_for_root_retirement(
                 request_bound: 1,
                 response_bound: 1,
             };
-            workers.push((lane, scope.spawn(move || {
-                service
-                    .serve_original_phase_lane_for_root_retirement(
-                        lane, (stream, stream_stop), policy, pidfd, retirement,
-                    )
-                    .map_err(io::Error::other)
-            })));
+            workers.push((
+                lane,
+                scope.spawn(move || {
+                    service
+                        .serve_original_phase_lane_for_root_retirement(
+                            lane,
+                            (stream, stream_stop),
+                            policy,
+                            pidfd,
+                            retirement,
+                        )
+                        .map_err(io::Error::other)
+                }),
+            ));
         }
         let mut outcomes = Vec::new();
         for (lane, worker) in workers {
@@ -373,7 +391,10 @@ pub(super) fn serve_bound_phase_lanes_for_root_retirement(
         join_close.disarm();
         Ok::<_, io::Error>(channels)
     })?;
-    let joined = OriginalRootAuthorityLanesJoined { channels, _bound: bound };
+    let joined = OriginalRootAuthorityLanesJoined {
+        channels,
+        _bound: bound,
+    };
     joined.require_original(retirement)?;
     scope_close.disarm();
     Ok(joined)

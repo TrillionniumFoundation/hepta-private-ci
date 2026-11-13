@@ -128,7 +128,9 @@ impl HostAuthorityService {
         let mut retirement_admission = None;
         while channel.exchange(|bytes| {
             retirement_admission = Some(
-                retirement_lane.enter_original_request().map_err(unavailable)?,
+                retirement_lane
+                    .enter_original_request()
+                    .map_err(unavailable)?,
             );
             let _admission = phase.enter_original_lane().map_err(unavailable)?;
             self.check_logind_lifetime().map_err(unavailable)?;

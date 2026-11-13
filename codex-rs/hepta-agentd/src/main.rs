@@ -4,9 +4,9 @@ use std::path::PathBuf;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 #[cfg(target_os = "linux")]
-use codex_hepta_agentd::AgentdProductionStartup;
-#[cfg(target_os = "linux")]
 use codex_hepta_agentd::AgentdOriginalSameActorDeploymentStartupV1;
+#[cfg(target_os = "linux")]
+use codex_hepta_agentd::AgentdProductionStartup;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_neuron_generation_process_bootstrap_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
@@ -27,7 +27,8 @@ fn main() -> anyhow::Result<()> {
         let (startup, arguments) = if phase.is_some() {
             (None, arguments)
         } else {
-            let (startup, arguments) = AgentdProductionStartup::from_process_environment(arguments)?;
+            let (startup, arguments) =
+                AgentdProductionStartup::from_process_environment(arguments)?;
             (Some(startup), arguments)
         };
         #[cfg(not(target_os = "linux"))]
@@ -36,7 +37,11 @@ fn main() -> anyhow::Result<()> {
         let identity = match (&phase, &startup) {
             (Some(phase), None) => phase.identity(),
             (None, Some(startup)) => startup.identity(),
-            _ => return Err(anyhow::anyhow!("exactly one actual Agentd startup is required")),
+            _ => {
+                return Err(anyhow::anyhow!(
+                    "exactly one actual Agentd startup is required"
+                ));
+            }
         };
         #[cfg(not(target_os = "linux"))]
         let identity = config.identity();
@@ -48,13 +53,17 @@ fn main() -> anyhow::Result<()> {
                 // This actual selected entry owns the sealed-context receiver,
                 // concrete material coordinator and original signed ingress.
                 // It returns no successful completion without terminal proof.
-                AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment(phase, arg0_paths).await?;
+                AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment(
+                    phase, arg0_paths,
+                )
+                .await?;
                 return Ok(());
             }
             #[cfg(target_os = "linux")]
             let (mut config, production) = startup
                 .ok_or_else(|| anyhow::anyhow!("original startup was not retained"))?
-                .receive().await?;
+                .receive()
+                .await?;
             let mut args = arguments.into_iter();
             let mut authbus_trust = None;
             let mut intelligence_authority_file = None;

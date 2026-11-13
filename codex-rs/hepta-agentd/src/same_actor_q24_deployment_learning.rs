@@ -18,8 +18,8 @@ use serde::Serialize;
 
 use crate::AgentdError;
 use crate::CircuitQ24TaskOpenModeV1;
-use crate::OriginalCellQ24TaskDatasetFreezeInputsV1;
 use crate::OriginalCellQ24DatasetFreezeSigningConfigV1;
+use crate::OriginalCellQ24TaskDatasetFreezeInputsV1;
 use crate::OriginalCellQ24TaskLedgerConfigV1;
 use crate::OriginalCellQ24TaskLedgerInputsV1;
 
@@ -113,13 +113,16 @@ impl OriginalDeploymentLearning {
         // asserted by a caller. Every later signing owner validates them again.
         super::learning_data::OriginalLearningAuthority::original_signer(
             &authority,
-            &data.original_a.signatures.principal, LearningEvidenceRoleV1::Generator,
+            &data.original_a.signatures.principal,
+            LearningEvidenceRoleV1::Generator,
         )?;
         super::learning_data::OriginalLearningAuthority::original_signer(
             &authority,
-            &data.original_a.observer, LearningEvidenceRoleV1::Observer,
+            &data.original_a.observer,
+            LearningEvidenceRoleV1::Observer,
         )?;
-        let (activated, signers) = super::learning_data::OriginalLearningAuthority::into_original_parts(authority);
+        let (activated, signers) =
+            super::learning_data::OriginalLearningAuthority::into_original_parts(authority);
         let verifier = activated.verifier().clone();
         let binding = Digest32::from_array(data.ledger_binding);
         let (ledger_file, ledger_directory) =
@@ -130,16 +133,23 @@ impl OriginalDeploymentLearning {
         let ledger = DurableLedger::create(ledger_file, binding, data.maximum_records)
             .map_err(deployment_error)?;
         files.require_original_context()?;
-        let witness = LedgerWitnessStore::create(witness_file, binding)
-            .map_err(deployment_error)?;
+        let witness =
+            LedgerWitnessStore::create(witness_file, binding).map_err(deployment_error)?;
         files.require_original_context()?;
         let ledger = LedgerWriter::from_durable(
-            ledger, witness, activated, &ledger_directory, &witness_directory,
+            ledger,
+            witness,
+            activated,
+            &ledger_directory,
+            &witness_directory,
         )
         .map_err(deployment_error)?;
         files.require_original_context()?;
         let original = Self {
-            ledger: Arc::new(Mutex::new(ledger)), verifier, signers, data,
+            ledger: Arc::new(Mutex::new(ledger)),
+            verifier,
+            signers,
+            data,
         };
         let inputs = original.open_original_task(&original.data.original_a, files, now)?;
         Ok((original, inputs))
@@ -164,11 +174,14 @@ impl OriginalDeploymentLearning {
         now: u64,
     ) -> Result<TrustedLearningSignerV1, AgentdError> {
         let id = StableId::new(principal).map_err(deployment_error)?;
-        let signer = self.signers.iter()
+        let signer = self
+            .signers
+            .iter()
             .find(|signer| signer.principal.principal_id == id && signer.roles.contains(&role))
             .cloned()
             .ok_or_else(|| deployment_refused("actual enrolled Learning signer is absent"))?;
-        self.verifier.require_signer_binding(role, &signer, now)
+        self.verifier
+            .require_signer_binding(role, &signer, now)
             .map_err(deployment_error)?;
         Ok(signer)
     }
@@ -180,18 +193,20 @@ impl OriginalDeploymentLearning {
     ) -> Result<OriginalCellQ24TaskDatasetFreezeInputsV1, AgentdError> {
         let data = &self.data.freeze;
         OriginalSignedOwnerFilesData::require_fresh(data)?;
-        let signer = self.require_original_signer(
-            &data.principal, LearningEvidenceRoleV1::Evaluator, now,
-        )?;
+        let signer =
+            self.require_original_signer(&data.principal, LearningEvidenceRoleV1::Evaluator, now)?;
         let key = files.read_original_signing_key(&data.key)?;
         require_original_key(&signer, &key)?;
         let journal = files.open_original_owner(&data.journal)?;
         let witness = OriginalWitnessData::open_original(&data.witness, files)?;
         files.require_original_context()?;
         Ok(OriginalCellQ24TaskDatasetFreezeInputsV1 {
-            journal, witness, open_mode: CircuitQ24TaskOpenModeV1::Create,
+            journal,
+            witness,
+            open_mode: CircuitQ24TaskOpenModeV1::Create,
             signing: OriginalCellQ24DatasetFreezeSigningConfigV1 {
-                signer, verifier: self.verifier.clone(),
+                signer,
+                verifier: self.verifier.clone(),
                 maximum_signature_lifetime_seconds: data.maximum_signature_lifetime_seconds,
             },
             evaluator_key: key,
@@ -214,11 +229,12 @@ impl OriginalDeploymentLearning {
     ) -> Result<OriginalCellQ24TaskLedgerInputsV1, AgentdError> {
         OriginalSignedOwnerFilesData::require_fresh(&data.signatures)?;
         let generator = self.require_original_signer(
-            &data.signatures.principal, LearningEvidenceRoleV1::Generator, now,
+            &data.signatures.principal,
+            LearningEvidenceRoleV1::Generator,
+            now,
         )?;
-        let observer = self.require_original_signer(
-            &data.observer, LearningEvidenceRoleV1::Observer, now,
-        )?;
+        let observer =
+            self.require_original_signer(&data.observer, LearningEvidenceRoleV1::Observer, now)?;
         let key = files.read_original_signing_key(&data.signatures.key)?;
         require_original_key(&generator, &key)?;
         let config = OriginalCellQ24TaskLedgerConfigV1 {
@@ -235,15 +251,19 @@ impl OriginalDeploymentLearning {
             unit_profile_digest: Digest32::from_array(data.unit_profile_digest),
             expected_delay_profile_digest: Digest32::from_array(data.expected_delay_profile_digest),
             claim_deadline_unix_seconds: data.claim_deadline_unix_seconds,
-            maximum_signature_lifetime_seconds:
-                data.signatures.maximum_signature_lifetime_seconds,
+            maximum_signature_lifetime_seconds: data.signatures.maximum_signature_lifetime_seconds,
         };
         let signature_journal = files.open_original_owner(&data.signatures.journal)?;
-        let signature_witness = OriginalWitnessData::open_original(&data.signatures.witness, files)?;
+        let signature_witness =
+            OriginalWitnessData::open_original(&data.signatures.witness, files)?;
         files.require_original_context()?;
         Ok(OriginalCellQ24TaskLedgerInputsV1 {
-            ledger: Arc::clone(&self.ledger), signature_journal, signature_witness,
-            open_mode: CircuitQ24TaskOpenModeV1::Create, config, generator_key: key,
+            ledger: Arc::clone(&self.ledger),
+            signature_journal,
+            signature_witness,
+            open_mode: CircuitQ24TaskOpenModeV1::Create,
+            config,
+            generator_key: key,
         })
     }
 }
@@ -253,7 +273,9 @@ fn require_original_key(
     key: &ed25519_dalek::SigningKey,
 ) -> Result<(), AgentdError> {
     if signer.verifying_key != key.verifying_key().to_bytes() {
-        return Err(deployment_refused("supplied key differs from the actual enrolled signer"));
+        return Err(deployment_refused(
+            "supplied key differs from the actual enrolled signer",
+        ));
     }
     Ok(())
 }

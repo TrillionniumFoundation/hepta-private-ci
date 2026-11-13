@@ -186,7 +186,14 @@ impl OriginalDeploymentFiles {
                 "ordinary deployment requires the actual dedicated non-Root owner",
             ));
         }
-        Ok(Self { uid, gid, claimed: BTreeSet::new(), immutable: BTreeMap::new(), origins: BTreeSet::new(), context })
+        Ok(Self {
+            uid,
+            gid,
+            claimed: BTreeSet::new(),
+            immutable: BTreeMap::new(),
+            origins: BTreeSet::new(),
+            context,
+        })
     }
 
     pub(super) fn read_root_descriptor(
@@ -197,10 +204,7 @@ impl OriginalDeploymentFiles {
         let read = self.read_original(input, maximum)?;
         // The ordinary process can read this data, but cannot replace the
         // Root-approved deployment or select its own trust/credential set.
-        if read.pin.owner != 0
-            || read.pin.group != self.gid
-            || read.pin.mode & 0o7777 != 0o640
-        {
+        if read.pin.owner != 0 || read.pin.group != self.gid || read.pin.mode & 0o7777 != 0o640 {
             return Err(deployment_refused(
                 "deployment descriptor requires Root ownership and exact 0640 mode",
             ));
@@ -268,19 +272,29 @@ impl OriginalDeploymentFiles {
             || metadata.len() == 0
             || metadata.len() > maximum as u64
         {
-            return Err(deployment_refused("deployment input is not a bounded protected file"));
+            return Err(deployment_refused(
+                "deployment input is not a bounded protected file",
+            ));
         }
         let pin = PhysicalPin::of(&metadata);
         let parent_metadata = parent.metadata()?;
         let mut bytes = Vec::new();
-        (&mut file).take(maximum as u64 + 1).read_to_end(&mut bytes)?;
+        (&mut file)
+            .take(maximum as u64 + 1)
+            .read_to_end(&mut bytes)?;
         if bytes.len() as u64 != metadata.len() || bytes.len() > maximum {
-            return Err(deployment_refused("deployment input changed during bounded read"));
+            return Err(deployment_refused(
+                "deployment input changed during bounded read",
+            ));
         }
         let read = OriginalPinnedRead {
-            file, path: path.to_owned(), parent, parent_path,
+            file,
+            path: path.to_owned(),
+            parent,
+            parent_path,
             parent_identity: directory_identity(&parent_metadata),
-            pin, bytes,
+            pin,
+            bytes,
         };
         read.require_original_pin()?;
         self.claim_original_immutable(&read)?;
@@ -304,10 +318,14 @@ impl OriginalDeploymentFiles {
         let (parent_path, parent) = open_original_parent(&input.path)?;
         let directory = parent.metadata()?;
         if directory.uid() != self.uid || directory.mode() & 0o077 != 0 {
-            return Err(deployment_refused("mutable owner requires its actual private directory"));
+            return Err(deployment_refused(
+                "mutable owner requires its actual private directory",
+            ));
         }
         let mut options = OpenOptions::new();
-        options.read(true).write(true)
+        options
+            .read(true)
+            .write(true)
             .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC);
         if matches!(input.mode, OriginalFileMode::CreateNew) {
             options.create_new(true).mode(0o600);
@@ -320,14 +338,18 @@ impl OriginalDeploymentFiles {
             || metadata.nlink() != 1
             || metadata.mode() & 0o7777 != 0o600
         {
-            return Err(deployment_refused("mutable owner file must be original private 0600 data"));
+            return Err(deployment_refused(
+                "mutable owner file must be original private 0600 data",
+            ));
         }
         let empty = metadata.len() == 0;
         if match input.mode {
             OriginalFileMode::CreateNew | OriginalFileMode::ExistingEmpty => !empty,
             OriginalFileMode::Recover => empty,
         } {
-            return Err(deployment_refused("explicit owner lifecycle differs from actual file"));
+            return Err(deployment_refused(
+                "explicit owner lifecycle differs from actual file",
+            ));
         }
         self.claim_original_inode(&metadata)?;
         let current_parent = std::fs::symlink_metadata(&parent_path)?;
@@ -336,7 +358,9 @@ impl OriginalDeploymentFiles {
             || parent_path.canonicalize()? != parent_path
             || PhysicalPin::of(&current) != PhysicalPin::of(&metadata)
         {
-            return Err(deployment_refused("mutable owner path changed before transfer"));
+            return Err(deployment_refused(
+                "mutable owner path changed before transfer",
+            ));
         }
         // Existing owner constructors synchronize their own commits. This
         // host also makes an explicitly created directory entry durable.
@@ -353,20 +377,26 @@ impl OriginalDeploymentFiles {
     ) -> Result<OriginalDirectoryPin, AgentdError> {
         self.require_original_context()?;
         if !path.is_absolute() || path.canonicalize()? != path {
-            return Err(deployment_refused("original owner directory must exist without symlinks"));
+            return Err(deployment_refused(
+                "original owner directory must exist without symlinks",
+            ));
         }
-        let file = OpenOptions::new().read(true)
+        let file = OpenOptions::new()
+            .read(true)
             .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
             .open(path)?;
         let metadata = file.metadata()?;
-        if !metadata.is_dir() || metadata.uid() != self.uid
-            || metadata.mode() & 0o7777 != 0o700
-        {
-            return Err(deployment_refused("original owner directory must be private 0700"));
+        if !metadata.is_dir() || metadata.uid() != self.uid || metadata.mode() & 0o7777 != 0o700 {
+            return Err(deployment_refused(
+                "original owner directory must be private 0700",
+            ));
         }
         self.claim_original_inode(&metadata)?;
-        let pin = OriginalDirectoryPin { file, path: path.to_owned(),
-            identity: directory_identity(&metadata) };
+        let pin = OriginalDirectoryPin {
+            file,
+            path: path.to_owned(),
+            identity: directory_identity(&metadata),
+        };
         pin.require_original_directory_pin()?;
         self.require_original_context()?;
         Ok(pin)
@@ -381,20 +411,31 @@ impl OriginalDeploymentFiles {
     ) -> Result<OriginalPinnedRead, AgentdError> {
         self.require_original_context()?;
         let (parent_path, parent) = open_original_parent(path)?;
-        let file = OpenOptions::new().read(true)
+        let file = OpenOptions::new()
+            .read(true)
             .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC)
             .open(path)?;
         let metadata = file.metadata()?;
-        if !metadata.is_file() || metadata.uid() != self.uid || metadata.nlink() != 1
-            || metadata.mode() & 0o7777 != 0o600 || metadata.len() != 0
+        if !metadata.is_file()
+            || metadata.uid() != self.uid
+            || metadata.nlink() != 1
+            || metadata.mode() & 0o7777 != 0o600
+            || metadata.len() != 0
         {
-            return Err(deployment_refused("existing original Artifact lock must be private and empty"));
+            return Err(deployment_refused(
+                "existing original Artifact lock must be private and empty",
+            ));
         }
         self.claim_original_inode(&metadata)?;
         let parent_identity = directory_identity(&parent.metadata()?);
         let pinned = OriginalPinnedRead {
-            file, path: path.to_owned(), parent, parent_path, parent_identity,
-            pin: PhysicalPin::of(&metadata), bytes: Vec::new(),
+            file,
+            path: path.to_owned(),
+            parent,
+            parent_path,
+            parent_identity,
+            pin: PhysicalPin::of(&metadata),
+            bytes: Vec::new(),
         };
         pinned.require_original_pin()?;
         self.require_original_context()?;
@@ -402,7 +443,9 @@ impl OriginalDeploymentFiles {
     }
 
     pub(super) fn retain_original_initial_file_origin(
-        &mut self, file: &File, path: &Path,
+        &mut self,
+        file: &File,
+        path: &Path,
     ) -> Result<OriginalOwnerFileOrigin, AgentdError> {
         OriginalOwnerFileOrigin::capture_original(file, path, self)
     }
@@ -417,10 +460,13 @@ impl OriginalDeploymentFiles {
     ) -> Result<ed25519_dalek::SigningKey, AgentdError> {
         let read = self.read_original(input, 32)?;
         if read.pin.owner != self.uid || read.pin.mode & 0o7777 != 0o600 {
-            return Err(deployment_refused("signing key must belong to the actual private owner"));
+            return Err(deployment_refused(
+                "signing key must belong to the actual private owner",
+            ));
         }
-        let key: [u8; 32] = read.bytes().try_into()
-            .map_err(|_| deployment_refused("signing key must contain exactly 32 supplied bytes"))?;
+        let key: [u8; 32] = read.bytes().try_into().map_err(|_| {
+            deployment_refused("signing key must contain exactly 32 supplied bytes")
+        })?;
         read.require_original_pin()?;
         Ok(ed25519_dalek::SigningKey::from_bytes(&key))
     }
@@ -430,12 +476,16 @@ impl OriginalDeploymentFiles {
         let digest = Digest32::of_bytes(read.bytes());
         if let Some((pin, original)) = self.immutable.get(&inode) {
             if pin != &read.pin || *original != digest {
-                return Err(deployment_refused("retained immutable deployment input changed"));
+                return Err(deployment_refused(
+                    "retained immutable deployment input changed",
+                ));
             }
             return Ok(());
         }
         if !self.claimed.insert(inode) {
-            return Err(deployment_refused("immutable input aliases an actual mutable owner"));
+            return Err(deployment_refused(
+                "immutable input aliases an actual mutable owner",
+            ));
         }
         self.immutable.insert(inode, (read.pin.clone(), digest));
         Ok(())
@@ -443,28 +493,44 @@ impl OriginalDeploymentFiles {
 
     fn claim_original_inode(&mut self, metadata: &Metadata) -> Result<(), AgentdError> {
         if !self.claimed.insert((metadata.dev(), metadata.ino())) {
-            return Err(deployment_refused("deployment roles alias the same actual file"));
+            return Err(deployment_refused(
+                "deployment roles alias the same actual file",
+            ));
         }
         Ok(())
     }
 }
 
 fn open_original_parent(path: &Path) -> Result<(PathBuf, File), AgentdError> {
-    let parent = path.parent()
+    let parent = path
+        .parent()
         .filter(|parent| path.is_absolute() && path.file_name().is_some() && parent.is_absolute())
-        .ok_or_else(|| deployment_refused("deployment file requires an absolute canonical parent"))?;
+        .ok_or_else(|| {
+            deployment_refused("deployment file requires an absolute canonical parent")
+        })?;
     if parent.canonicalize()? != parent {
-        return Err(deployment_refused("deployment parent contains a symlink or traversal"));
+        return Err(deployment_refused(
+            "deployment parent contains a symlink or traversal",
+        ));
     }
-    let directory = OpenOptions::new().read(true)
+    let directory = OpenOptions::new()
+        .read(true)
         .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
         .open(parent)?;
     if !directory.metadata()?.is_dir() {
-        return Err(deployment_refused("deployment parent is not an actual directory"));
+        return Err(deployment_refused(
+            "deployment parent is not an actual directory",
+        ));
     }
     Ok((parent.to_owned(), directory))
 }
 
 fn directory_identity(metadata: &Metadata) -> (u64, u64, u32, u32, u32) {
-    (metadata.dev(), metadata.ino(), metadata.uid(), metadata.gid(), metadata.mode())
+    (
+        metadata.dev(),
+        metadata.ino(),
+        metadata.uid(),
+        metadata.gid(),
+        metadata.mode(),
+    )
 }

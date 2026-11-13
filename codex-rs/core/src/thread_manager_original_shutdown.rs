@@ -65,7 +65,11 @@ struct OriginalThreadShutdownError {
 
 impl fmt::Display for OriginalThreadShutdownError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "original Core shutdown recorded {} failure(s)", self.failures.len())?;
+        write!(
+            formatter,
+            "original Core shutdown recorded {} failure(s)",
+            self.failures.len()
+        )?;
         for failure in &self.failures {
             write!(formatter, "; {failure}")?;
         }
@@ -85,13 +89,19 @@ fn refused(message: &'static str) -> CodexErr {
 
 impl OriginalThreadShutdownCustody {
     fn enable(&self, threads: &ThreadRegistryState) -> std::io::Result<()> {
-        let mut state = self.state.lock().map_err(|_| {
-            std::io::Error::other("original Core startup admission is poisoned")
-        })?;
-        if state.enabled || state.ever_started || state.sealed
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| std::io::Error::other("original Core startup admission is poisoned"))?;
+        if state.enabled
+            || state.ever_started
+            || state.sealed
             || !threads.threads.is_empty()
             || !threads.startup_delivery_claims.is_empty()
-            || threads.starting_spawns.iter().any(|spawn| spawn.strong_count() != 0)
+            || threads
+                .starting_spawns
+                .iter()
+                .any(|spawn| spawn.strong_count() != 0)
             || !threads.hard_delete_closing.is_empty()
             || !threads.startup_cleanup_closing.is_empty()
         {
@@ -109,9 +119,10 @@ impl OriginalThreadShutdownCustody {
     pub(super) fn reserve_original_startup(
         &self,
     ) -> CodexResult<Option<OriginalThreadStartupAdmission<'_>>> {
-        let mut state = self.state.lock().map_err(|_| {
-            refused("original Core startup admission is poisoned")
-        })?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| refused("original Core startup admission is poisoned"))?;
         if state.enabled && (state.sealed || state.admission_poisoned) {
             return Err(refused("original Core thread startup is sealed"));
         }
@@ -170,9 +181,11 @@ impl OriginalThreadShutdownCustody {
         plan: OriginalThreadShutdownPlan,
     ) -> Vec<Arc<OriginalCoreTaskFailure>> {
         let mut failures = Vec::new();
-        let mut startups = plan.startups.into_iter().map(|job| async move {
-            job.join_original_startup().await
-        }).collect::<FuturesUnordered<_>>();
+        let mut startups = plan
+            .startups
+            .into_iter()
+            .map(|job| async move { job.join_original_startup().await })
+            .collect::<FuturesUnordered<_>>();
         while let Some(result) = startups.next().await {
             if let Err(error) = result {
                 failures.push(error);
@@ -185,11 +198,17 @@ impl OriginalThreadShutdownCustody {
                 Ok(state) => state,
                 Err(poisoned) => poisoned.into_inner(),
             };
-            (state.loops.clone(), state.admission_poisoned || self.state.is_poisoned())
+            (
+                state.loops.clone(),
+                state.admission_poisoned || self.state.is_poisoned(),
+            )
         };
-        let mut loops = loops.into_iter().map(|original| async move {
-            OriginalSessionLoopShutdown::join_original_loop(&original).await
-        }).collect::<FuturesUnordered<_>>();
+        let mut loops = loops
+            .into_iter()
+            .map(|original| async move {
+                OriginalSessionLoopShutdown::join_original_loop(&original).await
+            })
+            .collect::<FuturesUnordered<_>>();
         while let Some(result) = loops.next().await {
             if let Err(error) = result {
                 failures.push(error);
@@ -205,10 +224,7 @@ impl OriginalThreadShutdownCustody {
 }
 
 impl OriginalThreadStartupAdmission<'_> {
-    pub(super) fn retain_original_thread_startup_handle(
-        mut self,
-        handle: JoinHandle<()>,
-    ) {
+    pub(super) fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {
         self.state.startups.push(Arc::new(OriginalThreadStartupJob {
             state: tokio::sync::Mutex::new(OriginalThreadStartupState {
                 handle: Some(handle),
@@ -235,9 +251,9 @@ impl OriginalThreadStartupJob {
             return result.clone();
         }
         let result = match state.handle.as_mut() {
-            Some(handle) => handle.await.map_err(|error| {
-                Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error)))
-            }),
+            Some(handle) => handle
+                .await
+                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error)))),
             None => Err(Arc::new(OriginalCoreTaskFailure::State(
                 "actual original Core startup handle is unavailable",
             ))),
@@ -273,7 +289,9 @@ impl OriginalSessionShutdownOrigin {
     ) -> CodexResult<(Arc<Session>, SessionIo)> {
         let Some(registry) = self.registry.upgrade() else {
             if self.enabled.load(Ordering::Acquire) {
-                return Err(refused("the original Core delegate custody has disappeared"));
+                return Err(refused(
+                    "the original Core delegate custody has disappeared",
+                ));
             }
             return Session::spawn(args).await;
         };
@@ -288,12 +306,10 @@ impl OriginalSessionShutdownOrigin {
                 let (sender, receiver) = tokio::sync::oneshot::channel();
                 let worker = tokio::spawn(async move {
                     let result = match Session::spawn(args).await {
-                        Ok((session, io)) => {
-                            match original.retain_original_session_loop(&io) {
-                                Ok(()) => Ok((session, io)),
-                                Err(error) => Err(error),
-                            }
-                        }
+                        Ok((session, io)) => match original.retain_original_session_loop(&io) {
+                            Ok(()) => Ok((session, io)),
+                            Err(error) => Err(error),
+                        },
                         Err(error) => Err(error),
                     };
                     // A cancelled delegate result waiter cannot release the
@@ -301,8 +317,7 @@ impl OriginalSessionShutdownOrigin {
                     let _ = sender.send(result);
                 });
                 OriginalThreadStartupAdmission::retain_original_thread_startup_handle(
-                    admission,
-                    worker,
+                    admission, worker,
                 );
                 Some(receiver)
             } else {
@@ -315,7 +330,9 @@ impl OriginalSessionShutdownOrigin {
             })?,
             None => match args {
                 Some(args) => Session::spawn(args).await,
-                None => Err(refused("the original default delegate input is unavailable")),
+                None => Err(refused(
+                    "the original default delegate input is unavailable",
+                )),
             },
         }
     }
@@ -336,14 +353,20 @@ impl ThreadManager {
     /// shutdown API or turns a timed-out/aborted wrapper into a joined owner.
     pub async fn shutdown_all_threads_original(&self) -> std::io::Result<()> {
         let plan = self.state.original_shutdown.seal_original_startups()?;
-        let failures = self.state.original_shutdown.join_original_sealed(plan).await;
+        let failures = self
+            .state
+            .original_shutdown
+            .join_original_sealed(plan)
+            .await;
         // The original loop handles have now really completed, including
         // panicked loops whose original JoinError remains in the result.
         self.state.thread_registry.write().await.threads.clear();
         if failures.is_empty() {
             Ok(())
         } else {
-            Err(std::io::Error::other(OriginalThreadShutdownError { failures }))
+            Err(std::io::Error::other(OriginalThreadShutdownError {
+                failures,
+            }))
         }
     }
 }

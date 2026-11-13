@@ -37,9 +37,13 @@ impl SameActorTaskRoute {
                     "original learning work requires the once-only post-A task phase".into(),
                 ));
             }
-            self.learning_work.set(Mutex::new(Some(work))).map_err(|_| {
-                AgentdError::GenerationFenced("original learning work was already attached".into())
-            })?;
+            self.learning_work
+                .set(Mutex::new(Some(work)))
+                .map_err(|_| {
+                    AgentdError::GenerationFenced(
+                        "original learning work was already attached".into(),
+                    )
+                })?;
             Ok(())
         })();
         if result.is_err() {

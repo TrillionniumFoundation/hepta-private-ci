@@ -72,9 +72,9 @@ use crate::utils::remote_mcp_env_var_names;
 #[path = "stdio_server_owned_shutdown.rs"]
 mod owned_shutdown;
 
+use owned_shutdown::OriginalOwnedStdioTransport;
 pub use owned_shutdown::OriginalStdioShutdownCustody;
 pub use owned_shutdown::OriginalStdioShutdownObservation;
-use owned_shutdown::OriginalOwnedStdioTransport;
 
 // General purpose public code.
 

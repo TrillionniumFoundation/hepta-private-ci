@@ -41,8 +41,7 @@ pub struct LockedFileProductQualificationEvidenceSinkV1 {
 impl LockedFileProductQualificationEvidenceSinkV1 {
     pub fn create(file: File, owner_binding: Digest32) -> Result<Self, FileError> {
         let binding = evidence_namespace(owner_binding)?;
-        let publication_store =
-            LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;
+        let publication_store = LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;
         Ok(Self {
             publication_store,
             owner_binding,
@@ -82,11 +81,8 @@ impl LockedFileProductQualificationEvidenceSinkV1 {
         }
         let payload = encode_decision(self.owner_binding, execution_digest, decision)?;
         let key = publication_key(self.owner_binding, execution_digest)?;
-        let state = ProductEvaluationExecutionStoreV1::readback(
-            &mut self.publication_store,
-            &key,
-        )
-        .map_err(store_error)?;
+        let state = ProductEvaluationExecutionStoreV1::readback(&mut self.publication_store, &key)
+            .map_err(store_error)?;
         match state {
             ProductEvaluationExecutionStateV1::Completed(bytes) if bytes == payload => {
                 Ok(publication_digest(&payload))
@@ -111,11 +107,8 @@ impl ProductQualificationEvidenceSinkV1 for LockedFileProductQualificationEviden
         }
         let payload = encode_decision(self.owner_binding, execution_digest, decision)?;
         let key = publication_key(self.owner_binding, execution_digest)?;
-        let claim = ProductEvaluationExecutionStoreV1::claim(
-            &mut self.publication_store,
-            &key,
-        )
-        .map_err(store_error)?;
+        let claim = ProductEvaluationExecutionStoreV1::claim(&mut self.publication_store, &key)
+            .map_err(store_error)?;
         match claim {
             ProductEvaluationExecutionClaimV1::Existing(
                 ProductEvaluationExecutionStateV1::Completed(bytes),
@@ -145,10 +138,7 @@ impl ProductQualificationEvidenceSinkV1 for LockedFileProductQualificationEviden
         }
         // Retain the original store's post-fsync readback and metadata check.
         // Once a claim could exist, failure is terminal, never a fresh retry.
-        match ProductEvaluationExecutionStoreV1::readback(
-            &mut self.publication_store,
-            &key,
-        ) {
+        match ProductEvaluationExecutionStoreV1::readback(&mut self.publication_store, &key) {
             Ok(ProductEvaluationExecutionStateV1::Completed(bytes)) if bytes == payload => {
                 Ok(publication_digest(&payload))
             }

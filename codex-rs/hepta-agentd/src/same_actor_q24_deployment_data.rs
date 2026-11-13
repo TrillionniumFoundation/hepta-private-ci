@@ -2,18 +2,23 @@
 //! All signatures, Outcomes, plans, journals and approved materials are real
 //! deployment inputs. Missing material has no synthetic or permissive default.
 
-use std::path::PathBuf;
-use serde::{Deserialize, Serialize};
-use crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;
-use super::artifacts::{OriginalArtifactDecisionData, OriginalArtifactOwnerData, OriginalSelectionData};
+use super::artifacts::OriginalArtifactDecisionData;
+use super::artifacts::OriginalArtifactOwnerData;
+use super::artifacts::OriginalSelectionData;
 use super::c::OriginalCData;
 use super::evaluation::OriginalEvaluationData;
 use super::exchange::OriginalActorExchangeData;
-use super::files::{MutableFileData, PinnedFileData};
+use super::files::MutableFileData;
+use super::files::PinnedFileData;
 use super::learning::OriginalLearningMaterialsData;
 use super::outcome_data::OriginalSignedOutcomeData;
 use super::preparation::OriginalPreparationData;
-use super::task::{OriginalCircuitData, OriginalInitialData};
+use super::task::OriginalCircuitData;
+use super::task::OriginalInitialData;
+use crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;
+use serde::Deserialize;
+use serde::Serialize;
+use std::path::PathBuf;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

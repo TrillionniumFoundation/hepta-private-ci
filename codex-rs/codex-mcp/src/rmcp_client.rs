@@ -338,14 +338,21 @@ impl ManagedClientStartup {
                     return Err(error.into());
                 }
 
-                let client = if let Some(owner) = McpRuntimeContext::original_owned_shutdown(&runtime_context) {
+                let client = if let Some(owner) =
+                    McpRuntimeContext::original_owned_shutdown(&runtime_context)
+                {
                     match tokio::time::timeout(
                         startup_timeout,
                         original_owned::make_original_owned_rmcp_client(
-                            &server_name, server.clone(), resolved_environment,
-                            protocol_mode, owner,
+                            &server_name,
+                            server.clone(),
+                            resolved_environment,
+                            protocol_mode,
+                            owner,
                         ),
-                    ).await {
+                    )
+                    .await
+                    {
                         Ok(result) => result?,
                         Err(_) => {
                             return Err(StartupOutcomeError::from(anyhow!(
@@ -355,27 +362,27 @@ impl ManagedClientStartup {
                     }
                 } else {
                     match tokio::time::timeout(
-                    startup_timeout,
-                    make_rmcp_client(
-                        &server_name,
-                        server.clone(),
-                        store_mode,
-                        keyring_backend_kind,
-                        runtime_context,
-                        resolved_environment,
-                        runtime_auth_provider,
-                        protocol_mode,
-                    ),
-                )
-                .await
-                {
-                    Ok(result) => Arc::new(result?),
-                    Err(_) => {
-                        return Err(StartupOutcomeError::from(anyhow!(
-                            "MCP client startup timed out after {startup_timeout:?}"
-                        )));
+                        startup_timeout,
+                        make_rmcp_client(
+                            &server_name,
+                            server.clone(),
+                            store_mode,
+                            keyring_backend_kind,
+                            runtime_context,
+                            resolved_environment,
+                            runtime_auth_provider,
+                            protocol_mode,
+                        ),
+                    )
+                    .await
+                    {
+                        Ok(result) => Arc::new(result?),
+                        Err(_) => {
+                            return Err(StartupOutcomeError::from(anyhow!(
+                                "MCP client startup timed out after {startup_timeout:?}"
+                            )));
+                        }
                     }
-                }
                 };
                 start_server_task(
                     server_name,

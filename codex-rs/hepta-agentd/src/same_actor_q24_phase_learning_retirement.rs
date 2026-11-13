@@ -3,10 +3,10 @@
 //! can construct the returned terminal/ACK/real-join owner facts.
 
 use super::*;
-use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
-use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use crate::circuit_learning_delivery::OriginalDurableLearningAcknowledgement;
 use crate::circuit_task::OriginalSameActorCQuiescence;
+use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 
 pub(super) struct OriginalLearningRetirement {
     state: Mutex<OriginalLearningRetirementState>,
@@ -52,7 +52,9 @@ impl OriginalSameActorLearningWork {
     ) -> Result<(), AgentdError> {
         if self.context.identity() != identity || !Arc::ptr_eq(self.gate(), gate) {
             self.gate().close();
-            return Err(refused("retired learning Work has another original phase or identity"));
+            return Err(refused(
+                "retired learning Work has another original phase or identity",
+            ));
         }
         self.gate().require_open().map(|_| ()).map_err(refused)
     }
@@ -63,13 +65,15 @@ impl OriginalSameActorLearningWork {
         owners: &codex_hepta_learning_artifacts::LearningIterationOwnersV1,
     ) -> Result<(), AgentdError> {
         self.require_original_retirement_identity(self.context.identity(), self.gate())?;
-        if request != &self.prepared.initial().request
-            || owners != &self.prepared.initial().owners
+        if request != &self.prepared.initial().request || owners != &self.prepared.initial().owners
         {
             self.gate().close();
             return Err(refused("delivery request differs from original Prepared"));
         }
-        self.prepared.scope().validate_request(request, owners).map_err(refused)
+        self.prepared
+            .scope()
+            .validate_request(request, owners)
+            .map_err(refused)
     }
 
     pub(crate) fn require_original_terminal_snapshot(
@@ -81,11 +85,16 @@ impl OriginalSameActorLearningWork {
             || snapshot.owners != self.prepared.initial().owners
         {
             self.gate().close();
-            return Err(refused("terminal checkpoint differs from its original Prepared"));
+            return Err(refused(
+                "terminal checkpoint differs from its original Prepared",
+            ));
         }
-        self.prepared.scope().validate_snapshot(snapshot).map_err(refused)?;
-        let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
+        self.prepared
+            .scope()
+            .validate_snapshot(snapshot)
             .map_err(refused)?;
+        let coordinator =
+            LearningIterationCoordinatorV1::from_snapshot(snapshot.clone()).map_err(refused)?;
         if coordinator.next_stage().is_some() {
             self.gate().close();
             return Err(refused("original learning checkpoint is not terminal"));
@@ -100,7 +109,9 @@ impl OriginalSameActorLearningWork {
         let mut closing = self.original_failure_scope();
         self.require_identity_and_gate(self.context.identity(), self.gate())?;
         OriginalSameActorCQuiescence::require_original_phase(
-            &quiescence, self.context.identity(), self.gate(),
+            &quiescence,
+            self.context.identity(),
+            self.gate(),
         )?;
         OriginalSameActorCQuiescence::require_original_learning_work(&quiescence, self)?;
         let mut state = self.retirement.state.lock().map_err(refused)?;
@@ -132,16 +143,24 @@ impl OriginalSameActorLearningWork {
                         let OriginalLearningRetirementState::Requested(original) =
                             std::mem::replace(&mut *state, OriginalLearningRetirementState::Taken)
                         else {
-                            return Err(refused("original retirement state changed under its lock"));
+                            return Err(refused(
+                                "original retirement state changed under its lock",
+                            ));
                         };
                         Some(*original)
                     }
-                    _ => return Err(refused("original C retirement capability was already taken")),
+                    _ => {
+                        return Err(refused(
+                            "original C retirement capability was already taken",
+                        ));
+                    }
                 }
             };
             if let Some(original) = taken {
                 OriginalSameActorCQuiescence::require_original_phase(
-                    &original, self.context.identity(), self.gate(),
+                    &original,
+                    self.context.identity(),
+                    self.gate(),
                 )?;
                 OriginalSameActorCQuiescence::require_original_learning_work(&original, self)?;
                 closing.disarm();
@@ -166,21 +185,26 @@ impl OriginalSameActorLearningWork {
     ) -> Result<(), AgentdError> {
         let mut closing = self.original_failure_scope();
         OriginalSameActorCQuiescence::require_original_phase(
-            quiescence, self.context.identity(), self.gate(),
+            quiescence,
+            self.context.identity(),
+            self.gate(),
         )?;
         OriginalSameActorCQuiescence::require_original_learning_work(quiescence, self)?;
         OriginalDurableLearningAcknowledgement::require_original_work(acknowledged, self)?;
         OriginalSameActorCQuiescence::require_original_learning_snapshot(
-            quiescence, acknowledged.snapshot(),
+            quiescence,
+            acknowledged.snapshot(),
         )?;
         self.require_original_terminal_snapshot(acknowledged.snapshot())?;
         let mut state = self.retirement.state.lock().map_err(refused)?;
         if !matches!(*state, OriginalLearningRetirementState::Taken) {
-            return Err(refused("original learning stop was not authorized exactly once"));
+            return Err(refused(
+                "original learning stop was not authorized exactly once",
+            ));
         }
-        *state = OriginalLearningRetirementState::StopAuthorized(
-            Box::new(acknowledged.snapshot().clone()),
-        );
+        *state = OriginalLearningRetirementState::StopAuthorized(Box::new(
+            acknowledged.snapshot().clone(),
+        ));
         drop(state);
         self.retirement.changed.notify_waiters();
         self.gate().notify_original_waiters();
@@ -213,10 +237,15 @@ impl OriginalSameActorLearningWork {
             std::mem::replace(&mut *state, OriginalLearningRetirementState::StopTaken)
         else {
             self.gate().close();
-            return Err(refused("original learning stop state changed under its lock"));
+            return Err(refused(
+                "original learning stop state changed under its lock",
+            ));
         };
         drop(state);
-        Ok(Some(OriginalLearningStop { work: Arc::clone(self), snapshot: *snapshot }))
+        Ok(Some(OriginalLearningStop {
+            work: Arc::clone(self),
+            snapshot: *snapshot,
+        }))
     }
 
     pub(crate) async fn join_original_normal_work(
@@ -225,8 +254,12 @@ impl OriginalSameActorLearningWork {
         delivery: &crate::learning_iteration::OriginalLearningDeliveryRetired,
     ) -> Result<OriginalLearningWorkJoined, AgentdError> {
         let mut closing = self.original_failure_scope();
-        crate::learning_iteration::OriginalLearningLoopRetired::require_original_work(learning, self)?;
-        crate::learning_iteration::OriginalLearningDeliveryRetired::require_original_work(delivery, self)?;
+        crate::learning_iteration::OriginalLearningLoopRetired::require_original_work(
+            learning, self,
+        )?;
+        crate::learning_iteration::OriginalLearningDeliveryRetired::require_original_work(
+            delivery, self,
+        )?;
         let result = self.jobs.join_original_normal().await;
         if let Err(error) = result {
             self.gate().close();
@@ -237,10 +270,16 @@ impl OriginalSameActorLearningWork {
             }));
         }
         self.require_original_retirement_identity(self.context.identity(), self.gate())?;
-        crate::learning_iteration::OriginalLearningLoopRetired::require_original_work(learning, self)?;
-        crate::learning_iteration::OriginalLearningDeliveryRetired::require_original_work(delivery, self)?;
+        crate::learning_iteration::OriginalLearningLoopRetired::require_original_work(
+            learning, self,
+        )?;
+        crate::learning_iteration::OriginalLearningDeliveryRetired::require_original_work(
+            delivery, self,
+        )?;
         closing.disarm();
-        Ok(OriginalLearningWorkJoined { work: Arc::clone(self) })
+        Ok(OriginalLearningWorkJoined {
+            work: Arc::clone(self),
+        })
     }
 }
 

@@ -39,10 +39,8 @@ impl OriginalWitnessData {
         let generation = Generation::new(self.generation).map_err(deployment_error)?;
         let file = files.open_original_owner(&self.file)?;
         files.require_original_context()?;
-        let witness = FileAnchorWitnessStore::open(
-            file, scope, generation, self.maximum_records,
-        )
-        .map_err(deployment_error)?;
+        let witness = FileAnchorWitnessStore::open(file, scope, generation, self.maximum_records)
+            .map_err(deployment_error)?;
         files.require_original_context()?;
         Ok(witness)
     }

@@ -18,12 +18,12 @@ use crate::same_actor_q24_phase::OriginalSameActorPhaseEventV1;
 use crate::same_actor_q24_phase::install_original_initial_task;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 
+#[path = "production_launcher_same_actor_deployment.rs"]
+mod deployment;
 #[path = "production_launcher_same_actor_owner.rs"]
 pub(super) mod owner;
 #[path = "production_launcher_same_actor_run.rs"]
 mod run;
-#[path = "production_launcher_same_actor_deployment.rs"]
-mod deployment;
 pub use deployment::AgentdOriginalSameActorDeploymentStartupV1;
 
 /// Construct before arg0 or original business owners open any additional
@@ -113,8 +113,11 @@ impl AgentdOriginalSameActorPhaseStartupV1 {
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
         owner::OriginalPhaseRunOwner::start_original(
-            self, owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)), arg0_paths,
-        )?.await
+            self,
+            owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)),
+            arg0_paths,
+        )?
+        .await
     }
 }
 
@@ -127,7 +130,8 @@ fn require_disjoint_phase_descriptors(
 }
 
 fn require_disjoint_phase_descriptor_numbers(
-    arguments: &[OsString], extra: [i32; 2],
+    arguments: &[OsString],
+    extra: [i32; 2],
 ) -> Result<(), AgentdError> {
     if extra[0] < 3 || extra[1] < 3 || extra[0] == extra[1] {
         return Err(refused(

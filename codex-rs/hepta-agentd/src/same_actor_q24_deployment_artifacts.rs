@@ -2,27 +2,39 @@
 //! The descriptor supplies original signed material. None of these loaders
 //! signs a head or treats an untrusted local snapshot as an independent floor.
 
-use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
-use codex_hepta_learning_artifacts::{
-    ArtifactSelectionVerifierV1, DatasetWithdrawalSnapshotReceiptV1,
-    LearningArtifactOwnerService, LearningArtifactOwnerServiceConfigV1,
-    LearningArtifactPublishRequestV1, SignedArtifactSelectionV1,
-    admit_manifest_at_withdrawal_head_v3, read_dataset_withdrawal_snapshot,
-};
-use codex_hepta_types::{Digest32, StableId};
-use serde::{Deserialize, Serialize};
-use crate::{AgentdError, AgentdGenerationSelectionFilesV1, AgentdSelectedGenerationV1,
-    OriginalCellQ24SelectionInputsV1};
-use crate::authority_host_runtime::{
-    OriginalDeploymentCurrentData, OriginalDeploymentOwnerTrustData,
-    OriginalDeploymentSelectionData, OriginalDeploymentSelectorTrustData,
-    OriginalDeploymentWithdrawalData,
-};
+use super::artifact_data::OriginalArtifactManifestData;
+use super::artifact_data::OriginalArtifactWriterData;
+use super::deployment_error;
+use super::deployment_refused;
+use super::files::OriginalDeploymentFiles;
+use super::files::OriginalDirectoryPin;
+use super::files::OriginalPinnedRead;
+use super::files::PinnedFileData;
+use crate::AgentdError;
+use crate::AgentdGenerationSelectionFilesV1;
+use crate::AgentdSelectedGenerationV1;
+use crate::OriginalCellQ24SelectionInputsV1;
+use crate::authority_host_runtime::OriginalDeploymentCurrentData;
+use crate::authority_host_runtime::OriginalDeploymentOwnerTrustData;
+use crate::authority_host_runtime::OriginalDeploymentSelectionData;
+use crate::authority_host_runtime::OriginalDeploymentSelectorTrustData;
+use crate::authority_host_runtime::OriginalDeploymentWithdrawalData;
 use crate::same_actor_q24_phase::OriginalSameActorArtifactInputsV1;
-use super::artifact_data::{OriginalArtifactManifestData, OriginalArtifactWriterData};
-use super::files::{OriginalDeploymentFiles, OriginalDirectoryPin, OriginalPinnedRead, PinnedFileData};
-use super::{deployment_error, deployment_refused};
+use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
+use codex_hepta_learning_artifacts::DatasetWithdrawalSnapshotReceiptV1;
+use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
+use codex_hepta_learning_artifacts::LearningArtifactOwnerServiceConfigV1;
+use codex_hepta_learning_artifacts::LearningArtifactPublishRequestV1;
+use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
+use codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3;
+use codex_hepta_learning_artifacts::read_dataset_withdrawal_snapshot;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -66,7 +78,14 @@ impl OriginalDeploymentArtifacts {
         // All named directories and the actual writer lock must already
         // exist. The original owner's creation fallback is not enrollment.
         let mut directories = vec![files.pin_original_owner_directory(&data.root)?];
-        for name in ["writer", "transactions", "payloads", "registries", "witnesses", "heads"] {
+        for name in [
+            "writer",
+            "transactions",
+            "payloads",
+            "registries",
+            "witnesses",
+            "heads",
+        ] {
             directories.push(files.pin_original_owner_directory(&data.root.join(name))?);
         }
         let lock = files.pin_original_artifact_lock(&data.root.join("writer/owner.lock"))?;
@@ -78,38 +97,76 @@ impl OriginalDeploymentArtifacts {
                 scope_digest: Digest32::from_array(data.withdrawal.scope),
                 head_digest: Digest32::from_array(data.withdrawal.head),
                 file_digest: Digest32::from_array(data.withdrawal.file_digest),
-                records: data.withdrawal.records, encoded_bytes: data.withdrawal.encoded_bytes,
+                records: data.withdrawal.records,
+                encoded_bytes: data.withdrawal.encoded_bytes,
             },
-        ).map_err(deployment_error)?;
+        )
+        .map_err(deployment_error)?;
         OriginalPinnedRead::require_original_pin(&withdrawal_file)?;
-        let trust = data.trust.original_owner_trust().map_err(deployment_error)?;
-        let verifier = data.selector.original_selector(&trust).map_err(deployment_error)?;
+        let trust = data
+            .trust
+            .original_owner_trust()
+            .map_err(deployment_error)?;
+        let verifier = data
+            .selector
+            .original_selector(&trust)
+            .map_err(deployment_error)?;
         let writer_lease = data.writer_lease.original()?;
-        let current = data.required_current_head.original_current().map_err(deployment_error)?;
+        let current = data
+            .required_current_head
+            .original_current()
+            .map_err(deployment_error)?;
         files.require_original_context()?;
         let owner = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: data.root.clone(), trust, writer_lease,
-            required_current_head: Some(current), withdrawal_registry,
-            storage_binding: Digest32::from_array(data.storage_binding), now,
-        }).map_err(deployment_error)?;
+            root: data.root.clone(),
+            trust,
+            writer_lease,
+            required_current_head: Some(current),
+            withdrawal_registry,
+            storage_binding: Digest32::from_array(data.storage_binding),
+            now,
+        })
+        .map_err(deployment_error)?;
         if owner.recovery_required().is_some() {
-            return Err(deployment_refused("original Artifact operation is not terminal"));
+            return Err(deployment_refused(
+                "original Artifact operation is not terminal",
+            ));
         }
-        for directory in &directories { OriginalDirectoryPin::require_original_directory_pin(directory)?; }
+        for directory in &directories {
+            OriginalDirectoryPin::require_original_directory_pin(directory)?;
+        }
         OriginalPinnedRead::require_original_pin(&lock)?;
         files.require_original_context()?;
-        let material = data.initial_selection.open_original_selection_files(files, &verifier)?;
+        let material = data
+            .initial_selection
+            .open_original_selection_files(files, &verifier)?;
         let selected = AgentdSelectedGenerationV1::load(
-            &owner, material.verifier, material.signed, material.files, now,
+            &owner,
+            material.verifier,
+            material.signed,
+            material.files,
+            now,
         )?;
         files.require_original_context()?;
-        Ok((Self { owner: Arc::new(Mutex::new(owner)), verifier, directories, lock }, selected))
+        Ok((
+            Self {
+                owner: Arc::new(Mutex::new(owner)),
+                verifier,
+                directories,
+                lock,
+            },
+            selected,
+        ))
     }
 
-    pub(super) fn owner(&self) -> &Arc<Mutex<LearningArtifactOwnerService>> { &self.owner }
+    pub(super) fn owner(&self) -> &Arc<Mutex<LearningArtifactOwnerService>> {
+        &self.owner
+    }
 
     pub(super) fn require_original_paths(&self) -> Result<(), AgentdError> {
-        for directory in &self.directories { OriginalDirectoryPin::require_original_directory_pin(directory)?; }
+        for directory in &self.directories {
+            OriginalDirectoryPin::require_original_directory_pin(directory)?;
+        }
         self.lock.require_original_pin()
     }
 
@@ -121,11 +178,17 @@ impl OriginalDeploymentArtifacts {
     ) -> Result<(OriginalCellQ24SelectionInputsV1, Digest32), AgentdError> {
         self.require_original_paths()?;
         let validation = data.open_original_selection_files(files, &self.verifier)?;
-        let owner = self.owner.lock()
+        let owner = self
+            .owner
+            .lock()
             .map_err(|_| deployment_refused("original Artifact owner mutex is poisoned"))?;
         files.require_original_context()?;
         let selected = AgentdSelectedGenerationV1::load(
-            &owner, validation.verifier, validation.signed, validation.files, now,
+            &owner,
+            validation.verifier,
+            validation.signed,
+            validation.files,
+            now,
         )?;
         let expected = selected.observation().digest();
         drop(owner);
@@ -154,20 +217,30 @@ impl OriginalDeploymentArtifacts {
             OriginalArtifactDecisionData::PublishQualified(data) => {
                 let payload = files.read_original(&data.payload, 16 * 1024 * 1024)?;
                 let manifest = data.manifest.original()?;
-                let owner = self.owner.lock().map_err(|_| deployment_refused("original Artifact owner mutex is poisoned"))?;
+                let owner = self
+                    .owner
+                    .lock()
+                    .map_err(|_| deployment_refused("original Artifact owner mutex is poisoned"))?;
                 files.require_original_context()?;
                 self.require_original_paths()?;
                 let admission = admit_manifest_at_withdrawal_head_v3(
                     owner.withdrawal_registry(),
                     Digest32::from_array(data.expected_withdrawal_head),
-                    manifest, now,
-                ).map_err(deployment_error)?;
+                    manifest,
+                    now,
+                )
+                .map_err(deployment_error)?;
                 let request = LearningArtifactPublishRequestV1 {
                     operation_id: StableId::new(&data.operation_id).map_err(deployment_error)?,
-                    admission, payload: OriginalPinnedRead::bytes(&payload).to_vec(),
-                    signed_current_head: data.signed_current_head.original_current()
+                    admission,
+                    payload: OriginalPinnedRead::bytes(&payload).to_vec(),
+                    signed_current_head: data
+                        .signed_current_head
+                        .original_current()
                         .map_err(deployment_error)?,
-                    expected_registry_predecessor_head: Digest32::from_array(data.expected_registry_predecessor_head),
+                    expected_registry_predecessor_head: Digest32::from_array(
+                        data.expected_registry_predecessor_head,
+                    ),
                     now,
                 };
                 OriginalPinnedRead::require_original_pin(&payload)?;
@@ -175,7 +248,9 @@ impl OriginalDeploymentArtifacts {
                 drop(owner);
                 // Actual publication subsequently reacquires its original
                 // writer and checks this exact withdrawal/current frontier.
-                Ok(OriginalSameActorArtifactInputsV1::PublishQualified(Box::new(request)))
+                Ok(OriginalSameActorArtifactInputsV1::PublishQualified(
+                    Box::new(request),
+                ))
             }
         }
     }
@@ -194,7 +269,8 @@ impl OriginalSelectionData {
         let registry = files.read_original(&self.registry_snapshot, 16 * 1024 * 1024)?;
         let payload = files.read_original(&self.payload, 16 * 1024 * 1024)?;
         let result = OriginalCellQ24SelectionInputsV1 {
-            verifier: verifier.clone(), signed: self.original_signed()?,
+            verifier: verifier.clone(),
+            signed: self.original_signed()?,
             files: AgentdGenerationSelectionFilesV1 {
                 registry_snapshot: OriginalPinnedRead::clone_original_file(&registry)?,
                 payload: OriginalPinnedRead::clone_original_file(&payload)?,

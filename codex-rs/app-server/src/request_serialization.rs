@@ -160,9 +160,7 @@ pub(crate) struct RequestSerializationQueues {
 }
 
 impl RequestSerializationQueues {
-    pub(crate) fn new_original_owner(
-        original: Arc<crate::OriginalAppServerOwnerCustody>,
-    ) -> Self {
+    pub(crate) fn new_original_owner(original: Arc<crate::OriginalAppServerOwnerCustody>) -> Self {
         Self {
             original_owner: Some(original),
             ..Self::default()
@@ -208,7 +206,10 @@ impl RequestSerializationQueues {
             _diagnostics_guard: QUEUED_REQUESTS.track(),
         };
         let mut queues = self.inner.lock().await;
-        if self.original_closed.load(std::sync::atomic::Ordering::Acquire) {
+        if self
+            .original_closed
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
             drop(queues);
             drop(request);
             crate::OriginalAppServerOwnerCustody::record_original_failure(

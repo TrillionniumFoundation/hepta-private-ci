@@ -5,7 +5,6 @@ use super::*;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 
-use codex_hepta_contracts::HostAuthorityPeerChannel;
 use crate::same_actor_q24_deployment_protocol::OriginalDeploymentAcknowledgement;
 use crate::same_actor_q24_deployment_protocol::OriginalDeploymentBinding;
 use crate::same_actor_q24_deployment_protocol::OriginalDeploymentRequest;
@@ -15,6 +14,7 @@ use crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementAcknow
 use crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementRequest;
 use crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementStage;
 use crate::same_actor_q24_root_retirement_protocol::RETIREMENT_PURPOSE;
+use codex_hepta_contracts::HostAuthorityPeerChannel;
 
 const ALL_PURPOSES: u16 = 0xff;
 
@@ -139,7 +139,9 @@ impl OriginalRootRetirementScope {
     pub(crate) fn require_original(&self, gate: &Arc<SameActorPhaseGate>) -> io::Result<()> {
         if !Arc::ptr_eq(&self.gate, gate) {
             self.gate.close();
-            return Err(io::Error::other("Root retirement replaced its original phase gate"));
+            return Err(io::Error::other(
+                "Root retirement replaced its original phase gate",
+            ));
         }
         let checked = (|| {
             self.gate.require_open()?;
@@ -169,7 +171,9 @@ impl OriginalRootRetirementScope {
         let mut state = self.state()?;
         let bit = purpose.bit();
         if state.intent.is_some() || state.registered & bit != 0 {
-            return Err(io::Error::other("original Root retirement lane reused or too late"));
+            return Err(io::Error::other(
+                "original Root retirement lane reused or too late",
+            ));
         }
         state.registered |= bit;
         drop(state);
@@ -191,11 +195,15 @@ impl OriginalRootRetirementScope {
         self.require_original(&self.gate)?;
         request.require_original_stage(&self.binding, OriginalDeploymentStage::Current)?;
         acknowledgement.require_original_request(request)?;
-        let binding = acknowledgement.registration_binding.clone()
+        let binding = acknowledgement
+            .registration_binding
+            .clone()
             .ok_or_else(|| io::Error::other("actual Root CURRENT registration missing"))?;
         let mut state = self.state()?;
         if state.original_current.is_some() || state.intent.is_some() {
-            return Err(io::Error::other("Root retirement CURRENT registration reused"));
+            return Err(io::Error::other(
+                "Root retirement CURRENT registration reused",
+            ));
         }
         state.original_current = Some((binding, acknowledgement.original_request.clone()));
         drop(state);
@@ -211,8 +219,9 @@ impl OriginalRootRetirementScope {
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
         self.require_original(&self.gate)?;
         let mut state = self.state()?;
-        let (registration, current_request) = state.original_current.as_ref()
-            .ok_or_else(|| io::Error::other("Root retirement requires its actual CURRENT registration"))?;
+        let (registration, current_request) = state.original_current.as_ref().ok_or_else(|| {
+            io::Error::other("Root retirement requires its actual CURRENT registration")
+        })?;
         request.require_original(
             &self.binding,
             registration,
@@ -225,7 +234,9 @@ impl OriginalRootRetirementScope {
             || state.clean_eof != 0
             || state.active_requests != 0
         {
-            return Err(io::Error::other("original Root retirement is busy, incomplete, or consumed"));
+            return Err(io::Error::other(
+                "original Root retirement is busy, incomplete, or consumed",
+            ));
         }
         // This mutex is also the request-admission cut. No later original
         // effect or response exchange can enter after this one-shot intent.
@@ -243,7 +254,9 @@ impl OriginalRootRetirementScope {
         self.require_original(&self.gate)?;
         let mut state = self.state()?;
         if state.intent.is_none() || state.intent_acknowledged {
-            return Err(io::Error::other("original Root retirement intent ACK reused"));
+            return Err(io::Error::other(
+                "original Root retirement intent ACK reused",
+            ));
         }
         state.intent_acknowledged = true;
         drop(state);
@@ -259,9 +272,13 @@ impl OriginalRootRetirementScope {
     ) -> io::Result<String> {
         self.require_original(&self.gate)?;
         let state = self.state()?;
-        let intent = state.intent.as_ref()
+        let intent = state
+            .intent
+            .as_ref()
             .ok_or_else(|| io::Error::other("original Root retirement intent missing"))?;
-        let (registration, current_request) = state.original_current.as_ref()
+        let (registration, current_request) = state
+            .original_current
+            .as_ref()
             .ok_or_else(|| io::Error::other("actual original CURRENT registration missing"))?;
         request.require_original(
             &self.binding,
@@ -271,7 +288,9 @@ impl OriginalRootRetirementScope {
             Some(intent),
         )?;
         if !state.intent_acknowledged || state.acknowledged {
-            return Err(io::Error::other("original Root retirement ACK state differs"));
+            return Err(io::Error::other(
+                "original Root retirement ACK state differs",
+            ));
         }
         Ok(intent.clone())
     }
@@ -286,11 +305,15 @@ impl OriginalRootRetirementScope {
             self.require_original(&self.gate)?;
             let mut state = self.state()?;
             if state.active_requests != 0 || state.clean_eof != ALL_PURPOSES {
-                return Err(io::Error::other("original Root business lanes have not retired"));
+                return Err(io::Error::other(
+                    "original Root business lanes have not retired",
+                ));
             }
             if state.intent_acknowledged {
                 if state.stop_watcher {
-                    return Err(io::Error::other("original Root deadline worker already released"));
+                    return Err(io::Error::other(
+                        "original Root deadline worker already released",
+                    ));
                 }
                 state.stop_watcher = true;
                 drop(state);
@@ -339,7 +362,9 @@ impl OriginalRootRetirementScope {
         self.require_original(&self.gate)?;
         let mut state = self.state()?;
         if !state.stop_watcher || !state.intent_acknowledged || state.acknowledged {
-            return Err(io::Error::other("original Root workers ACK reused or incomplete"));
+            return Err(io::Error::other(
+                "original Root workers ACK reused or incomplete",
+            ));
         }
         state.acknowledged = true;
         drop(state);
@@ -356,9 +381,13 @@ impl OriginalRootRetirementLane {
         if state.intent.is_some() || state.clean_eof & self.purpose.bit() != 0 {
             return Err(io::Error::other("original Root lane is retiring"));
         }
-        state.active_requests = state.active_requests.checked_add(1)
+        state.active_requests = state
+            .active_requests
+            .checked_add(1)
             .ok_or_else(|| io::Error::other("original Root request count overflow"))?;
-        Ok(OriginalRootRequestAdmission { scope: Arc::clone(&self.scope) })
+        Ok(OriginalRootRequestAdmission {
+            scope: Arc::clone(&self.scope),
+        })
     }
 
     /// Called only after the original peer channel returned Ok(false). Every
@@ -373,7 +402,9 @@ impl OriginalRootRetirementLane {
         let mut state = self.scope.state()?;
         let bit = self.purpose.bit();
         if state.intent.is_none() || state.clean_eof & bit != 0 {
-            return Err(io::Error::other("required original Root lane ended without its retirement"));
+            return Err(io::Error::other(
+                "required original Root lane ended without its retirement",
+            ));
         }
         state.clean_eof |= bit;
         drop(state);
@@ -397,13 +428,17 @@ impl OriginalRootRetiredChannel {
     ) -> io::Result<()> {
         if !std::ptr::eq(self.scope.as_ref(), scope) || self.purpose != purpose {
             self.scope.gate.close();
-            return Err(io::Error::other("original Root retired channel origin differs"));
+            return Err(io::Error::other(
+                "original Root retired channel origin differs",
+            ));
         }
         self.scope.require_original(&self.scope.gate)?;
         HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(io::Error::other)?;
         let state = self.scope.state()?;
         if state.intent.is_none() || state.clean_eof & purpose.bit() == 0 {
-            return Err(io::Error::other("actual original Root clean EOF is missing"));
+            return Err(io::Error::other(
+                "actual original Root clean EOF is missing",
+            ));
         }
         Ok(())
     }
@@ -412,7 +447,9 @@ impl OriginalRootRetiredChannel {
 impl Drop for OriginalRootRequestAdmission {
     fn drop(&mut self) {
         let outcome = self.scope.state().and_then(|mut state| {
-            state.active_requests = state.active_requests.checked_sub(1)
+            state.active_requests = state
+                .active_requests
+                .checked_sub(1)
                 .ok_or_else(|| io::Error::other("original Root request custody underflow"))?;
             Ok(())
         });
@@ -442,6 +479,8 @@ fn retirement_response(
             stage: request.stage,
             original_request: request.digest()?,
             original_intent: intent.into(),
-        }, request, intent,
+        },
+        request,
+        intent,
     )
 }

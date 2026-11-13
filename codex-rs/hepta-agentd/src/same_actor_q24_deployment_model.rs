@@ -1,15 +1,19 @@
 //! Open actual immutable Q24 files from the approved deployment and retain
 //! their inode/hash pins across the original bounded model decoder.
 
-use std::sync::Arc;
-use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
-use serde::{Deserialize, Serialize};
-use crate::{AgentdError, CellQ24ModelFilesV1, LoadedCellQ24ModelV1};
 use super::bundle_data::OriginalBundleData;
-use super::files::{OriginalDeploymentFiles, PinnedFileData};
-use super::learning_data::required_option;
 use super::deployment_error;
 use super::deployment_refused;
+use super::files::OriginalDeploymentFiles;
+use super::files::PinnedFileData;
+use super::learning_data::required_option;
+use crate::AgentdError;
+use crate::CellQ24ModelFilesV1;
+use crate::LoadedCellQ24ModelV1;
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
+use serde::Deserialize;
+use serde::Serialize;
+use std::sync::Arc;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -33,24 +37,43 @@ impl OriginalModelData {
         let base = files.read_original(&self.base, 16 * 1024 * 1024)?;
         let encoder = files.read_original(&self.encoder, 16 * 1024 * 1024)?;
         let heads = files.read_original(&self.heads, 16 * 1024 * 1024)?;
-        let organ = self.organ_adapter.as_ref()
-            .map(|file| files.read_original(file, 16 * 1024 * 1024)).transpose()?;
-        let cell = self.cell_adapter.as_ref()
-            .map(|file| files.read_original(file, 16 * 1024 * 1024)).transpose()?;
+        let organ = self
+            .organ_adapter
+            .as_ref()
+            .map(|file| files.read_original(file, 16 * 1024 * 1024))
+            .transpose()?;
+        let cell = self
+            .cell_adapter
+            .as_ref()
+            .map(|file| files.read_original(file, 16 * 1024 * 1024))
+            .transpose()?;
         let model = LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {
             base: super::files::OriginalPinnedRead::clone_original_file(&base)?,
             encoder: super::files::OriginalPinnedRead::clone_original_file(&encoder)?,
             heads: super::files::OriginalPinnedRead::clone_original_file(&heads)?,
-            organ_adapter: organ.as_ref().map(|read| super::files::OriginalPinnedRead::clone_original_file(read)).transpose()?,
-            cell_adapter: cell.as_ref().map(|read| super::files::OriginalPinnedRead::clone_original_file(read)).transpose()?,
-        }).map_err(deployment_error)?;
-        for read in [&base, &encoder, &heads].into_iter().chain(organ.iter()).chain(cell.iter()) {
+            organ_adapter: organ
+                .as_ref()
+                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))
+                .transpose()?,
+            cell_adapter: cell
+                .as_ref()
+                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))
+                .transpose()?,
+        })
+        .map_err(deployment_error)?;
+        for read in [&base, &encoder, &heads]
+            .into_iter()
+            .chain(organ.iter())
+            .chain(cell.iter())
+        {
             super::files::OriginalPinnedRead::require_original_pin(read)?;
         }
         let bundle = self.bundle.original()?;
         bundle.digest().map_err(deployment_error)?;
         if model.components() != &bundle.components {
-            return Err(deployment_refused("actual model components differ from the approved bundle"));
+            return Err(deployment_refused(
+                "actual model components differ from the approved bundle",
+            ));
         }
         files.require_original_context()?;
         Ok((Arc::new(model), bundle))

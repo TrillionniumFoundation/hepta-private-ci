@@ -8,13 +8,17 @@ impl OriginalSameActorCJoined {
         identity: &AgentdIdentity,
         gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
-        self.original.origin.require_original_binding(identity, gate)?;
+        self.original
+            .origin
+            .require_original_binding(identity, gate)?;
         self.original
             .slot
             .require_original_retired_slot(&self.original.origin)?;
         let route = self.original.origin.original_route()?;
         if !Arc::ptr_eq(&route, &self.route) {
-            return Err(retirement_error("original C terminal route custody differs"));
+            return Err(retirement_error(
+                "original C terminal route custody differs",
+            ));
         }
         OriginalRetiredLearningOwners::require_original_work(&self.learning, &self.work)?;
         let state = route.state.lock().map_err(|_| poisoned_route())?;

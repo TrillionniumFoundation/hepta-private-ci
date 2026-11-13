@@ -27,11 +27,15 @@ impl OriginalDeploymentCoordinatorOwner {
         stopped.require_original_origin(identity, gate)?;
         learning.require_original_phase(identity, gate)?;
         natural.require_original_phase(identity, gate)?;
-        let thread = self.thread.take()
+        let thread = self
+            .thread
+            .take()
             .ok_or_else(|| deployment_refused("actual coordinator result was already taken"))?;
         let retained = join_original_thread(thread)?;
         if !Arc::ptr_eq(&retained.context, &self.context) {
-            return Err(deployment_refused("actual joined coordinator context differs"));
+            return Err(deployment_refused(
+                "actual joined coordinator context differs",
+            ));
         }
         OriginalDeploymentRetained::require_original_origin(&retained, identity, gate)?;
         stopped.require_original_origin(identity, gate)?;
@@ -52,9 +56,12 @@ impl OriginalDeploymentRetained {
     ) -> Result<(), AgentdError> {
         if self.context.identity() != identity || !Arc::ptr_eq(self.context.gate(), gate) {
             self.context.gate().close();
-            return Err(deployment_refused("actual retained coordinator origin differs"));
+            return Err(deployment_refused(
+                "actual retained coordinator origin differs",
+            ));
         }
-        self.coordinator.require_original_retirement_origin(identity, gate)
+        self.coordinator
+            .require_original_retirement_origin(identity, gate)
     }
 
     /// Retain every actual material/ledger/model/evidence owner while the one
@@ -69,9 +76,10 @@ impl OriginalDeploymentRetained {
     ) -> Result<(OriginalRootRetirementIntent, Self), AgentdError> {
         self.require_original_origin(self.context.identity(), self.context.gate())?;
         let client = self.coordinator.take_original_retirement_client()?;
-        let intent = super::super::client::OriginalDeploymentClient::authorize_original_root_retirement(
-            client, stopped, learning, natural, session,
-        )?;
+        let intent =
+            super::super::client::OriginalDeploymentClient::authorize_original_root_retirement(
+                client, stopped, learning, natural, session,
+            )?;
         self.require_original_origin(self.context.identity(), self.context.gate())?;
         Ok((intent, self))
     }

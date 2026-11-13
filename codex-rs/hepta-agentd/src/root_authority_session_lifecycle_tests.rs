@@ -8,8 +8,8 @@ use crate::root_authority_session::OriginalRootSessionJoinObservation;
 use crate::root_authority_session::OriginalRootWorkerTermination;
 use pretty_assertions::assert_eq;
 use std::fs::OpenOptions;
-use std::task::Poll;
 use std::os::unix::fs::MetadataExt;
+use std::task::Poll;
 
 #[path = "root_authority_session_lifecycle_support_tests.rs"]
 mod support;
@@ -25,7 +25,14 @@ use support::takes_lock;
 async fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()
 -> Result<(), Box<dyn Error>> {
     let slot = OriginalRootSessionCustodySlot::new();
-    let PhaseConnection { session, head, peer, key, gate, .. } = phase_connection(&slot).await;
+    let PhaseConnection {
+        session,
+        head,
+        peer,
+        key,
+        gate,
+        ..
+    } = phase_connection(&slot).await;
     let session = session?;
     session.require_original_phase_task_custody(&slot)?;
     let (device, _, _device_directory) = owner(&session, key);
@@ -36,7 +43,9 @@ async fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()
         release,
         mut probe,
     } = blocking_consumer(&session, key, BlockedOutcome::Refused);
-    session.activate_original_phase_final_use_owners(vec![device, notes]).await?;
+    session
+        .activate_original_phase_final_use_owners(vec![device, notes])
+        .await?;
 
     let directory = tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))
@@ -44,7 +53,9 @@ async fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()
     let (trust, _) = fixture();
     let config = original_config(&directory.path().canonicalize()?, &trust)?;
     config.retain_root_session(&session)?;
-    let contender = OpenOptions::new().read(true).write(true)
+    let contender = OpenOptions::new()
+        .read(true)
+        .write(true)
         .open(config.identity().layout.writer_lock())?;
     let identity = contender.metadata()?;
     let writer = Arc::downgrade(&session.writer_file);
@@ -53,13 +64,16 @@ async fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()
     drop(config);
     head.store(2, Ordering::Release);
     tokio::time::timeout(Duration::from_secs(5), entered).await??;
-    assert!(matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+    assert!(
+        matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
     drop(session);
     tokio::time::timeout(Duration::from_secs(5), async {
         while !worker.is_finished() {
             tokio::task::yield_now().await;
         }
-    }).await?;
+    })
+    .await?;
     assert!(clock.now_unix_ms().is_err());
     assert!(gate.require_open().is_err());
     assert!(!takes_lock(&contender)?);
@@ -68,26 +82,44 @@ async fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()
     std::future::poll_fn(|context| {
         assert!(std::future::Future::poll(cleanup.as_mut(), context).is_pending());
         Poll::Ready(())
-    }).await;
+    })
+    .await;
     // Cancel this actual join waiter while the original CAS remains blocked.
     // The second call must resume borrowing the SAME actual JoinHandle.
     drop(cleanup);
-    assert!(matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+    assert!(
+        matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
     release.send(())?;
     let observed = tokio::time::timeout(
         Duration::from_secs(5),
         slot.stop_and_join_retired_session_tasks(),
-    ).await??;
-    let OriginalRootSessionJoinObservation::Joined { slot_poisoned, worker, recorded_worker_failure, consumers } = observed else {
+    )
+    .await??;
+    let OriginalRootSessionJoinObservation::Joined {
+        slot_poisoned,
+        worker,
+        recorded_worker_failure,
+        consumers,
+    } = observed
+    else {
         panic!("the actual phase Session was not registered");
     };
     assert!(!slot_poisoned);
     assert_ne!(worker, OriginalRootWorkerTermination::Panicked);
     if worker == OriginalRootWorkerTermination::Returned {
-        assert_eq!(recorded_worker_failure, Some(AgentdRootAuthorityError::Unavailable));
+        assert_eq!(
+            recorded_worker_failure,
+            Some(AgentdRootAuthorityError::Unavailable)
+        );
     }
     assert_eq!((consumers.registered, consumers.joined), (2, 2));
-    assert_eq!(consumers.first_observed_failure, Some(OriginalConsumerFailure::Owner(AgentdRootAuthorityError::Unavailable)));
+    assert_eq!(
+        consumers.first_observed_failure,
+        Some(OriginalConsumerFailure::Owner(
+            AgentdRootAuthorityError::Unavailable
+        ))
+    );
     assert!(!consumers.admission_poisoned);
     assert_eq!(probe.read(&mut [0])?, 0);
     assert_eq!(slot.stop_and_join_retired_session_tasks().await?, observed);
@@ -108,19 +140,34 @@ async fn cancelled_cleanup_retains_actual_blocking_cas_and_original_file()
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn cancelled_activation_keeps_its_real_consumer_job_until_join()
--> Result<(), Box<dyn Error>> {
+async fn cancelled_activation_keeps_its_real_consumer_job_until_join() -> Result<(), Box<dyn Error>>
+{
     let slot = OriginalRootSessionCustodySlot::new();
-    let PhaseConnection { session, head, peer, key, .. } = phase_connection(&slot).await;
+    let PhaseConnection {
+        session,
+        head,
+        peer,
+        key,
+        ..
+    } = phase_connection(&slot).await;
     let session = session?;
-    let BlockingConsumer { owner, directory: _directory, entered, release, mut probe } =
-        blocking_consumer(&session, key, BlockedOutcome::Refused);
+    let BlockingConsumer {
+        owner,
+        directory: _directory,
+        entered,
+        release,
+        mut probe,
+    } = blocking_consumer(&session, key, BlockedOutcome::Refused);
     // The owner is physically opened at head 1. The original read feed alone
     // advances the Session to 2; activation must then perform a real CAS.
     head.store(2, Ordering::Release);
     tokio::time::timeout(Duration::from_secs(5), async {
         loop {
-            let permit = session.live.serial.acquire().await
+            let permit = session
+                .live
+                .serial
+                .acquire()
+                .await
                 .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             let current = session.revocations()?;
             drop(permit);
@@ -129,7 +176,8 @@ async fn cancelled_activation_keeps_its_real_consumer_job_until_join()
             }
             tokio::task::yield_now().await;
         }
-    }).await??;
+    })
+    .await??;
     let mut activation = Box::pin(session.activate_original_phase_final_use_owners(vec![owner]));
     tokio::select! {
         biased;
@@ -143,15 +191,23 @@ async fn cancelled_activation_keeps_its_real_consumer_job_until_join()
     std::future::poll_fn(|context| {
         assert!(std::future::Future::poll(cleanup.as_mut(), context).is_pending());
         Poll::Ready(())
-    }).await;
-    assert!(matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+    })
+    .await;
+    assert!(
+        matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
     release.send(())?;
     let observed = tokio::time::timeout(Duration::from_secs(5), cleanup).await??;
     let OriginalRootSessionJoinObservation::Joined { consumers, .. } = observed else {
         panic!("activation lost actual Session custody");
     };
     assert_eq!((consumers.registered, consumers.joined), (1, 1));
-    assert_eq!(consumers.first_observed_failure, Some(OriginalConsumerFailure::Owner(AgentdRootAuthorityError::Unavailable)));
+    assert_eq!(
+        consumers.first_observed_failure,
+        Some(OriginalConsumerFailure::Owner(
+            AgentdRootAuthorityError::Unavailable
+        ))
+    );
     assert_eq!(probe.read(&mut [0])?, 0);
     drop(slot);
     join_peer(peer).await;
@@ -159,14 +215,26 @@ async fn cancelled_activation_keeps_its_real_consumer_job_until_join()
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn original_consumer_panic_is_joined_and_retained_as_failure()
--> Result<(), Box<dyn Error>> {
+async fn original_consumer_panic_is_joined_and_retained_as_failure() -> Result<(), Box<dyn Error>> {
     let slot = OriginalRootSessionCustodySlot::new();
-    let PhaseConnection { session, head, peer, key, .. } = phase_connection(&slot).await;
+    let PhaseConnection {
+        session,
+        head,
+        peer,
+        key,
+        ..
+    } = phase_connection(&slot).await;
     let session = session?;
-    let BlockingConsumer { owner, directory: _directory, entered, release, mut probe } =
-        blocking_consumer(&session, key, BlockedOutcome::Panicked);
-    session.activate_original_phase_final_use_owners(vec![owner]).await?;
+    let BlockingConsumer {
+        owner,
+        directory: _directory,
+        entered,
+        release,
+        mut probe,
+    } = blocking_consumer(&session, key, BlockedOutcome::Panicked);
+    session
+        .activate_original_phase_final_use_owners(vec![owner])
+        .await?;
     let worker = session.worker.abort_handle();
     head.store(2, Ordering::Release);
     tokio::time::timeout(Duration::from_secs(5), entered).await??;
@@ -175,20 +243,34 @@ async fn original_consumer_panic_is_joined_and_retained_as_failure()
         while !worker.is_finished() {
             tokio::task::yield_now().await;
         }
-    }).await?;
+    })
+    .await?;
     assert!(session.clock().now_unix_ms().is_err());
     drop(session);
     let observed = tokio::time::timeout(
         Duration::from_secs(5),
         slot.stop_and_join_retired_session_tasks(),
-    ).await??;
-    let OriginalRootSessionJoinObservation::Joined { worker, recorded_worker_failure, consumers, .. } = observed else {
+    )
+    .await??;
+    let OriginalRootSessionJoinObservation::Joined {
+        worker,
+        recorded_worker_failure,
+        consumers,
+        ..
+    } = observed
+    else {
         panic!("panic lost actual Session custody");
     };
     assert_eq!(worker, OriginalRootWorkerTermination::Returned);
-    assert_eq!(recorded_worker_failure, Some(AgentdRootAuthorityError::Unavailable));
+    assert_eq!(
+        recorded_worker_failure,
+        Some(AgentdRootAuthorityError::Unavailable)
+    );
     assert_eq!((consumers.registered, consumers.joined), (2, 2));
-    assert_eq!(consumers.first_observed_failure, Some(OriginalConsumerFailure::Panicked));
+    assert_eq!(
+        consumers.first_observed_failure,
+        Some(OriginalConsumerFailure::Panicked)
+    );
     assert_eq!(probe.read(&mut [0])?, 0);
     drop(slot);
     join_peer(peer).await;
@@ -201,10 +283,17 @@ async fn stopped_empty_slot_rejects_phase_spawn_after_real_initial_read()
     let slot = OriginalRootSessionCustodySlot::new();
     assert_eq!(
         slot.stop_and_join_retired_session_tasks().await?,
-        OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned: false },
+        OriginalRootSessionJoinObservation::NotRegistered {
+            slot_poisoned: false
+        },
     );
-    let PhaseConnection { session, observation_replies, peer, gate, .. } =
-        phase_connection(&slot).await;
+    let PhaseConnection {
+        session,
+        observation_replies,
+        peer,
+        gate,
+        ..
+    } = phase_connection(&slot).await;
     assert!(matches!(session, Err(AgentdRootAuthorityError::Refused)));
     // The actual proof/observation read completed. Refusal occurred at the
     // pre-spawn slot admission, not at an invented synthetic input failure.
@@ -212,7 +301,9 @@ async fn stopped_empty_slot_rejects_phase_spawn_after_real_initial_read()
     assert!(gate.require_open().is_err());
     assert_eq!(
         slot.stop_and_join_retired_session_tasks().await?,
-        OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned: false },
+        OriginalRootSessionJoinObservation::NotRegistered {
+            slot_poisoned: false
+        },
     );
     drop(slot);
     join_peer(peer).await;
@@ -220,25 +311,43 @@ async fn stopped_empty_slot_rejects_phase_spawn_after_real_initial_read()
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn post_spawn_gate_refusal_keeps_actual_worker_in_external_slot()
--> Result<(), Box<dyn Error>> {
+async fn post_spawn_gate_refusal_keeps_actual_worker_in_external_slot() -> Result<(), Box<dyn Error>>
+{
     let slot = OriginalRootSessionCustodySlot::new();
     slot.component_stop_after_original_spawn();
-    let PhaseConnection { session, observation_replies, peer, gate, .. } =
-        phase_connection(&slot).await;
-    assert!(matches!(session, Err(AgentdRootAuthorityError::Unavailable)));
+    let PhaseConnection {
+        session,
+        observation_replies,
+        peer,
+        gate,
+        ..
+    } = phase_connection(&slot).await;
+    assert!(matches!(
+        session,
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
     assert!(observation_replies.load(Ordering::Acquire) >= 1);
     assert!(gate.require_open().is_err());
     let observed = tokio::time::timeout(
         Duration::from_secs(5),
         slot.stop_and_join_retired_session_tasks(),
-    ).await??;
-    let OriginalRootSessionJoinObservation::Joined { worker, recorded_worker_failure, consumers, .. } = observed else {
+    )
+    .await??;
+    let OriginalRootSessionJoinObservation::Joined {
+        worker,
+        recorded_worker_failure,
+        consumers,
+        ..
+    } = observed
+    else {
         panic!("the refused post-spawn Session lost its actual worker");
     };
     assert_ne!(worker, OriginalRootWorkerTermination::Panicked);
     if worker == OriginalRootWorkerTermination::Returned {
-        assert_eq!(recorded_worker_failure, Some(AgentdRootAuthorityError::Unavailable));
+        assert_eq!(
+            recorded_worker_failure,
+            Some(AgentdRootAuthorityError::Unavailable)
+        );
     }
     assert_eq!((consumers.registered, consumers.joined), (0, 0));
     assert_eq!(consumers.first_observed_failure, None);

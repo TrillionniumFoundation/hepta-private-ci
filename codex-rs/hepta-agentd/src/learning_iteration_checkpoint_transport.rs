@@ -12,10 +12,10 @@ use std::time::Duration;
 
 use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
 
-#[path = "learning_iteration_checkpoint_same_actor.rs"]
-mod same_actor;
 #[path = "learning_iteration_checkpoint_retirement.rs"]
 mod retirement;
+#[path = "learning_iteration_checkpoint_same_actor.rs"]
+mod same_actor;
 pub(crate) use retirement::OriginalLearningCheckpointRetirement;
 
 const OPERATION: &str = "runtime.learning.checkpoint.v1";

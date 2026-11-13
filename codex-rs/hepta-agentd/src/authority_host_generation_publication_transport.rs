@@ -426,7 +426,8 @@ impl HostAuthorityService {
         ),
     ) -> io::Result<crate::OriginalRootRetiredChannel> {
         let (phase, retirement) = mode;
-        let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
+        let mut closing =
+            crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
         retirement.require_original(phase.gate)?;
         phase.require_original(slot)?;
         let stream_stop = phase.gate.retain_original_stream(&stream)?;
@@ -438,8 +439,10 @@ impl HostAuthorityService {
             phase.gate.deadline().instant(),
         )
         .map_err(io::Error::other)?;
-        let retirement_lane = retirement
-            .register_original_lane(crate::OriginalRootRetirementPurpose::Publication, phase.gate)?;
+        let retirement_lane = retirement.register_original_lane(
+            crate::OriginalRootRetirementPurpose::Publication,
+            phase.gate,
+        )?;
         let channel = self.serve_original_publication_channel(
             slot,
             learning,

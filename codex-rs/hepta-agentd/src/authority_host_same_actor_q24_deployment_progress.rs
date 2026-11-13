@@ -37,13 +37,18 @@ impl BoundDeploymentProgress {
         let path = original_deployment_socket(&phase.descriptor)?;
         let config = &phase.original.config;
         let mut paths: Vec<_> = validate_runtime_lanes(config)?
-            .into_iter().map(|(_, path)| path).collect();
+            .into_iter()
+            .map(|(_, path)| path)
+            .collect();
         paths.push(&phase.descriptor.control_socket);
         paths.push(&path);
         validate_lane_paths(&paths, config.peer_gid)?;
         verify_pinned_process(
-            &phase.original.registration, config.peer_uid, config.peer_gid,
-            &phase.original.owner_pidfd, phase.gate.deadline().instant(),
+            &phase.original.registration,
+            config.peer_uid,
+            config.peer_gid,
+            &phase.original.owner_pidfd,
+            phase.gate.deadline().instant(),
         )?;
         let binding = OriginalDeploymentBinding::from_original_phase(&phase.descriptor)?;
         let owner = phase.original.owner_pidfd.try_clone()?;
@@ -70,10 +75,14 @@ impl BoundDeploymentProgress {
             },
             original_binding: binding,
         };
-        if metadata.uid() != 0 || metadata.gid() != config.peer_gid
-            || config.timeout_ms == 0 || config.timeout_ms > 500
+        if metadata.uid() != 0
+            || metadata.gid() != config.peer_gid
+            || config.timeout_ms == 0
+            || config.timeout_ms > 500
         {
-            return Err(io::Error::other("original deployment listener custody or timeout differs"));
+            return Err(io::Error::other(
+                "original deployment listener custody or timeout differs",
+            ));
         }
         std::fs::set_permissions(&bound.path, std::fs::Permissions::from_mode(0o660))?;
         bound.listener.set_nonblocking(true)?;
@@ -92,8 +101,11 @@ impl BoundDeploymentProgress {
             match self.listener.accept() {
                 Ok((stream, _)) => {
                     verify_pinned_process(
-                        &self.original_registration, self.original_uid, self.original_gid,
-                        &self.original_owner, end,
+                        &self.original_registration,
+                        self.original_uid,
+                        self.original_gid,
+                        &self.original_owner,
+                        end,
                     )?;
                     gate.require_open()?;
                     return Ok(stream);
@@ -118,9 +130,12 @@ impl BoundDeploymentProgress {
         let stream = self.accept_original(&gate)?;
         let _stream_stop = gate.retain_original_stream(&stream)?;
         let mut channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, self.original_policy, self.original_owner.try_clone()?,
+            stream,
+            self.original_policy,
+            self.original_owner.try_clone()?,
             gate.deadline().instant(),
-        ).map_err(io::Error::other)?;
+        )
+        .map_err(io::Error::other)?;
         gate.require_open()?;
         for stage in [
             OriginalDeploymentStage::Initial,
@@ -136,7 +151,12 @@ impl BoundDeploymentProgress {
                     request.require_original_stage(&self.original_binding, stage)?;
                     files.require_deployment_files()?;
                     let registration = bridge::apply_original_progress(
-                        &files, &request, &commands, &acknowledgements, &gate, &mut dispatched,
+                        &files,
+                        &request,
+                        &commands,
+                        &acknowledgements,
+                        &gate,
+                        &mut dispatched,
                     )?;
                     // The actual Root ACK and all retained file post-checks
                     // precede encoding. Framing keeps its original request
@@ -144,8 +164,10 @@ impl BoundDeploymentProgress {
                     gate.require_open()?;
                     OriginalDeploymentAcknowledgement::encode_original(
                         &OriginalDeploymentAcknowledgement::from_actual_registration(
-                            &request, registration,
-                        )?, &request,
+                            &request,
+                            registration,
+                        )?,
+                        &request,
                     )
                 })();
                 match result {
@@ -168,7 +190,9 @@ impl BoundDeploymentProgress {
                 }
             })?;
             if !accepted {
-                return Err(io::Error::other("original deployment peer closed before its stage"));
+                return Err(io::Error::other(
+                    "original deployment peer closed before its stage",
+                ));
             }
             gate.require_open()?;
             HostAuthorityPeerChannel::check_peer_lifetime(&channel).map_err(io::Error::other)?;
@@ -177,11 +201,15 @@ impl BoundDeploymentProgress {
         // still live. Retain this one peer until common closure; a fourth frame
         // is refused. Neither EOF nor this lane's end is a completion witness.
         gate.require_open()?;
-        match HostAuthorityPeerChannel::exchange(
-            &mut channel, |_| Err(HostIssuerTransportError::InvalidRequest),
-        ) {
-            Ok(false) => Err(io::Error::other("original deployment peer closed without final owner join")),
-            Ok(true) => Err(io::Error::other("original deployment replay unexpectedly returned")),
+        match HostAuthorityPeerChannel::exchange(&mut channel, |_| {
+            Err(HostIssuerTransportError::InvalidRequest)
+        }) {
+            Ok(false) => Err(io::Error::other(
+                "original deployment peer closed without final owner join",
+            )),
+            Ok(true) => Err(io::Error::other(
+                "original deployment replay unexpectedly returned",
+            )),
             Err(error) => Err(io::Error::other(error)),
         }
     }
@@ -212,9 +240,12 @@ impl BoundDeploymentProgress {
         let stream = self.accept_original(&gate)?;
         let stream_stop = gate.retain_original_stream(&stream)?;
         let mut channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, self.original_policy, self.original_owner.try_clone()?,
+            stream,
+            self.original_policy,
+            self.original_owner.try_clone()?,
             gate.deadline().instant(),
-        ).map_err(io::Error::other)?;
+        )
+        .map_err(io::Error::other)?;
         gate.require_open()?;
         for stage in [
             OriginalDeploymentStage::Initial,
@@ -231,15 +262,22 @@ impl BoundDeploymentProgress {
                     request.require_original_stage(&self.original_binding, stage)?;
                     files.require_deployment_files()?;
                     let registration = bridge::apply_original_progress(
-                        &files, &request, &commands, &acknowledgements, &gate, &mut dispatched,
+                        &files,
+                        &request,
+                        &commands,
+                        &acknowledgements,
+                        &gate,
+                        &mut dispatched,
                     )?;
                     // The actual Root ACK and all retained file post-checks
                     // precede encoding. Framing keeps its original request
                     // deadline; the bridge never creates a replacement budget.
                     gate.require_open()?;
-                    let acknowledgement = OriginalDeploymentAcknowledgement::from_actual_registration(
-                        &request, registration,
-                    )?;
+                    let acknowledgement =
+                        OriginalDeploymentAcknowledgement::from_actual_registration(
+                            &request,
+                            registration,
+                        )?;
                     let encoded = acknowledgement.encode_original(&request)?;
                     if stage == OriginalDeploymentStage::Current {
                         original_current = Some((request, acknowledgement));
@@ -266,7 +304,9 @@ impl BoundDeploymentProgress {
                 }
             })?;
             if !accepted {
-                return Err(io::Error::other("original deployment peer closed before its stage"));
+                return Err(io::Error::other(
+                    "original deployment peer closed before its stage",
+                ));
             }
             gate.require_open()?;
             HostAuthorityPeerChannel::check_peer_lifetime(&channel).map_err(io::Error::other)?;
@@ -292,10 +332,15 @@ impl BoundDeploymentProgress {
             return Err(error);
         }
         let accepted = exchanged.map_err(|error| {
-            deployment_uncertain("original Root retirement intent response", io::Error::other(error))
+            deployment_uncertain(
+                "original Root retirement intent response",
+                io::Error::other(error),
+            )
         })?;
         if !accepted {
-            return Err(io::Error::other("original deployment peer closed without Root retirement"));
+            return Err(io::Error::other(
+                "original deployment peer closed without Root retirement",
+            ));
         }
         retirement.require_original(&gate)?;
         HostAuthorityPeerChannel::check_peer_lifetime(&channel).map_err(io::Error::other)?;
@@ -341,11 +386,20 @@ impl OriginalRootRetirementHandoff {
         retirement: &Arc<crate::OriginalRootRetirementScope>,
     ) -> io::Result<(OriginalRootRetirementPeer, OriginalRootRetainedDeployment)> {
         if !Arc::ptr_eq(&self.retirement, retirement) {
-            return Err(io::Error::other("actual Root retirement peer belongs to another scope"));
+            return Err(io::Error::other(
+                "actual Root retirement peer belongs to another scope",
+            ));
         }
         retirement.require_original(retirement.gate())?;
         HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(io::Error::other)?;
-        let Self { channel, stream_stop, retirement, bound, files, closing } = self;
+        let Self {
+            channel,
+            stream_stop,
+            retirement,
+            bound,
+            files,
+            closing,
+        } = self;
         Ok((
             OriginalRootRetirementPeer {
                 channel,
@@ -353,7 +407,11 @@ impl OriginalRootRetirementHandoff {
                 retirement: Arc::clone(&retirement),
                 _closing: closing,
             },
-            OriginalRootRetainedDeployment { bound, files, retirement },
+            OriginalRootRetainedDeployment {
+                bound,
+                files,
+                retirement,
+            },
         ))
     }
 }
@@ -364,7 +422,9 @@ impl OriginalRootRetainedDeployment {
         retirement: &crate::OriginalRootRetirementScope,
     ) -> io::Result<()> {
         if !std::ptr::eq(self.retirement.as_ref(), retirement) {
-            return Err(io::Error::other("retained Root deployment replaced its original scope"));
+            return Err(io::Error::other(
+                "retained Root deployment replaced its original scope",
+            ));
         }
         retirement.require_original(retirement.gate())?;
         self.files.require_deployment_files()?;
@@ -392,7 +452,9 @@ impl OriginalRootRetirementPeer {
             let result = (|| {
                 let request =
                     crate::same_actor_q24_root_retirement_protocol::OriginalRootRetirementRequest::decode_original(bytes)?;
-                let encoded = self.retirement.acknowledge_original_workers(&request, joined)?;
+                let encoded = self
+                    .retirement
+                    .acknowledge_original_workers(&request, joined)?;
                 self.retirement.require_original(self.retirement.gate())?;
                 Ok(encoded)
             })();
@@ -405,10 +467,15 @@ impl OriginalRootRetirementPeer {
             return Err(error);
         }
         let accepted = exchanged.map_err(|error| {
-            deployment_uncertain("actual Root workers joined response", io::Error::other(error))
+            deployment_uncertain(
+                "actual Root workers joined response",
+                io::Error::other(error),
+            )
         })?;
         if !accepted {
-            return Err(io::Error::other("original final peer closed before the joined acknowledgement"));
+            return Err(io::Error::other(
+                "original final peer closed before the joined acknowledgement",
+            ));
         }
         // Same BOOTTIME/Instant and same original pidfd after the complete
         // frame. Failure remains uncertain and closes this stream; never retry.
@@ -420,9 +487,14 @@ impl OriginalRootRetirementPeer {
         // client must then close this same stream while its process stays
         // alive. This EOF orders release; it proves neither ACK consumption
         // nor any daemon/C completion.
-        HostAuthorityPeerChannel::wait_for_original_peer_eof(&mut self.channel).map_err(|error| {
-            deployment_uncertain("original final peer release after joined ACK", io::Error::other(error))
-        })?;
+        HostAuthorityPeerChannel::wait_for_original_peer_eof(&mut self.channel).map_err(
+            |error| {
+                deployment_uncertain(
+                    "original final peer release after joined ACK",
+                    io::Error::other(error),
+                )
+            },
+        )?;
         self.retirement.require_original(self.retirement.gate())?;
         joined.require_original(&self.retirement)?;
         Ok(())

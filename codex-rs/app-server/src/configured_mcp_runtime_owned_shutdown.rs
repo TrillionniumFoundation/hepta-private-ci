@@ -10,7 +10,9 @@ impl ConfiguredMcpRuntime {
     pub async fn shutdown_original_owned(
         self,
     ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>> {
-        let custody = self.original_owned_shutdown.as_ref()
+        let custody = self
+            .original_owned_shutdown
+            .as_ref()
             .ok_or_else(|| anyhow!("configured MCP runtime has no original shutdown custody"))?;
         self.startup.cancel();
         let observed = OriginalMcpRuntimeShutdown::stop_and_join_original_runtime(custody).await?;
@@ -29,8 +31,10 @@ pub async fn initialize_configured_mcp_server_with_owned_shutdown(
     custody: &Arc<OriginalMcpRuntimeShutdown>,
 ) -> Result<ConfiguredMcpRuntime> {
     let (timeout, original_end) = bounds;
-    ensure!(std::time::Instant::now() < original_end,
-        "original phase end elapsed before configured MCP startup");
+    ensure!(
+        std::time::Instant::now() < original_end,
+        "original phase end elapsed before configured MCP startup"
+    );
     let operation = async {
         ensure!(
             !server.is_empty()
@@ -55,7 +59,8 @@ pub async fn initialize_configured_mcp_server_with_owned_shutdown(
                 .load_latest_config(Some(workspace.to_path_buf()))
                 .await?;
             let auth_manager =
-                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;
+                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
+                    .await?;
             manager.replace_cloud_config_bundle_loader(
                 auth_manager,
                 config.chatgpt_base_url.clone(),
@@ -74,7 +79,8 @@ pub async fn initialize_configured_mcp_server_with_owned_shutdown(
             );
             config.auth_config().validate()?;
             let auth_manager =
-                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;
+                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
+                    .await?;
             let restriction = SessionSource::Custom("hepta-agentd".into()).restriction_product();
             let skills = Arc::new(HostSkillsService::new_with_restriction_product(
                 codex_home.clone(),
@@ -116,26 +122,29 @@ pub async fn initialize_configured_mcp_server_with_owned_shutdown(
                 .await?,
             );
             let context = McpRuntimeContext::new(environments, config.cwd.to_path_buf());
-            let runtime = McpRuntime::new_with_owned_shutdown(McpRuntimeInput {
-                startup_policy: McpStartupPolicy::Eager,
-                config: Arc::clone(&mcp_config),
-                plugins_available: false,
-                selected_plugins: Arc::new(codex_mcp::SelectedPluginSnapshot::default()),
-                ready_selected_capability_roots: Vec::new(),
-                mcp_servers: servers,
-                submit_id: "hepta-original-runtime-bootstrap".into(),
-                tx_event: None,
-                startup_cancellation_token: startup.clone(),
-                runtime_context: context,
-                codex_apps_tools_cache: mcp_manager.codex_apps_tools_cache(),
-                tool_catalog_cache: mcp_manager.tool_catalog_cache(),
-                codex_apps_tools_cache_key: connector_runtime_context_key(auth.as_ref()),
-                client_mcp_extensions: ClientMcpExtensions::default(),
-                auth,
-                codex_apps_auth_manager: Some(auth_manager),
-                elicitation_reviewer: None,
-                elicitation_lifecycle: None,
-            }, custody)
+            let runtime = McpRuntime::new_with_owned_shutdown(
+                McpRuntimeInput {
+                    startup_policy: McpStartupPolicy::Eager,
+                    config: Arc::clone(&mcp_config),
+                    plugins_available: false,
+                    selected_plugins: Arc::new(codex_mcp::SelectedPluginSnapshot::default()),
+                    ready_selected_capability_roots: Vec::new(),
+                    mcp_servers: servers,
+                    submit_id: "hepta-original-runtime-bootstrap".into(),
+                    tx_event: None,
+                    startup_cancellation_token: startup.clone(),
+                    runtime_context: context,
+                    codex_apps_tools_cache: mcp_manager.codex_apps_tools_cache(),
+                    tool_catalog_cache: mcp_manager.tool_catalog_cache(),
+                    codex_apps_tools_cache_key: connector_runtime_context_key(auth.as_ref()),
+                    client_mcp_extensions: ClientMcpExtensions::default(),
+                    auth,
+                    codex_apps_auth_manager: Some(auth_manager),
+                    elicitation_reviewer: None,
+                    elicitation_lifecycle: None,
+                },
+                custody,
+            )
             .await?;
             if !runtime.latest_wait_for_server_ready(server, timeout).await {
                 // The external owner drives the retained real startup/driver/Child

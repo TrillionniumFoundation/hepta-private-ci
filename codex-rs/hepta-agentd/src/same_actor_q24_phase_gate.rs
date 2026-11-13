@@ -188,7 +188,8 @@ impl RequiredSameActorPhaseChannel {
         intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
     ) -> Result<(), crate::AgentdError> {
         OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(
-            &self.original_retirement_custody(), intent,
+            &self.original_retirement_custody(),
+            intent,
         )
     }
 
@@ -201,14 +202,24 @@ impl RequiredSameActorPhaseChannel {
     ) -> Result<(), crate::AgentdError> {
         let checked = (|| {
             joined.require_original_final_peer(self)?;
-            if self.retired.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err() {
+            if self
+                .retired
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
+            {
                 return Err(refused("original final peer EOF was already consumed").into());
             }
             {
-                let mut state = self.closing.gate.state.lock()
+                let mut state = self
+                    .closing
+                    .gate
+                    .state
+                    .lock()
                     .map_err(|_| refused("original final peer Gate is poisoned"))?;
                 self.closing.gate.check_locked(&mut state)?;
-                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self._stream.id) else {
+                let Some(OriginalPhaseEndpoint::Stream(stream)) =
+                    state.streams.get(&self._stream.id)
+                else {
                     return Err(refused("original final peer registration is unavailable").into());
                 };
                 stream.shutdown(Shutdown::Both)?;
@@ -613,7 +624,9 @@ impl OriginalSameActorPhaseWatch {
         exited.require_original_cleanup_origin(identity, &self.gate)?;
         self.gate.close();
         let worker = self.worker.take().ok_or_else(|| {
-            crate::AgentdError::GenerationFenced("actual deadline watcher was already consumed".into())
+            crate::AgentdError::GenerationFenced(
+                "actual deadline watcher was already consumed".into(),
+            )
         })?;
         worker.join().map_err(|_| {
             crate::AgentdError::GenerationFenced("actual deadline watcher panicked".into())

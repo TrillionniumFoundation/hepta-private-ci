@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "actual-native-compile-fix-non-exhaustive-rmcp-quit-reason",
+  "status": "frozen_source_only; not compiled or formatted after this edit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "actual_failure": {
+    "log": {
+      "git_blob": "439e7a7b3d7d06c3019ccd7824feba83f856d855",
+      "bytes": 26344,
+      "sha256": "77ef104ab84d6e1a945ee4f15199504444119e40e089572da35506ba2626fa7b"
+    },
+    "error_code": "E0004",
+    "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+    "line": 289,
+    "diagnosis": "match service.cancel().await does not cover Ok(_) for #[non_exhaustive] rmcp::service::QuitReason.",
+    "actual_type": "std::result::Result<rmcp::service::QuitReason, tokio::task::JoinError>",
+    "limitation": "This identifies the one reported compile error. It does not prove later stages or other components pass."
+  },
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "pre": {
+        "git_blob": "829fdc44f86bcd1267f1535068bd47293966ed70",
+        "bytes": 13987,
+        "sha256": "24550bafc469abff7990c9487778463dc2d70a37709cb9594c2c933cf018f325",
+        "create_get_verified": true
+      },
+      "post": {
+        "git_blob": "4c0c34579b757db415f6e7f7851b2418c8a8c987",
+        "bytes": 14084,
+        "sha256": "3c0909ca80b10aff5648b42101ca651c89a16e9d111c6964bb207ba8af08d321",
+        "create_get_verified": true
+      },
+      "operations": [
+        {
+          "old": "                    Ok(QuitReason::JoinError(error)) => {\n                        Err(format!(\"original MCP service subtask failed: {error}\"))\n                    }\n                    Err(error) => Err(format!(\n                        \"actual original MCP service driver failed to join: {error}\"\n                    )),",
+          "new": "                    Ok(QuitReason::JoinError(error)) => {\n                        Err(format!(\"original MCP service subtask failed: {error}\"))\n                    }\n                    Ok(_) => Err(\"original MCP service returned an unknown quit reason\".into()),\n                    Err(error) => Err(format!(\n                        \"actual original MCP service driver failed to join: {error}\"\n                    )),",
+          "classification": "add_fail_closed_non_exhaustive_result_arm",
+          "reason": "Actual compiler E0004: rmcp::service::QuitReason is non_exhaustive. Only the two supported normal terminations may construct OriginalDriverJoined; unrecognized Ok variants return the existing String error type."
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "paths": 1,
+    "operations": 1,
+    "new_match_arms": 1,
+    "new_public_types": 0,
+    "new_public_methods": 0,
+    "boundary_or_caller_policy_changes": 0
+  },
+  "verification": {
+    "actual_preimage_get_hash_bytes_equal": true,
+    "post_create_get_hash_bytes_equal": true,
+    "forward_unique": true,
+    "reverse_unique": true,
+    "forward_full_bytes_equal": true,
+    "reverse_full_bytes_equal": true,
+    "deleting_only_the_added_arm_restores_entire_preimage": true,
+    "known_cancelled_closed_joinerror_and_outer_joinerror_arms_unchanged": true,
+    "added_line": "                    Ok(_) => Err(\"original MCP service returned an unknown quit reason\".into()),",
+    "function_pre_sha256": "586d24429d50bc1890e7abb5800f30d1f4806339dea9ecd12e3cc5887c43126e",
+    "function_post_sha256": "202694985f5d7f3ce86310d49d8ca0f0ba61a54388e12132cb196d0ec81fa00b"
+  },
+  "behavior": {
+    "recognized_cancelled": "OriginalDriverJoined::Cancelled, unchanged",
+    "recognized_closed": "OriginalDriverJoined::Closed, unchanged",
+    "recognized_subtask_join_error": "Original String error, unchanged",
+    "actual_driver_join_error": "Original String error, unchanged",
+    "unrecognized_ok_reason": "Return Err(String); never create a successful OriginalDriverJoined observation.",
+    "custody": "The branch is evaluated only after the same actual service.cancel().await. Original cleanup loops still collect the error, continue joining all original services, and join the original stdio custody before returning the retained error.",
+    "unchanged": "Original service/cancellation/Arc custody, waits, request budgets, absolute end, owner identity, registry result delivery, None/default paths and public interfaces.",
+    "no_additional_trait_bound": "The wildcard ignores the unknown payload. It introduces no Debug/Clone/serialization assumption about future QuitReason variants."
+  },
+  "affected_metadata": {
+    "emitted_ops": 0,
+    "reason": "Final literal guards are deferred until Root's actual source/postimage reconciliation.",
+    "protected_selector": {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:0",
+      "expected_current_row_fingerprint": "37873f8eecf0fb0b505b0347779f1a8de02d926dd589fb7209656aff815b3a54",
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "field": "required_function_order",
+      "function": "fn join_actual_original_service(",
+      "sequence_index": 8
+    },
+    "required_new_obligation": "The complete actual function sequence must include the added Ok(_) -> Err branch while preserving every existing cancel, unwrap, await, result and retry-loop guard.",
+    "forbidden_must_remain_exact": [
+      "std::mem::forget(",
+      "SigningKey::generate(",
+      ".abort_all(",
+      ".detach("
+    ],
+    "boundary_ids_unchanged": true,
+    "product_callers_unchanged": true,
+    "receiver_and_call_pattern_unchanged": true
+  },
+  "authority": {
+    "native": 0,
+    "h": 0,
+    "ref_mutations": 0,
+    "checker_execution": 0,
+    "dependency_installation": 0
+  },
+  "integration": [
+    "Apply only to exact actual formatted preimage 829fdc44f86bcd1267f1535068bd47293966ed70.",
+    "Preserve native formatter changes in other paths; this packet neither reconstructs nor replaces them.",
+    "Re-run Root's unchanged authorized format/compile gates separately."
+  ]
+}

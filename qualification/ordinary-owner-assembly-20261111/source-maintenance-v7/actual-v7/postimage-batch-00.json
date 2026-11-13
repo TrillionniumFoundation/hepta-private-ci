@@ -1,0 +1,1031 @@
+{
+  "schema_version": 1,
+  "kind": "actual_formatter_postimage_batch_receipt",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "batch": 0,
+  "source_manifest": {
+    "git_blob": "d7550e33b1c46ca58c73fa81ea037abbc902f7b5",
+    "bytes": 144091,
+    "sha256": "15a824b764ac38b13541507bf45e1822ce2bcfb440ca7ae1dd60efa2915f8155"
+  },
+  "patch": {
+    "git_blob": "7f8e1205d896062566a5f95fbdbe41195d714d9b",
+    "bytes": 756178,
+    "sha256": "e776f38c799c1aee19828c33e8262963341990b6c936cfe0eed64841c4037cf0"
+  },
+  "reconstructor": {
+    "git_blob": "37994ecccbb147ce5ed41ddb9077e158c16e2704",
+    "bytes": 6769,
+    "sha256": "337032e08b69b3c0e69796c702be1f0c29686a0771a160422a09b20ff7139396"
+  },
+  "range": {
+    "start_inclusive": 0,
+    "end_exclusive": 20,
+    "total": 159
+  },
+  "previous_batch": null,
+  "files": [
+    {
+      "ordinal": 0,
+      "path": "codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs",
+      "pre": {
+        "git_blob": "35aee83996fe4ab83549c4fb2789437033477ea8",
+        "bytes": 7458,
+        "sha256": "3a553d4bbe988b313bc96d9d9c9fe89f0031bbb22dbeeca516cb9e09214edf3d"
+      },
+      "post": {
+        "git_blob": "3572786f29d425ab51bbe1fd09bfca1d042098ac",
+        "bytes": 7663,
+        "sha256": "4391a181e674f14c408c0c7301e69afa24f015b855a283d11eee86971896a058"
+      },
+      "hunk_count": 5,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 10,
+          "old_count": 7,
+          "new_start": 10,
+          "new_count": 9,
+          "patch_header_line": 5
+        },
+        {
+          "old_start": 29,
+          "old_count": 8,
+          "new_start": 31,
+          "new_count": 10,
+          "patch_header_line": 16
+        },
+        {
+          "old_start": 55,
+          "old_count": 7,
+          "new_start": 59,
+          "new_count": 8,
+          "patch_header_line": 29
+        },
+        {
+          "old_start": 74,
+          "old_count": 7,
+          "new_start": 79,
+          "new_count": 8,
+          "patch_header_line": 39
+        },
+        {
+          "old_start": 116,
+          "old_count": 26,
+          "new_start": 122,
+          "new_count": 29,
+          "patch_header_line": 49
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "3572786f29d425ab51bbe1fd09bfca1d042098ac",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 1,
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "pre": {
+        "git_blob": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+        "bytes": 10853,
+        "sha256": "c24bde53876b6a66c70599c636c296e48b08adf8f42649a051171dba0c72a324"
+      },
+      "post": {
+        "git_blob": "c0b592e825e70a41c4c8afd6f1a40116423e8f32",
+        "bytes": 10650,
+        "sha256": "e594ec176b12357e7fec149301b83c9214c1f073de571e790c8aa869fd696abc"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 112,
+          "old_count": 52,
+          "new_start": 112,
+          "new_count": 49,
+          "patch_header_line": 103
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "c0b592e825e70a41c4c8afd6f1a40116423e8f32",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 2,
+      "path": "codex-rs/app-server/src/lib.rs",
+      "pre": {
+        "git_blob": "91900627409741a362513bf6b37dd0184682ed49",
+        "bytes": 87084,
+        "sha256": "6e276e8fb33bf59376aed77731453547f252550ad97eb5808025bbee1dce4fe0"
+      },
+      "post": {
+        "git_blob": "b455314115dd2b2583e2f965a4ff80638b5d5a7a",
+        "bytes": 87215,
+        "sha256": "783acf4bd3f33e5f26d1d3f549f6406f06117294ac28659847da59f6bfbf9e33"
+      },
+      "hunk_count": 8,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 107,
+          "old_count": 11,
+          "new_start": 107,
+          "new_count": 11,
+          "patch_header_line": 202
+        },
+        {
+          "old_start": 133,
+          "old_count": 9,
+          "new_start": 133,
+          "new_count": 9,
+          "patch_header_line": 216
+        },
+        {
+          "old_start": 585,
+          "old_count": 7,
+          "new_start": 585,
+          "new_count": 10,
+          "patch_header_line": 227
+        },
+        {
+          "old_start": 699,
+          "old_count": 7,
+          "new_start": 702,
+          "new_count": 11,
+          "patch_header_line": 239
+        },
+        {
+          "old_start": 760,
+          "old_count": 7,
+          "new_start": 767,
+          "new_count": 10,
+          "patch_header_line": 252
+        },
+        {
+          "old_start": 1102,
+          "old_count": 11,
+          "new_start": 1112,
+          "new_count": 13,
+          "patch_header_line": 264
+        },
+        {
+          "old_start": 1178,
+          "old_count": 13,
+          "new_start": 1190,
+          "new_count": 11,
+          "patch_header_line": 283
+        },
+        {
+          "old_start": 1623,
+          "old_count": 7,
+          "new_start": 1633,
+          "new_count": 8,
+          "patch_header_line": 302
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "b455314115dd2b2583e2f965a4ff80638b5d5a7a",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 3,
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "pre": {
+        "git_blob": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "bytes": 82345,
+        "sha256": "6fed2a6ba6605fcee839cd4b2e7ae11e2cefad90cd60368b9b801eda1994b33a"
+      },
+      "post": {
+        "git_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+        "bytes": 82342,
+        "sha256": "89e75287c8cff52d209bac3001b5ce9fd38a3e7861159ce2dd1fd60d32e3e809"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 858,
+          "old_count": 13,
+          "new_start": 858,
+          "new_count": 15,
+          "patch_header_line": 316
+        },
+        {
+          "old_start": 955,
+          "old_count": 8,
+          "new_start": 957,
+          "new_count": 7,
+          "patch_header_line": 337
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 4,
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "pre": {
+        "git_blob": "503628dd6225dc886d23e5432bab81692572a7ce",
+        "bytes": 19045,
+        "sha256": "e1bc0d0c39db2e4b8e584cf3150d246e4433146514daf059854e1a9c7445c5ff"
+      },
+      "post": {
+        "git_blob": "8769b6ff6912729589bb86f835621387ff7fddf2",
+        "bytes": 20134,
+        "sha256": "905ddaf5f3ad2002a4137f6e9f60f4f6e96e3335c1384d0457c36703710324ab"
+      },
+      "hunk_count": 20,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 28,
+          "old_count": 11,
+          "new_start": 28,
+          "new_count": 15,
+          "patch_header_line": 351
+        },
+        {
+          "old_start": 58,
+          "old_count": 7,
+          "new_start": 62,
+          "new_count": 9,
+          "patch_header_line": 369
+        },
+        {
+          "old_start": 159,
+          "old_count": 11,
+          "new_start": 165,
+          "new_count": 9,
+          "patch_header_line": 380
+        },
+        {
+          "old_start": 206,
+          "old_count": 7,
+          "new_start": 210,
+          "new_count": 9,
+          "patch_header_line": 395
+        },
+        {
+          "old_start": 214,
+          "old_count": 14,
+          "new_start": 220,
+          "new_count": 22,
+          "patch_header_line": 406
+        },
+        {
+          "old_start": 253,
+          "old_count": 8,
+          "new_start": 267,
+          "new_count": 12,
+          "patch_header_line": 434
+        },
+        {
+          "old_start": 265,
+          "old_count": 7,
+          "new_start": 283,
+          "new_count": 9,
+          "patch_header_line": 449
+        },
+        {
+          "old_start": 294,
+          "old_count": 11,
+          "new_start": 314,
+          "new_count": 15,
+          "patch_header_line": 460
+        },
+        {
+          "old_start": 316,
+          "old_count": 7,
+          "new_start": 340,
+          "new_count": 9,
+          "patch_header_line": 478
+        },
+        {
+          "old_start": 326,
+          "old_count": 7,
+          "new_start": 352,
+          "new_count": 9,
+          "patch_header_line": 489
+        },
+        {
+          "old_start": 346,
+          "old_count": 7,
+          "new_start": 374,
+          "new_count": 9,
+          "patch_header_line": 500
+        },
+        {
+          "old_start": 357,
+          "old_count": 9,
+          "new_start": 387,
+          "new_count": 9,
+          "patch_header_line": 511
+        },
+        {
+          "old_start": 368,
+          "old_count": 7,
+          "new_start": 398,
+          "new_count": 10,
+          "patch_header_line": 524
+        },
+        {
+          "old_start": 378,
+          "old_count": 8,
+          "new_start": 411,
+          "new_count": 11,
+          "patch_header_line": 536
+        },
+        {
+          "old_start": 396,
+          "old_count": 20,
+          "new_start": 432,
+          "new_count": 28,
+          "patch_header_line": 550
+        },
+        {
+          "old_start": 417,
+          "old_count": 34,
+          "new_start": 461,
+          "new_count": 41,
+          "patch_header_line": 589
+        },
+        {
+          "old_start": 455,
+          "old_count": 11,
+          "new_start": 506,
+          "new_count": 20,
+          "patch_header_line": 641
+        },
+        {
+          "old_start": 468,
+          "old_count": 9,
+          "new_start": 528,
+          "new_count": 12,
+          "patch_header_line": 666
+        },
+        {
+          "old_start": 478,
+          "old_count": 11,
+          "new_start": 541,
+          "new_count": 13,
+          "patch_header_line": 682
+        },
+        {
+          "old_start": 500,
+          "old_count": 16,
+          "new_start": 565,
+          "new_count": 15,
+          "patch_header_line": 700
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "8769b6ff6912729589bb86f835621387ff7fddf2",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 5,
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "pre": {
+        "git_blob": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568",
+        "bytes": 9171,
+        "sha256": "59ae3369190061df6d809264f37c224ea9a5831412c79bdf9cc1e7b1f9ebbd3d"
+      },
+      "post": {
+        "git_blob": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+        "bytes": 9750,
+        "sha256": "1a3ffcea9279289bf0da5d09c3a05cdae2a2fa358e87a730fffbdeab47b8877c"
+      },
+      "hunk_count": 9,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 8,
+          "old_count": 7,
+          "new_start": 8,
+          "new_count": 11,
+          "patch_header_line": 726
+        },
+        {
+          "old_start": 35,
+          "old_count": 12,
+          "new_start": 39,
+          "new_count": 18,
+          "patch_header_line": 739
+        },
+        {
+          "old_start": 49,
+          "old_count": 10,
+          "new_start": 59,
+          "new_count": 20,
+          "patch_header_line": 761
+        },
+        {
+          "old_start": 60,
+          "old_count": 10,
+          "new_start": 80,
+          "new_count": 19,
+          "patch_header_line": 786
+        },
+        {
+          "old_start": 101,
+          "old_count": 9,
+          "new_start": 130,
+          "new_count": 8,
+          "patch_header_line": 809
+        },
+        {
+          "old_start": 112,
+          "old_count": 7,
+          "new_start": 140,
+          "new_count": 11,
+          "patch_header_line": 821
+        },
+        {
+          "old_start": 128,
+          "old_count": 23,
+          "new_start": 160,
+          "new_count": 29,
+          "patch_header_line": 834
+        },
+        {
+          "old_start": 157,
+          "old_count": 7,
+          "new_start": 195,
+          "new_count": 10,
+          "patch_header_line": 878
+        },
+        {
+          "old_start": 190,
+          "old_count": 21,
+          "new_start": 231,
+          "new_count": 34,
+          "patch_header_line": 890
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 6,
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "pre": {
+        "git_blob": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+        "bytes": 252538,
+        "sha256": "9f24f5f648df2886c66abcb044e5d8197628674a4e074e42c673730e60182d17"
+      },
+      "post": {
+        "git_blob": "19c6ea2229ab8875fbf5d67294c0e45bb09e1889",
+        "bytes": 252584,
+        "sha256": "b252391f271885c6f337a8e16c9a590ee23072a40f101a47c157a7e02073830a"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 1520,
+          "old_count": 11,
+          "new_start": 1520,
+          "new_count": 14,
+          "patch_header_line": 939
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "19c6ea2229ab8875fbf5d67294c0e45bb09e1889",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 7,
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "pre": {
+        "git_blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+        "bytes": 36728,
+        "sha256": "72611f3861616bbb1c90bfdc140c4d2b0de7e2eeebf468ecaddf4a57d7d1a789"
+      },
+      "post": {
+        "git_blob": "58600f5dd0cc51d399ca0b5369a6275ebcf8be03",
+        "bytes": 36747,
+        "sha256": "760e21bd27486a6bce74fdcc3bea810c2ba66c490504eb0dbb4f30fa75134d3f"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 160,
+          "old_count": 9,
+          "new_start": 160,
+          "new_count": 7,
+          "patch_header_line": 962
+        },
+        {
+          "old_start": 208,
+          "old_count": 7,
+          "new_start": 206,
+          "new_count": 10,
+          "patch_header_line": 973
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "58600f5dd0cc51d399ca0b5369a6275ebcf8be03",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 8,
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "pre": {
+        "git_blob": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+        "bytes": 23142,
+        "sha256": "19ca37120dc0b9bccbdded650e0c78568ccb694aa1df0b47cca7fd3d8ba0702b"
+      },
+      "post": {
+        "git_blob": "ae8cc0d9f8bbed23dd14ae926652ea078d957e5c",
+        "bytes": 23127,
+        "sha256": "f557798890c23a156adf42d9ea902b0816415d92a06229dde4778700541bd7a7"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 344,
+          "old_count": 9,
+          "new_start": 344,
+          "new_count": 7,
+          "patch_header_line": 989
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "ae8cc0d9f8bbed23dd14ae926652ea078d957e5c",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 9,
+      "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+      "pre": {
+        "git_blob": "3801128bd59fa176baeaea31cdb6cc39cca448a5",
+        "bytes": 40412,
+        "sha256": "650ee6ec9205ef8f14c25cda2d4244091b019a2cdb0cb1d24aa8aeb966b14358"
+      },
+      "post": {
+        "git_blob": "b6a96d98a51f6e3d973ab5ff0d5b0d4faf62a019",
+        "bytes": 40432,
+        "sha256": "bbe5e5b007caf1b385f0c1c9b4487945f867e6e2878087bb597116a416b5f120"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 682,
+          "old_count": 7,
+          "new_start": 682,
+          "new_count": 9,
+          "patch_header_line": 1004
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "b6a96d98a51f6e3d973ab5ff0d5b0d4faf62a019",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 10,
+      "path": "codex-rs/codex-mcp/src/lib.rs",
+      "pre": {
+        "git_blob": "6ce21ff6c41696a003279681878ec5ebf5e04f2f",
+        "bytes": 4675,
+        "sha256": "495855d53c28c329e3c72941ba3d3a61bf3c1c0ecab89338b59facdf019c3a64"
+      },
+      "post": {
+        "git_blob": "059b90204fc1e0f6b7858fff1df2525b38dfa809",
+        "bytes": 4675,
+        "sha256": "0e42d89cbb67365e8c4d3d9a0c0ccb12a2ea394cfc9fca87226a34adc1442b72"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 10,
+          "old_count": 6,
+          "new_start": 10,
+          "new_count": 8,
+          "patch_header_line": 1019
+        },
+        {
+          "old_start": 20,
+          "old_count": 8,
+          "new_start": 22,
+          "new_count": 6,
+          "patch_header_line": 1028
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "059b90204fc1e0f6b7858fff1df2525b38dfa809",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 11,
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": {
+        "git_blob": "24b181104af7d476136667f97c0393ce00a2d0ea",
+        "bytes": 13478,
+        "sha256": "3f4ff61e0e0784d1c593bf53435fdc72dbbd4c2b4776ce23a3c0e8f097b23c96"
+      },
+      "post": {
+        "git_blob": "658a425299210940a3e8b15a4945867f64818a0c",
+        "bytes": 14875,
+        "sha256": "ed6c3e11872a963aa4c13c4f7d6e9b97f0700abf2e8b8480bae14b642a007d94"
+      },
+      "hunk_count": 9,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 82,
+          "old_count": 12,
+          "new_start": 82,
+          "new_count": 18,
+          "patch_header_line": 1041
+        },
+        {
+          "old_start": 111,
+          "old_count": 55,
+          "new_start": 117,
+          "new_count": 96,
+          "patch_header_line": 1064
+        },
+        {
+          "old_start": 173,
+          "old_count": 7,
+          "new_start": 220,
+          "new_count": 10,
+          "patch_header_line": 1192
+        },
+        {
+          "old_start": 181,
+          "old_count": 21,
+          "new_start": 231,
+          "new_count": 30,
+          "patch_header_line": 1204
+        },
+        {
+          "old_start": 204,
+          "old_count": 41,
+          "new_start": 263,
+          "new_count": 63,
+          "patch_header_line": 1239
+        },
+        {
+          "old_start": 255,
+          "old_count": 20,
+          "new_start": 336,
+          "new_count": 34,
+          "patch_header_line": 1311
+        },
+        {
+          "old_start": 278,
+          "old_count": 16,
+          "new_start": 373,
+          "new_count": 20,
+          "patch_header_line": 1352
+        },
+        {
+          "old_start": 297,
+          "old_count": 9,
+          "new_start": 396,
+          "new_count": 13,
+          "patch_header_line": 1376
+        },
+        {
+          "old_start": 314,
+          "old_count": 5,
+          "new_start": 417,
+          "new_count": 7,
+          "patch_header_line": 1392
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "658a425299210940a3e8b15a4945867f64818a0c",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 12,
+      "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+      "pre": {
+        "git_blob": "9be80863bbd6aca092387740e444495a73977d8b",
+        "bytes": 51560,
+        "sha256": "f586e7705d1a9197cbac3e7d0c97509bd410b1057e2b887143cddb7adde67814"
+      },
+      "post": {
+        "git_blob": "a045b9973ff7f546860aa0a55aeb980080356b76",
+        "bytes": 51805,
+        "sha256": "696d93d60c4d38289920b41e2efec711533e7a33bf7e19d2c650f2f309ca8e3d"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 338,
+          "old_count": 14,
+          "new_start": 338,
+          "new_count": 21,
+          "patch_header_line": 1405
+        },
+        {
+          "old_start": 355,
+          "old_count": 27,
+          "new_start": 362,
+          "new_count": 27,
+          "patch_header_line": 1431
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "a045b9973ff7f546860aa0a55aeb980080356b76",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 13,
+      "path": "codex-rs/codex-mcp/src/rmcp_client_owned_shutdown.rs",
+      "pre": {
+        "git_blob": "26e9d03f351819e95fd161848e4d2c36c7e24650",
+        "bytes": 2090,
+        "sha256": "555596a47690a56873d8d45c030162a8210f64e311ccbbdeed71f58259c1752e"
+      },
+      "post": {
+        "git_blob": "6f909f290c7b5d9a474cdb2a71302fbbf22d0389",
+        "bytes": 2143,
+        "sha256": "8ed84d18b4ef16ca58e213327b902f8c0a176951d6e49bec1b4776af4d8a2a72"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 23,
+          "old_count": 11,
+          "new_start": 23,
+          "new_count": 16,
+          "patch_header_line": 1483
+        },
+        {
+          "old_start": 40,
+          "old_count": 7,
+          "new_start": 45,
+          "new_count": 9,
+          "patch_header_line": 1504
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "6f909f290c7b5d9a474cdb2a71302fbbf22d0389",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 14,
+      "path": "codex-rs/core/src/agent/control.rs",
+      "pre": {
+        "git_blob": "a36c9559db1bfd6ef96441ae2bf6566c77d5adea",
+        "bytes": 32647,
+        "sha256": "4a5809ae237fb72ffbbcdbf7534e7481c2401f7778144910e879682b8c34145c"
+      },
+      "post": {
+        "git_blob": "270703b1bb8a2aff30bf00b48ea4b74551c2e332",
+        "bytes": 32660,
+        "sha256": "24d82d2ba732b0c9da0547e88a936e63123786b5de1b5379fa2b81d554bb3baf"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 149,
+          "old_count": 7,
+          "new_start": 149,
+          "new_count": 8,
+          "patch_header_line": 1519
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "270703b1bb8a2aff30bf00b48ea4b74551c2e332",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 15,
+      "path": "codex-rs/core/src/agent/control_original_shutdown.rs",
+      "pre": {
+        "git_blob": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+        "bytes": 748,
+        "sha256": "e2399b5f4ee280e83bfec53c1fa0baca35d007e82001a6451dfc1eb89e1ac681"
+      },
+      "post": {
+        "git_blob": "49a47923261a167b31a81f5537ec0f95a56553a5",
+        "bytes": 835,
+        "sha256": "29ebd2659f4d7df7d5ba5e42741e625717e3a53f8d7c1786bc32e5b4d5520a65"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 14,
+          "old_count": 7,
+          "new_start": 14,
+          "new_count": 12,
+          "patch_header_line": 1533
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "49a47923261a167b31a81f5537ec0f95a56553a5",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 16,
+      "path": "codex-rs/core/src/codex_delegate.rs",
+      "pre": {
+        "git_blob": "50b7345c20029c33dc18fb0ad53a6295995f260e",
+        "bytes": 13978,
+        "sha256": "a16add28cd6cc5712f7be4c51de94f73be49635000c0ec6da7d32a32f9f96ad0"
+      },
+      "post": {
+        "git_blob": "e50a4616828144b78ca44c3d5d7de412ddb4888d",
+        "bytes": 14240,
+        "sha256": "ee73c4643b2d117ceeabc3c3dd4a35936f79d353d5bbdfed01a29236db9612d5"
+      },
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 86,
+          "old_count": 54,
+          "new_start": 86,
+          "new_count": 60,
+          "patch_header_line": 1551
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "e50a4616828144b78ca44c3d5d7de412ddb4888d",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 17,
+      "path": "codex-rs/core/src/session/original_shutdown.rs",
+      "pre": {
+        "git_blob": "7ca2e84183a4e74191f172cb64467d444f5e9b11",
+        "bytes": 5022,
+        "sha256": "e62afb9057624a6ba1e7222c56b3238a3aa81fb412d60701c17c8e8aaceeeadd"
+      },
+      "post": {
+        "git_blob": "0da95a220ed5484f419f5feb814c921c395db5ba",
+        "bytes": 4999,
+        "sha256": "ece5b5c32912e3dfba8877c320b2cde39a5d98b1e8b06ca08a0579be875fd55d"
+      },
+      "hunk_count": 4,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 69,
+          "old_count": 9,
+          "new_start": 69,
+          "new_count": 7,
+          "patch_header_line": 1664
+        },
+        {
+          "old_start": 87,
+          "old_count": 7,
+          "new_start": 85,
+          "new_count": 10,
+          "patch_header_line": 1675
+        },
+        {
+          "old_start": 105,
+          "old_count": 9,
+          "new_start": 106,
+          "new_count": 7,
+          "patch_header_line": 1687
+        },
+        {
+          "old_start": 120,
+          "old_count": 9,
+          "new_start": 119,
+          "new_count": 7,
+          "patch_header_line": 1698
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "0da95a220ed5484f419f5feb814c921c395db5ba",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 18,
+      "path": "codex-rs/core/src/session/original_shutdown_tests.rs",
+      "pre": {
+        "git_blob": "bff9d771b91505baa1f662c99fcc186d3bf46402",
+        "bytes": 3163,
+        "sha256": "1b8202cced6541c11667208c87d774f4a6985ba84e986af2f341726a516e526b"
+      },
+      "post": {
+        "git_blob": "bfa76cc8a0f910b51be65ffeda49717963fa8d7b",
+        "bytes": 3208,
+        "sha256": "640e7f39eba16eb3130413d2ff597732b7a432c83ecd362687d1a815f07d917d"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 42,
+          "old_count": 7,
+          "new_start": 42,
+          "new_count": 10,
+          "patch_header_line": 1713
+        },
+        {
+          "old_start": 50,
+          "old_count": 7,
+          "new_start": 53,
+          "new_count": 9,
+          "patch_header_line": 1725
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "bfa76cc8a0f910b51be65ffeda49717963fa8d7b",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    },
+    {
+      "ordinal": 19,
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "pre": {
+        "git_blob": "5d26b78cac7a15592f61c37062cf4242f78c0a44",
+        "bytes": 117381,
+        "sha256": "754f57e98f730a8e7eb8619b29c2633dd0d4e846d696fbab6637e2eefaef2f98"
+      },
+      "post": {
+        "git_blob": "e94f866b82f013dee69e332f542e542ed037e006",
+        "bytes": 117459,
+        "sha256": "82671c49281e8e9d512f8dac30e164134d8dc0001298968192affdab6e817b36"
+      },
+      "hunk_count": 2,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 721,
+          "old_count": 7,
+          "new_start": 721,
+          "new_count": 9,
+          "patch_header_line": 1740
+        },
+        {
+          "old_start": 874,
+          "old_count": 7,
+          "new_start": 876,
+          "new_count": 9,
+          "patch_header_line": 1751
+        }
+      ],
+      "forward_reverse_exact": true,
+      "post_three_hashes_exact": true,
+      "create_returned_sha": "e94f866b82f013dee69e332f542e542ed037e006",
+      "get_bytes_equal": true,
+      "get_three_hashes_exact": true
+    }
+  ],
+  "complete_uploaded_prefix": 20,
+  "claims": {
+    "actual_preimage_get_or_verified_cached_get": true,
+    "positioned_forward_reverse_exact": true,
+    "actual_manifest_post_hashes_exact": true,
+    "immutable_post_blobs_created_and_get_verified": true,
+    "source_semantic_or_compilation_claim": false,
+    "refs_modified": false,
+    "native_executed": false
+  }
+}

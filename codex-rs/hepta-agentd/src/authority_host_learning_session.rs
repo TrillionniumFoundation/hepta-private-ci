@@ -316,7 +316,6 @@ impl BoundLearning {
     }
 }
 
-
 pub(super) struct OriginalRootScopedChannelsJoined {
     learning: crate::OriginalRootRetiredChannel,
     model: crate::OriginalRootRetiredChannel,
@@ -332,14 +331,13 @@ impl OriginalRootScopedChannelsJoined {
         &self,
         retirement: &crate::OriginalRootRetirementScope,
     ) -> io::Result<()> {
-        self.learning.require_original(
-            retirement, crate::OriginalRootRetirementPurpose::Learning,
-        )?;
-        self.model.require_original(
-            retirement, crate::OriginalRootRetirementPurpose::Model,
-        )?;
+        self.learning
+            .require_original(retirement, crate::OriginalRootRetirementPurpose::Learning)?;
+        self.model
+            .require_original(retirement, crate::OriginalRootRetirementPurpose::Model)?;
         self.publication.require_original(
-            retirement, crate::OriginalRootRetirementPurpose::Publication,
+            retirement,
+            crate::OriginalRootRetirementPurpose::Publication,
         )
     }
 }

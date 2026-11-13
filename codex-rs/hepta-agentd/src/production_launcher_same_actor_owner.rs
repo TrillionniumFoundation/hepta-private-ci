@@ -4,34 +4,41 @@
 //! Notifications are not results and never certify completion.
 
 use std::future::Future;
-use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::panic::AssertUnwindSafe;
+use std::panic::catch_unwind;
 use std::pin::Pin;
-use std::sync::{Arc, Mutex, Weak};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::task::{Context, Poll};
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::Weak;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::task::Context;
+use std::task::Poll;
 use std::thread::JoinHandle;
 
 use codex_arg0::Arg0DispatchPaths;
-use tokio::runtime::{Handle, RuntimeFlavor};
+use tokio::runtime::Handle;
+use tokio::runtime::RuntimeFlavor;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
-use super::{AgentdOriginalSameActorPhaseStartupV1, refused};
+use super::AgentdOriginalSameActorPhaseStartupV1;
+use super::refused;
 use crate::AgentdError;
-use crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;
-use crate::circuit_task::{
-    OriginalCircuitJoinStatus, OriginalCircuitOwnerCustody, OriginalCircuitResultDelivery,
-};
+use crate::circuit_task::OriginalCircuitJoinStatus;
+use crate::circuit_task::OriginalCircuitOwnerCustody;
+use crate::circuit_task::OriginalCircuitResultDelivery;
 use crate::root_authority_session::OriginalRootSessionCustodySlot;
 use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::same_actor_q24_phase::OriginalSameActorBusinessInputsV1;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 
 #[path = "production_launcher_same_actor_consumer_custody.rs"]
 mod bootstrap_consumers;
-use bootstrap_consumers::OriginalBootstrapConsumers;
 pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerAdmission;
 pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerJob;
 pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerKind;
+use bootstrap_consumers::OriginalBootstrapConsumers;
 
 #[path = "production_launcher_same_actor_completion_custody.rs"]
 mod completion_custody;
@@ -66,7 +73,10 @@ impl OriginalPhaseRunControl {
             stopped: AtomicBool::new(false),
             cancellation: CancellationToken::new(),
             state: Mutex::new(OriginalPhaseOwnerState {
-                identity: None, gate: None, context: None, circuit: None,
+                identity: None,
+                gate: None,
+                context: None,
+                circuit: None,
             }),
             session: OriginalRootSessionCustodySlot::new(),
             consumers: OriginalBootstrapConsumers::new(),
@@ -75,12 +85,15 @@ impl OriginalPhaseRunControl {
         })
     }
 
-    pub(crate) fn session_slot(&self) -> &OriginalRootSessionCustodySlot { &self.session }
+    pub(crate) fn session_slot(&self) -> &OriginalRootSessionCustodySlot {
+        &self.session
+    }
 
     /// Called once by the real receiver immediately after constructing its
     /// Gate from the already captured original clocks and sealed Root bound.
     pub(crate) fn retain_original_receive_gate(
-        &self, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
         let mut state = self.state.lock().map_err(|_| {
             gate.close();
@@ -99,35 +112,51 @@ impl OriginalPhaseRunControl {
         Ok(())
     }
 
-
     pub(crate) fn reserve_original_consumer(
-        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,
+        &self,
+        kind: OriginalBootstrapConsumerKind,
+        gate: &Arc<SameActorPhaseGate>,
     ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {
         {
             let state = self.state.lock().map_err(|_| {
-                gate.close(); refused("original Startup custody is poisoned")
+                gate.close();
+                refused("original Startup custody is poisoned")
             })?;
             if self.stopped.load(Ordering::Acquire)
-                || !state.gate.as_ref().is_some_and(|original| Arc::ptr_eq(original, gate))
+                || !state
+                    .gate
+                    .as_ref()
+                    .is_some_and(|original| Arc::ptr_eq(original, gate))
             {
                 gate.close();
-                return Err(refused("bootstrap consumer differs from the actual receive Gate"));
+                return Err(refused(
+                    "bootstrap consumer differs from the actual receive Gate",
+                ));
             }
         }
         self.consumers.reserve(kind, gate)
     }
 
     pub(super) fn retain_original_context(
-        &self, context: &Arc<OriginalSameActorRootContext>,
+        &self,
+        context: &Arc<OriginalSameActorRootContext>,
     ) -> Result<(), AgentdError> {
-        let mut state = self.state.lock()
+        let mut state = self
+            .state
+            .lock()
             .map_err(|_| refused("original Startup custody is poisoned"))?;
-        if state.identity.is_some() || state.context.is_some()
-            || !state.gate.as_ref().is_some_and(|gate| Arc::ptr_eq(gate, context.gate()))
+        if state.identity.is_some()
+            || state.context.is_some()
+            || !state
+                .gate
+                .as_ref()
+                .is_some_and(|gate| Arc::ptr_eq(gate, context.gate()))
             || self.stopped.load(Ordering::Acquire)
         {
             SameActorPhaseGate::close(context.gate());
-            return Err(refused("original Startup context cannot be replaced or revived"));
+            return Err(refused(
+                "original Startup context cannot be replaced or revived",
+            ));
         }
         OriginalSameActorRootContext::require_current(context)?;
         state.identity = Some(context.identity().clone());
@@ -136,19 +165,27 @@ impl OriginalPhaseRunControl {
     }
 
     pub(super) fn retain_original_circuit(
-        &self, context: &Arc<OriginalSameActorRootContext>,
+        &self,
+        context: &Arc<OriginalSameActorRootContext>,
         custody: Arc<OriginalCircuitOwnerCustody>,
     ) -> Result<(), AgentdError> {
         custody.require_original_origin(context.identity(), context.gate())?;
-        let mut state = self.state.lock()
+        let mut state = self
+            .state
+            .lock()
             .map_err(|_| refused("original Startup custody is poisoned"))?;
         if state.circuit.is_some()
-            || !state.context.as_ref().and_then(Weak::upgrade)
+            || !state
+                .context
+                .as_ref()
+                .and_then(Weak::upgrade)
                 .is_some_and(|original| Arc::ptr_eq(&original, context))
             || self.stopped.load(Ordering::Acquire)
         {
             custody.request_stop();
-            return Err(refused("original Circuit custody cannot be replaced or restarted"));
+            return Err(refused(
+                "original Circuit custody cannot be replaced or restarted",
+            ));
         }
         state.circuit = Some(custody);
         Ok(())
@@ -162,20 +199,32 @@ impl OriginalPhaseRunControl {
             let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
             (state.gate.clone(), state.circuit.clone())
         };
-        if let Some(gate) = gate { SameActorPhaseGate::close(&gate); }
+        if let Some(gate) = gate {
+            SameActorPhaseGate::close(&gate);
+        }
         self.consumers.close();
         codex_app_server::OriginalMcpRuntimeShutdown::request_stop(&self.mcp);
         codex_app_server::OriginalAppServerOwnerCustody::request_stop(&self.app_server);
-        if let Some(circuit) = circuit { OriginalCircuitOwnerCustody::request_stop(&circuit); }
+        if let Some(circuit) = circuit {
+            OriginalCircuitOwnerCustody::request_stop(&circuit);
+        }
     }
 
     pub(crate) async fn wait_original_shutdown(&self) -> Result<(), AgentdError> {
         let (gate, circuit) = {
-            let state = self.state.lock()
+            let state = self
+                .state
+                .lock()
                 .map_err(|_| refused("original Startup custody is poisoned"))?;
             (
-                state.gate.clone().ok_or_else(|| refused("actual receive Gate was not installed"))?,
-                state.circuit.clone().ok_or_else(|| refused("actual Circuit custody was not installed"))?,
+                state
+                    .gate
+                    .clone()
+                    .ok_or_else(|| refused("actual receive Gate was not installed"))?,
+                state
+                    .circuit
+                    .clone()
+                    .ok_or_else(|| refused("actual Circuit custody was not installed"))?,
             )
         };
         let normal = OriginalCircuitOwnerCustody::wait_original_normal_shutdown(&circuit);
@@ -200,20 +249,34 @@ impl OriginalPhaseRunControl {
 
     async fn close_and_join_original_resources(&self) -> Result<(), AgentdError> {
         self.request_stop();
-        let circuit = self.state.lock().unwrap_or_else(|error| error.into_inner()).circuit.clone();
+        let circuit = self
+            .state
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .circuit
+            .clone();
         let mut failure = None;
         if let Some(circuit) = circuit {
             match circuit.stop_and_join_original_owner().await {
                 Ok(observed) => {
                     tracing::info!(observation = ?observed, "actual original Circuit cleanup observed");
                     if observed.admission_poisoned {
-                        save_original_failure(&mut failure, refused("original Circuit admission was poisoned"));
+                        save_original_failure(
+                            &mut failure,
+                            refused("original Circuit admission was poisoned"),
+                        );
                     }
-                    if matches!(observed.status, OriginalCircuitJoinStatus::Joined {
-                        delivery: OriginalCircuitResultDelivery::Abandoned, ..
-                    }) {
+                    if matches!(
+                        observed.status,
+                        OriginalCircuitJoinStatus::Joined {
+                            delivery: OriginalCircuitResultDelivery::Abandoned,
+                            ..
+                        }
+                    ) {
                         match circuit.take_abandoned_original_result().await {
-                            Ok(Some(Err(error))) | Err(error) => save_original_failure(&mut failure, error),
+                            Ok(Some(Err(error))) | Err(error) => {
+                                save_original_failure(&mut failure, error)
+                            }
                             Ok(Some(Ok(())) | None) => {}
                         }
                     }
@@ -222,9 +285,10 @@ impl OriginalPhaseRunControl {
             }
         }
         if let Err(error) = self.app_server.join_original_app_server().await {
-            save_original_failure(&mut failure, AgentdError::Protocol(
-                format!("original App Server owner cleanup: {error}"),
-            ));
+            save_original_failure(
+                &mut failure,
+                AgentdError::Protocol(format!("original App Server owner cleanup: {error}")),
+            );
         }
         if let Err(error) = self.consumers.join_and_release().await {
             save_original_failure(&mut failure, error);
@@ -233,16 +297,19 @@ impl OriginalPhaseRunControl {
         // and coordinator owners. Circuit is joined above; no actual Session
         // is intentionally kept alive merely to make this observation succeed.
         match self.session.stop_and_join_retired_session_tasks().await {
-            Ok(observed) => tracing::info!(observation = ?observed, "actual original Session cleanup observed"),
+            Ok(observed) => {
+                tracing::info!(observation = ?observed, "actual original Session cleanup observed")
+            }
             Err(error) => save_original_failure(&mut failure, error),
         }
         // The initializer and actual Runtime future have ended before this
         // cleanup. The same external cap still owns startup, service driver,
         // stdio I/O and Child handles even if their original waiter vanished.
         if let Err(error) = self.mcp.stop_and_join_original_runtime().await {
-            save_original_failure(&mut failure, AgentdError::Protocol(
-                format!("original MCP owner cleanup: {error}"),
-            ));
+            save_original_failure(
+                &mut failure,
+                AgentdError::Protocol(format!("original MCP owner cleanup: {error}")),
+            );
         }
         failure.map_or(Ok(()), Err)
     }
@@ -250,7 +317,9 @@ impl OriginalPhaseRunControl {
 
 struct OriginalPhaseThreadStop(Arc<OriginalPhaseRunControl>);
 impl Drop for OriginalPhaseThreadStop {
-    fn drop(&mut self) { OriginalPhaseRunControl::request_stop(&self.0); }
+    fn drop(&mut self) {
+        OriginalPhaseRunControl::request_stop(&self.0);
+    }
 }
 
 /// Owns the one actual std thread. Dropping this waiting future cannot detach
@@ -270,7 +339,9 @@ impl OriginalPhaseRunOwner {
         let runtime = Handle::try_current()
             .map_err(|_| refused("original phase requires its actual runtime"))?;
         if runtime.runtime_flavor() != RuntimeFlavor::MultiThread {
-            return Err(refused("original phase requires the actual multi-thread runtime"));
+            return Err(refused(
+                "original phase requires the actual multi-thread runtime",
+            ));
         }
         let control = OriginalPhaseRunControl::new();
         // This guard exists before spawning, including failure to spawn or
@@ -333,7 +404,11 @@ impl OriginalPhaseRunOwner {
                 let _ = complete.send(());
                 result
             }).map_err(|error| AgentdError::Protocol(format!("original phase thread: {error}")))?;
-        Ok(Self { control, completed, thread: Some(thread) })
+        Ok(Self {
+            control,
+            completed,
+            thread: Some(thread),
+        })
     }
 }
 
@@ -341,7 +416,9 @@ impl Future for OriginalPhaseRunOwner {
     type Output = Result<(), AgentdError>;
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this = self.get_mut();
-        if Pin::new(&mut this.completed).poll(cx).is_pending() { return Poll::Pending; }
+        if Pin::new(&mut this.completed).poll(cx).is_pending() {
+            return Poll::Pending;
+        }
         let Some(thread) = this.thread.take() else {
             return Poll::Ready(Err(refused("original phase result was already consumed")));
         };
@@ -362,14 +439,18 @@ impl Drop for OriginalPhaseRunOwner {
 
 fn join_original_owner(thread: JoinHandle<Result<(), AgentdError>>) -> Result<(), AgentdError> {
     let joined = match Handle::try_current() {
-        Ok(runtime) if runtime.runtime_flavor() == RuntimeFlavor::MultiThread =>
-            tokio::task::block_in_place(|| thread.join()),
+        Ok(runtime) if runtime.runtime_flavor() == RuntimeFlavor::MultiThread => {
+            tokio::task::block_in_place(|| thread.join())
+        }
         _ => thread.join(),
     };
     joined.map_err(|_| refused("actual original phase owner thread panicked"))?
 }
 
 fn save_original_failure(first: &mut Option<AgentdError>, error: AgentdError) {
-    if first.is_none() { *first = Some(error); }
-    else { tracing::error!(error = %error, "additional original cleanup failure"); }
+    if first.is_none() {
+        *first = Some(error);
+    } else {
+        tracing::error!(error = %error, "additional original cleanup failure");
+    }
 }

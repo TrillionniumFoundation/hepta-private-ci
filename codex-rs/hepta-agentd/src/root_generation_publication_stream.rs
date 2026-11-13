@@ -272,14 +272,12 @@ impl OriginalPublicationStream {
             return Err(unavailable().into());
         }
         phase.gate.require_open()?;
-        crate::root_observation_stream::check_lifetime(&self.root)
-            .map_err(io::Error::other)?;
+        crate::root_observation_stream::check_lifetime(&self.root).map_err(io::Error::other)?;
         // The concrete CURRENT client holds its full lane mutex and has
         // permanently fenced new exchanges before this exclusive borrow.
         phase.retired = true;
         self.stream.shutdown(std::net::Shutdown::Both)?;
-        crate::root_observation_stream::check_lifetime(&self.root)
-            .map_err(io::Error::other)?;
+        crate::root_observation_stream::check_lifetime(&self.root).map_err(io::Error::other)?;
         intent.require_original_origin(identity, gate)?;
         original_closing.disarm();
         closing.disarm();

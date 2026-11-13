@@ -40,7 +40,9 @@ impl OriginalLearningDeliveryRetired {
             || self.runtime.retained_source.is_none()
         {
             work.gate().close();
-            return Err(refused("retired delivery owner differs from its actual ACK"));
+            return Err(refused(
+                "retired delivery owner differs from its actual ACK",
+            ));
         }
         Ok(())
     }
@@ -73,12 +75,14 @@ impl CircuitLearningDeliveryRuntimeV1 {
                 &attempt.state,
                 &attempt.cancellation,
                 &attempt.work,
-            ).await?;
+            )
+            .await?;
             if attempt.cancellation.is_cancelled() {
                 return Err(refused("delivery fault cancellation after durable ACK"));
             }
             OriginalDurableLearningAcknowledgement::require_original_work(
-                &acknowledged, &attempt.work,
+                &acknowledged,
+                &attempt.work,
             )?;
             Ok(OriginalLearningDeliveryRetired {
                 _closing: attempt.closing,
@@ -100,11 +104,14 @@ impl CircuitLearningDeliveryRuntimeV1 {
             || !matches!(self.source, CircuitLearningSourceV1::OriginalQ24)
             || state.identity().spawn_generation != self.spawn_generation
         {
-            return Err(refused("normal retirement requires the actual retained-A delivery"));
+            return Err(refused(
+                "normal retirement requires the actual retained-A delivery",
+            ));
         }
-        let source: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> =
-            self.retained_source.as_ref()
-                .ok_or_else(|| refused("actual retained-A source is absent"))?;
+        let source: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> = self
+            .retained_source
+            .as_ref()
+            .ok_or_else(|| refused("actual retained-A source is absent"))?;
         source.observe_retained_learning(state.identity()).await?;
         let request = self.requests[0].clone();
         if &request != source.request() {

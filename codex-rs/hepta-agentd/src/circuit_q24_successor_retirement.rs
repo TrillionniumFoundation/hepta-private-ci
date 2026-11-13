@@ -35,10 +35,14 @@ impl SuccessorSlot {
         if state.phase != Phase::Ready || self.closed.is_cancelled() {
             return Err(retirement_error("original C slot is not ready"));
         }
-        let installed = state.installed.as_ref().ok_or_else(|| {
-            retirement_error("original C slot has no actual installed owner")
-        })?;
-        installed.handle.require_direct_original_handle().map_err(retirement_error)?;
+        let installed = state
+            .installed
+            .as_ref()
+            .ok_or_else(|| retirement_error("original C slot has no actual installed owner"))?;
+        installed
+            .handle
+            .require_direct_original_handle()
+            .map_err(retirement_error)?;
         installed
             .invocation
             .require_original_installed_custody(original, identity)
@@ -50,9 +54,10 @@ impl SuccessorSlot {
     ) -> Result<(), AgentdError> {
         self.require_open().map_err(retirement_error)?;
         let state = self.state.lock().map_err(retirement_error)?;
-        let original = state.decision.as_ref().ok_or_else(|| {
-            retirement_error("original C retirement has no actual decision")
-        })?;
+        let original = state
+            .decision
+            .as_ref()
+            .ok_or_else(|| retirement_error("original C retirement has no actual decision"))?;
         if state.phase != Phase::Ready
             || !state.generation
             || snapshot.request != original.request
@@ -76,7 +81,10 @@ impl SuccessorSlot {
             || !state.generation
             || self.closed.is_cancelled()
             || self.active.load(Ordering::Acquire) != 0
-            || state.installed.as_ref().is_none_or(|owner| owner.handle.pending_count() != 0)
+            || state
+                .installed
+                .as_ref()
+                .is_none_or(|owner| owner.handle.pending_count() != 0)
         {
             return Err(retirement_error("original C retirement is not available"));
         }
@@ -103,13 +111,20 @@ impl SuccessorSlot {
                 || !state.generation
                 || !self.closed.is_cancelled()
                 || self.active.load(Ordering::Acquire) != 0
-                || state.installed.as_ref().is_none_or(|owner| owner.handle.pending_count() != 0)
+                || state
+                    .installed
+                    .as_ref()
+                    .is_none_or(|owner| owner.handle.pending_count() != 0)
             {
-                return Err(retirement_error("original C worker did not join its retirement"));
+                return Err(retirement_error(
+                    "original C worker did not join its retirement",
+                ));
             }
-            let origin = state.retirement.as_ref().cloned().ok_or_else(|| {
-                retirement_error("original C retirement origin is missing")
-            })?;
+            let origin = state
+                .retirement
+                .as_ref()
+                .cloned()
+                .ok_or_else(|| retirement_error("original C retirement origin is missing"))?;
             origin.require_original_binding(identity, gate)?;
             origin.require_original_slot(self.as_ref())?;
             state.phase = Phase::JoinedRetirement;
@@ -134,9 +149,14 @@ impl SuccessorSlot {
             || state.installed.is_some()
             || !self.closed.is_cancelled()
             || self.active.load(Ordering::Acquire) != 0
-            || !state.retirement.as_ref().is_some_and(|actual| Arc::ptr_eq(actual, origin))
+            || !state
+                .retirement
+                .as_ref()
+                .is_some_and(|actual| Arc::ptr_eq(actual, origin))
         {
-            return Err(retirement_error("original C slot has not been consumed after join"));
+            return Err(retirement_error(
+                "original C slot has not been consumed after join",
+            ));
         }
         Ok(())
     }
@@ -156,14 +176,21 @@ impl OriginalSuccessorWorkerJoined {
             if state.phase != Phase::JoinedRetirement
                 || !self.slot.closed.is_cancelled()
                 || self.slot.active.load(Ordering::Acquire) != 0
-                || !state.retirement.as_ref().is_some_and(|actual| Arc::ptr_eq(actual, origin))
-                || state.installed.as_ref().is_none_or(|owner| owner.handle.pending_count() != 0)
+                || !state
+                    .retirement
+                    .as_ref()
+                    .is_some_and(|actual| Arc::ptr_eq(actual, origin))
+                || state
+                    .installed
+                    .as_ref()
+                    .is_none_or(|owner| owner.handle.pending_count() != 0)
             {
                 return Err(retirement_error("original C joined slot is not consumable"));
             }
-            let original = state.installed.take().ok_or_else(|| {
-                retirement_error("original C joined owner is missing")
-            })?;
+            let original = state
+                .installed
+                .take()
+                .ok_or_else(|| retirement_error("original C joined owner is missing"))?;
             state.phase = Phase::Retired;
             original
         };
@@ -172,7 +199,9 @@ impl OriginalSuccessorWorkerJoined {
         // guard. No await or cancellation gap separates this owner handoff.
         self.slot_closing.disarm();
         self.closing.disarm();
-        Ok(OriginalRetiredSuccessorOwners { _original: original })
+        Ok(OriginalRetiredSuccessorOwners {
+            _original: original,
+        })
     }
 }
 

@@ -50,13 +50,17 @@ impl AgentdRootQ24ModelFactoryV1 {
     ) -> Result<(), AgentdError> {
         let mut closing = CloseSameActorPhaseOnDrop::new(gate);
         intent.require_original_origin(identity, gate)?;
-        let phase = self.phase.as_ref()
+        let phase = self
+            .phase
+            .as_ref()
             .ok_or_else(|| refused("Model retirement has no original phase channel"))?;
         if !std::sync::Arc::ptr_eq(phase.gate(), gate) || self.fenced {
             return Err(refused("Model retirement is foreign or already fenced"));
         }
         phase.require_open().map_err(refused)?;
-        let transport = self.transport.as_ref()
+        let transport = self
+            .transport
+            .as_ref()
             .ok_or_else(|| refused("Model retirement has an uncertain exchange"))?;
         let root = RootObservationStream::root_lifetime(transport);
         crate::root_observation_stream::check_lifetime(root.get_ref()).map_err(refused)?;

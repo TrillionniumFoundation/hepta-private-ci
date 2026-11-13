@@ -344,9 +344,7 @@ impl ThreadStateManager {
         Self::default()
     }
 
-    pub(crate) fn new_original_owner(
-        original: Arc<crate::OriginalAppServerOwnerCustody>,
-    ) -> Self {
+    pub(crate) fn new_original_owner(original: Arc<crate::OriginalAppServerOwnerCustody>) -> Self {
         Self {
             original_owner: Some(original),
             ..Self::default()

@@ -10,8 +10,8 @@ use std::sync::MutexGuard;
 use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 
-use tokio::task::JoinHandle;
 use tokio::sync::Notify;
+use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -77,7 +77,9 @@ impl OriginalCircuitNaturalJoin {
             || self.job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED
         {
             self.gate.close();
-            return Err(custody_error("natural Circuit join differs from its original Runtime"));
+            return Err(custody_error(
+                "natural Circuit join differs from its original Runtime",
+            ));
         }
         self.gate.require_open().map_err(custody_error)?;
         Ok(())
@@ -167,7 +169,9 @@ impl OriginalCircuitOwnerCustody {
     ) -> Result<(), AgentdError> {
         if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate) {
             self.request_stop();
-            return Err(custody_error("outer Circuit custody differs from its original phase"));
+            return Err(custody_error(
+                "outer Circuit custody differs from its original phase",
+            ));
         }
         self.gate.require_open().map_err(custody_error)?;
         Ok(())
@@ -186,7 +190,9 @@ impl OriginalCircuitOwnerCustody {
         if state.stopped || state.job.is_some() || cancellation.is_cancelled() {
             self.gate.close();
             cancellation.cancel();
-            return Err(custody_error("outer Circuit owner cannot be started or restarted"));
+            return Err(custody_error(
+                "outer Circuit owner cannot be started or restarted",
+            ));
         }
         Ok(OriginalCircuitStartAdmission {
             state,
@@ -210,14 +216,18 @@ impl OriginalCircuitOwnerCustody {
         {
             let start = self.start.lock().map_err(custody_error)?;
             if start.stopped || start.job.is_none() {
-                return Err(custody_error("terminal custody has no original running Circuit owner"));
+                return Err(custody_error(
+                    "terminal custody has no original running Circuit owner",
+                ));
             }
         }
         {
             let mut normal = self.normal.lock().map_err(custody_error)?;
             self.gate.require_open().map_err(custody_error)?;
             if normal.terminal.is_some() || normal.shutdown_admitted || normal.taken {
-                return Err(custody_error("original Circuit terminal custody is single-use"));
+                return Err(custody_error(
+                    "original Circuit terminal custody is single-use",
+                ));
             }
             normal.terminal = Some(terminal);
         }
@@ -242,7 +252,9 @@ impl OriginalCircuitOwnerCustody {
                 {
                     let mut normal = custody.normal.lock().map_err(custody_error)?;
                     if normal.shutdown_admitted || normal.taken {
-                        return Err(custody_error("original normal shutdown input was already used"));
+                        return Err(custody_error(
+                            "original normal shutdown input was already used",
+                        ));
                     }
                     if let Some(terminal) = normal.terminal.as_ref() {
                         crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined::require_original_phase(
@@ -277,7 +289,9 @@ impl OriginalCircuitOwnerCustody {
             if cancellation.is_cancelled() {
                 let normal = self.normal.lock().map_err(custody_error)?;
                 if !normal.shutdown_admitted || normal.taken || normal.terminal.is_none() {
-                    return Err(custody_error("Circuit stopped without the original normal handoff"));
+                    return Err(custody_error(
+                        "Circuit stopped without the original normal handoff",
+                    ));
                 }
                 self.gate.require_open().map_err(custody_error)?;
                 return Ok(());
@@ -325,11 +339,14 @@ impl OriginalCircuitOwnerCustody {
                 let mut normal = attempt.custody.normal.lock().map_err(custody_error)?;
                 attempt.custody.gate.require_open().map_err(custody_error)?;
                 if !normal.shutdown_admitted || normal.taken {
-                    return Err(custody_error("original terminal bundle is not available for natural join"));
+                    return Err(custody_error(
+                        "original terminal bundle is not available for natural join",
+                    ));
                 }
-                let terminal = normal.terminal.take().ok_or_else(|| {
-                    custody_error("original terminal bundle is missing")
-                })?;
+                let terminal = normal
+                    .terminal
+                    .take()
+                    .ok_or_else(|| custody_error("original terminal bundle is missing"))?;
                 normal.taken = true;
                 terminal
             };
@@ -350,7 +367,9 @@ impl OriginalCircuitOwnerCustody {
                 &attempt.custody.gate,
             )?;
             if job.delivery.load(Ordering::Acquire) != RUNTIME_DELIVERED {
-                return Err(custody_error("original Runtime has not received the Circuit result"));
+                return Err(custody_error(
+                    "original Runtime has not received the Circuit result",
+                ));
             }
             let joined = OriginalCircuitNaturalJoin {
                 _closing: crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(
@@ -392,7 +411,9 @@ impl OriginalCircuitOwnerCustody {
         };
         let mut state = job.state.lock().await;
         job.join_locked(&mut state).await?;
-        let outcome = state.joined.ok_or_else(|| custody_error("outer Circuit join is missing"))?;
+        let outcome = state
+            .joined
+            .ok_or_else(|| custody_error("outer Circuit join is missing"))?;
         drop(state);
         // Fault cleanup drops the separately retained, already-joined bundle
         // only after the actual outer owner is joined. No new work is hidden.
@@ -425,11 +446,15 @@ impl OriginalCircuitOwnerCustody {
         )?;
         let state = self.start.lock().map_err(custody_error)?;
         if state.stopped {
-            return Err(custody_error("fault-stopped Circuit cannot retire normally"));
+            return Err(custody_error(
+                "fault-stopped Circuit cannot retire normally",
+            ));
         }
-        state.job.as_ref().cloned().ok_or_else(|| {
-            custody_error("normal Circuit retirement has no actual started owner")
-        })
+        state
+            .job
+            .as_ref()
+            .cloned()
+            .ok_or_else(|| custody_error("normal Circuit retirement has no actual started owner"))
     }
 
     /// A cancelled Runtime receiver has relinquished this result. Cleanup may
@@ -458,7 +483,9 @@ impl OriginalCircuitOwnerCustody {
                 Ok(Some(result))
             }
             CLEANUP_RECOVERED => Ok(None),
-            _ => Err(custody_error("outer Circuit result still belongs to its Runtime receiver")),
+            _ => Err(custody_error(
+                "outer Circuit result still belongs to its Runtime receiver",
+            )),
         }
     }
 }
@@ -512,10 +539,7 @@ impl OriginalCircuitOwnerJob {
         }
     }
 
-    async fn join_locked(
-        &self,
-        state: &mut OriginalCircuitJobState,
-    ) -> Result<(), AgentdError> {
+    async fn join_locked(&self, state: &mut OriginalCircuitJobState) -> Result<(), AgentdError> {
         if state.joined.is_some() {
             return Ok(());
         }
@@ -538,7 +562,9 @@ impl OriginalCircuitOwnerJob {
             ),
             Err(error) => (
                 OriginalCircuitOwnerOutcome::JoinFailed,
-                Err(AgentdError::Protocol(format!("Circuit task owner stopped: {error}"))),
+                Err(AgentdError::Protocol(format!(
+                    "Circuit task owner stopped: {error}"
+                ))),
             ),
         };
         // No await separates actual completion from saving the original
@@ -553,7 +579,9 @@ impl OriginalCircuitOwnerJob {
         let mut state = self.state.lock().await;
         self.join_locked(&mut state).await?;
         if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {
-            return Err(custody_error("original Circuit owner did not return success"));
+            return Err(custody_error(
+                "original Circuit owner did not return success",
+            ));
         }
         // Keep the original Result for its existing receiver. This operation
         // observes a join and never calls take, resends or constructs a result.
@@ -575,11 +603,14 @@ impl OriginalCircuitOwnerJob {
             let mut state = job.state.lock().await;
             job.join_locked(&mut state).await?;
             if job.delivery.load(Ordering::Acquire) != WAITING {
-                return Err(custody_error("outer Circuit Runtime result was already consumed"));
+                return Err(custody_error(
+                    "outer Circuit Runtime result was already consumed",
+                ));
             }
-            let result = state.result.take().ok_or_else(|| {
-                custody_error("original outer Circuit result is unavailable")
-            })?;
+            let result = state
+                .result
+                .take()
+                .ok_or_else(|| custody_error("original outer Circuit result is unavailable"))?;
             job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);
             receiver.complete = true;
             result

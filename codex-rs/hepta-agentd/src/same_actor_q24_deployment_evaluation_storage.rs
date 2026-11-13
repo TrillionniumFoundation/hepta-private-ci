@@ -2,20 +2,28 @@
 //! genesis, and every recovered durable store requires its external minimum.
 //! File identities remain distinct across source, witness, execution and sink.
 
-use codex_hepta_intelligence_eval::{
-    FinalHoldoutCasAnchorV1, FencedFinalHoldoutOwnerV1, HoldoutWriterFenceV1,
-    LockedFileFinalHoldoutCasStoreV1, LockedFileProductEvaluationExecutionStoreV1,
-    LockedFileProductQualificationEvidenceSinkV1, ProductEvaluationExecutionAnchorV1,
-};
-use codex_hepta_neuron::{CellGenerationJournalV2, FileAnchorWitnessStore};
-use codex_hepta_types::{Digest32, StableId};
-use serde::{Deserialize, Serialize};
-use crate::AgentdError;
-use crate::authority_host_runtime::OriginalDeploymentObserverData;
-use super::files::{MutableFileData, OriginalDeploymentFiles, OriginalFileMode};
+use super::deployment_error;
+use super::deployment_refused;
+use super::files::MutableFileData;
+use super::files::OriginalDeploymentFiles;
+use super::files::OriginalFileMode;
 use super::learning_data::required_option;
 use super::witness::OriginalWitnessData;
-use super::{deployment_error, deployment_refused};
+use crate::AgentdError;
+use crate::authority_host_runtime::OriginalDeploymentObserverData;
+use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
+use codex_hepta_intelligence_eval::FinalHoldoutCasAnchorV1;
+use codex_hepta_intelligence_eval::HoldoutWriterFenceV1;
+use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::LockedFileProductEvaluationExecutionStoreV1;
+use codex_hepta_intelligence_eval::LockedFileProductQualificationEvidenceSinkV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionAnchorV1;
+use codex_hepta_neuron::CellGenerationJournalV2;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -26,20 +34,28 @@ pub(super) struct OriginalEvaluationJournalData {
 }
 impl OriginalEvaluationJournalData {
     pub(super) fn open_original(
-        &self, files: &mut OriginalDeploymentFiles,
+        &self,
+        files: &mut OriginalDeploymentFiles,
     ) -> Result<CellGenerationJournalV2<FileAnchorWitnessStore>, AgentdError> {
         if !matches!(self.journal.mode, OriginalFileMode::Recover)
             || !matches!(self.witness.file.mode, OriginalFileMode::Recover)
         {
-            return Err(deployment_refused("B requires actual existing experiment journals"));
+            return Err(deployment_refused(
+                "B requires actual existing experiment journals",
+            ));
         }
-        let observer = self.observer.original_observer_config().map_err(deployment_error)?;
+        let observer = self
+            .observer
+            .original_observer_config()
+            .map_err(deployment_error)?;
         if observer.witness_scope.scope_digest.into_array() != self.witness.scope
             || observer.witness_scope.objective_digest.into_array() != self.witness.objective
             || observer.witness_generation.get() != self.witness.generation
             || observer.witness_records != self.witness.maximum_records
         {
-            return Err(deployment_refused("B witness differs from its actual observer configuration"));
+            return Err(deployment_refused(
+                "B witness differs from its actual observer configuration",
+            ));
         }
         let journal = files.open_original_owner(&self.journal)?;
         let witness = self.witness.open_original(files)?;
@@ -47,8 +63,12 @@ impl OriginalEvaluationJournalData {
         // Ordinary open rejects guarded CURRENT journals. No replacement
         // current callback or precomputed proof is installed by this loader.
         let original = CellGenerationJournalV2::open(
-            journal, witness, observer.generation, observer.journal_records,
-        ).map_err(deployment_error)?;
+            journal,
+            witness,
+            observer.generation,
+            observer.journal_records,
+        )
+        .map_err(deployment_error)?;
         files.require_original_context()?;
         Ok(original)
     }
@@ -74,7 +94,8 @@ pub(super) struct OriginalHoldoutData {
 }
 impl OriginalHoldoutData {
     pub(super) fn open_original_holdout(
-        &self, files: &mut OriginalDeploymentFiles,
+        &self,
+        files: &mut OriginalDeploymentFiles,
     ) -> Result<FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>, AgentdError> {
         let binding = Digest32::from_array(self.binding);
         // These are the real host-provided fence fields. No fence issuer,
@@ -88,8 +109,9 @@ impl OriginalHoldoutData {
         files.require_original_context()?;
         let original = match self.file.mode {
             OriginalFileMode::Recover => {
-                let minimum = self.minimum.as_ref()
-                    .ok_or_else(|| deployment_refused("recovered holdout has no independent minimum"))?;
+                let minimum = self.minimum.as_ref().ok_or_else(|| {
+                    deployment_refused("recovered holdout has no independent minimum")
+                })?;
                 let minimum = FinalHoldoutCasAnchorV1 {
                     fence_generation: minimum.fence_generation,
                     record_count: minimum.record_count,
@@ -102,14 +124,17 @@ impl OriginalHoldoutData {
             }
             OriginalFileMode::CreateNew | OriginalFileMode::ExistingEmpty => {
                 if self.minimum.is_some() {
-                    return Err(deployment_refused("fresh holdout cannot discard an existing minimum"));
+                    return Err(deployment_refused(
+                        "fresh holdout cannot discard an existing minimum",
+                    ));
                 }
                 let store = LockedFileFinalHoldoutCasStoreV1::create(file, binding)
                     .map_err(deployment_error)?;
                 files.require_original_context()?;
                 FencedFinalHoldoutOwnerV1::initialize(store, binding, fence)
             }
-        }.map_err(deployment_error)?;
+        }
+        .map_err(deployment_error)?;
         files.require_original_context()?;
         Ok(original)
     }
@@ -140,13 +165,16 @@ pub(super) struct OriginalEvaluationStoreData {
 impl OriginalEvaluationStoreData {
     fn require_original_mode(&self) -> Result<(), AgentdError> {
         if matches!(self.file.mode, OriginalFileMode::Recover) != self.minimum.is_some() {
-            return Err(deployment_refused("original evaluation store lifecycle/minimum differs"));
+            return Err(deployment_refused(
+                "original evaluation store lifecycle/minimum differs",
+            ));
         }
         Ok(())
     }
 
     pub(super) fn open_original_execution(
-        &self, files: &mut OriginalDeploymentFiles,
+        &self,
+        files: &mut OriginalDeploymentFiles,
     ) -> Result<LockedFileProductEvaluationExecutionStoreV1, AgentdError> {
         self.require_original_mode()?;
         let file = files.open_original_owner(&self.file)?;
@@ -154,16 +182,20 @@ impl OriginalEvaluationStoreData {
         files.require_original_context()?;
         let store = match &self.minimum {
             Some(minimum) => LockedFileProductEvaluationExecutionStoreV1::recover(
-                file, binding, minimum.original(),
+                file,
+                binding,
+                minimum.original(),
             ),
             None => LockedFileProductEvaluationExecutionStoreV1::create(file, binding),
-        }.map_err(deployment_error)?;
+        }
+        .map_err(deployment_error)?;
         files.require_original_context()?;
         Ok(store)
     }
 
     pub(super) fn open_original_sink(
-        &self, files: &mut OriginalDeploymentFiles,
+        &self,
+        files: &mut OriginalDeploymentFiles,
     ) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError> {
         self.require_original_mode()?;
         let file = files.open_original_owner(&self.file)?;
@@ -171,10 +203,13 @@ impl OriginalEvaluationStoreData {
         files.require_original_context()?;
         let sink = match &self.minimum {
             Some(minimum) => LockedFileProductQualificationEvidenceSinkV1::recover(
-                file, binding, minimum.original(),
+                file,
+                binding,
+                minimum.original(),
             ),
             None => LockedFileProductQualificationEvidenceSinkV1::create(file, binding),
-        }.map_err(deployment_error)?;
+        }
+        .map_err(deployment_error)?;
         files.require_original_context()?;
         Ok(sink)
     }

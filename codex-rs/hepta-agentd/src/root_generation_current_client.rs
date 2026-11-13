@@ -161,7 +161,10 @@ impl RootGenerationCurrentClient {
         let mut held = self.lane.try_lock().map_err(|_| uncertain())?;
         let lane = held.as_mut().ok_or_else(uncertain)?;
         OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent(
-            &mut lane.stream, intent, identity, gate,
+            &mut lane.stream,
+            intent,
+            identity,
+            gate,
         )?;
         intent.require_original_origin(identity, gate)?;
         // Keep the exact Lane, connection, sequence, stream and failure guard.

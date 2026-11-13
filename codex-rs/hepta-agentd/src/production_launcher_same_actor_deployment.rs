@@ -2,11 +2,12 @@
 //! No descriptor is opened before the original inherited-rights parser has
 //! taken its disjoint FDs. Missing mode leaves the legacy selector unchanged.
 
-use std::os::fd::{FromRawFd, OwnedFd};
-use std::path::PathBuf;
-use codex_hepta_types::Digest32;
 use super::*;
 use crate::same_actor_q24_deployment::OriginalDeploymentDescriptor;
+use codex_hepta_types::Digest32;
+use std::os::fd::FromRawFd;
+use std::os::fd::OwnedFd;
+use std::path::PathBuf;
 
 pub struct AgentdOriginalSameActorDeploymentStartupV1 {
     startup: AgentdOriginalSameActorPhaseStartupV1,
@@ -18,7 +19,11 @@ impl AgentdOriginalSameActorDeploymentStartupV1 {
         arguments: Vec<OsString>,
     ) -> Result<(Option<Self>, Vec<OsString>), AgentdError> {
         // The default branch performs no clock, file or inherited-FD action.
-        if !arguments.iter().step_by(2).any(|flag| flag == "--original-same-actor-deployment") {
+        if !arguments
+            .iter()
+            .step_by(2)
+            .any(|flag| flag == "--original-same-actor-deployment")
+        {
             return Ok((None, arguments));
         }
         Self::prepare_selected_original(arguments).map(|startup| (Some(startup), Vec::new()))
@@ -35,21 +40,33 @@ impl AgentdOriginalSameActorDeploymentStartupV1 {
         let mut forwarded = Vec::new();
         let mut args = arguments.into_iter();
         while let Some(flag) = args.next() {
-            let value = args.next().ok_or_else(|| refused("original phase flag requires a value"))?;
+            let value = args
+                .next()
+                .ok_or_else(|| refused("original phase flag requires a value"))?;
             if flag == "--original-same-actor-deployment" {
                 if descriptor.replace(PathBuf::from(value)).is_some() {
                     return Err(refused("duplicate original deployment descriptor"));
                 }
             } else if flag == "--original-same-actor-deployment-digest" {
-                if digest.is_some() { return Err(refused("duplicate original deployment digest")); }
-                digest = Some(value.to_str().ok_or_else(|| refused("deployment digest requires UTF-8"))?
-                    .parse::<Digest32>().map_err(|error| AgentdError::Invalid(error.to_string()))?);
+                if digest.is_some() {
+                    return Err(refused("duplicate original deployment digest"));
+                }
+                digest = Some(
+                    value
+                        .to_str()
+                        .ok_or_else(|| refused("deployment digest requires UTF-8"))?
+                        .parse::<Digest32>()
+                        .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+                );
             } else if flag == "--root-same-actor-phase-handoff-fd" {
                 if phase.replace(original_descriptor_number(&value)?).is_some() {
                     return Err(refused("duplicate original phase handoff"));
                 }
             } else if flag == "--root-same-actor-scoped-handoff-fd" {
-                if scoped.replace(original_descriptor_number(&value)?).is_some() {
+                if scoped
+                    .replace(original_descriptor_number(&value)?)
+                    .is_some()
+                {
                     return Err(refused("duplicate original scoped handoff"));
                 }
             } else {
@@ -68,30 +85,43 @@ impl AgentdOriginalSameActorDeploymentStartupV1 {
         require_disjoint_phase_descriptor_numbers(&forwarded, [phase, scoped])?;
         let phase = take_original_datagram(phase)?;
         let scoped = take_original_datagram(scoped)?;
-        let (startup, ordinary) = AgentdOriginalSameActorPhaseStartupV1::from_original_receive_start(
-            forwarded, phase, scoped, start,
-        )?;
+        let (startup, ordinary) =
+            AgentdOriginalSameActorPhaseStartupV1::from_original_receive_start(
+                forwarded, phase, scoped, start,
+            )?;
         if !ordinary.is_empty() {
-            return Err(refused("explicit phase material must come from its pinned deployment descriptor"));
+            return Err(refused(
+                "explicit phase material must come from its pinned deployment descriptor",
+            ));
         }
-        Ok(Self { startup, descriptor })
+        Ok(Self {
+            startup,
+            descriptor,
+        })
     }
 
-    pub fn identity(&self) -> &AgentdIdentity { self.startup.identity() }
+    pub fn identity(&self) -> &AgentdIdentity {
+        self.startup.identity()
+    }
 
     pub async fn run_original_deployment(
-        self, arg0_paths: Arg0DispatchPaths,
+        self,
+        arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
         owner::OriginalPhaseRunOwner::start_original(
             self.startup,
             owner::OriginalPhaseSelectedBusiness::Deployment(self.descriptor),
             arg0_paths,
-        )?.await
+        )?
+        .await
     }
 }
 
 fn original_descriptor_number(value: &OsString) -> Result<i32, AgentdError> {
-    value.to_str().and_then(|value| value.parse::<i32>().ok()).filter(|fd| *fd >= 3)
+    value
+        .to_str()
+        .and_then(|value| value.parse::<i32>().ok())
+        .filter(|fd| *fd >= 3)
         .ok_or_else(|| refused("original inherited descriptor must be an integer above stderr"))
 }
 
@@ -99,7 +129,9 @@ fn take_original_datagram(number: i32) -> Result<UnixDatagram, AgentdError> {
     // SAFETY: this only inspects and tightens the disjoint inherited FD. No
     // descriptor is allocated between raw alias checks and ownership taking.
     let flags = unsafe { libc::fcntl(number, libc::F_GETFD) };
-    if flags < 0 { return Err(std::io::Error::last_os_error().into()); }
+    if flags < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
     // SAFETY: CLOEXEC only narrows inheritance of this still-live exact FD.
     if unsafe { libc::fcntl(number, libc::F_SETFD, flags | libc::FD_CLOEXEC) } != 0 {
         return Err(std::io::Error::last_os_error().into());

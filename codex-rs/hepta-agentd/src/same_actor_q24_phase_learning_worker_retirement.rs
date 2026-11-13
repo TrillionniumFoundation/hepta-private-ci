@@ -56,7 +56,9 @@ impl OriginalRetiredLearningOwners {
         if !Arc::ptr_eq(&self.work, work) {
             self.work.gate().close();
             work.gate().close();
-            return Err(refused("retired Learning owners belong to another original Work"));
+            return Err(refused(
+                "retired Learning owners belong to another original Work",
+            ));
         }
         work.require_original_retirement_identity(&self.identity, work.gate())?;
         OriginalLearningCheckpointRetirement::require_original_work(&self.checkpoint, work)?;
@@ -76,10 +78,14 @@ impl OriginalRetiredLearningOwners {
         OriginalRetiredLearningOwners::require_original_work(&self, &self.work)?;
         intent.require_original_origin(&self.identity, self.work.gate())?;
         OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(
-            &self.checkpoint, intent,
+            &self.checkpoint,
+            intent,
         )?;
         OriginalLearningLoopRetired::retire_original_model_purpose(
-            &self.learning, intent, &self.identity, &self.work,
+            &self.learning,
+            intent,
+            &self.identity,
+            &self.work,
         )?;
         intent.require_original_origin(&self.identity, self.work.gate())?;
         // No field or armed failure guard is discarded. The actual C owner
@@ -96,9 +102,8 @@ impl OriginalSameActorLearningJoined {
         self,
         intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
     ) -> Result<OriginalSameActorLearningPurposesRetired, AgentdError> {
-        let original = OriginalSameActorCJoined::retire_original_root_purposes(
-            self.original, intent,
-        )?;
+        let original =
+            OriginalSameActorCJoined::retire_original_root_purposes(self.original, intent)?;
         Ok(OriginalSameActorLearningPurposesRetired { original })
     }
 
@@ -136,8 +141,11 @@ impl OriginalSameActorLearningWorker {
             let work = Arc::clone(&attempt.worker.work);
             let result = OriginalSameActorLearningWorker::run_original_retirable_lanes(
                 attempt.worker,
-                attempt.store, attempt.state, attempt.cancellation,
-            ).await;
+                attempt.store,
+                attempt.state,
+                attempt.cancellation,
+            )
+            .await;
             match result {
                 Ok(joined) => {
                     // Actual CJoined and its retained Learning owners already
@@ -166,7 +174,8 @@ impl OriginalSameActorLearningWorker {
         cancellation: CancellationToken,
     ) -> Result<OriginalSameActorLearningJoined, AgentdError> {
         OriginalSameActorRootContext::require_current(&self.context)?;
-        self.work.require_identity_and_gate(state.identity(), self.context.gate())?;
+        self.work
+            .require_identity_and_gate(state.identity(), self.context.gate())?;
         CircuitLearningDeliveryRuntimeV1::attach_sources(&self.delivery, &state)?;
         let OriginalSameActorLearningWorker {
             context,
@@ -179,13 +188,24 @@ impl OriginalSameActorLearningWorker {
         } = self;
         let stopped = cancellation.child_token();
         let mut learning = Box::pin(LearningIterationRuntimeBootstrapV1::run_original_retirable(
-            learning, Arc::clone(&state), stopped.clone(), Arc::clone(&work),
+            learning,
+            Arc::clone(&state),
+            stopped.clone(),
+            Arc::clone(&work),
         ));
         let mut delivery = Box::pin(CircuitLearningDeliveryRuntimeV1::run_original_retirable(
-            delivery, store.clone(), Arc::clone(&state), stopped.clone(), Arc::clone(&work),
+            delivery,
+            store.clone(),
+            Arc::clone(&state),
+            stopped.clone(),
+            Arc::clone(&work),
         ));
         let mut successor = Box::pin(PendingSuccessorOwner::run_original_retirable(
-            pending, store, state, stopped.clone(), Arc::clone(context.gate()),
+            pending,
+            store,
+            state,
+            stopped.clone(),
+            Arc::clone(context.gate()),
         ));
         let mut retirement = Box::pin(work.take_original_normal_retirement());
         let mut learning_result = None;
@@ -204,7 +224,9 @@ impl OriginalSameActorLearningWorker {
             if !stop_authorized {
                 if let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result) {
                     let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);
-                    if let Err(error) = work.authorize_original_learning_stop(original, acknowledged) {
+                    if let Err(error) =
+                        work.authorize_original_learning_stop(original, acknowledged)
+                    {
                         break Some(format!("original terminal Learning stop: {error}"));
                     }
                     stop_authorized = true;
@@ -215,16 +237,18 @@ impl OriginalSameActorLearningWorker {
                     let Some(original) = &quiescence else {
                         break Some("original C quiescence is missing".into());
                     };
-                    if let Err(error) = OriginalLearningLoopRetired::require_original_work(
-                        learning_owner, &work,
-                    ) {
+                    if let Err(error) =
+                        OriginalLearningLoopRetired::require_original_work(learning_owner, &work)
+                    {
                         break Some(format!("original Learning owner retirement: {error}"));
                     }
                     // The actual Learning receiver has closed and all its
                     // reservations have finished. Only now stop the real C
                     // loop using the drain-authorized local slot token.
                     if let Err(error) =
-                        OriginalSameActorCQuiescence::request_original_successor_retirement(original)
+                        OriginalSameActorCQuiescence::request_original_successor_retirement(
+                            original,
+                        )
                     {
                         break Some(format!("original C local retirement: {error}"));
                     }
@@ -325,20 +349,28 @@ impl OriginalSameActorLearningWorker {
             drop((learning_done, delivery_done, successor_done, quiescence));
             return Err(refused(causes.join("; ")));
         }
-        let learning = learning_result.take()
+        let learning = learning_result
+            .take()
             .ok_or_else(|| refused("original Learning owner result is absent"))??;
-        let delivery = delivery_result.take()
+        let delivery = delivery_result
+            .take()
             .ok_or_else(|| refused("original Delivery owner result is absent"))??;
-        let successor = successor_result.take()
+        let successor = successor_result
+            .take()
             .ok_or_else(|| refused("original C worker join is absent"))??;
-        let quiescence = quiescence.take()
+        let quiescence = quiescence
+            .take()
             .ok_or_else(|| refused("original C quiescence was not retained"))?;
         if cancellation.is_cancelled() {
-            return Err(refused("fault cancellation preceded actual Work retirement"));
+            return Err(refused(
+                "fault cancellation preceded actual Work retirement",
+            ));
         }
         let joined = work.join_original_normal_work(&learning, &delivery).await?;
         if cancellation.is_cancelled() {
-            return Err(refused("fault cancellation followed actual Work retirement"));
+            return Err(refused(
+                "fault cancellation followed actual Work retirement",
+            ));
         }
         let owners = OriginalRetiredLearningOwners {
             _closing: work.original_failure_scope(),
@@ -354,7 +386,9 @@ impl OriginalSameActorLearningWorker {
             quiescence, successor, owners,
         )?;
         OriginalSameActorCJoined::require_original_phase(
-            &original, context.identity(), context.gate(),
+            &original,
+            context.identity(),
+            context.gate(),
         )?;
         closing.disarm();
         Ok(OriginalSameActorLearningJoined { original })

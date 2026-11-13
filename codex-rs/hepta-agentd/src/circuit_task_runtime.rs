@@ -53,17 +53,17 @@ struct Command {
 mod successor;
 
 #[cfg(target_os = "linux")]
-#[path = "circuit_task_same_actor_phase.rs"]
-mod same_actor_phase;
-#[cfg(target_os = "linux")]
 #[path = "circuit_task_runtime_lifecycle.rs"]
 mod lifecycle;
 #[cfg(target_os = "linux")]
-pub(crate) use lifecycle::OriginalCircuitNaturalJoin;
+#[path = "circuit_task_same_actor_phase.rs"]
+mod same_actor_phase;
 #[cfg(target_os = "linux")]
 pub(crate) use lifecycle::OriginalCircuitJoinObservation;
 #[cfg(target_os = "linux")]
 pub(crate) use lifecycle::OriginalCircuitJoinStatus;
+#[cfg(target_os = "linux")]
+pub(crate) use lifecycle::OriginalCircuitNaturalJoin;
 #[cfg(target_os = "linux")]
 pub(crate) use lifecycle::OriginalCircuitOwnerCustody;
 #[cfg(target_os = "linux")]
@@ -374,9 +374,10 @@ impl CircuitTaskRuntimeBootstrapV1 {
             let worker = tokio::task::spawn_blocking(move || {
                 runtime.block_on((self.owner)(store, state, worker_cancellation))
             });
-            let job = lifecycle::OriginalCircuitStartAdmission::retain_original_circuit_owner_handle(
-                admission, worker,
-            );
+            let job =
+                lifecycle::OriginalCircuitStartAdmission::retain_original_circuit_owner_handle(
+                    admission, worker,
+                );
             return job.receive_original_result().await;
         }
         tokio::task::spawn_blocking(move || {

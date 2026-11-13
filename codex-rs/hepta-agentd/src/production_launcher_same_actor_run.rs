@@ -57,17 +57,22 @@ pub(super) async fn run_owned_original_phase(
         context,
         initial,
     } = receive_original_same_actor_inputs(
-        bootstrap, root_pidfd, phase, &identity, timeout, receiver, control.as_ref(),
+        bootstrap,
+        root_pidfd,
+        phase,
+        &identity,
+        timeout,
+        receiver,
+        control.as_ref(),
     )
     .await?;
     // From this point onward the actual same-Gate close guard already
     // exists outside every later future, including never-polled work.
     let _closing = CloseSameActorPhaseOnDrop::new(context.gate());
     owner::OriginalPhaseRunControl::retain_original_context(&control, &context)?;
-    let config =
-        AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
-            .with_root_bound_sockets(control_socket, app_server)?
-            .with_cognitive_retrieval_mode(cognitive_mode);
+    let config = AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?
+        .with_root_bound_sockets(control_socket, app_server)?
+        .with_cognitive_retrieval_mode(cognitive_mode);
     if config.identity() != &identity || context.identity() != &identity {
         return Err(refused(
             "original Starting Config differs from the received phase",
@@ -76,9 +81,12 @@ pub(super) async fn run_owned_original_phase(
     let (mut business, mut coordinator) = match selected {
         owner::OriginalPhaseSelectedBusiness::Embedded(business) => (*business, None),
         owner::OriginalPhaseSelectedBusiness::Deployment(descriptor) => {
-            let (business, coordinator) = crate::same_actor_q24_deployment::open_original_deployment(
-                Arc::clone(&context), descriptor,
-            ).await?;
+            let (business, coordinator) =
+                crate::same_actor_q24_deployment::open_original_deployment(
+                    Arc::clone(&context),
+                    descriptor,
+                )
+                .await?;
             (business, Some(coordinator))
         }
     };
@@ -138,11 +146,23 @@ pub(super) async fn run_owned_original_phase(
     // Only the concrete joined/paused/acknowledged/cleanup chain below may
     // construct the private result returned to the retained outer thread.
     let result = match AgentdProductionLaunch::run_original_same_actor_with_shutdown(
-        launch, config, arg0_paths, Arc::clone(&context), Arc::clone(&control),
-    ).await {
-        Ok(stopped) => completion::finish_original_phase(
-            stopped, context, Arc::clone(&control), coordinator.take(),
-        ).await,
+        launch,
+        config,
+        arg0_paths,
+        Arc::clone(&context),
+        Arc::clone(&control),
+    )
+    .await
+    {
+        Ok(stopped) => {
+            completion::finish_original_phase(
+                stopped,
+                context,
+                Arc::clone(&control),
+                coordinator.take(),
+            )
+            .await
+        }
         Err(error) => Err(error),
     };
     if let Some(coordinator) = coordinator.as_mut() {

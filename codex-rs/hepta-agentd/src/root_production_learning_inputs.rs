@@ -224,9 +224,9 @@ impl AgentdRootLearningInputsV1 {
     > {
         self.require_prepared_q24(stages.prepared())?;
         work.require_original_retirement_identity(&self.identity, work.gate())?;
-        let scope = self.scope.ok_or_else(|| {
-            refused("retirable Learning requires the original scoped checkpoint")
-        })?;
+        let scope = self
+            .scope
+            .ok_or_else(|| refused("retirable Learning requires the original scoped checkpoint"))?;
         let (ports, checkpoint) =
             AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners(
                 self.client,
@@ -244,11 +244,9 @@ impl AgentdRootLearningInputsV1 {
             scope,
         )?;
         let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
-        let bootstrap = bootstrap
-            .with_original_circuit_learning_delivery(self.initial.request)?;
-        let bootstrap = LearningIterationRuntimeBootstrapV1::with_original_q24_stage_owners(
-            bootstrap, stages,
-        )?;
+        let bootstrap = bootstrap.with_original_circuit_learning_delivery(self.initial.request)?;
+        let bootstrap =
+            LearningIterationRuntimeBootstrapV1::with_original_q24_stage_owners(bootstrap, stages)?;
         Ok((handle, bootstrap, checkpoint))
     }
 

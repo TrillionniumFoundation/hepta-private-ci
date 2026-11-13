@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "root-independent-maintenance-v4-to-v5-exact-replay",
+  "packet": "713e3fa2370fff3732761a24007caa251fd99709",
+  "pre": {
+    "blob": "e2d34b4941544a829e493ff5c90631207c319af5",
+    "bytes": 21115,
+    "sha256": "9375589a56fbfcdeb2ecd335c590fca2c7ddea3708ea1c82166463c5dfe061a4"
+  },
+  "post": {
+    "blob": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+    "bytes": 18684,
+    "sha256": "51700c6c620252280a279526b53ff7e9a07b52ca2d6cdbab7ed9114ce64e89a3"
+  },
+  "operations": [
+    "explicit_nonpublication_status",
+    "remove_final_local_publication",
+    "maintenance_only_exit_predicate"
+  ],
+  "unique_forward_and_reverse": true,
+  "remaining_native_publication_commands": 0,
+  "meaning_of_exit_zero": "Source maintenance checks completed successfully with no completion_unknown and no errors; no publication claim.",
+  "unchanged_original_qualification_harness": true,
+  "native_executed": false
+}

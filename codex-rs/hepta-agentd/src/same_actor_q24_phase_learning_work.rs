@@ -347,17 +347,25 @@ impl OriginalLearningJobs {
                 self.gate.close();
                 error.to_string()
             })?;
-            self.gate.require_open().map_err(|error| error.to_string())?;
+            self.gate
+                .require_open()
+                .map_err(|error| error.to_string())?;
             if self.normal_closed.swap(true, Ordering::AcqRel) {
                 return Err("original normal Work join was already requested".into());
             }
         }
         loop {
-            self.gate.require_open().map_err(|error| error.to_string())?;
-            let jobs = self.retained.lock().map_err(|error| {
-                self.gate.close();
-                error.to_string()
-            })?.clone();
+            self.gate
+                .require_open()
+                .map_err(|error| error.to_string())?;
+            let jobs = self
+                .retained
+                .lock()
+                .map_err(|error| {
+                    self.gate.close();
+                    error.to_string()
+                })?
+                .clone();
             if jobs.is_empty() {
                 let notified = self.changed.notified();
                 tokio::pin!(notified);
@@ -366,7 +374,9 @@ impl OriginalLearningJobs {
                     if self.join_failed.load(Ordering::Acquire) {
                         return Err("original blocking work failed before normal retirement".into());
                     }
-                    self.gate.require_open().map_err(|error| error.to_string())?;
+                    self.gate
+                        .require_open()
+                        .map_err(|error| error.to_string())?;
                     closing.disarm();
                     return Ok(());
                 }
@@ -397,10 +407,12 @@ impl OriginalLearningJobs {
                         return Err("original phase ended while joining an actual handle".into());
                     }
                 };
-                self.retained.lock().map_err(|error| {
-                self.gate.close();
-                error.to_string()
-            })?
+                self.retained
+                    .lock()
+                    .map_err(|error| {
+                        self.gate.close();
+                        error.to_string()
+                    })?
                     .retain(|entry| !Arc::ptr_eq(entry, &job));
                 if !joined {
                     self.join_failed.store(true, Ordering::Release);

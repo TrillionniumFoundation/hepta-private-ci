@@ -16,7 +16,9 @@ impl RootGenerationInitialDeploymentFilesV1 {
     ) -> io::Result<Arc<RootAuthorityDirectory>> {
         self.require_original_initial_files()?;
         if !matches!(self.data.mode, crate::RootGenerationInitialModeV1::Reserve) {
-            return Err(io::Error::other("fresh phase requires original Initial Reserve mode"));
+            return Err(io::Error::other(
+                "fresh phase requires original Initial Reserve mode",
+            ));
         }
         Ok(Arc::clone(&self.inputs.current))
     }

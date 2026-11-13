@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "root-independent-exact-compiler-fix-replay",
+  "packet": "d8dd2edb206d423117873be98a2c5915d69cfc58",
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "pre": {
+        "git_blob": "829fdc44f86bcd1267f1535068bd47293966ed70",
+        "bytes": 13987,
+        "sha256": "24550bafc469abff7990c9487778463dc2d70a37709cb9594c2c933cf018f325",
+        "create_get_verified": true
+      },
+      "post": {
+        "git_blob": "4c0c34579b757db415f6e7f7851b2418c8a8c987",
+        "bytes": 14084,
+        "sha256": "3c0909ca80b10aff5648b42101ca651c89a16e9d111c6964bb207ba8af08d321",
+        "create_get_verified": true
+      },
+      "operations": 1,
+      "unique_forward_and_reverse": true
+    }
+  ],
+  "runtime_executed": false,
+  "qualification_claim": false
+}

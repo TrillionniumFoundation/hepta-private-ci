@@ -107,7 +107,10 @@ impl LiveGenerationCurrent {
         let _artifacts = self.authorities.artifacts.try_lock().map_err(invalid)?;
         let _selected = self.selected.try_lock().map_err(invalid)?;
         NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent(
-            &self.current, intent, identity, gate,
+            &self.current,
+            intent,
+            identity,
+            gate,
         )?;
         intent.require_original_origin(identity, gate)?;
         closing.disarm();

@@ -48,16 +48,27 @@ impl OriginalDeploymentBinding {
 
     pub(super) fn require_data(&self) -> io::Result<()> {
         let phase = self.phase.parse::<Digest32>().map_err(io::Error::other)?;
-        let identity = self.identity.parse::<Digest32>().map_err(io::Error::other)?;
-        if phase.is_zero() || identity.is_zero()
-            || phase.to_string() != self.phase || identity.to_string() != self.identity
-            || self.root.uid != 0 || self.consumer.uid == 0
-            || self.root.pid == 0 || self.consumer.pid == 0
-            || self.root.process_start_ticks == 0 || self.consumer.process_start_ticks == 0
-            || self.root.boot_id.is_empty() || self.root.boot_id != self.consumer.boot_id
+        let identity = self
+            .identity
+            .parse::<Digest32>()
+            .map_err(io::Error::other)?;
+        if phase.is_zero()
+            || identity.is_zero()
+            || phase.to_string() != self.phase
+            || identity.to_string() != self.identity
+            || self.root.uid != 0
+            || self.consumer.uid == 0
+            || self.root.pid == 0
+            || self.consumer.pid == 0
+            || self.root.process_start_ticks == 0
+            || self.consumer.process_start_ticks == 0
+            || self.root.boot_id.is_empty()
+            || self.root.boot_id != self.consumer.boot_id
             || self.root_end_boottime_ns == 0
         {
-            return Err(io::Error::other("complete original deployment correlation required"));
+            return Err(io::Error::other(
+                "complete original deployment correlation required",
+            ));
         }
         Ok(())
     }
@@ -65,7 +76,9 @@ impl OriginalDeploymentBinding {
 
 pub(crate) fn original_deployment_socket(original: &OriginalPhaseBootstrap) -> io::Result<PathBuf> {
     OriginalDeploymentBinding::from_original_phase(original)?;
-    let parent = original.control_socket.parent()
+    let parent = original
+        .control_socket
+        .parent()
         .filter(|parent| parent.is_absolute())
         .ok_or_else(|| io::Error::other("original phase runtime parent required"))?;
     Ok(parent.join(PROGRESS_SOCKET))
@@ -83,8 +96,12 @@ pub(crate) enum OriginalDeploymentStage {
 #[serde(tag = "stage", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum OriginalDeploymentProgress {
     InputsOpened,
-    OriginalAPrepared { profile: HostAuthorityLearningProfileV1 },
-    OriginalSelectionReady { canonical_material: String },
+    OriginalAPrepared {
+        profile: HostAuthorityLearningProfileV1,
+    },
+    OriginalSelectionReady {
+        canonical_material: String,
+    },
 }
 
 impl OriginalDeploymentProgress {
@@ -115,24 +132,34 @@ impl OriginalDeploymentRequest {
             OriginalDeploymentStage::Scoped => 2,
             OriginalDeploymentStage::Current => 3,
         };
-        if self.schema_version != 1 || self.purpose != PROGRESS_PURPOSE || self.sequence != sequence {
-            return Err(io::Error::other("original deployment stage and sequence differ"));
+        if self.schema_version != 1 || self.purpose != PROGRESS_PURPOSE || self.sequence != sequence
+        {
+            return Err(io::Error::other(
+                "original deployment stage and sequence differ",
+            ));
         }
-        if let OriginalDeploymentProgress::OriginalSelectionReady { canonical_material } = &self.progress
+        if let OriginalDeploymentProgress::OriginalSelectionReady { canonical_material } =
+            &self.progress
             && (canonical_material.is_empty() || canonical_material.len() > FRAME_BOUND)
         {
-            return Err(io::Error::other("bounded original Current material required"));
+            return Err(io::Error::other(
+                "bounded original Current material required",
+            ));
         }
         encode_bounded(self)
     }
 
     pub(crate) fn decode_original(bytes: &[u8]) -> io::Result<Self> {
         if bytes.is_empty() || bytes.len() > FRAME_BOUND {
-            return Err(io::Error::other("bounded original deployment request required"));
+            return Err(io::Error::other(
+                "bounded original deployment request required",
+            ));
         }
         let request: Self = serde_json::from_slice(bytes).map_err(io::Error::other)?;
         if request.encode_original()? != bytes {
-            return Err(io::Error::other("canonical original deployment request required"));
+            return Err(io::Error::other(
+                "canonical original deployment request required",
+            ));
         }
         Ok(request)
     }
@@ -144,7 +171,9 @@ impl OriginalDeploymentRequest {
     ) -> io::Result<()> {
         self.encode_original()?;
         if self.binding != *binding || self.progress.stage() != stage {
-            return Err(io::Error::other("original deployment request changed phase or stage"));
+            return Err(io::Error::other(
+                "original deployment request changed phase or stage",
+            ));
         }
         Ok(())
     }
@@ -153,7 +182,8 @@ impl OriginalDeploymentRequest {
         Ok(Digest32::of_parts(&[
             b"hepta.same-actor-q24-deployment.original-request.v1\0",
             &self.encode_original()?,
-        ]).to_string())
+        ])
+        .to_string())
     }
 }
 
@@ -190,38 +220,62 @@ impl OriginalDeploymentAcknowledgement {
         Ok(value)
     }
 
-    pub(crate) fn require_original_request(&self, request: &OriginalDeploymentRequest) -> io::Result<()> {
-        if self.schema_version != 1 || self.purpose != PROGRESS_PURPOSE
-            || self.binding != request.binding || self.sequence != request.sequence
-            || self.stage != request.progress.stage() || self.original_request != request.digest()?
+    pub(crate) fn require_original_request(
+        &self,
+        request: &OriginalDeploymentRequest,
+    ) -> io::Result<()> {
+        if self.schema_version != 1
+            || self.purpose != PROGRESS_PURPOSE
+            || self.binding != request.binding
+            || self.sequence != request.sequence
+            || self.stage != request.progress.stage()
+            || self.original_request != request.digest()?
         {
-            return Err(io::Error::other("original deployment acknowledgement differs"));
+            return Err(io::Error::other(
+                "original deployment acknowledgement differs",
+            ));
         }
         match (self.stage, self.registration_binding.as_deref()) {
             (OriginalDeploymentStage::Scoped, None) => {}
             (OriginalDeploymentStage::Initial | OriginalDeploymentStage::Current, Some(value)) => {
                 let digest = value.parse::<Digest32>().map_err(io::Error::other)?;
                 if digest.is_zero() || digest.to_string() != value {
-                    return Err(io::Error::other("actual original registration binding required"));
+                    return Err(io::Error::other(
+                        "actual original registration binding required",
+                    ));
                 }
             }
-            _ => return Err(io::Error::other("original deployment acknowledgement kind differs")),
+            _ => {
+                return Err(io::Error::other(
+                    "original deployment acknowledgement kind differs",
+                ));
+            }
         }
         Ok(())
     }
 
-    pub(crate) fn encode_original(&self, request: &OriginalDeploymentRequest) -> io::Result<Vec<u8>> {
+    pub(crate) fn encode_original(
+        &self,
+        request: &OriginalDeploymentRequest,
+    ) -> io::Result<Vec<u8>> {
         self.require_original_request(request)?;
         encode_bounded(self)
     }
 
-    pub(crate) fn decode_original(bytes: &[u8], request: &OriginalDeploymentRequest) -> io::Result<Self> {
+    pub(crate) fn decode_original(
+        bytes: &[u8],
+        request: &OriginalDeploymentRequest,
+    ) -> io::Result<Self> {
         if bytes.is_empty() || bytes.len() > FRAME_BOUND {
-            return Err(io::Error::other("bounded original deployment acknowledgement required"));
+            return Err(io::Error::other(
+                "bounded original deployment acknowledgement required",
+            ));
         }
         let response: Self = serde_json::from_slice(bytes).map_err(io::Error::other)?;
         if response.encode_original(request)? != bytes {
-            return Err(io::Error::other("canonical original deployment acknowledgement required"));
+            return Err(io::Error::other(
+                "canonical original deployment acknowledgement required",
+            ));
         }
         Ok(response)
     }
@@ -230,7 +284,9 @@ impl OriginalDeploymentAcknowledgement {
 fn encode_bounded(value: &impl Serialize) -> io::Result<Vec<u8>> {
     let bytes = serde_json::to_vec(value).map_err(io::Error::other)?;
     if bytes.is_empty() || bytes.len() > FRAME_BOUND {
-        return Err(io::Error::other("original deployment frame exceeds its bound"));
+        return Err(io::Error::other(
+            "original deployment frame exceeds its bound",
+        ));
     }
     Ok(bytes)
 }

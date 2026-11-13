@@ -277,7 +277,8 @@ async fn successful_original_job_releases_real_lane_before_returning_value() -> 
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn joined_c_job_preserves_the_actual_panic_and_sticky_cleanup_failure() -> anyhow::Result<()> {
+async fn joined_c_job_preserves_the_actual_panic_and_sticky_cleanup_failure() -> anyhow::Result<()>
+{
     let jobs = jobs()?;
     let job = {
         let admission = jobs.reserve()?;
@@ -306,7 +307,8 @@ async fn joined_c_job_preserves_the_actual_panic_and_sticky_cleanup_failure() ->
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn joined_c_job_distinguishes_phase_refusal_and_drops_the_actual_owner() -> anyhow::Result<()> {
+async fn joined_c_job_distinguishes_phase_refusal_and_drops_the_actual_owner() -> anyhow::Result<()>
+{
     let jobs = jobs()?;
     let (owned, mut peer) = pair()?;
     let (started, started_rx) = oneshot::channel();

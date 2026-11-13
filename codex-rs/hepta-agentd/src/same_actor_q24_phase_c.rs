@@ -224,25 +224,17 @@ impl OriginalPhaseExecution {
                 });
             }
             OriginalScopedExit::Progress(Err(error)) => error,
-            OriginalScopedExit::Progress(Ok(())) => phase_refused(
-                "original C retirement was not acknowledged by its owners",
-            ),
-            OriginalScopedExit::Cancelled => phase_refused(
-                "original C phase was cancelled",
-            ),
-            OriginalScopedExit::Closed => phase_refused(
-                "original C phase is closed",
-            ),
+            OriginalScopedExit::Progress(Ok(())) => {
+                phase_refused("original C retirement was not acknowledged by its owners")
+            }
+            OriginalScopedExit::Cancelled => phase_refused("original C phase was cancelled"),
+            OriginalScopedExit::Closed => phase_refused("original C phase is closed"),
         };
         self.close_original_execution();
         stop.cancel();
         let joined = work.as_mut().await.map(drop);
         drop(work);
-        preserve_scoped_result(
-            Err(error),
-            joined,
-            "concrete Learning/delivery/C worker",
-        )
+        preserve_scoped_result(Err(error), joined, "concrete Learning/delivery/C worker")
     }
 }
 

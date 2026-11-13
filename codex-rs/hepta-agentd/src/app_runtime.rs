@@ -517,22 +517,28 @@ mod tests {
         use std::os::unix::net::UnixStream;
 
         let original = codex_app_server::OriginalAppServerOwnerCustody::new();
-        assert!(super::AppServerSocket::with_original_custody(
-            super::AppServerSocket::Bind,
-            super::AppServerModelToolProfile::Standard,
-            std::sync::Arc::clone(&original),
-        ).is_err());
+        assert!(
+            super::AppServerSocket::with_original_custody(
+                super::AppServerSocket::Bind,
+                super::AppServerModelToolProfile::Standard,
+                std::sync::Arc::clone(&original),
+            )
+            .is_err()
+        );
         for profile in [
             super::AppServerModelToolProfile::OriginalNotes,
             super::AppServerModelToolProfile::OriginalDesktop,
         ] {
             let (owned, mut peer) = UnixStream::pair().expect("actual socketpair");
             let socket = super::AppServerSocket::RootBound(owned.into());
-            assert!(super::AppServerSocket::with_original_custody(
-                socket,
-                profile,
-                std::sync::Arc::clone(&original),
-            ).is_err());
+            assert!(
+                super::AppServerSocket::with_original_custody(
+                    socket,
+                    profile,
+                    std::sync::Arc::clone(&original),
+                )
+                .is_err()
+            );
             let mut byte = [0_u8; 1];
             assert_eq!(peer.read(&mut byte).expect("rejected descriptor closed"), 0);
         }
@@ -555,7 +561,8 @@ mod tests {
             super::AppServerSocket::RootBound(owned.into()),
             super::AppServerModelToolProfile::Standard,
             std::sync::Arc::clone(&original),
-        ).expect("strict Standard descriptor transfer");
+        )
+        .expect("strict Standard descriptor transfer");
         let super::AppServerSocket::OriginalOwned { socket, custody } = result else {
             panic!("actual descriptor was not retained in the selected branch");
         };

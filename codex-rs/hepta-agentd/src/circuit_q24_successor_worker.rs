@@ -96,11 +96,11 @@ impl PendingSuccessorOwner {
             // Capture the ordered owner, including before the first poll.
             // A failure closes Gate before dropping actual owner resources.
             let mut attempt = attempt;
-            attempt.gate.require_open().map_err(|error| {
-                AgentdError::GenerationFenced(error.to_string())
-            })?;
-            if attempt.state.identity() != &attempt.identity
-                || attempt.cancellation.is_cancelled()
+            attempt
+                .gate
+                .require_open()
+                .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+            if attempt.state.identity() != &attempt.identity || attempt.cancellation.is_cancelled()
             {
                 return Err(AgentdError::GenerationFenced(
                     "original C retirement worker identity or cancellation differs".into(),

@@ -1520,11 +1520,14 @@ impl ThreadRequestProcessor {
         &self,
         original: &Arc<crate::OriginalAppServerOwnerCustody>,
     ) -> std::io::Result<()> {
-        let attached = self.thread_state_manager.original_owner().ok_or_else(|| {
-            std::io::Error::other("original ThreadStateManager owner is absent")
-        })?;
+        let attached = self
+            .thread_state_manager
+            .original_owner()
+            .ok_or_else(|| std::io::Error::other("original ThreadStateManager owner is absent"))?;
         if !Arc::ptr_eq(&attached, original) {
-            return Err(std::io::Error::other("original ThreadStateManager owner mismatch"));
+            return Err(std::io::Error::other(
+                "original ThreadStateManager owner mismatch",
+            ));
         }
         ThreadManager::enable_original_shutdown_custody(&self.thread_manager).await
     }

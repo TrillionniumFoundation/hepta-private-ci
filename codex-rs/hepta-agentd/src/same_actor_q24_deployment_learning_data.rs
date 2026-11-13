@@ -88,7 +88,12 @@ impl SignerData {
             principal: self.principal.original()?,
             controller_id: StableId::new(&self.controller_id).map_err(deployment_error)?,
             verifying_key: self.verifying_key,
-            roles: self.roles.iter().copied().map(EvidenceRoleData::original).collect(),
+            roles: self
+                .roles
+                .iter()
+                .copied()
+                .map(EvidenceRoleData::original)
+                .collect(),
             revoked_at: self.revoked_at,
         })
     }
@@ -109,7 +114,10 @@ impl TrustData {
             scope_digest: Digest32::from_array(self.scope_digest),
             objective_digest: Digest32::from_array(self.objective_digest),
             authority_epoch: self.authority_epoch,
-            signers: self.signers.iter().map(SignerData::original)
+            signers: self
+                .signers
+                .iter()
+                .map(SignerData::original)
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -195,7 +203,9 @@ impl LearningAuthorityData {
             .map_err(deployment_error)?;
         let expected = Digest32::from_array(self.expected_distribution_digest);
         if expected.is_zero() || activated.distribution_digest() != expected {
-            return Err(deployment_refused("actual Root Learning distribution differs"));
+            return Err(deployment_refused(
+                "actual Root Learning distribution differs",
+            ));
         }
         Ok(OriginalLearningAuthority { activated, signers })
     }
@@ -214,11 +224,15 @@ impl OriginalLearningAuthority {
         required_role: LearningEvidenceRoleV1,
     ) -> Result<TrustedLearningSignerV1, AgentdError> {
         let principal = StableId::new(principal_id).map_err(deployment_error)?;
-        self.signers.iter()
-            .find(|signer| signer.principal.principal_id == principal
-                && signer.roles.contains(&required_role))
+        self.signers
+            .iter()
+            .find(|signer| {
+                signer.principal.principal_id == principal && signer.roles.contains(&required_role)
+            })
             .cloned()
-            .ok_or_else(|| deployment_refused("required actual enrolled Learning signer is missing"))
+            .ok_or_else(|| {
+                deployment_refused("required actual enrolled Learning signer is missing")
+            })
     }
 }
 
@@ -251,14 +265,17 @@ impl SignedEvidenceData {
                 LearningEvidenceRoleV1::Observer => EvidenceRoleData::Observer,
                 LearningEvidenceRoleV1::Evaluator => EvidenceRoleData::Evaluator,
                 LearningEvidenceRoleV1::CreditAllocator => EvidenceRoleData::CreditAllocator,
-                LearningEvidenceRoleV1::UnlearningAuthority => EvidenceRoleData::UnlearningAuthority,
+                LearningEvidenceRoleV1::UnlearningAuthority => {
+                    EvidenceRoleData::UnlearningAuthority
+                }
                 LearningEvidenceRoleV1::Selector => EvidenceRoleData::Selector,
             },
             trust_digest: original.trust_digest.into_array(),
             scope_digest: original.scope_digest.into_array(),
             objective_digest: original.objective_digest.into_array(),
             authority_epoch: original.authority_epoch,
-            issued_at: original.issued_at, expires_at: original.expires_at,
+            issued_at: original.issued_at,
+            expires_at: original.expires_at,
             payload_digest: original.payload_digest.into_array(),
             signature: original.signature.to_vec(),
         }
@@ -282,7 +299,9 @@ impl SignedEvidenceData {
 }
 
 fn signature(bytes: &[u8]) -> Result<[u8; 64], AgentdError> {
-    bytes.try_into().map_err(|_| deployment_refused("original Ed25519 signature must be 64 bytes"))
+    bytes
+        .try_into()
+        .map_err(|_| deployment_refused("original Ed25519 signature must be 64 bytes"))
 }
 
 pub(super) fn required_option<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>

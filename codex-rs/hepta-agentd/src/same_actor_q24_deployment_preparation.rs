@@ -2,14 +2,24 @@
 //! The completed-task pin is external observation data checked by the actual
 //! Producer against its live source. It is never taken from a Control ACK.
 
+use super::deployment_error;
+use super::deployment_refused;
+use crate::AgentdError;
+use crate::CellQ24DatasetProjectionV1;
+use crate::CellQ24LearningPreparationConfigV1;
+use crate::CellQ24PrivateHeadV1;
+use crate::CellQ24SgdRuleV1;
+use crate::LoadedCellQ24ModelV1;
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
+use codex_hepta_learning_artifacts::IterationEnvelopeV1;
+use codex_hepta_learning_artifacts::LearningIterationBudgetV1;
+use codex_hepta_learning_artifacts::LearningIterationOwnersV1;
+use codex_hepta_learning_artifacts::LearningIterationRequestV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 use std::sync::Arc;
-use codex_hepta_learning_artifacts::{CellCompatibilityBundleV1, IterationEnvelopeV1,
-    LearningIterationBudgetV1, LearningIterationOwnersV1, LearningIterationRequestV1};
-use codex_hepta_types::{Digest32, StableId};
-use serde::{Deserialize, Serialize};
-use crate::{AgentdError, CellQ24DatasetProjectionV1, CellQ24LearningPreparationConfigV1,
-    CellQ24PrivateHeadV1, CellQ24SgdRuleV1, LoadedCellQ24ModelV1};
-use super::{deployment_error, deployment_refused};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -33,7 +43,8 @@ impl OriginalEnvelopeData {
             base_tree: Digest32::from_array(self.base_tree),
             objective_digest: Digest32::from_array(self.objective_digest),
             grammar_digest: Digest32::from_array(self.grammar_digest),
-            maximum_files: self.maximum_files, maximum_diff_bytes: self.maximum_diff_bytes,
+            maximum_files: self.maximum_files,
+            maximum_diff_bytes: self.maximum_diff_bytes,
             maximum_candidates: self.maximum_candidates,
             maximum_parallel_sandboxes: self.maximum_parallel_sandboxes,
             expiry_unix_seconds: self.expiry_unix_seconds,
@@ -97,13 +108,17 @@ pub(super) struct OriginalPreparationData {
 }
 impl OriginalPreparationData {
     pub(super) fn original(
-        &self, baseline: Arc<LoadedCellQ24ModelV1>, bundle: &CellCompatibilityBundleV1,
+        &self,
+        baseline: Arc<LoadedCellQ24ModelV1>,
+        bundle: &CellCompatibilityBundleV1,
     ) -> Result<CellQ24LearningPreparationConfigV1, AgentdError> {
         let expected = Digest32::from_array(self.request.selected_bundle_digest);
         if bundle.digest().map_err(deployment_error)? != expected
             || baseline.components() != &bundle.components
         {
-            return Err(deployment_refused("preparation differs from the actual Initial baseline"));
+            return Err(deployment_refused(
+                "preparation differs from the actual Initial baseline",
+            ));
         }
         let data = &self.request;
         let budget = &data.budget;
@@ -116,7 +131,8 @@ impl OriginalPreparationData {
             completed_task_receipt: Digest32::from_array(data.completed_task_receipt),
             selected_artifact_digest: Digest32::from_array(data.selected_artifact_digest),
             evaluation_profile: Digest32::from_array(data.evaluation_profile),
-            selected_bundle: bundle.clone(), envelope: data.envelope.original()?,
+            selected_bundle: bundle.clone(),
+            envelope: data.envelope.original()?,
             budget: LearningIterationBudgetV1 {
                 maximum_dataset_rows: budget.maximum_dataset_rows,
                 maximum_dataset_bytes: budget.maximum_dataset_bytes,
@@ -136,18 +152,25 @@ impl OriginalPreparationData {
                 evaluator: StableId::new(&owner.evaluator).map_err(deployment_error)?,
                 proposal: StableId::new(&owner.proposal).map_err(deployment_error)?,
                 selector: StableId::new(&owner.selector).map_err(deployment_error)?,
-                next_use_observer: StableId::new(&owner.next_use_observer).map_err(deployment_error)?,
+                next_use_observer: StableId::new(&owner.next_use_observer)
+                    .map_err(deployment_error)?,
             },
             baseline,
             head: match self.head {
                 OriginalPrivateHeadData::Drive { index } => CellQ24PrivateHeadV1::Drive { index },
-                OriginalPrivateHeadData::Prediction { index } => CellQ24PrivateHeadV1::Prediction { index },
+                OriginalPrivateHeadData::Prediction { index } => {
+                    CellQ24PrivateHeadV1::Prediction { index }
+                }
             },
-            rule: CellQ24SgdRuleV1 { epochs: self.epochs, learning_rate_q24: self.learning_rate_q24 },
+            rule: CellQ24SgdRuleV1 {
+                epochs: self.epochs,
+                learning_rate_q24: self.learning_rate_q24,
+            },
             projection: CellQ24DatasetProjectionV1 {
                 inherited_inclusion_policy: Digest32::from_array(self.inherited_inclusion_policy),
                 unit_profile_digest: Digest32::from_array(self.unit_profile_digest),
-                baseline_bundle: expected, input_width: self.input_width,
+                baseline_bundle: expected,
+                input_width: self.input_width,
             },
             snapshot_id: StableId::new(&self.snapshot_id).map_err(deployment_error)?,
         })

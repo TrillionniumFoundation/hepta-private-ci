@@ -23,7 +23,10 @@ impl PublishedCircuitFeatureTaskV1 {
         // locked and retained; never try to recreate that fact by a new read.
         let _original = self.0.original.try_lock().map_err(invalid)?;
         LiveGenerationCurrent::retire_original_current_purpose(
-            &self.0.current, intent, identity, gate,
+            &self.0.current,
+            intent,
+            identity,
+            gate,
         )?;
         intent.require_original_origin(identity, gate)?;
         closing.disarm();

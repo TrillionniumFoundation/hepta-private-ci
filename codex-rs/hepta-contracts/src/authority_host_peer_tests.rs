@@ -244,9 +244,8 @@ fn original_peer_eof_rejects_the_exit_of_the_actual_connected_process() {
     let listener = std::os::unix::net::UnixListener::bind(&path).unwrap();
     listener.set_nonblocking(true).unwrap();
     let module = module_path!().split_once("::").unwrap().1;
-    let test_name = format!(
-        "{module}::original_peer_eof_rejects_the_exit_of_the_actual_connected_process"
-    );
+    let test_name =
+        format!("{module}::original_peer_eof_rejects_the_exit_of_the_actual_connected_process");
     let mut child = std::process::Command::new(std::env::current_exe().unwrap())
         .args(["--exact", &test_name, "--nocapture"])
         .env(CHILD, &path)
@@ -256,7 +255,10 @@ fn original_peer_eof_rejects_the_exit_of_the_actual_connected_process() {
     let child_pid = rustix::process::Pid::from_raw(child.id() as i32).unwrap();
     let owner =
         rustix::process::pidfd_open(child_pid, rustix::process::PidfdFlags::empty()).unwrap();
-    let mut descriptors = [rustix::event::PollFd::new(&listener, rustix::event::PollFlags::IN)];
+    let mut descriptors = [rustix::event::PollFd::new(
+        &listener,
+        rustix::event::PollFlags::IN,
+    )];
     assert_ne!(
         rustix::event::poll(
             &mut descriptors,
