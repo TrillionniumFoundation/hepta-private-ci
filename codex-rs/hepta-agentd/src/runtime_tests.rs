@@ -643,7 +643,12 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("logical request");
     let fixture_started = std::time::Instant::now();
     let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
-    let expires_at = minted_at.as_secs() + 1;
+    // Round the nominal one-second deadline up to the lease field's precision.
+    // This changes the live window from (0s, 1s] to [1s, 2s). For fractional
+    // mints the old expiry moves by one second; the excess over the nominal
+    // one-second duration is strictly less than one second.
+    let lease_deadline = minted_at + Duration::from_secs(1);
+    let expires_at = lease_deadline.as_secs() + u64::from(lease_deadline.subsec_nanos() != 0);
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
             .duration_since(UNIX_EPOCH)

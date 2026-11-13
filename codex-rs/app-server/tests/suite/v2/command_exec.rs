@@ -532,6 +532,11 @@ async fn command_exec_permission_profile_does_not_reuse_default_network_proxy() 
         .await?;
 
     let response: CommandExecResponse = mcp.read_response(command_request_id).await?;
+    #[cfg(target_os = "linux")]
+    log_command_exec_sandbox_failure(
+        "command_exec_permission_profile_does_not_reuse_default_network_proxy",
+        &response,
+    );
     assert_eq!(
         response,
         CommandExecResponse {
@@ -590,6 +595,11 @@ async fn command_exec_permission_profile_project_roots_use_command_cwd() -> Resu
         .await?;
 
     let response: CommandExecResponse = mcp.read_response(command_request_id).await?;
+    #[cfg(target_os = "linux")]
+    log_command_exec_sandbox_failure(
+        "command_exec_permission_profile_project_roots_use_command_cwd",
+        &response,
+    );
     assert_eq!(
         response.exit_code, 0,
         "parent cwd write should fail under command project-root profile: {response:?}"
@@ -1404,6 +1414,103 @@ fn decode_delta_notification(
         .params
         .context("command/exec/outputDelta notification should include params")?;
     serde_json::from_value(params).context("deserialize command/exec/outputDelta notification")
+}
+
+#[cfg(target_os = "linux")]
+fn log_command_exec_sandbox_failure(test_name: &str, response: &CommandExecResponse) {
+    use std::fmt::Write as _;
+    use std::io::Read as _;
+    use std::io::Write as _;
+    use std::os::unix::fs::MetadataExt as _;
+
+    if response.exit_code == 0 {
+        return;
+    }
+
+    // These observations describe this test process after the response, not the
+    // app-server or bubblewrap child at the time namespace creation failed.
+    let mut diagnostics = format!(
+        "[command/exec sandbox] test={test_name}, observer=test-process, pid={}, exit_code={}\n",
+        std::process::id(),
+        response.exit_code,
+    );
+    match std::fs::metadata("/proc/self/ns/user") {
+        Ok(metadata) => {
+            let _ = writeln!(diagnostics, "user_namespace_inode={}", metadata.ino());
+        }
+        Err(error) => {
+            let _ = writeln!(
+                diagnostics,
+                "user_namespace_inode: {:?}, os_error={:?}",
+                error.kind(),
+                error.raw_os_error(),
+            );
+        }
+    }
+
+    for (path, limit) in [
+        ("/proc/self/status", 8_192),
+        ("/proc/self/uid_map", 256),
+        ("/proc/self/gid_map", 256),
+        ("/proc/self/attr/current", 512),
+        ("/proc/sys/kernel/osrelease", 256),
+        ("/proc/sys/kernel/unprivileged_userns_clone", 32),
+        ("/proc/sys/kernel/apparmor_restrict_unprivileged_userns", 32),
+        ("/proc/sys/user/max_user_namespaces", 32),
+    ] {
+        let mut bytes = Vec::new();
+        let read =
+            std::fs::File::open(path).and_then(|file| file.take(limit + 1).read_to_end(&mut bytes));
+        match read {
+            Ok(_) => {
+                let truncated = bytes.len() as u64 > limit;
+                bytes.truncate(limit as usize);
+                let contents = String::from_utf8_lossy(&bytes);
+                if path == "/proc/self/status" {
+                    for line in contents.lines().filter(|line| {
+                        [
+                            "Uid:",
+                            "Gid:",
+                            "CapEff:",
+                            "CapBnd:",
+                            "NoNewPrivs:",
+                            "Seccomp:",
+                            "Seccomp_filters:",
+                        ]
+                        .iter()
+                        .any(|field| line.starts_with(field))
+                    }) {
+                        let _ = writeln!(diagnostics, "{path}: {line:?}");
+                    }
+                    let _ = writeln!(diagnostics, "{path}: truncated={truncated}");
+                } else {
+                    let _ = writeln!(diagnostics, "{path}: {contents:?}, truncated={truncated}");
+                }
+            }
+            Err(error) => {
+                let _ = writeln!(
+                    diagnostics,
+                    "{path}: {:?}, os_error={:?}",
+                    error.kind(),
+                    error.raw_os_error(),
+                );
+            }
+        }
+    }
+
+    const OUTPUT_LIMIT: usize = 8_192;
+    const TRUNCATED: &str = "\n[command/exec sandbox] diagnostics truncated\n";
+    if diagnostics.len() > OUTPUT_LIMIT {
+        let mut end = OUTPUT_LIMIT - TRUNCATED.len();
+        while !diagnostics.is_char_boundary(end) {
+            end -= 1;
+        }
+        diagnostics.truncate(end);
+        diagnostics.push_str(TRUNCATED);
+    }
+
+    // Bypass libtest capture, and acquire stderr only after all bounded reads.
+    let _ = std::io::stderr().lock().write_all(diagnostics.as_bytes());
 }
 
 fn insert_networked_permission_profile_config(

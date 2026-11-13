@@ -1314,7 +1314,15 @@ mod tests {
         ));
 
         for (name, wire) in variants {
+            let report_stage = |stage: &str| {
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr().lock(),
+                    format_args!("[plain-host skill refusal] {name}: {stage}\n"),
+                );
+            };
+            report_stage("create fixture: begin");
             let fixture = Fixture::new().await;
+            report_stage("create fixture: complete");
             let now_ms = u64::try_from(
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
@@ -1325,7 +1333,10 @@ mod tests {
             let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
             let mut intent = effect_intent(&scope);
             intent.payload_digest = Sha256Digest::for_bytes(&wire);
+            report_stage("prepare effect: begin");
             prepare_effect(&fixture, now_ms, &intent).await;
+            report_stage("prepare effect: complete");
+            report_stage("prepare mock and original run: begin");
             let run_before = fixture
                 .store
                 .taskflow_run(&intent.run_id)
@@ -1345,10 +1356,14 @@ mod tests {
                     "provider_operation_id_sha256": Sha256Digest::for_bytes(b"unchecked-goal").as_str(),
                     "status": "completed"
                 }))).expect(0).mount(&server).await;
+            report_stage("prepare mock and original run: complete");
+            report_stage("open host and read original authority: begin");
             let (host, signer, host_file) = fixture.open_effect_host(&server, &scope);
             let before_capacity = host.authority.capacity().expect("authority capacity");
             let before_frontier = host.authority.frontier().expect("authority frontier");
             let grant = signed_final_use(&intent, now_ms, &signer);
+            report_stage("open host and read original authority: complete");
+            report_stage("reject envelope: begin");
             let result = host
                 .execute(
                     &fixture.store,
@@ -1359,6 +1374,8 @@ mod tests {
                     now_ms + 5,
                 )
                 .await;
+            report_stage("reject envelope: complete");
+            report_stage("check retained authority and durable records: begin");
             assert!(
                 matches!(result, Err(AgentdError::Invalid(ref reason))
                     if reason == "action skill invocation requires a registered goal-checking host"),
@@ -1417,10 +1434,16 @@ mod tests {
                 0,
                 "{name}"
             );
+            report_stage("check retained authority and durable records: complete");
+            report_stage("verify no provider contact: begin");
             server.verify().await;
+            report_stage("verify no provider contact: complete");
+            report_stage("drop and reopen original host: begin");
             drop(host);
             let reopened = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
                 .expect("reopen original authority");
+            report_stage("drop and reopen original host: complete");
+            report_stage("check reopened authority: begin");
             assert_eq!(
                 reopened.authority.capacity().expect("reopened capacity"),
                 before_capacity,
@@ -1431,6 +1454,11 @@ mod tests {
                 before_frontier,
                 "{name}"
             );
+            report_stage("check reopened authority: complete; leaving variant scope");
         }
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr().lock(),
+            format_args!("[plain-host skill refusal] all variant scopes exited\n"),
+        );
     }
 }
