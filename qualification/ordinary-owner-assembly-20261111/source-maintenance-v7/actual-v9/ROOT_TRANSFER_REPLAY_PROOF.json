@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "kind": "root_actual_v9_transfer_and_formatter_replay",
+  "status": "FAILED_MAINTENANCE_NOT_QUALIFICATION",
+  "source": {
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+    "manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+    "files": 199
+  },
+  "native_terminal": {
+    "session_id": "dpty-10eecbaa465df41c3903f8e55d01c9c9b139a3fd8f707d32baff2a955dbe152f",
+    "status": "exited",
+    "exit_code": 1,
+    "output_complete": true,
+    "capture_error": null,
+    "bytes": 3131,
+    "original_tool": "6973a755728a523bbc451fda9c7cb9407601ff99",
+    "full_output": "75201433434ef9fd4e30c8b6726f20669a2218fc",
+    "earlier_progress_read_tool_timeout": "4e4fc1453c1f58910864e2f706e684450f84f901",
+    "native_timeout": false
+  },
+  "readonly_reader": {
+    "session_id": "dpty-0211ff3fc54f93d23d35197fc9624355ca0a923d5e769f68888d7d197832febe",
+    "exit_code": 0,
+    "output_complete": true,
+    "capture_error": null,
+    "script": "099e225f061d5be2988fcbe3442c3fd6ac5deef9",
+    "request": "0f9f0f2be6f9dd058ffa1a81d8b71ee61e67fdeb",
+    "start": "57b079c3967fca36e2216fba0b42ada84ee984d2"
+  },
+  "transport": {
+    "output": {
+      "blob": "ae4de8e432ba556fe23a1ac570b99f83c72cc7c7",
+      "bytes": 113859,
+      "sha256": "e09fd5ca41bf3fbcef31e9bde3367cd43b180b106bd6f74c693cd4ea7708003b"
+    },
+    "bundle": {
+      "blob": "15967f8eafbbae2f07c38a0e889ca468dd0e41a8",
+      "bytes": 371237,
+      "sha256": "fdea9d1bb0e7c7b28ae8644c1ca6bf0ed2eb36e20d3a51a2afd7917008b31d19"
+    },
+    "summary": {
+      "blob": "8fbd6fc00034bac9e0f49fb648655ea62d915d54",
+      "bytes": 8367,
+      "sha256": "fa211b92113d507550837bef581c36ee92c4a770a6a3a970d4799a4671ba1a83"
+    },
+    "chunks": [
+      {
+        "offset": 0,
+        "end": 8192,
+        "pin": "26222dda6911505f2ff78e1db17b1024ecd6323c"
+      },
+      {
+        "offset": 8192,
+        "end": 24576,
+        "pin": "f2bd4652697c72312ee510c9b8ccecc4c0be5aad"
+      },
+      {
+        "offset": 24576,
+        "end": 40960,
+        "pin": "d89317b50be53eeb618cfad8f89cc1a11e5b0f8d"
+      },
+      {
+        "offset": 40960,
+        "end": 57344,
+        "pin": "75470b773e74fff3bb1c99074b60e313b44ad699"
+      },
+      {
+        "offset": 57344,
+        "end": 73728,
+        "pin": "03d68a0dd38de23465e6887e7481345ef7817155"
+      },
+      {
+        "offset": 73728,
+        "end": 90112,
+        "pin": "4f80e4bafba4b7be0f54f8d903ac88e81075ac71"
+      },
+      {
+        "offset": 90112,
+        "end": 106496,
+        "pin": "5157fcdecde8b379a23d34ec5fc4853628fca96a"
+      },
+      {
+        "offset": 106496,
+        "end": 113859,
+        "pin": "ddd60b9d8d72a0c680f46b5fe0d5616daf23d54c"
+      }
+    ],
+    "whole_archive_contiguous_bytes": 113859,
+    "all_chunk_sha256_verified": true,
+    "independent_raw_deflate_decoder": "8c163840421d6ca7acb2f7b30be9732f5ecb569b",
+    "compressed_hash_verified": true,
+    "full_decompressed_git_sha256_length_verified": true,
+    "utf8_roundtrip_exact": true,
+    "all_original_file_get_hashes_verified": true
+  },
+  "original_files": [
+    {
+      "name": "RESULT.json",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/RESULT.json",
+      "pin": {
+        "bytes": 11652,
+        "git_blob": "4f1856cd679163e205fad3a11cd554e4722acc38",
+        "sha256": "ad32d19a46e22b9a1b31d4214aeb6ce6873d54706dc293557ebd49b263b02052"
+      },
+      "version": [
+        "66306",
+        "78561465",
+        "11652",
+        "1794532381086053741",
+        "1794532381087070536"
+      ]
+    },
+    {
+      "name": "FINAL_POSTIMAGES.json",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/final-postimages.json",
+      "pin": {
+        "bytes": 61933,
+        "git_blob": "2f7d924178f222007d52394ae3d367beb3288eb1",
+        "sha256": "85a74ee4ae61b7878ea65721b27aee2319b9d1b29a1105f4aeaa8e255ca1be48"
+      },
+      "version": [
+        "66306",
+        "78561468",
+        "61933",
+        "1794532381033082917",
+        "1794532381034072469"
+      ]
+    },
+    {
+      "name": "FORMATTED_POSTIMAGES.json",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/formatted-postimages.json",
+      "pin": {
+        "bytes": 61941,
+        "git_blob": "f9b7741a620042ec3fe4194e76e0b82d73d0d374",
+        "sha256": "71cec67e15bebd63682b0e57dd6fec9627b6c365981ccbdcccca037ede5d8386"
+      },
+      "version": [
+        "66306",
+        "78561461",
+        "61941",
+        "1794532219970122101",
+        "1794532219977947793"
+      ]
+    },
+    {
+      "name": "INPUT_MANIFEST.json",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source/qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+      "pin": {
+        "bytes": 58109,
+        "git_blob": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+        "sha256": "efd7d33be47101862e70eba63dec4b77aebaf4ebb24f0194a03bd2947dad1d4b"
+      },
+      "version": [
+        "66306",
+        "79184675",
+        "58109",
+        "1794532217044054844",
+        "1794532217044054844"
+      ]
+    },
+    {
+      "name": "formatted-postimage/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs.txt",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/postimages-formatted/093.txt",
+      "pin": {
+        "bytes": 17576,
+        "git_blob": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "sha256": "e1711d162e363434a622f35ef75a4df68f273b1fe43808ccab62281b8d766856"
+      },
+      "version": [
+        "66306",
+        "79185536",
+        "17576",
+        "1794532219870834888",
+        "1794532219870834888"
+      ]
+    },
+    {
+      "name": "FORMATTED.patch",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/formatted.patch",
+      "pin": {
+        "bytes": 1729,
+        "git_blob": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+        "sha256": "7cb214788df602d87cc9faa06d5acc475484c6dbfee556cc62bbb99a3ee0f698"
+      },
+      "version": [
+        "66306",
+        "78561459",
+        "1729",
+        "1794532219856942285",
+        "1794532219856942285"
+      ]
+    },
+    {
+      "name": "final-postimage/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs.txt",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/postimages-final/093.txt",
+      "pin": {
+        "bytes": 17576,
+        "git_blob": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "sha256": "e1711d162e363434a622f35ef75a4df68f273b1fe43808ccab62281b8d766856"
+      },
+      "version": [
+        "66306",
+        "79185538",
+        "17576",
+        "1794532381012899730",
+        "1794532381012899730"
+      ]
+    },
+    {
+      "name": "actual-source/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pin": {
+        "bytes": 17576,
+        "git_blob": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "sha256": "e1711d162e363434a622f35ef75a4df68f273b1fe43808ccab62281b8d766856"
+      },
+      "version": [
+        "66306",
+        "79174666",
+        "17576",
+        "1794532219187976617",
+        "1794532219187976617"
+      ]
+    },
+    {
+      "name": "FINAL.patch",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/final.patch",
+      "pin": {
+        "bytes": 1729,
+        "git_blob": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+        "sha256": "7cb214788df602d87cc9faa06d5acc475484c6dbfee556cc62bbb99a3ee0f698"
+      },
+      "version": [
+        "66306",
+        "78532790",
+        "1729",
+        "1794532381009407985",
+        "1794532381009407985"
+      ]
+    },
+    {
+      "name": "FINAL_SCOPE.json",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/final-scope-observation.json",
+      "pin": {
+        "bytes": 402,
+        "git_blob": "148c879d85f6ed317e908129bef465135ce98d58",
+        "sha256": "82e4c2ed9d39b3a0ac661b56ee4b3ba163abe58f3e594502c5ea067db0134cf9"
+      },
+      "version": [
+        "66306",
+        "78561467",
+        "402",
+        "1794532381009514971",
+        "1794532381010073345"
+      ]
+    },
+    {
+      "name": "fix-eleven-crates.log",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fix-eleven-crates.log",
+      "pin": {
+        "bytes": 97371,
+        "git_blob": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+        "sha256": "37b9622af630f061012c04a1e38f5f48f044a9f481256940bcf0cdad8c67d95c"
+      },
+      "version": [
+        "66306",
+        "78561462",
+        "97371",
+        "1794532378355170177",
+        "1794532378355170177"
+      ]
+    }
+  ],
+  "actual_result": {
+    "status": "source-maintenance-failed",
+    "format_before": 0,
+    "fix": 101,
+    "format_after": 0,
+    "bins": null,
+    "elapsed_seconds": 179.92275131400675,
+    "completion_unknown": false,
+    "errors": [],
+    "reference_before": {
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "status": "",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+    },
+    "reference_after": {
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "status": "",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+    },
+    "publication_status": "not_attempted_root_will_transfer_verified_postimages",
+    "tests_run": false,
+    "original_checker_verify_run": false,
+    "native_qualification_run": false
+  },
+  "formatter": {
+    "changed_paths": 1,
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+    "pre": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+    "post": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+    "patch": {
+      "bytes": 1729,
+      "git_blob": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+      "sha256": "7cb214788df602d87cc9faa06d5acc475484c6dbfee556cc62bbb99a3ee0f698"
+    },
+    "hunks": 3,
+    "exact_positional_forward_reverse": true,
+    "formatted_and_final_patches_equal": true,
+    "formatted_and_final_manifests_equal": true,
+    "actual_source_copy_equals_original_postimage": true,
+    "semantics": "Sort the existing new Outcome import and collapse only the actual C UFCS assignment to one line. Original A call, both operands, call order and other source bytes are preserved."
+  },
+  "manifest": {
+    "blob": "69dc1fc5c75298b37bb0c218254deb7967ccc101",
+    "bytes": 58109,
+    "sha256": "2cb726a9d3b45cfc80239e193909bc29eeb539f169a95a6736e5df56d05d764e"
+  },
+  "scope_observation": {
+    "outside_fixed_paths": [],
+    "patch": {
+      "bytes": 1729,
+      "git_blob": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+      "sha256": "7cb214788df602d87cc9faa06d5acc475484c6dbfee556cc62bbb99a3ee0f698"
+    },
+    "publication_allowed": true,
+    "schema_version": 1,
+    "stage": "final",
+    "tracked_dirty": [
+      "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+    ],
+    "untracked": []
+  },
+  "current_failure": {
+    "agentd": "Clippy's attempted source fix renamed the receiver binding; the emitted assignment still referenced receiver. The broken temporary fixes are not in the final source image.",
+    "core": "Eight original SessionIo test initializers lack original_loop_outcome.",
+    "other_observed_rules": "Core and AppServer have actual await_holding_invalid_type diagnostics; retain original owner custody when correcting."
+  },
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "independent_c_accepted": false,
+  "real_daemon_root_restart_accepted": false
+}

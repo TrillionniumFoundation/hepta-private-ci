@@ -1,0 +1,292 @@
+{
+  "classification": "SOURCE_MAINTENANCE_ONLY_NOT_QUALIFICATION",
+  "completion_unknown": false,
+  "elapsed_seconds": 179.92275131400675,
+  "errors": [],
+  "final_postimages": {
+    "bytes": 61933,
+    "git_blob": "2f7d924178f222007d52394ae3d367beb3288eb1",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/final-postimages.json",
+    "sha256": "85a74ee4ae61b7878ea65721b27aee2319b9d1b29a1105f4aeaa8e255ca1be48"
+  },
+  "final_source": {
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "status": " M codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs\n",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03"
+  },
+  "formatted_postimages": {
+    "bytes": 61941,
+    "git_blob": "f9b7741a620042ec3fe4194e76e0b82d73d0d374",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/formatted-postimages.json",
+    "sha256": "71cec67e15bebd63682b0e57dd6fec9627b6c365981ccbdcccca037ede5d8386"
+  },
+  "initial_source": {
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "status": "",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03"
+  },
+  "input": {
+    "bins_timeout_seconds": 3600,
+    "branch": "codex/ordinary-owner-maintenance-v7-20261112-af52",
+    "cargo_home": "/home/qq/.cargo",
+    "fix_timeout_seconds": 7200,
+    "format_base": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "just_path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+    "operator_target": "/home/qq/af52-learning-20261111/target",
+    "overall_timeout_seconds": 10800,
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet",
+      "codex-core",
+      "codex-app-server",
+      "codex-rmcp-client",
+      "codex-mcp"
+    ],
+    "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "reference_head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "reference_repository": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+    "reference_tree": "6fe2c2426f22383416697016445cf444aafdd2ff",
+    "rustc_path": "/home/qq/.cargo/bin/rustc",
+    "rustup_home": "/home/qq/.rustup",
+    "source_manifest_blob": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+    "source_manifest_path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+    "work_name": "ordinary-future-199-maintenance-v9",
+    "work_root": "/home/qq/af52-learning-local-decision-20261111"
+  },
+  "maintenance_checks_passed": false,
+  "maintenance_results": {
+    "bins": null,
+    "fix": 101,
+    "format_after": 0
+  },
+  "native_qualification_run": false,
+  "ordinary_business_counts": [
+    0,
+    0,
+    0
+  ],
+  "original_checker_verify_run": false,
+  "publication_status": "not_attempted_root_will_transfer_verified_postimages",
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "schema_version": 1,
+  "separate_evidence_cleanup_budget_seconds": 120,
+  "source_ready": true,
+  "stage": "fmt-after",
+  "status": "source-maintenance-failed",
+  "steps": [
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-hardlinks",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9",
+      "elapsed_seconds": 0.8154297689907253,
+      "exit_code": 0,
+      "label": "isolated-clone",
+      "log": {
+        "bytes": 107,
+        "git_blob": "5a89c08f1e8942a554d3757371a3a9caa8327305",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/isolated-clone.log",
+        "sha256": "68336d14653040147b7441866de1cfacdcb74edc67718854acdd703a7d306729"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/isolated-clone.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "14d377594626fcd8d2664aaf805436a818bec867"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9",
+      "elapsed_seconds": 14.519887378904969,
+      "exit_code": 0,
+      "label": "fetch-exact-source",
+      "log": {
+        "bytes": 142,
+        "git_blob": "ce321d8f8bbc28fb1b4370bc1845f7e47b035dd9",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fetch-exact-source.log",
+        "sha256": "8490c6b5dc0a4733e5b7ec97581568082353241dfcefeec6fb5a3f9667c9cda9"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fetch-exact-source.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source",
+        "checkout",
+        "--detach",
+        "14d377594626fcd8d2664aaf805436a818bec867"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9",
+      "elapsed_seconds": 0.6207430940121412,
+      "exit_code": 0,
+      "label": "checkout-exact-source",
+      "log": {
+        "bytes": 220,
+        "git_blob": "a366b7ff98fc58693f9fe634867f430c8dbefa29",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/checkout-exact-source.log",
+        "sha256": "6ea904dcd894e4a2931b935d55df5ab827ecc85ec66879230fa72bb427892e2f"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/checkout-exact-source.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+        "14d377594626fcd8d2664aaf805436a818bec867"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source",
+      "elapsed_seconds": 0.010115528013557196,
+      "exit_code": 0,
+      "label": "format-base-ancestry",
+      "log": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/format-base-ancestry.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/format-base-ancestry.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "/home/qq/.cargo/bin/rustc",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source/codex-rs",
+      "elapsed_seconds": 0.015990147134289145,
+      "exit_code": 0,
+      "label": "operator-rustc",
+      "log": {
+        "bytes": 196,
+        "git_blob": "4b0852244672d9611e81367e960345736b255b8c",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/operator-rustc.log",
+        "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/operator-rustc.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source",
+      "elapsed_seconds": 2.370602461975068,
+      "exit_code": 0,
+      "label": "fmt-before",
+      "log": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fmt-before.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fmt-before.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-fleet",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-app-server",
+        "-p",
+        "codex-rmcp-client",
+        "-p",
+        "codex-mcp"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source",
+      "elapsed_seconds": 158.41565772797912,
+      "exit_code": 101,
+      "label": "fix-eleven-crates",
+      "log": {
+        "bytes": 97371,
+        "git_blob": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fix-eleven-crates.log",
+        "sha256": "37b9622af630f061012c04a1e38f5f48f044a9f481256940bcf0cdad8c67d95c"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fix-eleven-crates.log",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "cbf6ca7dd619589be3e9e98755f185d34d0f7413"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/source",
+      "elapsed_seconds": 2.418186282971874,
+      "exit_code": 0,
+      "label": "fmt-after",
+      "log": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fmt-after.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_may_be_incomplete": false,
+      "log_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/fmt-after.log",
+      "timed_out": false
+    }
+  ],
+  "tests_run": false
+}

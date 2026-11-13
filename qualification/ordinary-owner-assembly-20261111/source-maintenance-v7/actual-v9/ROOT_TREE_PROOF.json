@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "kind": "root_actual_v9_exact_tree_proof",
+  "parent": "14d377594626fcd8d2664aaf805436a818bec867",
+  "parent_tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+  "tree_without_this_proof": "5b52765238f23fe74628ee015b3a194073faa866",
+  "source_manifest": "69dc1fc5c75298b37bb0c218254deb7967ccc101",
+  "source_files": 199,
+  "actual_source_changes": 1,
+  "qualification_changes": 53,
+  "complete_nontruncated_tree_comparison": true,
+  "all_modes_100644_blobs": true,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "old": {
+        "sha": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/BINDING_PROOF.json",
+      "old": null,
+      "new": {
+        "sha": "d8edcde565ae710a7d4e7ce16f6a25beb1af3c4b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/CONFIG.json",
+      "old": null,
+      "new": {
+        "sha": "3103956cf1432ac4e616fd3d1f05d90ec3d7bc94",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/PROGRESS_READ_TIMEOUT.json",
+      "old": null,
+      "new": {
+        "sha": "4e4fc1453c1f58910864e2f706e684450f84f901",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/START_REQUEST.json",
+      "old": null,
+      "new": {
+        "sha": "adb8cdb00716dedd29419efb4acd6ff5a3989c5f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/START_RESPONSE.json",
+      "old": null,
+      "new": {
+        "sha": "c15e96220a89b39eb60fc98915d8a40fc6bb41ea",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/SUPERVISOR.py",
+      "old": null,
+      "new": {
+        "sha": "83358130ea5b7888eb99922938a349c18e4a9f4c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/TERMINAL_TOOL.json",
+      "old": null,
+      "new": {
+        "sha": "6973a755728a523bbc451fda9c7cb9407601ff99",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/execution/TERMINAL.txt",
+      "old": null,
+      "new": {
+        "sha": "75201433434ef9fd4e30c8b6726f20669a2218fc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/FINAL_SOURCE_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "69dc1fc5c75298b37bb0c218254deb7967ccc101",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/INPUT_SOURCE_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/boundaries.json",
+      "old": null,
+      "new": {
+        "sha": "18b8e0ca81e26c0a09fa623c19d0c5bc3232674f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/bounded-projection-199.json",
+      "old": null,
+      "new": {
+        "sha": "f8ff3f43b3eb52e2443faefb7b5f47e74c3b19ba",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/coordinator-actual-v9.json",
+      "old": null,
+      "new": {
+        "sha": "780619c2a09dbd8978b438b5f7b4d8f23f08e389",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/finalizer.js",
+      "old": null,
+      "new": {
+        "sha": "f1131dc120e8c0df210723a9fa228c4c42893534",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/helpers.js",
+      "old": null,
+      "new": {
+        "sha": "644659241f86f20f933958acffea6ded4900c3fa",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/INDEX.json",
+      "old": null,
+      "new": {
+        "sha": "0f92f1358a8bfa9aa7873b061791184a0c38414e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/manual-guards.json",
+      "old": null,
+      "new": {
+        "sha": "85885737a60604b11fea9aa198473df424d7dfc8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/old-semantic-three-proposal.json",
+      "old": null,
+      "new": {
+        "sha": "a13a9a437bcaebf95ab6cb3bda5d97ae49a4e91b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/recipe.json",
+      "old": null,
+      "new": {
+        "sha": "eac63c1296315a34a4741e4e736a3a42ec5abb09",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/metadata-progress/whole-guards-199.json",
+      "old": null,
+      "new": {
+        "sha": "7583c283d2d861bb6c3ade0fea58a6f223c0e2cd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/actual-source/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/FINAL_POSTIMAGES.json",
+      "old": null,
+      "new": {
+        "sha": "2f7d924178f222007d52394ae3d367beb3288eb1",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/FINAL_SCOPE.json",
+      "old": null,
+      "new": {
+        "sha": "148c879d85f6ed317e908129bef465135ce98d58",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/final-postimage/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/FINAL.patch",
+      "old": null,
+      "new": {
+        "sha": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/fix-eleven-crates.log",
+      "old": null,
+      "new": {
+        "sha": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/FORMATTED_POSTIMAGES.json",
+      "old": null,
+      "new": {
+        "sha": "f9b7741a620042ec3fe4194e76e0b82d73d0d374",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/formatted-postimage/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/FORMATTED.patch",
+      "old": null,
+      "new": {
+        "sha": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/INPUT_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/original-records/RESULT.json",
+      "old": null,
+      "new": {
+        "sha": "4f1856cd679163e205fad3a11cd554e4722acc38",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/README.md",
+      "old": null,
+      "new": {
+        "sha": "8c38f1fac0f709372e3cd497d85773a7f4f9a03c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/reviews/old-semantic-three.json",
+      "old": null,
+      "new": {
+        "sha": "8b699e8942e2fae91b44c6e5e6b0e6e6967a5a32",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/reviews/outcome-metadata-detail.json",
+      "old": null,
+      "new": {
+        "sha": "f9c651d395f779d90f81d172175cc18b3d2f6e1a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/reviews/outcome-metadata.json",
+      "old": null,
+      "new": {
+        "sha": "e0698dc742c574d2f947d696f335baee340a8383",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/ROOT_TRANSFER_REPLAY_PROOF.json",
+      "old": null,
+      "new": {
+        "sha": "b7e446ed0aa52ddf0520b9c961c73903c9425ba5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/test-plan/additional-components.json",
+      "old": null,
+      "new": {
+        "sha": "2184502d3759dd655840b987bb7c980863eadc89",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/test-plan/source-inventory.json",
+      "old": null,
+      "new": {
+        "sha": "700a4e0c532167e0dad4929e3b26770943e907e8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/000000.json",
+      "old": null,
+      "new": {
+        "sha": "26222dda6911505f2ff78e1db17b1024ecd6323c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/008192.json",
+      "old": null,
+      "new": {
+        "sha": "f2bd4652697c72312ee510c9b8ccecc4c0be5aad",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/024576.json",
+      "old": null,
+      "new": {
+        "sha": "d89317b50be53eeb618cfad8f89cc1a11e5b0f8d",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/040960.json",
+      "old": null,
+      "new": {
+        "sha": "75470b773e74fff3bb1c99074b60e313b44ad699",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/057344.json",
+      "old": null,
+      "new": {
+        "sha": "03d68a0dd38de23465e6887e7481345ef7817155",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/073728.json",
+      "old": null,
+      "new": {
+        "sha": "4f80e4bafba4b7be0f54f8d903ac88e81075ac71",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/090112.json",
+      "old": null,
+      "new": {
+        "sha": "5157fcdecde8b379a23d34ec5fc4853628fca96a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/chunks/106496.json",
+      "old": null,
+      "new": {
+        "sha": "ddd60b9d8d72a0c680f46b5fe0d5616daf23d54c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/COMPLETE_OUTPUT.txt",
+      "old": null,
+      "new": {
+        "sha": "ae4de8e432ba556fe23a1ac570b99f83c72cc7c7",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/ORIGINAL_BUNDLE.json",
+      "old": null,
+      "new": {
+        "sha": "15967f8eafbbae2f07c38a0e889ca468dd0e41a8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/reader.py",
+      "old": null,
+      "new": {
+        "sha": "099e225f061d5be2988fcbe3442c3fd6ac5deef9",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/START_REQUEST.json",
+      "old": null,
+      "new": {
+        "sha": "0f9f0f2be6f9dd058ffa1a81d8b71ee61e67fdeb",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/START_RESPONSE.json",
+      "old": null,
+      "new": {
+        "sha": "57b079c3967fca36e2216fba0b42ada84ee984d2",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v9/transfer/SUMMARY.json",
+      "old": null,
+      "new": {
+        "sha": "8fbd6fc00034bac9e0f49fb648655ea62d915d54",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+      "old": {
+        "sha": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "69dc1fc5c75298b37bb0c218254deb7967ccc101",
+        "mode": "100644",
+        "type": "blob"
+      }
+    }
+  ],
+  "native_status": "FAILED_MAINTENANCE",
+  "qualification_run": false,
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

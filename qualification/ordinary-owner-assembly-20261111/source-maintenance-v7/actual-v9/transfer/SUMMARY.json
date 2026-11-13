@@ -1,0 +1,45 @@
+{
+  "classification": "READ_ONLY_EVIDENCE_TRANSFER_NOT_QUALIFICATION",
+  "compiler_error_blocks": 11,
+  "compiler_error_excerpt": "error: errors present after applying fixes to crate `codex_hepta_agentd`\n --> hepta-agentd/src/circuit_task_runtime.rs\n ::: hepta-agentd/src/circuit_task_runtime_lifecycle.rs\n ::: hepta-agentd/src/root_authority_session_lifecycle.rs\n  = cause: error[E0425]: cannot find value `receiver` in this scope\n              --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:615:13\n               |\n           598 |         let _receiver = OriginalCircuitRuntimeReceiver {\n               |             --------- `_receiver` defined here\n           ...\n           615 |             receiver.complete = true;\n               |             ^^^^^^^^\n               |\n           help: the leading underscore in `_receiver` marks it as unused, consider renaming it to `receiver`\n               |\n           598 -         let _receiver = OriginalCircuitRuntimeReceiver {\n           598 +         let receiver = OriginalCircuitRuntimeReceiver {\n               |\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:7896:14\n     |\n7896 |     let io = SessionIo {\n     |              ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8643:23\n     |\n8643 |     let io = Arc::new(SessionIo {\n     |                       ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8679:23\n     |\n8679 |     let io = Arc::new(SessionIo {\n     |                       ^^^^^^^^^ missing `original_loop_outcome`\n\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8643:23\n     |\n8643 |     let io = Arc::new(SessionIo {\n     |                       ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8679:23\n     |\n8679 |     let io = Arc::new(SessionIo {\n     |                       ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8715:21\n     |\n8715 |     let parent_io = SessionIo {\n     |                     ^^^^^^^^^ missing `original_loop_outcome`\n\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8679:23\n     |\n8679 |     let io = Arc::new(SessionIo {\n     |                       ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8715:21\n     |\n8715 |     let parent_io = SessionIo {\n     |                     ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8737:20\n     |\n8737 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8715:21\n     |\n8715 |     let parent_io = SessionIo {\n     |                     ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8737:20\n     |\n8737 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8769:20\n     |\n8769 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8737:20\n     |\n8737 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8769:20\n     |\n8769 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8800:21\n     |\n8800 |     let parent_io = SessionIo {\n     |                     ^^^^^^^^^ missing `original_loop_outcome`\n\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8769:20\n     |\n8769 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8800:21\n     |\n8800 |     let parent_io = SessionIo {\n     |                     ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8822:20\n     |\n8822 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8800:21\n     |\n8800 |     let parent_io = SessionIo {\n     |                     ^^^^^^^^^ missing `original_loop_outcome`\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8822:20\n     |\n8822 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\nFor more information about this error, try `rustc --explain E0063`.\nerror: could not compile `codex-core` (lib test) due to 8 previous errors\nwarning: build failed, waiting for other jobs to finish...\nerror: recipe `fix` failed on line 58 with exit code 101\n\nerror[E0063]: missing field `original_loop_outcome` in initializer of `session::SessionIo`\n    --> core/src/session/tests.rs:8822:20\n     |\n8822 |     let child_io = SessionIo {\n     |                    ^^^^^^^^^ missing `original_loop_outcome`\n\nFor more information about this error, try `rustc --explain E0063`.\ne",
+  "completion_unknown": false,
+  "errors": [],
+  "files": 11,
+  "formatted_changed": [
+    {
+      "bytes": 17576,
+      "copy_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/postimages-formatted/093.txt",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "post_blob": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+      "pre_blob": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+      "sha256": "e1711d162e363434a622f35ef75a4df68f273b1fe43808ccab62281b8d766856"
+    }
+  ],
+  "full_compiler_log_in_payload": true,
+  "kind": "actual-v9-evidence-summary",
+  "maintenance_results": {
+    "bins": null,
+    "fix": 101,
+    "format_after": 0
+  },
+  "patch": {
+    "bytes": 1729,
+    "git_blob": "e813018f796d9d7f7890eb54894d7272d8d8c330",
+    "sha256": "7cb214788df602d87cc9faa06d5acc475484c6dbfee556cc62bbb99a3ee0f698"
+  },
+  "result": {
+    "bytes": 11652,
+    "git_blob": "4f1856cd679163e205fad3a11cd554e4722acc38",
+    "sha256": "ad32d19a46e22b9a1b31d4214aeb6ce6873d54706dc293557ebd49b263b02052"
+  },
+  "source_changed": [
+    {
+      "bytes": 17576,
+      "copy_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9/records/postimages-final/093.txt",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "post_blob": "d4dce1fe1b90169a21151568be2c1d7a32e5125c",
+      "pre_blob": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+      "sha256": "e1711d162e363434a622f35ef75a4df68f273b1fe43808ccab62281b8d766856"
+    }
+  ]
+}

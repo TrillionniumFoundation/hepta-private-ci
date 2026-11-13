@@ -1,0 +1,30 @@
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs b/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs
+index e1ea11bc5929f43760059df2f48217c8f3ef2f42..d4dce1fe1b90169a21151568be2c1d7a32e5125c 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs
+@@ -27,7 +27,6 @@ use super::c::OriginalCResources;
+ use super::client::OriginalDeploymentClient;
+ use super::data::OriginalACompletionData;
+ use super::data::OriginalCOutcomeData;
+-use super::outcome_data::OriginalSignedOutcomeData;
+ use super::data::OriginalDeploymentData;
+ use super::deployment_refused;
+ use super::exchange::OriginalActorWait;
+@@ -37,6 +36,7 @@ use super::files::OriginalPinnedRead;
+ use super::ingress::OriginalOrdinaryTaskIngress;
+ use super::ingress::OriginalOrdinaryTaskStage;
+ use super::learning::OriginalDeploymentLearning;
++use super::outcome_data::OriginalSignedOutcomeData;
+ use super::task::OriginalInitialPredecessorFiles;
+ 
+ #[path = "same_actor_q24_deployment_coordinator_materials.rs"]
+@@ -373,8 +373,7 @@ impl OriginalDeploymentCoordinator {
+                             "actual C Outcome belongs to another phase",
+                         ));
+                     }
+-                    let (outcome, signed) =
+-                        OriginalSignedOutcomeData::into_original(data.outcome)?;
++                    let (outcome, signed) = OriginalSignedOutcomeData::into_original(data.outcome)?;
+                     OriginalPinnedRead::require_original_pin(&response)?;
+                     wait.require_original_live()?;
+                     self.send_original(Command::ObserveOriginalC(Box::new(

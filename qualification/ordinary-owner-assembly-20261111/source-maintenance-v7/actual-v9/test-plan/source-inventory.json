@@ -1,0 +1,850 @@
+{
+  "schema_version": 1,
+  "task": "Read-only four additional crate test-gate inventory",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "14d377594626fcd8d2664aaf805436a818bec867",
+  "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+  "status": "Prepared commands only; no command executed; no result inferred.",
+  "original_qualification": "Original seven-package qualification and Root17 unchanged. Additional four-crate and workspace runs are separate evidence; do not modify the original qualification harness or its arguments.",
+  "authorization": "Root confirmed the user's existing full-run authorization covers the required complete-workspace gate; no repeated approval request is needed.",
+  "instruction_scope": {
+    "root_agents": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "exact_absent_paths": [
+      "codex-rs/AGENTS.md",
+      "codex-rs/core/AGENTS.md",
+      "codex-rs/app-server/AGENTS.md",
+      "codex-rs/rmcp-client/AGENTS.md",
+      "codex-rs/codex-mcp/AGENTS.md",
+      "codex-rs/justfile"
+    ],
+    "absence_basis": "Exact fixed-ref fetches returned404; fixed crate listings and complete non-truncated src/tests subtree inventories confirm no nested AGENTS in reviewed source/test scope.",
+    "trees": [
+      {
+        "path": "codex-rs/core/src",
+        "tree": "b94bee6172150f5ad8adae80db162cc80c5d1bef",
+        "truncated": false,
+        "entries": 534,
+        "nested_agents": []
+      },
+      {
+        "path": "codex-rs/core/tests",
+        "tree": "7fdb810c16771603da55c5904086cb45e49fb3dc",
+        "truncated": false,
+        "entries": 197,
+        "nested_agents": []
+      },
+      {
+        "path": "codex-rs/app-server/src",
+        "tree": "e80008478b22b20a4d6685b82c1cc6359a086b79",
+        "truncated": false,
+        "entries": 134,
+        "nested_agents": []
+      },
+      {
+        "path": "codex-rs/app-server/tests",
+        "tree": "6a827993ad631c48c14ae99dd1146343776b18e7",
+        "truncated": false,
+        "entries": 145,
+        "nested_agents": []
+      },
+      {
+        "path": "codex-rs/rmcp-client/src",
+        "tree": "2754425cf743967aab0a025b8349efcb2338bc37",
+        "truncated": false,
+        "entries": 56,
+        "nested_agents": []
+      },
+      {
+        "path": "codex-rs/rmcp-client/tests",
+        "tree": "fb3453fa4f69cd21b619832ac7c4f0f6423e8a65",
+        "truncated": false,
+        "entries": 20,
+        "nested_agents": []
+      },
+      {
+        "path": "codex-rs/codex-mcp/src",
+        "tree": "bfe7027dee6aa996223bd5e1b1c18b0089d07241",
+        "truncated": false,
+        "entries": 50,
+        "nested_agents": []
+      }
+    ]
+  },
+  "runner": {
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "wrapper": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "shell_adapter": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "nextest_config": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+    "rust_toolchain": "917d2492264a35bc9c0feaef41878d8825870866",
+    "rust_version": "1.96.0",
+    "cwd": "repository codex-rs; root justfile sets this working directory",
+    "selected_profile": "local",
+    "rust_min_stack": "8388608",
+    "actual_command_prefix": [
+      "cargo",
+      "nextest",
+      "run",
+      "--no-fail-fast"
+    ],
+    "crate_filter_metadata": "Scoped -p with graph-free -E may use cargo metadata --no-deps. Wrapper still passes original test and feature selection to nextest; full workspace uses normal metadata.",
+    "defaults": {
+      "retries": 1,
+      "slow_timeout": {
+        "period": "30s",
+        "terminate_after": 2
+      },
+      "rmcp_named_override": {
+        "filter": "test(rmcp_client)",
+        "period": "1m",
+        "terminate_after": 4
+      },
+      "app_server_local_integration_max_threads": 4,
+      "junit": "junit.xml in selected local profile store",
+      "default_filter_found": false
+    }
+  },
+  "commands": [
+    {
+      "id": "targeted-core",
+      "phase": "targeted",
+      "required": true,
+      "command": "just test -p codex-core --lib -E 'test(session::original_shutdown::tests::) | test(thread_manager::original_shutdown::tests::) | test(codex_delegate::tests::) | test(thread_manager::tests::shutdown_all_threads_bounded_submits_shutdown_to_every_thread) | test(thread_manager::tests::cancelled_unclaimed_new_startup_removes_runtime_and_materialized_store)'",
+      "reason": "Actual new Session loop / ThreadManager custody, original delegate tests, and existing bounded shutdown / cancelled startup regressions."
+    },
+    {
+      "id": "targeted-app-server",
+      "phase": "targeted",
+      "required": true,
+      "command": "just test -p codex-app-server --lib -E 'test(original_owned_shutdown::tests::) | test(request_serialization::tests::) | test(configured_mcp_runtime::tests::) | test(models_refresh_worker::tests::) | test(turn_cost_worker::tests::)'",
+      "reason": "Actual eight custody components plus original queue, MCP configuration, models refresh and turn cost workers."
+    },
+    {
+      "id": "targeted-rmcp-client",
+      "phase": "targeted",
+      "required": true,
+      "command": "just test -p codex-rmcp-client --lib -E 'test(stdio_server_launcher::owned_shutdown::tests::)'",
+      "reason": "Six actual process/FD/retained-handle components, compiled only for target_os=linux."
+    },
+    {
+      "id": "targeted-codex-mcp",
+      "phase": "targeted",
+      "required": true,
+      "command": "just test -p codex-mcp --lib -E 'test(connection_manager::tests::shutdown_) | test(connection_manager::tests::cancelling_startup_does_not_disable_a_ready_client) | test(runtime::tests::) | test(rmcp_client::tests::)'",
+      "reason": "Existing actual manager cancellation and runtime/client compatibility tests; no invented strict-shutdown test module."
+    },
+    {
+      "id": "full-codex-core",
+      "phase": "full-crate",
+      "required": true,
+      "command": "just test -p codex-core",
+      "reason": "No --lib, --test or -E restriction: all default Cargo/nextest test targets for the changed package."
+    },
+    {
+      "id": "full-codex-app-server",
+      "phase": "full-crate",
+      "required": true,
+      "command": "just test -p codex-app-server",
+      "reason": "No --lib, --test or -E restriction: all default Cargo/nextest test targets for the changed package."
+    },
+    {
+      "id": "full-codex-rmcp-client",
+      "phase": "full-crate",
+      "required": true,
+      "command": "just test -p codex-rmcp-client",
+      "reason": "No --lib, --test or -E restriction: all default Cargo/nextest test targets for the changed package."
+    },
+    {
+      "id": "full-codex-mcp",
+      "phase": "full-crate",
+      "required": true,
+      "command": "just test -p codex-mcp",
+      "reason": "No --lib, --test or -E restriction: all default Cargo/nextest test targets for the changed package."
+    },
+    {
+      "id": "full-workspace",
+      "phase": "workspace",
+      "required": true,
+      "command": "just test",
+      "reason": "Root AGENTS requires full workspace tests after changed-project tests when core/common/protocol changes. Actual core source changed. Root confirmed existing user authorization covers this gate."
+    }
+  ],
+  "optional_failure_isolation_commands": [
+    {
+      "command": "just test -p codex-core --test all -E 'test(suite::abort_tasks::) | test(suite::codex_delegate::) | test(suite::mcp_refresh_cleanup::)'",
+      "reason": "Optional earlier isolation of existing integration regressions; full core gate includes them already."
+    },
+    {
+      "command": "just test -p codex-app-server --test all -E 'test(suite::v2::session_end::) | test(suite::v2::connection_handling_websocket::)'",
+      "reason": "Optional earlier isolation of existing process/public API shutdown regressions; full AppServer gate includes them already."
+    },
+    {
+      "command": "just test -p codex-rmcp-client --test process_group_cleanup",
+      "reason": "Optional earlier isolation of existing real process-group shutdown compatibility; full rmcp-client gate includes it already."
+    }
+  ],
+  "targets": [
+    {
+      "directory": "codex-rs/core",
+      "package": "codex-core",
+      "library": "codex_core",
+      "explicit_binaries": [
+        "codex-write-config-schema"
+      ],
+      "top_level_integration_sources": [
+        {
+          "path": "all.rs",
+          "blob": "0ee0cd986a3159e4d1f9e71759b73a239d953067"
+        },
+        {
+          "path": "responses_headers.rs",
+          "blob": "b53d163a38a428ee3867ec3288178cbea917cb8c"
+        }
+      ],
+      "crate_features": [],
+      "required_features": [],
+      "doctest_disabled": false
+    },
+    {
+      "directory": "codex-rs/app-server",
+      "package": "codex-app-server",
+      "library": "codex_app_server",
+      "explicit_binaries": [
+        "codex-app-server",
+        "codex-app-server-test-notify-capture",
+        "exec-server"
+      ],
+      "top_level_integration_sources": [
+        {
+          "path": "all.rs",
+          "blob": "fdf98aa9455bffb74f4dc11df6d237aa948248ef"
+        }
+      ],
+      "crate_features": [],
+      "required_features": [],
+      "doctest_disabled": true
+    },
+    {
+      "directory": "codex-rs/rmcp-client",
+      "package": "codex-rmcp-client",
+      "library": "codex_rmcp_client",
+      "auto_binaries": [
+        {
+          "path": "bin/rmcp_test_server.rs",
+          "blob": "a2ab794f5ab76dc5745c6c74a0822091ff82ccf0"
+        },
+        {
+          "path": "bin/test_mcp_2026_discovery_stdio_server.rs",
+          "blob": "fc3af65944258d18731493994fcf0a18e5f8ce1a"
+        },
+        {
+          "path": "bin/test_mcp_2026_stdio_server.rs",
+          "blob": "3f6afd99f3691e27cb3e24b570698218a5009221"
+        },
+        {
+          "path": "bin/test_stdio_server.rs",
+          "blob": "5ebd161921b9064444841d631835d4f51f78813e"
+        },
+        {
+          "path": "bin/test_streamable_http_server.rs",
+          "blob": "a0fc7b4f7cbbd0443a1df12a91fa7c8edc341a2e"
+        }
+      ],
+      "top_level_integration_sources": [
+        {
+          "path": "foreign_stdio_cwd.rs",
+          "blob": "84aca7b92a5e52f55075d9ea879ad9cbe67cb33a"
+        },
+        {
+          "path": "mcp_2026_discovery.rs",
+          "blob": "1495438d75efb9989cba066a04c014ddbae20632"
+        },
+        {
+          "path": "mcp_2026_message_limits.rs",
+          "blob": "785aa4e1956c95a1b3319315ce1b135be6e0f713"
+        },
+        {
+          "path": "mcp_2026_mrtr.rs",
+          "blob": "ed2ad1ed01134a36629b4ba77cd29a333f938177"
+        },
+        {
+          "path": "mcp_2026_oauth_discovery.rs",
+          "blob": "36d4f1d1272cb99b72a79ef8c9076ebc35246ff9"
+        },
+        {
+          "path": "mcp_2026_sse_discovery.rs",
+          "blob": "92910a34a2a7fe0d3f6a2f433f165d4df5755727"
+        },
+        {
+          "path": "mcp_2026_stdio.rs",
+          "blob": "3cb7bf5cbcef1e58520e73311bc1f1119dbc8244"
+        },
+        {
+          "path": "mcp_2026_stdio_discovery.rs",
+          "blob": "8cf62a2697cf505946e283ae3a6c975532ab9d38"
+        },
+        {
+          "path": "mcp_events.rs",
+          "blob": "3b015a01d274c90109f490b6314755240664fc35"
+        },
+        {
+          "path": "process_group_cleanup.rs",
+          "blob": "ac446233f81cd37a4464daaca2b1441078ce5e00"
+        },
+        {
+          "path": "resources.rs",
+          "blob": "be1755f4a510b0765fac40ddedcf3294bd4e4c69"
+        },
+        {
+          "path": "stdio_message_limits.rs",
+          "blob": "7c8ec6102bbb4a3238fb8e61d697cb09f234b77f"
+        },
+        {
+          "path": "streamable_http_oauth_startup.rs",
+          "blob": "e6b98304d28e1c9ae2aff16804b8a458df3d9d66"
+        },
+        {
+          "path": "streamable_http_oauth_store_pinning.rs",
+          "blob": "069fa3e8c968435868a19dd5190964d7d71b8b7f"
+        },
+        {
+          "path": "streamable_http_recovery.rs",
+          "blob": "29d2404ede9e7074a7d0e54ea06e0b5883877d59"
+        },
+        {
+          "path": "streamable_http_remote.rs",
+          "blob": "51d6c486cd99321905bb9963457ee805cc841289"
+        },
+        {
+          "path": "streamable_http_test_support.rs",
+          "blob": "43bd3141bf47697f0ddb85b22aa1ffdf82bbec82"
+        },
+        {
+          "path": "streamable_http_user_agent.rs",
+          "blob": "45b5d6025cdd629f690a5c728303c6371bf9fe25"
+        }
+      ],
+      "crate_features": [],
+      "required_features": [],
+      "doctest_disabled": true
+    },
+    {
+      "directory": "codex-rs/codex-mcp",
+      "package": "codex-mcp",
+      "library": "codex_mcp",
+      "explicit_binaries": [],
+      "top_level_integration_sources": [],
+      "crate_features": [],
+      "required_features": [],
+      "doctest_disabled": true
+    }
+  ],
+  "new_component_counts": {
+    "core_original_shutdown": 7,
+    "app_server_original_owned_shutdown": 8,
+    "rmcp_stdio_owned_shutdown_linux": 6,
+    "codex_mcp_dedicated_original_owned_shutdown_tests_found": 0,
+    "note": "Static named component declarations, not discovered/executed test counts. Historical10 AppServer-related components comprised8 AppServer+2Agentd; the2Agentd cases stay under original qualification."
+  },
+  "collection": [
+    "Fixed source commit/tree and dirty roster before/after every phase; do not infer source equivalence after maintenance mutates files.",
+    "Exact command/working directory/tool versions/profile and all original stdout/stderr, true exit status, elapsed time and timeout/output-limit flags.",
+    "Archive each selected local profile JUnit before the next invocation overwrites it. Also archive selected test identities and count; zero selected targeted tests is not success.",
+    "Preserve first failures and every inherited nextest retry attempt. Separate failures, flaky-after-retry, ignored/filtered/compile-time excluded tests, environment early returns and tool/startup failures.",
+    "The Core skip_if_no_network macro returns normally when the sandbox-network flag is present; stdout and environment/skip reasons must be retained because a counted success may not execute that integration behavior. Do not remove/change those guards.",
+    "No all-workspace success before the complete no-filter just test has completed; no business/Root qualification is inferred from component success."
+  ],
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "justfile",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "git_blob": "79862bd7edcd982bedb55897a6246b926fa54959",
+      "bytes": 23110,
+      "sha256": "722f70c04e70174e8c9a7c80da055739607d8b69249fc08e629c8adb1a8a45bd"
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "bytes": 6617,
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "git_blob": "cc853510df3ab58a1991f425638eb9f39a65dd41",
+      "bytes": 18316,
+      "sha256": "a3e6b58c4dc7b93ff39af09743a22cafa4d5c724900f866f6dfd6cb6edea736f"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "git_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f",
+      "bytes": 7819,
+      "sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42"
+    },
+    {
+      "path": "codex-rs/core/Cargo.toml",
+      "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "bytes": 6185,
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4"
+    },
+    {
+      "path": "codex-rs/core/BUILD.bazel",
+      "git_blob": "30555d4bb95f0e6082b897ff711ad4699cf07549",
+      "bytes": 2828,
+      "sha256": "a4899fd63b037be198daf0d4ca59e58ade98b6382c63f351d4dedbfb8bd8e823"
+    },
+    {
+      "path": "codex-rs/core/src/codex_delegate.rs",
+      "git_blob": "e50a4616828144b78ca44c3d5d7de412ddb4888d",
+      "bytes": 14240,
+      "sha256": "ee73c4643b2d117ceeabc3c3dd4a35936f79d353d5bbdfed01a29236db9612d5"
+    },
+    {
+      "path": "codex-rs/core/src/codex_delegate_tests.rs",
+      "git_blob": "44e30df042f4a8144cb70a946427db8f631194d4",
+      "bytes": 10996,
+      "sha256": "73284edcdd5e99f8aaea322ee2e880aa261f487d14279525437084d55d7803e2"
+    },
+    {
+      "path": "codex-rs/core/src/lib.rs",
+      "git_blob": "3933dff6750ba15fbfeea04e4fb302ffb09dda4a",
+      "bytes": 7781,
+      "sha256": "c3f8a5a41ed1d5ebff8fc9861b801d73f867ff7e25db907663f204a298d4172b"
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "git_blob": "f335c2173beed441d633772ae5f1bee00ef6d2ee",
+      "bytes": 216337,
+      "sha256": "5e87dc636275ef11a5506bfdce23d479ac33689285f65a8900833b55bc5ea89b"
+    },
+    {
+      "path": "codex-rs/core/src/session/original_shutdown.rs",
+      "git_blob": "0da95a220ed5484f419f5feb814c921c395db5ba",
+      "bytes": 4999,
+      "sha256": "ece5b5c32912e3dfba8877c320b2cde39a5d98b1e8b06ca08a0579be875fd55d"
+    },
+    {
+      "path": "codex-rs/core/src/session/original_shutdown_tests.rs",
+      "git_blob": "bfa76cc8a0f910b51be65ffeda49717963fa8d7b",
+      "bytes": 3208,
+      "sha256": "640e7f39eba16eb3130413d2ff597732b7a432c83ecd362687d1a815f07d917d"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "git_blob": "e94f866b82f013dee69e332f542e542ed037e006",
+      "bytes": 117459,
+      "sha256": "82671c49281e8e9d512f8dac30e164134d8dc0001298968192affdab6e817b36"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "git_blob": "5d54000ec5d0d66b0eb43c4da18528361307dd59",
+      "bytes": 13370,
+      "sha256": "f7782a34c5842e0b23ca8e19c47a90cf62bb0227e47177e5273020213a68ca57"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "git_blob": "0c9e0370d897118ebcf59c8422c329cb2d8e48ba",
+      "bytes": 4934,
+      "sha256": "45181e33a78de2cf090d8cb1ec21abff4b4382c6f310eb1220fb5f27e7125d15"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_tests.rs",
+      "git_blob": "3e2b3c40c0f161bfd391c8426260aa331790017b",
+      "bytes": 117148,
+      "sha256": "410271a3f5cd8ecf9c39f0661a5da264bcfd11a25d876a3f53214653a112c61a"
+    },
+    {
+      "path": "codex-rs/core/tests/all.rs",
+      "git_blob": "0ee0cd986a3159e4d1f9e71759b73a239d953067",
+      "bytes": 183,
+      "sha256": "fb65d181d9fcd37714caa2b9ded5a35dd322edd04cee22176c21a8be8ee12f4c"
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "git_blob": "f4e0d11e0b440b57faeba5c400e343975a0506d3",
+      "bytes": 23401,
+      "sha256": "34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "git_blob": "0ddb66609968a9860252579484df664eff39ace3",
+      "bytes": 15883,
+      "sha256": "5a7ab49eb5cbebc3ffc9ce59b87e3d1209151aaec96eb94eb40bf1233a576a2e"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/codex_delegate.rs",
+      "git_blob": "d8cb4483f73f4e0bbfde192a1fead25ec3fa07ac",
+      "bytes": 17831,
+      "sha256": "0b6c86bbe4ac9492f2bf763cec4bace5a7c69eb5aabbeebd151685210b76ee1c"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mcp_refresh_cleanup.rs",
+      "git_blob": "b4b10c996f6ee5ce286b3ca342233b7e5b024b33",
+      "bytes": 8266,
+      "sha256": "e19dd3ddd206f4a98b8a62b155b5b10cf997f3ec54a0b331af2239d7b6fe4e34"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "git_blob": "cd37943029248c5214ade38b3299cbede099d0c1",
+      "bytes": 4896,
+      "sha256": "fde5d5126ab746a251ebf9c15623ef7d15fda2b663384a95aebf625a237d44d1"
+    },
+    {
+      "path": "codex-rs/app-server/Cargo.toml",
+      "git_blob": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+      "bytes": 4997,
+      "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f"
+    },
+    {
+      "path": "codex-rs/app-server/BUILD.bazel",
+      "git_blob": "3c7c6a9e4d66bc0425e10107799ecdfbfff7a89b",
+      "bytes": 1578,
+      "sha256": "a43e6c9e2b6b71b73e7c76494b3e3c85a1870c45fcf3915f549136f29e0ab702"
+    },
+    {
+      "path": "codex-rs/app-server/src/configured_mcp_runtime.rs",
+      "git_blob": "e9bb61775c50098bd0e85bbb246498165b4fd051",
+      "bytes": 7652,
+      "sha256": "f5eef6d8fc3d41fd3e8d6a0e7e9125ba066a3e3facfcf348e72172190d74087f"
+    },
+    {
+      "path": "codex-rs/app-server/src/configured_mcp_runtime_tests.rs",
+      "git_blob": "c96c6b75b1ce75145473f196effb6ea15c414219",
+      "bytes": 3901,
+      "sha256": "4e268ad1710bc7980ea2a6d4f14c3fb3de2792b3433c7cdd5cb3173538ef77ea"
+    },
+    {
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "git_blob": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+      "bytes": 3525,
+      "sha256": "775f7a9af1875813baae5c69681459a9465755bfdadd69bd8f640aedc3f757d3"
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "git_blob": "b455314115dd2b2583e2f965a4ff80638b5d5a7a",
+      "bytes": 87215,
+      "sha256": "783acf4bd3f33e5f26d1d3f549f6406f06117294ac28659847da59f6bfbf9e33"
+    },
+    {
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "git_blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+      "bytes": 2098,
+      "sha256": "4d19cd651afd092b00db18bada7cb5ad2e90ed7fea780e8ccd83213c684a50e7"
+    },
+    {
+      "path": "codex-rs/app-server/src/models_refresh_worker_tests.rs",
+      "git_blob": "989bfd8608b00334f35ee1057deb7ddbd34e15b8",
+      "bytes": 3040,
+      "sha256": "e49d36484a5f96dd3639dcdbf364c928dcc1cbfcb2acb82b3f598e7cc79e0554"
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "git_blob": "8769b6ff6912729589bb86f835621387ff7fddf2",
+      "bytes": 20134,
+      "sha256": "905ddaf5f3ad2002a4137f6e9f60f4f6e96e3335c1384d0457c36703710324ab"
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "git_blob": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+      "bytes": 9750,
+      "sha256": "1a3ffcea9279289bf0da5d09c3a05cdae2a2fa358e87a730fffbdeab47b8877c"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "git_blob": "58600f5dd0cc51d399ca0b5369a6275ebcf8be03",
+      "bytes": 36747,
+      "sha256": "760e21bd27486a6bce74fdcc3bea810c2ba66c490504eb0dbb4f30fa75134d3f"
+    },
+    {
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "git_blob": "ae8cc0d9f8bbed23dd14ae926652ea078d957e5c",
+      "bytes": 23127,
+      "sha256": "f557798890c23a156adf42d9ea902b0816415d92a06229dde4778700541bd7a7"
+    },
+    {
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "git_blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+      "bytes": 17654,
+      "sha256": "c8a7de5471768871e117df543800e9ff4dec131a9ebad495cbfd7fb6393cb4ca"
+    },
+    {
+      "path": "codex-rs/app-server/src/turn_cost_worker_tests.rs",
+      "git_blob": "2fa57fbd608427a95e2ae617c58ff28843f16c92",
+      "bytes": 14060,
+      "sha256": "47616f6962b9d5f17890ee32f90f8abc71fbfafa6a9e93d5d8756cfda4b91a35"
+    },
+    {
+      "path": "codex-rs/app-server/tests/all.rs",
+      "git_blob": "fdf98aa9455bffb74f4dc11df6d237aa948248ef",
+      "bytes": 153,
+      "sha256": "f484e46e22db99bab05787768d047b60251f6ba95e24387f75034c1dfa1980a3"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/lib.rs",
+      "git_blob": "7b545e94f3b1e4cd6bed840c57cd0539467e772c",
+      "bytes": 2802,
+      "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "git_blob": "9c51cda731d9b663c6272eef052d9ae53b46a44d",
+      "bytes": 82221,
+      "sha256": "f6c6c147e961fb995272dac91427638c9b66a5877ef43be036273b06378e003e"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/mod.rs",
+      "git_blob": "09c40493f6c5a699e9691673b2854c41ae90b977",
+      "bytes": 99,
+      "sha256": "db3509153cc574d2a11191ea6308e6a433b8ec59f3860a83e00b154ebaaae799"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/connection_handling_websocket.rs",
+      "git_blob": "14a604fc84eead0f5bb14423b56cba7766bcd84d",
+      "bytes": 34256,
+      "sha256": "c015889621b9bbeb96df240b81c0480997442d4b1f4ad2da55eb6e1567515efd"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/mod.rs",
+      "git_blob": "292716a6afb22a2f6885f539dbc3169735727c09",
+      "bytes": 2637,
+      "sha256": "9226ee9bc5defc4f867edc72a109411837d61ded66a46effe4324787e6b5766d"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/session_end.rs",
+      "git_blob": "93592f296745c0f8cf558616c902a934ef363856",
+      "bytes": 6818,
+      "sha256": "d8297e03ce8a5f81cda6efde1b6a87dc679a48758630d154c3ff82a73ec6c678"
+    },
+    {
+      "path": "codex-rs/rmcp-client/Cargo.toml",
+      "git_blob": "1a88c3aedbe8aeccb5ce2debd97681de04d38116",
+      "bytes": 2543,
+      "sha256": "630a65afa578517edb7bb67ba50963dc8d8f182cfe313d6538c30523d034c047"
+    },
+    {
+      "path": "codex-rs/rmcp-client/BUILD.bazel",
+      "git_blob": "89a1963eccdcee0047ab90068761318c24edeb44",
+      "bytes": 187,
+      "sha256": "4107d4970eb5175d64652057d17613869a30379575d212adfb55ceb738493d80"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/lib.rs",
+      "git_blob": "cbde9a951ef4d1ed811391f189a97ffb064c4711",
+      "bytes": 2691,
+      "sha256": "d5b641616ffd9505c48d849a971e0d463ec20c9a5de2c8351ef9055f75670565"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+      "git_blob": "09bc9e592c096bce7f2291caece711fc1e2c782e",
+      "bytes": 28372,
+      "sha256": "c86d283acabb6b76fb04f7e7261aa54aab2ddc358529aafbf1387cf824ccec09"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "git_blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+      "bytes": 26125,
+      "sha256": "8142cfe8f5f937e7652489fcabcbd7334db1ff0fbbdc2290f1c44a08ff5a9a1f"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "git_blob": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+      "bytes": 8692,
+      "sha256": "f0951c8fce0f414f317a85bd394914d5048fe490edb177a4ae4659e7ed990e84"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/foreign_stdio_cwd.rs",
+      "git_blob": "84aca7b92a5e52f55075d9ea879ad9cbe67cb33a",
+      "bytes": 2065,
+      "sha256": "2a2824f7b50e5078737243df27c8dcacaca29246e7640339d24ecbb96828fbf8"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_discovery.rs",
+      "git_blob": "1495438d75efb9989cba066a04c014ddbae20632",
+      "bytes": 56813,
+      "sha256": "4ebc666b88e208fafc21bf778e7551c5879de0637bc60c01d11ccce6b543c220"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+      "git_blob": "785aa4e1956c95a1b3319315ce1b135be6e0f713",
+      "bytes": 10509,
+      "sha256": "6ac67f5a47d14345dffff2370f43a34bd7706f1486057d97b9827a0f8e56a4ee"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_mrtr.rs",
+      "git_blob": "ed2ad1ed01134a36629b4ba77cd29a333f938177",
+      "bytes": 29084,
+      "sha256": "67efd9f046e3b9bb5883652c501a21ba3eeb58cc8d67b83b0a8e9fd0c64ca19a"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "git_blob": "36d4f1d1272cb99b72a79ef8c9076ebc35246ff9",
+      "bytes": 24899,
+      "sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_sse_discovery.rs",
+      "git_blob": "92910a34a2a7fe0d3f6a2f433f165d4df5755727",
+      "bytes": 7047,
+      "sha256": "c2acd7d3af504b26015671acfe9278c110a19d682dc0e06f4bd08d3f03f06e41"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_stdio.rs",
+      "git_blob": "3cb7bf5cbcef1e58520e73311bc1f1119dbc8244",
+      "bytes": 7756,
+      "sha256": "110a0d150389443f7d8b689abba5e68fb09242e9bf17aebdecea76e9502ae201"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_stdio_discovery.rs",
+      "git_blob": "8cf62a2697cf505946e283ae3a6c975532ab9d38",
+      "bytes": 10284,
+      "sha256": "e1aeef1642eda6968a9884571d180e58da8d6ebcff2a1119bc559cf6dbf1273a"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_events.rs",
+      "git_blob": "3b015a01d274c90109f490b6314755240664fc35",
+      "bytes": 8655,
+      "sha256": "17ad4de55a15b34d136301cce761a2249e5efb298146aa042e9352f25eb5b685"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/process_group_cleanup.rs",
+      "git_blob": "ac446233f81cd37a4464daaca2b1441078ce5e00",
+      "bytes": 5652,
+      "sha256": "aef6d4f4c1dcaaeb68ad8fdc18c82c4280b952f62626ab0152f4ac58503e7bac"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/resources.rs",
+      "git_blob": "be1755f4a510b0765fac40ddedcf3294bd4e4c69",
+      "bytes": 3854,
+      "sha256": "834983d66c86d8415e9fc871529992a8cacc255c8d4023087f91b6a29979e6bb"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/stdio_message_limits.rs",
+      "git_blob": "7c8ec6102bbb4a3238fb8e61d697cb09f234b77f",
+      "bytes": 7949,
+      "sha256": "8ba966ed0bd4a4e6c8d0d3ac0b9f74280897f347853710a6d3743c8547540521"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_oauth_startup.rs",
+      "git_blob": "e6b98304d28e1c9ae2aff16804b8a458df3d9d66",
+      "bytes": 30741,
+      "sha256": "7d70a86de51fac115907e7fd869eb56af76f3229716075451d4cab9b54cb2e62"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_oauth_store_pinning.rs",
+      "git_blob": "069fa3e8c968435868a19dd5190964d7d71b8b7f",
+      "bytes": 12230,
+      "sha256": "f038deb48f031901e09b861e76f44fcdb97bdf43e6e46de2211752ff0e25dec1"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_recovery.rs",
+      "git_blob": "29d2404ede9e7074a7d0e54ea06e0b5883877d59",
+      "bytes": 13679,
+      "sha256": "3b8618b2517256d39ae2b26984fda3d098a1d0798e15f88ea59c0efb7c228021"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_remote.rs",
+      "git_blob": "51d6c486cd99321905bb9963457ee805cc841289",
+      "bytes": 6145,
+      "sha256": "feb041c54f3527d27c4dfe40ef8fe9e97b68cdfc395ae7af46f4121afbdedbd2"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_test_support.rs",
+      "git_blob": "43bd3141bf47697f0ddb85b22aa1ffdf82bbec82",
+      "bytes": 13474,
+      "sha256": "c7cb6532d1fff792733dbce11f5aa1da09a5153f529adfacf32931d1c0953f1b"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_user_agent.rs",
+      "git_blob": "45b5d6025cdd629f690a5c728303c6371bf9fe25",
+      "bytes": 2560,
+      "sha256": "a19e4610d39e2db503c7832a4f21c9c63aef764d65798dba4f2016d73d88df22"
+    },
+    {
+      "path": "codex-rs/codex-mcp/Cargo.toml",
+      "git_blob": "6134f2126db203999727d05f61921836dfed06b7",
+      "bytes": 1726,
+      "sha256": "c14b473064600e0886d20b034fb07ab0a5f71d7120c0e6e585f3b93f88aec0ad"
+    },
+    {
+      "path": "codex-rs/codex-mcp/BUILD.bazel",
+      "git_blob": "fbae63201a7fd49a060f614ee4589daab806cc19",
+      "bytes": 115,
+      "sha256": "3753c163ec9c058814c1ed48d45c80408696b070450b1f2d520f27723194dc12"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+      "git_blob": "b6a96d98a51f6e3d973ab5ff0d5b0d4faf62a019",
+      "bytes": 40432,
+      "sha256": "bbe5e5b007caf1b385f0c1c9b4487945f867e6e2878087bb597116a416b5f120"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+      "git_blob": "e023cf961d06cef22325112d784efc56fec038c7",
+      "bytes": 182844,
+      "sha256": "3542d4aa1cb10dca0becaea82e2c50bb2fbb06dd24bbfb8d8ee2807a6a235c5f"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/lib.rs",
+      "git_blob": "059b90204fc1e0f6b7858fff1df2525b38dfa809",
+      "bytes": 4675,
+      "sha256": "0e42d89cbb67365e8c4d3d9a0c0ccb12a2ea394cfc9fca87226a34adc1442b72"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "git_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+      "bytes": 15052,
+      "sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+      "git_blob": "a045b9973ff7f546860aa0a55aeb980080356b76",
+      "bytes": 51805,
+      "sha256": "696d93d60c4d38289920b41e2efec711533e7a33bf7e19d2c650f2f309ca8e3d"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/rmcp_client_owned_shutdown.rs",
+      "git_blob": "6f909f290c7b5d9a474cdb2a71302fbbf22d0389",
+      "bytes": 2143,
+      "sha256": "8ed84d18b4ef16ca58e213327b902f8c0a176951d6e49bec1b4776af4d8a2a72"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/runtime.rs",
+      "git_blob": "3e2f2dd91b18cdf0f6886eb31782b9b5d5af9516",
+      "bytes": 41330,
+      "sha256": "bd563c88351727863e9cefe4d15432cd186c570e5789e99f50b048a6433a9e3f"
+    },
+    {
+      "path": "codex-rs/core/README.md",
+      "git_blob": "278c614dfd8986105cfa83425ca9d5be536b3f09",
+      "bytes": 4869,
+      "sha256": "90419618b596e4965d9326ff57d81a0a3a406dab586b52d114e6829cafc6da31"
+    }
+  ]
+}

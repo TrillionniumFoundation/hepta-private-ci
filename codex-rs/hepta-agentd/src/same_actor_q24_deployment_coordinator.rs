@@ -27,7 +27,6 @@ use super::c::OriginalCResources;
 use super::client::OriginalDeploymentClient;
 use super::data::OriginalACompletionData;
 use super::data::OriginalCOutcomeData;
-use super::outcome_data::OriginalSignedOutcomeData;
 use super::data::OriginalDeploymentData;
 use super::deployment_refused;
 use super::exchange::OriginalActorWait;
@@ -37,6 +36,7 @@ use super::files::OriginalPinnedRead;
 use super::ingress::OriginalOrdinaryTaskIngress;
 use super::ingress::OriginalOrdinaryTaskStage;
 use super::learning::OriginalDeploymentLearning;
+use super::outcome_data::OriginalSignedOutcomeData;
 use super::task::OriginalInitialPredecessorFiles;
 
 #[path = "same_actor_q24_deployment_coordinator_materials.rs"]
@@ -373,8 +373,7 @@ impl OriginalDeploymentCoordinator {
                             "actual C Outcome belongs to another phase",
                         ));
                     }
-                    let (outcome, signed) =
-                        OriginalSignedOutcomeData::into_original(data.outcome)?;
+                    let (outcome, signed) = OriginalSignedOutcomeData::into_original(data.outcome)?;
                     OriginalPinnedRead::require_original_pin(&response)?;
                     wait.require_original_live()?;
                     self.send_original(Command::ObserveOriginalC(Box::new(

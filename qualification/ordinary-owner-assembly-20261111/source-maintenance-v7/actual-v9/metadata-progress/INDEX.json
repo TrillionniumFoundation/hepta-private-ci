@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "metadata_progress_checkpoint_not_final",
+  "previous": "69a2e7059112704ccc9bc5c2c968f9258d751fae",
+  "pieces": [
+    {
+      "name": "manual_guard_progress",
+      "bytes": 1306197,
+      "sha256": "ae00ec8173b46766da714b83dda58f8b76481dbd9b440709278b5d50365a2ad9",
+      "git_blob": "85885737a60604b11fea9aa198473df424d7dfc8",
+      "create_get_verified": true
+    },
+    {
+      "name": "boundary_progress",
+      "bytes": 142234,
+      "sha256": "4364da16fe580cf28354b414294f9dca5ccc8e51e4cf0922b546edb4a21d9bb9",
+      "git_blob": "18b8e0ca81e26c0a09fa623c19d0c5bc3232674f",
+      "create_get_verified": true
+    },
+    {
+      "name": "helpers",
+      "bytes": 24579,
+      "sha256": "3ee2dcc580f52f0da31a5df832bf9beb357d315204f7555fc2e162ae898e02f0",
+      "git_blob": "644659241f86f20f933958acffea6ded4900c3fa",
+      "create_get_verified": true
+    }
+  ],
+  "reused_whole69": "a26add0aa9233b723ea27604df5124eeaaa27916",
+  "plan": {
+    "recipe": "291776cc203c29728e08b2589e684c0cac4047cb",
+    "generator": "eca89aa4bfff94d81346a3345974ea6c7ffd07c3",
+    "counts": {
+      "boundaries": 1010,
+      "protected": 598
+    }
+  },
+  "pending": [
+    "Old semantic rows163/313/419 final exact row mapping",
+    "Re-sample 69 whole guards against actual v8 plus accepted compiler-repair stage",
+    "Apply Chain875d then86eaf full-row deltas",
+    "Outcome74aa additive1boundary/2protected",
+    "Actual maintenance v9 byte changes if any"
+  ],
+  "no_h_native_ref": true,
+  "no_original_checker_execution": true
+}

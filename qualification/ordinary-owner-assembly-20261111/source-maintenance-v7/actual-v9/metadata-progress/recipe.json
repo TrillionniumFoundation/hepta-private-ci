@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "replayable_actual_metadata_finalization_recipe_pending_actual_v9_source_delta",
+  "helpers": [
+    {
+      "name": "actual_source_metadata_finalizer",
+      "pin": "f1131dc120e8c0df210723a9fa228c4c42893534",
+      "bytes": 9605,
+      "sha256": "276b78bfecfab717bc699232c530706e6caae61b2432f940bdebf6ff739397a7"
+    },
+    {
+      "name": "original_generator_toml_parser_extract",
+      "pin": "14b43d87cc460df3b0a2d4b5c5d178c3bff44ddf",
+      "bytes": 6634,
+      "sha256": "4a47fc7fdc9fb7e478212a64dfcf2215973e6751eb28fcf22731b8f12033c20a"
+    }
+  ],
+  "original_plan_recipe": "291776cc203c29728e08b2589e684c0cac4047cb",
+  "original_semantic_generator": "eca89aa4bfff94d81346a3345974ea6c7ffd07c3",
+  "base_metadata": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+  "ordered_stages": [
+    {
+      "pin": "18b8e0ca81e26c0a09fa623c19d0c5bc3232674f",
+      "shape": "boundary_updates"
+    },
+    {
+      "pin": "85885737a60604b11fea9aa198473df424d7dfc8",
+      "shape": "guard_updates"
+    },
+    {
+      "pin": "a13a9a437bcaebf95ab6cb3bda5d97ae49a4e91b",
+      "shape": "row_delta"
+    },
+    {
+      "pin": "7583c283d2d861bb6c3ade0fea58a6f223c0e2cd",
+      "shape": "row_delta"
+    },
+    {
+      "pin": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+      "shape": "row_delta"
+    },
+    {
+      "pin": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+      "shape": "row_delta"
+    }
+  ],
+  "outcome_annex": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+  "current_source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+  "current_projection": "f8ff3f43b3eb52e2443faefb7b5f47e74c3b19ba",
+  "expected_counts": {
+    "required_ids": 1011,
+    "declared_boundaries": 1011,
+    "protected_conjuncts": 600
+  },
+  "current_result_fingerprints": {
+    "boundaries": "cea38cb7531707fea2261be25c38e52103057d0decf3ab3690d1d93ea8761c33",
+    "protected": "b619e939143486168fa4454f1adcf41f31c8ac5fb92550bb3aaa433f5d124908",
+    "header": "91c2e68218c66bf766546f91a81430f36e53f21c29baf12723c3ccd6c16ee3ff"
+  },
+  "internal_renderer_validation": {
+    "raw_preserved_original_rows": 1210,
+    "replaced_original_rows": 91,
+    "exact_ops": 93,
+    "full_forward_reverse": true,
+    "semantic_roundtrip": true,
+    "not_published_as_final_table": true
+  },
+  "preservation": [
+    "All789 original IDs and512 original protected conjuncts retained in original order.",
+    "598 prepared conjuncts remain separately identified; Outcome adds2 and no path deduplication occurs.",
+    "All original forbidden arrays and header fields except append-only required IDs are exact.",
+    "Sources must be mapped by actual native postimages before final output; current coordinator e1ea is awaiting real d4dce1 layout stage.",
+    "No original checker/helper/native run is claimed."
+  ],
+  "usage": [
+    "Replay original seven-input recipe with retained-stream caller successor2cb to obtain exact1010/598 plan.",
+    "GET every stage raw by pin and supply shape as listed; hash is checked by finalizer.",
+    "Supply original0f0cc raw and strong74aa raw; API fingerprint/gitBlob from original generator, parseToml from the exact extracted parser helper.",
+    "Finalizer result enforces each whole old row/fingerprint; render() preserves unchanged original raw rows, records unique exact forward/reverse replacement ops, and reparses output for semantic equality.",
+    "Append subsequent actual layout deltas as row_delta stages with exact old row identities, then re-run source projections and final rendering."
+  ]
+}

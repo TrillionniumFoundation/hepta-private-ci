@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "kind": "independent_actual_outcome_metadata_and_type_closure_review",
+  "status": "NO CONFIRMED LOCAL STATIC METADATA BLOCKER; BOUNDED SCOPE; NOT EXECUTED",
+  "reviewer": "chain_nextuse",
+  "current_annex": {
+    "git_blob": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+    "bytes": 9456,
+    "sha256": "f8986e9c3a1e057e97c3531b9b855f04340f0fc7f0a13edd6fcb5285e01e0361"
+  },
+  "superseded_annex": {
+    "git_blob": "d44dce76ae8e32fd2c867725cdb59b4befe96a56",
+    "bytes": 8166,
+    "sha256": "8c5e3016da6c6812dcf3a7fa880f52be1ec058bfebc767924291cf6c3fa7b148"
+  },
+  "unchanged_source_proposal": {
+    "git_blob": "8aa906560477a5bb0595c592a850d50fa0d1bc59",
+    "bytes": 22263,
+    "sha256": "f09198a2a3200500aeb0a167559ad8326a8eb892e9589b37161549755b1ce912"
+  },
+  "detail": {
+    "git_blob": "f9c651d395f779d90f81d172175cc18b3d2f6e1a",
+    "bytes": 74869,
+    "sha256": "10863352f4f42124bc4054f9a0c65801aba64e0d14110589bca2ed61fddb7ba8"
+  },
+  "findings": [
+    {
+      "item": "Exact successor preservation",
+      "result": "74aa preserves the complete d44 annex except appending nine precise raw guards to new_protected[0].required and its successor annotation. The three previous raw requirements remain the exact prefix; all existing forbidden, type spans, function/top-level sequences, boundary/caller fields and parent-module guard remain exact."
+    },
+    {
+      "item": "Precise nullable/type requirements",
+      "result": "All nine appended bindings uniquely match actual source: three derive+deny_unknown_fields+named-struct bindings, one derive+snake_case+named-enum binding, and five required_option attributes bound to their named concrete fields. The two older generic attribute markers are intentionally not unique and are not treated as sufficient per-field proof."
+    },
+    {
+      "item": "Complete guard coverage",
+      "result": "The sole new reconstruction function matches its entire 40-line masked code sequence and five top-level statements; four whole type bodies match exactly. Parent declaration is a separate explicit-raw required guard with forbidden[]. Both local protected rows pass the frozen V8 projection only."
+    },
+    {
+      "item": "Real raw field inventory",
+      "result": "Actual original declarations contain 9 AuthenticatedOutcomeV1 fields, 6 OutcomeWatermarkV1 fields, 7 AuthenticatedPrincipalV1 fields and 11 SignedLearningEvidenceV1 fields. All 33 mapping entries are unique and present, with no omissions. This counts observer and watermark container nodes, so it is 31 leaf entries, not 33 independent leaf fields."
+    },
+    {
+      "item": "Actual A/C call closure",
+      "result": "The existing raw wrapper types each contain OriginalSignedOutcomeData; the coordinator's two consuming UFCS calls use completed.outcome and data.outcome in the real A/C branches. Schema/phase checks, original file pins and original command construction remain in their existing order. A/C labels do not establish independent C deployment or actual execution."
+    },
+    {
+      "item": "Independent 176-file bounded projection",
+      "result": "Independently GET/hash-read every file in the author's fixed current changed-product index (3,102,784 bytes), then recomputed the pure V8 field/receiver projection: two concrete wrapper fields, two qualified calls in one coordinator, zero unresolved receivers in exactly this 176-file index. The result matches 955a. Unchanged base product files are outside this scan."
+    },
+    {
+      "item": "Original schema and matcher",
+      "result": "Original 7a670 and e23 were read, not executed. receiver_type is a valid identifier; omitted receiver_methods derives into_original from the symbol. With receiver_type present, actual matching uses has_authority_call rather than custom/fallback call_pattern. Explicit UFCS is recognized; ambiguous relevant dot receivers fail closed. The original checker compares product FILE sets, so two calls correctly declare one caller path. Definition markers and caller marker independently match actual source."
+    },
+    {
+      "item": "Additive union and collisions",
+      "result": "Against the complete fixed semantic recipe's 1,010 boundaries/required IDs and 598 protected conjuncts, the one new ID and symbol do not collide. Pure append yields 1,011 boundaries and required IDs, 600 protected conjuncts; every prior complete row remains exact. The existing parent-file conjunct c981#new_protected:32 remains alongside the new parent conjunct."
+    },
+    {
+      "item": "Corrected old inventory limit",
+      "result": "The original 555-identifier summary does not contain exact into_original. Its into_original_parts entry is a different identifier and cannot prove anything about into_original's unchanged-base callers. No global source-absence or whole-repository caller closure is claimed."
+    }
+  ],
+  "source_replay": {
+    "files": 3,
+    "operations": 5,
+    "all_post_and_pre_pin_checks": true,
+    "unique_forward_reverse": true,
+    "two_existing_preimages_match_current_c4b": true
+  },
+  "integration_obligation": {
+    "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:7",
+    "function": "fn run_original(",
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+    "actual_post": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+    "requirement": "Resample the same complete original caller function for the two exact new UFCS spellings; preserve all old branches/guards and all same-path conjuncts. Runtime owns that update."
+  },
+  "full_base_and_native_gate": "The final original checker/compiler/native qualification remains required on the complete integrated source. Local projection does not satisfy that gate.",
+  "authentication_scope": "This adapter reconstructs original untrusted raw data and supplied signatures. No verified receipt, role, timestamp, key, owner or business result is created. Primary authentication/source semantics are separately reviewed by hepta_audit.",
+  "execution": {
+    "original_checker": false,
+    "original_typed_helper": false,
+    "compiler": false,
+    "formatter": false,
+    "tests": false,
+    "native": false,
+    "h_or_pty": false,
+    "product_source_changed": false,
+    "refs_changed": false,
+    "business_acceptance_counts_changed": false
+  }
+}

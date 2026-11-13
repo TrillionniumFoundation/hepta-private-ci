@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "original_supervisor": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+  "bound_script": {
+    "blob": "83358130ea5b7888eb99922938a349c18e4a9f4c",
+    "bytes": 18684,
+    "sha256": "f09e43748a36ec9a4f947786f03d8f96ce88ede45936dbe00994d3e22b8ce5fd"
+  },
+  "config": {
+    "blob": "3103956cf1432ac4e616fd3d1f05d90ec3d7bc94",
+    "bytes": 1468,
+    "sha256": "923bcd4477f50c96f5260f2b62595fe2ea7aab8776d8e85d0290305f98496232"
+  },
+  "request": {
+    "blob": "adb8cdb00716dedd29419efb4acd6ff5a3989c5f",
+    "bytes": 21726,
+    "sha256": "57f5d32f4f742bc6bd756a16bb412da86cb4d37e589d629c391c6a6f62701dc6"
+  },
+  "operations": [
+    {
+      "old": "assert C[\"head\"]==\"7434600f61293543f11b3ccd2e2c7102e32b3f3c\"",
+      "new": "assert C[\"head\"]==\"14d377594626fcd8d2664aaf805436a818bec867\""
+    },
+    {
+      "old": "assert C[\"tree\"]==\"d0a887edbd797583b2ba3d08cd1bb66ea4ae324d\"",
+      "new": "assert C[\"tree\"]==\"62a2a16cb7099eac3ce38fe134d8092bc54add03\""
+    },
+    {
+      "old": "assert C[\"source_manifest_blob\"]==\"b2227120620c86ce7634e97a7b11dd74ab313489\"",
+      "new": "assert C[\"source_manifest_blob\"]==\"26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a\""
+    },
+    {
+      "old": "assert str(WORK)==\"/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v7\"",
+      "new": "assert str(WORK)==\"/home/qq/af52-learning-local-decision-20261111/ordinary-future-199-maintenance-v9\""
+    },
+    {
+      "old": "original=json.loads(raw_manifest);assert len(original[\"files\"])==197",
+      "new": "original=json.loads(raw_manifest);assert len(original[\"files\"])==199"
+    }
+  ],
+  "unique_forward_reverse": true,
+  "other_supervisor_bytes_exact": true,
+  "original_qualification_harness_unchanged": true,
+  "budget_changes": [],
+  "packages_changes": [],
+  "candidate": {
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+    "branch": "codex/ordinary-owner-maintenance-v7-20261112-af52",
+    "parent": "6e345aaef8bcdc2e6acb5e1825172b13e26fb437",
+    "manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+    "source_files": 199,
+    "root_review": "2cf5796480062324c70aed9f2311520ac327ae13",
+    "tree_proof": "f7bc36be3157666efc59251f416d370390f233df",
+    "changes": {
+      "source": 12,
+      "qualification": 49
+    },
+    "ref_verified": true,
+    "pr_source_unchanged": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "staging_unchanged": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "qualified": false,
+    "business_counts": [
+      0,
+      0,
+      0
+    ]
+  }
+}

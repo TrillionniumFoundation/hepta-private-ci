@@ -1,0 +1,1943 @@
+{
+  "schema_version": 1,
+  "kind": "three_original_protected_rows_actual_semantic_reconciliation",
+  "status": "source_bound_proposal_for_independent_review_not_original_checker_run",
+  "original_plan": "291776cc203c29728e08b2589e684c0cac4047cb",
+  "source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+  "mapping_review": "4705c50427813702e14bcc1127d63de0fab694b8",
+  "protected_changes": [
+    {
+      "selector": {
+        "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:163",
+        "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "expected_full_row_fingerprint": "20c052d81e4c14e179888fb5c6edf46deb4ba92a845fd1ece70cf00f4fbd6e7b"
+      },
+      "old_row": {
+        "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "required": [
+          "register-learning",
+          "--learning-profile",
+          "--root-learning-handoff-fd",
+          "learning_profile.is_some() != learning_handoff.is_some()",
+          "learning_profile.is_some() && root_fd.is_none()",
+          "PreparedHostAuthoritySession::open(&config, &registration, owner)?",
+          "prepared.with_registered_learning(&profile)?",
+          "prepared.seal_learning_bootstrap()",
+          "send_root_learning_handoff(",
+          "prepared.serve_with_ready(ready)",
+          "--generation-publication-deployment",
+          "--root-generation-publication-handoff-fd",
+          "publication_deployment.is_some() != publication_handoff.is_some()",
+          "capability.with_original_deployment(&path)?",
+          "deployment.wait_and_register(stop_ref)",
+          "PublicationDeploymentStop",
+          "let served = match",
+          "drop(stop)",
+          "served?",
+          "--generation-initial-deployment",
+          "--root-generation-initial-handoff-fd",
+          "initial_deployment.is_some() != initial_handoff.is_some()",
+          "initial and learned publication require separate original Root sessions",
+          "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(",
+          "prepared.enable_generation_initial(files.deployment().clone())",
+          "capability.with_original_initial_deployment(files)?",
+          "deployment.wait_and_register_initial(stop_ref)?",
+          "initial_registered_binding",
+          "PreparedHostAuthoritySession::prepare_fresh_from_registered",
+          "Some(profile), None",
+          "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+          "worker.join()"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all"
+        ],
+        "required_order": [
+          [
+            "let learning_handoff = learning_handoff\n            .as_deref()",
+            "inherited_descriptor(fd, &mut claimed)",
+            "learning_profile.is_some() != learning_handoff.is_some()",
+            "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+            "prepared.with_registered_learning(&profile)?",
+            "prepared.seal_learning_bootstrap()",
+            "let ready = ||",
+            "send_root_learning_handoff(",
+            "prepared.launch_native_with_ready(",
+            "prepared.serve_with_text_and_ready(",
+            "prepared.serve_with_ready(ready)"
+          ],
+          [
+            "publication_deployment.is_some() != publication_handoff.is_some()",
+            "let publication_handoff = publication_handoff",
+            "inherited_descriptor(fd, &mut claimed)",
+            "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+            "prepared.with_registered_learning(&profile)?",
+            "prepared.enable_generation_publication()?",
+            "capability.with_original_deployment(&path)?",
+            "send_root_generation_publication_handoff(",
+            "let stop = PublicationDeploymentStop",
+            "deployment.wait_and_register(stop_ref)",
+            "let served = match",
+            "prepared.serve_with_ready(ready)",
+            "drop(stop)",
+            "worker.join()",
+            "served?"
+          ],
+          [
+            "let registered = deployment.wait_and_register(stop_ref)?",
+            "let stdout = std::io::stdout()",
+            "let mut output = stdout.lock()",
+            "writeln!(output,",
+            "output.flush()",
+            "Ok::<_, std::io::Error>(registered)",
+            "let served = match",
+            "drop(stop)",
+            "worker.join()",
+            "served?",
+            "registered?"
+          ],
+          [
+            "let initial_handoff =\n            options.remove",
+            "if (initial_deployment.is_some() || initial_handoff.is_some())",
+            "if initial_deployment.is_some() != initial_handoff.is_some()",
+            "if publication_deployment.is_some() != publication_handoff.is_some()",
+            "let mut claimed =",
+            "let initial_handoff = initial_handoff",
+            "inherited_descriptor(fd, &mut claimed)",
+            "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+            "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(",
+            "prepared.enable_generation_initial(files.deployment().clone())",
+            "capability.with_original_initial_deployment(files)?",
+            "send_root_generation_initial_handoff(",
+            "if let Some(session) = initial_ready",
+            "std::io::stdout().flush()?",
+            "let stop = PublicationDeploymentStop",
+            "deployment.wait_and_register_initial(stop_ref)?",
+            "let mut output = stdout.lock()",
+            "writeln!(output,",
+            "output.flush()",
+            "Ok::<_, std::io::Error>(registered)",
+            "let served = match",
+            "drop(stop)",
+            "initial_worker",
+            "worker.join()",
+            "served?",
+            "initial_registered"
+          ],
+          [
+            "drop(stop)",
+            "let registered = match worker",
+            "worker\n                        .join()",
+            "let initial_registered = match initial_worker",
+            "worker.join()",
+            "served?",
+            "if let Some(registered) = initial_registered",
+            "registered?",
+            "if let Some(registered) = registered",
+            "registered?"
+          ],
+          [
+            "fn main() -> Result<(), Box<dyn std::error::Error>> {",
+            "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+            "let served = match (native_profile, text) {",
+            "(Some(profile), None) => {",
+            "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+            "drop(stop);",
+            "worker.join()",
+            "served?;",
+            "\nstruct PublicationDeploymentStop<'a>"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "self.0\n            .store(",
+              "std::sync::atomic::Ordering::Release"
+            ]
+          }
+        ]
+      },
+      "new_row": {
+        "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "required": [
+          "register-learning",
+          "--learning-profile",
+          "--root-learning-handoff-fd",
+          "learning_profile.is_some() != learning_handoff.is_some()",
+          "learning_profile.is_some() && root_fd.is_none()",
+          "PreparedHostAuthoritySession::open(&config, &registration, owner)?",
+          "prepared.with_registered_learning(&profile)?",
+          "prepared.seal_learning_bootstrap()",
+          "send_root_learning_handoff(",
+          "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+          "--generation-publication-deployment",
+          "--root-generation-publication-handoff-fd",
+          "publication_deployment.is_some() != publication_handoff.is_some()",
+          "capability.with_original_deployment(&path)?",
+          "deployment.wait_and_register(stop_ref)",
+          "PublicationDeploymentStop",
+          "let served = match",
+          "drop(stop)",
+          "served?",
+          "--generation-initial-deployment",
+          "--root-generation-initial-handoff-fd",
+          "initial_deployment.is_some() != initial_handoff.is_some()",
+          "initial and learned publication require separate original Root sessions",
+          "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(",
+          "prepared.enable_generation_initial(files.deployment().clone())",
+          "capability.with_original_initial_deployment(files)?",
+          "deployment.wait_and_register_initial(stop_ref)?",
+          "initial_registered_binding",
+          "PreparedHostAuthoritySession::prepare_fresh_from_registered",
+          "Some(profile), None",
+          "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+          "worker.join()"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all"
+        ],
+        "required_order": [
+          [
+            "let learning_handoff = learning_handoff\n            .as_deref()",
+            "inherited_descriptor(fd, &mut claimed)",
+            "learning_profile.is_some() != learning_handoff.is_some()",
+            "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+            "prepared.with_registered_learning(&profile)?",
+            "prepared.seal_learning_bootstrap()",
+            "let ready = ||",
+            "send_root_learning_handoff(",
+            "prepared.launch_native_with_ready(",
+            "prepared.serve_with_text_and_ready(",
+            "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )"
+          ],
+          [
+            "publication_deployment.is_some() != publication_handoff.is_some()",
+            "let publication_handoff = publication_handoff",
+            "inherited_descriptor(fd, &mut claimed)",
+            "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+            "prepared.with_registered_learning(&profile)?",
+            "prepared.enable_generation_publication()?",
+            "capability.with_original_deployment(&path)?",
+            "send_root_generation_publication_handoff(",
+            "let stop = PublicationDeploymentStop",
+            "deployment.wait_and_register(stop_ref)",
+            "let served = match",
+            "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+            "drop(stop)",
+            "worker\n                        .join()",
+            "served?"
+          ],
+          [
+            "let registered = deployment.wait_and_register(stop_ref)?",
+            "let stdout = std::io::stdout()",
+            "let mut output = stdout.lock()",
+            "writeln!(output,",
+            "output.flush()",
+            "Ok::<_, std::io::Error>(registered)",
+            "let served = match",
+            "drop(stop)",
+            "worker\n                        .join()",
+            "served?",
+            "registered?"
+          ],
+          [
+            "let initial_handoff =\n            options.remove",
+            "if (initial_deployment.is_some() || initial_handoff.is_some())",
+            "if initial_deployment.is_some() != initial_handoff.is_some()",
+            "if publication_deployment.is_some() != publication_handoff.is_some()",
+            "let mut claimed =",
+            "let initial_handoff = initial_handoff",
+            "inherited_descriptor(fd, &mut claimed)",
+            "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+            "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(",
+            "prepared.enable_generation_initial(files.deployment().clone())",
+            "capability.with_original_initial_deployment(files)?",
+            "send_root_generation_initial_handoff(",
+            "if let Some(session) = initial_ready",
+            "std::io::stdout().flush()?",
+            "let stop = PublicationDeploymentStop",
+            "deployment.wait_and_register_initial(stop_ref)?",
+            "let mut output = stdout.lock()",
+            "writeln!(output,",
+            "output.flush()",
+            "Ok::<_, std::io::Error>(registered)",
+            "let served = match",
+            "drop(stop)",
+            "initial_worker",
+            "worker.join()",
+            "served?",
+            "initial_registered"
+          ],
+          [
+            "drop(stop)",
+            "let registered = match worker",
+            "worker\n                        .join()",
+            "let initial_registered = match initial_worker",
+            "worker.join()",
+            "served?",
+            "if let Some(registered) = initial_registered",
+            "registered?",
+            "if let Some(registered) = registered",
+            "registered?"
+          ],
+          [
+            "fn main() -> Result<(), Box<dyn std::error::Error>> {",
+            "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+            "let served = match (native_profile, text) {",
+            "(Some(profile), None) => {",
+            "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+            "drop(stop);",
+            "worker\n                        .join()",
+            "served?;",
+            "struct PublicationDeploymentStop<'a>"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "self.0\n            .store(",
+              "std::sync::atomic::Ordering::Release"
+            ]
+          }
+        ]
+      },
+      "expected_new_full_row_fingerprint": "8f5a54770d88b84c09cf6cd4ab6819d3d54003cbbc3e48ab07b255f8501d563c",
+      "source_pre": {
+        "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:163",
+        "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "base_row_index": 163,
+        "original_identity": "20c052d81e4c14e179888fb5c6edf46deb4ba92a845fd1ece70cf00f4fbd6e7b",
+        "raw_sha256": "144a9903f107ac4d144ecfab18237400658dba9ed88697687389a5c73a3be290",
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all"
+        ]
+      },
+      "source_post": "2d9c8a1ef65ff4cd1ef0ff79953597ea59f37cd7",
+      "field_mappings": [
+        {
+          "field": [
+            "required",
+            9
+          ],
+          "before": "prepared.serve_with_ready(ready)",
+          "after": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+          "classification": "author_semantic_same_original_consuming_receiver_UFCS",
+          "source_span": {
+            "start": 23503,
+            "end": 23625,
+            "text": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )"
+          }
+        },
+        {
+          "field": [
+            "required_order",
+            0,
+            10
+          ],
+          "before": "prepared.serve_with_ready(ready)",
+          "after": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+          "classification": "author_semantic_same_original_consuming_receiver_UFCS",
+          "source_span": {
+            "start": 23503,
+            "end": 23625,
+            "text": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )"
+          }
+        },
+        {
+          "field": [
+            "required_order",
+            1,
+            11
+          ],
+          "before": "prepared.serve_with_ready(ready)",
+          "after": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+          "classification": "author_semantic_same_original_consuming_receiver_UFCS",
+          "source_span": {
+            "start": 23503,
+            "end": 23625,
+            "text": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )"
+          }
+        },
+        {
+          "field": [
+            "required_order",
+            1,
+            13
+          ],
+          "index": 13,
+          "before": "worker.join()",
+          "after": "worker\n                        .join()",
+          "classification": "whitespace",
+          "start": 23909,
+          "end": 23947
+        },
+        {
+          "field": [
+            "required_order",
+            2,
+            8
+          ],
+          "index": 8,
+          "before": "worker.join()",
+          "after": "worker\n                        .join()",
+          "classification": "whitespace",
+          "start": 23909,
+          "end": 23947
+        },
+        {
+          "field": [
+            "required_order",
+            5,
+            6
+          ],
+          "index": 6,
+          "before": "worker.join()",
+          "after": "worker\n                        .join()",
+          "classification": "whitespace",
+          "start": 23909,
+          "end": 23947
+        },
+        {
+          "field": [
+            "required_order",
+            5,
+            8
+          ],
+          "index": 8,
+          "before": "\nstruct PublicationDeploymentStop<'a>",
+          "after": "struct PublicationDeploymentStop<'a>",
+          "classification": "whitespace",
+          "start": 24752,
+          "end": 24788
+        }
+      ],
+      "projection": {
+        "required": [
+          {
+            "marker": "register-learning",
+            "offset": 375
+          },
+          {
+            "marker": "--learning-profile",
+            "offset": 4293
+          },
+          {
+            "marker": "--root-learning-handoff-fd",
+            "offset": 8904
+          },
+          {
+            "marker": "learning_profile.is_some() != learning_handoff.is_some()",
+            "offset": 12725
+          },
+          {
+            "marker": "learning_profile.is_some() && root_fd.is_none()",
+            "offset": 12797
+          },
+          {
+            "marker": "PreparedHostAuthoritySession::open(&config, &registration, owner)?",
+            "offset": 16161
+          },
+          {
+            "marker": "prepared.with_registered_learning(&profile)?",
+            "offset": 16316
+          },
+          {
+            "marker": "prepared.seal_learning_bootstrap()",
+            "offset": 18676
+          },
+          {
+            "marker": "send_root_learning_handoff(",
+            "offset": 18953
+          },
+          {
+            "marker": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+            "offset": 23503
+          },
+          {
+            "marker": "--generation-publication-deployment",
+            "offset": 9261
+          },
+          {
+            "marker": "--root-generation-publication-handoff-fd",
+            "offset": 9417
+          },
+          {
+            "marker": "publication_deployment.is_some() != publication_handoff.is_some()",
+            "offset": 10919
+          },
+          {
+            "marker": "capability.with_original_deployment(&path)?",
+            "offset": 16976
+          },
+          {
+            "marker": "deployment.wait_and_register(stop_ref)",
+            "offset": 21585
+          },
+          {
+            "marker": "PublicationDeploymentStop",
+            "offset": 21297
+          },
+          {
+            "marker": "let served = match",
+            "offset": 23129
+          },
+          {
+            "marker": "drop(stop)",
+            "offset": 23795
+          },
+          {
+            "marker": "served?",
+            "offset": 24398
+          },
+          {
+            "marker": "--generation-initial-deployment",
+            "offset": 9555
+          },
+          {
+            "marker": "--root-generation-initial-handoff-fd",
+            "offset": 9702
+          },
+          {
+            "marker": "initial_deployment.is_some() != initial_handoff.is_some()",
+            "offset": 10623
+          },
+          {
+            "marker": "initial and learned publication require separate original Root sessions",
+            "offset": 10506
+          },
+          {
+            "marker": "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(",
+            "offset": 17437
+          },
+          {
+            "marker": "prepared.enable_generation_initial(files.deployment().clone())",
+            "offset": 17581
+          },
+          {
+            "marker": "capability.with_original_initial_deployment(files)?",
+            "offset": 17819
+          },
+          {
+            "marker": "deployment.wait_and_register_initial(stop_ref)?",
+            "offset": 22546
+          },
+          {
+            "marker": "initial_registered_binding",
+            "offset": 22729
+          },
+          {
+            "marker": "PreparedHostAuthoritySession::prepare_fresh_from_registered",
+            "offset": 14729
+          },
+          {
+            "marker": "Some(profile), None",
+            "offset": 23190
+          },
+          {
+            "marker": "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+            "offset": 23236
+          },
+          {
+            "marker": "worker.join()",
+            "offset": 24206
+          }
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all"
+        ],
+        "fileorder": [
+          [
+            {
+              "marker": "let learning_handoff = learning_handoff\n            .as_deref()",
+              "offset": 11773
+            },
+            {
+              "marker": "inherited_descriptor(fd, &mut claimed)",
+              "offset": 11859
+            },
+            {
+              "marker": "learning_profile.is_some() != learning_handoff.is_some()",
+              "offset": 12725
+            },
+            {
+              "marker": "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+              "offset": 14137
+            },
+            {
+              "marker": "prepared.with_registered_learning(&profile)?",
+              "offset": 16316
+            },
+            {
+              "marker": "prepared.seal_learning_bootstrap()",
+              "offset": 18676
+            },
+            {
+              "marker": "let ready = ||",
+              "offset": 18747
+            },
+            {
+              "marker": "send_root_learning_handoff(",
+              "offset": 18953
+            },
+            {
+              "marker": "prepared.launch_native_with_ready(",
+              "offset": 23236
+            },
+            {
+              "marker": "prepared.serve_with_text_and_ready(",
+              "offset": 23398
+            },
+            {
+              "marker": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+              "offset": 23503
+            }
+          ],
+          [
+            {
+              "marker": "publication_deployment.is_some() != publication_handoff.is_some()",
+              "offset": 10919
+            },
+            {
+              "marker": "let publication_handoff = publication_handoff",
+              "offset": 12089
+            },
+            {
+              "marker": "inherited_descriptor(fd, &mut claimed)",
+              "offset": 12181
+            },
+            {
+              "marker": "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+              "offset": 14137
+            },
+            {
+              "marker": "prepared.with_registered_learning(&profile)?",
+              "offset": 16316
+            },
+            {
+              "marker": "prepared.enable_generation_publication()?",
+              "offset": 16776
+            },
+            {
+              "marker": "capability.with_original_deployment(&path)?",
+              "offset": 16976
+            },
+            {
+              "marker": "send_root_generation_publication_handoff(",
+              "offset": 19852
+            },
+            {
+              "marker": "let stop = PublicationDeploymentStop",
+              "offset": 21286
+            },
+            {
+              "marker": "deployment.wait_and_register(stop_ref)",
+              "offset": 21585
+            },
+            {
+              "marker": "let served = match",
+              "offset": 23129
+            },
+            {
+              "marker": "codex_hepta_agentd::PreparedHostAuthoritySession::serve_with_ready(\n                    prepared, ready,\n                )",
+              "offset": 23503
+            },
+            {
+              "marker": "drop(stop)",
+              "offset": 23795
+            },
+            {
+              "marker": "worker\n                        .join()",
+              "offset": 23909
+            },
+            {
+              "marker": "served?",
+              "offset": 24398
+            }
+          ],
+          [
+            {
+              "marker": "let registered = deployment.wait_and_register(stop_ref)?",
+              "offset": 21568
+            },
+            {
+              "marker": "let stdout = std::io::stdout()",
+              "offset": 21804
+            },
+            {
+              "marker": "let mut output = stdout.lock()",
+              "offset": 21852
+            },
+            {
+              "marker": "writeln!(output,",
+              "offset": 21900
+            },
+            {
+              "marker": "output.flush()",
+              "offset": 22023
+            },
+            {
+              "marker": "Ok::<_, std::io::Error>(registered)",
+              "offset": 22251
+            },
+            {
+              "marker": "let served = match",
+              "offset": 23129
+            },
+            {
+              "marker": "drop(stop)",
+              "offset": 23795
+            },
+            {
+              "marker": "worker\n                        .join()",
+              "offset": 23909
+            },
+            {
+              "marker": "served?",
+              "offset": 24398
+            },
+            {
+              "marker": "registered?",
+              "offset": 24482
+            }
+          ],
+          [
+            {
+              "marker": "let initial_handoff =\n            options.remove",
+              "offset": 9631
+            },
+            {
+              "marker": "if (initial_deployment.is_some() || initial_handoff.is_some())",
+              "offset": 10309
+            },
+            {
+              "marker": "if initial_deployment.is_some() != initial_handoff.is_some()",
+              "offset": 10620
+            },
+            {
+              "marker": "if publication_deployment.is_some() != publication_handoff.is_some()",
+              "offset": 10916
+            },
+            {
+              "marker": "let mut claimed =",
+              "offset": 11426
+            },
+            {
+              "marker": "let initial_handoff = initial_handoff",
+              "offset": 12256
+            },
+            {
+              "marker": "inherited_descriptor(fd, &mut claimed)",
+              "offset": 12340
+            },
+            {
+              "marker": "let owner = std::io::stdin().as_fd().try_clone_to_owned()?",
+              "offset": 14137
+            },
+            {
+              "marker": "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(",
+              "offset": 17437
+            },
+            {
+              "marker": "prepared.enable_generation_initial(files.deployment().clone())",
+              "offset": 17581
+            },
+            {
+              "marker": "capability.with_original_initial_deployment(files)?",
+              "offset": 17819
+            },
+            {
+              "marker": "send_root_generation_initial_handoff(",
+              "offset": 20284
+            },
+            {
+              "marker": "if let Some(session) = initial_ready",
+              "offset": 20594
+            },
+            {
+              "marker": "std::io::stdout().flush()?",
+              "offset": 20723
+            },
+            {
+              "marker": "let stop = PublicationDeploymentStop",
+              "offset": 21286
+            },
+            {
+              "marker": "deployment.wait_and_register_initial(stop_ref)?",
+              "offset": 22546
+            },
+            {
+              "marker": "let mut output = stdout.lock()",
+              "offset": 22659
+            },
+            {
+              "marker": "writeln!(output,",
+              "offset": 22707
+            },
+            {
+              "marker": "output.flush()",
+              "offset": 22826
+            },
+            {
+              "marker": "Ok::<_, std::io::Error>(registered)",
+              "offset": 23050
+            },
+            {
+              "marker": "let served = match",
+              "offset": 23129
+            },
+            {
+              "marker": "drop(stop)",
+              "offset": 23795
+            },
+            {
+              "marker": "initial_worker",
+              "offset": 24152
+            },
+            {
+              "marker": "worker.join()",
+              "offset": 24206
+            },
+            {
+              "marker": "served?",
+              "offset": 24398
+            },
+            {
+              "marker": "initial_registered",
+              "offset": 24445
+            }
+          ],
+          [
+            {
+              "marker": "drop(stop)",
+              "offset": 23795
+            },
+            {
+              "marker": "let registered = match worker",
+              "offset": 23819
+            },
+            {
+              "marker": "worker\n                        .join()",
+              "offset": 23909
+            },
+            {
+              "marker": "let initial_registered = match initial_worker",
+              "offset": 24121
+            },
+            {
+              "marker": "worker.join()",
+              "offset": 24206
+            },
+            {
+              "marker": "served?",
+              "offset": 24398
+            },
+            {
+              "marker": "if let Some(registered) = initial_registered",
+              "offset": 24419
+            },
+            {
+              "marker": "registered?",
+              "offset": 24482
+            },
+            {
+              "marker": "if let Some(registered) = registered",
+              "offset": 24521
+            },
+            {
+              "marker": "registered?",
+              "offset": 24576
+            }
+          ],
+          [
+            {
+              "marker": "fn main() -> Result<(), Box<dyn std::error::Error>> {",
+              "offset": 110
+            },
+            {
+              "marker": "PreparedHostAuthoritySession::prepare_fresh_from_registered(",
+              "offset": 14729
+            },
+            {
+              "marker": "let served = match (native_profile, text) {",
+              "offset": 23129
+            },
+            {
+              "marker": "(Some(profile), None) => {",
+              "offset": 23189
+            },
+            {
+              "marker": "prepared.launch_native_with_ready(&config, &registration, &profile, ready)",
+              "offset": 23236
+            },
+            {
+              "marker": "drop(stop);",
+              "offset": 23795
+            },
+            {
+              "marker": "worker\n                        .join()",
+              "offset": 23909
+            },
+            {
+              "marker": "served?;",
+              "offset": 24398
+            },
+            {
+              "marker": "struct PublicationDeploymentStop<'a>",
+              "offset": 24752
+            }
+          ]
+        ],
+        "functions": [
+          {
+            "function": "fn drop(",
+            "start": 24904,
+            "end": 25016,
+            "sequence": [
+              {
+                "marker": "self.0\n            .store(",
+                "offset": 29
+              },
+              {
+                "marker": "std::sync::atomic::Ordering::Release",
+                "offset": 69
+              }
+            ],
+            "top_level": [],
+            "literal_calls": []
+          }
+        ]
+      }
+    },
+    {
+      "selector": {
+        "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:313",
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "expected_full_row_fingerprint": "6c4dabd349160a4972b7d8e1f6375a3380c4a621ae40f16ee196d1324e77d1d1"
+      },
+      "old_row": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "required": [
+          "#[serde(deny_unknown_fields)]",
+          "pub(super) struct DeploymentData",
+          "pub(super) struct LateMaterial",
+          "pub target: ObserverData",
+          "pub selection: SelectionData",
+          "required_option",
+          "from_original_selection(",
+          "data.original_selection()? != *original",
+          "pub(in crate::authority_host_runtime::session) struct ObserverData",
+          "pub(in crate::authority_host_runtime::session) struct SelectorTrustData"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "AuthorityPosture::ALLOW_ALL",
+          "SigningKey",
+          "FinalUseAuthority::",
+          "HostAuthorityFrontierStore::initialize",
+          "NeuronGenerationCurrentOwnerV1::initialize"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn original_selection(",
+            "sequence": [
+              "Ok(SignedArtifactSelectionV1",
+              "self\n                .signature\n                .as_slice()\n                .try_into()"
+            ]
+          },
+          {
+            "function": "fn from_original_selection(",
+            "sequence": [
+              "original.artifact_kind != ArtifactKind::Model",
+              "let data = Self",
+              "data.original_selection()? != *original",
+              "Ok(data)"
+            ]
+          }
+        ]
+      },
+      "new_row": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "required": [
+          "#[serde(deny_unknown_fields)]",
+          "pub(super) struct DeploymentData",
+          "pub(super) struct LateMaterial",
+          "pub target: ObserverData",
+          "pub selection: SelectionData",
+          "required_option",
+          "from_original_selection(",
+          "data.original_selection()? != *original",
+          "pub(crate) struct ObserverData",
+          "pub(crate) struct SelectorTrustData"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "AuthorityPosture::ALLOW_ALL",
+          "SigningKey",
+          "FinalUseAuthority::",
+          "HostAuthorityFrontierStore::initialize",
+          "NeuronGenerationCurrentOwnerV1::initialize"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn original_selection(",
+            "sequence": [
+              "Ok(SignedArtifactSelectionV1",
+              "self\n                .signature\n                .as_slice()\n                .try_into()"
+            ]
+          },
+          {
+            "function": "fn from_original_selection(",
+            "sequence": [
+              "original.artifact_kind != ArtifactKind::Model",
+              "let data = Self",
+              "data.original_selection()? != *original",
+              "Ok(data)"
+            ]
+          }
+        ]
+      },
+      "expected_new_full_row_fingerprint": "52bd8b18c35e755c05765538fa166359e11fef1d82578196acad9c2df0688bd6",
+      "source_pre": {
+        "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:313",
+        "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+        "base_row_index": 313,
+        "original_identity": "6c4dabd349160a4972b7d8e1f6375a3380c4a621ae40f16ee196d1324e77d1d1",
+        "raw_sha256": "8129245c34ff159232ad7d27b7e6440ec1cfa3a58e41d6b1ee4ed9a53c836179",
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "AuthorityPosture::ALLOW_ALL",
+          "SigningKey",
+          "FinalUseAuthority::",
+          "HostAuthorityFrontierStore::initialize",
+          "NeuronGenerationCurrentOwnerV1::initialize"
+        ]
+      },
+      "source_post": "77f5d9d305529b602108bb43bbafe84991adeb30",
+      "field_mappings": [
+        {
+          "field": [
+            "required",
+            8
+          ],
+          "before": "pub(in crate::authority_host_runtime::session) struct ObserverData",
+          "after": "pub(crate) struct ObserverData",
+          "classification": "author_semantic_crate_data_visibility_expansion",
+          "visibility_mapping_review": "4705c50427813702e14bcc1127d63de0fab694b8"
+        },
+        {
+          "field": [
+            "required",
+            9
+          ],
+          "before": "pub(in crate::authority_host_runtime::session) struct SelectorTrustData",
+          "after": "pub(crate) struct SelectorTrustData",
+          "classification": "author_semantic_crate_data_visibility_expansion",
+          "visibility_mapping_review": "4705c50427813702e14bcc1127d63de0fab694b8"
+        }
+      ],
+      "projection": {
+        "required": [
+          {
+            "marker": "#[serde(deny_unknown_fields)]",
+            "offset": 618
+          },
+          {
+            "marker": "pub(super) struct DeploymentData",
+            "offset": 648
+          },
+          {
+            "marker": "pub(super) struct LateMaterial",
+            "offset": 1605
+          },
+          {
+            "marker": "pub target: ObserverData",
+            "offset": 1671
+          },
+          {
+            "marker": "pub selection: SelectionData",
+            "offset": 1701
+          },
+          {
+            "marker": "required_option",
+            "offset": 3037
+          },
+          {
+            "marker": "from_original_selection(",
+            "offset": 12772
+          },
+          {
+            "marker": "data.original_selection()? != *original",
+            "offset": 14577
+          },
+          {
+            "marker": "pub(crate) struct ObserverData",
+            "offset": 1812
+          },
+          {
+            "marker": "pub(crate) struct SelectorTrustData",
+            "offset": 5587
+          }
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "AuthorityPosture::ALLOW_ALL",
+          "SigningKey",
+          "FinalUseAuthority::",
+          "HostAuthorityFrontierStore::initialize",
+          "NeuronGenerationCurrentOwnerV1::initialize"
+        ],
+        "fileorder": [],
+        "functions": [
+          {
+            "function": "fn original_selection(",
+            "start": 9860,
+            "end": 11916,
+            "sequence": [
+              {
+                "marker": "Ok(SignedArtifactSelectionV1",
+                "offset": 80
+              },
+              {
+                "marker": "self\n                .signature\n                .as_slice()\n                .try_into()",
+                "offset": 1853
+              }
+            ],
+            "top_level": [],
+            "literal_calls": []
+          },
+          {
+            "function": "fn from_original_selection(",
+            "start": 12769,
+            "end": 14774,
+            "sequence": [
+              {
+                "marker": "original.artifact_kind != ArtifactKind::Model",
+                "offset": 113
+              },
+              {
+                "marker": "let data = Self",
+                "offset": 307
+              },
+              {
+                "marker": "data.original_selection()? != *original",
+                "offset": 1808
+              },
+              {
+                "marker": "Ok(data)",
+                "offset": 1992
+              }
+            ],
+            "top_level": [],
+            "literal_calls": []
+          }
+        ]
+      }
+    },
+    {
+      "selector": {
+        "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:419",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "expected_full_row_fingerprint": "803cef0718d0757e3156c452941921921b1d19ac48018d76d496545524e125af"
+      },
+      "old_row": {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "required": [],
+        "forbidden": [],
+        "required_order": [
+          [
+            "pub async fn run_original_phase(\n        self,\n        mut business: OriginalSameActorBusinessInputsV1,\n        arg0_paths: Arg0DispatchPaths,\n    )",
+            " -> Result<(), AgentdError> {"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_process_environment(",
+            "sequence": [
+              "OriginalPhaseReceiveStart::capture()?",
+              "require_disjoint_phase_descriptors(",
+              "late_startup::select_original_startup_entry(arguments)?",
+              "inputs::parse(arguments)?",
+              "late_writer::require_late_owner(inputs.uid, inputs.gid)?",
+              "inputs.learning_handoff.is_some()",
+              "inputs.q24_model_handoff.is_some()",
+              "inputs.publication_handoff.is_some()",
+              "inputs.initial_handoff.is_some()",
+              "!matches!(&inputs.primary, PrimaryInputs::Android",
+              "start\n            .finish(inputs.lifetime)?",
+              ".restrict_original_launcher_end(inputs.bootstrap_deadline)?",
+              "crate::config::read_original_late_writer_starting_identity()?"
+            ]
+          },
+          {
+            "function": "fn run_original_phase(",
+            "sequence": [
+              ") -> Result<(), AgentdError> {",
+              "tokio::runtime::Handle::try_current()",
+              "RuntimeFlavor::MultiThread",
+              "late_writer::require_late_owner(uid, gid)?",
+              "receive_root_production_writer_handoff(",
+              "receiver.remaining()?",
+              "receive_original_phase_start(",
+              "receiver.instant()",
+              "receive_original_same_actor_inputs(",
+              "CloseSameActorPhaseOnDrop::new(context.gate())",
+              "AgentdConfig::from_root_writer_handoff(",
+              "config.identity() != &identity",
+              "InputsOpened",
+              "InitialRootEnrolled",
+              "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+              "connect_original_same_actor_initial(",
+              "tokio::task::block_in_place(",
+              "install_original_initial_task(",
+              "OriginalSameActorRootContext::require_current(&context)?",
+              "AgentdProductionLaunch",
+              "launch.run(config, arg0_paths).await?",
+              "Err(refused("
+            ]
+          }
+        ]
+      },
+      "new_row": {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "required": [],
+        "forbidden": [],
+        "required_order": [
+          [
+            "pub async fn run_original_phase(\n        self,\n        business: OriginalSameActorBusinessInputsV1,\n        arg0_paths: Arg0DispatchPaths,\n    )",
+            " -> Result<(), AgentdError> {"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_process_environment(",
+            "sequence": [
+              "fn from_process_environment(",
+              "arguments: Vec<OsString>,",
+              "phase_handoff: UnixDatagram,",
+              "scoped_handoff: UnixDatagram,",
+              ") -> Result<(Self, Vec<OsString>), AgentdError> {",
+              "let start = OriginalPhaseReceiveStart::capture()?;",
+              "Self::from_original_receive_start(arguments, phase_handoff, scoped_handoff, start)",
+              "}"
+            ],
+            "top_level": [
+              "let start = OriginalPhaseReceiveStart::capture()?;",
+              "Self::from_original_receive_start(arguments, phase_handoff, scoped_handoff, start)"
+            ]
+          },
+          {
+            "function": "fn from_original_receive_start(",
+            "sequence": [
+              "fn from_original_receive_start(",
+              "arguments: Vec<OsString>,",
+              "phase_handoff: UnixDatagram,",
+              "scoped_handoff: UnixDatagram,",
+              "start: OriginalPhaseReceiveStart,",
+              ") -> Result<(Self, Vec<OsString>), AgentdError> {",
+              "require_disjoint_phase_descriptors(&arguments, &phase_handoff, &scoped_handoff)?;",
+              "let arguments = match late_startup::select_original_startup_entry(arguments)? {",
+              "late_startup::OriginalStartupSelection::Existing(arguments)",
+              "| late_startup::OriginalStartupSelection::LateWriter(arguments) => arguments,",
+              "};",
+              "let (selected, ordinary) = inputs::parse(arguments)?;",
+              "let inputs =",
+              "selected.ok_or_else(|| refused(                                              ))?;",
+              "late_writer::require_late_owner(inputs.uid, inputs.gid)?;",
+              "if inputs.learning_handoff.is_some()",
+              "|| inputs.q24_model_handoff.is_some()",
+              "|| inputs.publication_handoff.is_some()",
+              "|| inputs.initial_handoff.is_some()",
+              "{",
+              "return Err(refused(",
+              ",",
+              "));",
+              "}",
+              "if !matches!(&inputs.primary, PrimaryInputs::Android { .. }) || inputs.notes_ui.is_some() {",
+              "return Err(refused(",
+              ",",
+              "));",
+              "}",
+              "let receiver = start",
+              ".finish(inputs.lifetime)?",
+              ".restrict_original_launcher_end(inputs.bootstrap_deadline)?;",
+              "let (identity, cognitive_mode) =",
+              "crate::config::read_original_late_writer_starting_identity()?;",
+              "Ok((",
+              "Self {",
+              "identity,",
+              "cognitive_mode,",
+              "inputs,",
+              "receiver,",
+              "phase_handoff,",
+              "scoped_handoff,",
+              "},",
+              "ordinary,",
+              "))",
+              "}"
+            ],
+            "top_level": [
+              "require_disjoint_phase_descriptors(&arguments, &phase_handoff, &scoped_handoff)?;",
+              "let arguments = match late_startup::select_original_startup_entry(arguments)? {",
+              "let (selected, ordinary) = inputs::parse(arguments)?;",
+              "let inputs =",
+              "selected.ok_or_else(|| refused(                                              ))?;",
+              "late_writer::require_late_owner(inputs.uid, inputs.gid)?;",
+              "if inputs.learning_handoff.is_some()",
+              "|| inputs.q24_model_handoff.is_some()",
+              "|| inputs.publication_handoff.is_some()",
+              "|| inputs.initial_handoff.is_some()",
+              "if !matches!(&inputs.primary, PrimaryInputs::Android { .. }) || inputs.notes_ui.is_some() {",
+              "let receiver = start",
+              ".finish(inputs.lifetime)?",
+              ".restrict_original_launcher_end(inputs.bootstrap_deadline)?;",
+              "let (identity, cognitive_mode) =",
+              "crate::config::read_original_late_writer_starting_identity()?;",
+              "Ok((",
+              "Self {",
+              "ordinary,"
+            ]
+          },
+          {
+            "function": "fn run_original_phase(",
+            "sequence": [
+              "fn run_original_phase(",
+              "self,",
+              "business: OriginalSameActorBusinessInputsV1,",
+              "arg0_paths: Arg0DispatchPaths,",
+              ") -> Result<(), AgentdError> {",
+              "owner::OriginalPhaseRunOwner::start_original(",
+              "self,",
+              "owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)),",
+              "arg0_paths,",
+              ")?",
+              ".await",
+              "}"
+            ],
+            "top_level": [
+              "owner::OriginalPhaseRunOwner::start_original(",
+              "owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)),",
+              "arg0_paths,",
+              ".await"
+            ]
+          }
+        ]
+      },
+      "expected_new_full_row_fingerprint": "76087c7571fd04c6b29ecc6d62148597e196325cc0df348fa1719550cac08a30",
+      "source_post": "ae5f7ca32780fc0b2b9288d14a2eb6f6a9b05c83",
+      "classification": "authorized_startup_owner_custody_and_normal_completion_semantic_transfer_not_formatter_only",
+      "mapping_review": "4705c50427813702e14bcc1127d63de0fab694b8",
+      "obligation_mapping": {
+        "ordinal": 419,
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "classification": "actual parser/run extraction plus authorized normal-completion implementation; not formatter-only",
+        "row_fingerprint": "803cef0718d0757e3156c452941921921b1d19ac48018d76d496545524e125af",
+        "required_preserved": [],
+        "forbidden_preserved": [],
+        "old_run_inventory": "One async-signature obligation plus 22 ordered run items = 23; separate parser has 13 items.",
+        "public_wrapper_obligation": "Protect actual complete async signature and owner::OriginalPhaseRunOwner::start_original(self, owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)), arg0_paths)?.await. No event/status/count-only alternative.",
+        "run_mapping": [
+          {
+            "index": 0,
+            "old_marker": ") -> Result<(), AgentdError> {",
+            "actual_destination": "phase::run_original_phase",
+            "proof": "Same public async Result signature; business mut binding moves into owned run body."
+          },
+          {
+            "index": 1,
+            "old_marker": "tokio::runtime::Handle::try_current()",
+            "actual_destination": "owner::start_original",
+            "proof": "Actual imported Handle::try_current before std-thread construction."
+          },
+          {
+            "index": 2,
+            "old_marker": "RuntimeFlavor::MultiThread",
+            "actual_destination": "owner::start_original",
+            "proof": "Same runtime flavor rejection before actual std spawn."
+          },
+          {
+            "index": 3,
+            "old_marker": "late_writer::require_late_owner(uid, gid)?",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same pre-receive and post-Initial checks."
+          },
+          {
+            "index": 4,
+            "old_marker": "receive_root_production_writer_handoff(",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same actual bootstrap/root-pidfd/writer handoff tuple."
+          },
+          {
+            "index": 5,
+            "old_marker": "receiver.remaining()?",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "All five original sites retained; original receiver and min(500ms), no new start."
+          },
+          {
+            "index": 6,
+            "old_marker": "receive_original_phase_start(",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Actual existing receive with original inputs."
+          },
+          {
+            "index": 7,
+            "old_marker": "receiver.instant()",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same captured absolute end, no now-plus-TTL reconstruction."
+          },
+          {
+            "index": 8,
+            "old_marker": "receive_original_same_actor_inputs(",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Original first six arguments retained; new actual outer control custody argument."
+          },
+          {
+            "index": 9,
+            "old_marker": "CloseSameActorPhaseOnDrop::new(context.gate())",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Guard created after actual receive; additional outer control/thread guard precreated."
+          },
+          {
+            "index": 10,
+            "old_marker": "AgentdConfig::from_root_writer_handoff(",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same actual writer transferred into Config and original bound sockets/cognitive mode."
+          },
+          {
+            "index": 11,
+            "old_marker": "config.identity() != &identity",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Full identity condition includes same context.identity != identity."
+          },
+          {
+            "index": 12,
+            "old_marker": "InputsOpened",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same event after Config/current checks; it is data, not a completion witness."
+          },
+          {
+            "index": 13,
+            "old_marker": "InitialRootEnrolled",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Actual command await/match/refusal before Initial construction."
+          },
+          {
+            "index": 14,
+            "old_marker": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same mutable take and error propagation."
+          },
+          {
+            "index": 15,
+            "old_marker": "connect_original_same_actor_initial(",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Same actual connection/context and original 500ms frame; current postcheck retained."
+          },
+          {
+            "index": 16,
+            "old_marker": "tokio::task::block_in_place(",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Actual Initial construction remains synchronous after actual connection."
+          },
+          {
+            "index": 17,
+            "old_marker": "install_original_initial_task(",
+            "actual_destination": "run::run_owned_original_phase + initial",
+            "proof": "Same arguments; returns Config plus actual Circuit custody, immediately retained before launch."
+          },
+          {
+            "index": 18,
+            "old_marker": "OriginalSameActorRootContext::require_current(&context)?",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "All three checks retained, including after Initial and before launch."
+          },
+          {
+            "index": 19,
+            "old_marker": "AgentdProductionLaunch",
+            "actual_destination": "run::run_owned_original_phase",
+            "proof": "Actual root/RuntimeInputs with None handoffs retained."
+          },
+          {
+            "index": 20,
+            "old_marker": "launch.run(config, arg0_paths).await?",
+            "actual_destination": "runtime::run_original_same_actor_with_shutdown",
+            "proof": "Author-semantic replacement: actual original run_with_shutdown(...).await? preserves failure; real attachments/device/MCP/pidfd held in RuntimeStopped, not a success certificate."
+          },
+          {
+            "index": 21,
+            "old_marker": "Err(refused(",
+            "actual_destination": "completion + completion_custody + owner",
+            "proof": "Author-semantic replacement of old unconditional failure placeholder. Normal success requires the complete actual-custody chain recorded below; no equivalence claim to the old always-error behavior."
+          }
+        ],
+        "parser_mapping": [
+          {
+            "index": 0,
+            "old_marker": "OriginalPhaseReceiveStart::capture()?",
+            "actual_destination": "public from_process_environment, exactly once before delegation"
+          },
+          {
+            "index": 1,
+            "old_marker": "require_disjoint_phase_descriptors(",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 2,
+            "old_marker": "late_startup::select_original_startup_entry(arguments)?",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 3,
+            "old_marker": "inputs::parse(arguments)?",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 4,
+            "old_marker": "late_writer::require_late_owner(inputs.uid, inputs.gid)?",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 5,
+            "old_marker": "inputs.learning_handoff.is_some()",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 6,
+            "old_marker": "inputs.q24_model_handoff.is_some()",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 7,
+            "old_marker": "inputs.publication_handoff.is_some()",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 8,
+            "old_marker": "inputs.initial_handoff.is_some()",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 9,
+            "old_marker": "!matches!(&inputs.primary, PrimaryInputs::Android",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 10,
+            "old_marker": "start\n            .finish(inputs.lifetime)?",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 11,
+            "old_marker": ".restrict_original_launcher_end(inputs.bootstrap_deadline)?",
+            "actual_destination": "private from_original_receive_start"
+          },
+          {
+            "index": 12,
+            "old_marker": "crate::config::read_original_late_writer_starting_identity()?",
+            "actual_destination": "private from_original_receive_start"
+          }
+        ],
+        "parser_exact_evidence": "The 1,929-byte old parser tail from require_disjoint_phase_descriptors through returned Self is byte-identical in the private helper after the single capture was delegated. Preserve full public capture wrapper and private parser helper guards, including descriptor checks; guarding only the run wrapper is insufficient.",
+        "guard_origin_mapping": {
+          "owner": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:7",
+          "run": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:8",
+          "runtime": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:9",
+          "completion": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:10",
+          "completion_custody": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:11",
+          "initial": [
+            "base#protected_file:420",
+            "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:38"
+          ],
+          "session_final": "base#protected_file:505",
+          "circuit_lifecycle": "base#protected_file:494",
+          "session_pause": "base#protected_file:507",
+          "root_intent": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:33",
+          "root_exit": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:36"
+        },
+        "existing_new_guard_forbidden_to_preserve": [
+          "std::mem::forget(",
+          "SigningKey::generate(",
+          ".abort_all(",
+          ".detach("
+        ]
+      },
+      "normal_completion_chain": [
+        "run_with_shutdown Err propagates unchanged. Ok only creates RuntimeStopped holding actual attachment/device/MCP/root pidfd; it is not final success.",
+        "Circuit takes the same stored job and actual retained terminal bundle; join_original_returned_ok awaits the same handle and requires RUNTIME_DELIVERED, actual shutdown admission and original origin. Original Result remains single-delivery.",
+        "Actual coordinator thread JoinHandle is consumed and joined; its same original result and armed owners are retained. Embedded mode lacks this coordinator and cannot invent one.",
+        "Session pause validates real CJoined/NaturalJoin, awaits same actual worker and consumer jobs, checks parked same File and inactive live state, retaining all parked resources and armed guard.",
+        "Root seq1 borrows actual RuntimeStopped/LearningJoined/CircuitNaturalJoin/SessionPaused; canonical ACK plus original peer/Gate/end checked before and after. RootIntent holds original client and failure guard first; no Current re-entry or deadline renewal.",
+        "Real Runtime/Learning-C/Session purposes are consumed under that Intent and retained. Root seq2 requires three actual retired-purpose caps plus coordinator, then exact final-peer shutdown and original held pidfd kernel exit.",
+        "Actual watcher, Runtime attachment/device, strict MCP and component registries are joined/released with original errors retained. Learning/natural/coordinator and Circuit strong owners are released in the actual documented order.",
+        "Actual Context is dropped before final Slot/File cut. RootExited is cleanup-only and permits no new business Current/request.",
+        "Final Slot validates exact retained cap, actual last Session Drop notification, no remaining stream aliases, worker observed Returned with no handle, actual consumer joined-summary, pause Taken, and exclusive actual WriterCustody/Arc<File>. Extra strong or weak File sharing refuses.",
+        "Only after unique cap take and actual original File custody drop is FullyRetired created. Private final completion stores RootExited, FullyRetired, MCP observation and AppServer joined observation; it holds no Session/File/Context. Any cleanup error remains Err.",
+        "Outer owner still consumes and joins the actual std thread. Its oneshot is only readiness to join; panic/Err/fault cleanup cannot become completion."
+      ],
+      "projection": {
+        "required": [],
+        "forbidden": [],
+        "fileorder": [
+          [
+            {
+              "marker": "pub async fn run_original_phase(\n        self,\n        business: OriginalSameActorBusinessInputsV1,\n        arg0_paths: Arg0DispatchPaths,\n    )",
+              "offset": 4985
+            },
+            {
+              "marker": " -> Result<(), AgentdError> {",
+              "offset": 5129
+            }
+          ]
+        ],
+        "functions": [
+          {
+            "function": "fn from_process_environment(",
+            "start": 1989,
+            "end": 2413,
+            "sequence": [
+              {
+                "marker": "fn from_process_environment(",
+                "offset": 0
+              },
+              {
+                "marker": "arguments: Vec<OsString>,",
+                "offset": 37
+              },
+              {
+                "marker": "phase_handoff: UnixDatagram,",
+                "offset": 71
+              },
+              {
+                "marker": "scoped_handoff: UnixDatagram,",
+                "offset": 108
+              },
+              {
+                "marker": ") -> Result<(Self, Vec<OsString>), AgentdError> {",
+                "offset": 142
+              },
+              {
+                "marker": "let start = OriginalPhaseReceiveStart::capture()?;",
+                "offset": 278
+              },
+              {
+                "marker": "Self::from_original_receive_start(arguments, phase_handoff, scoped_handoff, start)",
+                "offset": 337
+              },
+              {
+                "marker": "}",
+                "offset": 424
+              }
+            ],
+            "top_level": [
+              "let start = OriginalPhaseReceiveStart::capture()?;",
+              "Self::from_original_receive_start(arguments, phase_handoff, scoped_handoff, start)"
+            ],
+            "literal_calls": []
+          },
+          {
+            "function": "fn from_original_receive_start(",
+            "start": 2420,
+            "end": 4591,
+            "sequence": [
+              {
+                "marker": "fn from_original_receive_start(",
+                "offset": 0
+              },
+              {
+                "marker": "arguments: Vec<OsString>,",
+                "offset": 40
+              },
+              {
+                "marker": "phase_handoff: UnixDatagram,",
+                "offset": 74
+              },
+              {
+                "marker": "scoped_handoff: UnixDatagram,",
+                "offset": 111
+              },
+              {
+                "marker": "start: OriginalPhaseReceiveStart,",
+                "offset": 149
+              },
+              {
+                "marker": ") -> Result<(Self, Vec<OsString>), AgentdError> {",
+                "offset": 187
+              },
+              {
+                "marker": "require_disjoint_phase_descriptors(&arguments, &phase_handoff, &scoped_handoff)?;",
+                "offset": 245
+              },
+              {
+                "marker": "let arguments = match late_startup::select_original_startup_entry(arguments)? {",
+                "offset": 335
+              },
+              {
+                "marker": "late_startup::OriginalStartupSelection::Existing(arguments)",
+                "offset": 427
+              },
+              {
+                "marker": "| late_startup::OriginalStartupSelection::LateWriter(arguments) => arguments,",
+                "offset": 499
+              },
+              {
+                "marker": "};",
+                "offset": 585
+              },
+              {
+                "marker": "let (selected, ordinary) = inputs::parse(arguments)?;",
+                "offset": 596
+              },
+              {
+                "marker": "let inputs =",
+                "offset": 658
+              },
+              {
+                "marker": "selected.ok_or_else(|| refused(                                              ))?;",
+                "offset": 683
+              },
+              {
+                "marker": "late_writer::require_late_owner(inputs.uid, inputs.gid)?;",
+                "offset": 773
+              },
+              {
+                "marker": "if inputs.learning_handoff.is_some()",
+                "offset": 839
+              },
+              {
+                "marker": "|| inputs.q24_model_handoff.is_some()",
+                "offset": 888
+              },
+              {
+                "marker": "|| inputs.publication_handoff.is_some()",
+                "offset": 938
+              },
+              {
+                "marker": "|| inputs.initial_handoff.is_some()",
+                "offset": 990
+              },
+              {
+                "marker": "{",
+                "offset": 1034
+              },
+              {
+                "marker": "return Err(refused(",
+                "offset": 1048
+              },
+              {
+                "marker": ",",
+                "offset": 1152
+              },
+              {
+                "marker": "));",
+                "offset": 1166
+              },
+              {
+                "marker": "}",
+                "offset": 1178
+              },
+              {
+                "marker": "if !matches!(&inputs.primary, PrimaryInputs::Android { .. }) || inputs.notes_ui.is_some() {",
+                "offset": 1423
+              },
+              {
+                "marker": "return Err(refused(",
+                "offset": 1527
+              },
+              {
+                "marker": ",",
+                "offset": 1632
+              },
+              {
+                "marker": "));",
+                "offset": 1646
+              },
+              {
+                "marker": "}",
+                "offset": 1658
+              },
+              {
+                "marker": "let receiver = start",
+                "offset": 1668
+              },
+              {
+                "marker": ".finish(inputs.lifetime)?",
+                "offset": 1701
+              },
+              {
+                "marker": ".restrict_original_launcher_end(inputs.bootstrap_deadline)?;",
+                "offset": 1739
+              },
+              {
+                "marker": "let (identity, cognitive_mode) =",
+                "offset": 1808
+              },
+              {
+                "marker": "crate::config::read_original_late_writer_starting_identity()?;",
+                "offset": 1853
+              },
+              {
+                "marker": "Ok((",
+                "offset": 1924
+              },
+              {
+                "marker": "Self {",
+                "offset": 1941
+              },
+              {
+                "marker": "identity,",
+                "offset": 1964
+              },
+              {
+                "marker": "cognitive_mode,",
+                "offset": 1990
+              },
+              {
+                "marker": "inputs,",
+                "offset": 2022
+              },
+              {
+                "marker": "receiver,",
+                "offset": 2046
+              },
+              {
+                "marker": "phase_handoff,",
+                "offset": 2072
+              },
+              {
+                "marker": "scoped_handoff,",
+                "offset": 2103
+              },
+              {
+                "marker": "},",
+                "offset": 2131
+              },
+              {
+                "marker": "ordinary,",
+                "offset": 2146
+              },
+              {
+                "marker": "))",
+                "offset": 2164
+              },
+              {
+                "marker": "}",
+                "offset": 2171
+              }
+            ],
+            "top_level": [
+              "require_disjoint_phase_descriptors(&arguments, &phase_handoff, &scoped_handoff)?;",
+              "let arguments = match late_startup::select_original_startup_entry(arguments)? {",
+              "let (selected, ordinary) = inputs::parse(arguments)?;",
+              "let inputs =",
+              "selected.ok_or_else(|| refused(                                              ))?;",
+              "late_writer::require_late_owner(inputs.uid, inputs.gid)?;",
+              "if inputs.learning_handoff.is_some()",
+              "|| inputs.q24_model_handoff.is_some()",
+              "|| inputs.publication_handoff.is_some()",
+              "|| inputs.initial_handoff.is_some()",
+              "if !matches!(&inputs.primary, PrimaryInputs::Android { .. }) || inputs.notes_ui.is_some() {",
+              "let receiver = start",
+              ".finish(inputs.lifetime)?",
+              ".restrict_original_launcher_end(inputs.bootstrap_deadline)?;",
+              "let (identity, cognitive_mode) =",
+              "crate::config::read_original_late_writer_starting_identity()?;",
+              "Ok((",
+              "Self {",
+              "ordinary,"
+            ],
+            "literal_calls": []
+          },
+          {
+            "function": "fn run_original_phase(",
+            "start": 4995,
+            "end": 5365,
+            "sequence": [
+              {
+                "marker": "fn run_original_phase(",
+                "offset": 0
+              },
+              {
+                "marker": "self,",
+                "offset": 31
+              },
+              {
+                "marker": "business: OriginalSameActorBusinessInputsV1,",
+                "offset": 45
+              },
+              {
+                "marker": "arg0_paths: Arg0DispatchPaths,",
+                "offset": 98
+              },
+              {
+                "marker": ") -> Result<(), AgentdError> {",
+                "offset": 133
+              },
+              {
+                "marker": "owner::OriginalPhaseRunOwner::start_original(",
+                "offset": 172
+              },
+              {
+                "marker": "self,",
+                "offset": 230
+              },
+              {
+                "marker": "owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)),",
+                "offset": 248
+              },
+              {
+                "marker": "arg0_paths,",
+                "offset": 328
+              },
+              {
+                "marker": ")?",
+                "offset": 348
+              },
+              {
+                "marker": ".await",
+                "offset": 359
+              },
+              {
+                "marker": "}",
+                "offset": 370
+              }
+            ],
+            "top_level": [
+              "owner::OriginalPhaseRunOwner::start_original(",
+              "owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)),",
+              "arg0_paths,",
+              ".await"
+            ],
+            "literal_calls": []
+          }
+        ]
+      }
+    }
+  ],
+  "counts": {
+    "changed_protected_rows": 3,
+    "added_protected_rows": 0,
+    "boundary_changes": 0
+  },
+  "preservation": [
+    "All original ids/boundaries/callers/receiver definitions untouched.",
+    "All three original forbidden arrays are exact.",
+    "Original163 retains every other required marker and every order, including Fresh six-marker obligations and both joins.",
+    "Original313 changes only two raw visibility obligations; actual broader8DTO/5helper crate visibility is explicitly recorded in source mapping.",
+    "Original419 transfers13parser obligations to the same capture wrapper plus original captured-start helper; full current wrapper/helper code is ordered, including top-level obligations.",
+    "Original419's formerly unconditional Err is an authorized semantic replacement; actual normal completion remains constrained by all linked typed-custody, real-join and exclusive-file guards."
+  ],
+  "limits": [
+    "No source mutation in this packet.",
+    "Pure V8 source masking/projection only.",
+    "Other independent conjuncts on these paths are retained by the final union.",
+    "No claims of compile/checker/business/daemonOS-exit qualification."
+  ]
+}

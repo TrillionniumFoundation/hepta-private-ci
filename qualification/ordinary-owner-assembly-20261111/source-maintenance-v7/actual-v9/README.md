@@ -1,0 +1,15 @@
+# Actual maintenance v9 — failed
+
+Input: 14d377594626fcd8d2664aaf805436a818bec867, tree 62a2a16cb7099eac3ce38fe134d8092bc54add03, manifest 26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a (199 entries).
+
+The actual owned maintenance process exited 1 with complete captured output and no capture error. Both formatter commands exited 0. Eleven-package just fix exited 101 after 158.41565772797912 seconds; bins were not run. Total elapsed time was 179.92275131400675 seconds. There was no native timeout, unknown completion, supervisor error, outside-path mutation or untracked file. The read-only reference remained exactly unchanged. Native Git publication was not attempted. Tests, the original checker and native qualification were not run.
+
+The complete 97,371-byte original log records eight missing original_loop_outcome fields in existing Core SessionIo test initializers. It also records Clippy's attempted agentd binding rename leaving an unresolved receiver assignment. Those broken temporary Clippy edits were rolled back and are not represented as actual final source. Core and AppServer each also have an await_holding_invalid_type diagnostic; any repair must preserve actual owner and cancellation custody without suppressing the lint.
+
+The only actual final source delta is same_actor_q24_deployment_coordinator.rs, e1ea11bc5929f43760059df2f48217c8f3ef2f42 to d4dce1fe1b90169a21151568be2c1d7a32e5125c. The three-hunk patch sorts the Outcome import and folds the C UFCS assignment onto one line. The A call and all other code remain exact. Root independently replayed the exact full-index patch in both directions, verified the raw postimage against the actual source readback, and confirmed formatted and final source maps and patches agree.
+
+The first progress-read MCP request timed out. A later read obtained the complete terminal; the read-tool timeout is not classified as a native failure. A separate bounded read-only Python process transferred the original records, two postimage copies and actual source. Root verified every chunk, independent raw DEFLATE decoding, complete UTF-8 roundtrip, lengths, SHA256 and Git blob IDs, then CREATE/GET-verified each original file. It did not rerun compilation or modify original records.
+
+The updated complete source manifest is 69dc1fc5c75298b37bb0c218254deb7967ccc101, 58,109 B, SHA256 2cb726a9d3b45cfc80239e193909bc29eeb539f169a95a6736e5df56d05d764e. This commit preserves only the actual formatter source image plus evidence and incomplete metadata checkpoints. Further source fixes remain separate reviewable work.
+
+Metadata progress and test plans are not execution results. The original seven-package and Root17 qualification and original checker/helper/harness remain unchanged; additional changed-crate tests and the Core-triggered complete workspace just test remain required. Business acceptance remains 0/0/0. Independent C and actual daemon/Root OS restart are unaccepted. PR #6006 remains Draft on its original source head; no main or Chain ref is changed.

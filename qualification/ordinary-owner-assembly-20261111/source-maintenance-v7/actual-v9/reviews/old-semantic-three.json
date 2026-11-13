@@ -1,0 +1,458 @@
+{
+  "schema": "hepta.independent.three-old-protected-row-semantic-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "status": "NO_CONFIRMED_LOCAL_BLOCKER_IN_THIS_THREE_ROW_PACKET; cross-file final union remains a separate gate",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "packet": {
+    "git_blob": "a13a9a437bcaebf95ab6cb3bda5d97ae49a4e91b",
+    "bytes": 74741,
+    "sha256": "f923366350ed09257b7d7eb5869c907a64260b866f78256aca3c3231fb70b347"
+  },
+  "prior_mapping": {
+    "git_blob": "4705c50427813702e14bcc1127d63de0fab694b8",
+    "bytes": 20822,
+    "sha256": "e0c5841f89a1071e5cfb7900bcb7f11e9d1111fa8d55e14608207b589d4f6a99"
+  },
+  "source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+  "tools": {
+    "toml_reader": "e53b3c7beb51d71cf7f5afe76701909444feebd3",
+    "rust_projection": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+    "canonicalization": "733b3c98676ff3d5eca29687fdb624f33ead6a33",
+    "reference_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "scope": "Pure V8 transcription only, not original tomllib/checker execution."
+  },
+  "independent_checks": {
+    "checks": [
+      {
+        "ordinal": 163,
+        "declaredFieldCount": 7,
+        "source_manifest_match": true
+      },
+      {
+        "ordinal": 313,
+        "declaredFieldCount": 2,
+        "source_manifest_match": true
+      },
+      {
+        "ordinal": 419,
+        "declaredFieldCount": null,
+        "source_manifest_match": true
+      }
+    ],
+    "forwardReverseExact": true,
+    "baseCounts": {
+      "boundary": 789,
+      "protected": 512
+    },
+    "sameOtherRows": 509,
+    "whole": [
+      {
+        "function": "fn from_process_environment(",
+        "lines": 8,
+        "start": 1989,
+        "end": 2413
+      },
+      {
+        "function": "fn from_original_receive_start(",
+        "lines": 46,
+        "start": 2420,
+        "end": 4591
+      },
+      {
+        "function": "fn run_original_phase(",
+        "lines": 12,
+        "start": 4995,
+        "end": 5365
+      }
+    ],
+    "mappingExactlyPrior": true
+  },
+  "row_projections": [
+    {
+      "ordinal": 163,
+      "old_exact_base": true,
+      "changed_keys": [
+        "required",
+        "required_order"
+      ],
+      "oldFP": "20c052d81e4c14e179888fb5c6edf46deb4ba92a845fd1ece70cf00f4fbd6e7b",
+      "newFP": "8f5a54770d88b84c09cf6cd4ab6819d3d54003cbbc3e48ab07b255f8501d563c",
+      "required": 32,
+      "forbidden": 2,
+      "fileSequences": 6,
+      "functions": [
+        "fn drop("
+      ],
+      "sequence": 2,
+      "top_level": 0
+    },
+    {
+      "ordinal": 313,
+      "old_exact_base": true,
+      "changed_keys": [
+        "required"
+      ],
+      "oldFP": "6c4dabd349160a4972b7d8e1f6375a3380c4a621ae40f16ee196d1324e77d1d1",
+      "newFP": "52bd8b18c35e755c05765538fa166359e11fef1d82578196acad9c2df0688bd6",
+      "required": 10,
+      "forbidden": 7,
+      "fileSequences": 0,
+      "functions": [
+        "fn original_selection(",
+        "fn from_original_selection("
+      ],
+      "sequence": 6,
+      "top_level": 0
+    },
+    {
+      "ordinal": 419,
+      "old_exact_base": true,
+      "changed_keys": [
+        "required_order",
+        "required_function_order"
+      ],
+      "oldFP": "803cef0718d0757e3156c452941921921b1d19ac48018d76d496545524e125af",
+      "newFP": "76087c7571fd04c6b29ecc6d62148597e196325cc0df348fa1719550cac08a30",
+      "required": 0,
+      "forbidden": 0,
+      "fileSequences": 1,
+      "functions": [
+        "fn from_process_environment(",
+        "fn from_original_receive_start(",
+        "fn run_original_phase("
+      ],
+      "sequence": 66,
+      "top_level": 25
+    }
+  ],
+  "conclusions": [
+    {
+      "ordinal": 163,
+      "classification": "Three same-consuming-receiver UFCS marker replacements plus four actual whitespace adjustments.",
+      "findings": [
+        "Independent exact old-row comparison to protected_file ordinal 163 of original 0f0cc succeeded. Seven declared field mappings alone reconstruct the entire new row; reversal reconstructs original.",
+        "The three UFCS entries are three metadata string occurrences for the same actual serve_with_ready call, not three different production calls. The actual prepared value is moved into the same PreparedHostAuthoritySession::serve_with_ready; ready and result are unchanged.",
+        "Original native/text branches and ordinary seal_learning_bootstrap remain. Both actual worker joins are separately constrained; do not confuse line-broken publication worker.join with the still-single-line Initial worker.join.",
+        "All 32 required entries, both forbidden entries, six ordered arrays and Drop's two ordered markers survive with only the declared adjustments. The Fresh full Linux main prefix through next struct remains constrained."
+      ]
+    },
+    {
+      "ordinal": 313,
+      "classification": "Author-semantic DTO visibility expansion, not formatter-only.",
+      "findings": [
+        "Exactly required[8] and required[9] change from session-ancestor visibility to pub(crate), matching actual ObserverData and SelectorTrustData definitions.",
+        "The source's broader 8 DTO and 5 helper visibility changes remain explicitly acknowledged by prior mapping 4705; this packet does not claim that source visibility stayed unchanged.",
+        "Every other required string, seven forbidden strings, both existing functions and all six ordered function markers are exact. The signed-selection conversion and full roundtrip comparison remain protected.",
+        "The DTOs remain data/conversion objects. This visibility change neither creates a live ownership capability nor replaces actual issuer/signature/identity validation."
+      ]
+    },
+    {
+      "ordinal": 419,
+      "classification": "Authorized parser/owner extraction and real normal-completion implementation; not equivalence to the former always-error placeholder.",
+      "findings": [
+        "Original row identity, path, empty required and forbidden arrays are exact. Full async signature remains a masked ordered requirement; business's removed mut spelling matches the actual wrapper.",
+        "All three current unique functions are constrained by all nonblank lines of their complete masked extent: from_process_environment 8, from_original_receive_start 46, run_original_phase 12. Independent extraction equaled all 66 sequence entries exactly; all 25 top-level obligations passed the same brace-depth projection.",
+        "The public parser captures OriginalPhaseReceiveStart once before delegation. The private parser keeps disjoint descriptors, original startup selection, original parse, late-owner check, four incompatible-handoff refusals, Android/Notes restriction, original lifetime and restricted launcher end, and original identity load.",
+        "The public async wrapper consumes self and embedded business into the actual OriginalPhaseRunOwner and awaits it. It is not by itself a completion proof.",
+        "The packet's 13 parser and 22 run-item mappings plus async-signature obligation are canonical-identical to the earlier independent 4705 mapping. Its eleven-step normal-completion chain is likewise unchanged.",
+        "Replacing the old final unconditional Err is an explicitly authorized semantic change. It is acceptable only with the listed current cross-file complete-function/whole-implementation guards and original conjunctions preserved. A final union containing only these three wrapper/helper functions would remain insufficient."
+      ]
+    }
+  ],
+  "parser_obligations": [
+    {
+      "index": 0,
+      "old_marker": "OriginalPhaseReceiveStart::capture()?",
+      "actual_destination": "public from_process_environment, exactly once before delegation"
+    },
+    {
+      "index": 1,
+      "old_marker": "require_disjoint_phase_descriptors(",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 2,
+      "old_marker": "late_startup::select_original_startup_entry(arguments)?",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 3,
+      "old_marker": "inputs::parse(arguments)?",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 4,
+      "old_marker": "late_writer::require_late_owner(inputs.uid, inputs.gid)?",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 5,
+      "old_marker": "inputs.learning_handoff.is_some()",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 6,
+      "old_marker": "inputs.q24_model_handoff.is_some()",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 7,
+      "old_marker": "inputs.publication_handoff.is_some()",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 8,
+      "old_marker": "inputs.initial_handoff.is_some()",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 9,
+      "old_marker": "!matches!(&inputs.primary, PrimaryInputs::Android",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 10,
+      "old_marker": "start\n            .finish(inputs.lifetime)?",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 11,
+      "old_marker": ".restrict_original_launcher_end(inputs.bootstrap_deadline)?",
+      "actual_destination": "private from_original_receive_start"
+    },
+    {
+      "index": 12,
+      "old_marker": "crate::config::read_original_late_writer_starting_identity()?",
+      "actual_destination": "private from_original_receive_start"
+    }
+  ],
+  "run_obligations": [
+    {
+      "index": 0,
+      "old_marker": ") -> Result<(), AgentdError> {",
+      "actual_destination": "phase::run_original_phase",
+      "proof": "Same public async Result signature; business mut binding moves into owned run body."
+    },
+    {
+      "index": 1,
+      "old_marker": "tokio::runtime::Handle::try_current()",
+      "actual_destination": "owner::start_original",
+      "proof": "Actual imported Handle::try_current before std-thread construction."
+    },
+    {
+      "index": 2,
+      "old_marker": "RuntimeFlavor::MultiThread",
+      "actual_destination": "owner::start_original",
+      "proof": "Same runtime flavor rejection before actual std spawn."
+    },
+    {
+      "index": 3,
+      "old_marker": "late_writer::require_late_owner(uid, gid)?",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same pre-receive and post-Initial checks."
+    },
+    {
+      "index": 4,
+      "old_marker": "receive_root_production_writer_handoff(",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same actual bootstrap/root-pidfd/writer handoff tuple."
+    },
+    {
+      "index": 5,
+      "old_marker": "receiver.remaining()?",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "All five original sites retained; original receiver and min(500ms), no new start."
+    },
+    {
+      "index": 6,
+      "old_marker": "receive_original_phase_start(",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Actual existing receive with original inputs."
+    },
+    {
+      "index": 7,
+      "old_marker": "receiver.instant()",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same captured absolute end, no now-plus-TTL reconstruction."
+    },
+    {
+      "index": 8,
+      "old_marker": "receive_original_same_actor_inputs(",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Original first six arguments retained; new actual outer control custody argument."
+    },
+    {
+      "index": 9,
+      "old_marker": "CloseSameActorPhaseOnDrop::new(context.gate())",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Guard created after actual receive; additional outer control/thread guard precreated."
+    },
+    {
+      "index": 10,
+      "old_marker": "AgentdConfig::from_root_writer_handoff(",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same actual writer transferred into Config and original bound sockets/cognitive mode."
+    },
+    {
+      "index": 11,
+      "old_marker": "config.identity() != &identity",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Full identity condition includes same context.identity != identity."
+    },
+    {
+      "index": 12,
+      "old_marker": "InputsOpened",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same event after Config/current checks; it is data, not a completion witness."
+    },
+    {
+      "index": 13,
+      "old_marker": "InitialRootEnrolled",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Actual command await/match/refusal before Initial construction."
+    },
+    {
+      "index": 14,
+      "old_marker": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same mutable take and error propagation."
+    },
+    {
+      "index": 15,
+      "old_marker": "connect_original_same_actor_initial(",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Same actual connection/context and original 500ms frame; current postcheck retained."
+    },
+    {
+      "index": 16,
+      "old_marker": "tokio::task::block_in_place(",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Actual Initial construction remains synchronous after actual connection."
+    },
+    {
+      "index": 17,
+      "old_marker": "install_original_initial_task(",
+      "actual_destination": "run::run_owned_original_phase + initial",
+      "proof": "Same arguments; returns Config plus actual Circuit custody, immediately retained before launch."
+    },
+    {
+      "index": 18,
+      "old_marker": "OriginalSameActorRootContext::require_current(&context)?",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "All three checks retained, including after Initial and before launch."
+    },
+    {
+      "index": 19,
+      "old_marker": "AgentdProductionLaunch",
+      "actual_destination": "run::run_owned_original_phase",
+      "proof": "Actual root/RuntimeInputs with None handoffs retained."
+    },
+    {
+      "index": 20,
+      "old_marker": "launch.run(config, arg0_paths).await?",
+      "actual_destination": "runtime::run_original_same_actor_with_shutdown",
+      "proof": "Author-semantic replacement: actual original run_with_shutdown(...).await? preserves failure; real attachments/device/MCP/pidfd held in RuntimeStopped, not a success certificate."
+    },
+    {
+      "index": 21,
+      "old_marker": "Err(refused(",
+      "actual_destination": "completion + completion_custody + owner",
+      "proof": "Author-semantic replacement of old unconditional failure placeholder. Normal success requires the complete actual-custody chain recorded below; no equivalence claim to the old always-error behavior."
+    }
+  ],
+  "signature_obligation": "Protect actual complete async signature and owner::OriginalPhaseRunOwner::start_original(self, owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)), arg0_paths)?.await. No event/status/count-only alternative.",
+  "guard_origin_obligations": {
+    "owner": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:7",
+    "run": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:8",
+    "runtime": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:9",
+    "completion": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:10",
+    "completion_custody": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:11",
+    "initial": [
+      "base#protected_file:420",
+      "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:38"
+    ],
+    "session_final": "base#protected_file:505",
+    "circuit_lifecycle": "base#protected_file:494",
+    "session_pause": "base#protected_file:507",
+    "root_intent": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:33",
+    "root_exit": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:36"
+  },
+  "normal_completion_chain": [
+    "run_with_shutdown Err propagates unchanged. Ok only creates RuntimeStopped holding actual attachment/device/MCP/root pidfd; it is not final success.",
+    "Circuit takes the same stored job and actual retained terminal bundle; join_original_returned_ok awaits the same handle and requires RUNTIME_DELIVERED, actual shutdown admission and original origin. Original Result remains single-delivery.",
+    "Actual coordinator thread JoinHandle is consumed and joined; its same original result and armed owners are retained. Embedded mode lacks this coordinator and cannot invent one.",
+    "Session pause validates real CJoined/NaturalJoin, awaits same actual worker and consumer jobs, checks parked same File and inactive live state, retaining all parked resources and armed guard.",
+    "Root seq1 borrows actual RuntimeStopped/LearningJoined/CircuitNaturalJoin/SessionPaused; canonical ACK plus original peer/Gate/end checked before and after. RootIntent holds original client and failure guard first; no Current re-entry or deadline renewal.",
+    "Real Runtime/Learning-C/Session purposes are consumed under that Intent and retained. Root seq2 requires three actual retired-purpose caps plus coordinator, then exact final-peer shutdown and original held pidfd kernel exit.",
+    "Actual watcher, Runtime attachment/device, strict MCP and component registries are joined/released with original errors retained. Learning/natural/coordinator and Circuit strong owners are released in the actual documented order.",
+    "Actual Context is dropped before final Slot/File cut. RootExited is cleanup-only and permits no new business Current/request.",
+    "Final Slot validates exact retained cap, actual last Session Drop notification, no remaining stream aliases, worker observed Returned with no handle, actual consumer joined-summary, pause Taken, and exclusive actual WriterCustody/Arc<File>. Extra strong or weak File sharing refuses.",
+    "Only after unique cap take and actual original File custody drop is FullyRetired created. Private final completion stores RootExited, FullyRetired, MCP observation and AppServer joined observation; it holds no Session/File/Context. Any cleanup error remains Err.",
+    "Outer owner still consumes and joins the actual std thread. Its oneshot is only readiness to join; panic/Err/fault cleanup cannot become completion."
+  ],
+  "current_cross_source_bindings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "git_blob": "d45540fc4caa55836d097364a97f2342ea4d2644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "git_blob": "0bcc8cbc8094c1350e412f2c6598c389fde6c2fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "git_blob": "995f62c55ce775c1a90367ba140ac4044b2fb9b3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "git_blob": "03b3ec1759d42031f48f965aeb9b0d9816307c28"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "git_blob": "5bdf4a49aa51981061b784f156ca6325a628d01e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "git_blob": "82a90d860bfb23d503a2d803a1a1a4400e15f850"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "git_blob": "b9753d53834659e46ebc9dfd5fdc5df9580152b8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+      "git_blob": "20dafd52c3da842bbf9f6693375c69134efbb222"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+      "git_blob": "3b2599c107fd6f7affeabd61d259d080ab8561e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "git_blob": "a987d30eaf5a99707f39778e7fbb6750390ada86"
+    }
+  ],
+  "already_reviewed_successors": [
+    {
+      "packet": "ac896f459fca0794bdc50232881e33c0f762b151",
+      "review": "2a215867fad1f2c98f749bc05ac0731ca7cd5630",
+      "effect": "Current owner/run/runtime/completion sources replace unresolved tracing calls with existing std stderr diagnostics. Real return/await/ownership gates remain; actual source guards must be resampled."
+    },
+    {
+      "packet": "86d575cb94e626933c52eb4654fef64af047906f",
+      "review": "8d999ed85f0af1e0c44bdcf2a3e07085b744800c",
+      "effect": "Root-exit registration propagates whole AsyncFdRegisterError through io::Error::other; original OwnedFd and error remain held. No new terminal proof."
+    }
+  ],
+  "preservation": {
+    "forward_reverse": "Three origin/ordinal replacements over the independently parsed original 789-boundary/512-protected table are reversible with whole-object equality.",
+    "untouched": "All 789 boundary rows and 509 other protected rows unchanged by this packet. No path-key deduplication, ID/caller/receiver change or source write.",
+    "forbidden": "Every original forbidden string is unchanged; cross-source existing prohibitions std::mem::forget, SigningKey::generate, abort_all, detach remain obligations of the final union."
+  },
+  "limits": [
+    "This review approves only the stated source-bound semantic adaptation, not a final serialized CALLERS union or its original-checker result.",
+    "Runtime's separate 69 complete-guard resampling and every existing duplicate-path conjunction must still be retained and validated against final actual postimages.",
+    "No h, native, shell, Python, Cargo, formatter, original checker, tests or refs were accessed or changed by this review.",
+    "No compiler, business, Root, full-phase, all-resource or external daemon OS-exit PASS is inferred from static marker presence."
+  ]
+}
