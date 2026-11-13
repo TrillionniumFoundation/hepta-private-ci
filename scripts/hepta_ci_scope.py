@@ -183,10 +183,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
                     or path.startswith("scripts/test_hepta")
                 )
             )
-            or (
-                len(parts) == 3
-                and path.startswith("scripts/tests/test_hepta")
-            )
+            or (len(parts) == 3 and path.startswith("scripts/tests/test_hepta"))
         ):
             derived = True
             continue

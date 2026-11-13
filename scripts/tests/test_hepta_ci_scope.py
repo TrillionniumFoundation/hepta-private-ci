@@ -147,9 +147,7 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["full_repo"])
 
     def test_dossier_detail_only_trusts_markdown_as_prose(self):
-        prose = select(
-            ["qualification/module-execution-dossiers/detail/owner.md"]
-        )
+        prose = select(["qualification/module-execution-dossiers/detail/owner.md"])
         self.assertTrue(prose["derived"])
         self.assertFalse(prose["native"])
         self.assertFalse(prose["full_repo"])

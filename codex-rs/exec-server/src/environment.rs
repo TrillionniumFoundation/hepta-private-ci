@@ -957,7 +957,9 @@ impl Environment {
                                 .to_string(),
                         ));
                     }
-                    active_client.discover_capability_roots(params.clone()).await
+                    active_client
+                        .discover_capability_roots(params.clone())
+                        .await
                 };
                 match discover().await {
                     Err(error) if crate::client::is_retryable_recovery_error(&error) => {

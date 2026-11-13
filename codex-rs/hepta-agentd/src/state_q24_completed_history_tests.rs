@@ -21,7 +21,10 @@ async fn ready_fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, Ag
     drop(previous);
     let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)?;
     state.refresh_generation()?;
-    fs::set_permissions(&state.identity().home_root, fs::Permissions::from_mode(0o700))?;
+    fs::set_permissions(
+        &state.identity().home_root,
+        fs::Permissions::from_mode(0o700),
+    )?;
     let cognitive = DurableCognitiveStore::open(&state.identity().layout).await?;
     state.attach_cognitive_store(Arc::new(cognitive))?;
     state.mark_runtime_prerequisites_ready()?;
@@ -68,7 +71,8 @@ async fn current_ready_daemon_cannot_promote_missing_terminal_acknowledgement() 
 }
 
 #[tokio::test]
-async fn terminal_acknowledgement_query_requires_the_actual_running_recipient() -> anyhow::Result<()> {
+async fn terminal_acknowledgement_query_requires_the_actual_running_recipient() -> anyhow::Result<()>
+{
     let (_directory, registry, state) = ready_fixture().await?;
     assert!(state.read_original_q24_terminal_acceptance()?.is_none());
     let running = registry.load_agent(&state.identity().agent_id)?.lifecycle;
@@ -120,7 +124,8 @@ async fn current_ready_daemon_cannot_promote_missing_completed_history() -> anyh
 }
 
 #[tokio::test]
-async fn completed_history_missing_still_requires_current_running_recipient() -> anyhow::Result<()> {
+async fn completed_history_missing_still_requires_current_running_recipient() -> anyhow::Result<()>
+{
     let (_directory, registry, state) = ready_fixture().await?;
     assert!(state.read_original_q24_completed_history()?.is_none());
     let running = registry.load_agent(&state.identity().agent_id)?.lifecycle;

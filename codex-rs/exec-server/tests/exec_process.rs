@@ -1214,7 +1214,9 @@ async fn assert_remote_windows_sandbox_rejects_unqualified_legacy_policy() -> Re
         })
         .await
     {
-        Ok(_) => anyhow::bail!("unqualified legacy Windows sandbox unexpectedly admitted a process"),
+        Ok(_) => {
+            anyhow::bail!("unqualified legacy Windows sandbox unexpectedly admitted a process")
+        }
         Err(error) => error,
     };
     assert!(

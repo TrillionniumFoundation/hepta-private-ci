@@ -346,8 +346,14 @@ fn invalid_successor_sequence_or_clock_never_reaches_model_port() {
         )))
     ));
     assert_eq!(model.calls, 1, "stale clock invoked model");
-    assert_eq!(checked(runtime.current_anchor()).unwrap().checkpoint_digest, predecessor);
-    assert_eq!(checked(witness.current()).unwrap().checkpoint_digest, predecessor);
+    assert_eq!(
+        checked(runtime.current_anchor()).map(|anchor| anchor.checkpoint_digest),
+        Some(predecessor)
+    );
+    assert_eq!(
+        checked(witness.current()).map(|anchor| anchor.checkpoint_digest),
+        Some(predecessor)
+    );
 
     // Neither rejection poisoned the journal or consumed a request slot.
     let second = checked(runtime.tick(&mut model, input(2, predecessor)));
@@ -406,7 +412,10 @@ fn wrong_journal_context_or_body_never_reaches_model_port() {
         )))
     ));
     assert_eq!(model.calls, 1);
-    assert_eq!(checked(runtime.current_anchor()).unwrap().sequence, 1);
+    assert_eq!(
+        checked(runtime.current_anchor()).map(|anchor| anchor.sequence),
+        Some(1)
+    );
 
     checked(runtime.tick(&mut model, input(2, predecessor)));
     assert_eq!(model.calls, 2);
@@ -433,7 +442,10 @@ fn full_neuron_journal_never_invokes_model_again() {
         Err(NeuronRuntimeError::Journal(JournalError::Capacity))
     ));
     assert_eq!(model.calls, 1, "full journal invoked model");
-    assert_eq!(checked(runtime.current_anchor()).unwrap().sequence, 1);
+    assert_eq!(
+        checked(runtime.current_anchor()).map(|anchor| anchor.sequence),
+        Some(1)
+    );
 }
 
 #[test]
