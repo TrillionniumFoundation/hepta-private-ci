@@ -10,8 +10,10 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
+import stat
 import statistics
 import sys
 
@@ -45,11 +47,33 @@ def reject_constant(value):
     raise EvidenceError(f"nonfinite JSON constant: {value[:32]}")
 
 
+def read_regular_bytes(path: Path, cap: int) -> bytes:
+    require(not path.is_symlink(), "symlinked evidence file")
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    with os.fdopen(os.open(path, flags), "rb") as handle:
+        before = os.fstat(handle.fileno())
+        require(stat.S_ISREG(before.st_mode) and before.st_size <= cap,
+                "evidence absent, nonregular or over byte cap")
+        raw = handle.read(cap + 1)
+        after = os.fstat(handle.fileno())
+    current = path.lstat()
+    require(len(raw) <= cap and len(raw) == before.st_size,
+            "evidence exceeds byte cap or changed during read")
+    fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+    require(all(getattr(before, key) == getattr(after, key) == getattr(current, key)
+                for key in fields) and stat.S_ISREG(current.st_mode),
+            "evidence file changed during read")
+    return raw
+
+
+def parse_json(raw: bytes):
+    return json.loads(raw.decode("utf-8"), object_pairs_hook=strict_pairs,
+                      parse_constant=reject_constant)
+
+
 def read_json(path: Path, cap: int = MAX_JSON_BYTES):
-    require(path.is_file() and not path.is_symlink(), "missing or symlinked JSON")
-    require(path.stat().st_size <= cap, "JSON exceeds byte cap")
-    return json.loads(path.read_text(encoding="utf-8"),
-                      object_pairs_hook=strict_pairs, parse_constant=reject_constant)
+    return parse_json(read_regular_bytes(path, cap))
 
 
 def digest(data: bytes) -> str:
@@ -81,8 +105,8 @@ def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) ->
     require(node.resolve().is_relative_to(root.resolve()), "artifact escaped root")
     require(not any(part.is_symlink() for part in (node, *node.parents) if part != root.parent),
             "symlinked artifact path")
-    require(node.is_file() and node.stat().st_size <= cap, "artifact absent or too large")
-    require(sha(expected) and digest(node.read_bytes()) == expected,
+    raw = read_regular_bytes(node, cap)
+    require(sha(expected) and digest(raw) == expected,
             "artifact SHA256 mismatch")
 
 
@@ -131,8 +155,16 @@ def validate_sources(root: Path, source_manifest: dict, history: dict):
 
 
 def validate_protocol(protocol, protocol_path: Path, expected_sha: str):
-    require(sha(expected_sha) and digest(protocol_path.read_bytes()) == expected_sha,
+    raw = read_regular_bytes(protocol_path, MAX_JSON_BYTES)
+    require(sha(expected_sha) and digest(raw) == expected_sha,
             "protocol not independently pinned by expected SHA256")
+    pinned = parse_json(raw)
+    require(type(protocol) is dict and type(pinned) is dict, "protocol must be an object")
+    def canonical(value):
+        return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=True, allow_nan=False)
+    require(canonical(protocol) == canonical(pinned),
+            "parsed protocol differs from the pinned file bytes")
     require(protocol.get("schema") == "hepta.p0-p7.research.v1", "unknown protocol")
     require(type(protocol.get("seeds")) is list and len(protocol["seeds"]) >= 3 and
             all(nonnegative_int(x) for x in protocol["seeds"]) and
@@ -149,9 +181,7 @@ def validate_protocol(protocol, protocol_path: Path, expected_sha: str):
 
 
 def read_episodes(path: Path):
-    require(path.is_file() and not path.is_symlink() and
-            path.stat().st_size <= MAX_EPISODES_BYTES, "episodes missing/over cap")
-    lines = path.read_text(encoding="utf-8").splitlines()
+    lines = read_regular_bytes(path, MAX_EPISODES_BYTES).decode("utf-8").splitlines()
     require(len(lines) <= 100_000, "episode count over cap")
     records = []
     for index, line in enumerate(lines):
@@ -167,7 +197,8 @@ def read_episodes(path: Path):
 def validate_trace(row):
     trace = row.get("decisions")
     require(type(trace) is list and len(trace) <= 16, "unbounded/missing decision trace")
-    require(len(trace) == row.get("actual_steps"), "declared capacity is not observed steps")
+    require(nonnegative_int(row.get("actual_steps")) and len(trace) == row["actual_steps"],
+            "declared capacity is not observed steps")
     if row["arm"] == "ndu" and row["valid"]:
         require(8 <= len(trace) <= 16, "completed NDU has fewer than 8 actual decisions")
     prev = None
@@ -203,8 +234,9 @@ def validate_episode(root, row, by_id, protocol):
             sha(row.get("noise_digest")), "source or common-noise binding")
     owner = row.get("owner")
     require(type(owner) is dict and owner.get("encoder_digest") == protocol["encoder_digest"] and
-            owner.get("generation") == protocol["encoder_generation"] and
-            owner.get("forward_calls") == 1 and sha(owner.get("feature_digest")),
+            nonnegative_int(owner.get("generation")) and
+            owner["generation"] == protocol["encoder_generation"] and
+            type(owner.get("forward_calls")) is int and owner["forward_calls"] == 1 and sha(owner.get("feature_digest")),
             "unbound or duplicated Encoder forward")
     cells = owner.get("cells")
     require(type(cells) is list and 1 <= len(cells) <= 4096 and
@@ -334,7 +366,7 @@ def main(argv=None):
             validate_episode(root, row, by_id, protocol)
         report = report_status(by_id, protocol, rows)
         code = 2  # no evidence-only run can grant external promotion authority
-    except (OSError, ValueError, KeyError, TypeError, OverflowError) as error:
+    except (OSError, ValueError, KeyError, TypeError, OverflowError, RecursionError) as error:
         report = {"schema": "hepta.p0-p7.audit.v1", "status": "INVALID_EVIDENCE",
                   "error": str(error)[:300], "authority": "DENY_ALL",
                   "model_promotion_authorized": False,

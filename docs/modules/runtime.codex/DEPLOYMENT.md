@@ -33,4 +33,20 @@ Configuration is immutable for one process generation. Changes to issuer key, au
 
 ## Target qualification
 
-Use `.github/workflows/runtime-codex-target-qualification.yml` on a protected self-hosted runner with the `runtime-codex-qualified` label and the `runtime-codex-production-qualification` environment. The target driver is itself digest-pinned. Passing that workflow validates the supplied target evidence; independent acceptance, activation, promotion, and release remain separate decisions.
+Target-host qualification is **SOURCE_ONLY_HOLD**. The manual workflow
+`.github/workflows/runtime-codex-target-qualification.yml` now fails on a hosted runner before requesting a protected environment,
+credentials, a target driver, or provenance attestations.
+
+The original procedure is preserved byte for byte in
+`library-recovery/runtime-codex-target-qualification-20261113/original-workflow.yml`. Its static source ran candidate-owned planning and verification
+code on the target runner and accepted self-asserted observation fields as evidence
+of a real provider and host. A driver hash checked before candidate code runs does
+not by itself establish the identity of the later invocation or an independent verifier.
+
+Local plan/schema diagnostics do not authenticate provider or process evidence,
+establish trusted-clock or anti-rollback provenance, or grant deployment authority.
+Restoring a target qualification path requires a reviewed execution boundary for
+candidate code, protected inputs and the driver, plus independent verification of
+the exact consumed evidence. No such target execution or qualification is claimed
+by this branch-convergence audit. Independent acceptance, activation, promotion,
+and release remain separate decisions.

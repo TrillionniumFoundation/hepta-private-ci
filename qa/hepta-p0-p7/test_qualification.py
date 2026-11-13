@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import subprocess
 import unittest
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -227,6 +228,38 @@ class QualificationTests(unittest.TestCase):
         validate_protocol(self.protocol,p,digest(data))
         with self.assertRaises(EvidenceError):
             validate_protocol(self.protocol,p,state(99))
+
+    def test_protocol_object_cannot_be_bound_to_different_pinned_bytes(self):
+        p = self.root / "changed-policy.json"
+        different = dict(self.protocol, episode_budget_us=1)
+        raw = json.dumps(different).encode()
+        p.write_bytes(raw)
+        with self.assertRaisesRegex(EvidenceError, "differs from the pinned"):
+            validate_protocol(self.protocol, p, digest(raw))
+
+    def test_nonobject_protocol_cli_returns_invalid_evidence(self):
+        p = self.root / "nonobject-policy.json"
+        p.write_bytes(b"[]")
+        command = [sys.executable, "-B", str(Path(__file__).with_name("qualification.py")),
+                   "--protocol", str(p), "--protocol-sha256", digest(b"[]"),
+                   "--sources", str(p), "--history", str(p), "--episodes", str(p),
+                   "--artifacts-root", str(self.root)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 3, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["status"], "INVALID_EVIDENCE")
+        self.assertEqual(report["authority"], "DENY_ALL")
+        self.assertFalse(report["model_promotion_authorized"])
+
+    def test_boolean_counts_do_not_represent_observed_integers(self):
+        for key in ("generation", "forward_calls"):
+            row = dict(self.records[0], owner=dict(self.records[0]["owner"]))
+            row["owner"][key] = True
+            with self.subTest(key=key), self.assertRaises(EvidenceError):
+                validate_episode(self.root, row, self.by_id, self.protocol)
+        row = dict(self.records[0], actual_steps=True)
+        with self.assertRaises(EvidenceError):
+            validate_episode(self.root, row, self.by_id, self.protocol)
 
     def test_fractional_cvar(self):
         self.assertAlmostEqual(cvar90([1,0,0,0,0,0,0,0,0,0,0]), 10/11)

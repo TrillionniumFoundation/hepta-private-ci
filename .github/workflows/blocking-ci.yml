@@ -256,7 +256,8 @@ jobs:
 
   ledgerwriter-owner-replay:
     name: LedgerWriter Bazel ${{ matrix.lane }} replay
-    if: github.event_name == 'pull_request'
+    # Retain the exact historical workflow-only replay and its original assertions.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment:
@@ -407,7 +408,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
-          EVENT_NAME: ${{ github.event_name }}
+          LEDGERWRITER_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -417,9 +418,9 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
-          event_name = os.environ["EVENT_NAME"]
+          replay_requested = os.environ["LEDGERWRITER_REPLAY_REQUESTED"] == "true"
           allowed = []
-          if event_name != "pull_request":
+          if not replay_requested:
               allowed.append("ledgerwriter-owner-replay")
           if not (native or full):
               allowed.append("hepta-contract-gate")

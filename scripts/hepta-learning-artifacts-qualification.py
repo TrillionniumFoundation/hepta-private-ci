@@ -21,7 +21,7 @@ OUT = ROOT / ".hepta-evidence/learning-artifacts"
 CRATE = "codex-hepta-learning-artifacts"
 MAX_LOG = 64 * 1024 * 1024
 SHA = re.compile(r"[0-9a-f]{40}\Z")
-PASS = re.compile(r"^\s*PASS\s+\[[^\]]+\]\s+(\S+)\s+(\S+)\s*$", re.M)
+PASS = re.compile(r"^\s*PASS\s+\[[^\]]+\]\s+(?:\(\s*\d+/\s*\d+\)\s+)?(\S+)\s+(\S+)\s*$", re.M)
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 STEPS = (
     ("build", ["cargo", "check", "--locked", "-p", CRATE, "--all-targets"]),
@@ -48,7 +48,7 @@ def canonical(value: object) -> bytes:
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+    return subprocess.check_output(["git", "--no-replace-objects", *args], cwd=ROOT, text=True).strip()
 
 
 def require_sha(value: str) -> str:
@@ -69,13 +69,40 @@ def materialize_candidate(source: str, base: str, lane: str) -> dict:
         merged = git("merge-tree", "--write-tree", base, source).splitlines()[0]
         require_sha(merged)
         env = dict(os.environ, GIT_AUTHOR_NAME="Artifact qualification", GIT_AUTHOR_EMAIL="qualification@invalid.example", GIT_COMMITTER_NAME="Artifact qualification", GIT_COMMITTER_EMAIL="qualification@invalid.example")
-        candidate = subprocess.check_output(["git", "commit-tree", merged, "-p", base, "-p", source, "-m", "Ordered-parent artifact qualification candidate"], cwd=ROOT, env=env, text=True).strip()
+        candidate = subprocess.check_output(["git", "--no-replace-objects", "commit-tree", merged, "-p", base, "-p", source, "-m", "Ordered-parent artifact qualification candidate"], cwd=ROOT, env=env, text=True).strip()
         git("checkout", "--detach", candidate)
         if git("show", "-s", "--format=%P", "HEAD").split() != [base, source]:
             raise ValueError("ordered merge parent mismatch")
     elif lane != "source":
         raise ValueError("unsupported qualification lane")
     return {"source": source, "sourceTree": source_tree, "base": base, "lane": lane, "candidate": git("rev-parse", "HEAD"), "candidateTree": git("rev-parse", "HEAD^{tree}"), "parents": git("show", "-s", "--format=%P", "HEAD").split()}
+
+
+def verify_checkout_identity(identity: dict, expected: str) -> None:
+    require_sha(expected)
+    if identity["source"] != expected:
+        raise ValueError("source identity mismatch")
+    for key in ("sourceTree", "base", "candidate", "candidateTree"):
+        require_sha(identity[key])
+    if identity["candidate"] != git("rev-parse", "HEAD"):
+        raise ValueError("checkout commit does not match tested candidate")
+    if identity["candidateTree"] != git("rev-parse", "HEAD^{tree}"):
+        raise ValueError("checkout tree does not match tested candidate")
+    if identity["sourceTree"] != git("rev-parse", f"{expected}^{{tree}}"):
+        raise ValueError("source tree does not match source commit")
+    git("cat-file", "-e", f"{identity['base']}^{{commit}}")
+    if identity["parents"] != git("show", "-s", "--format=%P", "HEAD").split():
+        raise ValueError("candidate parents do not match checkout")
+    if identity["lane"] == "source":
+        if identity["candidate"] != expected or identity["candidateTree"] != identity["sourceTree"]:
+            raise ValueError("source candidate mismatch")
+    elif identity["lane"] == "merge":
+        if identity["parents"] != [identity["base"], expected]:
+            raise ValueError("ordered merge parent mismatch")
+    else:
+        raise ValueError("unknown qualification lane")
+    if git("status", "--porcelain", "--untracked-files=no"):
+        raise ValueError("dirty tracked source is not admissible")
 
 
 def passed_tests(text: str) -> list[dict]:
@@ -153,19 +180,9 @@ def verify_report(report: dict, directory: Path, expected: str) -> None:
     claimed = body.pop("reportSha256", None)
     if claimed != digest(canonical(body)):
         raise ValueError("report digest mismatch")
-    if report["identity"]["source"] != expected:
-        raise ValueError("source identity mismatch")
-    identity = report["identity"]
-    for key in ("sourceTree", "base", "candidate", "candidateTree"):
-        require_sha(identity[key])
-    if identity["lane"] == "source":
-        if identity["candidate"] != expected or identity["candidateTree"] != identity["sourceTree"]:
-            raise ValueError("source candidate mismatch")
-    elif identity["lane"] == "merge":
-        if identity["parents"] != [identity["base"], expected]:
-            raise ValueError("ordered merge parent mismatch")
-    else:
-        raise ValueError("unknown qualification lane")
+    if report.get("schema") != "hepta.learning-artifacts.qualification.v1":
+        raise ValueError("unexpected qualification report schema")
+    verify_checkout_identity(report["identity"], expected)
     rows = report["steps"]
     if [row["name"] for row in rows] != [name for name, _ in STEPS]:
         raise ValueError("missing, duplicate or reordered diagnostic step")
@@ -208,6 +225,7 @@ def run() -> int:
             report["steps"].append(result)
             write_report(report)
             print(f"{name}: {result['status']} (exit {result['exitCode']})", flush=True)
+        verify_checkout_identity(report["identity"], report["identity"]["source"])
         report["nativeTraceability"] = traceability(report["steps"])
         report["trackedSourceUnchanged"] = not git("status", "--porcelain", "--untracked-files=no")
         write_report(report)

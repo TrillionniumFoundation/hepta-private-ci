@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Plan and validate fail-closed runtime.codex target-host qualification evidence."""
+"""Plan and diagnose supplied runtime.codex observations without qualifying a target.
+
+Exit zero means only that the supplied data passed local consistency checks.
+Provider/process evidence, issuer independence, trusted time and anti-rollback
+claims are not authenticated here. Every diagnostic receipt retains HOLD.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +12,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 import subprocess
 from collections import defaultdict
 from pathlib import Path
@@ -14,7 +20,7 @@ from typing import Any
 
 PLAN_SCHEMA = "hepta.runtime-codex.target-plan.v1"
 OBS_SCHEMA = "hepta.runtime-codex.target-observation.v1"
-RECEIPT_SCHEMA = "hepta.runtime-codex.target-receipt.v1"
+RECEIPT_SCHEMA = "hepta.runtime-codex.target-diagnostic.v1"
 CASES = (
     "success",
     "provider_ack_loss",
@@ -45,12 +51,99 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(["git", *args], text=True).strip()
+    return subprocess.check_output(["git", "--no-replace-objects", *args], text=True).strip()
 
 
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise SystemExit(message)
+
+
+
+def parse_json(raw: bytes | str, label: str) -> Any:
+    def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError(f"duplicate key {key}")
+            value[key] = item
+        return value
+
+    def reject_constant(value: str) -> Any:
+        raise ValueError(f"non-finite JSON number {value}")
+
+    try:
+        return json.loads(raw, object_pairs_hook=unique_object, parse_constant=reject_constant)
+    except (ValueError, UnicodeError) as error:
+        raise SystemExit(f"invalid {label}: {error}") from error
+
+
+def finite_nonnegative(value: Any) -> bool:
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value) and value >= 0
+    except OverflowError:
+        return False
+
+
+def validate_plan(plan: Any) -> set[tuple[str, int]]:
+    require(isinstance(plan, dict), "target plan must be an object")
+    require(plan.get("schema") == PLAN_SCHEMA, "unexpected target plan schema")
+    for name in ("candidateSha", "candidateTree"):
+        require(isinstance(plan.get(name), str) and re.fullmatch(r"[0-9a-f]{40}", plan[name]) is not None,
+                f"invalid plan {name}")
+    profile = plan.get("profileId")
+    require(isinstance(profile, str) and bool(profile) and profile.strip() == profile,
+            "invalid target profile")
+    iterations = plan.get("iterations")
+    require(type(iterations) is int and iterations >= 3,
+            "fault-matrix iterations must be at least three")
+    cases = plan.get("cases")
+    require(isinstance(cases, list) and len(cases) == len(CASES) * iterations,
+            "plan must contain every required case and iteration exactly once")
+    expected = {(case, iteration) for case in CASES for iteration in range(1, iterations + 1)}
+    actual: set[tuple[str, int]] = set()
+    for item in cases:
+        require(isinstance(item, dict) and set(item) == {"case", "iteration"},
+                "invalid plan case entry")
+        require(isinstance(item["case"], str) and type(item["iteration"]) is int,
+                "invalid plan case/iteration type")
+        key = (item["case"], item["iteration"])
+        require(key in expected and key not in actual, "unexpected or duplicate plan case/iteration")
+        actual.add(key)
+    require(actual == expected, "incomplete target plan")
+    requirements = plan.get("requirements")
+    required = {
+        "realProvider": True,
+        "independentIssuer": True,
+        "processInstanceIdentity": True,
+        "trustedClock": True,
+        "antiRollbackRecovery": True,
+        "blindReplayAttempts": 0,
+    }
+    require(isinstance(requirements, dict) and set(requirements) == set(required),
+            "invalid plan requirements")
+    for name, expected_value in required.items():
+        require(type(requirements[name]) is type(expected_value) and requirements[name] == expected_value,
+                f"invalid plan requirement {name}")
+    return expected
+
+
+def validate_thresholds(thresholds: Any) -> None:
+    require(isinstance(thresholds, dict), "thresholds must be an object")
+    require(thresholds.get("schema") == "hepta.runtime-codex.target-thresholds.v1",
+            "unexpected threshold schema")
+    metrics = thresholds.get("metrics")
+    require(isinstance(metrics, dict) and set(metrics) == set(TIMINGS) | {"peakRssBytes", "cpuMillis"},
+            "thresholds must cover every timing and resource metric")
+    for name, limits in metrics.items():
+        required = {"p95", "p99"} if name in TIMINGS else {"p99"}
+        available = {"p50", "p95", "p99", "max"} if name in TIMINGS else {"p95", "p99", "max"}
+        require(isinstance(limits, dict) and required <= set(limits) <= available,
+                f"invalid threshold percentiles for {name}")
+        for percentile_name, ceiling in limits.items():
+            require(finite_nonnegative(ceiling), f"invalid threshold {name}.{percentile_name}")
 
 
 def percentile(values: list[float], percentile_value: float) -> float:
@@ -61,8 +154,8 @@ def percentile(values: list[float], percentile_value: float) -> float:
 
 
 def command_plan(args: argparse.Namespace) -> None:
-    require(args.iterations >= 3, "fault-matrix iterations must be at least three")
-    candidate_sha = git("rev-parse", args.candidate)
+    require(type(args.iterations) is int and args.iterations >= 3, "fault-matrix iterations must be at least three")
+    candidate_sha = git("rev-parse", "--verify", "--end-of-options", f"{args.candidate}^{{commit}}")
     candidate_tree = git("rev-parse", f"{candidate_sha}^{{tree}}")
     plan = {
         "schema": PLAN_SCHEMA,
@@ -84,18 +177,20 @@ def command_plan(args: argparse.Namespace) -> None:
             "blindReplayAttempts": 0,
         },
     }
+    validate_plan(plan)
     Path(args.output).write_bytes(canonical(plan))
 
 
-def load_jsonl(path: Path) -> list[dict[str, Any]]:
+def load_jsonl(path: Path, raw: bytes | None = None) -> list[dict[str, Any]]:
     observations: list[dict[str, Any]] = []
-    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+    try:
+        text = (path.read_bytes() if raw is None else raw).decode("utf-8")
+    except UnicodeError as error:
+        raise SystemExit(f"invalid observation UTF-8: {error}") from error
+    for line_number, line in enumerate(text.splitlines(), 1):
         if not line.strip():
             continue
-        try:
-            value = json.loads(line)
-        except json.JSONDecodeError as error:
-            raise SystemExit(f"invalid JSONL at line {line_number}: {error}") from error
+        value = parse_json(line, f"observation JSONL line {line_number}")
         require(isinstance(value, dict), f"observation line {line_number} is not an object")
         observations.append(value)
     require(bool(observations), "target qualification evidence is empty")
@@ -121,7 +216,7 @@ def validate_common(observation: dict[str, Any], plan: dict[str, Any]) -> None:
         require(len(observation[field]) == 64, f"{field} is not a SHA-256 digest")
         require(all(char in "0123456789abcdef" for char in observation[field]), f"{field} is not lowercase hex")
     for field in ("agentGeneration", "issuerEpoch", "revocationRevision"):
-        require(isinstance(observation.get(field), int) and observation[field] > 0, f"invalid {field}")
+        require(type(observation.get(field)) is int and observation[field] > 0, f"invalid {field}")
     for field in (
         "realProvider",
         "independentIssuer",
@@ -130,18 +225,22 @@ def validate_common(observation: dict[str, Any], plan: dict[str, Any]) -> None:
         "antiRollbackRecoveryAttested",
     ):
         require(observation.get(field) is True, f"target evidence did not establish {field}")
-    require(observation.get("blindReplayAttempts") == 0, "blind replay was observed")
+    require(type(observation.get("blindReplayAttempts")) is int and observation["blindReplayAttempts"] == 0,
+            "invalid or nonzero blindReplayAttempts")
+    require(type(observation.get("iteration")) is int and observation["iteration"] > 0, "invalid iteration")
+    require(isinstance(observation.get("case"), str), "invalid case")
+    require(type(observation.get("terminalObserved")) is bool, "invalid terminalObserved")
     require(
-        isinstance(observation.get("physicalProviderRequests"), int)
+        type(observation.get("physicalProviderRequests")) is int
         and observation["physicalProviderRequests"] >= 0,
         "invalid physicalProviderRequests",
     )
     require(isinstance(observation.get("timings"), dict), "missing timings")
     for timing in TIMINGS:
         value = observation["timings"].get(timing)
-        require(isinstance(value, (int, float)) and value >= 0, f"invalid timing {timing}")
+        require(finite_nonnegative(value), f"invalid timing {timing}")
     for field in ("peakRssBytes", "cpuMillis"):
-        require(isinstance(observation.get(field), (int, float)) and observation[field] >= 0, f"invalid {field}")
+        require(finite_nonnegative(observation.get(field)), f"invalid {field}")
 
 
 def validate_case(observation: dict[str, Any]) -> None:
@@ -149,6 +248,8 @@ def validate_case(observation: dict[str, Any]) -> None:
     requests = observation["physicalProviderRequests"]
     outcome = observation.get("outcome")
     terminal = observation.get("terminalObserved") is True
+    if outcome in {"succeeded", "terminal"}:
+        require(terminal, "terminal outcome lacks terminalObserved")
     if case == "success":
         require(requests == 1 and terminal and outcome == "succeeded", "success case did not complete exactly once")
     elif case == "worker_kill_before_effect_entry":
@@ -171,14 +272,16 @@ def validate_case(observation: dict[str, Any]) -> None:
 
 
 def command_verify(args: argparse.Namespace) -> None:
-    plan = json.loads(Path(args.plan).read_text(encoding="utf-8"))
-    require(plan.get("schema") == PLAN_SCHEMA, "unexpected target plan schema")
-    require(plan.get("candidateSha") == git("rev-parse", "HEAD"), "checkout does not match target plan")
-    require(plan.get("candidateTree") == git("rev-parse", "HEAD^{tree}"), "checkout tree does not match target plan")
-    thresholds = json.loads(Path(args.thresholds).read_text(encoding="utf-8"))
-    require(thresholds.get("schema") == "hepta.runtime-codex.target-thresholds.v1", "unexpected threshold schema")
-    observations = load_jsonl(Path(args.evidence))
-    expected = {(item["case"], item["iteration"]) for item in plan["cases"]}
+    plan_raw = Path(args.plan).read_bytes()
+    evidence_raw = Path(args.evidence).read_bytes()
+    thresholds_raw = Path(args.thresholds).read_bytes()
+    plan = parse_json(plan_raw, "target plan")
+    expected = validate_plan(plan)
+    require(plan["candidateSha"] == git("rev-parse", "HEAD"), "checkout does not match target plan")
+    require(plan["candidateTree"] == git("rev-parse", "HEAD^{tree}"), "checkout tree does not match target plan")
+    thresholds = parse_json(thresholds_raw, "thresholds")
+    validate_thresholds(thresholds)
+    observations = load_jsonl(Path(args.evidence), evidence_raw)
     seen: set[tuple[str, int]] = set()
     operation_ids: set[str] = set()
     timing_samples: dict[str, list[float]] = defaultdict(list)
@@ -225,7 +328,7 @@ def command_verify(args: argparse.Namespace) -> None:
         "p99": percentile(cpu, 0.99),
         "max": max(cpu),
     }
-    for metric_name, limits in thresholds.get("metrics", {}).items():
+    for metric_name, limits in thresholds["metrics"].items():
         require(metric_name in metrics, f"threshold references unknown metric {metric_name}")
         for percentile_name, ceiling in limits.items():
             require(
@@ -233,20 +336,27 @@ def command_verify(args: argparse.Namespace) -> None:
                 f"{metric_name}.{percentile_name} exceeded {ceiling}",
             )
 
-    evidence_path = Path(args.evidence)
     receipt = {
         "schema": RECEIPT_SCHEMA,
         "candidateSha": plan["candidateSha"],
         "candidateTree": plan["candidateTree"],
         "profileId": plan["profileId"],
-        "planSha256": sha256_bytes(Path(args.plan).read_bytes()),
-        "evidenceSha256": sha256_bytes(evidence_path.read_bytes()),
-        "thresholdsSha256": sha256_bytes(Path(args.thresholds).read_bytes()),
+        "planSha256": sha256_bytes(plan_raw),
+        "evidenceSha256": sha256_bytes(evidence_raw),
+        "thresholdsSha256": sha256_bytes(thresholds_raw),
         "observations": len(observations),
         "metrics": metrics,
+        "diagnosticStatus": "INPUT_CONSISTENT",
+        "qualificationStatus": "HOLD",
+        "limitations": [
+            "Only supplied JSON structure, declared matrix completeness, case consistency and metric limits were checked.",
+            "Provider/process digest strings and positive assertions were not authenticated or verified against evidence bytes.",
+            "No real provider, independent issuer, trusted clock, anti-rollback recovery or target-host execution was established.",
+        ],
         "claims": {
-            "realProviderFaultMatrixValidated": True,
-            "targetHostEvidenceValidated": True,
+            "suppliedInputConsistencyValidated": True,
+            "realProviderFaultMatrixValidated": False,
+            "targetHostEvidenceValidated": False,
             "independentAcceptance": False,
             "activation": False,
             "promotion": False,
