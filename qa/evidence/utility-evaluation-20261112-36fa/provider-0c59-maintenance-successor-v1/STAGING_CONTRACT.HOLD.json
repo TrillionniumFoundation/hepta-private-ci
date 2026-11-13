@@ -1,0 +1,101 @@
+{
+  "format": "hepta-maintenance-control-staging-contract-v1",
+  "status": "HOLD_UNAPPROVED",
+  "base": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1",
+  "operation": "create only six external controls; no maintenance/source or lock operation",
+  "original_template": {
+    "bytes": 5869,
+    "sha256": "6faad9e88d97981085e381a02a514a53e15b7e944e6cf7c1710e76b7f6e7f8f0",
+    "git_blob": "4df01b20c666912cf022c806be06ff8757b4714e"
+  },
+  "four_helpers_byte_equal": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ],
+  "bootstrap": {
+    "name": "STAGING_BOOTSTRAP.HOLD.py",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/STAGING_BOOTSTRAP.HOLD.py",
+    "bytes": 5634,
+    "sha256": "b5ead38ac19b2622b47a82ab9c59e1f7f2993186bfd0dc03c37d630d21079ec0",
+    "git_blob": "cfdf313b000e695c8adbfbda0a1a8700be2b7121"
+  },
+  "payload": {
+    "name": "STAGING_PAYLOAD.HOLD.json",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/STAGING_PAYLOAD.HOLD.json",
+    "bytes": 145038,
+    "sha256": "14098bfd6f58748140cadaaedc4e1132d2eebace41a39a3a8eebb8249b4061e0",
+    "git_blob": "166a05a84b110711493b8dd19e090b0ddbf8b0b4"
+  },
+  "typed_request": {
+    "name": "STAGING_REQUEST.HOLD.json",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/STAGING_REQUEST.HOLD.json",
+    "bytes": 151062,
+    "sha256": "8a48950e4fcc901ccc1e22c5ed19dfd3a0a781d81a718d65f2b70fbe0cdbb880",
+    "git_blob": "ea6cc80b04257b072a2ef30fe0b7d9cdb6b7239f"
+  },
+  "files": [
+    {
+      "name": "driver-maintenance.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/driver-maintenance.py",
+      "local_source": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/driver-maintenance.HOLD.py",
+      "bytes": 68496,
+      "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+      "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+    },
+    {
+      "name": "APPROVED_MAINTENANCE_CONFIG.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/APPROVED_MAINTENANCE_CONFIG.json",
+      "local_source": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/MAINTENANCE_CONFIG.HOLD.json",
+      "bytes": 14015,
+      "sha256": "2f7eebda040a737997a06a8edc137d7ca39550d9de6d50ee06121db058086444",
+      "git_blob": "f2092840e7e59ba94d86709cdbe9d995b681f826"
+    },
+    {
+      "name": "inventory-driver.original.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/inventory-driver.original.py",
+      "local_source": "/tmp/hepta-36fa-full-candidate-graph-v1/inputs/INVENTORY_DRIVER_5118.original.py",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "name": "MAINTENANCE_STARTED.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/MAINTENANCE_STARTED.original.json",
+      "local_source": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/inputs/MAINTENANCE_STARTED.original.json",
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+    },
+    {
+      "name": "MATERIALIZATION_SUPERVISOR.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json",
+      "local_source": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/inputs/MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 952,
+      "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa",
+      "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c"
+    },
+    {
+      "name": "V8_RESTORATION_SUPERVISOR.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/V8_RESTORATION_SUPERVISOR.original.json",
+      "local_source": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/inputs/RESTORE_V3_NORMAL.original.json",
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+    }
+  ],
+  "bounded_input_bytes": 1048576,
+  "all_six_strict_base64_and_three_identity_fields_checked": true,
+  "directory_mode": 448,
+  "files_mode": 384,
+  "all_creates_exclusive": true,
+  "partial_created_controls_preserved_on_error": true,
+  "original_failure_recording_retained": true,
+  "separate_preparation_outer_seconds": 900,
+  "budget_scope": "This exact staging-only request retains the observed materializer bootstrap outer limit; it is not fix/fmt, preflight, record or qualification execution. Main maintenance retains the original separate 9300/7200/900/600/300 contract.",
+  "actual_creation_or_execution_observed": false,
+  "formal_execution_approval": false,
+  "qualification": false,
+  "future_formal_binding": "Root-approved final config changes its pin/base64 and the launcher PINS/request. Freeze and review those exact successor bytes before any native dispatch; this HOLD config remains false."
+}

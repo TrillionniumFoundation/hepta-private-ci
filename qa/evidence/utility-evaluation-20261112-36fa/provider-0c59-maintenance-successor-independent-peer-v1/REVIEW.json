@@ -1,0 +1,447 @@
+{
+  "format": "hepta-independent-provider-0c59-maintenance-successor-review-v1",
+  "status": "NO_CONCRETE_STATIC_BLOCKER_EXACT_ORDERED_EXECUTION_REMAINS_ROOT_DECISION",
+  "reviewed_at_utc": "2026-11-13T07:52:38.479682+00:00",
+  "scope": "Independent complete source delta and frozen producer-consumer proof/schema review, plus exact create-only staging and EX main request review. No native, preflight, formatter, Rust, QA or gate execution.",
+  "author": "/root/evaluation_audit",
+  "original_contract_review": {
+    "git_blob": "2b8228d94603dc2004ec57beab13ac0d70abfef0",
+    "placement": "e579e22061883bf1ea91f27991a56f10378f5357",
+    "preserved_as_original_window": true
+  },
+  "root_actual_materialization_review": {
+    "bytes": 13152,
+    "sha256": "3d34e652f449c9d35572b4c9d33d8d891288b8c6b5b7fc63ee19ffd1de3f5102",
+    "git_blob": "a3b2bca84db5a2d461923755158471730f92146c"
+  },
+  "independently_full_Git_GET": {
+    "successor_driver": {
+      "bytes": 68496,
+      "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+      "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+    },
+    "hold_config": {
+      "bytes": 14015,
+      "sha256": "2f7eebda040a737997a06a8edc137d7ca39550d9de6d50ee06121db058086444",
+      "git_blob": "f2092840e7e59ba94d86709cdbe9d995b681f826"
+    },
+    "hold_launcher": {
+      "bytes": 4897,
+      "sha256": "660d610166e0ad4bba9b3f663e768ceebec2c086bcff7804104b5cb5477810ec",
+      "git_blob": "9a2262f1e5cc36a587ea10c32c102f894ea1cfbb"
+    },
+    "execution_candidate_config": {
+      "bytes": 13768,
+      "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf",
+      "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e"
+    },
+    "execution_candidate_launcher": {
+      "bytes": 4897,
+      "sha256": "5592837192868f63137168e26044f3aa21f900277bbab8a1a97a67c16d564982",
+      "git_blob": "92be49535aed7505c81f9c18782e668406b2b186"
+    },
+    "main_request": {
+      "bytes": 5371,
+      "sha256": "c894637387df659ab0b4caf78f2ed376a37de39be96ad2ff444d72a765a93f0a",
+      "git_blob": "c6a5a907647a97204878b5b5371eab540b778403"
+    },
+    "stage_bootstrap": {
+      "bytes": 5634,
+      "sha256": "31e77f48eddbf35dc87113f57ddd320967c6f664db4f4b940255bc58767f11c4",
+      "git_blob": "e0c52b055ffea90817c4dc8a6c16f1c0d64d3332"
+    },
+    "stage_payload": {
+      "bytes": 144710,
+      "sha256": "4c614cef4c69a59d950b09e5fee3a3d5fb4b67d2e514d1b1529990e8c8f8204a",
+      "git_blob": "ad31acb90619438625b877b51a6c6ce680ccd25a"
+    },
+    "stage_request": {
+      "bytes": 150734,
+      "sha256": "a2e2c072aa175b3aaed5e9e461c7fc1bf9c198b36112523442025bcd457c9a52",
+      "git_blob": "dd593f5d41f7ecc46072f2fe60eb1047579588a2"
+    }
+  },
+  "actual_proof_inputs": [
+    {
+      "name": "MATERIALIZATION_RESULT.original.json",
+      "bytes": 14639,
+      "sha256": "c66af7f4d7d76e4a521bea9440c51da1923c320e443ec33f67d10351beaa87ed",
+      "git_blob": "4832994442a8a1bc89ea3af7825a06310ceb7c64"
+    },
+    {
+      "name": "MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 952,
+      "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa",
+      "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c"
+    },
+    {
+      "name": "MATERIALIZATION_COMMANDS.original.json",
+      "bytes": 33983,
+      "sha256": "50ee6e61134aeb07d591d961b1e2061fddabc7881e47ffc560e3e06d6621e20c",
+      "git_blob": "b68990a5280c608dad023aa918b68b286c4481d7"
+    },
+    {
+      "name": "MATERIALIZATION_MUTATIONS.original.json",
+      "bytes": 732,
+      "sha256": "7b00f47c44852cf7b1f36ef14ce8356bb1af65c3847aae5fd5ea755b2bcb52bc",
+      "git_blob": "0750032e774e195feca4c429054164c7f99c7b95"
+    },
+    {
+      "name": "MATERIALIZATION_INPUTS.original.json",
+      "bytes": 3206,
+      "sha256": "5a14e63e2fa27efc0394130da603d4c0d28dce2ebdbc54aaa8ed70951fc35388",
+      "git_blob": "e80f396149b2c98afe8deff7ebc436f278ec96cc"
+    },
+    {
+      "name": "MATERIALIZATION_ARTIFACTS.original.json",
+      "bytes": 84294,
+      "sha256": "64daa319b4543c72114b833655a789f90470c3e4ebd0387f8c1844c7aa614389",
+      "git_blob": "6d9fd58bf3c96a840da39b8946cd9c299f1f351b"
+    },
+    {
+      "name": "HISTORICAL_RUNTIME_RESULT.original.json",
+      "bytes": 21366,
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90",
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09"
+    },
+    {
+      "name": "HISTORICAL_RUNTIME_NORMAL.original.json",
+      "bytes": 954,
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb",
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20"
+    },
+    {
+      "name": "HISTORICAL_ENV8B62.original.json",
+      "bytes": 21724,
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172",
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec"
+    },
+    {
+      "name": "RESTORE_V3_RESULT.original.json",
+      "bytes": 17615,
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72",
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc"
+    },
+    {
+      "name": "RESTORE_V3_NORMAL.original.json",
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+    },
+    {
+      "name": "ARCHIVE_READBACK.original.json",
+      "bytes": 496,
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052",
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8"
+    },
+    {
+      "name": "RESTORE_V3_ARTIFACTS.original.json",
+      "bytes": 28169,
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d",
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d"
+    }
+  ],
+  "independent_byte_analysis": {
+    "original_definitions": 50,
+    "successor_definitions": 51,
+    "unchanged_byte_and_AST": [
+      "PreconditionError",
+      "IntegrityError",
+      "now",
+      "sha256",
+      "oid",
+      "check",
+      "nodup",
+      "parse",
+      "regular_read",
+      "jbytes",
+      "write",
+      "jwrite",
+      "gzrecord",
+      "event",
+      "pin_bytes",
+      "read_input",
+      "real_directory",
+      "external_directory",
+      "run_readonly",
+      "git",
+      "git_state",
+      "verify_original_inputs",
+      "load_module",
+      "parse_supervisor",
+      "verify_stage_source_entries",
+      "active_build_processes",
+      "installed_file_observation",
+      "project_runtime_file",
+      "environment_preflight",
+      "metadata_inventory",
+      "actual_leaf_map",
+      "merkle",
+      "OriginalBlobReader",
+      "read_actual_leaf",
+      "archive_transition",
+      "capture_source",
+      "check_fmt_base",
+      "set_alarm",
+      "alarm_handler",
+      "bounded_record",
+      "stage",
+      "finalize_source",
+      "finalize_inputs",
+      "retain_terminal",
+      "main"
+    ],
+    "changed_exactly": [
+      "validate_materialization",
+      "validate_runtime_restoration",
+      "validate_config",
+      "initial_preflight"
+    ],
+    "removed": [
+      "validate_source_advance"
+    ],
+    "new_exactly": [
+      "validate_materialization_current",
+      "validate_archive_restoration"
+    ],
+    "launcher_original_five_helpers_unchanged": [
+      "need",
+      "oid",
+      "read",
+      "save",
+      "sha"
+    ],
+    "stage_original_four_helpers_unchanged": [
+      "check",
+      "identity",
+      "real_parents",
+      "retain"
+    ],
+    "stage_baseline": {
+      "bytes": 5869,
+      "sha256": "6faad9e88d97981085e381a02a514a53e15b7e944e6cf7c1710e76b7f6e7f8f0",
+      "git_blob": "4df01b20c666912cf022c806be06ff8757b4714e"
+    },
+    "manual_review": "All four modified and two new functions, full launcher, full staging program, actual config and exact request schemas read. Original 6632 and c943 executor had already been read in the independent original-contract review; their unchanged core was recomputed here."
+  },
+  "source_proof_roles": [
+    {
+      "role": "historical_runtime",
+      "repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+      "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "result": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "environment": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "meaning": "Historical six UV commands and complete environment/tool content proof. Source path/seed anchors remain historical, not transplanted to current source."
+    },
+    {
+      "role": "separate_actual_archive_restoration",
+      "repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+      "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "result": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "meaning": "Actual normal restoration of the one original V8 archive. Its original full stat is retained independently; unchanged historical ENV bytes and five-field current file comparison remain intact."
+    },
+    {
+      "role": "actual_new_materialization",
+      "donor": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+      "destination": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+      "commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+      "tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+      "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "result": "4832994442a8a1bc89ea3af7825a06310ceb7c64",
+      "normal": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c",
+      "meaning": "Actual 15237 complete leaves, full5118 affce and compact686c remain distinct. No old source-advance proof is reused."
+    }
+  ],
+  "proof_schema_findings": {
+    "materialization": "Exact source/destination/HEAD/tree/sole parent; all completion/non-action flags; clean normal supervisor same job; exactly three verified audits; actual before=after full inventory and raw Git; donor preservation; 16652 target and16449 donor objects; full15237 logical/stat index; same original coordination lock; original four records completely read with result pins.",
+    "original_commands": 40,
+    "original_mutations": 4,
+    "all_commands_actual_observed_zero_no_timeout": true,
+    "all_mutations_actual_observed": true,
+    "metadata": "Original artifact record binds full gzip and raw2234 identities; decompressed raw matches recorded original metadata. All six exact file paths are required, no extras, each body fully hashed, nine original st_* values matched, maintenance record schema compared, producer JSON serializer reconstructed byte-for-byte. Raw commit is Git-typed authenticated to current HEAD/tree/sole parent.",
+    "metadata_scope_boundary": "Producer historical baseline covers all six regular Git files and their nine stat values. It does not provide historical directory-stat rows. Original maintenance metadata_inventory additionally observes every current Git directory and preserves full file+directory equality through finalization; that stronger final gate remains unchanged.",
+    "pack_fullread": "Current continuity uses regular_read with max(40000000,row.bytes), so the actual pack is fully checked without silently truncating at the ordinary40MB default.",
+    "archive": "Separate original RESULT/normal/ARCHIVE_READBACK/ARTIFACTS agree on complete actual identity/stat and exact destination. Three actual archive audits, no source/environment/Cargo/native/test actions, original five-field projection matches unchanged historical ENV.",
+    "archive_live_stat_limit": "The restored archive historical nine-stat identity is preserved as observed provenance. Future live environment_preflight uses the original five fields(path,resolved,bytes,SHA256,mode) and stable full file read; it does not require the obsolete historical ENV inode or pretend to perform a second archive-v3 observation.",
+    "exact_pure_predicate_evaluation": "Selected exact pure proof predicates were extracted by AST and evaluated only over fully GET-verified frozen bytes with read_input/write redirected to an in-memory map. All accepted. The whole driver was never imported; neither current filesystem continuity nor preflight/main was run.",
+    "metadata_gzip_exact_recovery": {
+      "bytes": 788,
+      "sha256": "64c544d389004e94decb1710ab0444f8f87743257762492b750a276cce077534",
+      "git_blob": "aed66de58e1331e1779cf81b390efc082a6a9e57"
+    },
+    "gzip_is_second_H_read": false
+  },
+  "unchanged_operational_contract": {
+    "fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "fix_only_delta": "Append exactly -p codex-hepta-learning-ledger after original package order.",
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "seconds": {
+      "fix": 7200,
+      "fmt": 900,
+      "preflight": 600,
+      "records_shared": 300,
+      "outer_main": 9300,
+      "separate_control_stage": 900
+    },
+    "max_log_bytes": 67108864,
+    "minimum_target_free_bytes": 34359738368,
+    "target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "create_target_if_absent": false,
+    "source_entry_snapshots": "Six exact original AGENTS/just/format/exec/shell/toolchain entries snapshotted; original executor loaded from saved verified bytes. Mutable formatted source entries are retained as postimages, not conflated with immutable controls.",
+    "live_guard": "Original same-UID Cargo/formatter active-or-unreadable guard remains exact, with process snapshot written before initial rejection and guard before each stage. No foreign-job exception or unknown bypass.",
+    "environment": "Original environment_preflight is byte/AST identical: exact runtime tools/V8/UV/Ruff paths, content modes and source environment; original offline external directories; live32GiB free-space guard; no installer or recreated target.",
+    "execution": "Original c943 execute_logged from snapshot, original POSIX own-process-group timeout/kill/wait/log retention. Wrapper alarm disabled over execution; no extra command, retry, test, source reset/ref update or timeout increase.",
+    "ordering": "One fix attempt; fmt only after successful fix plus required remaining retention budget. Nonzero fails, timeout/output cap or incomplete terminal remainsUnknown.",
+    "retention": "Actual whole source inventory, canonical before/raw after bodies, binary diff, gzip parts and complete physical Merkle retain every postimage including failure. Capture repeats full inventory; raw Git must match initial. Diff retains -c diff.autoRefreshIndex=false.",
+    "finalization": "Original whole .git file+directory metadata bytes must equal initial. Source and immutable controls must both verify before maintenance-completed status; retention gaps remainUnknown. Missing initial baseline never becomes an unchanged-source claim.",
+    "success_not_qualification": "MAINTENANCE_COMMANDS_COMPLETED_REVIEW_REQUIRED is review-only; tests remain0 and qualificationfalse."
+  },
+  "exclusive_launcher": {
+    "existing_same_inode_only": true,
+    "nine_stat_keys": [
+      "st_ctime_ns",
+      "st_dev",
+      "st_gid",
+      "st_ino",
+      "st_mode",
+      "st_mtime_ns",
+      "st_nlink",
+      "st_size",
+      "st_uid"
+    ],
+    "exclusive_nonblocking": true,
+    "inheritable_before_exec": true,
+    "no_unlock_or_close_before_exec": true,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "stat_matches_actual_materialization": true,
+    "limitation": "Cooperative lock only; original complete source/Git verification and live global process guards remain mandatory."
+  },
+  "exact_candidate_and_staging": {
+    "four_config_fields_only": [
+      "status",
+      "root_execution_approved",
+      "waiting_for_actual_records",
+      "formal_approved_config_created"
+    ],
+    "other_values_and_driver_unchanged": true,
+    "inverse_launcher_pin_replacement_full_bytes_equal": true,
+    "main_shape": [
+      "args",
+      "cwd",
+      "executable",
+      "host",
+      "idempotency_key",
+      "timeout_seconds"
+    ],
+    "stage_shape": [
+      "args",
+      "cwd",
+      "executable",
+      "host",
+      "idempotency_key",
+      "stdin",
+      "timeout_seconds"
+    ],
+    "main_shape_explanation": "Original maintenance main has six fields and no stdin. The separate stage request has seven including stdin. Both omit environment override.",
+    "stage_payload_bytes": 144710,
+    "stage_typed_request_bytes": 150734,
+    "stdin_bound": 1048576,
+    "six_payloads": {
+      "driver-maintenance.py": {
+        "bytes": 68496,
+        "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+        "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+      },
+      "APPROVED_MAINTENANCE_CONFIG.json": {
+        "bytes": 13768,
+        "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf",
+        "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e"
+      },
+      "inventory-driver.original.py": {
+        "bytes": 22946,
+        "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+        "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+      },
+      "MAINTENANCE_STARTED.original.json": {
+        "bytes": 1154,
+        "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+        "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+      },
+      "MATERIALIZATION_SUPERVISOR.original.json": {
+        "bytes": 952,
+        "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa",
+        "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c"
+      },
+      "V8_RESTORATION_SUPERVISOR.original.json": {
+        "bytes": 950,
+        "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+        "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+      }
+    },
+    "stage_writes": "Fresh external fixed evidence/control directory only, O_EXCL/O_NOFOLLOW records and exact readback; directoryfsync; no source file, old evidence replacement, shell, exec or subprocess. Failure preserves partial controls and attempts BOOTSTRAP_FAILURE, then raises.",
+    "freshness": "Existing control/run refuses; no alternative path/key invented to bypass it.",
+    "ordered_conditions": [
+      "Root approves these exact request bytes and conditions.",
+      "Dispatch the exact stage request once; require original same-job normal exit0 and complete durable terminal.",
+      "Read and verify STAGING_READBACK plus all six actual stored full file pins and retained launcher/payload; reject partial/failed/unknown staging.",
+      "Only then dispatch the exact main request once; it opens the fixed existing lock, checks all original source/runtime/guard conditions and runs original fix then conditional fmt.",
+      "Unknown reconciles original operation/key/bytes only; no new key, directory or request to bypass the state."
+    ],
+    "automation_limit": "The stage success and readback condition is the explicit Root/native dispatch contract between two exact requests. This review does not claim the main launcher alone polls a stage job; native must obtain and verify the original normal terminal and all six actual files before main."
+  },
+  "remaining_actual_preconditions": [
+    "Separate Root exact engineering approval for these two requests and order.",
+    "Actual create-only staging normal terminal plus complete six stored inputs and original readback.",
+    "Actual EX acquisition on fixed same inode, before running main.",
+    "Future complete current source/.git continuity, format base, tools/archive content, existing target32GiB and original global process guard.",
+    "Actual fix/fmt terminal, full postimages and final source/Git/input retention; none is supplied by this review."
+  ],
+  "concrete_static_blockers": [],
+  "preserved_history": "All previous failures, Unknowns, different source snapshots and prior HOLD/config/reviews stay immutable. This report neither reclassifies them nor inherits prior behavior gates.",
+  "evidence": {
+    "frozen_dataflow": {
+      "bytes": 11302,
+      "sha256": "53da321717d66e0cf56c1dec97d9ad92890ab1b2b1f13f1145210eafe14a8057",
+      "git_blob": "3f26ada9c6587e1fc5c249a64b68bf1929edd0db"
+    },
+    "frozen_dataflow_script": {
+      "bytes": 12838,
+      "sha256": "825c876db6afe4220c91a7d6ed9002d44159b5e9bc0dbd4e0c74231c122ece8b",
+      "git_blob": "de534a7bbf59aa5012b83570ed2409de30bb0bc7"
+    },
+    "exact_request_dataflow": {
+      "bytes": 5704,
+      "sha256": "dccd9f97b45eed3d76e5ada32c1ce0f875b36d72d486cb95b77f01de63ab060b",
+      "git_blob": "debc908d96582d74b8bae31096e328c39bf3ab2e"
+    },
+    "exact_request_script": {
+      "bytes": 9712,
+      "sha256": "8f1e38d0e070672725016863a8b4c89070ab07eab6bc5ac00a1f13ea01a61899",
+      "git_blob": "d8302c4c57703bb169a40d8fbcce4a16ec7ec3da"
+    }
+  },
+  "execution": {
+    "H": 0,
+    "preflight_or_main": 0,
+    "source_or_ref_mutation": 0,
+    "formatter_Rust_QA_gates": 0,
+    "pure_frozen_Python_analysis_only": true,
+    "qualification": false,
+    "real_A_B_C_daemon_Root_chain_claim": false,
+    "this_review_grants_execution_approval": false
+  }
+}

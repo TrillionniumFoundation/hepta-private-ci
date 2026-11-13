@@ -1,0 +1,113 @@
+{
+  "complete_inputs": [
+    {
+      "gzip": {
+        "bytes": 707857,
+        "git_blob": "91b63310e61ac23156731532cba400ce9e7b998e",
+        "sha256": "4d76a6bd6afc7cfbd0b11f7d2283c3db520ad215c9b21a23f7e7df1ce460c7ae"
+      },
+      "label": "base",
+      "raw": {
+        "bytes": 3095381,
+        "git_blob": "26a1d658112e58531b710ab9fb50ed93f50d1afe",
+        "sha256": "465d36f5dc99c651e59870806e8613cf2b3b5a1cecfabdce2363716c339711da"
+      }
+    },
+    {
+      "gzip": {
+        "bytes": 1071796,
+        "git_blob": "77577dab4cf47fad79e3d781adfca8dd72c8fa3e",
+        "sha256": "3b51189d4087167198a13b493991def8a925ec26d57b8981542c8426037ff3f2"
+      },
+      "label": "candidate",
+      "raw": {
+        "bytes": 5026346,
+        "git_blob": "432b4670a3c239627338df93c1f5f351260da498",
+        "sha256": "3f0e398c4a10d4cf5f0e2157c04e924449c674f338c8b5a4f4f51b203a2eb475"
+      }
+    }
+  ],
+  "format": "hepta-root-exact-five-staging-requests-review-v1",
+  "new_H_calls": 0,
+  "original_request_and_decoded_bounds_unchanged": true,
+  "packet": "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+  "qualification": false,
+  "rows": [
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "f8fe91fff1c88ab5c1837bc18edc53b88f581073",
+        "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4"
+      },
+      "expected_version": "absent",
+      "field_set_exact": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-001",
+      "request": {
+        "bytes": 699239,
+        "git_blob": "2087683e30e7b6d2de051734ad7d4ec4cc705d11",
+        "sha256": "8c7d9eee858e512e6596743565b1c8b22a5739a162072539912ab0f6357e9b6d"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 183569,
+        "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+        "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+      },
+      "expected_version": "absent",
+      "field_set_exact": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-002",
+      "request": {
+        "bytes": 244947,
+        "git_blob": "a2be7401763168beb7f2e56e12f889deab9277f4",
+        "sha256": "498ec733461f235b00344d6d6f386efc65b78a75447192a0577bc173667fc8e9"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "d749cb33da12291a6ccbe75c274f9e469416d7f2",
+        "sha256": "766d6059ebafe2bae6de7d56bdbc33630ff30eb142316765375af9fd1e04f533"
+      },
+      "expected_version": "absent",
+      "field_set_exact": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-001",
+      "request": {
+        "bytes": 699244,
+        "git_blob": "5132bf4b9ec9cdea2743315d13af90d1572e62c9",
+        "sha256": "83daa0d0d7a8e2b78800dbb6feb69595a50a90917f1c25c34fc4247a215005d6"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "c49ddcf626ceae1da278e96a04f9dbab04be6053",
+        "sha256": "cdc419065bf3671bd3b90736477be2ccfb9f8829db9d9f800d73d11573f52fc1"
+      },
+      "expected_version": "absent",
+      "field_set_exact": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-002",
+      "request": {
+        "bytes": 699244,
+        "git_blob": "288acff3143ead48f829dbb98347fba88cbab76b",
+        "sha256": "677784aaa9ab8f65f3e38cf2bcee71b08906fedf6310b5c7f075915fc2aa84fb"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 23220,
+        "git_blob": "0dbeac34953149deb0a198746ba52158ec66cf40",
+        "sha256": "62af9c275b43f70c2586899b83493f6a61603ef0e266c47e7d5666465f78fa54"
+      },
+      "expected_version": "absent",
+      "field_set_exact": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-003",
+      "request": {
+        "bytes": 31152,
+        "git_blob": "f6510be4c5d3ba0ffef7d33025574520fefc3c0d",
+        "sha256": "23372a9bba0bc13ffcbc0469ef95675bd925ae99b41e26003d1378ab5ab6be2c"
+      }
+    }
+  ],
+  "staging_manifest": "49e17fcf6f430c90f3048477e3521683903871a3"
+}

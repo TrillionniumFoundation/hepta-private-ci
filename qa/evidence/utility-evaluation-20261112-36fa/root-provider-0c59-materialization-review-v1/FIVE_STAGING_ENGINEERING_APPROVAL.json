@@ -1,0 +1,126 @@
+{
+  "format": "hepta-root-five-create-only-staging-engineering-approval-v1",
+  "status": "APPROVED_FIVE_CREATE_ONLY_INPUT_TRANSFERS",
+  "approver": "/root",
+  "executor": "/root/native_ci_audit",
+  "authorization_scope": "Engineering file preparation within the user's requested work. This is not a Hepta runtime Root grant, task-owner admission, learning authorization, release or deployment approval.",
+  "approved_tool": "mcp__codex_apps__h_binary_write",
+  "host": "desktop",
+  "staging_manifest": "49e17fcf6f430c90f3048477e3521683903871a3",
+  "packet": "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+  "root_byte_review": "b0ab0bf3000db87e5bcada426d4acdda46593ba9",
+  "independent_transfer_review": "c47b890a6ee127010885248ce89471d8c7955f7e",
+  "requests": [
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "f8fe91fff1c88ab5c1837bc18edc53b88f581073",
+        "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4"
+      },
+      "decoded_bytes": 524288,
+      "expected_mode": 384,
+      "expected_version": "absent",
+      "host": "desktop",
+      "name": "STAGE_BASE_001.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-001",
+      "request": {
+        "bytes": 699239,
+        "git_blob": "2087683e30e7b6d2de051734ad7d4ec4cc705d11",
+        "sha256": "8c7d9eee858e512e6596743565b1c8b22a5739a162072539912ab0f6357e9b6d"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 183569,
+        "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+        "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+      },
+      "decoded_bytes": 183569,
+      "expected_mode": 384,
+      "expected_version": "absent",
+      "host": "desktop",
+      "name": "STAGE_BASE_002.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-002",
+      "request": {
+        "bytes": 244947,
+        "git_blob": "a2be7401763168beb7f2e56e12f889deab9277f4",
+        "sha256": "498ec733461f235b00344d6d6f386efc65b78a75447192a0577bc173667fc8e9"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "d749cb33da12291a6ccbe75c274f9e469416d7f2",
+        "sha256": "766d6059ebafe2bae6de7d56bdbc33630ff30eb142316765375af9fd1e04f533"
+      },
+      "decoded_bytes": 524288,
+      "expected_mode": 384,
+      "expected_version": "absent",
+      "host": "desktop",
+      "name": "STAGE_CANDIDATE_001.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-001",
+      "request": {
+        "bytes": 699244,
+        "git_blob": "5132bf4b9ec9cdea2743315d13af90d1572e62c9",
+        "sha256": "83daa0d0d7a8e2b78800dbb6feb69595a50a90917f1c25c34fc4247a215005d6"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "c49ddcf626ceae1da278e96a04f9dbab04be6053",
+        "sha256": "cdc419065bf3671bd3b90736477be2ccfb9f8829db9d9f800d73d11573f52fc1"
+      },
+      "decoded_bytes": 524288,
+      "expected_mode": 384,
+      "expected_version": "absent",
+      "host": "desktop",
+      "name": "STAGE_CANDIDATE_002.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-002",
+      "request": {
+        "bytes": 699244,
+        "git_blob": "288acff3143ead48f829dbb98347fba88cbab76b",
+        "sha256": "677784aaa9ab8f65f3e38cf2bcee71b08906fedf6310b5c7f075915fc2aa84fb"
+      }
+    },
+    {
+      "decoded": {
+        "bytes": 23220,
+        "git_blob": "0dbeac34953149deb0a198746ba52158ec66cf40",
+        "sha256": "62af9c275b43f70c2586899b83493f6a61603ef0e266c47e7d5666465f78fa54"
+      },
+      "decoded_bytes": 23220,
+      "expected_mode": 384,
+      "expected_version": "absent",
+      "host": "desktop",
+      "name": "STAGE_CANDIDATE_003.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-003",
+      "request": {
+        "bytes": 31152,
+        "git_blob": "f6510be4c5d3ba0ffef7d33025574520fefc3c0d",
+        "sha256": "23372a9bba0bc13ffcbc0469ef95675bd925ae99b41e26003d1378ab5ab6be2c"
+      }
+    }
+  ],
+  "execution_contract": {
+    "exact_four_fields_only": true,
+    "request_objects_are_the_complete_actual_git_get_bytes_at_the_pinned_request_blobs": true,
+    "expected_version": "absent",
+    "sequence": "Use the manifest order. Dispatch each exact create-only write at most once; inspect its outcome before progressing. Full readback of the same five paths is authorized to verify data, size, mode and available file identity.",
+    "max_actual_decoded_bytes": 524288,
+    "max_actual_serialized_request_bytes": 699244,
+    "original_tool_limit_bytes": 1048576,
+    "parent": "/home/qian-qi/hepta-utility-36fa-evidence",
+    "parent_creation_authorized": false,
+    "mode_expectation": 384,
+    "unexpected_existing_file_or_mode_or_identity": "Stop and preserve the actual result; no overwrite, chmod, alternate path or new request identity is authorized.",
+    "transport_unknown": "Preserve the original unknown and reconcile only the same fixed path through read-only metadata/full-byte observation. Do not redispatch a write, change content or infer normal completion from silence.",
+    "evidence": "Retain every actual write/readback SDK outcome and complete byte identities. Input readiness is separate from the historical write outcome."
+  },
+  "main_process_authorized": false,
+  "bootstrap_or_driver_execution_authorized": false,
+  "source_repository_or_index_or_ref_mutation_authorized": false,
+  "native_or_formatter_or_test_authorized": false,
+  "runtime_Root_grant": false,
+  "qualification": false
+}

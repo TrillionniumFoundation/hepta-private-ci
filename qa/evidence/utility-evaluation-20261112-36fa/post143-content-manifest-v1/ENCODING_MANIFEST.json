@@ -1,0 +1,36 @@
+{
+  "decoded_part_limit": 262144,
+  "encoding": "gzip single member, mtime0, base64 parts with one final LF",
+  "expected_final_file_count": 5682,
+  "format": "hepta-gzip-base64-complete-content-map-encoding-v1",
+  "gzip": {
+    "bytes": 181961,
+    "git_blob": "143c076a06d4b81dfdfb4cb5469e62c3f5a527df",
+    "sha256": "3ae3fd8bf7806e9784b917d7e4d2833826830b93807df56e7b6c095b18555892"
+  },
+  "parts": [
+    {
+      "bytes": 242617,
+      "decoded_bytes": 181961,
+      "decoded_offset": 0,
+      "decoded_sha256": "3ae3fd8bf7806e9784b917d7e4d2833826830b93807df56e7b6c095b18555892",
+      "git_blob": "e45b3b39817f6c49f4e3bc6435dd4e12eb124d24",
+      "name": "CONTENT_MANIFEST.json.gz.part-001.b64",
+      "path": "post143-content-manifest-v1/CONTENT_MANIFEST.json.gz.part-001.b64",
+      "sha256": "f581994abbbda18274b9b6490a6035e24b2e9b6b84dcff27a52baad0b6e9be33"
+    }
+  ],
+  "payload_file_count": 5680,
+  "per_leaf_limit": 512000,
+  "qualification": false,
+  "raw": {
+    "bytes": 675507,
+    "git_blob": "0d03f4f668d5beedd7e35dde374929a6de8bb30a",
+    "sha256": "a132464e2fa3b446694db434c5ae3e61906023b0abb5bca11dda9d4e89535f0a"
+  },
+  "raw_manifest_is_not_a_leaf": true,
+  "self_packaging_paths": [
+    "post143-content-manifest-v1/ENCODING_MANIFEST.json",
+    "post143-content-manifest-v1/CONTENT_MANIFEST.json.gz.part-001.b64"
+  ]
+}

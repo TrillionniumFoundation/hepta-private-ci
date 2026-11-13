@@ -1,0 +1,294 @@
+{
+  "format": "hepta-maintenance-successor-original-contract-peer-v1",
+  "status": "ORIGINAL_CONTRACT_EXTRACTED_SUCCESSOR_REVIEW_PENDING",
+  "reviewed_date_utc": "2026-11-13",
+  "scope": "Independent full reading of the immutable original maintenance controller, frozen runner interfaces and continuation plan; preparation for a later exact successor delta review. No original or candidate control was executed.",
+  "original_inputs": [
+    {
+      "name": "MAINTENANCE_6632.original.py",
+      "bytes": 63007,
+      "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+      "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+      "independent_full_GET_equal": true
+    },
+    {
+      "name": "INTERFACE_56ff.original.json",
+      "bytes": 4842,
+      "sha256": "49259e92555d45b6aac3f3910519dc81b4bee6b157122ffd674cb847d477a172",
+      "git_blob": "56ff9b0019da0e2b9d4c49189ef170acd13eb45e",
+      "independent_full_GET_equal": true
+    },
+    {
+      "name": "PLAN_50c0.original.json",
+      "bytes": 8186,
+      "sha256": "d4f57450007d6ee2f0a3ddd978c39109c30266c4abf938314a8e8582136a1e86",
+      "git_blob": "50c0a5eabfcab306dc84111fa1f67318267c08ae",
+      "independent_full_GET_equal": true
+    },
+    {
+      "name": "EXECUTE_LOGGED_c943.original.py",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "independent_full_GET_equal": true
+    }
+  ],
+  "original_definition_index": {
+    "git_blob": "3c1f51148c35ab627870495d3f68f9cf3f4e7ef6",
+    "bytes": 18547,
+    "sha256": "4acd64c0d6a694b2603602e3144bbadbb84595cd4e6757594414aa5a1dad220e",
+    "top_level_definitions": 50,
+    "functions": 47,
+    "classes": 3,
+    "meaning": "AST/source-segment identities only, not executed behavior."
+  },
+  "frozen_command_contract": {
+    "original_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "authorized_successor_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "authorized_fix_change": "Append only the final -p codex-hepta-learning-ledger pair; one command, no separate additional fix.",
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "fixed_budgets_seconds": {
+      "fix": 7200,
+      "fmt": 900,
+      "outer": 9300,
+      "preflight": 600,
+      "shared_records": 300
+    },
+    "maximum_log_bytes": 67108864,
+    "existing_cargo_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "create_target_if_absent": false,
+    "minimum_target_free_bytes": 34359738368,
+    "minimum_note": "32 GiB is the exact frozen plan/config requirement. Original environment_preflight reads a positive config minimum and measures disk_free; it does not itself hardcode 32 GiB.",
+    "execution_order": "Complete preflight, one fix, then fmt only after complete successful fix and more than 60 seconds of the separate recording budget remain.",
+    "test_commands_authorized": false,
+    "formatter_base_scope": "check_fmt_base requires authentic c0f commit/tree and exactly 14851 unique supported leaf metadata rows; no recursive ancestry fsck."
+  },
+  "preserved_contracts": [
+    {
+      "area": "Control admission and records",
+      "functions": [
+        "main",
+        "validate_config",
+        "regular_read",
+        "write",
+        "gzrecord",
+        "event"
+      ],
+      "must_preserve": "Real source/evidence directories; fresh run path must be absent; fixed approval schema/status/true flag and exact driver SHA256/Git; exact source/config argv/budgets; no tests or refs. Record files are create-only O_EXCL/O_NOFOLLOW mode0600, complete readback plus fsync. Gzip uses mtime0 and exact roundtrip with 262144-byte decoded base64 parts. Existing run/partial output is never overwritten or retried."
+    },
+    {
+      "area": "Current source and Git baseline",
+      "functions": [
+        "git_state",
+        "initial_preflight",
+        "actual_leaf_map",
+        "merkle",
+        "metadata_inventory"
+      ],
+      "must_preserve": "Independent .git/common-dir, no alternates/shallow/grafts, exact detached HEAD bytes and zero refs, exact commit/tree. Preserve raw index/config/refs identity and complete .git file/mode/stat inventory. Initial full original5118 inventory must match the approved complete bytes and source identity, reconstruct every physical leaf to the exact canonical tree and count, and match actual materialization proof."
+    },
+    {
+      "area": "Original inventory/executor and mutable source entries",
+      "functions": [
+        "load_module",
+        "initial_preflight",
+        "verify_stage_source_entries",
+        "verify_original_inputs"
+      ],
+      "must_preserve": "Original inventory5118 and execute_logged c943 bytes remain pinned. Snapshot the six source-entry files before maintenance; load execute_logged from its archived immutable snapshot. The source paths themselves are not immutable post-format controls. Immediately before fix verify original justfile/just-shell/toolchain; before fmt additionally verify original format.py. Legitimate modifications after dispatch belong to actual postimages, not a false input-drift finding."
+    },
+    {
+      "area": "Historical and effective environment",
+      "functions": [
+        "validate_runtime_restoration",
+        "environment_preflight",
+        "project_runtime_file",
+        "installed_file_observation"
+      ],
+      "must_preserve": "Historical env69a3 remains exact. Preserve the explicitly restored PATH, CARGO/RUSTUP/V8 and UV/RUFF values, CODEX_REPO_ROOT/PYTHONPATH observation, no unreviewed UV/RUFF names, and no inherited Git identity/object overrides. Exact five-field tool/V8/formatter content/path/mode projections are measured again. Preserve actual UV0.11.3 and existing Rust1.96 checks; just version is recorded with exact file identity, not a newly invented version condition. No sync/install/download command is added."
+    },
+    {
+      "area": "Resource and global concurrency guards",
+      "functions": [
+        "external_directory",
+        "active_build_processes",
+        "environment_preflight",
+        "stage"
+      ],
+      "must_preserve": "Target and formatter directories must already exist outside source/run, be real and accessible with required ownership. Runtime actual free bytes must meet frozen32GiB. Preserve the original same-UID cargo/cargo-clippy/clippy-driver/rustc/rustfmt/just/uv/ruff guard and its unreadable rejection. BUILD_PROCESS_PREFLIGHT is written before the initial rejection. Each prospective stage re-observes the live guard and writes its own process preflight. No foreign-job exception, process kill, cache deletion or limit relaxation."
+    },
+    {
+      "area": "Stage preparation",
+      "functions": [
+        "bounded_record",
+        "stage"
+      ],
+      "must_preserve": "Before each command require current full inventory equal latest retained inventory, immutable external controls unchanged, exact source launch entries and empty live process/unreadable sets. All stage preparation and postimage/final audits share the original300-second recording budget. Append attempted/stage records only after stage preparation succeeds."
+    },
+    {
+      "area": "Original process ownership and cleanup",
+      "functions": [
+        "stage",
+        "execute_logged"
+      ],
+      "must_preserve": "Use c943 execute_logged directly; do not call its clean-gate run wrapper against intentional postimages. Disable wrapper SIGALRM throughout actual command execution. The original command gets a new POSIX session/process group, simultaneous EOF and direct-child completion requirements, 64MiB output ceiling and original7200/900 timeout. On incomplete command the helper SIGKILLs its own group, waits its direct child, closes pipe and fsyncs log. Escaped sessions are explicitly outside that helper guarantee; do not broaden the cleanup claim."
+    },
+    {
+      "area": "Complete actual postimages",
+      "functions": [
+        "stage",
+        "capture_source",
+        "archive_transition",
+        "OriginalBlobReader",
+        "read_actual_leaf"
+      ],
+      "must_preserve": "Retain post-command source even on nonzero return, timeout, output limit or exception. Preserve all physical changed rows, including untracked/ignored files, exact before and after bytes plus lengths/SHA256/Git identities, complete inventory, source Merkle and patch. Canonical preimages are obtained from original cat-file bodies and verified, later preimages from retained raw_cache; unavailable original preimages reject. Compare complete inventory again after retention."
+    },
+    {
+      "area": "Raw Git equality and read-only patch control",
+      "functions": [
+        "git",
+        "capture_source",
+        "archive_transition",
+        "finalize_source"
+      ],
+      "must_preserve": "At every capture raw HEAD/index/config/ref state must equal initial_git_state. Patch is exactly git -c diff.autoRefreshIndex=false diff --binary --full-index --no-ext-diff --no-textconv --no-renames HEAD -- under the original no-optional-locks wrapper. Final .git inventory must match the complete initial metadata byte string; never repair index/refs to make this comparison pass."
+    },
+    {
+      "area": "Auxiliary reader cleanup",
+      "functions": [
+        "OriginalBlobReader.close",
+        "archive_transition"
+      ],
+      "must_preserve": "The exact before-blob reader is closed in finally; its original direct-child wait/kill/reap and stderr retention remain. This is cleanup of the owned helper only, not proof every unrelated process stopped."
+    },
+    {
+      "area": "Final auditing and status",
+      "functions": [
+        "finalize_source",
+        "finalize_inputs",
+        "retain_terminal",
+        "main"
+      ],
+      "must_preserve": "No complete initial baseline means not_run with an explicit no-unchanged-source-claim reason. Final source/Git and immutable-input audits must both be verified for completed-review-required status. Budget exhaustion or incomplete retention cannot become success. Preserve READONLY_COMMANDS, INPUT_IDENTITIES, SOURCE_ENTRY_SNAPSHOTS, artifacts, exact RESULT and attempted/not-run commands. No automatic retry, reset, cache deletion, ref update or skipped prerequisite."
+    }
+  ],
+  "result_contract": {
+    "original_format": "hepta-original-scoped-maintenance-result-v1",
+    "normal_command_success_status": "completed_review_required",
+    "normal_wrapper_success_status": "MAINTENANCE_COMMANDS_COMPLETED_REVIEW_REQUIRED",
+    "wrapper_exit0_only_for_that_status": true,
+    "source_commit_tree_describe_initial_canonical_input": true,
+    "actual_final_source_records_postmaintenance_inventory_and_physical_tree": true,
+    "qualification": false,
+    "test_commands_dispatched": 0,
+    "important_non_success_cases": [
+      "Known nonzero original command with complete retained proof: failed stage / FAILED_MAINTENANCE; the next stage does not run.",
+      "Timeout or output limit: unknown_deadline_or_output_limit execution outcome and unknown stage; no following fmt.",
+      "Original execution did not return: command_returned=false, no invented return code; any retained log is explicitly of unknown completeness.",
+      "Source or postimage retention failure: UNKNOWN even when the command return was observed.",
+      "PreconditionError: HOLD_PRECONDITION; ordinary ValueError before attempt: FAILED_PRECONDITION; ValueError after attempt: UNKNOWN.",
+      "IntegrityError is retained as FAILED_INTEGRITY; mixed unknown final audit failures remain UNKNOWN.",
+      "Terminal retention failure prints UNKNOWN and cannot produce a successful wrapper return.",
+      "Failures before the main try may yield only the outer admission-rejected-or-unknown event; a missing RESULT must not be treated as normal completion."
+    ],
+    "consumer_requirement": "A future consumer needs the exact normal supervisor terminal and complete original RESULT/stage/log/retention/audit records. Status text or an old result alone is insufficient."
+  },
+  "successor_binding_seams": [
+    {
+      "seam": "Historical runtime path",
+      "source_function": "validate_runtime_restoration",
+      "fact": "Original observed.source_repo is compared with str(REPO), while its commit/tree/parents are SEED86dd. Changing global REPO to new0c59 without an explicit history/current separation deterministically rejects or falsely re-labels history.",
+      "required": "Preserve the exact historical old source path and SEED identity when verifying historical runtime RESULT/ENV; independently bind current0c59 materialization and source. Do not rewrite original historical proof bytes."
+    },
+    {
+      "seam": "Obsolete seed/source-advance chain",
+      "source_functions": [
+        "validate_materialization",
+        "validate_source_advance",
+        "initial_preflight"
+      ],
+      "fact": "Original validators consume86dd materialization and the single86dd->9c4 one-line advance, with old raw index and exact old commit/diff/blob reads.",
+      "required": "The successor needs a strict validator for the actual new0c59 materialization. Do not call the obsolete source-advance path on the new repository, invent its result, import unrelated history only to satisfy stale anchors, or bypass current complete/raw Git checks."
+    },
+    {
+      "seam": "Actual new materializer result role",
+      "producer": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+      "format": "hepta-complete-candidate-materialization-result-v1",
+      "success_status": "MATERIALIZED_EXACT_CANDIDATE_FOR_MAINTENANCE_REVIEW_ONLY",
+      "required": "source_repo identifies the cc57 donor; destination_repo identifies the current0c59 repository. source_commit/tree/parents and current_source_before/after describe destination canonical material. Bind its complete normal terminal, exact result, all three audits, actual current raw Git/index/metadata and original four record pins. Do not confuse donor physical15188 with destination15237."
+    },
+    {
+      "seam": "Archive restoration and metadata",
+      "source_functions": [
+        "project_runtime_file",
+        "installed_file_observation",
+        "environment_preflight"
+      ],
+      "fact": "Original V8 equality is exactly path/resolved/bytes/sha256/mode. Original inode is not a projected comparison field; this invocation still checks stable dev/inode/size/mtime/ctime while streaming current content.",
+      "required": "Keep historical ENV_READY unchanged and bind actual archive-restoration-v3 proof/current observation separately. Never label an old inode as current or reduce exact content/path/mode requirements."
+    },
+    {
+      "seam": "Exclusive coordination is outside6632",
+      "fact": "The original6632 imports no fcntl and performs no flock. Its live process guard does not replace the cooperative EX protocol.",
+      "required": "The exact successor launcher must retain the approved EX lease across exec and until terminal/cleanup. Merely reusing6632 cannot prove the lock was obtained. Review that launcher separately."
+    },
+    {
+      "seam": "Single authorized command delta",
+      "required": "Append only -p codex-hepta-learning-ledger to the original fix argv; retain one fix7200 followed by originalfmt900/c0f. No extra test, repeated fix, budget, target, resource-threshold, or filter change."
+    }
+  ],
+  "current_subject_preparation_only": {
+    "source_commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "source_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+    "expected_complete_inventory": {
+      "bytes": 5629701,
+      "sha256": "affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44",
+      "git_blob": "a596ae68859e3263a9ee58e2b5d7334ac9314c34",
+      "tracked_entries": 15237,
+      "filesystem_entries": 15237
+    },
+    "actual_materialization_result": null,
+    "actual_materialization_normal": null,
+    "actual_new_raw_index": null,
+    "actual_current_source_before": null,
+    "actual_current_source_after": null,
+    "announced_materialization_job": "1a1d3cdda18-392-1e2",
+    "actual_completed_materialization_independently_reviewed_here": false,
+    "candidate_successor_driver": null,
+    "candidate_successor_config": null,
+    "note": "Fixed canonical/expected values are known; the running job is not treated as successful. Future actual proof and exact successor delta must be reviewed separately."
+  },
+  "performed": {
+    "four_immutable_full_GETs": true,
+    "original_controller_full_text_read": true,
+    "original_execute_logged_full_text_read": true,
+    "AST_parsed_for_definition_index_only": true,
+    "reviewed_code_invoked": false,
+    "H_calls": 0,
+    "Rust_or_formatter_or_QA": false,
+    "source_or_ref_writes": false,
+    "successor_PASS": false
+  }
+}

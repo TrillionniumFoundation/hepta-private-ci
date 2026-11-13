@@ -1,0 +1,39 @@
+{
+  "H_executed": false,
+  "all_110_local_source_bytes_match_fixed_map": true,
+  "baseline_files": 15188,
+  "candidate_modes": {
+    "100644": 15146,
+    "100755": 90,
+    "120000": 1
+  },
+  "canonical_deletions": [],
+  "classification": {
+    "modified": 60,
+    "new": 49,
+    "unchanged": 1
+  },
+  "expected_candidate_files": 15237,
+  "expected_candidate_rust_files_all_repository": 6788,
+  "expected_candidate_rust_files_codex_rs": 6666,
+  "format": "hepta-final110-independent-git-write-tree-review-v1",
+  "inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "method": "Git update-index --index-info and write-tree --missing-ok in a create-only empty local bare repository with separate new indices. No original source repository or index is touched. The supplied graph identifies missing blobs; this does not materialize their whole source snapshot.",
+  "overlay": {
+    "bytes": 54410,
+    "git_blob": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+    "sha256": "ba2b642c5e1014fffa1151cca87e1b516c255f8d5ef549c633ce3f73fb615e57"
+  },
+  "physical_source_materialized": false,
+  "qualification": false,
+  "roots": {
+    "baseline": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "candidate": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+  },
+  "source_ref_changed": false,
+  "update_count": 109
+}

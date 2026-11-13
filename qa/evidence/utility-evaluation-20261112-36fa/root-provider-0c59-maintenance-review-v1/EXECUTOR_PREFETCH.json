@@ -1,0 +1,74 @@
+{
+  "actual_materialization_job_id": "1a1d3cdda18-392-1e2",
+  "actual_result_normal_four_records_complete_git_metadata_and_full_index_equal": true,
+  "configuration": {
+    "bytes": 13768,
+    "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e",
+    "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf"
+  },
+  "created_at": "2026-11-13T07:53:02.977186+00:00",
+  "driver": {
+    "bytes": 68496,
+    "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13",
+    "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259"
+  },
+  "format": "hepta-maintenance-executor-prefetch-verification-v1",
+  "four_actual_git_full_gets_equal_to_frozen_files": true,
+  "main_dispatched": false,
+  "main_request": {
+    "bytes": 5371,
+    "git_blob": "c6a5a907647a97204878b5b5371eab540b778403",
+    "sha256": "c894637387df659ab0b4caf78f2ed376a37de39be96ad2ff444d72a765a93f0a"
+  },
+  "main_seconds": 9300,
+  "native_path_observation_scope": "Only previously obtained fixed original native records are used. No live H path existence probe was issued; the reviewed stage and main retain their original real-time reads and guards.",
+  "no_environment_override": true,
+  "original_stage_seven_fields_main_six_fields": true,
+  "qualification": false,
+  "root_exact_execution_approval_received": false,
+  "stage_dispatched": false,
+  "stage_payload_six_files": [
+    {
+      "bytes": 68496,
+      "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13",
+      "name": "driver-maintenance.py",
+      "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259"
+    },
+    {
+      "bytes": 13768,
+      "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e",
+      "name": "APPROVED_MAINTENANCE_CONFIG.json",
+      "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf"
+    },
+    {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "name": "inventory-driver.original.py",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    {
+      "bytes": 1154,
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+      "name": "MAINTENANCE_STARTED.original.json",
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c",
+      "name": "MATERIALIZATION_SUPERVISOR.original.json",
+      "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "name": "V8_RESTORATION_SUPERVISOR.original.json",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    }
+  ],
+  "stage_request": {
+    "bytes": 150734,
+    "git_blob": "dd593f5d41f7ecc46072f2fe60eb1047579588a2",
+    "sha256": "a2e2c072aa175b3aaed5e9e461c7fc1bf9c198b36112523442025bcd457c9a52"
+  },
+  "stage_seconds": 900
+}

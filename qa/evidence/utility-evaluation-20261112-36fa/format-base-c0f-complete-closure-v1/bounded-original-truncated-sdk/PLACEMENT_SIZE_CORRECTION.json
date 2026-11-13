@@ -1,0 +1,15 @@
+{
+  "collector_original_result": "Refused before any tree/commit/ref mutation for this next checkpoint",
+  "excluded_oversized_new_leaf_path": "format-base-c0f-complete-closure-v1/LOCAL_PART_READ_004_TRUNCATED.original.json",
+  "format": "hepta-post143bcea-sdk-placement-size-correction-v1",
+  "original_placement": "661b5f85889512d5e02fd418ef329c138387e85f",
+  "original_raw_identity": {
+    "bytes": 1048751,
+    "git_blob": "440efa9f56f6895b4fe2a7170dc8ce8af8cbfd6c",
+    "sha256": "dd9909da32978fcc7d0030fec31de0115d7f63e2b7a14edca216aceb9248f00b"
+  },
+  "qualification": false,
+  "raw_sdk_is_not_materialization_failure": true,
+  "reason": "The proposed raw SDK leaf is 1048751 bytes, above the unchanged original 512000-byte evidence blob limit. Preserve the original placement and raw Git object; store exact bytes using bounded lossless parts and an explicit manifest. No source, runtime, gate, budget, or prior evidence is changed.",
+  "replacement_prefix": "format-base-c0f-complete-closure-v1/bounded-original-truncated-sdk"
+}

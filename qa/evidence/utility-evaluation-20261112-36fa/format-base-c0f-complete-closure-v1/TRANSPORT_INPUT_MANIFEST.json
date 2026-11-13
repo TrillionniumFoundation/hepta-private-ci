@@ -1,0 +1,59 @@
+{
+  "complete_proof_packet": {
+    "bytes": 6239044,
+    "git_blob": "d13fe2e9613284d133ac74f4437a775abd7ba23b",
+    "sha256": "4b8df62e7a9eed3f1f321dea468d7eb07b70fd79db27283473944912a54e7c32"
+  },
+  "gzip": {
+    "bytes": 707857,
+    "git_blob": "91b63310e61ac23156731532cba400ce9e7b998e",
+    "path": "BASE_OBJECT_INPUT.json.gz",
+    "sha256": "4d76a6bd6afc7cfbd0b11f7d2283c3db520ad215c9b21a23f7e7df1ce460c7ae"
+  },
+  "meaning": "All 83 original raw bodies in this small input are supplied. The full closure manifest is immutable separate evidence. Existing 16011 objects must still be verified from the approved source and the resulting complete base tree must be checked. This is not a runnable request or fresh availability observation.",
+  "parts": [
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 0,
+      "decoded_sha256": "479ef206720e292e8c879444ad42e2dd23b9fc259962acde8b78458c90a746f4",
+      "git_blob": "48f05fb2fc2a1825effc317b6d16205ac84a6a35",
+      "path": "BASE_OBJECT_INPUT.json.gz.part-001.b64",
+      "sha256": "cec621569c55adb4c2279f5f4b2cce9f8b27a10f46e08f6814f131636e551ebf"
+    },
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 196608,
+      "decoded_sha256": "91f69f61cb72080c37a7d4d24bbe8252e8f97c2de542faacf8e4dde5c6d1b8a0",
+      "git_blob": "d349ccd66957c396331c54df70c5bd8f5371e92b",
+      "path": "BASE_OBJECT_INPUT.json.gz.part-002.b64",
+      "sha256": "451d21111af5432d508b1ff334dda54bc2ce60216104128734a43347ba0b9cae"
+    },
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 393216,
+      "decoded_sha256": "a69d8d5bbe5d270fb228b9a70ee8451e95fb3242dea4007aa54b71ff31f90061",
+      "git_blob": "4cf3c8da637e2eadd02072702026425173061125",
+      "path": "BASE_OBJECT_INPUT.json.gz.part-003.b64",
+      "sha256": "d4f979c97c4f90c4d0618c33733393dbe00f57521024709cb5035bd7dc525bbf"
+    },
+    {
+      "bytes": 157381,
+      "decoded_bytes": 118033,
+      "decoded_offset": 589824,
+      "decoded_sha256": "7a8793ec32ed67ccaf461f57db4d506ba64bca684a58e9dad0f9ae969cdee54f",
+      "git_blob": "2614092404ebdb26ac5d787d473f290e1eb95ba5",
+      "path": "BASE_OBJECT_INPUT.json.gz.part-004.b64",
+      "sha256": "25d182c46409a218d2cc34d2e09afa7006d6e49e62ec1018c1a7bac7bba1ab65"
+    }
+  ],
+  "raw": {
+    "bytes": 3095381,
+    "git_blob": "26a1d658112e58531b710ab9fb50ed93f50d1afe",
+    "path": "BASE_OBJECT_INPUT.json",
+    "sha256": "465d36f5dc99c651e59870806e8613cf2b3b5a1cecfabdce2363716c339711da"
+  },
+  "schema": "hepta-c0f-format-base-transport-input-manifest-v1"
+}

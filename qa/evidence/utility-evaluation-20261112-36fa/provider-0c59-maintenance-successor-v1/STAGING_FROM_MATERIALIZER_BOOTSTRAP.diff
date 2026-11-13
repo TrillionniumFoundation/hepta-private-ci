@@ -1,0 +1,60 @@
+--- actual-materializer/BOOTSTRAP.py
++++ stage-only/STAGING_BOOTSTRAP.HOLD.py
+@@ -1,13 +1,7 @@
+ import base64, gzip, hashlib, io, json, os, pathlib, stat, sys, traceback
+ 
+-BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-isolated-materialization-v1')
+-PINS = {
+-    'driver.py': {'bytes': 70560, 'sha256': '2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6', 'git_blob': '6d1537fcd58540da64c18916369f4f04d2a0dce1'},
+-    'MATERIALIZATION_PACKET.json': {'bytes': 14331, 'sha256': 'b733baa29e1b70c6fa57582d61dfe47e360e9d3de4d0ef482193be30057914c6', 'git_blob': '728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c'},
+-    'DONOR_RESULT.original.json': {'bytes': 12671, 'sha256': 'fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96', 'git_blob': '40833805111c98773ba1d046df09285357531396'},
+-    'DONOR_SUPERVISOR.original.json': {'bytes': 951, 'sha256': 'a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa', 'git_blob': 'c507335b611474857eff53b738071a7a3f27dc99'},
+-    'APPROVED_CONFIG.json': {'bytes': 642, 'sha256': '58e25387f392c929a0adf798e30714ad73008f76b21b1b7d56f2c29e4b5f7980', 'git_blob': 'b760954f62dbe96b6ed337ae2cc99f4130727824'},
+-}
++BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1')
++PINS = {'driver-maintenance.py': {'bytes': 68496, 'sha256': 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', 'git_blob': '3a0f6dec8127aa9587129d6e0f24bad55837ca13'}, 'APPROVED_MAINTENANCE_CONFIG.json': {'bytes': 14015, 'sha256': '2f7eebda040a737997a06a8edc137d7ca39550d9de6d50ee06121db058086444', 'git_blob': 'f2092840e7e59ba94d86709cdbe9d995b681f826'}, 'inventory-driver.original.py': {'bytes': 22946, 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}, 'MAINTENANCE_STARTED.original.json': {'bytes': 1154, 'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1', 'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223'}, 'MATERIALIZATION_SUPERVISOR.original.json': {'bytes': 952, 'sha256': 'e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa', 'git_blob': 'b726c1fa0db15e96fc46f1398b362a7ce0391f3c'}, 'V8_RESTORATION_SUPERVISOR.original.json': {'bytes': 950, 'sha256': '3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d', 'git_blob': 'b5a9b8d0c8e5f9372eac59e3720ba90c42997579'}}
+ 
+ created = False
+ 
+@@ -51,19 +45,13 @@
+     raw_input = sys.stdin.buffer.read(1048577)
+     check(len(raw_input) <= 1048576, 'bounded exact input')
+     packet = json.loads(raw_input)
+-    check(set(packet) == {'format', 'files'} and packet['format'] == 'hepta-complete-candidate-materialization-bootstrap-v1', 'exact bootstrap schema')
+-    check(isinstance(packet['files'], dict) and set(packet['files']) == set(PINS), 'exact five input files')
++    check(set(packet) == {'format', 'files'} and packet['format'] == 'hepta-original-maintenance-control-staging-v1', 'exact bootstrap schema')
++    check(isinstance(packet['files'], dict) and set(packet['files']) == set(PINS), 'exact six input files')
+     files = {}
+     for name, pin in PINS.items():
+         encoded = packet['files'][name]
+         check(isinstance(encoded, str), 'base64 input required')
+         raw = base64.b64decode(encoded, validate=True)
+-        if name == 'MATERIALIZATION_PACKET.json':
+-            check(type(pin['bytes']) is int and 0 < pin['bytes'] <= 40000000, 'bounded reviewed packet')
+-            with gzip.GzipFile(fileobj=io.BytesIO(raw)) as stream:
+-                expanded = stream.read(pin['bytes'] + 1)
+-                check(len(expanded) == pin['bytes'] and stream.read(1) == b'', 'complete bounded reviewed packet')
+-            raw = expanded
+         check(identity(raw) == pin, 'fixed input bytes: ' + name)
+         files[name] = raw
+     real_parents()
+@@ -77,16 +65,16 @@
+             retain('ACTUAL_BOOTSTRAP_ARGV.json', (json.dumps(argv, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode()),
+             retain('ACTUAL_BOOTSTRAP_PAYLOAD.json', raw_input)]
+     rows += [retain(name, raw) for name, raw in files.items()]
+-    retain('STAGING_READBACK.json', (json.dumps({'format': 'hepta-complete-candidate-materialization-bootstrap-readback-v1',
++    retain('STAGING_READBACK.json', (json.dumps({'format': 'hepta-original-maintenance-control-staging-readback-v1',
+            'files': rows, 'source_writes_during_staging': False, 'qualification': False}, sort_keys=True, indent=2) + '\n').encode())
+     directory_fd = os.open(BASE, os.O_RDONLY | os.O_DIRECTORY)
+     try:
+         os.fsync(directory_fd)
+     finally:
+         os.close(directory_fd)
+-    print(json.dumps({'event': 'fixed_candidate_materialization_bootstrap_verified', 'control': str(BASE),
++    print(json.dumps({'event': 'fixed_maintenance_controls_staged_only', 'control': str(BASE),
+                       'source_writes_during_staging': False, 'qualification': False}), flush=True)
+-    os.execv('/usr/bin/python3', ['/usr/bin/python3', '-B', str(BASE / 'driver.py')])
++    # Staging ends here. The separately reviewed original EX launcher is the only maintenance entry.
+ except BaseException as error:
+     if created:
+         try:

@@ -1,0 +1,148 @@
+{
+  "format": "hepta-independent-successor-exact-request-review-v1",
+  "status": "EXACT_BYTES_CONSISTENT_PENDING_ROOT_APPROVAL_AND_ACTUAL_STAGING",
+  "config": {
+    "bytes": 13768,
+    "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf",
+    "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e"
+  },
+  "launcher": {
+    "bytes": 4897,
+    "sha256": "5592837192868f63137168e26044f3aa21f900277bbab8a1a97a67c16d564982",
+    "git_blob": "92be49535aed7505c81f9c18782e668406b2b186"
+  },
+  "main_request": {
+    "bytes": 5371,
+    "sha256": "c894637387df659ab0b4caf78f2ed376a37de39be96ad2ff444d72a765a93f0a",
+    "git_blob": "c6a5a907647a97204878b5b5371eab540b778403"
+  },
+  "stage_bootstrap": {
+    "bytes": 5634,
+    "sha256": "31e77f48eddbf35dc87113f57ddd320967c6f664db4f4b940255bc58767f11c4",
+    "git_blob": "e0c52b055ffea90817c4dc8a6c16f1c0d64d3332"
+  },
+  "stage_payload": {
+    "bytes": 144710,
+    "sha256": "4c614cef4c69a59d950b09e5fee3a3d5fb4b67d2e514d1b1529990e8c8f8204a",
+    "git_blob": "ad31acb90619438625b877b51a6c6ce680ccd25a"
+  },
+  "stage_request": {
+    "bytes": 150734,
+    "sha256": "a2e2c072aa175b3aaed5e9e461c7fc1bf9c198b36112523442025bcd457c9a52",
+    "git_blob": "dd593f5d41f7ecc46072f2fe60eb1047579588a2"
+  },
+  "four_config_fields_only": [
+    "status",
+    "root_execution_approved",
+    "waiting_for_actual_records",
+    "formal_approved_config_created"
+  ],
+  "all_other_config_values_equal": true,
+  "launcher_inverse_config_tuple_replacement_reproduces_HOLD_full_bytes": true,
+  "main_request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "timeout_seconds"
+  ],
+  "main_request_same_original_six_field_shape": true,
+  "main_host": "desktop",
+  "main_executable": "/usr/bin/python3",
+  "main_cwd": "/home/qian-qi",
+  "main_key": "hepta-utility-36fa-provider-0c59-maintenance-v1",
+  "main_outer_seconds": 9300,
+  "main_has_environment_override": false,
+  "stage_request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "stage_outer_seconds": 900,
+  "stage_key": "hepta-utility-36fa-provider-0c59-maintenance-control-staging-v1",
+  "stage_payload_maximum_bytes": 1048576,
+  "stage_payload_actual_bytes": 144710,
+  "six_strictly_decoded_complete_payloads": {
+    "driver-maintenance.py": {
+      "bytes": 68496,
+      "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+      "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+    },
+    "APPROVED_MAINTENANCE_CONFIG.json": {
+      "bytes": 13768,
+      "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf",
+      "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e"
+    },
+    "inventory-driver.original.py": {
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    "MAINTENANCE_STARTED.original.json": {
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+    },
+    "MATERIALIZATION_SUPERVISOR.original.json": {
+      "bytes": 952,
+      "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa",
+      "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c"
+    },
+    "V8_RESTORATION_SUPERVISOR.original.json": {
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+    }
+  },
+  "stage_four_original_helpers_byte_and_ast_equal": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ],
+  "stage_baseline": {
+    "bytes": 5869,
+    "sha256": "6faad9e88d97981085e381a02a514a53e15b7e944e6cf7c1710e76b7f6e7f8f0",
+    "git_blob": "4df01b20c666912cf022c806be06ff8757b4714e"
+  },
+  "stage_has_no_main_exec_or_subprocess": true,
+  "stage_scope": "Only fresh external evidence/control directory and fixed six files plus exact launcher/argv/payload/readback/failure records. Original source/result/environment paths are not modified.",
+  "lease": {
+    "existing_same_inode_only": true,
+    "nine_stat_keys": [
+      "st_ctime_ns",
+      "st_dev",
+      "st_gid",
+      "st_ino",
+      "st_mode",
+      "st_mtime_ns",
+      "st_nlink",
+      "st_size",
+      "st_uid"
+    ],
+    "exclusive_nonblocking": true,
+    "inheritable_before_exec": true,
+    "no_unlock_or_close_before_exec": true,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "stat_matches_actual_materialization": true,
+    "limitation": "Cooperative lock only; original complete source/Git verification and live global process guards remain mandatory."
+  },
+  "required_external_order": [
+    "Root approves these exact request bytes and conditions.",
+    "Dispatch the exact stage request once; require original same-job normal exit0 and complete durable terminal.",
+    "Read and verify STAGING_READBACK plus all six actual stored full file pins and retained launcher/payload; reject partial/failed/unknown staging.",
+    "Only then dispatch the exact main request once; it opens the fixed existing lock, checks all original source/runtime/guard conditions and runs original fix then conditional fmt.",
+    "Unknown reconciles original operation/key/bytes only; no new key, directory or request to bypass the state."
+  ],
+  "future_live_checks_not_executed": true,
+  "H_calls": 0,
+  "source_writes": 0,
+  "Rust_QA_formatter_calls": 0,
+  "qualification": false,
+  "engineering_approval_granted_by_this_review": false
+}

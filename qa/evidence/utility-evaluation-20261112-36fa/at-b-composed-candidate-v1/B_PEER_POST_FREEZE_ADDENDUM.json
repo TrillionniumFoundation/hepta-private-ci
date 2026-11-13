@@ -1,0 +1,23 @@
+{
+  "format": "hepta-post-freeze-static-peer-addendum-v1",
+  "frozen_composed_map": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+  "B_source_packet": "9cb773cee4b42aba80d5836a9e4443f0be1f34fb",
+  "B_peer": {
+    "bytes": 15363,
+    "sha256": "4dce64625b12e265db486e09e3c4cf0ff7fd549149af51a099c3537d81766e4c",
+    "git_blob": "0193299a122f22bd9e4e3d3a2ef6a53428c478f9"
+  },
+  "B_peer_placement": "4b396f46be6bbdd84d4e7ef906a23fdd1acc0f44",
+  "timing": "The peer completed after the initial composition map was frozen; the map's pending-at-freeze statement remains historical and is not rewritten.",
+  "conclusion": "Independent peer reported no new concrete static blocker for the unchanged B packet.",
+  "byte_or_source_changes_from_peer": 0,
+  "limits": [
+    "Static review only; no formatting, compilation, Rust tests, QA or H",
+    "The view is full objective data, not Source or authority",
+    "No cancellation/join execution proof or specific-error attribution from is_err",
+    "Actual preholding, cross-UID transport and full B execution through the new entry remain unexecuted"
+  ],
+  "qualification": false,
+  "execution_authorized": false,
+  "source_commit_or_ref_changed": false
+}

@@ -1,0 +1,78 @@
+{
+  "actual": {
+    "bytes": 183569,
+    "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+    "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+  },
+  "all_bytes_equal": true,
+  "chunks": [
+    {
+      "chunk_sha256": "1e1a4e67555b961f40e27d1d6666bc7933574c9481c38acbc8fcdc2080c2a965",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk": "STAGE_02.READ_000000.original.json",
+      "sdk_identity": {
+        "bytes": 87867,
+        "git_blob": "e41b96fab75b97ad3cf79dff1eb75fdb42035c7f",
+        "sha256": "a13e26c9c9c4dff0d99a979b3dd1a0b3d17dc642d28cedc02ed5596db197b5b8"
+      }
+    },
+    {
+      "chunk_sha256": "5eeacac086666a32e29a3440e00a6aba4823bcd6e84d9ec8900db5a0219bbb44",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "sdk": "STAGE_02.READ_065536.original.json",
+      "sdk_identity": {
+        "bytes": 87872,
+        "git_blob": "fa4bfeab8e1a78ba362b6d655b6db3249df86779",
+        "sha256": "c4fedaa8976bfc17fddcea5b1d606e7e7ff8e74f8162774027a1aaf263c18113"
+      }
+    },
+    {
+      "chunk_sha256": "3457d9baa34d0261261c786940086613a370f0cd3db6aeba8f1f2f3e0edafe56",
+      "eof": true,
+      "next_offset": 183569,
+      "offset": 131072,
+      "sdk": "STAGE_02.READ_131072.original.json",
+      "sdk_identity": {
+        "bytes": 70484,
+        "git_blob": "a9a6353ea8e0bcfdd5a743a5d32db8d2ceaee8cb",
+        "sha256": "5b5000cd142a3446dbfc20ab984d25f350bfb711f886681805819f984b5b5bfa"
+      }
+    }
+  ],
+  "file_info_sdk": {
+    "bytes": 646,
+    "git_blob": "c44e9ccd25de1710435d6ac68d210628edda4777",
+    "sha256": "7aa484ba5669ebc66673dd4bb78958d506ee96b0513711e2b9982c2de8c3ac99"
+  },
+  "format": "hepta-actual-fixed-part-full-readback-v1",
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "mode": 384,
+    "uid": 1000,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-002",
+  "request": {
+    "bytes": 244947,
+    "git_blob": "a2be7401763168beb7f2e56e12f889deab9277f4",
+    "sha256": "498ec733461f235b00344d6d6f386efc65b78a75447192a0577bc173667fc8e9"
+  },
+  "request_name": "STAGE_BASE_002.REQUEST.HOLD.json",
+  "scope": "Actual complete byte readback of the approved staged part only; no driver execution.",
+  "sequence": 2,
+  "single_read_version": true,
+  "version": "2050:50003010:183569:1794554474161128793:1794554474163948285",
+  "write_sdk": {
+    "bytes": 329,
+    "git_blob": "f98084eaa811d21694570d8667c74fd0cd438497",
+    "sha256": "e83381f53bcacb173ba3a12ec293571c20365163cd7d3970b0ee78bbe402144a"
+  }
+}

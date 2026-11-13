@@ -1,0 +1,124 @@
+{
+  "H_or_Git_source_object_operations": false,
+  "actual_Root_created_candidate_commit": {
+    "Root_tree_readback_proof_git_blob": "816716719793e212b4f7b7208dfb233054c3cf12",
+    "parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "raw": {
+      "bytes": 731,
+      "git_blob": "2aa08dc83d297fc37aa7f985afe7af41666d3a98",
+      "sha256": "291212c82bd82e80ff598d1261b1041e467e4e7a31fa6fda13ba9db1bec68623"
+    },
+    "raw_final_lf": false,
+    "tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+    "typed_oid": "0c59aaca0b4932507f068c723f73da2f96729b3d"
+  },
+  "actual_baseline_source": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "actual_canonical_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "actual_graph_additions": 49,
+  "actual_graph_modifications": 60,
+  "all_90_executable_and_one_symlink_inventory_rows_unchanged": true,
+  "baseline_native_projection": {
+    "bytes": 3530181,
+    "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+    "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "baseline_projection_exactly_matches_independent_original_20008_identity": true,
+  "canonical_source_deletions": [],
+  "expected_complete_graph": {
+    "bytes": 3816885,
+    "git_blob": "a37a5f15894e645123ffa32d151c6a8a7940e61c",
+    "sha256": "856e2dea53111c6c3e99470743f788188ad964e563e9340ec18237f01894688c"
+  },
+  "expected_files": 15237,
+  "expected_rust_all_repository": 6788,
+  "expected_rust_under_codex_rs": 6666,
+  "expected_source": {
+    "head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "status": "",
+    "tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+  },
+  "format": "hepta-0c59-expected-inventory-projection-review-v1",
+  "full_inventory_serializer": "original5118 compact sorted-key JSON, default ensure_ascii=True, final LF",
+  "local_attempt01_record": {
+    "bytes": 630,
+    "git_blob": "92102cd7b37fa8e242dca26ce4107e5c539092df",
+    "sha256": "b1b8916a6e0716fba98fdae1a1e555c52ccb4d0cc913313c8bffc1ff5a005617"
+  },
+  "native_projection_fields": [
+    "path",
+    "mode",
+    "bytes",
+    "sha256",
+    "blob"
+  ],
+  "native_projection_path_order": "os.fsencode(path)",
+  "native_projection_serializer": "json.dumps(sort_keys=True,separators=(',',':')), default ensure_ascii=True, encode(), no final LF",
+  "no_new_source_run_no_ref_change": true,
+  "only_original_pure_projection_function_executed": true,
+  "original_5118_driver": {
+    "bytes": 22946,
+    "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+  },
+  "original_5118_function": {
+    "bytes": 2595,
+    "git_blob": "3c16403570a88de979a1e7dacbefc3897c3ade55",
+    "sha256": "b9faab85b35a569760784d413dfec79e8c9f05d9376377c2c480015dc17a99d9"
+  },
+  "original_5118_serializer_reproduces_complete_baseline_raw": true,
+  "original_972ec_driver": {
+    "bytes": 57607,
+    "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f",
+    "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436"
+  },
+  "original_972ec_module_or_5118_module_or_main_executed": false,
+  "original_native_function": {
+    "bytes": 507,
+    "git_blob": "f796ea0da2da35981b6f66c32bb724d1c2e7abb0",
+    "sha256": "da592df905b5d33d870eda11fb38e9183341b7bf79914a940b5c349d47756b1a"
+  },
+  "original_projection_function_body_unmodified": true,
+  "original_rows_retained_unchanged": 15128,
+  "outputs": [
+    {
+      "gzip": {
+        "bytes": 1265565,
+        "git_blob": "2573dcec3203c553d19975abee016ba7e3b9a30a",
+        "sha256": "9f290da5873e86a844c6cb7c461271e9cc11c7536a46e85db5a63a54ec8ab139"
+      },
+      "name": "EXPECTED_CLEAN_INVENTORY.json",
+      "parts": 7,
+      "raw": {
+        "bytes": 5629701,
+        "git_blob": "a596ae68859e3263a9ee58e2b5d7334ac9314c34",
+        "sha256": "affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44"
+      }
+    },
+    {
+      "gzip": {
+        "bytes": 1173747,
+        "git_blob": "8bc4107a7c3b1c8b9d798b2351ae2251a83dea30",
+        "sha256": "4da1af3e539b711439092e7ee62b06aae1469b1b2458c0dcd9aef063d4c71cac"
+      },
+      "name": "EXPECTED_NATIVE_FIVE_FIELD.json",
+      "parts": 6,
+      "raw": {
+        "bytes": 3541985,
+        "git_blob": "68342846200b9ba15f0483d89e28bfcf4c499a44",
+        "sha256": "686c516814839ce12a3de6a8907a8efd5f27d4d39d9d4b14e380137698faa1f4"
+      }
+    }
+  ],
+  "qualification": false,
+  "stable_matches_index_and_clean_status_are_expected_requirements_not_observations": true,
+  "status": "Expected projection only; no native materialization or source qualification asserted",
+  "symlink_permissions": "Original lstat permissions 511 preserved; Git mode 120000 alone does not encode them"
+}

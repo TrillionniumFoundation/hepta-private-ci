@@ -1,0 +1,67 @@
+{
+  "actual_root_full_get_verified": true,
+  "decode_rule": "Each part is canonical base64 plus one LF; strict-decode in order at exact offsets, verify part/raw/gzip identities, then require exact decompressed raw bytes. The preserved original SDK already contains a truncated local command response; this transport encodes that original SDK without further truncation.",
+  "format": "hepta-original-truncated-sdk-lossless-encoding-v1",
+  "gzip": {
+    "bytes": 793302,
+    "git_blob": "25f797e405eee88c8c3b9d115b0310ea194be322",
+    "sha256": "d838b6108bbafa76d5a7e63fc99fa13a212d9b58d5cfa7912544b4c9851e9a1b"
+  },
+  "new_leaf_limit_bytes": 512000,
+  "original_placement": "661b5f85889512d5e02fd418ef329c138387e85f",
+  "original_placement_retained_unchanged": true,
+  "original_proposed_path": "format-base-c0f-complete-closure-v1/LOCAL_PART_READ_004_TRUNCATED.original.json",
+  "parts": [
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 0,
+      "decoded_sha256": "eb74d6f1c9d4b59fa82251de05d319a659451d72c1a6bffca2ab880fce084044",
+      "git_blob": "bcf149011657904eec929a697020a6a72b790c42",
+      "path": "LOCAL_PART_READ_004_TRUNCATED.original.json.gz.part-001.b64",
+      "sha256": "cf6e7bb83ac86b1b8b69f1a9289f0570b2bec0a6812eb6dbfabd57372e6c19b5"
+    },
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 196608,
+      "decoded_sha256": "74e47e8a0cf2cae75adce2c5aca462214be2c1794533c313cd2cdace7d3a7c7e",
+      "git_blob": "0a75f2fa116c129bdc8cb7043bcd928ac7c0f75a",
+      "path": "LOCAL_PART_READ_004_TRUNCATED.original.json.gz.part-002.b64",
+      "sha256": "705a61a256485ee1794dc9b6480662d996a72cf77d6d18da47e267a9d59f535a"
+    },
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 393216,
+      "decoded_sha256": "7f3beb6f998d1aa1f01e53f77d0375412f9ddb1c2231bcdbf221764155d364a8",
+      "git_blob": "bfe128af624c2997f3b6bab69891f9bc9a5de63b",
+      "path": "LOCAL_PART_READ_004_TRUNCATED.original.json.gz.part-003.b64",
+      "sha256": "c306b6773d2997b86e945a8fa268b74c0f309ce90fb8cc4eaea1f0268e46caa2"
+    },
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 589824,
+      "decoded_sha256": "7b0d0041c58fba6ed7c49f2380adbcbfc9b3b5def7da95861f0c24d952bc6c15",
+      "git_blob": "b854b652c1aa389122eebd7780385113915ed28a",
+      "path": "LOCAL_PART_READ_004_TRUNCATED.original.json.gz.part-004.b64",
+      "sha256": "26cefbef92943346730a323d7dcf1fb1656067fe3438cb46e27248cef1a1bd44"
+    },
+    {
+      "bytes": 9161,
+      "decoded_bytes": 6870,
+      "decoded_offset": 786432,
+      "decoded_sha256": "e5d3ad28e9785cc048bc1cb4af2f548200163f3ce65628d0319023f72f361880",
+      "git_blob": "2e797289027a19ea8c2b2f31fb97dbd01b67d12d",
+      "path": "LOCAL_PART_READ_004_TRUNCATED.original.json.gz.part-005.b64",
+      "sha256": "152e0eab557eb584ad6f9c41dda4ff15b7f871a8286c94dbfbdeff01e4583ba0"
+    }
+  ],
+  "qualification": false,
+  "raw": {
+    "bytes": 1048751,
+    "git_blob": "440efa9f56f6895b4fe2a7170dc8ce8af8cbfd6c",
+    "sha256": "dd9909da32978fcc7d0030fec31de0115d7f63e2b7a14edca216aceb9248f00b"
+  }
+}

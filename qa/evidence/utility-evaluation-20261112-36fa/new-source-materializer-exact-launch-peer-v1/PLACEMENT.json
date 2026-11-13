@@ -1,0 +1,89 @@
+{
+  "format": "hepta-verified-evidence-placement-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "prefix": "new-source-materializer-exact-launch-peer-v1/",
+  "entries": [
+    {
+      "path": "new-source-materializer-exact-launch-peer-v1/REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/REVIEW.json",
+      "bytes": 8641,
+      "sha256": "c110506fce83ada0df84dab7d31a48f1330927c02b8f4e490f7821ec4b9d717c",
+      "git_blob": "7223f5a88f3abe2c841594fa318f313e8d087799",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "sdk_local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/REVIEW.json.GITHUB.original.json",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "new-source-materializer-exact-launch-peer-v1/BYTE_REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/BYTE_REVIEW.json",
+      "bytes": 5553,
+      "sha256": "28ac0060628369d0d03ce0f6ea5a259e40096a350dd30ff8dddb50f448c7cf81",
+      "git_blob": "9c45f0523eab538c53c3c0e757731cf5fae3e2ca",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "sdk_local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/BYTE_REVIEW.json.GITHUB.original.json",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "new-source-materializer-exact-launch-peer-v1/check_exact_launch.py",
+      "local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/check_exact_launch.py",
+      "bytes": 12399,
+      "sha256": "5d92088fe307cb057f2269bb19c4b0fe7f50d59fcda4ff634082441a8de6daf3",
+      "git_blob": "83354a37a8831d594cce9746d390c55b3f7a2470",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "sdk_local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/check_exact_launch.py.GITHUB.original.json",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "new-source-materializer-exact-launch-peer-v1/README.md",
+      "local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/README.md",
+      "bytes": 2192,
+      "sha256": "b6fcf4e3bff45c6e2b2cc3e3d522e01889334052ad207f32f21f1306fbee88f6",
+      "git_blob": "73935696d8dc006a88d496d429ede6f2f9c9e734",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "sdk_local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/README.md.GITHUB.original.json",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "new-source-materializer-exact-launch-peer-v1/MANIFEST.json",
+      "local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/MANIFEST.json",
+      "bytes": 1549,
+      "sha256": "5a5b3a546c78df54ef5d67ee1a7de7d1ad1355f7efc78aa2bc41da42ac33c6bd",
+      "git_blob": "1fe835eeb6d2f1f97c2d0548fc32773181ca030c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "sdk_local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/MANIFEST.json.GITHUB.original.json",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "new-source-materializer-exact-launch-peer-v1/FULL_READBACK.json",
+      "local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/FULL_READBACK.json",
+      "bytes": 2725,
+      "sha256": "6f9b89eaaa5889de7a030f2d33da4fff051a3a6c340941a692bbca801fc73bde",
+      "git_blob": "11705222e293125ca2535cb8ccd8da9183c786fd",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "sdk_local_path": "/tmp/hepta-36fa-new-source-materializer-launch-peer-v1/FULL_READBACK.json.GITHUB.original.json",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "payload_count": 6,
+  "placement_self_not_in_entries_to_avoid_hash_cycle": true,
+  "publication_or_ref_updates": false,
+  "H_calls": 0,
+  "qualification": false,
+  "notes": [
+    "Final exact request a34c8779fca77cbf1dd7e26e5516efcfb654c191 statically reviewed; main authorization belongs to Root.",
+    "All listed payloads were actually created in Git and complete GET content matched.",
+    "Main review and earlier HOLD controls remain immutable."
+  ]
+}

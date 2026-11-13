@@ -1,0 +1,309 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
+@@ -8,6 +8,48 @@
+ use codex_hepta_types::FixedQ32;
+ use material::evaluation_provider::DecisionBinding;
+ use pretty_assertions::assert_eq;
++
++/// Complete borrowed comparison objective, not an A admission or Source
++/// publication. A trusted test host supplies these four compiled fields; this
++/// value carries no task identity, authority, history, issuer or signature.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(in super::super) struct BorrowedOriginalObjective<'a> {
++    pub(super) objective_digest: Digest32,
++    pub(super) objective_semantic_bytes: &'a [u8],
++    pub(super) objective_function_v1_digest: Digest32,
++    pub(super) objective_function_v1_bytes: &'a [u8],
++}
++
++impl<'a> BorrowedOriginalObjective<'a> {
++    pub(super) fn from_original_record(record: &'a RunStartRecordV1) -> Self {
++        Self {
++            objective_digest: record.snapshot.objective_digest,
++            objective_semantic_bytes: &record.objective_semantic_bytes,
++            objective_function_v1_digest: record.objective_function_v1_digest,
++            objective_function_v1_bytes: &record.objective_function_v1_bytes,
++        }
++    }
++
++    /// Pure consistency checks use the same full-byte identities and limits
++    /// as the original RunStart record. They do not authenticate an ingress or
++    /// create a completed A. The caller must retain its pre-held full contract.
++    pub(in super::super) fn from_preheld_compiled_objective(
++        objective_digest: Digest32,
++        objective_semantic_bytes: &'a [u8],
++        objective_function_v1_digest: Digest32,
++        objective_function_v1_bytes: &'a [u8],
++    ) -> anyhow::Result<Self> {
++        anyhow::ensure!(!objective_digest.is_zero()
++            && !objective_function_v1_digest.is_zero()
++            && (1..=256 * 1024).contains(&objective_semantic_bytes.len())
++            && (1..=256 * 1024).contains(&objective_function_v1_bytes.len())
++            && Digest32::of_bytes(objective_semantic_bytes) == objective_digest
++            && Digest32::of_bytes(objective_function_v1_bytes) == objective_function_v1_digest,
++            "complete pre-held compiled objective bytes and original identities");
++        Ok(Self { objective_digest, objective_semantic_bytes,
++            objective_function_v1_digest, objective_function_v1_bytes })
++    }
++}
+ 
+ pub(super) enum ObservationMode {
+     Complete,
+@@ -177,6 +219,21 @@
+         changed_candidate_action: bool,
+         decision_binding: DecisionBinding,
+     ) -> anyhow::Result<()> {
++        self.populate_from_preheld_objective(
++            BorrowedOriginalObjective::from_original_record(previous.original_record()),
++            baseline, candidate, mode, changed_candidate_action, decision_binding,
++        ).await
++    }
++
++    pub(super) async fn populate_from_preheld_objective(
++        &mut self,
++        objective: BorrowedOriginalObjective<'_>,
++        baseline: Digest32,
++        candidate: Digest32,
++        mode: ObservationMode,
++        changed_candidate_action: bool,
++        decision_binding: DecisionBinding,
++    ) -> anyhow::Result<()> {
+         let rule = self.rule.clone();
+         let history_at = rule.history_start_unix_seconds + 10;
+         for (index, episode) in rule.history.iter().enumerate() {
+@@ -194,7 +251,7 @@
+                 );
+             }
+             let publication = self
+-                .execute(previous, input, baseline, index, history_at)
++                .execute(objective, input, baseline, index, history_at)
+                 .await?;
+             material::evaluation_provider::decision(
+                 self.writer.as_mut().expect("original B ledger"),
+@@ -235,7 +292,7 @@
+             }
+             let publication = self
+                 .execute(
+-                    previous,
++                    objective,
+                     input.clone(),
+                     baseline,
+                     /*selected_index*/ 0,
+@@ -253,7 +310,7 @@
+             let mut candidate_input = input;
+             candidate_input.scope.run_id = target.candidate_run_id.clone();
+             self.execute(
+-                previous,
++                objective,
+                 candidate_input,
+                 candidate,
+                 usize::from(changed_candidate_action),
+@@ -300,7 +357,7 @@
+ 
+     async fn execute(
+         &mut self,
+-        previous: &CircuitTaskSourcePublicationV1,
++        objective: BorrowedOriginalObjective<'_>,
+         input: crate::CircuitTaskSourceInputV1,
+         bundle: Digest32,
+         selected_index: usize,
+@@ -315,15 +372,14 @@
+         // A shared digest cannot replace the original compiled objective.
+         // B keeps its distinct admission/run/time, with the complete objective
+         // and function bytes used by the preregistered comparison.
+-        let objective = previous.original_record();
+         assert_eq!(
+-            objective.snapshot.objective_digest,
++            objective.objective_digest,
+             self.rule.objective_digest
+         );
+         record.snapshot.objective_digest = self.rule.objective_digest;
+-        record.objective_semantic_bytes = objective.objective_semantic_bytes.clone();
++        record.objective_semantic_bytes = objective.objective_semantic_bytes.to_vec();
+         record.objective_function_v1_digest = objective.objective_function_v1_digest;
+-        record.objective_function_v1_bytes = objective.objective_function_v1_bytes.clone();
++        record.objective_function_v1_bytes = objective.objective_function_v1_bytes.to_vec();
+         record.admission.observed_at_unix_micros = at * 1_000_000;
+         record.admission.deadline_unix_micros = (at + 1) * 1_000_000;
+         record.authentication.expires_at_ms = (at + 1) * 1_000;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
+@@ -14,6 +14,7 @@
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
+ use crate::neuron_cell_evaluation::tests::original_provider::panel_members::PanelMemberFixture;
+ use material::evaluation_provider::DecisionBinding;
++pub(in super::super) use super::source::BorrowedOriginalObjective;
+ 
+ type Panel = OriginalCellEvaluationPanelOwnerV1<
+     FileAnchorWitnessStore,
+@@ -27,7 +28,7 @@
+ /// from its actual model and the original loaded baseline, without prior E.
+ pub(in super::super) struct CompletedTrainingInputs<'a> {
+     material: &'a OriginalCellQ24MaterialReceiptConfigV1,
+-    previous: &'a CircuitTaskSourcePublicationV1,
++    objective: BorrowedOriginalObjective<'a>,
+     training: LearningIterationSnapshotV1,
+     training_evidence: &'a SignedLearningEvidenceV1,
+     baseline: Digest32,
+@@ -77,7 +78,75 @@
+         )?.manifest;
+         Ok(Self {
+             material,
+-            previous,
++            objective: BorrowedOriginalObjective::from_original_record(previous.original_record()),
++            training: cut.snapshot().clone(),
++            training_evidence: training.attestation(),
++            baseline: baseline_bundle.digest()?,
++            candidate: candidate.bundle().digest()?,
++            manifests: [candidate_manifest, baseline_manifest],
++            credentials,
++        })
++    }
++
++    /// Receive a complete pre-held comparison objective separately from A's
++    /// Source owner. The original opaque D/T/Candidate checks still execute;
++    /// expected A history is compared to authenticated D, never to itself in
++    /// initial. This test-only view grants neither Root nor Training authority.
++    pub(in super::super) fn from_preheld_objective_and_original_completion(
++        material: &'a OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &'a OriginalCellQ24TrainingCommandReceiptV1,
++        candidate: &OriginalCellQ24CandidateMaterialV1,
++        baseline: &LoadedCellQ24ModelV1,
++        objective: BorrowedOriginalObjective<'a>,
++        source_a: &crate::CircuitTaskSourceInputV1,
++        expected_completed_a: Digest32,
++        config_a: &codex_hepta_neuron::CellGenerationConfigV2,
++        credentials: &'a material::Credentials,
++    ) -> anyhow::Result<Self> {
++        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)?;
++        anyhow::ensure!(material.initial.receipts.is_empty() && dataset.snapshot().receipts.len() == 2);
++        anyhow::ensure!(candidate.receipt() == training.receipt());
++        anyhow::ensure!(candidate.attestation() == training.attestation());
++        anyhow::ensure!(candidate.authority() == AuthorityPosture::DENY_ALL);
++        anyhow::ensure!(baseline.components() == &material.initial.request.selected_bundle.components);
++        // The source input and expected history are trusted host inputs,
++        // not fields chosen by an unauthenticated child report. The actual D
++        // is the original owner attestation that checked the live Source.
++        anyhow::ensure!(objective.objective_digest == source_a.objective_digest);
++        anyhow::ensure!(source_a.scope.agent_id == material.initial.request.agent_id
++            && source_a.scope.cell_id == material.initial.request.cell_id
++            && source_a.scope.principal_digest.to_string() == material.initial.request.principal_id.as_str(),
++            "complete pre-held A source identity matches original Material");
++        anyhow::ensure!(source_a.scope.run_id == material.initial.request.source_run_id);
++        anyhow::ensure!(source_a.objective_digest == material.initial.request.envelope.objective_digest);
++        anyhow::ensure!(!expected_completed_a.is_zero()
++            && dataset.snapshot().request.completed_task_receipt == expected_completed_a,
++            "pre-held A history is certified by the actual original D prefix");
++        anyhow::ensure!(credentials.generator.principal.principal_id == material.initial.owners.trainer);
++        anyhow::ensure!(credentials.evaluator.principal.principal_id == material.initial.owners.evaluator);
++        let mut cut = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
++        cut.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
++        anyhow::ensure!(cut.next_stage() == Some(LearningIterationStageV1::Evaluation));
++        anyhow::ensure!(cut.snapshot().receipts.len() == 3);
++        let baseline_bundle = &material.initial.request.selected_bundle;
++        let baseline_definition = support::definition(baseline, baseline_bundle)?;
++        let baseline_config = support::configuration(
++            baseline, baseline_bundle, &baseline_definition, source_a, 1,
++        )?;
++        anyhow::ensure!(baseline_config.task_digest == config_a.task_digest
++            && baseline_config.source_frontier == config_a.source_frontier
++            && baseline_config.initial.scope == config_a.initial.scope,
++            "complete pre-held A input remains bound to its original task config");
++        let baseline_manifest = baseline_config.manifest;
++        anyhow::ensure!(baseline_manifest == config_a.manifest);
++        let candidate_definition = support::definition(candidate.model(), candidate.bundle())?;
++        let candidate_manifest = support::configuration(
++            candidate.model(), candidate.bundle(), &candidate_definition, source_a, 2,
++        )?.manifest;
++        Ok(Self {
++            material,
++            objective,
+             training: cut.snapshot().clone(),
+             training_evidence: training.attestation(),
+             baseline: baseline_bundle.digest()?,
+@@ -195,8 +264,8 @@
+     retention_receipt_digests: Vec<Digest32>,
+     trainer: Arc<LearningIterationEvidenceClientV1>,
+ ) -> anyhow::Result<PanelMemberFixture> {
+-    b.populate_from_original_training(
+-        input.previous, input.baseline, input.candidate,
++    b.populate_from_preheld_objective(
++        input.objective, input.baseline, input.candidate,
+         ObservationMode::Complete, false, DecisionBinding::ExactSource,
+     ).await?;
+     let config = b.config_from_original_training(
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs
+@@ -61,3 +61,71 @@
+     }.await;
+     finish_case(result, fixture).await
+ }
++
++
++/// This uses actual Fresh E/D/T/Candidate handlers and the original A's full
++/// record as local trusted fixture data. It does not certify parent-before-
++/// child preholding, cross-UID transport or deployed independent B.
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn fresh_original_b_inputs_keep_actual_source_history_when_objective_is_borrowed() -> anyhow::Result<()> {
++    use super::super::evaluation_provider::fresh_training::{
++        BorrowedOriginalObjective, CompletedTrainingInputs,
++    };
++    let mut fixture = Box::pin(FreshStages::new()).await?;
++    let result: anyhow::Result<()> = async {
++        Box::pin(fixture.complete_training()).await?;
++        let before = fixture.original_bytes()?;
++        let original = fixture.original()?;
++        let record = original.previous.original_record();
++        let objective = BorrowedOriginalObjective::from_preheld_compiled_objective(
++            record.snapshot.objective_digest, &record.objective_semantic_bytes,
++            record.objective_function_v1_digest, &record.objective_function_v1_bytes,
++        )?;
++        let dataset = fixture.dataset_receipt.as_ref().context("actual D")?;
++        let training = fixture.training.as_ref().context("actual T")?;
++        let candidate = fixture.candidate.as_ref().context("actual Candidate")?;
++        let expected_history = original.previous.history_digest().as_str().parse::<Digest32>()?;
++        let old = CompletedTrainingInputs::from_original_completion(
++            &original.material, dataset, training, candidate, original.baseline.as_ref(),
++            &original.previous, &original.source_a, &original.config_a, &original.credentials,
++        )?;
++        let received = CompletedTrainingInputs::from_preheld_objective_and_original_completion(
++            &original.material, dataset, training, candidate, original.baseline.as_ref(),
++            objective, &original.source_a, expected_history, &original.config_a, &original.credentials,
++        )?;
++        drop((old, received));
++
++        anyhow::ensure!(CompletedTrainingInputs::from_preheld_objective_and_original_completion(
++            &original.material, dataset, training, candidate, original.baseline.as_ref(),
++            objective, &original.source_a, d("another-A-history"), &original.config_a, &original.credentials,
++        ).is_err(), "full objective bytes cannot replace actual original A history");
++        let mut wrong_source = original.source_a.clone();
++        wrong_source.scope.run_id = id("another-original-A-run");
++        anyhow::ensure!(CompletedTrainingInputs::from_preheld_objective_and_original_completion(
++            &original.material, dataset, training, candidate, original.baseline.as_ref(),
++            objective, &wrong_source, expected_history, &original.config_a, &original.credentials,
++        ).is_err(), "actual D/T cannot be rebound to another source run");
++        let mut wrong_input = original.source_a.clone();
++        wrong_input.observation.push(0);
++        anyhow::ensure!(CompletedTrainingInputs::from_preheld_objective_and_original_completion(
++            &original.material, dataset, training, candidate, original.baseline.as_ref(),
++            objective, &wrong_input, expected_history, &original.config_a, &original.credentials,
++        ).is_err(), "same run and objective do not replace the original full A input");
++        let mut changed_material = original.material.clone();
++        changed_material.initial.request.completed_task_receipt = d("rewritten-Material-A-history");
++        anyhow::ensure!(CompletedTrainingInputs::from_preheld_objective_and_original_completion(
++            &changed_material, dataset, training, candidate, original.baseline.as_ref(),
++            objective, &original.source_a, expected_history, &original.config_a, &original.credentials,
++        ).is_err(), "actual original D still authenticates the complete original Material");
++        let mut wrong_function = record.objective_function_v1_bytes.clone();
++        wrong_function.push(0);
++        anyhow::ensure!(BorrowedOriginalObjective::from_preheld_compiled_objective(
++            record.snapshot.objective_digest, &record.objective_semantic_bytes,
++            record.objective_function_v1_digest, &wrong_function,
++        ).is_err(), "complete original objective function bytes remain mandatory");
++        anyhow::ensure!(fixture.original_bytes()? == before,
++            "borrowing objectives and rejected input substitutions do not change original evidence");
++        Ok(())
++    }.await;
++    finish_case(result, fixture).await
++}

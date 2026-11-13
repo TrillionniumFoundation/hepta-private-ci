@@ -1,0 +1,253 @@
+{
+  "format": "hepta-maintenance-successor-static-byte-review-v1",
+  "status": "HOLD_PREPARATION_ONLY",
+  "original_driver": {
+    "bytes": 63007,
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735"
+  },
+  "driver": {
+    "name": "driver-maintenance.HOLD.py",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/driver-maintenance.HOLD.py",
+    "bytes": 68496,
+    "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+    "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+  },
+  "config": {
+    "name": "MAINTENANCE_CONFIG.HOLD.json",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/MAINTENANCE_CONFIG.HOLD.json",
+    "bytes": 14015,
+    "sha256": "2f7eebda040a737997a06a8edc137d7ca39550d9de6d50ee06121db058086444",
+    "git_blob": "f2092840e7e59ba94d86709cdbe9d995b681f826"
+  },
+  "launcher": {
+    "name": "LAUNCHER.HOLD.py",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/LAUNCHER.HOLD.py",
+    "bytes": 4897,
+    "sha256": "660d610166e0ad4bba9b3f663e768ceebec2c086bcff7804104b5cb5477810ec",
+    "git_blob": "9a2262f1e5cc36a587ea10c32c102f894ea1cfbb"
+  },
+  "original_definition_count": 50,
+  "unchanged_definitions_byte_and_ast": [
+    "PreconditionError",
+    "IntegrityError",
+    "now",
+    "sha256",
+    "oid",
+    "check",
+    "nodup",
+    "parse",
+    "regular_read",
+    "jbytes",
+    "write",
+    "jwrite",
+    "gzrecord",
+    "event",
+    "pin_bytes",
+    "read_input",
+    "real_directory",
+    "external_directory",
+    "run_readonly",
+    "git",
+    "git_state",
+    "verify_original_inputs",
+    "load_module",
+    "parse_supervisor",
+    "verify_stage_source_entries",
+    "active_build_processes",
+    "installed_file_observation",
+    "project_runtime_file",
+    "environment_preflight",
+    "metadata_inventory",
+    "actual_leaf_map",
+    "merkle",
+    "OriginalBlobReader",
+    "read_actual_leaf",
+    "archive_transition",
+    "capture_source",
+    "check_fmt_base",
+    "set_alarm",
+    "alarm_handler",
+    "bounded_record",
+    "stage",
+    "finalize_source",
+    "finalize_inputs",
+    "retain_terminal",
+    "main"
+  ],
+  "changed_definitions": [
+    "validate_materialization",
+    "validate_runtime_restoration",
+    "validate_config",
+    "initial_preflight"
+  ],
+  "removed_inapplicable_definition": [
+    "validate_source_advance"
+  ],
+  "new_definitions": [
+    "validate_archive_restoration",
+    "validate_materialization_current"
+  ],
+  "unchanged_launcher_helpers": [
+    "need",
+    "sha",
+    "oid",
+    "read",
+    "save"
+  ],
+  "main_and_stage_byte_equal": true,
+  "git_state_and_full_metadata_final_equality_byte_equal": true,
+  "original_global_guard_byte_equal": true,
+  "original_environment_preflight_byte_equal": true,
+  "original_executable_entry_sixpins": [
+    {
+      "path": "AGENTS.md",
+      "pin": {
+        "bytes": 22519,
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+      },
+      "complete_expected_inventory_row_equal": true
+    },
+    {
+      "path": "justfile",
+      "pin": {
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+      },
+      "complete_expected_inventory_row_equal": true
+    },
+    {
+      "path": "scripts/format.py",
+      "pin": {
+        "bytes": 16599,
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+      },
+      "complete_expected_inventory_row_equal": true
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "pin": {
+        "bytes": 12863,
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de"
+      },
+      "complete_expected_inventory_row_equal": true
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "pin": {
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+      },
+      "complete_expected_inventory_row_equal": true
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "pin": {
+        "bytes": 78,
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+        "git_blob": "917d2492264a35bc9c0feaef41878d8825870866"
+      },
+      "complete_expected_inventory_row_equal": true
+    }
+  ],
+  "fix_delta": "append only -p codex-hepta-learning-ledger after the original two packages",
+  "budgets": {
+    "fix": 7200,
+    "fmt": 900,
+    "outer": 9300,
+    "preflight": 600,
+    "record": 300
+  },
+  "lock": {
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "observed_producer_stat": {
+      "st_ctime_ns": 1794513889031523889,
+      "st_dev": 2050,
+      "st_gid": 1000,
+      "st_ino": 50139448,
+      "st_mode": 33152,
+      "st_mtime_ns": 1794513889031523889,
+      "st_nlink": 1,
+      "st_size": 0,
+      "st_uid": 1000
+    },
+    "existing_only": true,
+    "exclusive_nonblocking": true,
+    "inheritable_before_exec": true,
+    "no_unlock_or_close_before_exec": true,
+    "future_lease_is_not_observed": true
+  },
+  "exact_actual_inputs": {
+    "MATERIALIZATION_RESULT.original.json": {
+      "bytes": 14639,
+      "sha256": "c66af7f4d7d76e4a521bea9440c51da1923c320e443ec33f67d10351beaa87ed",
+      "git_blob": "4832994442a8a1bc89ea3af7825a06310ceb7c64"
+    },
+    "MATERIALIZATION_SUPERVISOR.original.json": {
+      "bytes": 952,
+      "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa",
+      "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c"
+    },
+    "MATERIALIZATION_GIT_METADATA.original.json": {
+      "bytes": 2234,
+      "sha256": "dedd13399e2b0ecec9fe234bcdfeaa397a0ec09372b78004bf8bd137973d82a6",
+      "git_blob": "15430201d5bafa19d2396f5fe8a240cd3d271d5c"
+    },
+    "MATERIALIZATION_INDEX_CHECK.original.json": {
+      "bytes": 347,
+      "sha256": "f3379b9b7ecd4ee66d326d50d14cdd9583c267114ce2a58a787af42ee78ccaf2",
+      "git_blob": "d51b91f34f53e49c658d43d58d348ab6a5604220"
+    },
+    "MATERIALIZATION_COMMANDS.original.json": {
+      "bytes": 33983,
+      "sha256": "50ee6e61134aeb07d591d961b1e2061fddabc7881e47ffc560e3e06d6621e20c",
+      "git_blob": "b68990a5280c608dad023aa918b68b286c4481d7"
+    },
+    "MATERIALIZATION_MUTATIONS.original.json": {
+      "bytes": 732,
+      "sha256": "7b00f47c44852cf7b1f36ef14ce8356bb1af65c3847aae5fd5ea755b2bcb52bc",
+      "git_blob": "0750032e774e195feca4c429054164c7f99c7b95"
+    },
+    "MATERIALIZATION_INPUTS.original.json": {
+      "bytes": 3206,
+      "sha256": "5a14e63e2fa27efc0394130da603d4c0d28dce2ebdbc54aaa8ed70951fc35388",
+      "git_blob": "e80f396149b2c98afe8deff7ebc436f278ec96cc"
+    },
+    "MATERIALIZATION_ARTIFACTS.original.json": {
+      "bytes": 84294,
+      "sha256": "64daa319b4543c72114b833655a789f90470c3e4ebd0387f8c1844c7aa614389",
+      "git_blob": "6d9fd58bf3c96a840da39b8946cd9c299f1f351b"
+    },
+    "RESTORE_V3_RESULT.original.json": {
+      "bytes": 17615,
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72",
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc"
+    },
+    "RESTORE_V3_NORMAL.original.json": {
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+    },
+    "ARCHIVE_READBACK.original.json": {
+      "bytes": 496,
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052",
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8"
+    },
+    "RESTORE_V3_ARTIFACTS.original.json": {
+      "bytes": 28169,
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d",
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d"
+    }
+  },
+  "executed": "Only this pure local byte/AST/config transformation; neither generated driver nor launcher was imported or run.",
+  "h_calls": 0,
+  "cargo_fix_fmt_qa_gate_commands": 0,
+  "source_or_ref_writes": 0,
+  "maintenance_execution_approval": false,
+  "qualification": false
+}

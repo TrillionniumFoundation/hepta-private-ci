@@ -1,0 +1,36 @@
+{
+  "format": "hepta-candidate-raw-commit-recovery-initial-observations-v1",
+  "candidate": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "api_metadata_status": "actual_complete_commit_GET",
+  "attempts": {
+    "format": "hepta-candidate-raw-commit-reconstruction-observation-v1",
+    "commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "initial_UTC_zero_or_one_LF_match": false,
+    "expanded_try_count": 75,
+    "known_timezone_matches": [],
+    "meaning": "Pure reconstruction from API commit fields; no H execution and no source ref mutation."
+  },
+  "additional_UTF8_encoding_header_comparisons": 6,
+  "matching_reconstructed_bodies": 0,
+  "patch_URL_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "GitHub API error 422: {\"message\":\"No commit found for SHA: 0c59aaca0b4932507f068c723f73da2f96729b3d.patch\",\"documentation_url\":\"https://docs.github.com/rest/commits/commits#get-a-commit\",\"status\":\"422\"}"
+      }
+    ],
+    "structuredContent": {
+      "error": "GitHub API error 422: {\"message\":\"No commit found for SHA: 0c59aaca0b4932507f068c723f73da2f96729b3d.patch\",\"documentation_url\":\"https://docs.github.com/rest/commits/commits#get-a-commit\",\"status\":\"422\"}",
+      "error_code": "INVALID_ARGUMENT",
+      "error_data": {
+        "message": "No commit found for SHA: 0c59aaca0b4932507f068c723f73da2f96729b3d.patch",
+        "documentation_url": "https://docs.github.com/rest/commits/commits#get-a-commit",
+        "status": "422"
+      }
+    },
+    "isError": true
+  },
+  "state": "Exact original commit body still unknown. No nonmatching candidate body is accepted or passed to materializer.",
+  "runtime_execution": false,
+  "source_branch_changed": false
+}

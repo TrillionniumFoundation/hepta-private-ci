@@ -1,0 +1,103 @@
+{
+  "format": "hepta-new-source-materializer-final-launch-independent-peer-v1",
+  "status": "NO_CONCRETE_STATIC_LAUNCH_BLOCKER_ROOT_EXACT_AUTHORIZATION_REQUIRED",
+  "reviewed_date_utc": "2026-11-13",
+  "scope": {
+    "candidate_request": "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+    "candidate_request_bytes": 128112,
+    "candidate_request_sha256": "521c5c982cbc281ad0357498265312f43846995fbd85040d9d7e3dfdae1f0050",
+    "candidate_bootstrap": "4df01b20c666912cf022c806be06ff8757b4714e",
+    "candidate_stdin": "303cd809444a88abdc1bd3025d530634361cea8e",
+    "candidate_config": "b760954f62dbe96b6ed337ae2cc99f4130727824",
+    "author_exact_review": "607225029e4a6f959a1956f30104674bb7d7da7c",
+    "author_config_diff": "7671ba4118a195d9af49ccd830ddccb9d6ae2d67",
+    "original_request": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+    "already_frozen_main_peer": "43842c89895d3e924021381a9686cef51fcb4271",
+    "already_frozen_actual_offline_dataflow": "feae3232a78de55b3feec8edf38fe85291e34b23",
+    "independent_byte_result": {
+      "bytes": 5553,
+      "sha256": "28ac0060628369d0d03ce0f6ea5a259e40096a350dd30ff8dddb50f448c7cf81",
+      "git_blob": "9c45f0523eab538c53c3c0e757731cf5fae3e2ca"
+    },
+    "final_candidate_input_full_GETs": 7,
+    "decoded_five_payloads_verified": 5,
+    "controls_executed": false,
+    "H_calls": 0,
+    "source_or_ref_writes": false,
+    "qualification": false
+  },
+  "conclusion": "The exact frozen launch candidate preserves the original bootstrap control flow and successfully cross-binds the already-reviewed driver, packet, donor proof, and candidate config. No concrete additional static blocker was found. The config's true approval field is candidate data; this peer does not authorize dispatch or claim actual native staging, materialization, source-gate, or test completion.",
+  "findings": [
+    {
+      "subject": "Exact typed request and original outer limit",
+      "finding": "The request has exactly args, cwd, executable, host, idempotency_key, stdin and timeout_seconds. It runs /usr/bin/python3 with -B -c and the entire 5869-byte frozen bootstrap, cwd /home/qian-qi, host desktop, and the unique provider-0c59-isolated-materialization-v1 key. timeout_seconds is integer 900, equal to the original 163e69 request. There is no env field. Entire request 128112 bytes and stdin 121849 bytes are each below the unchanged 1048576-byte bound.",
+      "basis": [
+        "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+        "163e69e0e1002f70dc6d8e71ff3354ff95607647"
+      ]
+    },
+    {
+      "subject": "Original helper and complete control-flow preservation",
+      "finding": "check, identity, real_parents and retain have identical complete function bodies and ASTs. Replacing only the fresh BASE, complete fixed PINS assignment, bootstrap schema literal, readback schema literal and event literal with the old values restores every byte and the complete AST of the original bootstrap. The final candidate differs from its HOLD template only by filling the APPROVED_CONFIG pin; the payload differs only by filling that config's base64.",
+      "basis": [
+        "4df01b20c666912cf022c806be06ff8757b4714e",
+        "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+        "9c45f0523eab538c53c3c0e757731cf5fae3e2ca"
+      ]
+    },
+    {
+      "subject": "Five input files and driver/packet/proof consistency",
+      "finding": "The exact five decoded files are driver.py, MATERIALIZATION_PACKET.json, DONOR_RESULT.original.json, DONOR_SUPERVISOR.original.json and APPROVED_CONFIG.json. All complete byte strings, lengths, SHA256 and Git blob identities match independently frozen inputs. Only MATERIALIZATION_PACKET is gzip-wrapped in stdin; the original bounded reader yields exactly 14331 bytes and EOF. Its donor proof pins equal the two bootstrap donor pins. Driver CONTROL, SOURCE and TARGET agree with the config and packet. PACKET_PIN agrees with the actual decoded packet, and config.driver agrees with the actual decoded driver.",
+      "basis": [
+        "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+        "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+        "40833805111c98773ba1d046df09285357531396",
+        "c507335b611474857eff53b738071a7a3f27dc99",
+        "b760954f62dbe96b6ed337ae2cc99f4130727824"
+      ]
+    },
+    {
+      "subject": "Only two config fields changed",
+      "finding": "Relative to fixed WAITING d7f27d6a9b726112983fae24b7e767cc4bd2c91a, only root_execution_approved false->true and status WAITING_ROOT_EXACT_APPROVAL->APPROVED_CANDIDATE_ISOLATED_MATERIALIZATION differ. Reversing those values recovers the entire original WAITING byte string. The separately frozen 392-byte config diff exactly equals the independently generated diff. All paths, driver pins, 600 action seconds, 180 record seconds, automatic_retry=false and qualification=false remain exact.",
+      "basis": [
+        "b760954f62dbe96b6ed337ae2cc99f4130727824",
+        "7671ba4118a195d9af49ccd830ddccb9d6ae2d67",
+        "d7f27d6a9b726112983fae24b7e767cc4bd2c91a"
+      ]
+    },
+    {
+      "subject": "Create-only control staging and durable readback",
+      "finding": "All fixed input bytes are validated before control-directory creation. The original uid=1000 check, real non-symlink parent walk, owned evidence parent, lexists rejection, mkdir0700 and one-level record checks are unchanged. retain uses O_EXCL|O_NOFOLLOW mode0600, fsync, exact complete reread, stable dev/inode/mode/uid/gid/nlink/size/mtime/ctime and nlink1. It archives actual bootstrap, actual argv, exact stdin, all five files and the staging readback, then fsyncs the directory before exec. The fresh control directory is distinct from donor and destination. These are code guarantees to be exercised later, not a claim that the native paths currently exist or are absent.",
+      "basis": [
+        "4df01b20c666912cf022c806be06ff8757b4714e"
+      ]
+    },
+    {
+      "subject": "Execution and failure semantics",
+      "finding": "The sole execv remains in its original try block and invokes the fixed driver under /usr/bin/python3 -B. Successful exec replaces the bootstrap process; its future driver exit is not converted by the bootstrap into success. If bootstrap work or execv itself raises after mkdir, the unchanged handler attempts a new BOOTSTRAP_FAILURE.json, preserves partial records, and re-raises. Before creation it cannot retain that local failure file. A failure of the best-effort failure recorder is swallowed only before the original error is re-raised. There is no unlink, overwrite, rollback or retry path.",
+      "basis": [
+        "4df01b20c666912cf022c806be06ff8757b4714e",
+        "163e69e0e1002f70dc6d8e71ff3354ff95607647"
+      ]
+    },
+    {
+      "subject": "Source write scope and separately approved five chunks",
+      "finding": "Bootstrap writes only its new evidence control directory. Its source_writes_during_staging=false field applies to that staging phase; the later already-reviewed materializer creates the new isolated destination. The separate five h_binary_write requests are not embedded in the main request and are not executed by this reviewer. The fixed driver/packet binds their exact paths, lengths and identities and validates them when run. Root's earlier transfer-only approval is separate from exact main dispatch authorization.",
+      "basis": [
+        "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+        "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+        "49e17fcf6f430c90f3048477e3521683903871a3"
+      ]
+    }
+  ],
+  "method": {
+    "independent_readback": "Seven actual Git full GET responses were saved and every content byte was matched to the frozen local author file and the specified Git blob identity.",
+    "local_check": "check_exact_launch.py parsed frozen JSON/AST, performed whole-string inversions, decoded only the exact reviewed inputs, and wrote BYTE_REVIEW.json. It returned exit0. It does not import, compile-execute or call the bootstrap, materializer, preflight, H, Git process, source gates, Cargo or tests.",
+    "preservation": "The earlier main review and HOLD/source/control originals were not modified; this is a separate final-launch addendum."
+  },
+  "outstanding": [
+    "Root must issue explicit approval for this exact typed request before the native executor dispatches it.",
+    "Actual five-chunk write/readback, live path and owner checks, new repository creation, original command terminals and all final materialization audits require original native observations.",
+    "A successful materialization remains preparation-only and does not establish source-gate or behavioral-test qualification."
+  ]
+}

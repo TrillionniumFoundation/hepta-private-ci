@@ -1,0 +1,59 @@
+{
+  "format": "hepta-root-exact-maintenance-execution-candidate-byte-review-v1",
+  "driver": "3a0f6dec8127aa9587129d6e0f24bad55837ca13",
+  "config": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e",
+  "exact_four_config_field_changes": [
+    "formal_approved_config_created",
+    "root_execution_approved",
+    "status",
+    "waiting_for_actual_records"
+  ],
+  "all_other_config_fields_unchanged": true,
+  "main_request": "c6a5a907647a97204878b5b5371eab540b778403",
+  "main_key": "hepta-utility-36fa-provider-0c59-maintenance-v1",
+  "main_fields": 6,
+  "main_timeout": 9300,
+  "stage_request": "dd593f5d41f7ecc46072f2fe60eb1047579588a2",
+  "stage_key": "hepta-utility-36fa-provider-0c59-maintenance-control-staging-v1",
+  "stage_fields": 7,
+  "stage_timeout": 900,
+  "request_launcher_and_stdin_bytes_exact": true,
+  "six_payloads": {
+    "driver-maintenance.py": {
+      "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13",
+      "bytes": 68496,
+      "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259"
+    },
+    "APPROVED_MAINTENANCE_CONFIG.json": {
+      "git_blob": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e",
+      "bytes": 13768,
+      "sha256": "ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf"
+    },
+    "inventory-driver.original.py": {
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    "MAINTENANCE_STARTED.original.json": {
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1"
+    },
+    "MATERIALIZATION_SUPERVISOR.original.json": {
+      "git_blob": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c",
+      "bytes": 952,
+      "sha256": "e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa"
+    },
+    "V8_RESTORATION_SUPERVISOR.original.json": {
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    }
+  },
+  "six_full_Git_GET_original_payloads_base64_equal": true,
+  "no_unreviewed_env_field": true,
+  "staging_does_not_exec_main": true,
+  "independent_peer_pending": true,
+  "H_calls": 0,
+  "qualification": false
+}

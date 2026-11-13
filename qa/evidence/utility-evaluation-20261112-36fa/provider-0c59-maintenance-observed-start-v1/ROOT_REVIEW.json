@@ -1,0 +1,75 @@
+{
+  "format": "hepta-root-observed-maintenance-start-window-v1",
+  "job_id": "1a1d3eccd3a-392-231",
+  "exact_request": "c6a5a907647a97204878b5b5371eab540b778403",
+  "exact_ordered_approval": "753cbbe66c445f476209106f7c95cd71909d543c",
+  "actual_admission": {
+    "git_blob": "bb35e5c8401300692422b1391ce466856c9583fc",
+    "bytes": 6761,
+    "sha256": "d6f6e053494945af509d869ddd367b823e168fea7584879ca46788b0147d1bdc"
+  },
+  "actual_running_status": {
+    "git_blob": "535b9b237e36371fc246f5ca09409359a1ebb738",
+    "bytes": 615,
+    "sha256": "2e35fd1b76cda4a847ccf9dd6ed1f7566268059ffdf353ded5908654a1984a8d"
+  },
+  "actual_original_stream_read": {
+    "git_blob": "2c3d83db28c215a1535a19966f7d4ed09808b062",
+    "bytes": 14794,
+    "sha256": "7f837ffd78d380ad79b84dec0e0de2cad24bc1d1aa2b640c991aa6945c7b109a"
+  },
+  "actual_stdout_prefix": {
+    "git_blob": "28ed9e93be09f9897e2f30ee039b60978f639506",
+    "bytes": 4620,
+    "sha256": "37459e79b1b481127e49cc41ad1e62e3e296aa5e43ba8d8daf2478b059ab6f2d"
+  },
+  "actual_prefix_range": [
+    0,
+    4620
+  ],
+  "empty_stderr_observed_range": [
+    0,
+    0
+  ],
+  "exact_admission_fields_match_frozen_request": true,
+  "preflight_completed_event": {
+    "at": "2026-11-13T08:01:28.404817+00:00",
+    "event": "maintenance_preflight_completed",
+    "physical_leaves": 15237,
+    "source_commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "source_tests_started": false,
+    "source_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+  },
+  "original_fix_attempted_event": {
+    "argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "at": "2026-11-13T08:01:32.027363+00:00",
+    "event": "original_maintenance_command_attempted",
+    "name": "fix",
+    "timeout_seconds": 7200
+  },
+  "actual_compilation_output_present": true,
+  "stream_hex_and_text_full_byte_equal": true,
+  "state": "running",
+  "observed_complete_maintenance_terminal": false,
+  "stream_eof_is_not_job_completion": true,
+  "systemd_Result_success_and_ExecMainStatus_0_while_running_are_not_terminal": true,
+  "fmt_observed_in_this_window": false,
+  "original_recipe_scope": {
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "just_shell": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "explanation": "The displayed {args} is the original recipe placeholder. The unchanged POSIX adapter substitutes quoted positional arguments; the exact approved just fix argv remains the three scoped packages."
+  },
+  "staging_actual_archive": "737c769afe61aa4654b19d284ad61bc870883870",
+  "later_runtime_results_belong_to_separate_windows": true,
+  "qualification": false,
+  "real_qualified_chains": 0
+}

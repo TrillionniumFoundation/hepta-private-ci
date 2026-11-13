@@ -1,0 +1,34 @@
+{
+  "format": "hepta-root-pending-placement-self-path-correction-v1",
+  "status": "CORRECTED_BEFORE_ANY_NEW_GIT_TREE_OR_REF_MUTATION",
+  "affected_pending_plan": "f4dd313f882e802e5ef587afba05ba3ffaef560e",
+  "actual_blob_availability_review_unchanged": "b6852892bc878db1f7809f55216a38eb7b6f0d21",
+  "discovery": "Root strict canonical-path scan found four self-placement paths with a doubled separator, introduced when appending /PLACEMENT.json to supplied prefixes already ending in /. The supplied payload entries, bytes and original placement blobs were not changed.",
+  "exact_corrections": [
+    {
+      "before": "full-candidate-graph-v1//PLACEMENT.json",
+      "after": "full-candidate-graph-v1/PLACEMENT.json",
+      "git_blob": "85e7609eaf5458d2779fc6b35f491ea2fda5664b"
+    },
+    {
+      "before": "new-source-materializer-exact-launch-peer-v1//PLACEMENT.json",
+      "after": "new-source-materializer-exact-launch-peer-v1/PLACEMENT.json",
+      "git_blob": "f0d19cecd4c6c7dc3af346ea143f4bf83ec2d33b"
+    },
+    {
+      "before": "new-source-materializer-main-peer-v1//PLACEMENT.json",
+      "after": "new-source-materializer-main-peer-v1/PLACEMENT.json",
+      "git_blob": "4651d77b2675c5fdafc3d1257ed7aafe37b916cc"
+    },
+    {
+      "before": "new-source-staging-peer-v1//PLACEMENT.json",
+      "after": "new-source-staging-peer-v1/PLACEMENT.json",
+      "git_blob": "6a7d5271afff2ca0525a9d78aa75a2ec9df29a7c"
+    }
+  ],
+  "original_pending_plan_preserved": true,
+  "source_changes": false,
+  "H_calls": 0,
+  "published_tree_changes": false,
+  "qualification": false
+}

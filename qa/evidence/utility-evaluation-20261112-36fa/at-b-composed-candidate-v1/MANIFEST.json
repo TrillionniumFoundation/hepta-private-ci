@@ -1,0 +1,156 @@
+{
+  "format": "hepta-exact-AT-B-composed-candidate-manifest-v1",
+  "qualification": false,
+  "execution_authorized": false,
+  "composed_map": {
+    "name": "EXACT_COMPOSED_OVERLAY.json",
+    "bytes": 54410,
+    "sha256": "ba2b642c5e1014fffa1151cca87e1b516c255f8d5ef549c633ce3f73fb615e57",
+    "git_blob": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+    "actual_create_and_full_get_equal": true
+  },
+  "sources": {
+    "rust": 90,
+    "non_rust": 20,
+    "total": 110,
+    "rust_classification": {
+      "modified": 42,
+      "new": 47,
+      "unchanged_original": 1
+    },
+    "non_rust_classification": {
+      "modified": 18,
+      "new": 2,
+      "unchanged_original": 0
+    }
+  },
+  "input_objects_reused_without_new_alias_payloads": [
+    {
+      "name": "ROOT89_MAP.json",
+      "bytes": 60339,
+      "sha256": "8adcd93a43c1d3fb2c1cf5d68e2f26fade9070233344ddb25c40fa1f126253af",
+      "git_blob": "23d710dbda6f7d88ef6b693c1e77933d168b0177",
+      "actual_complete_get_and_three_identity_match": true
+    },
+    {
+      "name": "AT_SOURCE_PACKET.json",
+      "bytes": 43806,
+      "sha256": "51f373721f7b2f2f0047d7bc68f1ebd24ba7e7eb850ecea053e6fb80059ad18a",
+      "git_blob": "a72dc791ed6026ae49b0500a52dc295f9b3622ad",
+      "actual_complete_get_and_three_identity_match": true
+    },
+    {
+      "name": "B_SOURCE_PACKET.json",
+      "bytes": 87182,
+      "sha256": "d47814ac583402cccfc55e8d861fe66fc433cf8e9c555d52b3bb0ed195149231",
+      "git_blob": "9cb773cee4b42aba80d5836a9e4443f0be1f34fb",
+      "actual_complete_get_and_three_identity_match": true
+    },
+    {
+      "name": "ORIGINAL_AGENTD_SRC_MAP.json",
+      "bytes": 99436,
+      "sha256": "a2c9281c7d5d54f4fed5a7642113b1e2a3704fa52e43e455af09826e349ed263",
+      "git_blob": "a27a9ae3949b8632bbcdbe59189081b200dc5165",
+      "actual_complete_get_and_three_identity_match": true
+    },
+    {
+      "name": "ORIGINAL_LEDGER_SRC_MAP.json",
+      "bytes": 64058,
+      "sha256": "3ea1cc4a2bd32df5525ed8ff6af999c020a2ffdc2338242b933297a3ca713440",
+      "git_blob": "d0e417f969579fc1b724876ddf0e18dc041378d8",
+      "actual_complete_get_and_three_identity_match": true
+    }
+  ],
+  "final_source_blobs_reused_in_git": 110,
+  "full_git_readback": {
+    "name": "GIT_FULL_READBACK.json",
+    "bytes": 63674,
+    "sha256": "06ea132841575e57cbdcebed41768f4119624aa2d8c4f400d13e28fd867b2879",
+    "git_blob": "106e4ed2e978b7eb2fb39696678c675a74a0f62e",
+    "actual_create_and_full_get_equal": true
+  },
+  "local_overlay_directory": "/tmp/hepta-36fa-at-b-composed-candidate-v1/overlay",
+  "canonical_source_deletions": [],
+  "materializer_delete_operations": [],
+  "B_status_at_map_freeze": "pending",
+  "B_static_peer_after_freeze": {
+    "bytes": 1194,
+    "sha256": "29964ae1780c32931425aba316a36bb774609ca40f639bad4635bdd9a87f22ca",
+    "git_blob": "3c9115d63ce96faec99446030feba2a52b2db80b"
+  },
+  "source_changes_due_to_peer": 0,
+  "root89_and_prior_layers_unchanged": true,
+  "performed": [
+    "Pure composition of fixed packet bytes",
+    "Complete local source identities and modes",
+    "Five complete Git input reads",
+    "110 complete Git final-source reads; all local size/SHA-256/Git identities match",
+    "Immutable artifact creation and full readback"
+  ],
+  "not_performed": [
+    "Full repository materialization",
+    "Rust format/fix/compile/tests",
+    "QA/source gates",
+    "H/native execution",
+    "Source commit/tree/ref/PR changes",
+    "A useful real task chain"
+  ],
+  "artifacts": [
+    {
+      "name": "EXACT_COMPOSED_OVERLAY.json",
+      "bytes": 54410,
+      "sha256": "ba2b642c5e1014fffa1151cca87e1b516c255f8d5ef549c633ce3f73fb615e57",
+      "git_blob": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "compose.py",
+      "bytes": 11184,
+      "sha256": "33e3a52830a223916bfa57eef67d0857f7f8e104c40d0c2f35ecd2f6cef3a4e5",
+      "git_blob": "a8cfdeee5245826f1a7c3f3b0655e8f5d96fbaae",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "finalize.py",
+      "bytes": 3727,
+      "sha256": "bd928d38429910e2ed3714de8a1a19710f9bff0ccb50465c4755a8089fa0fb3c",
+      "git_blob": "6f03eae4f95b2ea0e2f281bcdf80d55135aa193f",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "LOCAL_COMPOSITION.json",
+      "bytes": 52611,
+      "sha256": "c89bd4bd3bc05003d6793e892df62bb6d33c6430f36b46ee66d1a6f4e4a9aaf2",
+      "git_blob": "6d0538de99a03251b4b44ed9d2e21411589c2bac",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "LOCAL_BYTE_VERIFICATION.json",
+      "bytes": 78569,
+      "sha256": "0bd12940777307387676bbbeb9026d911a2f0458d7f874bdcd907883657b3395",
+      "git_blob": "aaadcda99a025bc4a3fded509e47186b5908a983",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "GIT_FULL_READBACK.json",
+      "bytes": 63674,
+      "sha256": "06ea132841575e57cbdcebed41768f4119624aa2d8c4f400d13e28fd867b2879",
+      "git_blob": "106e4ed2e978b7eb2fb39696678c675a74a0f62e",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "README.md",
+      "bytes": 4114,
+      "sha256": "9fbeded9fa6b07d364ad581e9ba9efd34c56e0f74c746caa4eb72d84df07b79d",
+      "git_blob": "8c9fda4699901b47cdf8dfaa5ebae5e86c30b503",
+      "actual_create_and_full_get_equal": true
+    },
+    {
+      "name": "B_PEER_POST_FREEZE_ADDENDUM.json",
+      "bytes": 1194,
+      "sha256": "29964ae1780c32931425aba316a36bb774609ca40f639bad4635bdd9a87f22ca",
+      "git_blob": "3c9115d63ce96faec99446030feba2a52b2db80b",
+      "actual_create_and_full_get_equal": true
+    }
+  ]
+}

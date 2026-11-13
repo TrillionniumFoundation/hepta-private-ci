@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "actual_arrays": 6,
+      "actual_git_functions": [
+        "buildifier_formatter_group",
+        "changed_paths",
+        "formatting_configuration_changed",
+        "rust_configuration_scope"
+      ],
+      "cause": "The reviewer omitted the buildifier formatter ls-files array from its count. The source has three ls-files arrays plus diff/show/rev-parse.",
+      "error": "ValueError: unexpected formatter Git call inventory",
+      "event": "First local audit invocation",
+      "incorrect_expected_arrays": 5,
+      "result": "failed at reviewer hard-coded formatter argv count after all object/set checks"
+    },
+    {
+      "correction": "Derive exact Git-containing function names from the pinned formatter AST; use BYTE_REVIEW_v2.json.",
+      "effect": "Only reviewer function-name metadata changed. All 27 full GETs, raw identities, tree bodies, object metadata, set differences and 83-object content results are identical.",
+      "event": "First completed byte review retained",
+      "identity": {
+        "bytes": 59536,
+        "git_blob": "bec7b5a4309694f0c7b3fd9f3bebdc82a1e915d0",
+        "path": "BYTE_REVIEW.json",
+        "sha256": "3645242df53af1321c4db13a4a13ed5f7f06f3368392c4b1f4c3cc7795e21846"
+      },
+      "incorrect_metadata": "functions_read contained python_configuration_scope; that function is not in the original source."
+    }
+  ],
+  "final_byte_review": {
+    "bytes": 59536,
+    "git_blob": "ac60d808cc40f7d6ee0dbbbe6a10163a46c11d0a",
+    "path": "BYTE_REVIEW_v2.json",
+    "sha256": "c55e11c9441db3fbabe42009f26ebca0aa2785520623aa2e7d4c1f3e383bb952"
+  },
+  "no_overwrite_of_first_completed_review": true,
+  "schema": "hepta-reviewer-preparation-corrections-v1",
+  "scope": "Independent local audit preparation; no package/source/native/gate failure."
+}

@@ -1,0 +1,82 @@
+{
+  "H_calls": 0,
+  "candidate_complete_inventory_equal_independent_preparation": true,
+  "computed_record_identities": [
+    {
+      "bytes": 5629701,
+      "git_blob": "a596ae68859e3263a9ee58e2b5d7334ac9314c34",
+      "name": "EXPECTED_CANDIDATE.complete.inventory.json",
+      "sha256": "affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44"
+    },
+    {
+      "bytes": 2562689,
+      "git_blob": "41d7c7c583234fb71f56c2a11b561baf10615ec7",
+      "name": "EXPECTED_OBJECTS.json",
+      "sha256": "76844df8bf5eac167b6d837b63dbd7599ac9c2cd5107642858bd125378dfd4cc"
+    }
+  ],
+  "donor_object_count": 16449,
+  "driver": {
+    "bytes": 70560,
+    "git_blob": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+    "sha256": "2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6"
+  },
+  "expected_objects": 16652,
+  "format": "hepta-pure-prepared-input-binding-review-v1",
+  "four_commit_raw_identities_match_exact_refs": true,
+  "full_driver_imported": false,
+  "future_live_donor_body_reads_and_all_runtime_guards_still_required": true,
+  "immutable_donor_producer_predicates": [
+    {
+      "evaluates_true_on_actual_original_proof": true,
+      "line": 718,
+      "predicate": "observed['format'] == 'hepta-isolated-cc57-materialization-result-v1' and observed['status'] == 'MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY' and observed['destination_repo'] == str(SOURCE) and observed['source_commit'] == DONOR_HEAD and observed['source_tree'] == DONOR_TREE and observed['parents'] == packet['donor']['parents']"
+    },
+    {
+      "evaluates_true_on_actual_original_proof": true,
+      "line": 719,
+      "predicate": "observed['action_completed'] is True and observed['new_repo_created'] is True and observed['new_objects_fully_verified'] == 16449 and observed['input_identities_unchanged'] is True and observed['qualification'] is False and observed['cargo_or_formatter_started'] is False and observed['test_commands_dispatched'] == 0"
+    },
+    {
+      "evaluates_true_on_actual_original_proof": true,
+      "line": 720,
+      "predicate": "len(observed['final_audits']) == 3 and all(item['status'] == 'verified' for item in observed['final_audits']) and observed['current_source_before'] == observed['current_source_after'] and observed['current_git_state_before'] == observed['current_git_state_after'] == packet['donor_proof']['current_git_state'] and observed['current_git_metadata'] == packet['donor_proof']['current_git_metadata']"
+    },
+    {
+      "evaluates_true_on_actual_original_proof": true,
+      "line": 722,
+      "predicate": "{key: actual_inventory[key] for key in ('bytes', 'sha256', 'git_blob')} == packet['donor']['inventory'] and actual_inventory['tracked_entries'] == actual_inventory['filesystem_entries'] == DONOR_LEAVES and observed['current_source_after']['native_inventory'] == packet['donor']['native_inventory']"
+    }
+  ],
+  "loaded_definitions": [
+    "check",
+    "derive_candidate_inventory",
+    "encoded",
+    "expected_graphs",
+    "identity",
+    "identity_projection",
+    "native_projection",
+    "nodup",
+    "oid",
+    "parse",
+    "pin",
+    "raw_commit_fields",
+    "sha256",
+    "tree_objects"
+  ],
+  "original_budget_seconds_unchanged": [
+    600,
+    180,
+    900
+  ],
+  "provided_object_count": 203,
+  "pure_mapping_functions_called": [
+    "derive_candidate_inventory",
+    "expected_graphs"
+  ],
+  "qualification": false,
+  "runtime_or_main_executed": false,
+  "runtime_remaining_and_recording_not_exercised": true,
+  "source_mutations": 0,
+  "status": "STATIC_ONLY_NOT_EXECUTION_APPROVAL"
+}

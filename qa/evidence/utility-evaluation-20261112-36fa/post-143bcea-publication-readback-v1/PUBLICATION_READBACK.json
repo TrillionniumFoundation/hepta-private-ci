@@ -1,0 +1,185 @@
+{
+  "format": "hepta-post-0e5-5128-publication-readback-v1",
+  "parent": "0e5a50fc4f7f26b4120c0837902cb5d046d3f58e",
+  "commit": "143bcea947e97914775aef8bcae475e4e24c38b8",
+  "root": "9b330fecef18283978b01e53372c1efc29f38cdc",
+  "leaf": "d35f68d511da0bf2e834f9343096ecf51723aa37",
+  "files": 5128,
+  "directory_trees_including_leaf": 773,
+  "prior_non_readme_files_preserved": 4722,
+  "update_entries": 406,
+  "max_new_leaf_blob_bytes": 331739,
+  "new_blob_limit_bytes": 512000,
+  "tree_creation_operations": [
+    {
+      "operation": 1,
+      "base": "d7a298465f71941d28efcc60b97e63bb6318b3e3",
+      "entries": 80,
+      "expected": "391803bd414c37994d6545e59f422f44c0d14053",
+      "actual": "391803bd414c37994d6545e59f422f44c0d14053"
+    },
+    {
+      "operation": 2,
+      "base": "391803bd414c37994d6545e59f422f44c0d14053",
+      "entries": 80,
+      "expected": "76a7a79de427cc198f2f6949e4a8ba5ed05e01a5",
+      "actual": "76a7a79de427cc198f2f6949e4a8ba5ed05e01a5"
+    },
+    {
+      "operation": 3,
+      "base": "76a7a79de427cc198f2f6949e4a8ba5ed05e01a5",
+      "entries": 80,
+      "expected": "a164c09f18e61bb47b1f81cf44c637b2df8db220",
+      "actual": "a164c09f18e61bb47b1f81cf44c637b2df8db220"
+    },
+    {
+      "operation": 4,
+      "base": "a164c09f18e61bb47b1f81cf44c637b2df8db220",
+      "entries": 80,
+      "expected": "f9ef450a91e63d2427a9a0ae139d26cad5e24129",
+      "actual": "f9ef450a91e63d2427a9a0ae139d26cad5e24129"
+    },
+    {
+      "operation": 5,
+      "base": "f9ef450a91e63d2427a9a0ae139d26cad5e24129",
+      "entries": 80,
+      "expected": "a55aeffee474e1993ed0b3abfa0ee66b2e03f9de",
+      "actual": "a55aeffee474e1993ed0b3abfa0ee66b2e03f9de"
+    },
+    {
+      "operation": 6,
+      "base": "a55aeffee474e1993ed0b3abfa0ee66b2e03f9de",
+      "entries": 6,
+      "expected": "d35f68d511da0bf2e834f9343096ecf51723aa37",
+      "actual": "d35f68d511da0bf2e834f9343096ecf51723aa37"
+    }
+  ],
+  "ancestor_operations": [
+    {
+      "key": "evidence_tree",
+      "prior": "9cd2e725e225d1ba16bcd8e49df3472f6d328e7d",
+      "child_path": "utility-evaluation-20261112-36fa",
+      "child": "d35f68d511da0bf2e834f9343096ecf51723aa37",
+      "new": "2426efd240bae4ee3594eded45d0de5e236929ae",
+      "full_get": true,
+      "only_named_child_changed": true
+    },
+    {
+      "key": "qa",
+      "prior": "14798ffe8e3e860dcac1ad4415684bf573b852c3",
+      "child_path": "evidence",
+      "child": "2426efd240bae4ee3594eded45d0de5e236929ae",
+      "new": "6c2a084773e4aeef90ea23a54af1d03adf20f0d2",
+      "full_get": true,
+      "only_named_child_changed": true
+    },
+    {
+      "key": "root",
+      "prior": "4be30fa033932ce2e171f8d96b95bd83784c2e87",
+      "child_path": "qa",
+      "child": "6c2a084773e4aeef90ea23a54af1d03adf20f0d2",
+      "new": "9b330fecef18283978b01e53372c1efc29f38cdc",
+      "full_get": true,
+      "only_named_child_changed": true
+    }
+  ],
+  "recursive_read": {
+    "truncated": false,
+    "blobs": 5128,
+    "descendant_trees": 772,
+    "all_modes_paths_and_blobs_exact": true,
+    "all_directory_merkle_hashes_exact": true,
+    "parsed_payload_identity": {
+      "bytes": 1759878,
+      "sha256": "db7454784663ec3d14d5bc6667b6b587378c0a6db07c80ff87c8cd9412ff5709"
+    }
+  },
+  "commit_actual_get": {
+    "sha": "143bcea947e97914775aef8bcae475e4e24c38b8",
+    "node_id": "C_kwDOTrgxoNoAKDE0M2JjZWE5NDdlOTc5MTQ3NzVhZWY4YmNhZTQ3NWU0ZTI0YzM4Yjg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/143bcea947e97914775aef8bcae475e4e24c38b8",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/143bcea947e97914775aef8bcae475e4e24c38b8",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-13T06:50:01Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-13T06:50:01Z"
+    },
+    "tree": {
+      "sha": "9b330fecef18283978b01e53372c1efc29f38cdc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/9b330fecef18283978b01e53372c1efc29f38cdc"
+    },
+    "message": "docs(qa): preserve utility evidence checkpoint and guarded runtime restoration\n\nRecord reviewed prepared source layers, CURRENT design limits, successful bounded V8 restoration, and canonical deletion-scope correction. Keep qualification false and the source branch unchanged.",
+    "parents": [
+      {
+        "sha": "0e5a50fc4f7f26b4120c0837902cb5d046d3f58e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0e5a50fc4f7f26b4120c0837902cb5d046d3f58e",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0e5a50fc4f7f26b4120c0837902cb5d046d3f58e"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "refs_before": {
+    "source": {
+      "ref": "refs/heads/codex/utility-evidence-closure-20261112-36fa",
+      "node_id": "REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvdXRpbGl0eS1ldmlkZW5jZS1jbG9zdXJlLTIwMjYxMTEyLTM2ZmE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/utility-evidence-closure-20261112-36fa",
+      "object": {
+        "sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cc57c7198db6293ccca562253c42fffbe2a04633"
+      }
+    },
+    "evidence": {
+      "ref": "refs/heads/codex/utility-eval-evidence-20261112-36fa",
+      "node_id": "REF_kwDOTrgxoNoANHJlZnMvaGVhZHMvY29kZXgvdXRpbGl0eS1ldmFsLWV2aWRlbmNlLTIwMjYxMTEyLTM2ZmE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/utility-eval-evidence-20261112-36fa",
+      "object": {
+        "sha": "0e5a50fc4f7f26b4120c0837902cb5d046d3f58e",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0e5a50fc4f7f26b4120c0837902cb5d046d3f58e"
+      }
+    }
+  },
+  "ref_update_result": {
+    "success": true
+  },
+  "refs_after": {
+    "source": {
+      "ref": "refs/heads/codex/utility-evidence-closure-20261112-36fa",
+      "node_id": "REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvdXRpbGl0eS1ldmlkZW5jZS1jbG9zdXJlLTIwMjYxMTEyLTM2ZmE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/utility-evidence-closure-20261112-36fa",
+      "object": {
+        "sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cc57c7198db6293ccca562253c42fffbe2a04633"
+      }
+    },
+    "evidence": {
+      "ref": "refs/heads/codex/utility-eval-evidence-20261112-36fa",
+      "node_id": "REF_kwDOTrgxoNoANHJlZnMvaGVhZHMvY29kZXgvdXRpbGl0eS1ldmFsLWV2aWRlbmNlLTIwMjYxMTEyLTM2ZmE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/utility-eval-evidence-20261112-36fa",
+      "object": {
+        "sha": "143bcea947e97914775aef8bcae475e4e24c38b8",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/143bcea947e97914775aef8bcae475e4e24c38b8"
+      }
+    }
+  },
+  "source_branch_unchanged": true,
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "scope": "Evidence publication only; source candidate, maintenance, native, production CURRENT bridge and authorized A/B/C remain unexecuted.",
+  "readme": "98a2754aa6f62ac725cc29ca55b217db80a92af1",
+  "content_manifest_encoding": "439f03bd9e91f880153820291195e0ccaa3dc094"
+}

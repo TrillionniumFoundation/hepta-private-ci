@@ -1,0 +1,17 @@
+{
+  "cause": "Git symlink mode 120000 does not carry original lstat permissions; retain original symlink inventory row permissions",
+  "exit_code": 1,
+  "failure": "assert expected counts of unchanged/full-row modifications",
+  "format": "hepta-local-projection-attempt01-record-v1",
+  "mismatches": [
+    {
+      "attempted_mode_bit_projection": 0,
+      "git_mode": "120000",
+      "observed_original_permissions": 511,
+      "path": "codex-rs/vendor/bubblewrap/LICENSE"
+    }
+  ],
+  "no_H_or_source_execution": true,
+  "no_expected_inventory_artifacts_emitted": true,
+  "operation": "pure local expected metadata derivation"
+}

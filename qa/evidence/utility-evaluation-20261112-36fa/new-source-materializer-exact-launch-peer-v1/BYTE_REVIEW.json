@@ -1,0 +1,162 @@
+{
+  "HOLD_bootstrap_only_approval_pin_filled": true,
+  "HOLD_payload_only_config_filled": true,
+  "H_calls": 0,
+  "approval_true_is_reviewed_candidate_data_not_dispatch_authorization": true,
+  "args_prefix": [
+    "-B",
+    "-c"
+  ],
+  "bootstrap_changes_only": [
+    "fresh BASE",
+    "five fixed PINS",
+    "schema literal",
+    "readback schema literal",
+    "event literal"
+  ],
+  "bootstrap_or_driver_executed": false,
+  "bounded_request_and_stdin_1MiB": true,
+  "budgets_action_record_outer_seconds": [
+    600,
+    180,
+    900
+  ],
+  "config_exact_inverse_and_recorded_diff_equal": true,
+  "config_fields_changed": [
+    "root_execution_approved",
+    "status"
+  ],
+  "control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-isolated-materialization-v1",
+  "cwd": "/home/qian-qi",
+  "destination_repo": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+  "driver_control_packet_and_donor_proofs_cross_bind": true,
+  "executable": "/usr/bin/python3",
+  "five_inputs": [
+    {
+      "bytes": 70560,
+      "full_bytes_equal": true,
+      "git_blob": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+      "name": "driver.py",
+      "sha256": "2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6",
+      "wire_decoded_bytes": 70560
+    },
+    {
+      "bytes": 14331,
+      "full_bytes_equal": true,
+      "git_blob": "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+      "name": "MATERIALIZATION_PACKET.json",
+      "sha256": "b733baa29e1b70c6fa57582d61dfe47e360e9d3de4d0ef482193be30057914c6",
+      "wire_decoded_bytes": 6366
+    },
+    {
+      "bytes": 12671,
+      "full_bytes_equal": true,
+      "git_blob": "40833805111c98773ba1d046df09285357531396",
+      "name": "DONOR_RESULT.original.json",
+      "sha256": "fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96",
+      "wire_decoded_bytes": 12671
+    },
+    {
+      "bytes": 951,
+      "full_bytes_equal": true,
+      "git_blob": "c507335b611474857eff53b738071a7a3f27dc99",
+      "name": "DONOR_SUPERVISOR.original.json",
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa",
+      "wire_decoded_bytes": 951
+    },
+    {
+      "bytes": 642,
+      "full_bytes_equal": true,
+      "git_blob": "b760954f62dbe96b6ed337ae2cc99f4130727824",
+      "name": "APPROVED_CONFIG.json",
+      "sha256": "58e25387f392c929a0adf798e30714ad73008f76b21b1b7d56f2c29e4b5f7980",
+      "wire_decoded_bytes": 642
+    }
+  ],
+  "format": "hepta-new-source-materializer-exact-launch-independent-byte-review-v1",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-provider-0c59-isolated-materialization-v1",
+  "input_originals": [
+    {
+      "author_file_equal": true,
+      "bytes": 5869,
+      "git_blob": "4df01b20c666912cf022c806be06ff8757b4714e",
+      "independent_full_get_equal": true,
+      "name": "MATERIALIZATION_BOOTSTRAP.candidate.py",
+      "sha256": "6faad9e88d97981085e381a02a514a53e15b7e944e6cf7c1710e76b7f6e7f8f0"
+    },
+    {
+      "author_file_equal": true,
+      "bytes": 128112,
+      "git_blob": "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+      "independent_full_get_equal": true,
+      "name": "MATERIALIZATION_PROCESS_INPUT.candidate.json",
+      "sha256": "521c5c982cbc281ad0357498265312f43846995fbd85040d9d7e3dfdae1f0050"
+    },
+    {
+      "author_file_equal": true,
+      "bytes": 121849,
+      "git_blob": "303cd809444a88abdc1bd3025d530634361cea8e",
+      "independent_full_get_equal": true,
+      "name": "MATERIALIZATION_STDIN.candidate.json",
+      "sha256": "1b1f59b99f0c4b32208a261a887c0f3df7ec3c4d66ea4761ed3e49b804f284a7"
+    },
+    {
+      "author_file_equal": true,
+      "bytes": 642,
+      "git_blob": "b760954f62dbe96b6ed337ae2cc99f4130727824",
+      "independent_full_get_equal": true,
+      "name": "APPROVAL_CANDIDATE_CONFIG.json",
+      "sha256": "58e25387f392c929a0adf798e30714ad73008f76b21b1b7d56f2c29e4b5f7980"
+    },
+    {
+      "author_file_equal": true,
+      "bytes": 3225,
+      "git_blob": "607225029e4a6f959a1956f30104674bb7d7da7c",
+      "independent_full_get_equal": true,
+      "name": "EXACT_LAUNCH_CANDIDATE_REVIEW.json",
+      "sha256": "9626319d8ce87dcf5975d312fa98387941c848e3054643374fa6f1d0a5a5c63b"
+    },
+    {
+      "author_file_equal": true,
+      "bytes": 392,
+      "git_blob": "7671ba4118a195d9af49ccd830ddccb9d6ae2d67",
+      "independent_full_get_equal": true,
+      "name": "CONFIG_CANDIDATE_FROM_WAITING.diff",
+      "sha256": "300e6ff5930a1c8ee99148f73b9f3aa4a619233d305e2449fbca23f1648ef31e"
+    },
+    {
+      "author_file_equal": true,
+      "bytes": 109095,
+      "git_blob": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+      "independent_full_get_equal": true,
+      "name": "ORIGINAL_163E69_PROCESS_REQUEST.json",
+      "sha256": "7e8caf48364c4b58a737af0a1b888e97730e7b53d0c23bdb79dc786031e704a5"
+    }
+  ],
+  "original_four_helper_bytes_and_AST_equal": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ],
+  "qualification": false,
+  "request_bytes": 128112,
+  "request_environment_field_present": false,
+  "request_field_count": 7,
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "side_effects": "Read local frozen inputs and full GET SDKs; create this review JSON only.",
+  "source_or_ref_writes": false,
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+  "status": "EXACT_LOCAL_BYTE_AST_AND_INPUT_BINDINGS_VERIFIED_NO_EXECUTION",
+  "stdin_bytes": 121849,
+  "whole_bootstrap_inverse_bytes_and_AST_equal": true
+}

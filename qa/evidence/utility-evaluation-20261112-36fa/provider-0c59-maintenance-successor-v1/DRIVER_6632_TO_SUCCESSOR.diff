@@ -1,0 +1,408 @@
+--- 6632/driver-v5.py
++++ successor/driver-maintenance.HOLD.py
+@@ -7,31 +7,33 @@
+ import base64, datetime, gzip, hashlib, json, os, pathlib, re, shutil, signal, stat
+ import subprocess, sys, tempfile, time, traceback, types
+ 
+-REPO=pathlib.Path("/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1")
+-EVIDENCE=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1")
+-OUT=EVIDENCE/"run-v5"
+-CONFIG=EVIDENCE/"APPROVED_CONFIG_V5.json"
+-INVENTORY_FILE=EVIDENCE/"inventory-driver-v2.py"
++REPO=pathlib.Path("/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1")
++EVIDENCE=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1")
++OUT=EVIDENCE/"run"
++CONFIG=EVIDENCE/"APPROVED_MAINTENANCE_CONFIG.json"
++INVENTORY_FILE=EVIDENCE/"inventory-driver.original.py"
+ ENVIRONMENT_FILE=EVIDENCE/"MAINTENANCE_STARTED.original.json"
+ GIT="/usr/bin/git"
+-HEAD="9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+-TREE="ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
++HEAD="0c59aaca0b4932507f068c723f73da2f96729b3d"
++TREE="4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+ C0F="c0f78493f815780f68b9bf5e390a21314d79311f"
+ C0F_TREE="313ee34febc8ccc54c611ab56286e289518c63cb"
+ A96="a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+ SEED_HEAD="86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+ SEED_TREE="383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+ SEED_PARENTS=[C0F,A96]
+-PARENTS=[SEED_HEAD]
+-SEED_INVENTORY={"bytes":5611182,"filesystem_entries":15188,"git_blob":"e7efbbc915cf80db9f873a2b5f9bf162daf4308c","sha256":"bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711","tracked_entries":15188}
+-SUCCESSOR_INVENTORY={"bytes":5611182,"filesystem_entries":15188,"git_blob":"07b1d331bcc1d84c8483c3b056e88682f9252cd1","sha256":"c006da7852740c7c24961a4748744eb1270f25c8d8fe95c2fc873d4dc279d79d","tracked_entries":15188}
+-SOURCE_ADVANCE_CHANGE={"after_bytes":5190,"after_git_blob":"1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f","after_sha256":"2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1","before_bytes":5133,"before_git_blob":"36289de55d67d19d5ed710044efdf7012c08d3a3","before_sha256":"a5ec4adaf8c6f3c48bfbd37282873a943ce6a7fd6cd83c5994ea1744f43840a7","mode":"100644","path":"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs"}
+-SOURCE_ADVANCE_PACKET_PIN={"bytes":98087,"sha256":"e72cd85a68ff67412865f14a76c398cd1f26b8c948a16da4bfe5155c300000e0","git_blob":"a62a7e701f42ea18dfa93fc0d5eb521f836750cb"}
+-SOURCE_ADVANCE_BEFORE_INDEX={"bytes":2072488,"sha256":"b19fab7a860a4281331096bd6a9c2ab5b6b9ef95ff8411e9f757cd1373380f15"}
+-LEAVES=15188
++PARENTS=["cc57c7198db6293ccca562253c42fffbe2a04633"]
++HISTORICAL_RUNTIME_REPO=pathlib.Path("/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1")
++MATERIALIZATION_DONOR=pathlib.Path("/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1")
++DONOR_HEAD="cc57c7198db6293ccca562253c42fffbe2a04633"
++DONOR_TREE="b7b357c07b5539769a068c6b9b009629f5612d1e"
++COORDINATION_LOCK=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock")
++NATIVE_INVENTORY={"bytes":3541985,"git_blob":"68342846200b9ba15f0483d89e28bfcf4c499a44","sha256":"686c516814839ce12a3de6a8907a8efd5f27d4d39d9d4b14e380137698faa1f4"}
++SUCCESSOR_INVENTORY={"bytes":5629701,"filesystem_entries":15237,"git_blob":"a596ae68859e3263a9ee58e2b5d7334ac9314c34","sha256":"affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44","tracked_entries":15237}
++LEAVES=15237
+ TARGET=pathlib.Path("/data/hepta-utility-36fa-final-native-target-v1")
+ DEPOT=pathlib.Path("/data/hepta-utility-36fa-runtime-materials-86dd-v1")
+-FIX=["just","fix","-p","codex-hepta-intelligence-eval","-p","codex-hepta-agentd"]
++FIX=["just","fix","-p","codex-hepta-intelligence-eval","-p","codex-hepta-agentd","-p","codex-hepta-learning-ledger"]
+ FMT=["just","fmt","--base",C0F]
+ FIX_SECONDS=7200
+ FMT_SECONDS=900
+@@ -318,131 +320,143 @@
+     return terminal
+ 
+ def validate_materialization():
+-    materialization=cfg.get("materialization")
+-    check(isinstance(materialization,dict),"actual materialization proof required")
+-    source=read_input(materialization["result_path"],materialization["result"])
+-    terminal_raw=read_input(materialization["supervisor_path"],materialization["supervisor"])
+-    observed=parse(source);terminal=parse_supervisor(terminal_raw)
+-    check(terminal.get("job_id")==materialization["job_id"],"actual materialization job")
+-    check(observed.get("format")=="hepta-fresh-source-materialization-result-v2"
+-          and observed.get("status")=="MATERIALIZED_FOR_MAINTENANCE_ONLY"
+-          and observed.get("target_repo")==str(REPO)
+-          and observed.get("source_commit")==SEED_HEAD and observed.get("source_tree")==SEED_TREE
+-          and observed.get("parents")==SEED_PARENTS,"exact successful materialization identity")
+-    for key in ("new_repo_created","import_started","physical_materialization_started",
+-                "source_before_verified","source_repo_unmodified","source_object_lookup_unchanged","inputs_unchanged"):
+-        check(observed.get(key) is True,"materialization actual "+key)
+-    for key in ("maintenance_started","cargo_or_tests_started","qualification","remote_ref_updates"):
+-        check(observed.get(key) is False,"materialization absence of "+key)
+-    check(observed.get("materialized")=={"head":SEED_HEAD,"tree":SEED_TREE,"index_equals_tree":True,
+-          "physical_bytes_equal":True,"detached":True,"maintenance_or_tests_started":False,"qualification":False},
+-          "complete original materialized physical/index identity")
+-    check({x["check"]:x["status"] for x in observed["final_audits"]}==
+-          {"close_owned_helpers":"verified","original_source":"verified",
+-           "original_source_object_lookup":"verified","new_destination":"verified","original_inputs":"verified"},
+-          "all actual materialization final audits")
+-    expected=SEED_INVENTORY
+-    check(all(observed["destination_inventory"].get(k)==expected.get(k)
+-              for k in ("bytes","sha256","git_blob")) and
+-          observed["destination_inventory"].get("tracked_entries")==LEAVES and
+-          observed["destination_inventory"].get("filesystem_entries")==LEAVES,
+-          "approved exact complete physical source inventory")
+-    write("MATERIALIZATION_RESULT.original.json",source)
+-    write("MATERIALIZATION_SUPERVISOR.original.json",terminal_raw)
+-    return observed
+-
+-def validate_source_advance(current_inventory,current_git_state):
+-    proof=cfg.get("source_advance")
+-    check(isinstance(proof,dict) and set(proof)==
+-          {"job_id","result_path","result","supervisor_path","supervisor"},
+-          "one actual source-advance proof descriptor required")
+-    check(isinstance(proof["job_id"],str) and bool(proof["job_id"]) and
+-          all(isinstance(proof[key],str) and bool(proof[key])
+-              for key in ("result_path","supervisor_path")),
+-          "HOLD: actual source-advance job and original paths are absent")
++    proof=cfg.get("materialization")
++    check(isinstance(proof,dict) and isinstance(proof.get("job_id"),str) and proof["job_id"],
++          "HOLD: actual candidate materialization proof required")
+     raw=read_input(proof["result_path"],proof["result"])
+     terminal_raw=read_input(proof["supervisor_path"],proof["supervisor"])
+     observed=parse(raw);terminal=parse_supervisor(terminal_raw)
+-    check(terminal.get("job_id")==proof["job_id"],"same actual source-advance job")
+-    check(observed.get("format")=="hepta-exact-source-advance-result-v1" and
+-          observed.get("status")=="SOURCE_ADVANCED_FOR_MAINTENANCE_ONLY" and
+-          observed.get("source_repo")==str(REPO),"actual completed exact source advance")
+-    before=observed.get("before");after=observed.get("after")
+-    check(isinstance(before,dict) and isinstance(after,dict),"actual source-advance endpoints")
+-    check(before.get("commit")==SEED_HEAD and before.get("tree")==SEED_TREE and
+-          before.get("parents")==SEED_PARENTS and before.get("inventory")==SEED_INVENTORY,
+-          "source-advance original complete seed endpoint")
+-    check(after.get("commit")==HEAD and after.get("tree")==TREE and
+-          after.get("parents")==PARENTS and after.get("inventory")==SUCCESSOR_INVENTORY,
+-          "source-advance complete frozen successor endpoint")
+-    pin_bytes(current_inventory,SUCCESSOR_INVENTORY,"current source after actual advance")
+-    check(after.get("git_state")==current_git_state,"actual post-advance raw Git state still current")
+-    before_git=before.get("git_state")
+-    check(isinstance(before_git,dict) and set(before_git)==set(current_git_state),
+-          "complete actual pre-advance Git state")
+-    check(before_git.get("head")==SEED_HEAD and before_git.get("tree")==SEED_TREE and
+-          before_git.get("head_raw_sha256")==sha256((SEED_HEAD+"\n").encode()) and
+-          before_git.get("index_bytes")==SOURCE_ADVANCE_BEFORE_INDEX["bytes"] and
+-          before_git.get("index_sha256")==SOURCE_ADVANCE_BEFORE_INDEX["sha256"],
+-          "actual pre-advance original HEAD/tree/index; prior Unknown is not rewritten")
+-    check(all(before_git[key]==current_git_state[key] for key in
+-          ("config_bytes","config_sha256","refs_bytes","refs_sha256")),
+-          "source advance changed no repository config or branch refs")
+-    check(observed.get("changes")==[SOURCE_ADVANCE_CHANGE] and
+-          observed.get("canonical_packet")==SOURCE_ADVANCE_PACKET_PIN,
+-          "only reviewed canonical six-object, one-source-path advancement")
+-    check(observed.get("seed_proofs")=={
+-          "materialization_result":cfg["materialization"]["result"],
+-          "runtime_restoration_result":cfg["runtime_restoration"]["result"],
+-          "runtime_environment":cfg["runtime_restoration"]["environment"]},
+-          "source advance retains the exact historical materialization/runtime proofs")
+-    actual=observed.get("actual")
+-    check(isinstance(actual,dict) and type(actual.get("verified_canonical_objects")) is int and
+-          actual["verified_canonical_objects"]==6 and
+-          all(actual.get(key) is True for key in
+-              ("detached","index_equals_tree","physical_bytes_equal","other_tracked_paths_unchanged")),
+-          "actual original objects and complete source/index completion")
+-    check(observed.get("local_head_advanced") is True,"authorized detached HEAD advancement observed")
+-    for key in ("source_branch_refs_updated","remote_ref_updates","dependency_installation_started",
+-                "cargo_or_formatter_started","qualification","automatic_retry"):
+-        check(observed.get(key) is False,"source advancement did not authorize "+key)
++    check(terminal.get("job_id")==proof["job_id"],"same actual candidate materialization job")
++    check(observed.get("format")=="hepta-complete-candidate-materialization-result-v1" and
++          observed.get("status")=="MATERIALIZED_EXACT_CANDIDATE_FOR_MAINTENANCE_REVIEW_ONLY" and
++          observed.get("source_repo")==str(MATERIALIZATION_DONOR) and
++          observed.get("destination_repo")==str(REPO) and
++          observed.get("source_commit")==HEAD and observed.get("source_tree")==TREE and
++          observed.get("parents")==PARENTS,"actual donor/destination and exact candidate identity")
++    for key in ("action_completed","new_repo_created","new_files_and_directories_synced",
++                "donor_physical_and_git_file_state_unchanged","input_identities_unchanged"):
++        check(observed.get(key) is True,"candidate materialization actual "+key)
++    for key in ("old_source_writes","remote_ref_updates","cargo_or_formatter_started",
++                "dependency_installation_started","automatic_retry","rollback","qualification"):
++        check(observed.get(key) is False,"materialization did not authorize "+key)
+     check(type(observed.get("test_commands_dispatched")) is int and
+-          observed["test_commands_dispatched"]==0,"source advancement executed no tests")
++          observed["test_commands_dispatched"]==0 and observed.get("cleanup_errors")==[] and
++          "error" not in observed and "retention_error" not in observed,
++          "materialization has no test dispatch, incomplete cleanup or retained error")
+     audits=observed.get("final_audits")
+-    check(isinstance(audits,list) and len(audits)==3 and all(isinstance(row,dict) for row in audits) and
++    check(isinstance(audits,list) and len(audits)==3 and
+           {row.get("check"):row.get("status") for row in audits}==
+-          {"source":"verified","git":"verified","inputs":"verified"},
+-          "all actual source-advance final audits complete")
+-    # These are object-only reads. Preserve the exact canonical commit bodies;
+-    # never synthesize new metadata or use a same-tree replacement.
+-    for name,commit,tree,parents in (
+-            ("seed",SEED_HEAD,SEED_TREE,SEED_PARENTS),("successor",HEAD,TREE,PARENTS)):
+-        commit_raw=git("cat-file","commit",commit)
+-        headers=commit_raw.split(b"\n\n",1)[0].split(b"\n")
+-        check(oid("commit",commit_raw)==commit and headers[0]==("tree "+tree).encode() and
+-              [line[7:].decode("ascii") for line in headers if line.startswith(b"parent ")]==parents,
+-              "authentic exact "+name+" commit/tree/ordered parents")
+-        write("SOURCE_ADVANCE."+name+".commit.raw",commit_raw)
+-    change=SOURCE_ADVANCE_CHANGE
+-    delta=git("diff-tree","--no-commit-id","--raw","-r","-z","--no-renames","--no-abbrev",
+-              SEED_HEAD,HEAD,"--")
+-    expected_delta=(":"+change["mode"]+" "+change["mode"]+" "+change["before_git_blob"]+" "+
+-                    change["after_git_blob"]+" M\0"+change["path"]+"\0").encode()
+-    check(delta==expected_delta,"complete canonical source delta is exactly the one reviewed record")
+-    write("SOURCE_ADVANCE.complete-object-diff.raw",delta)
+-    for side in ("before","after"):
+-        blob_raw=git("cat-file","blob",change[side+"_git_blob"])
+-        expected_pin={"bytes":change[side+"_bytes"],"sha256":change[side+"_sha256"],
+-                      "git_blob":change[side+"_git_blob"]}
+-        pin_bytes(blob_raw,expected_pin,"reviewed original "+side+" test-port bytes")
+-        write("SOURCE_ADVANCE."+side+".source.rs",blob_raw)
+-    write("SOURCE_ADVANCE_RESULT.original.json",raw)
+-    write("SOURCE_ADVANCE_SUPERVISOR.original.json",terminal_raw)
+-    result["actual_source_advance_job"]=proof["job_id"]
+-    result["actual_source_advance_result"]=proof["result"]
+-    result["source_provenance_seed"]={"commit":SEED_HEAD,"tree":SEED_TREE,"parents":SEED_PARENTS,
+-                                      "inventory":SEED_INVENTORY}
++          {"donor_physical_source_and_git_files":"verified","new_source_and_git":"verified",
++           "inputs_and_coordination":"verified"},"all three actual materialization final audits")
++    endpoint={"head":HEAD,"tree":TREE,"parents":PARENTS,"status":"",
++              "inventory":SUCCESSOR_INVENTORY,"native_inventory":NATIVE_INVENTORY}
++    check(observed.get("current_source_before")==endpoint==observed.get("current_source_after"),
++          "actual complete materialized before/after source inventories")
++    check(observed.get("current_git_state_before")==observed.get("current_git_state_after")==
++          proof.get("git_state") and isinstance(proof.get("git_state"),dict),
++          "actual materialization raw Git equality and approved current raw identity")
++    check(observed.get("donor_source_before")==observed.get("donor_source_after") and
++          observed.get("donor_git_state_before")==observed.get("donor_git_state_after"),
++          "actual donor physical and complete Git-file observations unchanged")
++    donor_git=observed["donor_git_state_after"]["git_state"]
++    check(donor_git.get("head")==DONOR_HEAD and donor_git.get("tree")==DONOR_TREE,
++          "historical donor is the actual cc57 repository, not the new candidate")
++    check(observed.get("new_objects_fully_verified")==16652 and
++          observed.get("donor_objects_fully_verified")==16449 and
++          observed.get("physical_leaves_created")==LEAVES,"complete approved object/source counts")
++    index=observed.get("current_index")
++    check(index==proof.get("index") and isinstance(index,dict) and index.get("entries")==LEAVES and
++          index.get("all_entry_logical_identities_verified") is True and
++          index.get("all_actual_stat_fields_verified") is True and
++          index.get("assume_unchanged_or_skip_worktree_entries")==0,
++          "actual full index entries/stat and no skip/assume-unchanged flags")
++    check(index["raw"]["bytes"]==proof["git_state"]["index_bytes"] and
++          index["raw"]["sha256"]==proof["git_state"]["index_sha256"],
++          "actual raw index proof matches current raw Git identity")
++    check(observed.get("coordination_lock")==cfg.get("coordination_lock") and
++          observed["coordination_lock"]["path"]==str(COORDINATION_LOCK) and
++          observed["coordination_lock"]["mode"]=="LOCK_EX",
++          "same actual cooperative coordination lock; no historical coverage extension")
++    records={}
++    parent=pathlib.Path(proof["result_path"]).parent
++    for key,name in (("command_records","COMMANDS.json"),("mutation_records","MUTATION_INTENTS.json"),
++                     ("input_records","INPUT_IDENTITIES.before.json"),("artifact_records","ARTIFACTS.json")):
++        check(observed[key].get("name")==name and
++              {k:observed[key][k] for k in ("bytes","sha256","git_blob")}==proof["records"][key],
++              "actual original materialization record pin "+name)
++        body=read_input(parent/name,proof["records"][key])
++        records[key]=parse(body)
++        write("MATERIALIZATION_"+name,body)
++    check(isinstance(records["command_records"],list) and records["command_records"] and
++          all(row.get("actual_terminal")=="observed" and row.get("returncode")==0 and
++              row.get("timed_out") is False for row in records["command_records"]),
++          "all retained original materialization commands have normal observed terminals")
++    check(isinstance(records["mutation_records"],list) and records["mutation_records"] and
++          all(row.get("actual_terminal")=="observed" for row in records["mutation_records"]),
++          "all retained materialization mutation intents have observed terminals")
++    matches=[row for row in records["artifact_records"] if row.get("name")=="final.git-metadata.json.gz"]
++    check(len(matches)==1,"one complete original final Git metadata artifact")
++    meta=matches[0]
++    check({k:meta[k] for k in ("bytes","sha256","git_blob")}==proof["git_metadata_gzip"] and
++          {k:meta["raw_"+k] for k in ("bytes","sha256","git_blob")}==
++          observed.get("current_git_metadata")==proof.get("git_metadata"),
++          "actual full Git metadata raw/gzip identities from original artifact records")
++    compressed=read_input(parent/"final.git-metadata.json.gz",proof["git_metadata_gzip"])
++    metadata=gzip.decompress(compressed)
++    pin_bytes(metadata,proof["git_metadata"],"complete actual materialization Git-file metadata")
++    write("MATERIALIZATION_GIT_METADATA.original.json",metadata)
++    write("MATERIALIZATION_RESULT.original.json",raw)
++    write("MATERIALIZATION_SUPERVISOR.original.json",terminal_raw)
+     return observed
++
++def validate_materialization_current(observed,current_inventory,current_git_state,current_metadata):
++    proof=cfg["materialization"]
++    pin_bytes(current_inventory,SUCCESSOR_INVENTORY,"current complete materialized candidate inventory")
++    check(current_git_state==observed["current_git_state_after"]==proof["git_state"],
++          "current raw HEAD/index/config/refs still equal the actual materialization result")
++    # The producer records all regular Git files; the original maintenance
++    # inventory also records directories. Preserve that stricter final gate.
++    original=regular_read(OUT/"MATERIALIZATION_GIT_METADATA.original.json")
++    pin_bytes(original,proof["git_metadata"],"retained actual complete Git-file metadata")
++    expected=parse(original);actual=parse(current_metadata)["files"]
++    check(isinstance(expected,list) and expected and
++          all(row.get("kind") in ("file","directory") for row in actual),
++          "complete current Git metadata contains no unrecorded symlink/special file")
++    actual_files={row["path"]:row for row in actual if row["kind"]=="file"}
++    check(len(actual_files)==len(expected)==len({row["path"] for row in expected}) and
++          set(actual_files)=={row["path"] for row in expected},
++          "all actual materialized Git files and no extra/missing files")
++    rebuilt=[]
++    for row in expected:
++        relative=pathlib.PurePosixPath(row["path"])
++        check(not relative.is_absolute() and relative.as_posix()==row["path"] and
++              all(part not in ("",".","..") for part in relative.parts),"exact relative Git file path")
++        path=REPO/".git"/relative
++        body=regular_read(path,max(40000000,row["bytes"]))
++        pin_bytes(body,row,"full actual Git file "+row["path"])
++        current=path.lstat();original_stat=row["stat"]
++        stat_keys=("st_dev","st_ino","st_mode","st_uid","st_gid","st_nlink","st_size","st_mtime_ns","st_ctime_ns")
++        observed_stat={key:getattr(current,key) for key in stat_keys}
++        check(set(original_stat)==set(stat_keys) and observed_stat==original_stat and
++              stat.S_ISREG(current.st_mode) and current.st_nlink==1,
++              "actual complete Git-file stat identity "+row["path"])
++        check(actual_files[row["path"]]=={
++              "path":row["path"],"mode":stat.S_IMODE(current.st_mode),"device":current.st_dev,
++              "inode":current.st_ino,"nlink":current.st_nlink,"mtime_ns":current.st_mtime_ns,
++              "ctime_ns":current.st_ctime_ns,"kind":"file","bytes":len(body),"sha256":sha256(body)},
++              "original maintenance metadata agrees with complete materialization file identity")
++        rebuilt.append({"path":row["path"],"bytes":len(body),"sha256":sha256(body),
++                        "git_blob":oid("blob",body),"stat":observed_stat})
++    check(jbytes(rebuilt)==original,"current complete Git-file metadata is byte-identical to actual producer output")
++    commit_raw=git("cat-file","commit",HEAD)
++    headers=commit_raw.split(b"\n\n",1)[0].split(b"\n")
++    check(oid("commit",commit_raw)==HEAD and headers[0]==("tree "+TREE).encode() and
++          [line[7:].decode("ascii") for line in headers if line.startswith(b"parent ")]==PARENTS,
++          "authentic candidate commit/tree/sole parent; no historical source-advance transplant")
++    write("MATERIALIZATION_CURRENT.commit.raw",commit_raw)
++    result["materialization_current_git_metadata_verified"]=proof["git_metadata"]
++    result["materialization_current_index_verified"]=proof["index"]
++    result["source_provenance_donor"]={"repo":str(MATERIALIZATION_DONOR),"commit":DONOR_HEAD,"tree":DONOR_TREE}
+ 
+ def verify_stage_source_entries(name):
+     paths={"fix":("justfile","scripts/just-shell.py","codex-rs/rust-toolchain.toml"),
+@@ -509,7 +523,7 @@
+           and bool(proof["job_id"]),"actual runtime restoration job identity")
+     check(observed.get("format")=="hepta-runtime-materials-restoration-result-v2"
+           and observed.get("status")=="MATERIALS_READY_FOR_MAINTENANCE_REVIEW"
+-          and observed.get("source_repo")==str(REPO) and observed.get("source_commit")==SEED_HEAD
++          and observed.get("source_repo")==str(HISTORICAL_RUNTIME_REPO) and observed.get("source_commit")==SEED_HEAD
+           and observed.get("source_tree")==SEED_TREE and observed.get("parents")==SEED_PARENTS
+           and observed.get("depot")==str(DEPOT) and observed.get("cargo_target")==str(TARGET),
+           "actual complete runtime restoration identity")
+@@ -546,7 +560,61 @@
+     result["actual_runtime_restoration_job"]=proof["job_id"]
+     result["actual_runtime_restoration_result"]=proof["result"]
+     result["actual_runtime_environment"]=proof["environment"]
++    validate_archive_restoration(environment)
+     return environment
++
++def validate_archive_restoration(environment):
++    proof=cfg.get("archive_restoration")
++    check(isinstance(proof,dict),"actual separate V8 archive restoration proof required")
++    raw=read_input(proof["result_path"],proof["result"])
++    terminal_raw=read_input(proof["supervisor_path"],proof["supervisor"])
++    archive_raw=read_input(proof["archive_readback_path"],proof["archive_readback"])
++    artifacts_raw=read_input(proof["artifacts_path"],proof["artifacts"])
++    observed=parse(raw);terminal=parse_supervisor(terminal_raw);archive=parse(archive_raw)
++    check(isinstance(proof.get("job_id"),str) and proof["job_id"] and
++          terminal.get("job_id")==proof["job_id"],"same actual archive-restoration normal terminal")
++    check(observed.get("format")=="hepta-v8-single-archive-restoration-result-v1" and
++          observed.get("status")=="ARCHIVE_RESTORED_FOR_REVIEW_ONLY" and
++          observed.get("source_repo")==str(MATERIALIZATION_DONOR) and
++          observed.get("source_commit")==DONOR_HEAD and observed.get("source_tree")==DONOR_TREE,
++          "actual archive restoration belongs to historical cc57 donor, not current candidate")
++    for key in ("source_unchanged","destination_created","downloads_started","publication_intent_recorded"):
++        check(observed.get(key) is True,"actual archive restoration "+key)
++    for key in ("source_writes","environment_changes","dependency_installation","native_main_started",
++                "automatic_retry","qualification"):
++        check(observed.get(key) is False,"archive restoration did not authorize "+key)
++    check(observed.get("cargo_or_test_commands")==[],"archive restoration executed no Cargo/test command")
++    audits=observed.get("final_audits")
++    check(isinstance(audits,list) and len(audits)==3 and
++          {row.get("check"):row.get("status") for row in audits}==
++          {"source":"verified","inputs_environment":"verified","materials":"verified"},
++          "all actual archive restoration final audits")
++    materials=next(row for row in audits if row["check"]=="materials")
++    check(observed.get("archive_actual")==archive==materials.get("archive")==proof["archive_actual"],
++          "actual restored archive full identity/stat is separately retained without rewriting historical ENV")
++    archive_path=str(DEPOT/"v8-150.4.0-gnu-sandbox"/
++                     "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz")
++    check(observed.get("destination")==archive.get("path")==archive_path,
++          "actual original V8 destination path")
++    info=archive["stat"];identity=archive["identity"]
++    check(stat.S_ISREG(info["st_mode"]) and stat.S_IMODE(info["st_mode"])==0o600 and
++          info["st_nlink"]==1 and info["st_uid"]==1000 and info["st_size"]==identity["bytes"],
++          "actual restored archive owned single-link regular file")
++    projection={"path":archive_path,"resolved":archive_path,"bytes":identity["bytes"],
++                "sha256":identity["sha256"],"mode":stat.S_IMODE(info["st_mode"])}
++    check(projection==cfg["v8_files"]["RUSTY_V8_ARCHIVE"]==
++          project_runtime_file(environment["tool_and_material_files"]["v8-sandbox-archive"]),
++          "separate actual V8 restoration matches unchanged historical five-field content projection")
++    artifacts=parse(artifacts_raw)
++    matches=[row for row in artifacts["files"] if row.get("name")=="ARCHIVE_READBACK.json"]
++    check(len(matches)==1 and {key:matches[0][key] for key in ("bytes","sha256","git_blob")}
++          ==proof["archive_readback"],"original archive artifact index binds complete readback")
++    for name,body in (("RESULT",raw),("SUPERVISOR",terminal_raw),
++                      ("ARCHIVE_READBACK",archive_raw),("ARTIFACTS",artifacts_raw)):
++        write("V8_RESTORATION_"+name+".original.json",body)
++    result["actual_archive_restoration_job"]=proof["job_id"]
++    result["actual_archive_restoration_result"]=proof["result"]
++    result["actual_archive_restoration_readback"]=proof["archive_readback"]
+ 
+ def environment_preflight():
+     historical=parse(read_input(ENVIRONMENT_FILE,HISTORICAL_ENV_PIN,100000))
+@@ -925,6 +993,11 @@
+           "separate preparation/evidence overhead")
+     check(value.get("test_commands_authorized") is False and value.get("remote_ref_updates_authorized") is False,
+           "no test/ref scope expansion")
++    check(value.get("minimum_target_free_bytes")==34359738368 and
++          value.get("create_target_if_absent") is False,"unchanged 32 GiB existing-target contract")
++    check(value.get("outer_timeout_seconds")==9300 and
++          value.get("coordination_lock",{}).get("path")==str(COORDINATION_LOCK),
++          "original outer budget and one actual cooperative lock path")
+     input_pins[str(CONFIG)]={"bytes":len(raw),"sha256":sha256(raw),"git_blob":oid("blob",raw)}
+     input_pins[str(pathlib.Path(__file__))]={"bytes":len(current),"sha256":sha256(current),"git_blob":oid("blob",current)}
+     write("ACTUAL_DRIVER.py",current);write("APPROVED_CONFIG.original.json",raw)
+@@ -964,10 +1037,10 @@
+     initial_leaves=actual_leaf_map(initial_inventory)
+     check(len(initial_leaves)==LEAVES and merkle(initial_leaves)==TREE,
+           "all actual initial physical leaves reconstruct exact source tree")
+-    validate_source_advance(initial_inventory,initial_git_state)
+     latest_inventory=initial_inventory
+     initial_git_metadata=metadata_inventory(REPO/".git")
+     gzrecord("SOURCE_GIT_METADATA.before.json.gz",initial_git_metadata)
++    validate_materialization_current(observed,initial_inventory,initial_git_state,initial_git_metadata)
+     result["fmt_base"]=check_fmt_base()
+     initial_environment=environment_preflight()
+     verify_original_inputs()

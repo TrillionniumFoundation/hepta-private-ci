@@ -1,0 +1,364 @@
+{
+  "format": "hepta-maintenance-successor-proof-contract-v1",
+  "status": "PREPARED_PENDING_ROOT_EXACT_ENGINEERING_APPROVAL",
+  "driver": {
+    "bytes": 68496,
+    "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+    "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+  },
+  "historical_roles": {
+    "runtime_six_command_result": {
+      "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+      "result": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "environment": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "changed_bytes": false,
+      "current_source_proof": false
+    },
+    "archive_restore_v3": {
+      "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+      "result": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "normal": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "observed_archive_inode": 26738823,
+      "current_comparison_fields": [
+        "path",
+        "resolved",
+        "bytes",
+        "sha256",
+        "mode"
+      ],
+      "historical_env_inode_rewritten": false
+    },
+    "new_materialization": {
+      "donor_repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+      "destination_repo": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+      "commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+      "tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+      "parents": [
+        "cc57c7198db6293ccca562253c42fffbe2a04633"
+      ],
+      "result": "4832994442a8a1bc89ea3af7825a06310ceb7c64",
+      "normal": "b726c1fa0db15e96fc46f1398b362a7ce0391f3c",
+      "git_metadata": "15430201d5bafa19d2396f5fe8a240cd3d271d5c",
+      "git_metadata_bytes": 2234,
+      "old_86dd_to_9c4_source_advance_reused": false
+    }
+  },
+  "changed_functions": [
+    {
+      "name": "validate_materialization",
+      "change": "Replace old seed producer schema with the actual new isolated candidate schema; require exact result/normal, current endpoints, full index, raw Git, unchanged donor, three final audits, all four original record bodies and final complete metadata gzip/raw."
+    },
+    {
+      "name": "validate_source_advance",
+      "change": "Remove this inapplicable old 86dd→9c4 one-file proof consumer. No historical proof is reclassified."
+    },
+    {
+      "name": "validate_materialization_current",
+      "change": "New consumer after original current metadata_inventory. Re-read every actual Git file, verify full bytes/SHA/Git and all nine producer stat fields, compare complete path sets and reconstruct the exact producer 2234-byte metadata. Preserve original directory-inclusive before/after equality. Verify actual candidate commit/tree/ordered parent."
+    },
+    {
+      "name": "validate_runtime_restoration",
+      "change": "Only bind historical result.source_repo to its fixed old runtime repo; call separate archive-v3 validator before returning unchanged original ENV8b62."
+    },
+    {
+      "name": "validate_archive_restoration",
+      "change": "New separate actual cc57 archive RESULT/normal/readback/artifact proof. Full original new inode/stat retained, exact content projected to the unchanged old five-field comparison. No environment history rewrite."
+    },
+    {
+      "name": "validate_config",
+      "change": "Add explicit original 32GiB/createfalse, outer9300 and fixed coordination lock path checks; all original approval/source/command/budget/test/ref checks retained."
+    },
+    {
+      "name": "initial_preflight",
+      "change": "Remove old sourceadvance call; after full current metadata capture, call current materialization continuity consumer. Preserve all source-entry snapshots, original helper loading, inventory/Merkle, c0f verification, original environment and live guard."
+    }
+  ],
+  "all_new_proof_predicates_in_source_order": {
+    "validate_materialization": [
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(proof,dict) and isinstance(proof.get(\"job_id\"),str) and proof[\"job_id\"],\n          \"HOLD: actual candidate materialization proof required\")"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(proof[\"result_path\"],proof[\"result\"])"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(proof[\"supervisor_path\"],proof[\"supervisor\"])"
+      },
+      {
+        "operation": "parse_supervisor",
+        "exact_source": "parse_supervisor(terminal_raw)"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(terminal.get(\"job_id\")==proof[\"job_id\"],\"same actual candidate materialization job\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"format\")==\"hepta-complete-candidate-materialization-result-v1\" and\n          observed.get(\"status\")==\"MATERIALIZED_EXACT_CANDIDATE_FOR_MAINTENANCE_REVIEW_ONLY\" and\n          observed.get(\"source_repo\")==str(MATERIALIZATION_DONOR) and\n          observed.get(\"destination_repo\")==str(REPO) and\n          observed.get(\"source_commit\")==HEAD and observed.get(\"source_tree\")==TREE and\n          observed.get(\"parents\")==PARENTS,\"actual donor/destination and exact candidate identity\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(key) is True,\"candidate materialization actual \"+key)"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(key) is False,\"materialization did not authorize \"+key)"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(type(observed.get(\"test_commands_dispatched\")) is int and\n          observed[\"test_commands_dispatched\"]==0 and observed.get(\"cleanup_errors\")==[] and\n          \"error\" not in observed and \"retention_error\" not in observed,\n          \"materialization has no test dispatch, incomplete cleanup or retained error\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(audits,list) and len(audits)==3 and\n          {row.get(\"check\"):row.get(\"status\") for row in audits}==\n          {\"donor_physical_source_and_git_files\":\"verified\",\"new_source_and_git\":\"verified\",\n           \"inputs_and_coordination\":\"verified\"},\"all three actual materialization final audits\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"current_source_before\")==endpoint==observed.get(\"current_source_after\"),\n          \"actual complete materialized before/after source inventories\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"current_git_state_before\")==observed.get(\"current_git_state_after\")==\n          proof.get(\"git_state\") and isinstance(proof.get(\"git_state\"),dict),\n          \"actual materialization raw Git equality and approved current raw identity\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"donor_source_before\")==observed.get(\"donor_source_after\") and\n          observed.get(\"donor_git_state_before\")==observed.get(\"donor_git_state_after\"),\n          \"actual donor physical and complete Git-file observations unchanged\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(donor_git.get(\"head\")==DONOR_HEAD and donor_git.get(\"tree\")==DONOR_TREE,\n          \"historical donor is the actual cc57 repository, not the new candidate\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"new_objects_fully_verified\")==16652 and\n          observed.get(\"donor_objects_fully_verified\")==16449 and\n          observed.get(\"physical_leaves_created\")==LEAVES,\"complete approved object/source counts\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(index==proof.get(\"index\") and isinstance(index,dict) and index.get(\"entries\")==LEAVES and\n          index.get(\"all_entry_logical_identities_verified\") is True and\n          index.get(\"all_actual_stat_fields_verified\") is True and\n          index.get(\"assume_unchanged_or_skip_worktree_entries\")==0,\n          \"actual full index entries/stat and no skip/assume-unchanged flags\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(index[\"raw\"][\"bytes\"]==proof[\"git_state\"][\"index_bytes\"] and\n          index[\"raw\"][\"sha256\"]==proof[\"git_state\"][\"index_sha256\"],\n          \"actual raw index proof matches current raw Git identity\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"coordination_lock\")==cfg.get(\"coordination_lock\") and\n          observed[\"coordination_lock\"][\"path\"]==str(COORDINATION_LOCK) and\n          observed[\"coordination_lock\"][\"mode\"]==\"LOCK_EX\",\n          \"same actual cooperative coordination lock; no historical coverage extension\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed[key].get(\"name\")==name and\n              {k:observed[key][k] for k in (\"bytes\",\"sha256\",\"git_blob\")}==proof[\"records\"][key],\n              \"actual original materialization record pin \"+name)"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(parent/name,proof[\"records\"][key])"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(records[\"command_records\"],list) and records[\"command_records\"] and\n          all(row.get(\"actual_terminal\")==\"observed\" and row.get(\"returncode\")==0 and\n              row.get(\"timed_out\") is False for row in records[\"command_records\"]),\n          \"all retained original materialization commands have normal observed terminals\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(records[\"mutation_records\"],list) and records[\"mutation_records\"] and\n          all(row.get(\"actual_terminal\")==\"observed\" for row in records[\"mutation_records\"]),\n          \"all retained materialization mutation intents have observed terminals\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(len(matches)==1,\"one complete original final Git metadata artifact\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check({k:meta[k] for k in (\"bytes\",\"sha256\",\"git_blob\")}==proof[\"git_metadata_gzip\"] and\n          {k:meta[\"raw_\"+k] for k in (\"bytes\",\"sha256\",\"git_blob\")}==\n          observed.get(\"current_git_metadata\")==proof.get(\"git_metadata\"),\n          \"actual full Git metadata raw/gzip identities from original artifact records\")"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(parent/\"final.git-metadata.json.gz\",proof[\"git_metadata_gzip\"])"
+      },
+      {
+        "operation": "pin_bytes",
+        "exact_source": "pin_bytes(metadata,proof[\"git_metadata\"],\"complete actual materialization Git-file metadata\")"
+      }
+    ],
+    "validate_materialization_current": [
+      {
+        "operation": "pin_bytes",
+        "exact_source": "pin_bytes(current_inventory,SUCCESSOR_INVENTORY,\"current complete materialized candidate inventory\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(current_git_state==observed[\"current_git_state_after\"]==proof[\"git_state\"],\n          \"current raw HEAD/index/config/refs still equal the actual materialization result\")"
+      },
+      {
+        "operation": "pin_bytes",
+        "exact_source": "pin_bytes(original,proof[\"git_metadata\"],\"retained actual complete Git-file metadata\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(expected,list) and expected and\n          all(row.get(\"kind\") in (\"file\",\"directory\") for row in actual),\n          \"complete current Git metadata contains no unrecorded symlink/special file\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(len(actual_files)==len(expected)==len({row[\"path\"] for row in expected}) and\n          set(actual_files)=={row[\"path\"] for row in expected},\n          \"all actual materialized Git files and no extra/missing files\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(not relative.is_absolute() and relative.as_posix()==row[\"path\"] and\n              all(part not in (\"\",\".\",\"..\") for part in relative.parts),\"exact relative Git file path\")"
+      },
+      {
+        "operation": "pin_bytes",
+        "exact_source": "pin_bytes(body,row,\"full actual Git file \"+row[\"path\"])"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(set(original_stat)==set(stat_keys) and observed_stat==original_stat and\n              stat.S_ISREG(current.st_mode) and current.st_nlink==1,\n              \"actual complete Git-file stat identity \"+row[\"path\"])"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(actual_files[row[\"path\"]]=={\n              \"path\":row[\"path\"],\"mode\":stat.S_IMODE(current.st_mode),\"device\":current.st_dev,\n              \"inode\":current.st_ino,\"nlink\":current.st_nlink,\"mtime_ns\":current.st_mtime_ns,\n              \"ctime_ns\":current.st_ctime_ns,\"kind\":\"file\",\"bytes\":len(body),\"sha256\":sha256(body)},\n              \"original maintenance metadata agrees with complete materialization file identity\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(jbytes(rebuilt)==original,\"current complete Git-file metadata is byte-identical to actual producer output\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(oid(\"commit\",commit_raw)==HEAD and headers[0]==(\"tree \"+TREE).encode() and\n          [line[7:].decode(\"ascii\") for line in headers if line.startswith(b\"parent \")]==PARENTS,\n          \"authentic candidate commit/tree/sole parent; no historical source-advance transplant\")"
+      }
+    ],
+    "validate_archive_restoration": [
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(proof,dict),\"actual separate V8 archive restoration proof required\")"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(proof[\"result_path\"],proof[\"result\"])"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(proof[\"supervisor_path\"],proof[\"supervisor\"])"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(proof[\"archive_readback_path\"],proof[\"archive_readback\"])"
+      },
+      {
+        "operation": "read_input",
+        "exact_source": "read_input(proof[\"artifacts_path\"],proof[\"artifacts\"])"
+      },
+      {
+        "operation": "parse_supervisor",
+        "exact_source": "parse_supervisor(terminal_raw)"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(proof.get(\"job_id\"),str) and proof[\"job_id\"] and\n          terminal.get(\"job_id\")==proof[\"job_id\"],\"same actual archive-restoration normal terminal\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"format\")==\"hepta-v8-single-archive-restoration-result-v1\" and\n          observed.get(\"status\")==\"ARCHIVE_RESTORED_FOR_REVIEW_ONLY\" and\n          observed.get(\"source_repo\")==str(MATERIALIZATION_DONOR) and\n          observed.get(\"source_commit\")==DONOR_HEAD and observed.get(\"source_tree\")==DONOR_TREE,\n          \"actual archive restoration belongs to historical cc57 donor, not current candidate\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(key) is True,\"actual archive restoration \"+key)"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(key) is False,\"archive restoration did not authorize \"+key)"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"cargo_or_test_commands\")==[],\"archive restoration executed no Cargo/test command\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(isinstance(audits,list) and len(audits)==3 and\n          {row.get(\"check\"):row.get(\"status\") for row in audits}==\n          {\"source\":\"verified\",\"inputs_environment\":\"verified\",\"materials\":\"verified\"},\n          \"all actual archive restoration final audits\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"archive_actual\")==archive==materials.get(\"archive\")==proof[\"archive_actual\"],\n          \"actual restored archive full identity/stat is separately retained without rewriting historical ENV\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(observed.get(\"destination\")==archive.get(\"path\")==archive_path,\n          \"actual original V8 destination path\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(stat.S_ISREG(info[\"st_mode\"]) and stat.S_IMODE(info[\"st_mode\"])==0o600 and\n          info[\"st_nlink\"]==1 and info[\"st_uid\"]==1000 and info[\"st_size\"]==identity[\"bytes\"],\n          \"actual restored archive owned single-link regular file\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(projection==cfg[\"v8_files\"][\"RUSTY_V8_ARCHIVE\"]==\n          project_runtime_file(environment[\"tool_and_material_files\"][\"v8-sandbox-archive\"]),\n          \"separate actual V8 restoration matches unchanged historical five-field content projection\")"
+      },
+      {
+        "operation": "check",
+        "exact_source": "check(len(matches)==1 and {key:matches[0][key] for key in (\"bytes\",\"sha256\",\"git_blob\")}\n          ==proof[\"archive_readback\"],\"original archive artifact index binds complete readback\")"
+      }
+    ]
+  },
+  "unchanged_execution": {
+    "definitions_count": 45,
+    "main_and_stage_and_execute_logged_call": true,
+    "timeout_and_failure_classification": true,
+    "global_process_guard_and_rejection_record": true,
+    "source_entry_start_checks": true,
+    "all_actual_postimages": true,
+    "raw_git_state_equality": true,
+    "full_directory_and_file_metadata_equality": true,
+    "archive_diff_autoRefreshIndex_false": true,
+    "minimum_target_free_bytes": 34359738368,
+    "cargo_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "budgets_seconds": {
+      "outer": 9300,
+      "fix": 7200,
+      "fmt": 900,
+      "preflight": 600,
+      "records": 300
+    }
+  },
+  "cooperative_lock": {
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "actual_materialization_device": 2050,
+    "actual_materialization_inode": 50139448,
+    "successor_lease_observed": false,
+    "existing_only_no_recreation": true,
+    "all_nine_actual_stat_fields_checked": true,
+    "code": "os.open existing O_RDWR|O_NOFOLLOW → exact stat → flock LOCK_EX|LOCK_NB → set_inheritable(True) → retain actual fresh lease → os.execv original Python driver; no close/unlock in between.",
+    "scope": "Cooperating writers only. No backward coverage of historical work, no claim of unrelated-process exclusion; full inventories and global guard remain mandatory."
+  },
+  "staging_and_main": {
+    "staging_contract": "STAGING_CONTRACT.HOLD.json",
+    "final_exact_input_index": "execution-candidate-v1/FILE_INDEX.json",
+    "staging_creates_only": true,
+    "staging_does_not_execute_driver": true,
+    "ordered_approval": "Root exact engineering approval must cover the stage-only seven-field request followed, only after its actual normal0/full6file readback, by the six-field 9300-second main request.",
+    "source_dir_or_ref_write_during_preparation": false,
+    "unknown_job_never_replaced_or_retried_with_new_bytes": true
+  },
+  "limitations": [
+    "No maintenance/fmt/Cargo/source gate/native gate was executed by this preparation.",
+    "All output postimages, future lease/process observation, formatting result and qualification remain unobserved.",
+    "The same raw index and metadata must actually survive original commands; no stat-only or logical-index waiver is introduced.",
+    "Separate 900-second control staging retains the observed bootstrap outer limit; it does not add time to maintenance commands or qualification gates."
+  ],
+  "qualification": false
+}

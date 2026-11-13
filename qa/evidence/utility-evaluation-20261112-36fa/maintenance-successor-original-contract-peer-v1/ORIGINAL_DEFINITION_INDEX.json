@@ -1,0 +1,491 @@
+{
+  "H_calls": 0,
+  "class_count": 3,
+  "definition_count": 50,
+  "definitions": [
+    {
+      "AST_sha256": "033b97d14d7b973211cfee763d5634332b68cce04be899bad1c13fa8c783c6d3",
+      "kind": "ClassDef",
+      "line_end": 119,
+      "line_start": 119,
+      "name": "PreconditionError",
+      "source_segment_bytes": 43,
+      "source_segment_sha256": "8b09852e20a75aaab2db775ea774ba3186ce37ec7ce43c7e8f5c304b0a0119fd"
+    },
+    {
+      "AST_sha256": "ea62c20dda72de0b7b2f440be09998eb00c9de111aaaa599473dc88a8b6b7d5d",
+      "kind": "ClassDef",
+      "line_end": 120,
+      "line_start": 120,
+      "name": "IntegrityError",
+      "source_segment_bytes": 40,
+      "source_segment_sha256": "99c5dba7404faeb92a9939e45095256fe9128d253e6924ca11d0c79a0d9b7071"
+    },
+    {
+      "AST_sha256": "b99c66735a3e9c6a78ff6f0985160e715909dcc5dfa52c1a5ac6a107ddb1977a",
+      "kind": "FunctionDef",
+      "line_end": 124,
+      "line_start": 123,
+      "name": "now",
+      "source_segment_bytes": 78,
+      "source_segment_sha256": "4947c8b7dae7be0e7963b915d710951c83b98a37e44432a37055d0bf3dd3eb9a"
+    },
+    {
+      "AST_sha256": "5097b5a9194a53d91c8d93f88e69c7c79446b58105128296053901d34ba16ef5",
+      "kind": "FunctionDef",
+      "line_end": 127,
+      "line_start": 126,
+      "name": "sha256",
+      "source_segment_bytes": 55,
+      "source_segment_sha256": "1b61f29a0b229f7a9a9e1905ec8c0a737f15a89680d167c4967d91706a1a7bfa"
+    },
+    {
+      "AST_sha256": "335c3e6bff7717518c157b7f885879eb3ba701a9832ba341ea9fa9a5a2e200e0",
+      "kind": "FunctionDef",
+      "line_end": 130,
+      "line_start": 129,
+      "name": "oid",
+      "source_segment_bytes": 114,
+      "source_segment_sha256": "5cb15a5dd93435ead1534f5cb096dbc63b2d0caa653f2b0bcb83ab447638cf41"
+    },
+    {
+      "AST_sha256": "a79992285e16e2d11b8b326380cff36b3dfd33427c8de3bb7cbea0464d510c3f",
+      "kind": "FunctionDef",
+      "line_end": 134,
+      "line_start": 132,
+      "name": "check",
+      "source_segment_bytes": 68,
+      "source_segment_sha256": "08ec2e93c4594119d89bf82adf1a3ad18a2c41221900444400b0a67cd2857bf1"
+    },
+    {
+      "AST_sha256": "eaca41c17ecb997203a83eb355ae5af1a71b8178856ce6a0cb748e0e71defdb3",
+      "kind": "FunctionDef",
+      "line_end": 141,
+      "line_start": 136,
+      "name": "nodup",
+      "source_segment_bytes": 132,
+      "source_segment_sha256": "8f1166c9b3b999742a948bc98ab14fb00fee174570fd6b3869fb48dfa7fcbb3b"
+    },
+    {
+      "AST_sha256": "c1b20809cf734c323c9439832c94c65d4619822f9833a179d02e991f0e3a457e",
+      "kind": "FunctionDef",
+      "line_end": 144,
+      "line_start": 143,
+      "name": "parse",
+      "source_segment_bytes": 79,
+      "source_segment_sha256": "555e8bedcde57a8766e717f5b22848b5d86cac79ffe6f3769ae825e1b3cbfbb8"
+    },
+    {
+      "AST_sha256": "736eead349ae41bc172e21cfa63192e0ebc234343724b5d1e486c8be5c4c6406",
+      "kind": "FunctionDef",
+      "line_end": 169,
+      "line_start": 146,
+      "name": "regular_read",
+      "source_segment_bytes": 924,
+      "source_segment_sha256": "44df1cf209b52d58ff103e0fb26618d893de61d57ca88fe0020695b212cfa64a"
+    },
+    {
+      "AST_sha256": "4dc4a9ddd4f6eb3e0cf2aeb03965d910b5d69c2f8602056abe6b4f76ec7248c0",
+      "kind": "FunctionDef",
+      "line_end": 172,
+      "line_start": 171,
+      "name": "jbytes",
+      "source_segment_bytes": 117,
+      "source_segment_sha256": "521ef79c40f00745f8b86b7b81ee367c61552fc70486255dcd6d061d013c91ab"
+    },
+    {
+      "AST_sha256": "200c957fd6d55562dea6db760234b86f5cc2b45e8dfb545fe12ad5af911dba85",
+      "kind": "FunctionDef",
+      "line_end": 183,
+      "line_start": 174,
+      "name": "write",
+      "source_segment_bytes": 508,
+      "source_segment_sha256": "12bd28057641033e4b8715058a6c9f619856f72204460934dc542e3151f3e050"
+    },
+    {
+      "AST_sha256": "b87df6eedccdd5efd7cd99b2f262c6a7e7dbe3ccc345a79ddb3fb6274c14cb39",
+      "kind": "FunctionDef",
+      "line_end": 186,
+      "line_start": 185,
+      "name": "jwrite",
+      "source_segment_bytes": 62,
+      "source_segment_sha256": "25d0364da3a441ab2fe9418efe57d16258b69184ccc5769f513d958c74b2cf3d"
+    },
+    {
+      "AST_sha256": "186d7781d88131563849c08ca88d1db08553c473277539b4c8b9cb5a97573f1c",
+      "kind": "FunctionDef",
+      "line_end": 199,
+      "line_start": 188,
+      "name": "gzrecord",
+      "source_segment_bytes": 575,
+      "source_segment_sha256": "675374003d8b5a6910ea121dd0088c26dc7b14b3061b0d1c86555de42851f7f4"
+    },
+    {
+      "AST_sha256": "69358d03bd54a65e36237c12fab99f81b750e31cc934d68e54ae82477751e7c9",
+      "kind": "FunctionDef",
+      "line_end": 208,
+      "line_start": 201,
+      "name": "event",
+      "source_segment_bytes": 340,
+      "source_segment_sha256": "65f4a30f8d75a7e7841d756b4502c51569c0fac57f333189d7a566d8f931d75e"
+    },
+    {
+      "AST_sha256": "d7582a498617baff094cdbc85f2aab60058c0000197f119658a6ea1cd3bc0aa1",
+      "kind": "FunctionDef",
+      "line_end": 216,
+      "line_start": 211,
+      "name": "pin_bytes",
+      "source_segment_bytes": 312,
+      "source_segment_sha256": "a8f1320e03bbc0ebdb16c2f3db12a997a805028ee41ec7b3c4afe3336672d1d8"
+    },
+    {
+      "AST_sha256": "2145b93e14808d90b959c72cc26cea738f604aa50b51b13a38c2d287c603992e",
+      "kind": "FunctionDef",
+      "line_end": 223,
+      "line_start": 218,
+      "name": "read_input",
+      "source_segment_bytes": 229,
+      "source_segment_sha256": "fc0059853dade3bd4b33f8c08f7f3ba011657736473d350d13a9b56560746abf"
+    },
+    {
+      "AST_sha256": "8a65923cf59b892fcfd2f9e7af6bb9fc9fcde0b88e0a1c126a8ed54f8c10c463",
+      "kind": "FunctionDef",
+      "line_end": 233,
+      "line_start": 225,
+      "name": "real_directory",
+      "source_segment_bytes": 369,
+      "source_segment_sha256": "223567839d313deaadac7cb0faa187d2f2fc605feb2f0bb30186048e11beae2f"
+    },
+    {
+      "AST_sha256": "97d254906a9b823d3259d4edb36735a2785aea13059e57740c1c0c6433ef6e7b",
+      "kind": "FunctionDef",
+      "line_end": 252,
+      "line_start": 235,
+      "name": "external_directory",
+      "source_segment_bytes": 1027,
+      "source_segment_sha256": "bcfc28386ae8395b0b5d5a7577a2a92ea18853a167a6066f8a2c4efb19a843fc"
+    },
+    {
+      "AST_sha256": "071e6927fc09bbd84b21116e71cb1eda0b55be5df2f68c41e9b97945ec023899",
+      "kind": "FunctionDef",
+      "line_end": 265,
+      "line_start": 254,
+      "name": "run_readonly",
+      "source_segment_bytes": 697,
+      "source_segment_sha256": "81409bc0c5f3ae80f948f0756a27ca44bd858220bb6c0516bc3eeb0887b70e86"
+    },
+    {
+      "AST_sha256": "f01f4c7470bf01fd07114c97ee69fb33126a9dff85481ab731c3c22fe8bea0b4",
+      "kind": "FunctionDef",
+      "line_end": 269,
+      "line_start": 267,
+      "name": "git",
+      "source_segment_bytes": 180,
+      "source_segment_sha256": "7f03eb5696d964ef3c68693462e3bf83e5a0591ec1f8eb774dff31c37a416e8e"
+    },
+    {
+      "AST_sha256": "9e93767315f71556efd6e91d2090eb996e46a3b74cf6e1188a72d90ae69e8f6a",
+      "kind": "FunctionDef",
+      "line_end": 290,
+      "line_start": 271,
+      "name": "git_state",
+      "source_segment_bytes": 1325,
+      "source_segment_sha256": "569aa9f2dcfdb68b4b56104d7d49b9bdfc01d8166318af7f8a5cf71a047e20f2"
+    },
+    {
+      "AST_sha256": "8ada63aa723232591d330a64ee9a41ff5e376fdec4d4f42356c89e4d9318d4e1",
+      "kind": "FunctionDef",
+      "line_end": 295,
+      "line_start": 292,
+      "name": "verify_original_inputs",
+      "source_segment_bytes": 209,
+      "source_segment_sha256": "28d1a68835982b0377243bcbd5e8231f80c35a9ca1a61573c8305c673c4286b4"
+    },
+    {
+      "AST_sha256": "58dde288e3b4e717dcb8f9a64c19af6522f04bea01a80ecdcca6c97e03426cb3",
+      "kind": "FunctionDef",
+      "line_end": 304,
+      "line_start": 297,
+      "name": "load_module",
+      "source_segment_bytes": 348,
+      "source_segment_sha256": "cc620b5e69c7757f030d889e4506c11bbc4901799bdc65d5b5a4d4c4c3c39350"
+    },
+    {
+      "AST_sha256": "419147f214db477d92ae36f25547a2b2f137809d3c262ee4567282a414fa81a5",
+      "kind": "FunctionDef",
+      "line_end": 318,
+      "line_start": 306,
+      "name": "parse_supervisor",
+      "source_segment_bytes": 861,
+      "source_segment_sha256": "4f526ff12e0e14b754187dce5ff893ec335ef1f456b38f1a27af76921fca62ba"
+    },
+    {
+      "AST_sha256": "e34a229b10b265b0952e6930c8bdcd3ee85a2987ed1001aa4303c643727ea812",
+      "kind": "FunctionDef",
+      "line_end": 352,
+      "line_start": 320,
+      "name": "validate_materialization",
+      "source_segment_bytes": 2472,
+      "source_segment_sha256": "bc4a3a15185ff548397429510e579bbbce4a82558df79abe502266cfa12e59f1"
+    },
+    {
+      "AST_sha256": "47a4e67ef9e6f791517fd69793cf7d6d6edf5b0b904d314820b1a44a50b29948",
+      "kind": "FunctionDef",
+      "line_end": 445,
+      "line_start": 354,
+      "name": "validate_source_advance",
+      "source_segment_bytes": 6550,
+      "source_segment_sha256": "c2d626c3852267452b6510b728f19d00cb5a986a70d6dafa8ce0e32d5a379dff"
+    },
+    {
+      "AST_sha256": "ee99491a6dc447383b9aa7713928953b00abf9d537a9a2a329228c2e2ea6ea15",
+      "kind": "FunctionDef",
+      "line_end": 458,
+      "line_start": 447,
+      "name": "verify_stage_source_entries",
+      "source_segment_bytes": 862,
+      "source_segment_sha256": "557a414e0ab771e78c60b549f00aadebc957995fe14212fe4528c3a2272cdcb1"
+    },
+    {
+      "AST_sha256": "2fda3b666e36d96d45831aedfedba766d2b90bfcdb17e5a0e7d82a8e6691a67f",
+      "kind": "FunctionDef",
+      "line_end": 478,
+      "line_start": 460,
+      "name": "active_build_processes",
+      "source_segment_bytes": 1049,
+      "source_segment_sha256": "097233d5e83f195351f7a56473f766773dfb9a8e649969eab53449fb95b0f1ac"
+    },
+    {
+      "AST_sha256": "bb9d790251c18d5806cc896d6ded70398c7976563ecfe0881a0bbf86ddd3aba2",
+      "kind": "FunctionDef",
+      "line_end": 493,
+      "line_start": 480,
+      "name": "installed_file_observation",
+      "source_segment_bytes": 770,
+      "source_segment_sha256": "c9dd738bb5a02d1af5b8567bad3bc19528e414746de84dc8caf303ff1de00c73"
+    },
+    {
+      "AST_sha256": "662e455019dac00086d0a0e324e2dfb32b6e82e7d62ffa0569f64f49b6a148d5",
+      "kind": "FunctionDef",
+      "line_end": 499,
+      "line_start": 495,
+      "name": "project_runtime_file",
+      "source_segment_bytes": 332,
+      "source_segment_sha256": "ecaa21b503b2eafc82cd4121aaef0aa9212e1bdc6e888ce8077d1f8781edbf29"
+    },
+    {
+      "AST_sha256": "4301a834ce09a35356ca9b2ae78b5f67610c1b8fe8d9329dd2d092f23c4599c0",
+      "kind": "FunctionDef",
+      "line_end": 549,
+      "line_start": 501,
+      "name": "validate_runtime_restoration",
+      "source_segment_bytes": 3799,
+      "source_segment_sha256": "3056bd324d5b651caec7728d3f022d3f114feed7883d73645510aeb05a35e2d5"
+    },
+    {
+      "AST_sha256": "67a28503050537d219f6808fcdfdc2be98886fbc706c5443ae56d05f713d281d",
+      "kind": "FunctionDef",
+      "line_end": 644,
+      "line_start": 551,
+      "name": "environment_preflight",
+      "source_segment_bytes": 6749,
+      "source_segment_sha256": "324072d9e7b0de967bf5b45b472f264c65422df67ca0f9698519c2952013f66c"
+    },
+    {
+      "AST_sha256": "970cc8432e58afeff445c13c5a14d7db5929d21b62dd105efb96c4b2ea1ae5eb",
+      "kind": "FunctionDef",
+      "line_end": 674,
+      "line_start": 646,
+      "name": "metadata_inventory",
+      "source_segment_bytes": 1790,
+      "source_segment_sha256": "f7f5cce48399770b4da49a763384b13c08592e85a63559fd1a94f6c4bc9a3aef"
+    },
+    {
+      "AST_sha256": "da1aaf2e73794856a10e7ff276a96a1cf774d0ba305d10bdb4124c1c763546a8",
+      "kind": "FunctionDef",
+      "line_end": 688,
+      "line_start": 677,
+      "name": "actual_leaf_map",
+      "source_segment_bytes": 728,
+      "source_segment_sha256": "71b564279721303e663e390b13cd76d7ff0209b6648ec8f005b0dd739c0f7a53"
+    },
+    {
+      "AST_sha256": "26a32ae4a38ba824c1c79121216c6abc57a3f12e0f25af6971df29a6bf5b7139",
+      "kind": "FunctionDef",
+      "line_end": 707,
+      "line_start": 690,
+      "name": "merkle",
+      "source_segment_bytes": 846,
+      "source_segment_sha256": "8f89e9b3c37d89ac44893fbcd1afa2b8cb194b8cbb859f39aa1373c477525aed"
+    },
+    {
+      "AST_sha256": "efa5e124704156abcaf8e474f4d5130b7900fd71e6863ce70066054335c160c7",
+      "kind": "ClassDef",
+      "line_end": 742,
+      "line_start": 709,
+      "name": "OriginalBlobReader",
+      "source_segment_bytes": 1777,
+      "source_segment_sha256": "65cc32fbedc0b4ce4be83f85bfdfd29eb1ba07fa993895edecc6fdf989766dbe"
+    },
+    {
+      "AST_sha256": "8b2b36e4e261a359119eb69b44fb6e08ce79a64826289b35907fd5f76ba50c9e",
+      "kind": "FunctionDef",
+      "line_end": 752,
+      "line_start": 744,
+      "name": "read_actual_leaf",
+      "source_segment_bytes": 382,
+      "source_segment_sha256": "700b8ac5fd28988e3a78753d805d132524902abec175953f3763b6bd555b4997"
+    },
+    {
+      "AST_sha256": "85c71d297724a972c00d775fc9bbed59a8d1616142555d608ba451447996708b",
+      "kind": "FunctionDef",
+      "line_end": 800,
+      "line_start": 754,
+      "name": "archive_transition",
+      "source_segment_bytes": 3018,
+      "source_segment_sha256": "b0fd2fd21ea0dac5b4e56af6f08d6c8bddf7a7870da9e4923fc3a2ffe3d067f8"
+    },
+    {
+      "AST_sha256": "33a3e197a244dc4b1455114da23ed3c1714be8fae2c3f85118b7d42978623a73",
+      "kind": "FunctionDef",
+      "line_end": 815,
+      "line_start": 802,
+      "name": "capture_source",
+      "source_segment_bytes": 718,
+      "source_segment_sha256": "b597103c0733ca624e3ca3fd5175d61f2aec402ef46ce927ee69b73e67e4577c"
+    },
+    {
+      "AST_sha256": "bbf2e76e4e6c876e1274c7351dab57bbc69bd75305ee2a2591c2276bc5733846",
+      "kind": "FunctionDef",
+      "line_end": 833,
+      "line_start": 817,
+      "name": "check_fmt_base",
+      "source_segment_bytes": 1112,
+      "source_segment_sha256": "3e02c1ae9225bbf6606e5abd754d1028af28233ca811154b142e84b929b001bd"
+    },
+    {
+      "AST_sha256": "158061c0a8c6a7e0fc37754e4a5d77acf25781d46e96fb3c729718e10c39daa1",
+      "kind": "FunctionDef",
+      "line_end": 837,
+      "line_start": 835,
+      "name": "set_alarm",
+      "source_segment_bytes": 128,
+      "source_segment_sha256": "4f189cd1ae464a16aa1e733340be8d639aed0d2f34651387c6fc338721a5bf21"
+    },
+    {
+      "AST_sha256": "90a363571e2ef208d1a1e71a4ce24533da02016d1d74bd524e7d89f8795da12b",
+      "kind": "FunctionDef",
+      "line_end": 840,
+      "line_start": 839,
+      "name": "alarm_handler",
+      "source_segment_bytes": 115,
+      "source_segment_sha256": "83b72d98ac743ff94e6e44ea59d31f2667ffb297efe6536b5cd68fe6fbe77c25"
+    },
+    {
+      "AST_sha256": "9c427d45075aa063510d693a9377d940ef15aa4ded1671817742ddf1653cf529",
+      "kind": "FunctionDef",
+      "line_end": 852,
+      "line_start": 844,
+      "name": "bounded_record",
+      "source_segment_bytes": 314,
+      "source_segment_sha256": "b08c3c0c8ea197669db73d6f5039b40ebf92c6c8c0ae423a88a7a0ef85d80e2e"
+    },
+    {
+      "AST_sha256": "f101d37528a8a7b8626bfab3525573a480e799deee14dc8c7bb1e641c851993c",
+      "kind": "FunctionDef",
+      "line_end": 909,
+      "line_start": 854,
+      "name": "stage",
+      "source_segment_bytes": 3659,
+      "source_segment_sha256": "139c2d47f68a39e7299c57a866a01cd11389be585943ddda9a3461e2f350a11c"
+    },
+    {
+      "AST_sha256": "ab106d36289d6de24d2ef2398727f6a95db6a020efd2983d45b8d8b753566bde",
+      "kind": "FunctionDef",
+      "line_end": 931,
+      "line_start": 911,
+      "name": "validate_config",
+      "source_segment_bytes": 1684,
+      "source_segment_sha256": "f5c386f32fb40ddf6a14a6ce68eb6521e75e8a6711e3fcda652ea48817163ad2"
+    },
+    {
+      "AST_sha256": "95e665bbd47546dd231d3e246897f56b35ff013fffbe1326de97722c03d48891",
+      "kind": "FunctionDef",
+      "line_end": 977,
+      "line_start": 934,
+      "name": "initial_preflight",
+      "source_segment_bytes": 2882,
+      "source_segment_sha256": "7c83795a9aee12d0bdfab1261f27a38e21dccf7537361ebfe2bfec7bcd55f6ba"
+    },
+    {
+      "AST_sha256": "62e644328f2defa4d62c5a808df5580f5b54ca188c6e42a9d7eae6989b9539d8",
+      "kind": "FunctionDef",
+      "line_end": 991,
+      "line_start": 979,
+      "name": "finalize_source",
+      "source_segment_bytes": 831,
+      "source_segment_sha256": "008fbe575dbf87757c458ea525d527a086978d6f3b7221274ed945b44de2f1c7"
+    },
+    {
+      "AST_sha256": "b214787b74dfde44ed208fc9c770c6e921c179dd5df4cdcdb31ede6fe90fe0c6",
+      "kind": "FunctionDef",
+      "line_end": 994,
+      "line_start": 993,
+      "name": "finalize_inputs",
+      "source_segment_bytes": 82,
+      "source_segment_sha256": "67f27ecda21dcfa52451e42c488aba6c4fac3af6ae7b95f7882d8b32a6deb635"
+    },
+    {
+      "AST_sha256": "94961a9eaca94dbd506ddce4f57f2150d96c154d2d20ad09e7a71297393722cc",
+      "kind": "FunctionDef",
+      "line_end": 1014,
+      "line_start": 996,
+      "name": "retain_terminal",
+      "source_segment_bytes": 1290,
+      "source_segment_sha256": "35362658d13c7cbeda38bc5dcb08eb3d3bccfe9e5112729a69330a4fcba17747"
+    },
+    {
+      "AST_sha256": "98b6e51067454e8b5513492cde145163070ac785f1ab6e3b58f652a2c38db8fc",
+      "kind": "FunctionDef",
+      "line_end": 1076,
+      "line_start": 1016,
+      "name": "main",
+      "source_segment_bytes": 3572,
+      "source_segment_sha256": "b08f6daa9ccffb957c0e44c64328c47638c1c7b43302336760ebf155d9b1a5a6"
+    }
+  ],
+  "format": "hepta-maintenance-original-static-definition-index-v1",
+  "function_count": 47,
+  "inputs": [
+    {
+      "bytes": 63007,
+      "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+      "independent_full_GET_equal": true,
+      "name": "MAINTENANCE_6632.original.py",
+      "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+    },
+    {
+      "bytes": 4842,
+      "git_blob": "56ff9b0019da0e2b9d4c49189ef170acd13eb45e",
+      "independent_full_GET_equal": true,
+      "name": "INTERFACE_56ff.original.json",
+      "sha256": "49259e92555d45b6aac3f3910519dc81b4bee6b157122ffd674cb847d477a172"
+    },
+    {
+      "bytes": 8186,
+      "git_blob": "50c0a5eabfcab306dc84111fa1f67318267c08ae",
+      "independent_full_GET_equal": true,
+      "name": "PLAN_50c0.original.json",
+      "sha256": "d4f57450007d6ee2f0a3ddd978c39109c30266c4abf938314a8e8582136a1e86"
+    },
+    {
+      "bytes": 12863,
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "independent_full_GET_equal": true,
+      "name": "EXECUTE_LOGGED_c943.original.py",
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    }
+  ],
+  "qualification": false,
+  "scope": "AST parsed as data; no reviewed module or function executed. Source segment hashes omit the trailing newline outside each AST node."
+}

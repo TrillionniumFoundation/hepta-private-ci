@@ -1,0 +1,135 @@
+{
+  "byte_audit": {
+    "bytes": 59536,
+    "git_blob": "ac60d808cc40f7d6ee0dbbbe6a10163a46c11d0a",
+    "path": "BYTE_REVIEW_v2.json",
+    "sha256": "c55e11c9441db3fbabe42009f26ebca0aa2785520623aa2e7d4c1f3e383bb952"
+  },
+  "commit_integrity": {
+    "bytes": 1293,
+    "ends_with_lf": false,
+    "parents": [
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "b29869e856d08db1bfb066116a9c443376ccc57d"
+    ],
+    "raw_file_git_blob": "81369bfd8e7bc48a9aea6ae8d2e60e10a6fbdc6b",
+    "sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "sha256": "8aefa9dd70ba73ec646dbca656270509dfa3c1afed23b08e10330540a587d4d3",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+    "type": "commit"
+  },
+  "conclusion": "The fixed 83-object increment is exactly the missing c0f snapshot object set relative to the declared cc57 plus 246d two-snapshot pack. Its raw bodies and the complete snapshot/set identities match. This is sufficient base-object material for the original formatter Git queries when combined with an actually verified current repository, worktree, index and runtime. A successor loader and final typed request are not yet supplied; their execution remains unapproved.",
+  "counts": {
+    "c0f": {
+      "blob": 14315,
+      "commit": 1,
+      "total": 16094,
+      "tree": 1778
+    },
+    "c0f_leaf_paths": 14851,
+    "cc57_plus_246d": {
+      "blob": 14615,
+      "commit": 2,
+      "total": 16449,
+      "tree": 1832
+    },
+    "provided": {
+      "blob": 72,
+      "commit": 1,
+      "total": 83,
+      "tree": 10
+    },
+    "provided_blob_raw_bytes": 2216414,
+    "shared": {
+      "blob": 14243,
+      "total": 16011,
+      "tree": 1768
+    },
+    "three_snapshot_union": 16532,
+    "union_scope": "Exactly cc57 snapshot + 246d snapshot + c0f snapshot; excludes unfrozen future source overlay objects and recursive parent history."
+  },
+  "execution_hold_conditions": [
+    "No successor loader source or exact executable request has been supplied. Therefore this peer has not verified its destination selection, write scope, failure cleanup, standard Git import, optional-lock configuration or source/index/ref/object-store immutability.",
+    "Actual preflight must read and check all required existing 16,011 objects from the approved donor, then verify the resulting complete c0f snapshot after import. Historical closure equality is not a present native availability observation.",
+    "Original c0f commit bytes and true parents must remain unchanged. Do not manufacture shallow history, grafts, replacements or alternate-object dependencies to conceal missing ancestors; do not claim whole-history fsck.",
+    "Preserve the fixed formatter argv and original 900-second budget. The prior materialization 600-second work/180-second cleanup/900-second outer record is a reference; this evidence audit does not approve any new deadline or gate.",
+    "Keep the existing 1,048,576-byte per-request limit. The four encoded part files total 943,816 bytes, and the gzip is 707,857 bytes. These are not a final typed request or staged-write request: measure each exact final serialized request and decoded write payload under its original limit. Separate create-only staged input transfer may be proposed and must be reviewed on its actual bytes."
+  ],
+  "executions": {
+    "H": 0,
+    "Rust_or_QA_tests": 0,
+    "formatter": 0,
+    "native": 0,
+    "pure_offline_audit_only": true,
+    "source_or_ref_mutations": 0
+  },
+  "formatter": {
+    "changed_paths_base_resolution": [
+      "git",
+      "rev-parse",
+      "--verify",
+      "--end-of-options",
+      "c0f78493f815780f68b9bf5e390a21314d79311f^{commit}"
+    ],
+    "changed_paths_comparison": [
+      "git",
+      "diff",
+      "--name-only",
+      "--diff-filter=ACDMRT",
+      "--no-renames",
+      "-z",
+      "<resolved fixed c0f commit>",
+      "--"
+    ],
+    "configuration_original_bytes": [
+      "git",
+      "show",
+      "<fixed base>:<pyproject path>"
+    ],
+    "current_state_dependency": "The current candidate repository and complete physical inventory, index, source files, formatter configuration and tools still require their own actual validation. No formatter is invoked by this review.",
+    "no_base_or_budget_change_proposed": true,
+    "original_command_contract": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "original_formatter_budget_seconds": 900,
+    "other_git_queries": "Three ls-files arrays cover current tracked/untracked input enumeration in changed_paths, rust_configuration_scope and buildifier_formatter_group.",
+    "source_git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "sufficiency": "These commands resolve the original commit object and snapshot tree/blob contents and inspect current worktree/index paths. They do not call merge-base, rev-list, log, fetch or fsck. Recursive c0f parent history is not required by these fixed queries."
+  },
+  "inputs": {
+    "bytes": 19874,
+    "git_blob": "8a5b25e17c3650f775a060894bbcd5d6b37e9a21",
+    "path": "SOURCE_INPUTS.json",
+    "sha256": "dab4b532f8f9f729de6fa5b49634f87840d2fa81e529760d4dd848957548d2f8"
+  },
+  "method": [
+    "Independently full GET the transport manifest, final preparation review, lossless encoding manifest, raw commit retained as a blob, original formatter source and 22 encoded transport/proof pieces. Check complete returned UTF-8 bytes against every local frozen copy and all corresponding Git object identities.",
+    "Strict-decode each canonical base64 piece with exactly one terminal LF, verify contiguous offsets and each decoded SHA-256, concatenate gzip bytes and verify the full gzip and raw sizes/SHA-256/Git-blob identities for all three packages.",
+    "Check all 1,876 historical raw object records by type, full original body, size, SHA-256 and typed Git OID. Parse the actual c0f raw tree recursively with canonical Git byte ordering, resolving every tree edge and comparing all 14,851 leaf paths, modes and blob OIDs to the pinned original inventory.",
+    "Independently build the current cc57 and parent 246d raw Merkle trees from the pinned complete inventory and exactly five recorded substitutions; compare both roots and both authentic commit bodies, without importing the native reconstruction or materialization driver.",
+    "Compare every object in the complete c0f identity manifest, all blob occurrence paths, all 16,011 shared metadata rows and every one of the 1,768 shared raw tree bodies. Verify that the 83 supplied full raw bodies are exactly the remaining object set, not merely the claimed count."
+  ],
+  "provenance_limits": [
+    "The four historical local inputs are checked against their complete immutable byte identities, and the c0f tree/commit original bodies are directly hashed. This is exact recovery and static verification, not a second H read of the original filesystem.",
+    "The 14,243 shared blob metadata identities come from the preserved inventories. This peer does not claim fresh full body reads of those shared blobs. All 72 provided missing blob bodies and all 10 provided tree bodies plus the commit are read completely and individually hashed.",
+    "Native archival placement 661b5f85889512d5e02fd418ef329c138387e85f remains the original 70-payload record. Its cloud part-read truncation is retained by that package and is not a formatter or H failure.",
+    "This peer starts a new evidence window and changes neither the 5128 cutoff nor any earlier review or failure."
+  ],
+  "reproducible_offline_script": {
+    "bytes": 25896,
+    "git_blob": "8e1d53e3379bcb88a6b6a3e140ddc3b29df567d2",
+    "path": "verify_original_objects.py",
+    "sha256": "cf5fedec64707bcb505892bd3d63c5e5ecb2ecf219d03d88912cffbfc712092f"
+  },
+  "reviewer_corrections": {
+    "bytes": 1822,
+    "git_blob": "fd7210ea2d0df9a736cf1ecdbad348313746a12f",
+    "path": "REVIEWER_PREPARATION_NOTES.json",
+    "sha256": "1127c45efde6123f4d477a639ed1932285611a55060ef83c88b26e3597c02f1d"
+  },
+  "schema": "hepta-c0f-format-base-independent-peer-review-v1",
+  "status": "NO_STATIC_OBJECT_CLOSURE_BLOCKER_EXECUTION_HOLD"
+}

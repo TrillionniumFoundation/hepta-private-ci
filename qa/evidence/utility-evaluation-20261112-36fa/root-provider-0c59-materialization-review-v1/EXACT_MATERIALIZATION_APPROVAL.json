@@ -1,0 +1,161 @@
+{
+  "format": "hepta-root-exact-0c59-isolated-materialization-engineering-approval-v1",
+  "status": "APPROVED_EXACT_SINGLE_MATERIALIZATION_ATTEMPT",
+  "approver": "/root",
+  "executor": "/root/native_ci_audit",
+  "scope": "Engineering creation and verification of a fresh isolated source repository under the user's requested work. Not a Hepta runtime Root grant, real-task permission, learning/adoption result, merge or deployment.",
+  "request": {
+    "git_blob": "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+    "bytes": 128112,
+    "sha256": "521c5c982cbc281ad0357498265312f43846995fbd85040d9d7e3dfdae1f0050"
+  },
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "argv_prefix": [
+    "-B",
+    "-c"
+  ],
+  "cwd": "/home/qian-qi",
+  "idempotency_key": "hepta-utility-36fa-provider-0c59-isolated-materialization-v1",
+  "timeout_seconds": 900,
+  "action_seconds": 600,
+  "record_seconds": 180,
+  "bootstrap": "4df01b20c666912cf022c806be06ff8757b4714e",
+  "stdin": "303cd809444a88abdc1bd3025d530634361cea8e",
+  "config": "b760954f62dbe96b6ed337ae2cc99f4130727824",
+  "driver": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+  "packet": "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+  "root_reviews": {
+    "driver": "143b0ec06ef6da8056c60116ece8e4cf429b1750",
+    "exact_launch": "8694d9ea3a40d78f4773a45c92b0b4eb2dff3599",
+    "staging": "b0ab0bf3000db87e5bcada426d4acdda46593ba9"
+  },
+  "independent_reviews": {
+    "main": "43842c89895d3e924021381a9686cef51fcb4271",
+    "actual_pure_dataflow": "feae3232a78de55b3feec8edf38fe85291e34b23",
+    "exact_launch": "7223f5a88f3abe2c841594fa318f313e8d087799",
+    "staging": "c47b890a6ee127010885248ce89471d8c7955f7e"
+  },
+  "actual_staging": {
+    "approval": "3c3070ec03da8b658906cd57fa2822412d9fa640",
+    "result": "e7a1f64f4e0ea4c7ecd2e603688aeec94b70aaba",
+    "all_five_normal_write_and_exact_full_readback": true,
+    "unknown_write_outcomes": 0,
+    "parts": [
+      {
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-001",
+        "version": "2050:50003042:524288:1794554338703515239:1794554338708128255",
+        "actual": {
+          "bytes": 524288,
+          "git_blob": "f8fe91fff1c88ab5c1837bc18edc53b88f581073",
+          "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4"
+        },
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1,
+        "write_sdk": "4cf3b0a368914a2cacb1ba1478a5f2975a84c54a",
+        "file_info_sdk": "746ff774804c30ec90d330cfd326d2481f66cbf7",
+        "readback_review": "7b5dd0308fd3fb8c3b4505935da4b690b206d66f",
+        "chunks": 8
+      },
+      {
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-base.json.gz.part-002",
+        "version": "2050:50003010:183569:1794554474161128793:1794554474163948285",
+        "actual": {
+          "bytes": 183569,
+          "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+          "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+        },
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1,
+        "write_sdk": "f98084eaa811d21694570d8667c74fd0cd438497",
+        "file_info_sdk": "c44e9ccd25de1710435d6ac68d210628edda4777",
+        "readback_review": "aba6ad5ce73ab097525bf19e3d646994884614cc",
+        "chunks": 3
+      },
+      {
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-001",
+        "version": "2050:50003012:524288:1794554508950660969:1794554508970880357",
+        "actual": {
+          "bytes": 524288,
+          "git_blob": "d749cb33da12291a6ccbe75c274f9e469416d7f2",
+          "sha256": "766d6059ebafe2bae6de7d56bdbc33630ff30eb142316765375af9fd1e04f533"
+        },
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1,
+        "write_sdk": "c038034c55c4d8026b837ff49159a68f64f8d3ee",
+        "file_info_sdk": "0b5fc3b370b82b22a6b8b0e6cee59be4748a9a1d",
+        "readback_review": "793c84870f24ad97de4bb28e148fbfd5d4446bbf",
+        "chunks": 8
+      },
+      {
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-002",
+        "version": "2050:50003101:524288:1794554552810538402:1794554552815538249",
+        "actual": {
+          "bytes": 524288,
+          "git_blob": "c49ddcf626ceae1da278e96a04f9dbab04be6053",
+          "sha256": "cdc419065bf3671bd3b90736477be2ccfb9f8829db9d9f800d73d11573f52fc1"
+        },
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1,
+        "write_sdk": "0d14146b8e34b500788bb44e086d9428f388b5ea",
+        "file_info_sdk": "201943559d7e2eb352a0897f698d14fcd9ed1299",
+        "readback_review": "8e0d8420bbd6d67846a2092e3ebc81e99eb6410a",
+        "chunks": 8
+      },
+      {
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-003",
+        "version": "2050:50003105:23220:1794554580178250779:1794554580179702260",
+        "actual": {
+          "bytes": 23220,
+          "git_blob": "0dbeac34953149deb0a198746ba52158ec66cf40",
+          "sha256": "62af9c275b43f70c2586899b83493f6a61603ef0e266c47e7d5666465f78fa54"
+        },
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1,
+        "write_sdk": "713b0804927cb8e501ec060271d7a65069e8df27",
+        "file_info_sdk": "17a65b6657b02004a7200f0e9517ef81e1b0b969",
+        "readback_review": "eb9cf2d6844d8800354603b935fc7886a702c631",
+        "chunks": 1
+      }
+    ],
+    "root_observation_scope": "Actual Git full GET of RESULT, all five readback reviews, and all ten original write/file_info SDKs; their fields and continuous0-to-EOF coverage crosschecked. Native performed the28 binary reads; Root has not independently re-fetched their large payload SDKs. The approved driver independently rereads every staged input before destination creation."
+  },
+  "write_scope": {
+    "source_read_only": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+    "new_destination": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+    "fresh_control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-isolated-materialization-v1",
+    "only_exact_original_bootstrap_and_driver_paths": true,
+    "old_maintenance_repository_access_or_repair": false
+  },
+  "candidate": {
+    "commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+    "parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "expected_files": 15237,
+    "expected_objects": 16652,
+    "canonical_deletions": []
+  },
+  "execution_requirements": [
+    "Dispatch only the complete exact approved seven-field object. No env/argv/key/path/budget substitutions.",
+    "All original fresh-path, UID, disk, coordination, process, input, donor, object and current-source checks remain active. Refusal is retained without repair or bypass.",
+    "If admission or completion is transport-unknown, reconcile only the exact original request/key/job. No new operation identity or inferred success.",
+    "Retain complete actual admission, supervisor, stdout/stderr, RESULT and its four bound command/mutation/input/artifact records, actual source/index/Git observations and all three final audits.",
+    "Unknown SourceBefore or original command terminals remain Unknown. No retrospective fill-in, automatic retry, rollback, deletion, foreign process kill or old repository repair.",
+    "Return the main actual result for Root review before any subsequent maintenance, formatter, source gate or native test operation."
+  ],
+  "automatic_retry": false,
+  "maintenance_or_formatter_or_tests_authorized": false,
+  "remote_ref_update_authorized": false,
+  "runtime_Root_grant": false,
+  "qualification": false
+}

@@ -1,0 +1,234 @@
+{
+  "schema": "hepta-original-material-to-trainer-public-api-static-review-v1",
+  "status": "STATIC_SOURCE_REVIEW_ONLY",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_mutation": false,
+  "native_execution": false,
+  "tests_executed": 0,
+  "compiled": false,
+  "conclusion": "The original public Linux APIs expose all four fixed Material-to-Trainer connections and the consuming Trainer bootstrap. This establishes a source-level assembly path, not an executed cross-UID fixture or proof that Root first admission is complete.",
+  "host_mapping": {
+    "material_server_uid": 60001,
+    "trainer_consumer_uid": 60002,
+    "scope": "Fixed proposed three-UID harness role map. Actual credentials and pidfd identities must be observed when the original APIs bind each real socket."
+  },
+  "material_owner": {
+    "source": {
+      "bytes": 20959,
+      "sha256": "3acf8e3a56434b003fe68498f67ac1c93daaa98bfd23c5dc624736b8e2372e53",
+      "git_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7"
+    },
+    "signature": "pub fn into_command_owner<SW: AnchorWitnessStore>(\n        self,\n        source: CircuitTaskSourceReadbackV1<SW>,\n        identity: AgentdIdentity,\n        ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>,\n        baseline: std::sync::Arc<LoadedCellQ24ModelV1>,\n    ) -> Result<\n        crate::OriginalCellQ24MaterialCommandOwnerV1<EW, DW, SW>,\n        crate::OriginalCellQ24MaterialCommandErrorV1,\n    > {",
+    "binding": "Consumes the original Material ReceiptOwners pair, original CircuitTaskSourceReadback, AgentdIdentity, original Arc<Mutex<LedgerWriter>>, and loaded baseline. FreshCreate alone allows new commands; recovered pair initializes admitted bits as spent. No Source publication, ledger writer or E/D key is constructed by the transport control channel.",
+    "constructor_is_public": true,
+    "platform_gate": "cfg(target_os = \"linux\")"
+  },
+  "trainer_bootstrap": {
+    "source": {
+      "bytes": 7779,
+      "sha256": "7ad1512d08b9f49b0bcdc949081638ad714c96761ba74e89845d8b8ff9a02d23",
+      "git_blob": "35bf372850718a41f245c996ee91a71c184bed89"
+    },
+    "signature": "pub fn from_original_custody(\n        custody: OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>,\n        config: OriginalCellQ24TrainingBootstrapConfigV1,\n        dataset: OriginalCellQ24DatasetCommandReadbackV1,\n        cancellation: Arc<AtomicBool>,\n    ) -> Result<Self, Error> {",
+    "custody_fields": [
+      "native_file: File",
+      "native_witness: TW: AnchorWitnessStore",
+      "receipt_file: File",
+      "receipt_witness: RW: AnchorWitnessStore",
+      "generator_key: SigningKey",
+      "baseline: Arc<LoadedCellQ24ModelV1>",
+      "material_source: OriginalCellQ24MaterialSourceConnectionV1",
+      "experience: LearningIterationEvidenceClientV1",
+      "dataset: LearningIterationEvidenceClientV1"
+    ],
+    "config_fields": [
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "optimizer: CellQ24SgdRuleV1",
+      "generator: TrustedLearningSignerV1",
+      "maximum_signature_lifetime_seconds: u64"
+    ],
+    "additional_arguments": [
+      "OriginalCellQ24DatasetCommandReadbackV1",
+      "Arc<AtomicBool> cancellation"
+    ],
+    "checks": [
+      "exact empty initial coordinator state and Material context",
+      "same Material Source initial request/scope/baseline",
+      "Generator key matches configured trusted signer and original Trainer actor",
+      "signature lifetime bounded by original source contract",
+      "baseline components match original selected bundle"
+    ],
+    "no_eager_journal_initialization": true,
+    "deferred_behavior": "The original command flow reads the actual Dataset pair and current Material/Source evidence before consuming custody and initializing native/receipt journals. The recovered constructor remains a separate readback-only origin.",
+    "does_not_solve": "The process-specific original files/witnesses/signing custody and Root preheld trust remain necessary. An Arc or Rust owner cannot be transferred across exec as JSON."
+  },
+  "connections": [
+    {
+      "role": "Dataset original pair, attenuated readback",
+      "server": "pub fn serve_dataset_commands(\n        &self,\n        stream: UnixStream,\n        consumer: AgentdRootAuthorityPeer,\n        consumer_uid: u32,\n        original_consumer_pidfd: OwnedFd,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<u64, Error> {",
+      "client": "pub fn from_original_dataset_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        original_owner_pidfd: OwnedFd,\n        config: OriginalCellQ24MaterialReceiptConfigV1,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {",
+      "attenuation": "pub fn into_original_dataset_readback(\n        self,\n        expected: &OriginalCellQ24MaterialReceiptConfigV1,\n    ) -> Result<OriginalCellQ24DatasetCommandReadbackV1, Error> {",
+      "consumer_actor_binding": "Dataset owner",
+      "command_permits": 1,
+      "authority": "Original Dataset client is consumed; role/context/live-peer/clock checks precede permanent execution_requested=true. Same original channel, request sequence and lifetime remain; returned type exposes readback rather than Execute."
+    },
+    {
+      "role": "Material Source",
+      "server": "pub fn serve_dataset_source(\n        &self,\n        stream: UnixStream,\n        policy: HostAuthorityPeerPolicy,\n        original_consumer_pidfd: OwnedFd,\n    ) -> Result<(), OriginalCellQ24MaterialSourceErrorV1> {",
+      "client": "pub fn from_original_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        original_owner_pidfd: OwnedFd,\n        initial: LearningIterationSnapshotV1,\n        scope: FrozenLearningScopeV2,\n        baseline: Arc<LoadedCellQ24ModelV1>,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {",
+      "consumer_actor_binding": "Dataset owner",
+      "command_permits": 0,
+      "authority": "Connection binds exact initial request/owners/scope/selected baseline and actual distinct process. Dataset completion is read later; caller supplies no future receipt/head/batch/label/signer."
+    },
+    {
+      "role": "Experience evidence",
+      "server": "pub fn serve_experience_readback(\n        &self,\n        stream: UnixStream,\n        policy: HostAuthorityPeerPolicy,\n        original_consumer_pidfd: OwnedFd,\n    ) -> Result<(), OriginalCellQ24MaterialEvidenceErrorV1> {",
+      "client": "pub fn from_owner_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        owner_pidfd: OwnedFd,\n        initial: LearningIterationSnapshotV1,\n        verifier: LearningEvidenceVerifierV1,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {",
+      "consumer_actor_binding": "Experience owner",
+      "command_permits": 0,
+      "authority": "Fixed-role server only authenticates already committed original Experience, retaining complete signature. Client exact initial cut/trust/objective and receipt role/actor checks remain."
+    },
+    {
+      "role": "Dataset evidence",
+      "server": "pub fn serve_dataset_readback(\n        &self,\n        stream: UnixStream,\n        policy: HostAuthorityPeerPolicy,\n        original_consumer_pidfd: OwnedFd,\n    ) -> Result<(), OriginalCellQ24MaterialEvidenceErrorV1> {",
+      "client": "pub fn from_owner_stream(\n        stream: UnixStream,\n        peer: LearningIterationEvidencePeerV1,\n        owner_pidfd: OwnedFd,\n        initial: LearningIterationSnapshotV1,\n        verifier: LearningEvidenceVerifierV1,\n        timeout: Duration,\n        lifetime: Duration,\n    ) -> Result<Self, Error> {",
+      "consumer_actor_binding": "Dataset owner",
+      "command_permits": 0,
+      "authority": "Fixed-role server only authenticates already committed original Dataset with predecessor evidence. Client exact initial cut/trust/objective and receipt role/actor checks remain."
+    }
+  ],
+  "actual_identity_obligations": [
+    "Each connection needs an actual UnixStream and original peer pidfd, plus peer pid/boot_id/process_start_ticks/uid/actor binding.",
+    "Client constructors reject same real/effective UID and same PID. HostAuthorityPeerChannel/RootObservationStream verify the supplied original process identity against real socket credentials and pidfd lifetime.",
+    "The four connections are live public transport capabilities. Parent control messages may coordinate addresses and fixture metadata but do not authenticate a receipt or mint a channel capability.",
+    "Trainer Generator custody remains owned by the Trainer process. Material E/D signing keys, Source owner and ledger writer remain with Material. Each process loads its own real baseline; no cross-process Arc identity is asserted."
+  ],
+  "quotas": {
+    "material_command_host_limit": 4,
+    "gated_function": "OriginalCellQ24MaterialCommandOwnerV1::serve_role_commands",
+    "gate_source": {
+      "bytes": 13866,
+      "sha256": "aedb443b6bb07f497960ceedfb4889dac690511556c91452db1c3e3366a413c2",
+      "git_blob": "58afc356fff945a5377c3556fa0ba79139d3fad6"
+    },
+    "trainer_pair_command_permits": 1,
+    "root_experience_plus_dataset_command_permits_if_simultaneously_connected": 2,
+    "example_simultaneous_total_command_permits": 3,
+    "read_only_source_experience_dataset_delegates_take_command_permit": false,
+    "command_channel_request_loop": "1..=128_u64 for each original command channel",
+    "readonly_source_and_evidence_policy": {
+      "max_request_bytes": 16384,
+      "max_response_bytes": 16384,
+      "max_timeout_milliseconds": 500,
+      "max_lifetime_seconds": 300,
+      "request_id": "strict increasing with checked overflow"
+    },
+    "no_claim_of_global_128_for_all_four": true,
+    "separate_trainer_incoming_limit": "Trainer's own Semaphore4 is separate from Material's command admission. No limit, queue, stack, deadline or reconnect policy is increased."
+  },
+  "failure_and_cancellation": [
+    "Original command client exchange/readback slot consumption and unavailable semantics are unchanged.",
+    "Evidence client takes its original channel before asynchronous blocking work; cancellation or failed validation does not reconstitute a connection.",
+    "Material Source and evidence services do not attest new work; missing/pending/expired/error is not synthesized into completed evidence.",
+    "Socket worker termination and parent fixture cleanup must be observed under the existing common lifecycle limits. No successful startup or service completion is inferred from this static review."
+  ],
+  "remaining_work": [
+    "Wire the four public sockets to actual separate 60001/60002 processes with original custody and exact peer records.",
+    "Retain Root's independently preheld trust/request/objective/model/owners/scope/plan contract and authenticate full original Source and freeze payloads at first admission.",
+    "Reconcile the final A/T/B overlay with the final frozen source map, registration and post-format byte guards.",
+    "Actual formatting, compilation, focused/full source/native tests and cross-UID fixture execution remain unperformed for this proposal."
+  ],
+  "sources": [
+    {
+      "key": "material_t_bootstrap",
+      "bytes": 7779,
+      "sha256": "7ad1512d08b9f49b0bcdc949081638ad714c96761ba74e89845d8b8ff9a02d23",
+      "git_blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_t_build",
+      "bytes": 9649,
+      "sha256": "e0d831c7043e062d5a0bc0ea795762be18680bf66e3889321498b6ad63c91db5",
+      "git_blob": "826f48120730196081bb7e0bcd6427d30763579e",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_t_service",
+      "bytes": 9196,
+      "sha256": "be568062c8aeb35296278194d2a16095379900698d5ba2e520f708abbb1770d9",
+      "git_blob": "bc335ec8347176510dea0ae425ff5ac42b099eea",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_public_source",
+      "bytes": 12045,
+      "sha256": "7fc70bdd9c41548e7e823b03ad7594937b8dd8ce456409d23d93d7051ecf94b7",
+      "git_blob": "6152a6137874d726ced622353abb8bf172baf1a9",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_public_connection",
+      "bytes": 4583,
+      "sha256": "e78fefad5f24b216d907aaf6d3344447b1afe60a1200420c089b843f08268643",
+      "git_blob": "df63719d221d05dce9862d4a82af424043b71a61",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_public_serve",
+      "bytes": 9142,
+      "sha256": "ab98b271ff5aa3f991c2b419dff480331883d31c156732ca09be9ffaabe3830d",
+      "git_blob": "9b4db7d83af9ab11710710adc75279461c134fec",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_public_pair_readback",
+      "bytes": 1300,
+      "sha256": "d4a998efe42ebcfb526c54c146b7b7f409c3391fee43bd7e46ac5d5dd330eb75",
+      "git_blob": "be5d6172a7e23571d77f07b7dcff8af71d51c663",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_public_command_service",
+      "bytes": 13866,
+      "sha256": "aedb443b6bb07f497960ceedfb4889dac690511556c91452db1c3e3366a413c2",
+      "git_blob": "58afc356fff945a5377c3556fa0ba79139d3fad6",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_command_main",
+      "bytes": 15219,
+      "sha256": "11e55727e50e64c8c0173753cf7b2e23ad1b019004d8314926a468ea3a40c77a",
+      "git_blob": "8cbfa41153ddc401ca7cc5aace42592be909de2f",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_dataset_readback",
+      "bytes": 4153,
+      "sha256": "5e856012a84fddd5d0da5428fe5ed6390ea3c62c14befc4c6de663033265abc2",
+      "git_blob": "99b875330c70819fa8152d485737ec40431f837b",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_evidence_client",
+      "bytes": 14022,
+      "sha256": "47231d32f69c0a70f7daed27cc23db35e562ce46bbe02063ad8db652af20e3aa",
+      "git_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_evidence_service",
+      "bytes": 13528,
+      "sha256": "a1e0a7120c9666dfc42272b8ed1b52e895db99cf457dd5d5b17152c4ca0eb66b",
+      "git_blob": "b61dc81c7a14eca197fdec9e55c397743b69eac6",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    },
+    {
+      "key": "material_receipt_owner",
+      "bytes": 20959,
+      "sha256": "3acf8e3a56434b003fe68498f67ac1c93daaa98bfd23c5dc624736b8e2372e53",
+      "git_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+      "retrieval": "actual complete Git GET with bytes/SHA256/Git identity equality"
+    }
+  ]
+}

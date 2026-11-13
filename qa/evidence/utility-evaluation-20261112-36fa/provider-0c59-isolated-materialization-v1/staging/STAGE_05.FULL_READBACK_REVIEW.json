@@ -1,0 +1,54 @@
+{
+  "actual": {
+    "bytes": 23220,
+    "git_blob": "0dbeac34953149deb0a198746ba52158ec66cf40",
+    "sha256": "62af9c275b43f70c2586899b83493f6a61603ef0e266c47e7d5666465f78fa54"
+  },
+  "all_bytes_equal": true,
+  "chunks": [
+    {
+      "chunk_sha256": "62af9c275b43f70c2586899b83493f6a61603ef0e266c47e7d5666465f78fa54",
+      "eof": true,
+      "next_offset": 23220,
+      "offset": 0,
+      "sdk": "STAGE_05.READ_000000.original.json",
+      "sdk_identity": {
+        "bytes": 31445,
+        "git_blob": "d3e5ea9a4b92e6bf24fbc5e5660aa1fa9c5d62f5",
+        "sha256": "0288a8ee1f5c18c333aa2a182b23fecb9055c9be8584f9e7d535e8a87b2901a3"
+      }
+    }
+  ],
+  "file_info_sdk": {
+    "bytes": 649,
+    "git_blob": "17a65b6657b02004a7200f0e9517ef81e1b0b969",
+    "sha256": "204400070714ca20d8fb4ecad30ca7b5dd2414899d53274b025ed4c2dcf2410e"
+  },
+  "format": "hepta-actual-fixed-part-full-readback-v1",
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "mode": 384,
+    "uid": 1000,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1-candidate.json.gz.part-003",
+  "request": {
+    "bytes": 31152,
+    "git_blob": "f6510be4c5d3ba0ffef7d33025574520fefc3c0d",
+    "sha256": "23372a9bba0bc13ffcbc0469ef95675bd925ae99b41e26003d1378ab5ab6be2c"
+  },
+  "request_name": "STAGE_CANDIDATE_003.REQUEST.HOLD.json",
+  "scope": "Actual complete byte readback of the approved staged part only; no driver execution.",
+  "sequence": 5,
+  "single_read_version": true,
+  "version": "2050:50003105:23220:1794554580178250779:1794554580179702260",
+  "write_sdk": {
+    "bytes": 326,
+    "git_blob": "713b0804927cb8e501ec060271d7a65069e8df27",
+    "sha256": "d83cae23cff077a65f3173bf40fc7e8fd91d86ea52090ab5a9016e3df56049cd"
+  }
+}

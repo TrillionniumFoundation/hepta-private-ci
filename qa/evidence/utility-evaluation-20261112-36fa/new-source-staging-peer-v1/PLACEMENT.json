@@ -1,0 +1,54 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "prefix": "new-source-staging-peer-v1/",
+  "scope": "Fixed five create-only staging requests; main driver excluded",
+  "qualification": false,
+  "H_calls": 0,
+  "manifest_under_review": "49e17fcf6f430c90f3048477e3521683903871a3",
+  "packet_under_review": "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+  "review": "c47b890a6ee127010885248ce89471d8c7955f7e",
+  "approval": "Separate Root engineering approval required; this review does not dispatch or grant staging/main execution",
+  "entries": [
+    {
+      "path": "new-source-staging-peer-v1/REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c47b890a6ee127010885248ce89471d8c7955f7e",
+      "bytes": 9003,
+      "sha256": "44301b850079b06f327fe6ef71357a1a2beede1bf1e4b43475197d58dd934e32",
+      "local_path": "/tmp/hepta-36fa-new-source-staging-peer-v1/REVIEW.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "new-source-staging-peer-v1/check_transfer.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffd3a4d099bd9fba337c0fd87bedaafec1c44e84",
+      "bytes": 12573,
+      "sha256": "4d6c6f884846aac6275b3f9240314562a6ccd9f39f6bd2c87ac29c843b3d9ca2",
+      "local_path": "/tmp/hepta-36fa-new-source-staging-peer-v1/check_transfer.py",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "new-source-staging-peer-v1/INPUT_READBACK.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e6b6ff5521975d792e8a44ef26c870c0b29acc27",
+      "bytes": 2147,
+      "sha256": "98c6616450877ec2131261e4256a5d9be89f06b5a7b506dd6ed7b6eb2bedb6d9",
+      "local_path": "/tmp/hepta-36fa-new-source-staging-peer-v1/INPUT_READBACK.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "new-source-staging-peer-v1/CHECK_RUN.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5883a3811cb96c3ef173cbdc3ad1ece209c85b80",
+      "bytes": 2110,
+      "sha256": "fdff78691b875f5eb2a8b3f37946242f3bfe8097bdcd87e4797dac9b4707d051",
+      "local_path": "/tmp/hepta-36fa-new-source-staging-peer-v1/CHECK_RUN.original.json",
+      "actual_full_Git_GET_equal": true
+    }
+  ],
+  "entry_count": 4
+}

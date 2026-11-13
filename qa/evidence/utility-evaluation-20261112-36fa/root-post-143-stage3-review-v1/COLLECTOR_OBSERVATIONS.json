@@ -1,0 +1,26 @@
+{
+  "format": "hepta-root-pending-evidence-collector-observations-v1",
+  "observations": [
+    {
+      "stage": "New package availability collector",
+      "outcome": "Incomplete local collector after 98 successful payload verifications",
+      "observed_error": "TypeError: s is not iterable",
+      "cause": "Not established from the retained output. The original non-string tool response was not retained before the local hash helper raised.",
+      "subsequent_action": "Read the same immutable Git blobs again, with an explicit raw-string check and complete result handling; all 157 unique package payloads then matched full byte/SHA256/Git identities.",
+      "source_or_H_changes": false
+    },
+    {
+      "stage": "Inventory pin-equivalence package collector",
+      "outcome": "Local Boolean condition incorrectly raised after successful result collection",
+      "observed_error": "inventory availability incomplete",
+      "identified_cause": "The rejection condition was written as status != rejected. This was a local collector bug; it did not establish a missing or mismatching payload.",
+      "subsequent_action": "Changed the local collector check to an explicit failure list, preserved the observation, and verified all 12 exact immutable payloads with no remaining failures.",
+      "source_or_H_changes": false
+    }
+  ],
+  "no_source_or_H_failure_inference_from_these_collector_errors": true,
+  "exact_original_H_index_transport_error_separately_retained": "ee720552601b4fd39acb31c5a6b5128f3dce17cd",
+  "no_evidence_tree_or_ref_mutation_before_complete_collection": true,
+  "current_evidence_parent": "143bcea947e97914775aef8bcae475e4e24c38b8",
+  "qualification": false
+}

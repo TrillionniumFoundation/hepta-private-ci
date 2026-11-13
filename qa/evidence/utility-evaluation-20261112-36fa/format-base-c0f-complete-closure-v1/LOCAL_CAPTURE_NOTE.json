@@ -1,0 +1,13 @@
+{
+  "schema": "hepta-cloud-static-artifact-read-observation-v1",
+  "status": "bounded_read_recovery_needed",
+  "operation": "Read four local 262145-byte b64 artifact files as one JSON via exec_command",
+  "actual_result": {
+    "exit_code": 0,
+    "output_characters": 1048603,
+    "original_token_count": 262194
+  },
+  "parse_error": "Bad control character in string literal in JSON at position 524288",
+  "observation": "The exec capture contains an explicit truncation annotation inside JSON. The first four compact transport pieces had already completed actual Git create/full GET. No native operation, source change or packet-byte edit occurred. Continue with at most three such files per local read, strictly matching complete expected hashes before use.",
+  "git_archive_rows_completed": 15
+}

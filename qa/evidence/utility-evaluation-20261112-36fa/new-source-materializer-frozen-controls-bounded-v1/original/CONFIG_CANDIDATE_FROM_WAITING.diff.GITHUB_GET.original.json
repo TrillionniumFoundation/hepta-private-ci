@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "--- WAITING_CONFIG.json\n+++ APPROVAL_CANDIDATE_CONFIG.json\n@@ -10,7 +10,7 @@\n   },\n   \"qualification\": false,\n   \"record_seconds\": 180,\n-  \"root_execution_approved\": false,\n+  \"root_execution_approved\": true,\n   \"source_repo\": \"/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1\",\n-  \"status\": \"WAITING_ROOT_EXACT_APPROVAL\"\n+  \"status\": \"APPROVED_CANDIDATE_ISOLATED_MATERIALIZATION\"\n }\n"
+  },
+  "isError": false
+}

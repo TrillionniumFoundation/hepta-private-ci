@@ -1,0 +1,11 @@
+--- LAUNCHER.HOLD.py
++++ LAUNCHER.execution-candidate.py
+@@ -1,7 +1,7 @@
+ import ast,datetime,fcntl,hashlib,json,os,stat,sys
+ from pathlib import Path
+ ROOT=Path("/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1")
+-PINS={'driver-maintenance.py': (68496, 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', '3a0f6dec8127aa9587129d6e0f24bad55837ca13'), 'APPROVED_MAINTENANCE_CONFIG.json': (14015, '2f7eebda040a737997a06a8edc137d7ca39550d9de6d50ee06121db058086444', 'f2092840e7e59ba94d86709cdbe9d995b681f826')}
++PINS={'driver-maintenance.py': (68496, 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', '3a0f6dec8127aa9587129d6e0f24bad55837ca13'), 'APPROVED_MAINTENANCE_CONFIG.json': (13768, 'ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf', 'd27dd8ee763c75eb5a0f195bb034fc9ca32b727e')}
+ def need(v,m):
+  if not v:raise ValueError(m)
+ def sha(b):return hashlib.sha256(b).hexdigest()

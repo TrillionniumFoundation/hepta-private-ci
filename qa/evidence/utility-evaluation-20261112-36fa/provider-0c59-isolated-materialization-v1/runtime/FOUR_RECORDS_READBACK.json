@@ -1,0 +1,119 @@
+{
+  "artifact_entries": 267,
+  "commands_count": 40,
+  "format": "hepta-materialization-four-records-full-readback-v1",
+  "inputs_count": 13,
+  "job_id": "1a1d3cdda18-392-1e2",
+  "mutations_count": 4,
+  "records": [
+    {
+      "actual": {
+        "bytes": 33983,
+        "git_blob": "b68990a5280c608dad023aa918b68b286c4481d7",
+        "sha256": "50ee6e61134aeb07d591d961b1e2061fddabc7881e47ffc560e3e06d6621e20c"
+      },
+      "chunks": [
+        {
+          "eof": true,
+          "file": "COMMANDS_json_READ_000000.original.json",
+          "identity": {
+            "bytes": 45797,
+            "git_blob": "d8c6f1a8397074cd2882b6fd116d315128b49e6d",
+            "sha256": "82799f4299a63e0dc67ca23ce13dddb2b27c4ea89914b8cb0f27f0c80a89e0bf"
+          },
+          "next_offset": 33983,
+          "offset": 0,
+          "version": "2050:51120460:33983:1794555112168363754:1794555112168363754"
+        }
+      ],
+      "complete_readback": true,
+      "name": "COMMANDS.json"
+    },
+    {
+      "actual": {
+        "bytes": 732,
+        "git_blob": "0750032e774e195feca4c429054164c7f99c7b95",
+        "sha256": "7b00f47c44852cf7b1f36ef14ce8356bb1af65c3847aae5fd5ea755b2bcb52bc"
+      },
+      "chunks": [
+        {
+          "eof": true,
+          "file": "MUTATION_INTENTS_json_READ_000000.original.json",
+          "identity": {
+            "bytes": 1463,
+            "git_blob": "89e9c883acb6bb76c3b5bdafcb5fac71541ee5e8",
+            "sha256": "4d9bccba8ed3d735e13d2bb04e704b47b7601c58b64be8128da6317c912011a6"
+          },
+          "next_offset": 732,
+          "offset": 0,
+          "version": "2050:51120463:732:1794555112175743890:1794555112175743890"
+        }
+      ],
+      "complete_readback": true,
+      "name": "MUTATION_INTENTS.json"
+    },
+    {
+      "actual": {
+        "bytes": 3206,
+        "git_blob": "e80f396149b2c98afe8deff7ebc436f278ec96cc",
+        "sha256": "5a14e63e2fa27efc0394130da603d4c0d28dce2ebdbc54aaa8ed70951fc35388"
+      },
+      "chunks": [
+        {
+          "eof": true,
+          "file": "INPUT_IDENTITIES_before_json_READ_000000.original.json",
+          "identity": {
+            "bytes": 4773,
+            "git_blob": "6304c026555a6d2025ca708facc59090cffa1654",
+            "sha256": "2c5dfbe2b936f2c01ca144b648611c5643dc5e47086fb93924cd5f3777653b4d"
+          },
+          "next_offset": 3206,
+          "offset": 0,
+          "version": "2050:51120464:3206:1794555112181044787:1794555112181044787"
+        }
+      ],
+      "complete_readback": true,
+      "name": "INPUT_IDENTITIES.before.json"
+    },
+    {
+      "actual": {
+        "bytes": 84294,
+        "git_blob": "6d9fd58bf3c96a840da39b8946cd9c299f1f351b",
+        "sha256": "64daa319b4543c72114b833655a789f90470c3e4ebd0387f8c1844c7aa614389"
+      },
+      "chunks": [
+        {
+          "eof": false,
+          "file": "ARTIFACTS_json_READ_000000.original.json",
+          "identity": {
+            "bytes": 87871,
+            "git_blob": "94ac07a7f0392fc274a8e81b6d2e756f31e97eae",
+            "sha256": "2521e13c3fbc1a29ba9ee8cc04bb751cb9253d54f297ea09080dbc82c29f2315"
+          },
+          "next_offset": 65536,
+          "offset": 0,
+          "version": "2050:51120465:84294:1794555112187230465:1794555112187230465"
+        },
+        {
+          "eof": true,
+          "file": "ARTIFACTS_json_READ_065536.original.json",
+          "identity": {
+            "bytes": 25502,
+            "git_blob": "1d63833000698decb77ad87ad218246d83b127d4",
+            "sha256": "6e0a486e3707d56c19d91ce7b4fdcb54c9058c40a003a6e1e84dfc6e7a5b8794"
+          },
+          "next_offset": 84294,
+          "offset": 65536,
+          "version": "2050:51120465:84294:1794555112187230465:1794555112187230465"
+        }
+      ],
+      "complete_readback": true,
+      "name": "ARTIFACTS.json"
+    }
+  ],
+  "result": {
+    "bytes": 14639,
+    "git_blob": "4832994442a8a1bc89ea3af7825a06310ceb7c64",
+    "sha256": "c66af7f4d7d76e4a521bea9440c51da1923c320e443ec33f67d10351beaa87ed"
+  }
+}

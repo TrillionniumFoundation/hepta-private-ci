@@ -1,0 +1,235 @@
+{
+  "format": "hepta-b-preheld-objective-independent-semantic-review-v1",
+  "status": "STATIC_REVIEW_COMPLETE_NO_SPECIFIC_NEW_BLOCKER",
+  "reviewer": "/root/evaluation_audit",
+  "reviewed_packet": {
+    "git_blob": "9cb773cee4b42aba80d5836a9e4443f0be1f34fb",
+    "bytes": 87182,
+    "sha256": "d47814ac583402cccfc55e8d861fe66fc433cf8e9c555d52b3bb0ed195149231"
+  },
+  "author_manifest": "a6c0e11a5f0f8969e8b1d645a9f1649e68e4250c",
+  "author_placement": "a822ae69b016200b34ddb7c2598d0598f1aaad09",
+  "independent_byte_review": "13896fb77d280fe015c8ffea9de6ffe697c19cb2",
+  "input_manifest": "c795bfdc2e58c855ac99199f28efe7ad0f8f62e1",
+  "scope": {
+    "source_paths": 3,
+    "all_existing_test_helpers": true,
+    "new_test_methods": 1,
+    "original_stage_test_methods_unchanged": 2,
+    "current_source_or_author_files_written": false,
+    "rust_formatter_or_compiler_or_qa_or_h_executed": false,
+    "actual_canonical_source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "candidate_baseline_map": "23d710dbda6f7d88ef6b693c1e77933d168b0177",
+    "source_window": "later than frozen Root89; this review does not change that window",
+    "main51_registration_package_changed": false,
+    "qualified_real_world_chains_proven": 0
+  },
+  "conclusion": "The frozen delta is a bounded test-only separation of complete objective bytes from the A Source owner. It preserves the old Source-backed entry point, authenticates the actual original Dataset context before using expected A history, and leaves independent B execution/signing/receipt construction intact. No specific new static type, scope or permission blocker was found. This is not compilation, behavioral execution, a successful new B run, public cross-UID admission or a production CURRENT solution.",
+  "findings": [
+    {
+      "id": "B01",
+      "title": "All six source images and both frozen map preimages match",
+      "result": "verified_by_independent_bytes",
+      "detail": "The actual Git GET returns the complete 87,182-byte packet with its exact SHA-256 and Git object identity. Each before/after text matches its declared byte count, SHA-256 and Git blob and the corresponding local frozen file. All three before rows match both Root86 and Root89. Independent unified diff reconstruction equals the entire 17,177-byte author patch.",
+      "sources": [
+        "BYTE_REVIEW.json",
+        "SOURCE_PACKET.GET.original.json"
+      ]
+    },
+    {
+      "id": "B02",
+      "title": "The four-field view is data, not Source custody",
+      "result": "static_contract_preserved",
+      "detail": "BorrowedOriginalObjective contains only semantic digest/borrowed full semantic bytes and function digest/borrowed full function bytes. It contains no SourcePublication, task owner, role credential, signer, authority, grant, RunStart admission or history. It is Copy only over Digest32 and immutable slices. The new constructor requires nonzero digests, 1..=256 KiB for both full byte strings, and their exact separate byte hashes, matching the original RunStart consistency bounds. These checks do not prove that a caller obtained or held the objective before a child report, and do not themselves authenticate semantic compilation or bind an arbitrary replacement protocol to A. That remains the trusted first-admission contract; the author explicitly says so.",
+      "sources": [
+        {
+          "path": "circuit_original_evaluation_source_support_tests.rs",
+          "git_blob": "e7249165ebb5ba02eba8d08c040f9d5c971b35f4",
+          "symbols": [
+            "BorrowedOriginalObjective",
+            "from_preheld_compiled_objective",
+            "from_original_record"
+          ]
+        },
+        {
+          "path": "hepta-learning-ledger/src/run_start.rs",
+          "git_blob": "cb387137df02044221c2b2caa0bc8db0ccde3fd7",
+          "symbols": [
+            "RunStartRecordV1",
+            "validate_record_compat"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B03",
+      "title": "The old Source-backed path and independent B work remain",
+      "result": "full_inverse_equal",
+      "detail": "The legacy populate_from_original_training wrapper obtains all four fields from previous.original_record and delegates exactly once. Reversing only that extraction, the borrowed execute parameter and the two equivalent byte-copy expressions restores the entire original source-support file. B retains its own preregistration, ledger, per-episode input/run/principal, admission/time and seven actual Source/Cell publications. Original decision/outcome signing calls and all four assert_eq! plus two assert! occurrences are unchanged. No completed A is synthesized from the new objective view.",
+      "sources": [
+        {
+          "before": "9528b169dd57d71dd30d087d8732eeaec90c6d02",
+          "after": "e7249165ebb5ba02eba8d08c040f9d5c971b35f4"
+        },
+        "review_bytes.py",
+        "BYTE_REVIEW.json"
+      ]
+    },
+    {
+      "id": "B04",
+      "title": "Legacy Source/history assertions are retained",
+      "result": "full_inverse_equal",
+      "detail": "CompletedTrainingInputs::from_original_completion retains the original previous.input()==source_a assertion, run/objective checks and the previous.history_digest comparison, as well as all original Dataset/Training/Candidate/manifests checks. Only the stored previous field becomes the exact borrowed four-field projection. complete_member consumes that projection; the rest of PreparedBPanel, retention-first completion, qualification, provider plan, real signing and original trainer ownership is unchanged. Removing the additive constructor/re-export and undoing these two substitutions restores the whole original fresh-training-support file.",
+      "sources": [
+        {
+          "before": "6c3438d982449daf16e5ed3aec829f3b616a3ff3",
+          "after": "f3745f3e50f1fe0948f9774cc125b6d2bcaf76ed"
+        },
+        "BYTE_REVIEW.json"
+      ]
+    },
+    {
+      "id": "B05",
+      "title": "The separated path binds expected A history to authenticated D",
+      "result": "static_contract_preserved",
+      "detail": "The first operation is the original opaque Dataset receipt's require_original_dataset_context. That checks the retained original_context against the complete Material binding and invokes authenticate_cut: exact initial request and owners, exactly two receipts/evidences, valid coordinator/scope, and both original Observer signatures, identities and windows. Only after that does the new constructor compare nonzero expected_completed_a with dataset.snapshot().request.completed_task_receipt. It does not establish history by comparing caller-editable initial to itself. New source identity checks cover agent/cell/principal/run/objective, and recomputed baseline config must equal the trusted original task_digest, source_frontier and full scope, then the complete manifest.",
+      "sources": [
+        {
+          "path": "cell_q24_material_dataset_readback.rs",
+          "git_blob": "99b875330c70819fa8152d485737ec40431f837b",
+          "symbols": [
+            "require_original_dataset_context"
+          ]
+        },
+        {
+          "path": "cell_q24_material_command_wire.rs",
+          "git_blob": "2319720bc255c2a12ab551092bb944b5a95f917f",
+          "symbols": [
+            "context_binding",
+            "authenticate_cut"
+          ]
+        },
+        {
+          "path": "circuit_original_evaluation_fresh_training_support_tests.rs",
+          "git_blob": "f3745f3e50f1fe0948f9774cc125b6d2bcaf76ed",
+          "symbols": [
+            "from_preheld_objective_and_original_completion"
+          ]
+        },
+        {
+          "path": "circuit_q24_task_test_support.rs",
+          "git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+          "symbols": [
+            "configuration"
+          ]
+        },
+        {
+          "path": "circuit_feature_current.rs",
+          "git_blob": "542e4e532443ac2082bd0b8fa7649fcdb25deca9",
+          "symbols": [
+            "circuit_feature_task_digest_v1",
+            "source_input"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B06",
+      "title": "Actual T/Candidate and both manifests remain required",
+      "result": "static_contract_preserved",
+      "detail": "The new constructor requires full equality of the opaque Candidate's Training receipt and attestation with the supplied opaque original T receipt, Candidate DENY_ALL, baseline components equal the initial selected bundle, original Trainer/Evaluator identities, and a valid original D-to-T coordinator transition to exactly three receipts with Evaluation next. It builds the candidate manifest from the actual candidate model/bundle and the baseline manifest from the actual loaded baseline. No native owner, uploaded receipt, replacement model or new T execution is introduced. The original T receipt has private receipt/attestation fields; the original Candidate page protocol binds full T signing bytes plus signature, not a digest-only synthetic result. No new claim that these offline retained checks prove subsequent live availability is made.",
+      "sources": [
+        {
+          "path": "circuit_original_evaluation_fresh_training_support_tests.rs",
+          "git_blob": "f3745f3e50f1fe0948f9774cc125b6d2bcaf76ed"
+        },
+        {
+          "path": "cell_q24_training_command.rs",
+          "git_blob": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00"
+        },
+        {
+          "path": "cell_q24_training_candidate_wire.rs",
+          "git_blob": "9d3236d51d969424b17f4ef445b2ff2c54a4e6b8",
+          "symbols": [
+            "completion_digest",
+            "original_page"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B07",
+      "title": "New mechanism test preserves old tests and meaningful inputs",
+      "result": "static_test_design_only",
+      "detail": "The entire original 3,476-byte stage-test file, including both old methods, is an exact prefix of the new file. The new method creates the actual FreshStages fixture, awaits original Experience/Dataset/Training completion and reads actual Candidate, then first requires both old and new constructors to accept the same original material. Five negative inputs separately replace expected A history, source run, full source observation, Material history, and original function bytes. The observation case is tied to the original canonical task digest; the Material-history substitution hits the original D context binding before downstream comparisons. Original evidence bytes are checked unchanged. The method does not execute the newly separated B constructor through a full new B/E run and does not exercise public cross-UID admission.",
+      "sources": [
+        {
+          "before": "a1f5cfd587e3472b2f9f4b2417dd6b151dd92d6e",
+          "after": "c8ea6587287828b164c306713e8ddd504e554ba1"
+        },
+        {
+          "path": "circuit_resident_candidate_provider_stage_support_tests.rs",
+          "git_blob": "150d529814964c9121debe523a2202a1dd6439e7",
+          "symbols": [
+            "new",
+            "complete_training",
+            "complete_b_and_evaluation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B08",
+      "title": "Error cleanup is preserved; cancellation is not demonstrated",
+      "result": "bounded_static_cleanup_review",
+      "detail": "After fixture construction, every Result error in the new test body is captured and passed to the unchanged finish_case. That function awaits FreshStages::finish and preserves the original error together with any cleanup error. Finish closes E clients, joins E peers, finishes B panel, drops Candidate/T/Material clients, joins the original shared Trainer and remaining T/Material peers, then finishes the original A/Material fixture. The new input views borrow data and do not create extra peers or owners. This is not an RAII proof for an externally cancelled test future: cancellation during complete_training or finish can prevent finish_case from completing, and the new test has no cancellation branch. Existing fixture construction/panic/cancellation behavior was not changed or tested by this delta.",
+      "sources": [
+        {
+          "path": "circuit_resident_candidate_provider_stage_support_tests.rs",
+          "git_blob": "150d529814964c9121debe523a2202a1dd6439e7",
+          "symbols": [
+            "finish",
+            "finish_case"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B09",
+      "title": "Visibility and concrete field types align statically",
+      "result": "no_specific_type_or_scope_blocker_found",
+      "detail": "The new type and constructor are restricted to the existing owner-support test subtree; its four fields are visible only through the existing evaluation-provider parent. The fresh-training re-export remains within that same ancestor and the stage-test relative path resolves through the actual existing module mounts. RunStartRecordV1 is exported by the original learning-ledger lib and already imported via its wildcard; Digest32 and borrowed byte slices support the derives used here. CellGenerationScopeV2 and CellGenerationConfigV2 have Eq/PartialEq, and task_digest/source_frontier are [u8;32], so the new equality expressions match concrete fields. These checks are source inspection, not a successful Rust typecheck.",
+      "sources": [
+        {
+          "path": "cell_generation_types.rs",
+          "git_blob": "11cde7b9f16322905d106fb8107846b27592b9d1"
+        },
+        {
+          "path": "cell_generation_state.rs",
+          "git_blob": "085bcfd745c7a06426d90e5ee881d04694238ff7"
+        },
+        "SOURCE_INPUTS.json"
+      ]
+    }
+  ],
+  "limitations": [
+    {
+      "id": "L1",
+      "detail": "All Rust code, old and new tests, formatting and qualification remain unexecuted in this review. The only executed program was an independent text/hash comparison script."
+    },
+    {
+      "id": "L2",
+      "detail": "The new negative cases use is_err(), not exact error variants. Earlier valid controls make an always-failing constructor fail the test, but do not rule out a common later validity/clock expiry causing negative cases to be rejected for an unrelated reason. This is an attribution limitation, not an observed failure. A later actual run must retain full errors; exact error attribution or a final valid control can be considered by the test author without relaxing any boundary."
+    },
+    {
+      "id": "L3",
+      "detail": "Preholding/trust origin is a caller-side fixture/admission condition. Matching full objective hashes is not an authenticated Source or permission grant. The new method cannot be wired to untrusted child-declared objectives/config/history and then described as trusted first admission."
+    },
+    {
+      "id": "L4",
+      "detail": "No independent real-world B measurement, public three-UID chain, Root CURRENT custody, FinalUse authority or external cancellation guarantee is established. Previous Current peer 33f3c335197a43356421887cba008179d46678c2 and its engineering gaps remain unchanged."
+    }
+  ],
+  "blocking_findings": [],
+  "integration_boundary": "Root may use this bounded static review when considering the separate frozen proposal. The original full-source, formatting, compile/native and qualification gates are still required on the final integrated source; this report supplies no execution authorization."
+}

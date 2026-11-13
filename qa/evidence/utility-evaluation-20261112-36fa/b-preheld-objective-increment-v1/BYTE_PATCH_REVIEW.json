@@ -1,0 +1,60 @@
+{
+  "scope": "Pure file identities and Git patch application in a throw-away directory; no Rust module execution, compiler, formatter, QA or H",
+  "patch_check_returncode": 0,
+  "forward_and_reverse": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "forward_full_bytes_equal": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "forward_full_bytes_equal": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "forward_full_bytes_equal": true,
+      "reverse_full_bytes_equal": true
+    }
+  ],
+  "original_two_test_methods_full_prefix_equal": true,
+  "new_unexecuted_test_methods": 1,
+  "old_from_original_completion_exact_after_one_field_projection": true,
+  "old_B_assertion_and_signed_append_counts_unchanged": {
+    "assert_eq!(": 4,
+    "assert!(": 2,
+    "material::evaluation_provider::decision(": 2,
+    "material::evaluation_provider::outcome(": 2
+  },
+  "packet": {
+    "bytes": 87182,
+    "sha256": "d47814ac583402cccfc55e8d861fe66fc433cf8e9c555d52b3bb0ed195149231",
+    "git_blob": "9cb773cee4b42aba80d5836a9e4443f0be1f34fb"
+  },
+  "patch": {
+    "bytes": 17177,
+    "sha256": "c77c26ed155ef507f2d50ca4ab2e60632016de6c28856edd2c0ebc314e534a2a",
+    "git_blob": "617524ae8cd846c3e233625013451735e4e71a41"
+  },
+  "root89_preimages": {
+    "map": "23d710dbda6f7d88ef6b693c1e77933d168b0177",
+    "checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "root89_full_before_bytes_equal": true,
+        "git_blob": "9528b169dd57d71dd30d087d8732eeaec90c6d02"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+        "root89_full_before_bytes_equal": true,
+        "git_blob": "6c3438d982449daf16e5ed3aec829f3b616a3ff3"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+        "root89_full_before_bytes_equal": true,
+        "git_blob": "a1f5cfd587e3472b2f9f4b2417dd6b151dd92d6e"
+      }
+    ]
+  }
+}

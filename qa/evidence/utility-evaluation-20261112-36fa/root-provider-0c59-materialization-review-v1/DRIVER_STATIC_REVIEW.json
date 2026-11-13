@@ -1,0 +1,25 @@
+{
+  "format": "hepta-root-candidate-materializer-driver-static-read-v1",
+  "driver": {
+    "git_blob": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+    "bytes": 70560,
+    "sha256": "2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6"
+  },
+  "root_complete_local_semantic_read_and_actual_git_full_get": true,
+  "packet": "728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c",
+  "original_peer_contract": "150b7d5c0b3dd7949cdd85a9b7d948d534562ac4",
+  "reviewed": {
+    "source": "Fixed healthy cc57 isolated donor, 15188 physical leaves. No missing-path branch or old maintenance repair; raw complete Git metadata, refs and object bodies remain mandatory.",
+    "candidate": "Fixed 0c59 commit/4b1 tree, 15237 expected physical leaves, zero canonical deletions, 110 complete pre/post rows. Actual original 5118 inventory and native projection must equal separate expected pins.",
+    "objects": "All 16449 donor bodies are read through the original ObjectReader; 83 format-base and 120 candidate raw objects are typed-hashed, unique and complete. Full target pack import is read back. The four-snapshot union is bounded to 16652 objects, not full ancestry.",
+    "writes": "Only new fixed TARGET and fresh control output, with destination-only Git mutations, create-only leaves and standard independent PACK. No source refs, alternates, rollback or foreign process termination.",
+    "controls": "UID1000, fixed Git and inventory module bytes, no inherited Git overrides, original exclusive coordination, repeated global same-UID build/formatter guard, source immutability and input rereads are retained.",
+    "results": "Action completion alone cannot yield success: three verified final audits and absence of operation/cleanup/retention errors are required. Missing SourceBefore remains unknown_not_available; command terminal Unknown remains separate from wrapper failure.",
+    "budgets": "600 seconds action plus 180 seconds records retained. The future exact outer request must preserve 900 seconds; that request and bootstrap are not yet reviewed."
+  },
+  "staging_byte_review": "b0ab0bf3000db87e5bcada426d4acdda46593ba9",
+  "static_conclusion": "No specific blocker found in Root's full driver read; independent successor review and exact configuration/bootstrap/process request review are still pending.",
+  "new_H_execution_authorized": false,
+  "runtime_Root_grant": false,
+  "qualification": false
+}

@@ -1,0 +1,220 @@
+{
+  "format": "hepta-prepared-source-candidate-0c59aaca-readback-v1",
+  "candidate_commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "candidate_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+  "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "composition": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+  "root_B_integration_review": "b4d2be32911908366be8518824c11951c27e9bbb",
+  "independent_git_cli_review": "04bf0237a31b2aaf9bbf832fa112a61d4187080e",
+  "exact_update_entries": "f2fd6ee063524d432ad751dac821a3c59a90e4ae",
+  "git_cli_script": "6583ae56b8a3e0c409ace2529a150fe1aaf01875",
+  "tree_plan_identity": {
+    "git_blob": "a3f5d803de93c3dbb6f0210d61974ce38b8edeb4",
+    "bytes": 285666,
+    "sha256": "c817ee619b20c964b875e8737d8df0836a1eed62e269621e40294e836f3e873b"
+  },
+  "actual_create_operations": [
+    {
+      "base": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+      "entries": 80,
+      "expected": "3b017bf26bd8d058adeb1fea69d82830b5fc492b",
+      "actual": "3b017bf26bd8d058adeb1fea69d82830b5fc492b"
+    },
+    {
+      "base": "3b017bf26bd8d058adeb1fea69d82830b5fc492b",
+      "entries": 29,
+      "expected": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+      "actual": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+    }
+  ],
+  "actual_changed_tree_readbacks": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src",
+      "sha": "b0b05421d45ed9d712cf7597a116a18766ee3736",
+      "immediate_entries": 45,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 11403,
+        "sha256": "02bbfd06eca85fafa4407ab5e1961bee9708769275049c121b433e94d4bf22b2"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src",
+      "sha": "7f4242238fe64ec4b8330dfdc9b86a9066b8e5d2",
+      "immediate_entries": 941,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 249699,
+        "sha256": "f1b863f295ddd5ad5cefdfc3bb722297830e7de501ec143ad463f588f9ea03b6"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass",
+      "sha": "8c89e05370ec59733e4d11c6551e709041eadd76",
+      "immediate_entries": 66,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 18554,
+        "sha256": "5ad44becd0ee830f88b0fd51d2959026b994954331a0ad6cc6c1d1da06dbc971"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger",
+      "sha": "343c2b16737fedf12f25a5ea6b113be9851d665e",
+      "immediate_entries": 8,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 2118,
+        "sha256": "5aa53172d97d882a56d7bde18290666596f744b8394bb92745597e8f5c8b5db3"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "sha": "7e587098a02bcf6753db47e9a5ee03dbdcb345fc",
+      "immediate_entries": 37,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 9451,
+        "sha256": "fdc93c6ce2c2eb280d8ad588efe63275de62014053e22059f79d00114d751745"
+      }
+    },
+    {
+      "path": ".github/workflows",
+      "sha": "a099f37115d7c854f4f42ead97c77511c4d404c2",
+      "immediate_entries": 99,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 25737,
+        "sha256": "9ab2356d590dd2e5d60a241442d7e6d8f2f24e2acfb2f89ca7ebcaffb340779e"
+      }
+    },
+    {
+      "path": "qa",
+      "sha": "dcc60f531d0eecf9e9d05ea2a73cce0b57952b4b",
+      "immediate_entries": 5,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 1357,
+        "sha256": "2b18b2dd5e1f85fd3f59299e02e3fcce4c7a3661997a7444069bf9970a3887eb"
+      }
+    },
+    {
+      "path": "codex-rs",
+      "sha": "7376cc53f7cc03391b031de144c3e48a2cf53361",
+      "immediate_entries": 165,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 38696,
+        "sha256": "ca9a9e2d17c9caf75da917a5c232d6e83d64d9a026117fa1f185afad6cd6bedd"
+      }
+    },
+    {
+      "path": ".github",
+      "sha": "6c7cf1e7abcc77092c8aa9fc1b28fc2fef102753",
+      "immediate_entries": 13,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 3339,
+        "sha256": "5abbd7a340e2b041da8d7e2f2012db000bd50482a5a1b5cc0ed239f4013d56fc"
+      }
+    },
+    {
+      "path": "",
+      "sha": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+      "immediate_entries": 56,
+      "truncated": false,
+      "all_modes_types_paths_and_oids_match": true,
+      "typed_merkle_recomputed": true,
+      "payload_identity": {
+        "bytes": 13466,
+        "sha256": "1de6bde8b60d4c2e7ecbaf8a01461095b60cd74880330c74e91d0e8085a1a034"
+      }
+    }
+  ],
+  "commit_api_read": {
+    "sha": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "node_id": "C_kwDOTrgxoNoAKDBjNTlhYWNhMGI0OTMyNTA3ZjA2OGM3MjNmNzNkYTJmOTY3MjliM2Q",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-13T06:55:31Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-13T06:55:31Z"
+    },
+    "tree": {
+      "sha": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+    },
+    "message": "fix(eval): prepare complete owner-evidence closure candidate\n\nCompose the frozen 90 Rust and 20 non-Rust source coverage, including original signed evidence retention, bounded first admission, independent objective inputs, and registration checks.\n\nThis isolated candidate is not qualified. Original maintenance, full-source gates, native gates, and real authorized A/B/C plus daemon and Root recovery evidence remain required. No branch advancement or activation is implied.",
+    "parents": [
+      {
+        "sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cc57c7198db6293ccca562253c42fffbe2a04633",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/cc57c7198db6293ccca562253c42fffbe2a04633"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "exact_raw_commit": {
+    "git_object_type": "commit",
+    "git_object_sha": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "storage_git_blob": "2aa08dc83d297fc37aa7f985afe7af41666d3a98",
+    "bytes": 731,
+    "sha256": "291212c82bd82e80ff598d1261b1041e467e4e7a31fa6fda13ba9db1bec68623"
+  },
+  "raw_commit_record": "28e486e8dcd677817d07261b656e7714ff3cc660",
+  "prior_recovery_attempts": "5274ea0b7512cae157124802ef41459e59fff415",
+  "expected_counts": {
+    "files": 15237,
+    "all_repository_rust": 6788,
+    "codex_rs_rust": 6666,
+    "modes": {
+      "100644": 15146,
+      "100755": 90,
+      "120000": 1
+    },
+    "covered_paths": 110,
+    "actual_updates": 109,
+    "new": 49,
+    "modified": 60,
+    "unchanged": 1,
+    "canonical_deletions": 0
+  },
+  "source_branch_unchanged": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "evidence_branch_unchanged": "143bcea947e97914775aef8bcae475e4e24c38b8",
+  "qualification": false,
+  "H_execution_authorized": false,
+  "physical_source_materialized": false,
+  "maintenance_or_compile_or_source_gates": false,
+  "real_qualified_chains": 0,
+  "meaning": "An exact unqualified Git candidate object for isolated preparation, with independent Git and mode-aware Merkle agreement. No source-ref advancement, activation or runtime Root grant."
+}

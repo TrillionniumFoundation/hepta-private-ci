@@ -1,0 +1,15 @@
+{
+  "format": "hepta-post143bcea-stage1-collector-refusal-observation-v1",
+  "path": "format-base-c0f-complete-closure-v1/LOCAL_PART_READ_004_TRUNCATED.original.json",
+  "state": "REFUSED_BEFORE_ANY_TREE_OR_REF_WRITE",
+  "reason": "An input placement member violated the preserved evidence entry constraints; original rows are inspected separately. No limit override or truncation accepted.",
+  "qualification": false,
+  "input_identity": {
+    "git_blob": "440efa9f56f6895b4fe2a7170dc8ce8af8cbfd6c",
+    "bytes": 1048751,
+    "sha256": "dd9909da32978fcc7d0030fec31de0115d7f63e2b7a14edca216aceb9248f00b",
+    "actual_full_get": true
+  },
+  "exact_error": "Error: entry invalid format-base-c0f-complete-closure-v1/LOCAL_PART_READ_004_TRUNCATED.original.json",
+  "meaning": "Recorded observation of the actual functions.exec refusal; this is not an original SDK envelope."
+}

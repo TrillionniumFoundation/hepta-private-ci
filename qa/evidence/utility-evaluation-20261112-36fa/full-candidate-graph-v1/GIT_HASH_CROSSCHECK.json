@@ -1,0 +1,20 @@
+{
+  "independent_root_review": {
+    "bytes": 1431,
+    "git_blob": "04bf0237a31b2aaf9bbf832fa112a61d4187080e",
+    "local_path": "/tmp/hepta-36fa-root-git-source-tree-audit-v1/REVIEW.json",
+    "method": "Git update-index --index-info and write-tree --missing-ok in a create-only empty local bare repository with separate new indices. No original source repository or index is touched. The supplied graph identifies missing blobs; this does not materialize their whole source snapshot.",
+    "roots_counts_modes_and_updates_equal": true,
+    "sha256": "e7443619e258693109d5bfc7116484ef668b9f0e59ea337ce1ff04411d3b8790"
+  },
+  "optional_local_probe": {
+    "diagnostic": {
+      "bytes": 1039,
+      "git_blob": "796740207fa46cbc477b948e752393ae2bf748cf",
+      "sha256": "6b53026c3e4a8de8fb3481e6a954ea358b54db1b7077830ee2001a14bb3d9c50"
+    },
+    "observed_returncode": -11,
+    "status": "failed, retained without retry or attribution to source"
+  },
+  "scope": "Independent pure Python full-tree Merkle compared with Root own Git CLI result. This preparer creates no source tree/commit or ref."
+}
