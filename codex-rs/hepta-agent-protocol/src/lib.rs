@@ -8,6 +8,7 @@ mod evidence;
 mod generation;
 mod objective_history;
 mod q24_completed_history;
+mod q24_initial_task_progress;
 mod q24_outcome;
 mod q24_task_observation;
 mod q24_terminal_acceptance;
@@ -55,6 +56,8 @@ pub use objective_history::ObjectiveJournalAnchor;
 pub use objective_history::ObjectivePublicationOutcome;
 pub use q24_completed_history::AGENTD_Q24_COMPLETED_HISTORY_CAPABILITY;
 pub use q24_completed_history::OriginalQ24CompletedHistoryDataV1;
+pub use q24_initial_task_progress::Q24OriginalInitialTaskCompletionV1;
+pub use q24_initial_task_progress::Q24OriginalInitialTaskProgressV1;
 pub use q24_outcome::AGENTD_Q24_ORIGINAL_OUTCOME_CAPABILITY;
 pub use q24_outcome::MAX_Q24_OUTCOME_PREIMAGE_BYTES;
 pub use q24_outcome::Q24OriginalObserverEvidenceV1;
@@ -615,6 +618,9 @@ pub enum AgentdMethod {
         request: Box<Q24OriginalTerminalOutcomeRequestV1>,
     },
     Q24OriginalTaskObservation {},
+    Q24OriginalInitialTaskProgress {
+        request: AuthBusObjectiveIngress,
+    },
     OriginalQ24CompletedHistory {},
     OriginalQ24TerminalAcceptance {},
     Health,
@@ -789,6 +795,7 @@ pub enum AgentdPayload {
     Generation(GenerationControlResponseV1),
     Q24OriginalTerminalOutcome(Q24OriginalTerminalOutcomeReceiptV1),
     Q24OriginalTaskObservation(Q24OriginalTaskObservationV1),
+    Q24OriginalInitialTaskProgress(Q24OriginalInitialTaskProgressV1),
     OriginalQ24CompletedHistory {
         data: Option<OriginalQ24CompletedHistoryDataV1>,
     },

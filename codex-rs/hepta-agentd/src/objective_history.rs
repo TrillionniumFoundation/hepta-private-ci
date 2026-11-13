@@ -12,6 +12,49 @@ use crate::ObjectiveAdmissionUnknownReason;
 use crate::ObjectivePublicationOutcome;
 
 impl ObjectiveRuntimeHost {
+    /// Match the exact original signed request and return its existing record
+    /// under the same owner mutex. This does not compile, append or execute.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn read_original_initial_request(
+        &self,
+        identity: &AgentdIdentity,
+        request: &AuthBusObjectiveIngress,
+    ) -> Result<(ObjectiveAdmissionPublication, RunStartRecordV1), AgentdError> {
+        let state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("original Initial RunStart owner lock unavailable".into())
+        })?;
+        let publication = state
+            .read_publication(
+                identity,
+                self.profile_digest,
+                ObjectiveAdmissionQuery {
+                    request: request.clone(),
+                    anchor: None,
+                },
+            )
+            .map_err(|reason| {
+                AgentdError::Protocol(format!("original Initial request history: {reason:?}"))
+            })?;
+        if !matches!(
+            &publication.outcome,
+            ObjectivePublicationOutcome::Compiled { .. }
+        ) {
+            return Err(AgentdError::Protocol(
+                "original Initial request was not compiled".into(),
+            ));
+        }
+        let run_id = StableId::new(&request.body.run_id).map_err(|error| {
+            AgentdError::Protocol(format!("original Initial request run: {error}"))
+        })?;
+        let record = state
+            .journal
+            .get(&run_id)
+            .map_err(|error| AgentdError::Protocol(format!("original Initial RunStart: {error}")))?
+            .cloned()
+            .ok_or_else(|| AgentdError::Protocol("original Initial RunStart missing".into()))?;
+        Ok((publication, record))
+    }
+
     pub(crate) fn admission_history(
         &self,
         identity: &AgentdIdentity,

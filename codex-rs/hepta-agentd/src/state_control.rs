@@ -84,6 +84,22 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::Q24OriginalInitialTaskProgress { request } => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalInitialTaskProgress(
+                        AgentdState::read_original_q24_initial_task_progress(self, &request)
+                            .await?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    let _ = request;
+                    return Err(AgentdError::Protocol(
+                        "original Initial task progress unavailable on this platform".into(),
+                    ));
+                }
+            }
             crate::AgentdMethod::OriginalQ24TerminalAcceptance {} => {
                 #[cfg(target_os = "linux")]
                 {
