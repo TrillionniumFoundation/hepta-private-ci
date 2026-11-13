@@ -119,6 +119,7 @@ pub struct NduSolverTerminationReceipt {
     pub disposition: SolveDisposition,
     pub iterations: u32,
     pub terminal_residual_raw: i64,
+    /// Maximum residual across the initial state and all emitted iterations.
     pub maximum_residual_raw: i64,
     pub projection_count: u32,
     pub predecessor_digest: Digest32,
@@ -278,11 +279,9 @@ pub fn solve_preference_target(
 
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    // Once at least one solver step exists, maximum residual is an aggregate
-    // over emitted iteration receipts. The pre-solve residual is represented
-    // only by the zero-iteration termination path above and must not be
-    // re-labelled as iteration evidence.
-    let mut maximum_residual_raw = FixedQ32::ZERO.raw();
+    // The termination bound includes the initial state; only actual solver
+    // steps are represented by iteration receipts.
+    let mut maximum_residual_raw = initial_residual_raw;
 
     for iteration in 1..=MAX_ITERATIONS {
         let (next, receipt) = update_once(&state, &target, eta, iteration)?;

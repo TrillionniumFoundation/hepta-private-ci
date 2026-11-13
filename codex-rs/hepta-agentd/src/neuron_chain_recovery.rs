@@ -30,7 +30,10 @@ pub(super) fn select_neuron_segments_v1(
             max_records: capacity,
         }]),
         (None, None, Some(segments)) if !segments.is_empty() => Ok(segments.to_vec()),
-        _ => Err("choose exactly one complete neuron journal source: single file or segment_chain".into()),
+        _ => Err(
+            "choose exactly one complete neuron journal source: single file or segment_chain"
+                .into(),
+        ),
     }
 }
 
@@ -52,7 +55,9 @@ pub(super) fn recover_neuron_chain_v1(
             .ok_or("neuron segment capacity overflow")?;
     }
     let final_capacity = u64::try_from(segments.last().ok_or("empty chain")?.max_records)?;
-    let end_capacity = prefix_capacity.checked_add(final_capacity).ok_or("neuron segment capacity overflow")?;
+    let end_capacity = prefix_capacity
+        .checked_add(final_capacity)
+        .ok_or("neuron segment capacity overflow")?;
     if segments.iter().any(|segment| segment.max_records == 0)
         || acknowledged.sequence == 0
         || acknowledged.checkpoint_digest.is_zero()
@@ -66,33 +71,25 @@ pub(super) fn recover_neuron_chain_v1(
     let mut files = checked_files(segments)?.into_iter();
     let first = files.next().ok_or("empty neuron segment chain")?;
     if segments.len() == 1 {
-        return Ok(SparseJournal::open_anchored(first, config, scope, segments[0].max_records, acknowledged)?);
+        return Ok(SparseJournal::open_anchored(
+            first,
+            config,
+            scope,
+            segments[0].max_records,
+            acknowledged,
+        )?);
     }
-    let mut current = SparseJournal::open(first, config, scope, segments[0].max_records)?;
-    let mut expected_end = u64::try_from(segments[0].max_records)?;
-    require_sequence(&current, expected_end)?;
-    for (index, (segment, file)) in segments.iter().skip(1).zip(files).enumerate() {
-        expected_end = expected_end.checked_add(u64::try_from(segment.max_records)?)
-            .ok_or("neuron segment capacity overflow")?;
-        if index + 2 == segments.len() {
-            current = current.recover_successor(file, segment.max_records, acknowledged)?;
-            let recovered = current.current()?.ok_or(JournalError::AcknowledgedHistoryMissing)?;
-            if recovered.sequence() != acknowledged.sequence || recovered.digest() != acknowledged.checkpoint_digest {
-                return Err(JournalError::AnchorMismatch.into());
-            }
-        } else {
-            current = current.start_successor(file, segment.max_records)?;
-            require_sequence(&current, expected_end)?;
-        }
-    }
-    Ok(current)
-}
-
-fn require_sequence(journal: &SparseJournal, sequence: u64) -> Result<()> {
-    if journal.current()?.map(|checkpoint| checkpoint.sequence()) != Some(sequence) {
-        return Err(JournalError::AcknowledgedHistoryMissing.into());
-    }
-    Ok(())
+    let chain = std::iter::once(first)
+        .chain(files)
+        .zip(segments)
+        .map(|(file, segment)| (file, segment.max_records))
+        .collect();
+    Ok(SparseJournal::recover_chain_anchored(
+        chain,
+        config,
+        scope,
+        acknowledged,
+    )?)
 }
 
 fn checked_files(segments: &[NeuronSegmentDescriptorV1]) -> Result<Vec<File>> {
@@ -107,7 +104,9 @@ fn checked_files(segments: &[NeuronSegmentDescriptorV1]) -> Result<Vec<File>> {
         }
         let metadata = std::fs::symlink_metadata(path)?;
         if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.len() == 0 {
-            return Err("neuron recovery requires an existing nonempty regular non-symlink file".into());
+            return Err(
+                "neuron recovery requires an existing nonempty regular non-symlink file".into(),
+            );
         }
         if !paths.insert(path.canonicalize()?) {
             return Err("duplicate neuron segment path".into());

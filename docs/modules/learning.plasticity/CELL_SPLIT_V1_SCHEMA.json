@@ -45,7 +45,27 @@
       "type": "array",
       "minItems": 2,
       "maxItems": 2,
-      "items": { "$ref": "#/$defs/candidate" }
+      "items": { "$ref": "#/$defs/candidate" },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "no_change" } }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "change" } }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
     },
     "planDigest": { "$ref": "#/$defs/digest" },
     "status": { "const": "requires_independent_review" },
@@ -141,6 +161,12 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["candidateId", "kind", "cellId", "evidenceDigest"],
+      "if": {
+        "required": ["kind"],
+        "properties": { "kind": { "const": "change" } }
+      },
+      "then": { "required": ["operation"] },
+      "else": { "not": { "required": ["operation"] } },
       "properties": {
         "candidateId": { "type": "string", "minLength": 1 },
         "kind": { "enum": ["no_change", "change"] },

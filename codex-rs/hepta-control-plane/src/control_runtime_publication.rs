@@ -778,13 +778,13 @@ mod tests {
         let owner = id("control.runtime");
         let mut publisher = FileControlRuntimeDecisionPublisherV1::new(&path, owner.clone());
         let expected = ControlRuntimePublicationHeadV1::empty();
-        let record = record(expected, b"decision");
+        let original_record = record(expected, b"decision");
         publisher
-            .compare_and_publish(expected, &record)
+            .compare_and_publish(expected, &original_record)
             .expect("publish");
         assert_eq!(
             publisher.load_records(&owner).expect("load"),
-            vec![record.clone()]
+            vec![original_record.clone()]
         );
         let conflicting = record(expected, b"other");
         assert!(matches!(
