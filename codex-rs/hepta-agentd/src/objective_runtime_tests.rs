@@ -11,6 +11,10 @@ use crate::RuntimeComposition;
 #[path = "objective_history_tests.rs"]
 mod history;
 
+#[cfg(unix)]
+#[path = "objective_run_start_publisher_tests.rs"]
+mod original_publisher;
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }

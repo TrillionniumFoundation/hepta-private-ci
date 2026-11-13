@@ -27,7 +27,10 @@ impl RootGenerationInitialClient {
                 || published.publication.disposition != RunStartAppendDisposition::Appended
                 || published.run_start != record.snapshot
                 || record.snapshot.run_id.as_str() != self.scope().run_id
-                || record.snapshot.generation != self.profile.deployment.target.generation()
+                || !crate::objective_runtime::run_start_matches_original_publisher(
+                    self.connection.original_launch_binding().1,
+                    &record.snapshot,
+                )
             {
                 return Err(uncertain());
             }

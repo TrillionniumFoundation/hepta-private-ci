@@ -24,6 +24,7 @@ use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_learning_ledger::RunStartRecovery;
+use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
@@ -267,6 +268,23 @@ pub(crate) fn objective_fence(identity: &AgentdIdentity, current_generation: u64
     bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
     bytes.extend_from_slice(&current_generation.to_be_bytes());
     Digest32::of_bytes(&bytes)
+}
+
+/// Check the original publisher's Running generation, independently of the
+/// Cell/model generation. This data binding does not authenticate the record;
+/// callers must retain their original session, physical and trust checks.
+pub(crate) fn run_start_matches_original_publisher(
+    identity: &AgentdIdentity,
+    snapshot: &RunStartSnapshotV1,
+) -> bool {
+    identity.spawn_generation != 0
+        && identity
+            .spawn_generation
+            .checked_add(1)
+            .is_some_and(|running_generation| {
+                snapshot.generation == running_generation
+                    && snapshot.fence_digest == objective_fence(identity, running_generation)
+            })
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {

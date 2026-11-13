@@ -29,7 +29,9 @@ ACTUAL = {
     "root_generation_journal_original_observer": (N + "cell_generation_unpublished_observer.rs",),
     "root_artifact_original_reader_open": (A + "production_post_a_artifacts.rs",),
     "root_artifact_original_withdrawal_bind": (A + "production_post_a_artifacts.rs",),
-    "root_generation_connection_original_binding": (A + "root_generation_initial_source_capture.rs",),
+    "root_generation_connection_original_binding": (
+        A + "root_generation_initial_source_capture.rs", A + "root_generation_initial_run_start.rs",
+    ),
     "root_generation_publication_handoff_until": (A + "cell_q24_publication_root_stage.rs",),
     "q24_successor_running_admission": (A + "cell_q24_publication_successor_grant.rs", A + "production_post_a_continuation.rs",),
     "root_original_publication_stream_until": (A + "root_independent_b_client_connect.rs", A + "root_independent_b_source_client.rs",),
