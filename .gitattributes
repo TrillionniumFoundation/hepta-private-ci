@@ -10,3 +10,7 @@ codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
 # Native acquisition qualification binds these production/patch bytes exactly.
 codex-rs/utils/path-utils/src/private_state_windows_directory.rs text eol=lf
 .github/fixtures/windows-private-state-acquisition/*.patch text eol=lf
+
+# Preserve original failed transport evidence bytes on every checkout.
+evidence/actual-elf-transport-20261105-93bfc-01/archives/** -text linguist-generated
+evidence/actual-elf-transport-20261105-93bfc-01/transport-index.json -text linguist-generated
