@@ -235,7 +235,10 @@ fn main() -> anyhow::Result<()> {
 
             #[cfg(target_os = "linux")]
             match production {
-                Some(launch) => launch.run(config, arg0_paths).await?,
+                Some(mut launch) => {
+                    config = codex_hepta_agentd::AgentdProductionLaunch::install_original_root_task(&mut launch, config).await?;
+                    launch.run(config, arg0_paths).await?;
+                }
                 None => codex_hepta_agentd::run(config, arg0_paths).await?,
             }
             #[cfg(not(target_os = "linux"))]

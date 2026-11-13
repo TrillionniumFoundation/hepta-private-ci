@@ -15,10 +15,12 @@ use codex_hepta_automation::CircuitStartV2;
 use codex_hepta_automation::CircuitStopReasonV2;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_neuron::CellPartitionOwnerV1;
+use codex_hepta_neuron::CellStateOwnerV1;
 use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
 
 use super::*;
+use crate::AgentdCircuitCellOwnerV1;
 use crate::CircuitCellBindingV1;
 use crate::CircuitCellRegistryV1;
 use crate::circuit_cell::tests::configuration;
@@ -57,7 +59,7 @@ impl CircuitTaskInputProviderV1 for Inputs {
     }
 }
 
-type Driver = CircuitTaskDriverV1<CellPartitionOwnerV1, Model, Encoder, Inputs>;
+type Driver = CircuitTaskDriverV1<AgentdCircuitCellOwnerV1<CellPartitionOwnerV1, Model, Encoder>, Inputs>;
 
 async fn fixture(
     definition: BoundedCircuitDefinitionV2,
@@ -367,3 +369,7 @@ async fn circuit_deadline_wakes_before_a_later_feedback_activation() {
     );
     driver.store.close().await;
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_original_root_bootstrap_tests.rs"]
+mod original_root_bootstrap;

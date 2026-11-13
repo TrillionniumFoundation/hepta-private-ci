@@ -151,9 +151,27 @@ pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedRootHostInitialGenerationV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedRootHostCircuitTaskV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedRootMaterialSourceHostV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::OriginalRootMaterialSourceRegistrationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::OriginalRootPrefreezeSourceRegistrationV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootHostInitialTaskInstallationErrorV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedRootHostLoadedQ24TaskV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootHostOriginalTaskLearningFilesV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootResidentCandidateProcessInputsV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::prepare_host_resident_candidate_v3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::recover_host_resident_candidate_v3;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::commit_host_issuer_lease_renewal;
 #[cfg(target_os = "linux")]
@@ -188,6 +206,10 @@ pub use authority_host_service::HostAuthorityTextUiRegistration;
 pub use authority_host_service::RootHostInitialGenerationInputsV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::RootHostInitialGenerationRecoveryV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootHostInitialGenerationFilesV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootHostQ24TaskFilesV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::resident::AgentdRootResidentLearningClientV3;
 #[cfg(target_os = "linux")]
@@ -233,6 +255,9 @@ pub use root_production_learning_inputs::AgentdRootLearningInputsV1;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]
+#[path = "root_original_task_descriptor.rs"]
+mod root_original_task_descriptor;
+#[cfg(target_os = "linux")]
 pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 pub use config::drop_root_native_owner_credentials;
@@ -240,6 +265,10 @@ pub use config::drop_root_native_owner_credentials;
 pub use root_production_handoff::RootCandidateStageHandoffV1;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootLearningHandoffV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::RootOriginalTaskHandoffV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_original_task_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
 #[cfg(target_os = "linux")]
@@ -956,6 +985,8 @@ pub use circuit_feature_current::recover_original_circuit_retained_publication_v
 pub use circuit_learning_delivery::deliver_circuit_learning_v1;
 pub use circuit_learning_delivery::reconcile_circuit_learning_v1;
 pub use circuit_task::CircuitTaskErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_task::OriginalRootCircuitTaskDaemonInputsV1;
 pub use circuit_task::CircuitTaskHandleV1;
 pub use circuit_task::CircuitTaskInputModeV1;
 pub use circuit_task::CircuitTaskInputProviderV1;
@@ -965,6 +996,8 @@ pub use circuit_task::CircuitTaskRuntimeBootstrapV1;
 pub use circuit_task::CircuitTaskSourceInputV1;
 pub use circuit_task::CircuitTaskSourcePublicationV1;
 pub use circuit_task::CircuitTaskSourceReadbackV1;
+#[cfg(target_os = "linux")]
+pub use circuit_task::{OriginalCircuitPrefreezeSourceRequestV1, OriginalCircuitPrefreezeSourceV1};
 pub use circuit_task::DurableCircuitTaskSourceV1;
 pub use circuit_task::circuit_task_channel_v1;
 pub use client::AgentdClient;
@@ -1548,3 +1581,17 @@ pub use artifact_original_head::OriginalArtifactHeadOwnerV1;
 pub use artifact_original_head::OriginalArtifactRegistrySourceClientV1;
 #[cfg(target_os = "linux")]
 pub use artifact_original_head::OriginalArtifactRegistrySourceOwnerV1;
+
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootResidentCandidateEnrollmentInputsV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootResidentCandidateEnrollmentServiceV3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::prepare_host_resident_candidate_enrollment_v3;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::recover_host_resident_candidate_enrollment_v3;
+#[cfg(target_os = "linux")]
+mod material_host;
+#[cfg(target_os = "linux")]
+pub use material_host::{OriginalMaterialChannelFilesV1, OriginalMaterialHostFilesV1,
+    serve_original_material_host_from_files};

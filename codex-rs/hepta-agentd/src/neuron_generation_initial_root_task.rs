@@ -175,3 +175,12 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalRootInitialGenerationCustod
         }
     }
 }
+
+#[path = "neuron_generation_initial_material_source.rs"]
+mod original_material_source;
+
+#[path = "neuron_generation_initial_prefreeze_source.rs"]
+mod original_prefreeze_source;
+
+#[path = "neuron_generation_initial_root_task_channel.rs"]
+mod original_channel;

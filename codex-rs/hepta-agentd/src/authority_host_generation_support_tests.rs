@@ -252,3 +252,6 @@ fn write_original_json(path: &std::path::Path, value: &impl serde::Serialize) ->
 
 #[path = "authority_host_generation_tests.rs"]
 mod tests;
+
+#[path = "authority_host_generation_root_task_tests.rs"]
+mod root_task_tests;

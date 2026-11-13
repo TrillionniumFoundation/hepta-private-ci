@@ -25,6 +25,10 @@ use crate::RootResidentLearningProfileV3;
 #[path = "root_candidate_stage_handoff_wire.rs"]
 mod wire;
 
+#[path = "root_candidate_stage_transport.rs"]
+mod late_transport;
+pub(crate) use late_transport::{OriginalRootCandidateStageTransportV1, receive_original_candidate_stage_transport};
+
 const PURPOSE: &str = "hepta.original-root-candidate-stage-handoff.v1";
 const ROLES: [&str; 10] = [
     "experience",

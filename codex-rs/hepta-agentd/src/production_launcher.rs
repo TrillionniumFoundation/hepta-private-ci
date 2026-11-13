@@ -25,6 +25,9 @@ use crate::desktop_root_composition::attach_root_desktop_operation_host_with_sta
 #[path = "production_launcher_inputs.rs"]
 mod inputs;
 
+#[path = "production_resident_enrollment.rs"]
+mod resident_enrollment;
+
 use inputs::LaunchInputs;
 use inputs::NotesUiInputs;
 use inputs::PrimaryInputs;
@@ -67,6 +70,9 @@ struct RuntimeInputs {
     primary: PrimaryInputs,
     notes: Option<UnixDatagram>,
     notes_ui: Option<NotesUiInputs>,
+    resident_handoff: Option<UnixDatagram>,
+    resident_end: Option<Instant>,
+    original_task_handoff: Option<crate::RootOriginalTaskHandoffV1>,
 }
 
 impl AgentdProductionStartup {
@@ -84,6 +90,8 @@ impl AgentdProductionStartup {
                 let LaunchInputs {
                     handoff,
                     learning_handoff,
+                    resident_handoff,
+                    original_task_handoff,
                     uid,
                     gid,
                     control,
@@ -111,10 +119,16 @@ impl AgentdProductionStartup {
                         )
                     })
                     .transpose()?;
+                let original_task_handoff = original_task_handoff.map(|handoff| {
+                    crate::receive_root_original_task_handoff(handoff, remaining(bootstrap_deadline)?)
+                }).transpose()?;
                 let inputs = RuntimeInputs {
                     primary,
                     notes,
                     notes_ui,
+                    resident_handoff,
+                    resident_end: None,
+                    original_task_handoff,
                 };
                 Startup::Root(Box::new(RootStartup {
                     config,
@@ -156,9 +170,10 @@ impl AgentdProductionStartup {
                     app_server,
                     lifetime,
                     deadline,
-                    inputs,
+                    mut inputs,
                 } = *root;
                 let session_end = Instant::now() + lifetime;
+                inputs.resident_end = inputs.resident_handoff.as_ref().map(|_| session_end);
                 let root = crate::receive_root_production_inputs(
                     bootstrap,
                     root_pidfd,
@@ -195,6 +210,18 @@ impl AgentdProductionStartup {
 }
 
 impl AgentdProductionLaunch {
+    /// Consume the same sealed task offer after the ordinary Objective/AuthBus
+    /// configuration, and before original V3 enrollment and daemon startup.
+    /// No replacement Config, Store, RunStart or writer is created here.
+    pub async fn install_original_root_task(&mut self, config: AgentdConfig)
+        -> Result<AgentdConfig, AgentdError>
+    {
+        match self.inputs.original_task_handoff.take() {
+            Some(handoff) => crate::RootOriginalTaskHandoffV1::install(handoff, config, &self.root).await,
+            None => Ok(config),
+        }
+    }
+
     /// Start the original configured MCP manager and retain its exact selected
     /// peer beside the same Root session and recovered writer until Agentd exits.
     /// This is a newly initialized original startup session, not a connector or
@@ -204,11 +231,17 @@ impl AgentdProductionLaunch {
         mut config: AgentdConfig,
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
+        if self.inputs.original_task_handoff.is_some() {
+            return Err(AgentdError::Invalid("original task handoff must be consumed before runtime".into()));
+        }
         config.require_root_learning_assembled()?;
         let RuntimeInputs {
             primary,
             notes,
             notes_ui,
+            resident_handoff,
+            resident_end,
+            original_task_handoff: _,
         } = self.inputs;
         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
@@ -426,7 +459,14 @@ impl AgentdProductionLaunch {
             if let Some(deadline) = android_deadline {
                 remaining(deadline)?;
             }
-            let result = crate::run(config, arg0_paths).await;
+            let result = match (resident_handoff, resident_end) {
+                (None, None) => crate::run(config, arg0_paths).await,
+                (Some(socket), Some(end)) => resident_enrollment::run_original(
+                    config, arg0_paths,
+                    resident_enrollment::PendingResidentEnrollment { socket, end },
+                ).await,
+                _ => Err(AgentdError::Invalid("resident original session boundary missing".into())),
+            };
             // Keep the authenticated Root feed and original checkpoint/grant
             // handles alive until all original runtime workers have stopped.
             drop((attachment, desktop_attachment));

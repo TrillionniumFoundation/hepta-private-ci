@@ -62,6 +62,12 @@ mod generation;
 pub(crate) use generation::OriginalHostInitialOperation;
 pub use generation::RootHostInitialGenerationInputsV1;
 pub use generation::RootHostInitialGenerationRecoveryV1;
+pub use generation::RootHostInitialGenerationFilesV1;
+pub(crate) use generation::OriginalGenerationLoadPurpose;
+pub(crate) use generation::OriginalLoadedGeneration;
+pub use generation::RootHostQ24TaskFilesV1;
+pub(crate) use generation::OriginalTaskFilePurpose;
+pub(crate) use generation::OriginalTaskClockStatus;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]

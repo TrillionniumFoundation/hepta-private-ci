@@ -191,3 +191,6 @@ pub(super) fn bind_runtime_lanes(
 #[cfg(test)]
 #[path = "authority_host_listeners_tests.rs"]
 mod tests;
+
+#[path = "authority_host_resident_listener.rs"]
+pub(super) mod resident;

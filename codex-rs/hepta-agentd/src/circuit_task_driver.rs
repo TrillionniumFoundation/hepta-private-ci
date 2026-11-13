@@ -13,11 +13,7 @@ use codex_hepta_automation::CircuitEventV2;
 use codex_hepta_automation::TaskFlowError;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_neuron::CellInferenceReadbackPortV1;
-use codex_hepta_neuron::CellInputEncoderV1;
-use codex_hepta_neuron::CellStateOwnerV1;
 use codex_hepta_neuron::CellStepInputV1;
-use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
 
 use super::CircuitTaskErrorV1 as Error;
@@ -26,24 +22,22 @@ use super::CircuitTaskInputProviderV1;
 use super::CircuitTaskModeV1;
 use super::CircuitTaskReceiptV1;
 use super::CircuitTaskRequestV1;
-use crate::AgentdCircuitCellOwnerV1;
+use super::cell_port::OriginalCellPort;
 use crate::CircuitCellErrorV1;
 use crate::CircuitCellExecutionV1;
 use crate::CircuitCellTimeV1;
 use crate::circuit_cell::finish;
 
-pub(super) struct CircuitTaskDriverV1<O, P, E, I> {
+pub(super) struct CircuitTaskDriverV1<C, I> {
     pub(super) store: AutomationStore,
     pub(super) fence: TaskFlowFence,
-    pub(super) cells: AgentdCircuitCellOwnerV1<O, P, E>,
+    pub(super) cells: C,
     pub(super) inputs: I,
 }
 
-impl<O, P, E, I> CircuitTaskDriverV1<O, P, E, I>
+impl<C, I> CircuitTaskDriverV1<C, I>
 where
-    O: CellStateOwnerV1 + Send,
-    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send,
-    E: CellInputEncoderV1 + Send,
+    C: OriginalCellPort,
     I: CircuitTaskInputProviderV1,
 {
     pub(super) async fn execute(

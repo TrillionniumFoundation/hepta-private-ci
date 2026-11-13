@@ -35,7 +35,8 @@
       "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
       "id": "root_host_initial_host_authority_service_bind_original_initial_operation",
       "product_callers": [
-        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs"
       ],
       "receiver_type": "HostAuthorityService",
       "symbol": "HostAuthorityService::bind_original_initial_operation"
@@ -48,7 +49,8 @@
       "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
       "id": "root_host_initial_host_authority_service_recover_original_initial_operation",
       "product_callers": [
-        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs"
       ],
       "receiver_type": "HostAuthorityService",
       "symbol": "HostAuthorityService::recover_original_initial_operation"
@@ -115,7 +117,11 @@
       "id": "root_host_initial_original_host_initial_operation_require_observed",
       "product_callers": [
         "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
-        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs"
       ],
       "receiver_type": "OriginalHostInitialOperation",
       "symbol": "OriginalHostInitialOperation::require_observed"
@@ -160,7 +166,9 @@
       ],
       "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
       "id": "root_host_initial_prepared_root_host_initial_generation_v1_publish_original_generation",
-      "product_callers": [],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs"
+      ],
       "receiver_type": "PreparedRootHostInitialGenerationV1",
       "symbol": "PreparedRootHostInitialGenerationV1::publish_original_generation"
     },
@@ -331,7 +339,9 @@
         "product_callers": [
           "codex-rs/hepta-agentd/src/authority_host_generation.rs",
           "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
-          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs"
         ],
         "receiver_type": "OriginalRootInitialGenerationCustodyV1",
         "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
@@ -439,7 +449,11 @@
         "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
         "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
         "product_callers": [
-          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs"
         ],
         "receiver_type": "OriginalRootCircuitTaskCustodyV1",
         "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
@@ -486,7 +500,7 @@
     }
   ],
   "original_protected_prefix_count": 442,
-  "original_protected_prefix_sha256": "d5f8b123be861788300635fa72998fc101ddd3dff0a2590cff1540301232c0fa",
+  "original_protected_prefix_sha256": "94b88b687c382e608b7fa068428988768b15201f66dfcf91f2201faa94315243",
   "pending": [
     "full unchanged typed collector",
     "original QA and mutation execution",
@@ -496,9 +510,9 @@
   ],
   "production_files": {
     "codex-rs/hepta-agentd/src/authority_host_generation.rs": {
-      "bytes": 15263,
-      "git_blob": "8ca53769c20627fd9e204c0a0a5b4e77771bebac",
-      "sha256": "3fe84b8d8f29e5e4554ab69f4b81b6a91884a03732020223b32b12c9070e3a72"
+      "bytes": 15821,
+      "git_blob": "ff2aadfb6eba18aea1aace8dee9d911490a19a4a",
+      "sha256": "5887cb70fa501cde9e1eaa312185c45f532c12b4b1701255e745be90b2da1ff0"
     },
     "codex-rs/hepta-agentd/src/authority_host_generation_request.rs": {
       "bytes": 3448,
@@ -506,34 +520,34 @@
       "sha256": "47bde0c769254a9d1e61d8093d4111fb235ca3adf772e919b340bd15d5b60acd"
     },
     "codex-rs/hepta-agentd/src/authority_host_runtime.rs": {
-      "bytes": 20116,
-      "git_blob": "035be6b6128a6a9f8861e1ba7c6ac95b45f71b4d",
-      "sha256": "15748f1c212d7f967b960133cb0c0e84586666893b38ac1601dab2f931d07cf2"
+      "bytes": 21288,
+      "git_blob": "c13f84545e1acabc735ba0a9bc96c9a115d76e7d",
+      "sha256": "9fe6f1b53ea701dda2da6335aafd6661952a6f184762bd422c9b460c46140b5b"
     },
     "codex-rs/hepta-agentd/src/authority_host_service.rs": {
-      "bytes": 23062,
-      "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff",
-      "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b"
+      "bytes": 23375,
+      "git_blob": "3840fc02ac2e2b18148345fbbc9576dfba914442",
+      "sha256": "c27157fb0b64bdb6210497f8da18c0cbce15612c9f9820c6939694da6dd171b9"
     },
     "codex-rs/hepta-agentd/src/authority_host_session.rs": {
-      "bytes": 17780,
-      "git_blob": "d1a06f714d3805636bb52ea00096a567ade99348",
-      "sha256": "26c1430f5241d4a717190bd2a7bd7400723605b5bda1eea7c9306c9dc6b7724e"
+      "bytes": 18193,
+      "git_blob": "40ebaacd58ff408473ff5f2aff03cb290aa96ba7",
+      "sha256": "2fdcc47caff69db9daaf46bd9bb0fb5d07463a262bc2f6eb97ce79cfeb531229"
     },
     "codex-rs/hepta-agentd/src/authority_host_session_generation.rs": {
-      "bytes": 8419,
-      "git_blob": "1254c569aed6554782d21ff23653d95e7f7f3835",
-      "sha256": "d65a1f5e67802dfc0a2f523c305dd78b9868eaa1c81271eedb4da98f113a1d5b"
+      "bytes": 8804,
+      "git_blob": "a8577c4125de92dce3cc181d1750053f6d7175bc",
+      "sha256": "d33f86aa7c6857bb1fc4489a172a70d9305da41b7e051ab91b04e8ad028eac12"
     },
     "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs": {
-      "bytes": 5610,
-      "git_blob": "70003ef39ef45c372077d09d2416a1c289848ebc",
-      "sha256": "882dff00964b095cd34568a360bf387a3fa8ed4be4e591820505feca03598d72"
+      "bytes": 6120,
+      "git_blob": "f7f9a73502c7a8d07e32c84bffbad4e2b2197f94",
+      "sha256": "f8bd4b2497c0c37fb0bc0bce7633bdd7e97b591efba7e289b881efb4222c73b9"
     },
     "codex-rs/hepta-agentd/src/lib.rs": {
-      "bytes": 72778,
-      "git_blob": "ab0c56c89de7a895bf0211b78fc19fdb42299387",
-      "sha256": "7b80ff46fff73939eee289a89492184e27ba4154b6a92448af6cc6843038d166"
+      "bytes": 74959,
+      "git_blob": "42a8d1afd72dc66ed85f8359cf1dca244469f6a1",
+      "sha256": "bae9c42ad8a289db0a76443cb5a01b6f1894b3ebf96a4887d791350133bd528b"
     },
     "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs": {
       "bytes": 11650,

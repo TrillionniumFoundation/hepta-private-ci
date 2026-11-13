@@ -23,75 +23,7 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
-EXPECTED = {
-    "root_resident_original_register": [],
-    "root_resident_original_recover": [],
-    "root_resident_original_custody_open": [
-        "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
-    ],
-    "root_resident_original_custody_retain": [
-        "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
-    ],
-    "root_resident_registration_create": [
-        "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
-    ],
-    "root_resident_registration_recover": [
-        "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
-    ],
-    "root_resident_service_register": [],
-    "root_resident_service_recover": [],
-    "root_resident_runtime_consume": [],
-    "root_resident_coordinator_run": ['codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs'],
-    "root_resident_original_stream_serve": ['codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs'],
-    "root_resident_original_client_create": [],
-    "root_resident_original_client_recover": [],
-    "root_resident_original_client_readback": [
-        "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
-    ],
-    "root_resident_postclaim_admit": [
-        "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
-    ],
-    "root_resident_preclaim_channel": [
-        "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
-    ],
-    "root_resident_final_observation": [
-        "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
-    ],
-    "root_resident_gate_effect_current": ['codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs', 'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs'],
-    "root_resident_gate_training_cancel": ['codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs'],
-    "root_resident_original_intent_fence": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
-    ],
-    "root_resident_original_intent_current": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
-    ],
-    "root_resident_late_enrollment_config": [],
-    "root_resident_late_enrollment_submit": [],
-    "root_resident_late_delivery_run": [
-        "codex-rs/hepta-agentd/src/runtime.rs"
-    ],
-    "root_resident_late_source_candidate": [
-        "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
-    ],
-    "root_resident_checkpoint_register": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
-    ],
-    "root_resident_checkpoint_recover": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
-    ],
-    "root_resident_checkpoint_fresh_cas": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
-    ],
-    "root_resident_registered_fresh_admit": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
-    ],
-    "root_resident_gate_begin_dispatch": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
-    ],
-    "root_resident_gate_commit_checkpoint": [
-        "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
-    ]
-}
+EXPECTED = {'root_resident_original_register': ['codex-rs/hepta-agentd/src/authority_host_resident_launch.rs'], 'root_resident_original_recover': ['codex-rs/hepta-agentd/src/authority_host_resident_launch.rs'], 'root_resident_original_custody_open': ['codex-rs/hepta-agentd/src/authority_host_resident_registration.rs', 'codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs'], 'root_resident_original_custody_retain': ['codex-rs/hepta-agentd/src/authority_host_runtime.rs'], 'root_resident_registration_create': ['codex-rs/hepta-agentd/src/authority_host_resident_registration.rs', 'codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs'], 'root_resident_registration_recover': ['codex-rs/hepta-agentd/src/authority_host_resident_registration.rs', 'codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs'], 'root_resident_service_register': ['codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs'], 'root_resident_service_recover': ['codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs'], 'root_resident_runtime_consume': [], 'root_resident_coordinator_run': ['codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs'], 'root_resident_original_stream_serve': ['codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs'], 'root_resident_original_client_create': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs'], 'root_resident_original_client_recover': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs'], 'root_resident_original_client_readback': ['codex-rs/hepta-agentd/src/resident_learning_delivery.rs'], 'root_resident_postclaim_admit': ['codex-rs/hepta-agentd/src/resident_learning_delivery.rs'], 'root_resident_preclaim_channel': ['codex-rs/hepta-agentd/src/resident_learning_delivery.rs'], 'root_resident_final_observation': ['codex-rs/hepta-agentd/src/resident_learning_delivery.rs'], 'root_resident_gate_effect_current': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs', 'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs'], 'root_resident_gate_training_cancel': ['codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs'], 'root_resident_original_intent_fence': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs'], 'root_resident_original_intent_current': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs'], 'root_resident_late_enrollment_config': ['codex-rs/hepta-agentd/src/production_resident_enrollment.rs'], 'root_resident_late_enrollment_submit': ['codex-rs/hepta-agentd/src/production_resident_enrollment.rs'], 'root_resident_late_delivery_run': ['codex-rs/hepta-agentd/src/runtime.rs'], 'root_resident_late_source_candidate': ['codex-rs/hepta-agentd/src/resident_learning_delivery.rs'], 'root_resident_checkpoint_register': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs'], 'root_resident_checkpoint_recover': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs'], 'root_resident_checkpoint_fresh_cas': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs'], 'root_resident_registered_fresh_admit': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs'], 'root_resident_gate_begin_dispatch': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs'], 'root_resident_gate_commit_checkpoint': ['codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs'], 'e3_root_candidate_prepare': ['codex-rs/hepta-agentd/src/authority_host_resident_cli.rs'], 'e3_root_candidate_recover': ['codex-rs/hepta-agentd/src/authority_host_resident_cli.rs'], 'e3_root_candidate_late_prepare': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs'], 'e3_root_candidate_late_recover': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs'], 'e3_root_candidate_late_run': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs', 'codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs'], 'e3_daemon_resident_connect': ['codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs'], 'e3_root_resident_handoff_send': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs'], 'e3_daemon_resident_handoff_receive': ['codex-rs/hepta-agentd/src/production_resident_enrollment.rs'], 'e3_root_resident_original_process_pin': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs', 'codex-rs/hepta-agentd/src/material_host_files.rs'], 'e3_root_resident_trust_read': ['codex-rs/hepta-agentd/src/authority_host_resident_launch.rs', 'codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs', 'codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs'], 'e3_daemon_resident_root_trust_decode': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs'], 'e3_root_resident_trust_construct': [], 'e3_root_resident_observer_binding': ['codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs'], 'e3_root_resident_deployment_read': ['codex-rs/hepta-agentd/src/authority_host_resident_launch.rs', 'codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs', 'codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs'], 'e3_root_resident_listener_bind': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs', 'codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs'], 'e3_root_resident_listener_accept': ['codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs', 'codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs']}
 ROOT_CASES = [
     "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
     "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
@@ -129,6 +61,7 @@ ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
 ]
 ROOT_HOST_GENERATION_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_publication_enters_original_task_factory_and_drain', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_same_issuer_revoked_grant', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_stale_original_consumer_head', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_another_complete_intent', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_existing_state_reopens_after_old_session_is_dropped', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_request_reads_the_exact_binding_without_preparing']
+ROOT_E3_RESIDENT_ENROLLMENT_CASES = ['root_production_handoff::resident_enrollment::tests::exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd', 'root_production_handoff::resident_enrollment::tests::v1_marker_cannot_enter_the_v3_resident_handoff', 'root_production_handoff::resident_enrollment::tests::sealed_file_alias_cannot_replace_the_original_root_pidfd']
 ROOT_CUSTODY_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current',
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback',
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell',
@@ -138,6 +71,8 @@ ROOT_CUSTODY_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support:
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant',
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback',
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error']
+
+ROOT_ORDINARY_PRODUCT_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_keeps_unstarted_source_incomplete', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_refusal_retains_only_the_same_operation', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::prefreeze::root_prefreeze_ready_reads_existing_source_without_future_event']
 
 class ResidentRootSourceClosureTests(unittest.TestCase):
     @classmethod
@@ -411,7 +346,9 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))
         self.assertTrue(set(ROOT_CUSTODY_CASES).issubset(parents))
         self.assertTrue(set(ROOT_HOST_GENERATION_CASES).issubset(parents))
-        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES) + len(ROOT_CUSTODY_CASES) + len(ROOT_HOST_GENERATION_CASES))
+        self.assertTrue(set(ROOT_E3_RESIDENT_ENROLLMENT_CASES).issubset(parents))
+        self.assertTrue(set(ROOT_ORDINARY_PRODUCT_CASES).issubset(parents))
+        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES) + len(ROOT_CUSTODY_CASES) + len(ROOT_HOST_GENERATION_CASES) + len(ROOT_E3_RESIDENT_ENROLLMENT_CASES) + len(ROOT_ORDINARY_PRODUCT_CASES))
         roots = (ROOT / (AGENT + "authority_host_learning_resident_root_tests.rs")).read_text()
         evaluation = (ROOT / (AGENT + "authority_host_learning_resident_evaluation_tests.rs")).read_text()
         self.assertIn(
@@ -495,14 +432,14 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
 
     def test_root_host_initial_product_exact_source_and_original_guards(self):
         raw = (ROOT / "qa/b4-no-bypass/ROOT_HOST_INITIAL_PRODUCT_SOURCE_CONTRACT.json").read_bytes()
-        self.assertEqual(hashlib.sha256(raw).hexdigest(), "459bebbd0b0f7bdb6057e30fed598a133ea7b4ce39507bd221e6766190e5c8ca")
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), "6d02850c36f1e19c62be007f3242fc6a9a620a80df1f6fab100851d45a198e56")
         contract = json.loads(raw)
         current = tomllib.loads((ROOT / "CALLERS.toml").read_text())
-        self.assertEqual(len(current["boundary"]), 650)
-        self.assertEqual(len(current["protected_file"]), 451)
+        self.assertEqual(len(current["boundary"]), 805)
+        self.assertEqual(len(current["protected_file"]), 565)
         protected = json.dumps(current["protected_file"][:442], sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(protected).hexdigest(), contract["original_protected_prefix_sha256"])
-        self.assertEqual(current["boundary"][-17:], contract["new_boundary_rows"])
+        self.assertEqual(current["boundary"][633:650], contract["new_boundary_rows"])
         for change in contract["old_boundary_additions"]:
             self.assertEqual(current["boundary"][change["index"]], change["after"])
         for path, expected in contract["production_files"].items():
@@ -523,6 +460,46 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         for parent in ROOT_HOST_GENERATION_CASES:
             self.assertIn("async fn " + parent.rsplit("::", 1)[-1] + "(", cases)
         self.assertEqual(cases.count('#[ignore = "requires original Root host bind and actual signed owner fixtures"]'), len(ROOT_HOST_GENERATION_CASES))
+
+
+    def test_e3_resident_enrollment_exact_sources_and_closed_rows(self):
+        raw = (ROOT / "qa/b4-no-bypass/ROOT_RESIDENT_E3_PRODUCT_SOURCE_CONTRACT.json").read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), "26ebe932a7b2f4ce98a7ba49811c5b6f5ac69ab92a6b88e328717d457e0396a0")
+        contract = json.loads(raw)
+        current = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        self.assertEqual(len(current["boundary"]), contract["projected_boundary_count"])
+        self.assertEqual(len(current["protected_file"]), contract["projected_protected_count"])
+        prefix = json.dumps(current["protected_file"][:451], sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(prefix).hexdigest(), contract["original_protected_prefix_sha256"])
+        self.assertEqual(current["boundary"][650:666], contract["new_boundary_rows"])
+        self.assertEqual(current["protected_file"][451:470], contract["new_protected_rows"])
+        for change in contract["old_boundary_additions"]:
+            self.assertEqual(current["boundary"][change["index"]], change["after"])
+        for path, expected in {**contract["production_files"], **contract["test_files"]}.items():
+            with self.subTest(e3_source=path):
+                body = (ROOT / path).read_bytes()
+                actual = {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(),
+                          "git_blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
+                self.assertEqual(actual, expected)
+
+    def test_e3_resident_enrollment_guards_and_original_root_lane(self):
+        raw = (ROOT / "qa/b4-no-bypass/ROOT_RESIDENT_E3_PRODUCT_SOURCE_CONTRACT.json").read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), "26ebe932a7b2f4ce98a7ba49811c5b6f5ac69ab92a6b88e328717d457e0396a0")
+        contract = json.loads(raw)
+        for attack in contract["critical_guard_deletions"]:
+            with self.subTest(e3_guard=attack["filename"]):
+                self.rejects(attack["filename"], attack["function"], attack["marker"])
+        parent = (ROOT / (AGENT + "root_production_handoff.rs")).read_text()
+        handoff = (ROOT / (AGENT + "root_resident_enrollment_handoff.rs")).read_text()
+        cases = (ROOT / (AGENT + "root_resident_enrollment_handoff_tests.rs")).read_text()
+        self.assertIn('#[path = "root_resident_enrollment_handoff.rs"]\nmod resident_enrollment;', parent)
+        self.assertIn('#[path = "root_resident_enrollment_handoff_tests.rs"]\nmod tests;', handoff)
+        self.assertEqual(contract["root_parents"], ROOT_E3_RESIDENT_ENROLLMENT_CASES)
+        self.assertEqual(len(ROOT_E3_RESIDENT_ENROLLMENT_CASES), len(set(ROOT_E3_RESIDENT_ENROLLMENT_CASES)))
+        self.assertTrue(set(ROOT_E3_RESIDENT_ENROLLMENT_CASES).isdisjoint(ROOT_CASES + ROOT_ISSUER_CASES + ROOT_CUSTODY_CASES + ROOT_HOST_GENERATION_CASES))
+        for parent in ROOT_E3_RESIDENT_ENROLLMENT_CASES:
+            self.assertIn("fn " + parent.rsplit("::", 1)[-1] + "(", cases)
+        self.assertEqual(cases.count('#[ignore = "requires actual original Root credentials and Linux pidfd"]'), 3)
 
 
 if __name__ == "__main__":

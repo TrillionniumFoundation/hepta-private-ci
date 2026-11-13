@@ -128,6 +128,12 @@ jobs:
               "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_another_complete_intent",
               "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_existing_state_reopens_after_old_session_is_dropped",
               "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_request_reads_the_exact_binding_without_preparing",
+              "root_production_handoff::resident_enrollment::tests::exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd",
+              "root_production_handoff::resident_enrollment::tests::v1_marker_cannot_enter_the_v3_resident_handoff",
+              "root_production_handoff::resident_enrollment::tests::sealed_file_alias_cannot_replace_the_original_root_pidfd",
+              'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_keeps_unstarted_source_incomplete',
+              'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_refusal_retains_only_the_same_operation',
+              'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::prefreeze::root_prefreeze_ready_reads_existing_source_without_future_event',
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
                       "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",

@@ -33,6 +33,9 @@ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 mod dataset_readback;
 pub use dataset_readback::OriginalCellQ24DatasetCommandReadbackV1;
 
+#[path = "cell_q24_material_source_context.rs"]
+mod original_source_context;
+
 #[path = "cell_q24_material_command_service.rs"]
 mod serving;
 #[path = "cell_q24_material_command_wire.rs"]

@@ -43,6 +43,13 @@ use crate::CircuitCellRegistryV1;
 use crate::circuit_cell_operation_id_v1;
 use crate::circuit_cell_scope_digest_v1;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_remote.rs"]
+pub(crate) mod remote_source;
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_bootstrap.rs"]
+pub(crate) mod root_bootstrap;
+
 #[path = "circuit_task_source_codec.rs"]
 mod codec;
 #[path = "circuit_task_source_journal.rs"]
@@ -53,6 +60,10 @@ pub(crate) use policy::CircuitTaskPolicyProjectionV1;
 #[path = "circuit_task_source_readback.rs"]
 mod readback;
 pub use readback::CircuitTaskSourceReadbackV1;
+#[cfg(target_os = "linux")]
+pub(crate) use readback::material as material_source;
+#[cfg(target_os = "linux")]
+pub(crate) use readback::prefreeze as prefreeze_source;
 
 /// Explicit source bytes and original Cell-clock values, fixed before task
 /// ingress. Only the operation ID is derived later from the original Circuit

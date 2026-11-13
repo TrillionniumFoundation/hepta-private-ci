@@ -424,7 +424,7 @@ impl OriginalCellQ24DatasetV1 {
     }
 }
 
-fn require_source(
+pub(crate) fn require_source(
     identity: &AgentdIdentity,
     source: &CircuitTaskSourcePublicationV1,
     request: &LearningIterationRequestV1,

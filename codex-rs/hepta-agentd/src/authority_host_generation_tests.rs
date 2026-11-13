@@ -170,3 +170,6 @@ async fn start_original_task(
     let worker = tokio::spawn(bootstrap.run(Arc::clone(&runtime.state), cancellation.clone()));
     Ok(RootSession { runtime, request, installed, cancellation, worker: Some(worker) })
 }
+
+#[path = "authority_host_prefreeze_source_tests.rs"]
+mod prefreeze;

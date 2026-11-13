@@ -43,6 +43,9 @@ mod learning_read;
 mod owner;
 #[path = "circuit_feature_current_recovery.rs"]
 mod recovery;
+#[path = "circuit_feature_material_source.rs"]
+mod original_material_source;
+
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
 

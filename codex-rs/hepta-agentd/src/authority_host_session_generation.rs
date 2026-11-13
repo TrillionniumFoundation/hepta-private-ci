@@ -21,6 +21,12 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 #[path = "authority_host_session_generation_task.rs"]
 mod task;
 pub use task::RootHostInitialTaskInstallationErrorV1;
+pub use task::PreparedRootHostCircuitTaskV1;
+pub use task::PreparedRootMaterialSourceHostV1;
+pub use task::OriginalRootMaterialSourceRegistrationV1;
+pub use task::OriginalRootPrefreezeSourceRegistrationV1;
+pub use task::PreparedRootHostLoadedQ24TaskV1;
+pub use task::RootHostOriginalTaskLearningFilesV1;
 
 enum InitialHostPhase<W: AnchorWitnessStore> {
     Fresh(RootHostInitialGenerationInputsV1<W>),
@@ -36,6 +42,9 @@ pub struct PreparedRootHostInitialGenerationV1<W: AnchorWitnessStore> {
     phase: InitialHostPhase<W>,
     end: Instant,
 }
+
+#[path = "authority_host_session_generation_input_loader.rs"]
+mod input_loader;
 
 impl PreparedHostAuthoritySession {
     /// Bind the same original Root/lease/issuer/clock to actual Artifact,

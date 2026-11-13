@@ -287,7 +287,7 @@ impl<W: NeuronFeatureWorkerV1> NeuronInferenceControlPort for ControlledNeuronFe
             .map_err(|_| NeuronModelError::Indeterminate)?;
         let mut observation = self.worker.execute(request)?;
         let completed = (self.clock)();
-        if completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate
+        if completed == u64::MAX || completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate
         {
             return Err(NeuronModelError::Indeterminate);
         }

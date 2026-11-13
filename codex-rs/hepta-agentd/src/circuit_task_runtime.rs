@@ -30,6 +30,14 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::CircuitCellTimeV1;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_remote_runtime.rs"]
+mod original_remote;
+#[cfg(target_os = "linux")]
+pub(crate) use original_remote::channel as original_remote_channel;
+#[cfg(target_os = "linux")]
+pub(crate) use original_remote::channel_until as original_remote_channel_until;
+
 struct PendingWork(Arc<AtomicUsize>);
 
 impl Drop for PendingWork {
@@ -53,9 +61,19 @@ pub struct CircuitTaskHandleV1 {
     sender: mpsc::Sender<Command>,
     generation: u64,
     pending: Arc<AtomicUsize>,
+    #[cfg(target_os = "linux")]
+    original_remote: Option<Arc<super::remote::DaemonClient>>,
 }
 
 impl CircuitTaskHandleV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn retain_original_remote_record(&self, record: &RunStartRecordV1)
+        -> Result<Option<super::remote::OriginalRecordLoan>, AgentdError>
+    {
+        self.original_remote.as_ref().map(|client| super::remote::DaemonClient::begin_original_record(client, record))
+            .transpose().map_err(|error| AgentdError::Protocol(format!("original Root RunStart loan: {error}")))
+    }
+
     /// Queue and active lane work, including work whose caller lost its ACK.
     /// Durable unresolved Circuit runs are additional AutomationStore blockers.
     pub fn pending_count(&self) -> usize {
@@ -114,6 +132,8 @@ pub struct CircuitTaskRuntimeBootstrapV1 {
     identity: AgentdIdentity,
     handle: CircuitTaskHandleV1,
     owner: OwnerLoop,
+    #[cfg(target_os = "linux")]
+    original_root: Option<Box<dyn super::root_lane::OriginalRootLaneFactory>>,
 }
 
 /// Uses Agentd's original AutomationStore at startup. The injected clock keeps
@@ -124,7 +144,7 @@ pub fn circuit_task_channel_v1<O, P, E, I, C>(
     fence: TaskFlowFence,
     cells: AgentdCircuitCellOwnerV1<O, P, E>,
     inputs: I,
-    mut clock: C,
+    clock: C,
     capacity: usize,
 ) -> Result<(CircuitTaskHandleV1, CircuitTaskRuntimeBootstrapV1), AgentdError>
 where
@@ -154,17 +174,32 @@ where
             "Circuit task owner requires exact process scope and a 1..64 queue".into(),
         ));
     }
+    #[cfg(target_os = "linux")]
+    let original_owners = Arc::new(std::sync::Mutex::new(Some(super::root_lane::OriginalOwners {
+        cells, inputs, clock,
+    })));
+    #[cfg(not(target_os = "linux"))]
+    let mut clock = clock;
     let (sender, mut receiver) = mpsc::channel::<Command>(capacity);
     let handle = CircuitTaskHandleV1 {
         sender,
         generation: fence.generation,
         pending: Arc::new(AtomicUsize::new(0)),
+        #[cfg(target_os = "linux")]
+        original_remote: None,
     };
     let bootstrap = CircuitTaskRuntimeBootstrapV1 {
         identity: identity.clone(),
         handle: handle.clone(),
+        #[cfg(target_os = "linux")]
+        original_root: Some(super::root_lane::retain(Arc::clone(&original_owners), capacity)),
         owner: Box::new(move |store, state, cancellation| {
             Box::pin(async move {
+                #[cfg(target_os = "linux")]
+                let super::root_lane::OriginalOwners { cells, inputs, mut clock } =
+                    original_owners.try_lock()
+                        .map_err(|_| AgentdError::Protocol("original Cell factory is unavailable".into()))?
+                        .take().ok_or_else(|| AgentdError::Protocol("original Cell factory was consumed".into()))?;
                 let mut driver = CircuitTaskDriverV1 {
                     store,
                     fence,
@@ -222,6 +257,22 @@ where
 }
 
 impl CircuitTaskRuntimeBootstrapV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn original_root_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error> {
+        super::root_lane::OriginalRootLaneFactory::original_handoff_registry(
+            self.original_root.as_ref().ok_or(Error::Unavailable)?.as_ref(),
+        )
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_root_lane(&mut self)
+        -> Result<Box<dyn super::root_lane::OriginalRootCellPump>, Error>
+    {
+        super::root_lane::OriginalRootLaneFactory::take_original_root_cell_pump(
+            self.original_root.take().ok_or(Error::Unavailable)?,
+        )
+    }
+
     pub(crate) fn handle(&self) -> CircuitTaskHandleV1 {
         self.handle.clone()
     }

@@ -1,5 +1,9 @@
 //! Explicit ordinary-task Circuit profile, paired with its sole Cell owner.
 
+#[cfg(target_os = "linux")]
+#[path = "config_original_root_task.rs"]
+mod original_root;
+
 use std::sync::Arc;
 
 use super::AgentdConfig;

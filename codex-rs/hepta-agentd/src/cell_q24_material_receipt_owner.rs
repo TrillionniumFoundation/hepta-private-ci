@@ -36,6 +36,10 @@ use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_material_root_source.rs"]
+mod original_root_source;
+
 #[path = "cell_q24_material_receipt_binding.rs"]
 mod binding;
 #[cfg(target_os = "linux")]

@@ -12,6 +12,9 @@ mod desktop_startup;
 mod notes_startup;
 pub use notes_startup::RootNotesPolicyPredecessor;
 
+#[path = "authority_host_session_task_host.rs"]
+mod original_task_host;
+
 #[path = "authority_host_session_material.rs"]
 mod material;
 
@@ -21,7 +24,13 @@ mod learning;
 #[path = "authority_host_session_generation.rs"]
 mod generation;
 pub use generation::PreparedRootHostInitialGenerationV1;
+pub use generation::PreparedRootHostCircuitTaskV1;
+pub use generation::PreparedRootMaterialSourceHostV1;
+pub use generation::OriginalRootMaterialSourceRegistrationV1;
+pub use generation::OriginalRootPrefreezeSourceRegistrationV1;
 pub use generation::RootHostInitialTaskInstallationErrorV1;
+pub use generation::PreparedRootHostLoadedQ24TaskV1;
+pub use generation::RootHostOriginalTaskLearningFilesV1;
 
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional

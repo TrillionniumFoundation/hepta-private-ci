@@ -1,6 +1,16 @@
 //! Explicit Root administration, fresh publication and open-only session entry.
 
 #[cfg(target_os = "linux")]
+#[path = "../authority_host_resident_cli.rs"]
+mod resident_cli;
+#[cfg(target_os = "linux")]
+#[path = "../authority_host_resident_enrollment_cli.rs"]
+mod resident_enrollment_cli;
+#[cfg(target_os = "linux")]
+#[path = "../authority_host_loaded_task_cli.rs"]
+mod loaded_task_cli;
+
+#[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::os::fd::AsFd;
     use std::path::PathBuf;
@@ -22,6 +32,39 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 return Err("duplicate option".into());
             }
         }
+    }
+    if command == "serve-original-task-learning" || command == "recover-original-task-learning" {
+        if pidfd_stdin {
+            return Err("original task loading requires all named original descriptors".into());
+        }
+        let purpose = if command == "serve-original-task-learning" {
+            loaded_task_cli::Command::Fresh
+        } else {
+            loaded_task_cli::Command::Recover
+        };
+        return loaded_task_cli::run(options, purpose);
+    }
+    if command == "serve-resident-learning-late" || command == "recover-resident-learning-late" {
+        if pidfd_stdin {
+            return Err("late resident service requires its named original pidfds".into());
+        }
+        let purpose = if command == "serve-resident-learning-late" {
+            resident_enrollment_cli::Command::Fresh
+        } else {
+            resident_enrollment_cli::Command::Recover
+        };
+        return resident_enrollment_cli::run(options, purpose);
+    }
+    if command == "serve-resident-learning" || command == "recover-resident-learning" {
+        if pidfd_stdin {
+            return Err("resident service requires its named original consumer pidfd".into());
+        }
+        let purpose = if command == "serve-resident-learning" {
+            resident_cli::Command::Fresh
+        } else {
+            resident_cli::Command::Recover
+        };
+        return resident_cli::run(options, purpose);
     }
     let mut take = |key: &str| {
         options

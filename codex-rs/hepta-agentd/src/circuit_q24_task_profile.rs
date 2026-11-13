@@ -3,6 +3,10 @@
 //! original host. This module creates no issuer, grant, selection or input.
 //! A different session/task uses a separately published original task binding.
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_q24_task_root_lane.rs"]
+mod original_root_lane;
+
 use std::fs::File;
 use std::sync::Arc;
 

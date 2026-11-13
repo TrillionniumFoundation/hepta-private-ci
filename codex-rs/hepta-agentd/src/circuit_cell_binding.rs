@@ -19,6 +19,10 @@ use crate::CircuitCellErrorV1;
 use crate::circuit_cell_output::circuit_cell_output_schema_v1;
 use crate::circuit_cell_ports::circuit_cell_output_schema_v2;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_cell_registry_bootstrap.rs"]
+pub(crate) mod root_bootstrap;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CircuitCellRouteV1 {
     pub candidate_id: StableId,

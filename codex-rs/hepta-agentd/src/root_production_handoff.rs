@@ -18,6 +18,12 @@ use crate::HOST_AUTHORITY_BOOTSTRAP_BOUND;
 
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
+#[path = "root_original_task_handoff.rs"]
+mod original_task;
+pub use original_task::RootOriginalTaskHandoffV1;
+pub use original_task::receive_root_original_task_handoff;
+pub(crate) use original_task::send_original_task_handoff;
+
 #[path = "root_production_writer_handoff.rs"]
 mod writer;
 pub use writer::RootProductionWriterDescriptor;
@@ -35,6 +41,7 @@ mod candidate_stages;
 pub use candidate_stages::RootCandidateStageHandoffV1;
 pub use candidate_stages::receive_root_candidate_stage_handoff;
 pub use candidate_stages::send_root_candidate_stage_handoff;
+pub(crate) use candidate_stages::{OriginalRootCandidateStageTransportV1, receive_original_candidate_stage_transport};
 
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.
@@ -257,3 +264,9 @@ fn refused(message: &str) -> AgentdError {
 #[cfg(test)]
 #[path = "root_production_handoff_tests.rs"]
 mod tests;
+
+#[path = "root_resident_enrollment_handoff.rs"]
+mod resident_enrollment;
+pub(crate) use resident_enrollment::receive_original_resident_enrollment;
+pub(crate) use resident_enrollment::send_original_resident_enrollment;
+pub(crate) use resident_enrollment::require_original_resident_process_pin;

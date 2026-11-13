@@ -4,6 +4,9 @@
 
 #[path = "circuit_cell_batch.rs"]
 mod batch;
+#[cfg(target_os = "linux")]
+#[path = "circuit_cell_remote.rs"]
+mod original_remote;
 
 use std::cell::Cell;
 use std::error::Error;

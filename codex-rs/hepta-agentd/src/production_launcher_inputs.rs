@@ -15,10 +15,12 @@ use std::time::Instant;
 use crate::AgentdError;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 19] = [
+const FLAGS: [&str; 21] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
+    "--root-resident-learning-handoff-fd",
+    "--root-original-task-handoff-fd",
     "--root-production-uid",
     "--root-production-gid",
     "--root-production-control-fd",
@@ -47,6 +49,8 @@ enum Profile {
 pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
     pub(super) learning_handoff: Option<UnixDatagram>,
+    pub(super) resident_handoff: Option<UnixDatagram>,
+    pub(super) original_task_handoff: Option<UnixDatagram>,
     pub(super) uid: u32,
     pub(super) gid: u32,
     pub(super) control: OwnedFd,
@@ -148,6 +152,17 @@ pub(super) fn parse(
         .remove("--root-learning-handoff-fd")
         .map(descriptor_number)
         .transpose()?;
+    let resident_handoff = selected
+        .remove("--root-resident-learning-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if resident_handoff.is_some() && learning_handoff.is_some() {
+        return Err(invalid("resident V3 and original V1 learning handoffs are exclusive"));
+    }
+    let original_task_handoff = selected
+        .remove("--root-original-task-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
     let notes = selected
         .remove("--notes-production-handoff-fd")
         .map(descriptor_number)
@@ -225,6 +240,8 @@ pub(super) fn parse(
     let numbers = [
         Some(handoff),
         learning_handoff,
+        resident_handoff,
+        original_task_handoff,
         Some(control),
         Some(app_server),
         payload,
@@ -259,6 +276,14 @@ pub(super) fn parse(
     // inherited authority out of unrelated App Server helper re-executions.
     let handoff = UnixDatagram::from(take_descriptor(handoff)?);
     let learning_handoff = learning_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let resident_handoff = resident_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let original_task_handoff = original_task_handoff
         .map(take_descriptor)
         .transpose()?
         .map(UnixDatagram::from);
@@ -305,6 +330,8 @@ pub(super) fn parse(
         Some(LaunchInputs {
             handoff,
             learning_handoff,
+            resident_handoff,
+            original_task_handoff,
             uid,
             gid,
             control,

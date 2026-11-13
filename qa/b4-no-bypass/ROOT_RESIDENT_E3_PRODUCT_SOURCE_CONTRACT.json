@@ -1,0 +1,1282 @@
+{
+  "authority": false,
+  "critical_guard_deletions": [
+    {
+      "filename": "authority_host_resident_cli.rs",
+      "function": "fn run(",
+      "marker": "let work = codex_hepta_agentd::RootResidentCandidateServiceV1::run(service, cancellation.clone());"
+    },
+    {
+      "filename": "authority_host_resident_launch.rs",
+      "function": "fn prepare(",
+      "marker": "if unsafe { libc::geteuid() } != 0"
+    },
+    {
+      "filename": "authority_host_resident_launch_inputs.rs",
+      "function": "fn read(",
+      "marker": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)"
+    },
+    {
+      "filename": "authority_host_resident_trust_file.rs",
+      "function": "fn observer(",
+      "marker": ".require_signer_binding(LearningEvidenceRoleV1::Observer, signer, now)"
+    },
+    {
+      "filename": "authority_host_resident_enrollment.rs",
+      "function": "async fn prepare_enrollment(",
+      "marker": "crate::root_production_handoff::send_original_resident_enrollment("
+    },
+    {
+      "filename": "authority_host_resident_enrollment_cli.rs",
+      "function": "fn run(",
+      "marker": "let work = codex_hepta_agentd::RootResidentCandidateEnrollmentServiceV3::run(service, cancellation.clone());"
+    },
+    {
+      "filename": "authority_host_resident_enrollment_connect.rs",
+      "function": "async fn connect_original_resident_enrollment(",
+      "marker": "packet.consumer.pid != std::process::id()"
+    },
+    {
+      "filename": "authority_host_resident_enrollment_profile.rs",
+      "function": "fn original(",
+      "marker": "if profile.binding() != digest(&self.binding)?"
+    },
+    {
+      "filename": "authority_host_resident_enrollment_wire.rs",
+      "function": "fn read(",
+      "marker": "crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;"
+    },
+    {
+      "filename": "authority_host_resident_listener.rs",
+      "function": "fn bind_original(",
+      "marker": "validate_lane_paths(&[&path], config.peer_gid)?;"
+    },
+    {
+      "filename": "production_resident_enrollment.rs",
+      "function": "async fn run_original(",
+      "marker": "config.with_root_resident_learning_enrollment()?"
+    },
+    {
+      "filename": "root_resident_enrollment_handoff.rs",
+      "function": "async fn receive_original_resident_enrollment(",
+      "marker": "require_root_pin(&pidfd, peer.pid as u32)?;"
+    }
+  ],
+  "format": "hepta.e3.resident-source-contract.v1",
+  "new_boundary_rows": [
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub fn prepare_host_resident_candidate_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "id": "e3_root_candidate_prepare",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+      ],
+      "symbol": "prepare_host_resident_candidate_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub fn recover_host_resident_candidate_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "id": "e3_root_candidate_recover",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+      ],
+      "symbol": "recover_host_resident_candidate_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub async fn prepare_host_resident_candidate_enrollment_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "id": "e3_root_candidate_late_prepare",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs"
+      ],
+      "symbol": "prepare_host_resident_candidate_enrollment_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub async fn recover_host_resident_candidate_enrollment_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "id": "e3_root_candidate_late_recover",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs"
+      ],
+      "symbol": "recover_host_resident_candidate_enrollment_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub async fn run(self,"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "id": "e3_root_candidate_late_run",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs",
+        "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs"
+      ],
+      "receiver_type": "RootResidentCandidateEnrollmentServiceV3",
+      "symbol": "RootResidentCandidateEnrollmentServiceV3::run"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) async fn connect_original_resident_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs",
+      "id": "e3_daemon_resident_connect",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs"
+      ],
+      "symbol": "connect_original_resident_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) fn send_original_resident_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "id": "e3_root_resident_handoff_send",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "symbol": "send_original_resident_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) async fn receive_original_resident_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "id": "e3_daemon_resident_handoff_receive",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+      ],
+      "symbol": "receive_original_resident_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) fn require_original_resident_process_pin("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "id": "e3_root_resident_original_process_pin",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+        "codex-rs/hepta-agentd/src/material_host_files.rs"
+      ],
+      "symbol": "require_original_resident_process_pin"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn read(path:"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_root_resident_trust_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs"
+      ],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn from_root_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_daemon_resident_root_trust_decode",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+      ],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::from_root_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn from_value(value:"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_root_resident_trust_construct",
+      "product_callers": [],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::from_value"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn observer("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_root_resident_observer_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+      ],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::observer"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn read("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+      "id": "e3_root_resident_deployment_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs"
+      ],
+      "receiver_type": "OriginalDeployment",
+      "symbol": "OriginalDeployment::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) fn bind_original("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "id": "e3_root_resident_listener_bind",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs"
+      ],
+      "receiver_type": "ResidentListener",
+      "symbol": "ResidentListener::bind_original"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) async fn accept_original("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "id": "e3_root_resident_listener_accept",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs"
+      ],
+      "receiver_type": "ResidentListener",
+      "symbol": "ResidentListener::accept_original"
+    }
+  ],
+  "new_protected_rows": [
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs",
+      "required": [
+        "//! Fixed candidate-service command for the original Root authority executable.\n\nuse std::collections::BTreeMap;\nuse std::collections::BTreeSet;\nuse std::ffi::OsStr;\nuse std::ffi::OsString;\nuse std::fs::File;\nuse std::os::unix::net::UnixDatagram;\nuse std::os::unix::net::UnixStream;\nuse std::path::PathBuf;\n\nuse codex_hepta_agentd::CellQ24ModelFilesV1;\nuse codex_hepta_agentd::RootResidentCandidateProcessInputsV3;\nuse tokio_util::sync::CancellationToken;\n\npub(super) enum Command {\n    Fresh,\n    Recover,\n}\n\npub(super) fn run(\n    mut options: BTreeMap<OsString, OsString>,\n    command: Command,\n) -> Result<(), Box<dyn std::error::Error>> {\n    let mut take = |key: &str| {\n        options\n            .remove(OsStr::new(key))\n            .ok_or(\"missing required resident option\")\n    };\n    let config = PathBuf::from(take(\"--config\")?);\n    let deployment = PathBuf::from(take(\"--resident-deployment\")?);\n    let trust = PathBuf::from(take(\"--learning-trust\")?);\n    let handoff = take(\"--candidate-stage-handoff-fd\")?;\n    let consumer = take(\"--resident-consumer-fd\")?;\n    let consumer_pidfd = take(\"--resident-consumer-pidfd\")?;\n    let base = take(\"--baseline-base-fd\")?;\n    let encoder = take(\"--baseline-encoder-fd\")?;\n    let heads = take(\"--baseline-heads-fd\")?;\n    let readback = match command {\n        Command::Fresh => None,\n        Command::Recover => Some(PathBuf::from(take(\"--resident-readback\")?)),\n    };\n    let organ = options.remove(OsStr::new(\"--baseline-organ-fd\"));\n    let cell = options.remove(OsStr::new(\"--baseline-cell-fd\"));\n    if !options.is_empty() {\n        return Err(\"unknown resident option or fresh/readback purpose mismatch\".into());\n    }\n    // Adopt every inherited numeric slot before a file open, clone or runtime\n    // can reuse a missing number. The original parser retains sole ownership.\n    let mut claimed = BTreeSet::new();\n    let handoff = super::inherited_descriptor(&handoff, &mut claimed)?;\n    let consumer = super::inherited_descriptor(&consumer, &mut claimed)?;\n    let consumer_pidfd = super::inherited_descriptor(&consumer_pidfd, &mut claimed)?;\n    let base = super::inherited_descriptor(&base, &mut claimed)?;\n    let encoder = super::inherited_descriptor(&encoder, &mut claimed)?;\n    let heads = super::inherited_descriptor(&heads, &mut claimed)?;\n    let organ = organ\n        .as_deref()\n        .map(|fd| super::inherited_descriptor(fd, &mut claimed))\n        .transpose()?;\n    let cell = cell\n        .as_deref()\n        .map(|fd| super::inherited_descriptor(fd, &mut claimed))\n        .transpose()?;\n    let original = RootResidentCandidateProcessInputsV3 {\n        stage_handoff: UnixDatagram::from(handoff),\n        consumer_stream: UnixStream::from(consumer),\n        original_consumer_pidfd: consumer_pidfd,\n        baseline_files: CellQ24ModelFilesV1 {\n            base: File::from(base),\n            organ_adapter: organ.map(File::from),\n            cell_adapter: cell.map(File::from),\n            encoder: File::from(encoder),\n            heads: File::from(heads),\n        },\n    };\n    let runtime = tokio::runtime::Builder::new_current_thread()\n        .enable_all()\n        .build()?;\n    runtime.block_on(async move {\n        let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;\n        let cancellation = CancellationToken::new();\n        let service = match readback {\n            Some(readback) => codex_hepta_agentd::recover_host_resident_candidate_v3(\n                &config,\n                &deployment,\n                &trust,\n                original,\n                &readback,\n            )?,\n            None => codex_hepta_agentd::prepare_host_resident_candidate_v3(\n                &config,\n                &deployment,\n                &trust,\n                original,\n            )?,\n        };\n        let work = codex_hepta_agentd::RootResidentCandidateServiceV1::run(service, cancellation.clone());\n        tokio::pin!(work);\n        tokio::select! {\n            result = &mut work => result?,\n            signal = tokio::signal::ctrl_c() => {\n                cancellation.cancel();\n                let result = work.await;\n                signal?;\n                result?;\n            }\n            _ = terminate.recv() => {\n                cancellation.cancel();\n                work.await?;\n            }\n        }\n        Ok::<(), Box<dyn std::error::Error>>(())\n    })\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "required": [
+        "//! Root's once-only late enrollment and original candidate service composition.\n\nuse super::*;\nuse std::time::Duration;\nuse crate::HostAuthorityServiceConfig;\nuse crate::authority_host_runtime::listeners::resident::ResidentListener;\nuse crate::authority_host_runtime::listeners::resident::ResidentSocketGuard;\n\n#[path = \"authority_host_resident_enrollment_wire.rs\"]\nmod wire;\n#[path = \"authority_host_resident_enrollment_connect.rs\"]\nmod connect;\npub(crate) use connect::connect_original_resident_enrollment;\n\n#[path = \"authority_host_task_resident_enrollment.rs\"]\nmod original_task;\npub(crate) use original_task::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,\n    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,\n    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};\n\n/// No stream created before the daemon's credential drop is accepted here.\n/// Root creates one protected listener; the actual daemon connects after A.\npub struct RootResidentCandidateEnrollmentInputsV3 {\n    pub stage_handoff: UnixDatagram,\n    pub enrollment_handoff: UnixDatagram,\n    pub original_root_pidfd: OwnedFd,\n    pub original_consumer_pidfd: OwnedFd,\n    pub baseline_files: CellQ24ModelFilesV1,\n}\n\npub async fn prepare_host_resident_candidate_enrollment_v3(\n    config_file: &Path,\n    deployment_file: &Path,\n    trusted_evidence_file: &Path,\n    original: RootResidentCandidateEnrollmentInputsV3,\n) -> io::Result<RootResidentCandidateEnrollmentServiceV3> {\n    prepare_enrollment(config_file, deployment_file, trusted_evidence_file, original, Purpose::Fresh).await\n}\n\npub async fn recover_host_resident_candidate_enrollment_v3(\n    config_file: &Path,\n    deployment_file: &Path,\n    trusted_evidence_file: &Path,\n    original: RootResidentCandidateEnrollmentInputsV3,\n    readback_file: &Path,\n) -> io::Result<RootResidentCandidateEnrollmentServiceV3> {\n    prepare_enrollment(config_file, deployment_file, trusted_evidence_file, original, Purpose::Readback(readback_file)).await\n}\n\nasync fn prepare_enrollment(\n    config_file: &Path,\n    deployment_file: &Path,\n    trusted_evidence_file: &Path,\n    original: RootResidentCandidateEnrollmentInputsV3,\n    purpose: Purpose<'_>,\n) -> io::Result<RootResidentCandidateEnrollmentServiceV3> {\n    // SAFETY: both calls inspect only actual current credentials.\n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(io::Error::other(\"original Root resident process required\"));\n    }\n    let config: HostAuthorityServiceConfig = read_root_json(config_file)?;\n    config.required_bind.verify()?;\n    let trust = trust::OriginalHostTrust::read(trusted_evidence_file)?;\n    let RootResidentCandidateEnrollmentInputsV3 {\n        stage_handoff, enrollment_handoff, original_root_pidfd,\n        original_consumer_pidfd, baseline_files,\n    } = original;\n    let baseline = Arc::new(LoadedCellQ24ModelV1::open_files(baseline_files).map_err(io::Error::other)?);\n    let inputs::OriginalDeployment { profile, inputs, consumer, handoff_timeout, enrollment_profile } =\n        inputs::OriginalDeployment::read(deployment_file, &trust, baseline)?;\n    let (peer, uid, timeout, lifetime) = consumer.into_peer();\n    if uid != config.peer_uid || matches!(config.peer_gid, 0 | u32::MAX) {\n        return Err(io::Error::other(\"resident recipient differs from original host config\"));\n    }\n    let recipient = wire::Process::from_peer(&peer);\n    recipient.require_original()?;\n    crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, config.peer_gid)?;\n    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)\n        .map_err(io::Error::other)?;\n    let now = wire::now_ns()?;\n    let connect_before_ns = now.checked_add(u64::try_from(handoff_timeout.as_nanos()).map_err(io::Error::other)?)\n        .ok_or_else(|| io::Error::other(\"resident handoff deadline overflow\"))?;\n    let session_end_ns = now.checked_add(u64::try_from(lifetime.as_nanos()).map_err(io::Error::other)?)\n        .ok_or_else(|| io::Error::other(\"resident session deadline overflow\"))?;\n    let connect_end = wire::absolute(connect_before_ns, Duration::from_secs(30))?;\n    let session_end = wire::absolute(session_end_ns, Duration::from_secs(300))?;\n    let (authorization, readback) = match purpose {\n        Purpose::Fresh => (wire::Authorization::Fresh, None),\n        Purpose::Readback(path) => {\n            let value: ReadbackFile = read_root_json(path)?;\n            if value.schema_version != 3\n                || value.purpose != \"hepta.host-resident-learning.readback-deployment.v3\"\n            { return Err(io::Error::other(\"resident readback purpose differs\")); }\n            let authorization = wire::Authorization::Readback { intent: value.intent.clone(), lease: value.lease.clone() };\n            let original = RootResidentLearningReadbackAuthorizationV3::from_original_root(&profile, value.intent, value.lease)?;\n            (authorization, Some(original))\n        }\n    };\n    let handoff = crate::receive_root_candidate_stage_handoff(stage_handoff, &profile, wire::remaining(connect_end)?)\n        .map_err(io::Error::other)?;\n    // After this call fails or its ACK is uncertain, only explicit readback of\n    // the same operation is legal. No listener/send failure restores freshness.\n    let binding = profile.binding();\n    // Use the same concrete config already checked for recipient and listener\n    // custody. Reuse the original open-only issuer factory without a second\n    // path read that could select a different Root configuration.\n    let super::super::OriginalHostIssuerCustodyV3 { issuer, leases, root, .. } =\n        super::super::open_original_issuer_custody(&config)?;\n    let registration = match readback {\n        Some(readback) => RootResidentLearningRegistrationV3::recover_original_root(\n            root, issuer, Arc::new(leases), profile, readback,\n        )?,\n        None => RootResidentLearningRegistrationV3::register_original_root(\n            root, issuer, Arc::new(leases), profile,\n        )?,\n    };\n    wire::remaining(connect_end)?;\n    let listener = ResidentListener::bind_original(&config, binding)?;\n    let (path, device, inode) = listener.original_node();\n    let packet = wire::Packet {\n        schema_version: 3, purpose: wire::PURPOSE.into(), root: wire::Process::current()?,\n        consumer: recipient, consumer_uid: uid, consumer_gid: config.peer_gid,\n        profile: enrollment_profile,\n        trusted_evidence: String::from_utf8(trust.encoded).map_err(io::Error::other)?,\n        socket: path.clone(), socket_device: device, socket_inode: inode,\n        connect_before_ns, session_end_ns,\n        command_timeout_ms: u64::try_from(timeout.as_millis()).map_err(io::Error::other)?,\n        authorization,\n    };\n    let sealed = wire::seal(&packet)?;\n    crate::root_production_handoff::send_original_resident_enrollment(\n        enrollment_handoff, &sealed, &original_root_pidfd, wire::remaining(connect_end)?,\n    ).map_err(io::Error::other)?;\n    let (stream, socket_guard) = listener.accept_original(connect_end).await?;\n    packet.consumer.require_original()?;\n    crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, config.peer_gid)?;\n    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)\n        .map_err(io::Error::other)?;\n    wire::remaining(connect_end)?;\n    let service = RootResidentLearningRegistrationV3::into_candidate_service(\n        registration, inputs, handoff,\n        RootResidentLearningConsumerV3 {\n            stream, peer, uid, original_consumer_pidfd,\n            timeout, lifetime: wire::remaining(session_end)?,\n        },\n    ).map_err(io::Error::other)?;\n    wire::remaining(connect_end)?;\n    Ok(RootResidentCandidateEnrollmentServiceV3 { service, socket_guard, session_end })\n}\n\n/// Retains the exact Root socket node through the original service lifetime.\n/// The underlying continuation, cancellation and terminal join remain original.\npub struct RootResidentCandidateEnrollmentServiceV3 {\n    service: RootResidentCandidateServiceV1,\n    socket_guard: ResidentSocketGuard,\n    session_end: std::time::Instant,\n}\n\nimpl RootResidentCandidateEnrollmentServiceV3 {\n    pub async fn run(self, cancellation: tokio_util::sync::CancellationToken) -> Result<(), crate::AgentdError> {\n        let Self { service, socket_guard, session_end } = self;\n        let bounded = cancellation.child_token();\n        let work = RootResidentCandidateServiceV1::run(service, bounded.clone());\n        tokio::pin!(work);\n        let result = tokio::select! {\n            result = &mut work => result,\n            _ = tokio::time::sleep_until(tokio::time::Instant::from_std(session_end)) => {\n                bounded.cancel();\n                work.await\n            }\n        };\n        drop(socket_guard);\n        result\n    }\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs",
+      "required": [
+        "//! Normal late candidate entry, using a Root listener after daemon UID drop.\n\nuse std::collections::{BTreeMap, BTreeSet};\nuse std::ffi::{OsStr, OsString};\nuse std::fs::File;\nuse std::os::unix::net::UnixDatagram;\nuse std::path::PathBuf;\nuse codex_hepta_agentd::{CellQ24ModelFilesV1, RootResidentCandidateEnrollmentInputsV3};\nuse tokio_util::sync::CancellationToken;\n\npub(super) enum Command { Fresh, Recover }\n\npub(super) fn run(mut options: BTreeMap<OsString, OsString>, command: Command) -> Result<(), Box<dyn std::error::Error>> {\n    let mut take = |key: &str| options.remove(OsStr::new(key)).ok_or(\"missing required resident enrollment option\");\n    let config = PathBuf::from(take(\"--config\")?);\n    let deployment = PathBuf::from(take(\"--resident-deployment\")?);\n    let trust = PathBuf::from(take(\"--learning-trust\")?);\n    let stages = take(\"--candidate-stage-handoff-fd\")?;\n    let enrollment = take(\"--resident-enrollment-handoff-fd\")?;\n    let root_pidfd = take(\"--resident-root-pidfd\")?;\n    let consumer_pidfd = take(\"--resident-consumer-pidfd\")?;\n    let base = take(\"--baseline-base-fd\")?;\n    let encoder = take(\"--baseline-encoder-fd\")?;\n    let heads = take(\"--baseline-heads-fd\")?;\n    let readback = match command {\n        Command::Fresh => None,\n        Command::Recover => Some(PathBuf::from(take(\"--resident-readback\")?)),\n    };\n    let organ = options.remove(OsStr::new(\"--baseline-organ-fd\"));\n    let cell = options.remove(OsStr::new(\"--baseline-cell-fd\"));\n    if !options.is_empty() { return Err(\"unknown resident enrollment option\".into()); }\n    let mut claimed = BTreeSet::new();\n    let stages = super::inherited_descriptor(&stages, &mut claimed)?;\n    let enrollment = super::inherited_descriptor(&enrollment, &mut claimed)?;\n    let root_pidfd = super::inherited_descriptor(&root_pidfd, &mut claimed)?;\n    let consumer_pidfd = super::inherited_descriptor(&consumer_pidfd, &mut claimed)?;\n    let base = super::inherited_descriptor(&base, &mut claimed)?;\n    let encoder = super::inherited_descriptor(&encoder, &mut claimed)?;\n    let heads = super::inherited_descriptor(&heads, &mut claimed)?;\n    let organ = organ.as_deref().map(|fd| super::inherited_descriptor(fd, &mut claimed)).transpose()?;\n    let cell = cell.as_deref().map(|fd| super::inherited_descriptor(fd, &mut claimed)).transpose()?;\n    let original = RootResidentCandidateEnrollmentInputsV3 {\n        stage_handoff: UnixDatagram::from(stages),\n        enrollment_handoff: UnixDatagram::from(enrollment),\n        original_root_pidfd: root_pidfd,\n        original_consumer_pidfd: consumer_pidfd,\n        baseline_files: CellQ24ModelFilesV1 {\n            base: File::from(base), organ_adapter: organ.map(File::from), cell_adapter: cell.map(File::from),\n            encoder: File::from(encoder), heads: File::from(heads),\n        },\n    };\n    tokio::runtime::Builder::new_current_thread().enable_all().build()?.block_on(async move {\n        let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;\n        let prepare = async move {\n            match readback {\n                Some(readback) => codex_hepta_agentd::recover_host_resident_candidate_enrollment_v3(\n                    &config, &deployment, &trust, original, &readback,\n                ).await,\n                None => codex_hepta_agentd::prepare_host_resident_candidate_enrollment_v3(\n                    &config, &deployment, &trust, original,\n                ).await,\n            }\n        };\n        tokio::pin!(prepare);\n        let service = tokio::select! {\n            result = &mut prepare => result?,\n            signal = tokio::signal::ctrl_c() => {\n                signal?;\n                return Err(\"resident enrollment preparation interrupted; same-operation readback required\".into());\n            }\n            _ = terminate.recv() => {\n                return Err(\"resident enrollment preparation interrupted; same-operation readback required\".into());\n            }\n        };\n        let cancellation = CancellationToken::new();\n        let work = codex_hepta_agentd::RootResidentCandidateEnrollmentServiceV3::run(service, cancellation.clone());\n        tokio::pin!(work);\n        tokio::select! {\n            result = &mut work => result?,\n            signal = tokio::signal::ctrl_c() => {\n                cancellation.cancel(); let result = work.await; signal?; result?;\n            }\n            _ = terminate.recv() => { cancellation.cancel(); work.await?; }\n        }\n        Ok::<(), Box<dyn std::error::Error>>(())\n    })\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs",
+      "required": [
+        "//! Daemon-side reconstruction only after the original Root handoff is pinned.\n\nuse super::wire;\nuse std::fs::File;\nuse std::io;\nuse std::os::fd::OwnedFd;\nuse std::os::unix::fs::{FileTypeExt, MetadataExt};\nuse std::time::{Duration, Instant};\nuse crate::{AgentdIdentity, AgentdRootResidentLearningClientV3, RootResidentLearningReadbackAuthorizationV3};\n\npub(crate) async fn connect_original_resident_enrollment(\n    bootstrap: File,\n    held_root_pidfd: OwnedFd,\n    root_pid: u32,\n    identity: &AgentdIdentity,\n    idle_end: Instant,\n) -> io::Result<AgentdRootResidentLearningClientV3> {\n    let packet = wire::read(bootstrap)?;\n    // SAFETY: these calls only inspect the actual final daemon credentials.\n    let (uid, gid) = unsafe { (libc::geteuid(), libc::getegid()) };\n    if packet.schema_version != 3 || packet.purpose != wire::PURPOSE\n        || uid == 0 || gid == 0 || packet.consumer_uid != uid || packet.consumer_gid != gid\n        || packet.consumer.pid != std::process::id() || packet.root.pid != root_pid\n        || packet.root.pid == std::process::id() || !(1..=30_000).contains(&packet.command_timeout_ms)\n    { return Err(io::Error::other(\"resident sealed purpose or recipient differs\")); }\n    packet.consumer.require_original()?;\n    packet.root.require_original()?;\n    crate::authority_host_runtime::verify_process_credentials(std::process::id(), uid, gid)?;\n    let connect_end = wire::absolute(packet.connect_before_ns, Duration::from_secs(30))?.min(idle_end);\n    let session_end = wire::absolute(packet.session_end_ns, Duration::from_secs(300))?.min(idle_end);\n    let trust = super::super::trust::OriginalHostTrust::from_root_enrollment(packet.trusted_evidence.as_bytes())?;\n    let profile = packet.profile.original(&trust.verifier)?;\n    if profile.initial().request.agent_id.as_str() != identity.agent_id.as_str()\n        || packet.socket.file_name().and_then(|name| name.to_str())\n            != Some(format!(\"lr3-{}.sock\", &profile.binding().to_string()[..32]).as_str())\n    { return Err(io::Error::other(\"resident profile or fixed socket purpose differs\")); }\n    validate_socket(&packet.socket, gid, packet.socket_device, packet.socket_inode)?;\n    crate::root_observation_stream::check_lifetime(&held_root_pidfd).map_err(io::Error::other)?;\n    let connect_timeout = wire::remaining(connect_end)?.min(Duration::from_millis(500));\n    // Exactly one connection, after the original credential drop. Unknown\n    // connect/handshake outcomes do not obtain a replacement socket or nonce.\n    let stream = tokio::time::timeout(connect_timeout, tokio::net::UnixStream::connect(&packet.socket))\n        .await.map_err(|_| io::Error::other(\"resident connect deadline elapsed\"))??;\n    validate_socket(&packet.socket, gid, packet.socket_device, packet.socket_inode)?;\n    packet.consumer.require_original()?;\n    packet.root.require_original()?;\n    wire::remaining(connect_end)?;\n    let root_pin = held_root_pidfd.try_clone()?;\n    let timeout = Duration::from_millis(packet.command_timeout_ms);\n    let client = match packet.authorization {\n        wire::Authorization::Fresh => AgentdRootResidentLearningClientV3::from_original_root_stream(\n            stream.into_std()?, packet.root.into_peer(), held_root_pidfd,\n            profile, trust.verifier, timeout, wire::remaining(session_end)?,\n        ),\n        wire::Authorization::Readback { intent, lease } => {\n            let authorization = RootResidentLearningReadbackAuthorizationV3::from_original_root(&profile, intent, lease)?;\n            AgentdRootResidentLearningClientV3::recover_original_root_stream(\n                stream.into_std()?, packet.root.into_peer(), held_root_pidfd,\n                profile, authorization, trust.verifier, /*expected*/ None, timeout, wire::remaining(session_end)?,\n            )\n        }\n    }.map_err(io::Error::other)?;\n    crate::root_observation_stream::check_lifetime(&root_pin).map_err(io::Error::other)?;\n    wire::remaining(connect_end)?;\n    wire::remaining(session_end)?;\n    Ok(client)\n}\n\nfn validate_socket(path: &std::path::PathBuf, gid: u32, device: u64, inode: u64) -> io::Result<()> {\n    crate::authority_host_runtime::validate_lane_paths(&[path], gid)?;\n    let node = std::fs::symlink_metadata(path)?;\n    if !node.file_type().is_socket() || node.uid() != 0 || node.gid() != gid\n        || node.nlink() != 1 || node.mode() & 0o7777 != 0o660\n        || (node.dev(), node.ino()) != (device, inode)\n    { return Err(io::Error::other(\"original Root resident socket changed\")); }\n    Ok(())\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+      "required": [
+        "//! Data copied from the exact already validated Root deployment, without owners.\n\nuse super::*;\nuse codex_hepta_learning_ledger::LearningEvidenceVerifierV1;\nuse codex_hepta_types::Digest32;\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in super::super) struct EnrollmentProfile {\n    initial_snapshot: String,\n    scope: Scope,\n    original_intent: SignedFinalUseGrant,\n    original_lease: AuthorityLease,\n    binding: String,\n}\n\nimpl EnrollmentProfile {\n    pub(super) fn capture(\n        original: (String, Scope, SignedFinalUseGrant, AuthorityLease),\n        binding: Digest32,\n    ) -> Self {\n        let (initial_snapshot, scope, original_intent, original_lease) = original;\n        Self { initial_snapshot, scope, original_intent, original_lease, binding: binding.to_string() }\n    }\n\n    /// Called only after Root pair, sealed descriptor and recipient validation.\n    /// Rebuilding public profile data does not authenticate any stage result.\n    pub(in super::super) fn original(\n        self,\n        verifier: &LearningEvidenceVerifierV1,\n    ) -> io::Result<RootResidentLearningProfileV3> {\n        let raw = decode(&self.initial_snapshot, 8_192)?;\n        let initial = decode_original_owner_snapshot_v1(&raw).map_err(io::Error::other)?;\n        if encode_original_owner_snapshot_v1(&initial).map_err(io::Error::other)? != raw {\n            return Err(io::Error::other(\"noncanonical resident initial cut\"));\n        }\n        let scope = FrozenLearningScopeV2::freeze(\n            &initial.request,\n            &initial.owners,\n            match self.scope.update_scope {\n                UpdateScope::Cell => LearningUpdateScopeV2::Cell,\n                UpdateScope::Organ => LearningUpdateScopeV2::Organ,\n            },\n            digest(&self.scope.update_rule)?,\n        ).map_err(io::Error::other)?;\n        if scope.binding() != digest(&self.scope.binding)? {\n            return Err(io::Error::other(\"resident frozen scope differs\"));\n        }\n        let profile = RootResidentLearningProfileV3::new(\n            initial, scope, verifier, self.original_intent, self.original_lease,\n        )?;\n        if profile.binding() != digest(&self.binding)? {\n            return Err(io::Error::other(\"resident full profile differs\"));\n        }\n        Ok(profile)\n    }\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs",
+      "required": [
+        "//! Private sealed V3 enrollment description. Data cannot construct role owners.\n\nuse std::fs::File;\nuse std::io::{self, Read, Seek, Write};\nuse std::path::PathBuf;\nuse std::time::{Duration, Instant};\nuse serde::{Deserialize, Serialize};\n\nuse super::super::inputs::EnrollmentProfile;\nuse crate::AgentdRootAuthorityPeer;\n\npub(super) const PURPOSE: &str = \"hepta.original-root-resident-enrollment.v3\";\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct Packet {\n    pub(super) schema_version: u32,\n    pub(super) purpose: String,\n    pub(super) root: Process,\n    pub(super) consumer: Process,\n    pub(super) consumer_uid: u32,\n    pub(super) consumer_gid: u32,\n    pub(super) profile: EnrollmentProfile,\n    pub(super) trusted_evidence: String,\n    pub(super) socket: PathBuf,\n    pub(super) socket_device: u64,\n    pub(super) socket_inode: u64,\n    pub(super) connect_before_ns: u64,\n    pub(super) session_end_ns: u64,\n    pub(super) command_timeout_ms: u64,\n    pub(super) authorization: Authorization,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(tag = \"purpose\", rename_all = \"snake_case\", deny_unknown_fields)]\npub(super) enum Authorization {\n    Fresh,\n    Readback {\n        intent: codex_hepta_contracts::SignedFinalUseGrant,\n        lease: codex_hepta_contracts::authority_lease::AuthorityLease,\n    },\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct Process {\n    pub(super) pid: u32,\n    pub(super) boot_id: String,\n    pub(super) process_start_ticks: u64,\n}\n\nimpl Process {\n    pub(super) fn current() -> io::Result<Self> {\n        let pid = std::process::id();\n        let boot_id = text(\"/proc/sys/kernel/random/boot_id\", 128)?.trim().to_string();\n        Ok(Self { pid, boot_id, process_start_ticks: start(pid)? })\n    }\n\n    pub(super) fn from_peer(peer: &AgentdRootAuthorityPeer) -> Self {\n        Self { pid: peer.pid, boot_id: peer.boot_id.clone(), process_start_ticks: peer.process_start_ticks }\n    }\n\n    pub(super) fn require_original(&self) -> io::Result<()> {\n        if self.pid == 0 || self.pid > i32::MAX as u32 || self.process_start_ticks == 0\n            || self.boot_id.is_empty() || self.boot_id.len() > 128\n            || text(\"/proc/sys/kernel/random/boot_id\", 128)?.trim() != self.boot_id\n            || start(self.pid)? != self.process_start_ticks\n        {\n            return Err(io::Error::other(\"original resident process identity differs\"));\n        }\n        Ok(())\n    }\n\n    pub(super) fn into_peer(self) -> AgentdRootAuthorityPeer {\n        AgentdRootAuthorityPeer { pid: self.pid, boot_id: self.boot_id, process_start_ticks: self.process_start_ticks }\n    }\n}\n\nfn text(path: &str, bound: u64) -> io::Result<String> {\n    let mut text = String::new();\n    File::open(path)?.take(bound + 1).read_to_string(&mut text)?;\n    if text.len() as u64 > bound { return Err(io::Error::other(\"resident identity bound exceeded\")); }\n    Ok(text)\n}\n\nfn start(pid: u32) -> io::Result<u64> {\n    text(&format!(\"/proc/{pid}/stat\"), 8192)?.rsplit_once(\") \")\n        .and_then(|(_, fields)| fields.split_whitespace().nth(19))\n        .and_then(|value| value.parse().ok())\n        .ok_or_else(|| io::Error::other(\"original process start missing\"))\n}\n\npub(super) fn now_ns() -> io::Result<u64> {\n    let mut now = libc::timespec { tv_sec: 0, tv_nsec: 0 };\n    // SAFETY: clock_gettime receives one initialized writable timespec.\n    if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now) } != 0 {\n        return Err(io::Error::last_os_error());\n    }\n    u64::try_from(now.tv_sec).ok()\n        .and_then(|seconds| seconds.checked_mul(1_000_000_000))\n        .and_then(|seconds| u64::try_from(now.tv_nsec).ok().filter(|n| *n < 1_000_000_000)\n            .and_then(|nanos| seconds.checked_add(nanos)))\n        .ok_or_else(|| io::Error::other(\"invalid original monotonic clock\"))\n}\n\npub(super) fn absolute(end_ns: u64, maximum: Duration) -> io::Result<Instant> {\n    // Sample Instant first so translating an external absolute clock cannot\n    // extend its remaining budget by the time spent reading CLOCK_MONOTONIC.\n    let instant = Instant::now();\n    let remaining = end_ns.checked_sub(now_ns()?).filter(|n| *n != 0)\n        .map(Duration::from_nanos).filter(|n| *n <= maximum)\n        .ok_or_else(|| io::Error::other(\"resident absolute deadline differs\"))?;\n    instant.checked_add(remaining).ok_or_else(|| io::Error::other(\"resident deadline overflow\"))\n}\n\npub(super) fn remaining(end: Instant) -> io::Result<Duration> {\n    end.checked_duration_since(Instant::now()).filter(|n| !n.is_zero())\n        .ok_or_else(|| io::Error::other(\"resident original deadline elapsed\"))\n}\n\npub(super) fn seal(packet: &Packet) -> io::Result<File> {\n    let mut writer = Bounded(Vec::new());\n    serde_json::to_writer(&mut writer, packet).map_err(io::Error::other)?;\n    crate::authority_host_bootstrap_seal::seal_bytes(&writer.0)\n}\n\npub(super) fn read(mut file: File) -> io::Result<Packet> {\n    let size = file.metadata()?.len();\n    if size == 0 || size > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {\n        return Err(io::Error::other(\"resident sealed descriptor bound exceeded\"));\n    }\n    crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;\n    file.rewind()?;\n    let mut raw = Vec::new();\n    Read::by_ref(&mut file).take(crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 + 1).read_to_end(&mut raw)?;\n    crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;\n    if raw.len() as u64 != size { return Err(io::Error::other(\"resident sealed bytes changed\")); }\n    serde_json::from_slice(&raw).map_err(io::Error::other)\n}\n\nstruct Bounded(Vec<u8>);\nimpl Write for Bounded {\n    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {\n        if bytes.len() > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND.saturating_sub(self.0.len()) {\n            return Err(io::Error::other(\"resident sealed descriptor bound exceeded\"));\n        }\n        self.0.extend_from_slice(bytes); Ok(bytes.len())\n    }\n    fn flush(&mut self) -> io::Result<()> { Ok(()) }\n}\n\n#[cfg(test)]\n#[path = \"authority_host_resident_enrollment_wire_tests.rs\"]\nmod tests;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "required": [
+        "//! Normal Root service entry for the original V3 candidate continuation.\n//! Configuration describes original inputs; it cannot construct a role owner.\n\nuse std::io;\nuse std::os::fd::OwnedFd;\nuse std::os::unix::net::UnixDatagram;\nuse std::os::unix::net::UnixStream;\nuse std::path::Path;\nuse std::sync::Arc;\n\nuse codex_hepta_contracts::SignedFinalUseGrant;\nuse codex_hepta_contracts::authority_lease::AuthorityLease;\nuse serde::Deserialize;\n\nuse crate::CellQ24ModelFilesV1;\nuse crate::LoadedCellQ24ModelV1;\nuse crate::RootResidentCandidateServiceV1;\nuse crate::RootResidentLearningConsumerV3;\nuse crate::RootResidentLearningReadbackAuthorizationV3;\nuse crate::RootResidentLearningRegistrationV3;\nuse crate::authority_host_config::read_root_json;\n\n#[path = \"authority_host_resident_launch_inputs.rs\"]\nmod inputs;\n#[path = \"authority_host_resident_trust_file.rs\"]\nmod trust;\n\n/// Each descriptor is inherited from the actual Root supervisor and consumed\n/// once. The ten role streams remain in the separate original SCM_RIGHTS\n/// handoff, with the original recipient/pidfd/purpose/deadline checks.\npub struct RootResidentCandidateProcessInputsV3 {\n    pub stage_handoff: UnixDatagram,\n    pub consumer_stream: UnixStream,\n    pub original_consumer_pidfd: OwnedFd,\n    pub baseline_files: CellQ24ModelFilesV1,\n}\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\nstruct ReadbackFile {\n    schema_version: u32,\n    purpose: String,\n    intent: SignedFinalUseGrant,\n    lease: AuthorityLease,\n}\n\nenum Purpose<'a> {\n    Fresh,\n    Readback(&'a Path),\n}\n\n/// Call inside the resident Tokio runtime, after the original ordinary A has\n/// completed and its exact initial request and independent B plan are known.\n/// No error promises that a successfully registered Root record was unwritten;\n/// uncertainty requires the separate original readback authorization.\npub fn prepare_host_resident_candidate_v3(\n    config_file: &Path,\n    deployment_file: &Path,\n    trusted_evidence_file: &Path,\n    original: RootResidentCandidateProcessInputsV3,\n) -> io::Result<RootResidentCandidateServiceV1> {\n    prepare(\n        config_file,\n        deployment_file,\n        trusted_evidence_file,\n        original,\n        Purpose::Fresh,\n    )\n}\n\n/// Open-only recovery consumes the same original deployment and a distinct\n/// current readback grant/lease. Neither file can promote recovered custody to\n/// fresh execution or recreate a role channel.\npub fn recover_host_resident_candidate_v3(\n    config_file: &Path,\n    deployment_file: &Path,\n    trusted_evidence_file: &Path,\n    original: RootResidentCandidateProcessInputsV3,\n    readback_file: &Path,\n) -> io::Result<RootResidentCandidateServiceV1> {\n    prepare(\n        config_file,\n        deployment_file,\n        trusted_evidence_file,\n        original,\n        Purpose::Readback(readback_file),\n    )\n}\n\nfn prepare(\n    config_file: &Path,\n    deployment_file: &Path,\n    trusted_evidence_file: &Path,\n    original: RootResidentCandidateProcessInputsV3,\n    purpose: Purpose<'_>,\n) -> io::Result<RootResidentCandidateServiceV1> {\n    // SAFETY: geteuid has no pointer or ownership precondition.\n    if unsafe { libc::geteuid() } != 0 {\n        return Err(io::Error::other(\"original Root resident process required\"));\n    }\n    let trust = trust::OriginalHostTrust::read(trusted_evidence_file)?;\n    let RootResidentCandidateProcessInputsV3 {\n        stage_handoff,\n        consumer_stream,\n        original_consumer_pidfd,\n        baseline_files,\n    } = original;\n    let baseline = Arc::new(\n        LoadedCellQ24ModelV1::open_files(baseline_files).map_err(io::Error::other)?,\n    );\n    let deployment = inputs::OriginalDeployment::read(deployment_file, &trust, baseline)?;\n    let readback = match purpose {\n        Purpose::Fresh => None,\n        Purpose::Readback(path) => {\n            let value: ReadbackFile = read_root_json(path)?;\n            if value.schema_version != 3\n                || value.purpose != \"hepta.host-resident-learning.readback-deployment.v3\"\n            {\n                return Err(io::Error::other(\"original resident readback profile differs\"));\n            }\n            Some(RootResidentLearningReadbackAuthorizationV3::from_original_root(\n                &deployment.profile,\n                value.intent,\n                value.lease,\n            )?)\n        }\n    };\n    let handoff = crate::receive_root_candidate_stage_handoff(\n        stage_handoff,\n        &deployment.profile,\n        deployment.handoff_timeout,\n    )\n    .map_err(io::Error::other)?;\n    let registration = match readback {\n        Some(authorization) => super::recover_host_resident_learning_v3(\n            config_file,\n            deployment.profile,\n            authorization,\n        )?,\n        None => super::register_host_resident_learning_v3(config_file, deployment.profile)?,\n    };\n    let (peer, uid, timeout, lifetime) = deployment.consumer.into_peer();\n    RootResidentLearningRegistrationV3::into_candidate_service(\n        registration,\n        deployment.inputs,\n        handoff,\n        RootResidentLearningConsumerV3 {\n            stream: consumer_stream,\n            peer,\n            uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime,\n        },\n    )\n    .map_err(io::Error::other)\n}\n\n#[path = \"authority_host_resident_enrollment.rs\"]\nmod enrollment;\npub use enrollment::RootResidentCandidateEnrollmentInputsV3;\npub use enrollment::RootResidentCandidateEnrollmentServiceV3;\npub use enrollment::prepare_host_resident_candidate_enrollment_v3;\npub use enrollment::recover_host_resident_candidate_enrollment_v3;\npub(crate) use enrollment::connect_original_resident_enrollment;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+      "required": [
+        "//! Bounded Root deployment data for an already completed ordinary A.\n//! No task result, trust key set, role endpoint or private signer is decoded.\n\nuse std::io;\nuse std::path::Path;\nuse std::sync::Arc;\nuse std::time::Duration;\nuse std::time::SystemTime;\nuse std::time::UNIX_EPOCH;\n\nuse base64::Engine;\nuse base64::engine::general_purpose::STANDARD_NO_PAD;\nuse codex_hepta_contracts::SignedFinalUseGrant;\nuse codex_hepta_contracts::authority_lease::AuthorityLease;\nuse codex_hepta_learning_artifacts::FrozenLearningScopeV2;\nuse codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;\nuse codex_hepta_learning_artifacts::LearningUpdateScopeV2;\nuse codex_hepta_learning_ledger::DatasetFreezePlanV2;\nuse codex_hepta_learning_ledger::LearningEvidenceRoleV1;\nuse codex_hepta_learning_ledger::SignedLearningEvidenceV1;\nuse codex_hepta_types::StableId;\nuse serde::Deserialize;\nuse serde::Serialize;\n\nuse super::trust::OriginalHostTrust;\nuse super::trust::digest;\nuse crate::AgentdRootAuthorityPeer;\nuse crate::CellQ24DatasetRuleV1;\nuse crate::CellQ24PrivateHeadV1;\nuse crate::LoadedCellQ24ModelV1;\nuse crate::OriginalCellEvaluationPanelRegistrationV1;\nuse crate::OriginalCellEvaluationPanelTaskV1;\nuse crate::OriginalCellQ24MaterialReceiptConfigV1;\nuse crate::RootResidentCandidateInputsV1;\nuse crate::RootResidentLearningProfileV3;\nuse crate::authority_host_config::read_root_json;\nuse crate::learning_iteration_checkpoint::decode_original_owner_snapshot_v1;\nuse crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;\n\nconst PURPOSE: &str = \"hepta.host-resident-learning.candidate-deployment.v3\";\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\nstruct DeploymentFile {\n    schema_version: u32,\n    purpose: String,\n    initial_snapshot: String,\n    scope: Scope,\n    head: Head,\n    unit_profile_digest: String,\n    freeze_plan: FreezePlan,\n    freeze_evidence: FreezeEvidence,\n    original_freeze_payload: String,\n    maximum_signature_lifetime_seconds: u64,\n    panel: Panel,\n    original_intent: SignedFinalUseGrant,\n    original_lease: AuthorityLease,\n    consumer: Consumer,\n    handoff_timeout_ms: u64,\n}\n\n#[derive(Clone, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct Scope {\n    update_scope: UpdateScope,\n    update_rule: String,\n    binding: String,\n}\n\n#[derive(Clone, Copy, Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\nenum UpdateScope {\n    Cell,\n    Organ,\n}\n\n#[derive(Deserialize)]\n#[serde(tag = \"kind\", rename_all = \"snake_case\", deny_unknown_fields)]\nenum Head {\n    Drive { index: u16 },\n    Prediction { index: u16 },\n}\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\nstruct FreezePlan {\n    snapshot_id: String,\n    objective_digest: String,\n    inclusion_policy_digest: String,\n}\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\nstruct FreezeEvidence {\n    evidence_id: String,\n    principal_id: String,\n    role: String,\n    trust_digest: String,\n    scope_digest: String,\n    objective_digest: String,\n    authority_epoch: u64,\n    issued_at: u64,\n    expires_at: u64,\n    payload_digest: String,\n    signature: String,\n}\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\nstruct Panel {\n    primary: PanelTask,\n    retention: Vec<PanelTask>,\n}\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\nstruct PanelTask {\n    plan_id: String,\n    task_digest: String,\n    cohort_rule_digest: String,\n}\n\nimpl PanelTask {\n    fn original(self) -> io::Result<OriginalCellEvaluationPanelTaskV1> {\n        Ok(OriginalCellEvaluationPanelTaskV1 {\n            plan_id: StableId::new(self.plan_id).map_err(io::Error::other)?,\n            task_digest: digest(&self.task_digest)?,\n            cohort_rule_digest: digest(&self.cohort_rule_digest)?,\n        })\n    }\n}\n\n#[derive(Deserialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct Consumer {\n    pub(super) uid: u32,\n    pid: u32,\n    boot_id: String,\n    process_start_ticks: u64,\n    timeout_ms: u64,\n    lifetime_ms: u64,\n}\n\nimpl Consumer {\n    pub(super) fn into_peer(self) -> (AgentdRootAuthorityPeer, u32, Duration, Duration) {\n        (\n            AgentdRootAuthorityPeer {\n                pid: self.pid,\n                boot_id: self.boot_id,\n                process_start_ticks: self.process_start_ticks,\n            },\n            self.uid,\n            Duration::from_millis(self.timeout_ms),\n            Duration::from_millis(self.lifetime_ms),\n        )\n    }\n}\n\npub(super) struct OriginalDeployment {\n    pub(super) profile: RootResidentLearningProfileV3,\n    pub(super) inputs: RootResidentCandidateInputsV1,\n    pub(super) consumer: Consumer,\n    pub(super) handoff_timeout: Duration,\n    pub(super) enrollment_profile: EnrollmentProfile,\n}\n\nimpl OriginalDeployment {\n    pub(super) fn read(\n        path: &Path,\n        trust: &OriginalHostTrust,\n        baseline: Arc<LoadedCellQ24ModelV1>,\n    ) -> io::Result<Self> {\n        let value: DeploymentFile = read_root_json(path)?;\n        if value.schema_version != 3\n            || value.purpose != PURPOSE\n            || !(1..=30_000).contains(&value.handoff_timeout_ms)\n            || value.consumer.uid == 0\n            || value.consumer.pid == 0\n            || value.consumer.process_start_ticks == 0\n            || value.consumer.boot_id.is_empty()\n            || !(1..=30_000).contains(&value.consumer.timeout_ms)\n            || !(1..=300_000).contains(&value.consumer.lifetime_ms)\n            || value.panel.retention.is_empty()\n            || value.panel.retention.len() > 16\n        {\n            return Err(io::Error::other(\"original resident deployment profile differs\"));\n        }\n        let raw = decode(&value.initial_snapshot, 8_192)?;\n        let initial = decode_original_owner_snapshot_v1(&raw).map_err(io::Error::other)?;\n        let empty = LearningIterationCoordinatorV1::new(\n            initial.request.clone(),\n            initial.owners.clone(),\n        )\n        .map_err(io::Error::other)?;\n        if empty.snapshot() != &initial\n            || encode_original_owner_snapshot_v1(&initial).map_err(io::Error::other)? != raw\n        {\n            return Err(io::Error::other(\"exact original empty stage cut is required\"));\n        }\n        let scope = FrozenLearningScopeV2::freeze(\n            &initial.request,\n            &initial.owners,\n            match value.scope.update_scope {\n                UpdateScope::Cell => LearningUpdateScopeV2::Cell,\n                UpdateScope::Organ => LearningUpdateScopeV2::Organ,\n            },\n            digest(&value.scope.update_rule)?,\n        )\n        .map_err(io::Error::other)?;\n        if scope.binding() != digest(&value.scope.binding)? {\n            return Err(io::Error::other(\"original frozen scope binding differs\"));\n        }\n        let protocol = OriginalCellEvaluationPanelRegistrationV1::new(\n            value.panel.primary.original()?,\n            value\n                .panel\n                .retention\n                .into_iter()\n                .map(PanelTask::original)\n                .collect::<io::Result<_>>()?,\n        )\n        .map_err(io::Error::other)?;\n        if initial.request.evaluation_profile != protocol.evaluation_profile()\n            || baseline.components() != &initial.request.selected_bundle.components\n        {\n            return Err(io::Error::other(\"original pre-training panel or loaded baseline differs\"));\n        }\n        let at = SystemTime::now()\n            .duration_since(UNIX_EPOCH)\n            .map_err(io::Error::other)?\n            .as_secs();\n        let freeze = value.freeze_evidence.original()?;\n        let payload = decode(&value.original_freeze_payload, 65_536)?;\n        trust\n            .verifier\n            .verify(LearningEvidenceRoleV1::Evaluator, &freeze, &payload, at)\n            .map_err(io::Error::other)?;\n        let material = OriginalCellQ24MaterialReceiptConfigV1 {\n            experience_signer: trust.observer(&initial.owners.experience, at)?,\n            dataset_signer: trust.observer(&initial.owners.dataset, at)?,\n            initial,\n            scope,\n            rule: CellQ24DatasetRuleV1 {\n                head: match value.head {\n                    Head::Drive { index } => CellQ24PrivateHeadV1::Drive { index },\n                    Head::Prediction { index } => CellQ24PrivateHeadV1::Prediction { index },\n                },\n                unit_profile_digest: digest(&value.unit_profile_digest)?,\n            },\n            freeze_plan: DatasetFreezePlanV2 {\n                snapshot_id: StableId::new(value.freeze_plan.snapshot_id)\n                    .map_err(io::Error::other)?,\n                objective_digest: digest(&value.freeze_plan.objective_digest)?,\n                inclusion_policy_digest: digest(&value.freeze_plan.inclusion_policy_digest)?,\n            },\n            freeze_evidence: freeze,\n            verifier: trust.verifier.clone(),\n            maximum_signature_lifetime_seconds: value.maximum_signature_lifetime_seconds,\n        };\n        OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)\n            .map_err(io::Error::other)?;\n        let original_handoff = (\n            value.initial_snapshot.clone(),\n            value.scope.clone(),\n            value.original_intent.clone(),\n            value.original_lease.clone(),\n        );\n        let profile = RootResidentLearningProfileV3::new(\n            material.initial.clone(),\n            material.scope.clone(),\n            &trust.verifier,\n            value.original_intent,\n            value.original_lease,\n        )?;\n        let enrollment_profile = EnrollmentProfile::capture(original_handoff, profile.binding());\n        Ok(Self {\n            profile,\n            enrollment_profile,\n            inputs: RootResidentCandidateInputsV1 {\n                material,\n                protocol,\n                baseline,\n                verifier: trust.verifier.clone(),\n            },\n            consumer: value.consumer,\n            handoff_timeout: Duration::from_millis(value.handoff_timeout_ms),\n        })\n    }\n}\n\nimpl FreezeEvidence {\n    fn original(self) -> io::Result<SignedLearningEvidenceV1> {\n        if self.role != \"evaluator\" {\n            return Err(io::Error::other(\"fixed original freeze evaluator purpose required\"));\n        }\n        let signature = decode(&self.signature, 64)?\n            .try_into()\n            .map_err(|_| io::Error::other(\"complete original freeze signature required\"))?;\n        Ok(SignedLearningEvidenceV1 {\n            evidence_id: StableId::new(self.evidence_id).map_err(io::Error::other)?,\n            principal_id: StableId::new(self.principal_id).map_err(io::Error::other)?,\n            role: LearningEvidenceRoleV1::Evaluator,\n            trust_digest: digest(&self.trust_digest)?,\n            scope_digest: digest(&self.scope_digest)?,\n            objective_digest: digest(&self.objective_digest)?,\n            authority_epoch: self.authority_epoch,\n            issued_at: self.issued_at,\n            expires_at: self.expires_at,\n            payload_digest: digest(&self.payload_digest)?,\n            signature,\n        })\n    }\n}\n\nfn decode(value: &str, limit: usize) -> io::Result<Vec<u8>> {\n    if value.is_empty() || value.len() > limit.div_ceil(3) * 4 {\n        return Err(io::Error::other(\"original resident input exceeds its codec bound\"));\n    }\n    let bytes = STANDARD_NO_PAD.decode(value).map_err(io::Error::other)?;\n    if bytes.len() > limit || STANDARD_NO_PAD.encode(&bytes) != value {\n        return Err(io::Error::other(\"noncanonical original resident input bytes\"));\n    }\n    Ok(bytes)\n}\n\n#[path = \"authority_host_resident_enrollment_profile.rs\"]\nmod enrollment_profile;\npub(super) use enrollment_profile::EnrollmentProfile;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "required": [
+        "//! One fixed resident socket under the original Root-controlled runtime parent.\n\nuse super::*;\nuse codex_hepta_types::Digest32;\nuse std::path::PathBuf;\n\npub(crate) struct ResidentSocketGuard { _guard: SocketGuard }\n\npub(crate) struct ResidentListener {\n    listener: tokio::net::UnixListener,\n    guard: ResidentSocketGuard,\n    path: PathBuf,\n    device: u64,\n    inode: u64,\n}\n\nimpl ResidentListener {\n    pub(crate) fn bind_original(\n        config: &HostAuthorityServiceConfig,\n        profile: Digest32,\n    ) -> io::Result<Self> {\n        // SAFETY: these calls only inspect current credentials.\n        if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n            return Err(io::Error::other(\"resident listener requires original Root\"));\n        }\n        let parent = config.sockets.observation.parent()\n            .ok_or_else(|| io::Error::other(\"missing original runtime parent\"))?;\n        let path = parent.join(format!(\"lr3-{}.sock\", &profile.to_string()[..32]));\n        validate_lane_paths(&[&path], config.peer_gid)?;\n        // UnixListener::bind is create-only. Never unlink an occupied name.\n        let listener = UnixListener::bind(&path)?;\n        let created = std::fs::symlink_metadata(&path)?;\n        let guard = SocketGuard(vec![(path.clone(), created.dev(), created.ino())]);\n        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o660))?;\n        let node = std::fs::symlink_metadata(&path)?;\n        if node.uid() != 0 || node.gid() != config.peer_gid\n            || node.nlink() != 1 || node.mode() & 0o7777 != 0o660\n            || (node.dev(), node.ino()) != (created.dev(), created.ino())\n        {\n            return Err(io::Error::other(\"original resident socket custody differs\"));\n        }\n        validate_lane_paths(&[&path], config.peer_gid)?;\n        listener.set_nonblocking(true)?;\n        Ok(Self {\n            listener: tokio::net::UnixListener::from_std(listener)?,\n            guard: ResidentSocketGuard { _guard: guard }, path, device: node.dev(), inode: node.ino(),\n        })\n    }\n\n    pub(crate) fn original_node(&self) -> (&PathBuf, u64, u64) {\n        (&self.path, self.device, self.inode)\n    }\n\n    /// Consume one connection or fail. There is no accept retry after refusal.\n    pub(crate) async fn accept_original(self, end: Instant) -> io::Result<(std::os::unix::net::UnixStream, ResidentSocketGuard)> {\n        if Instant::now() >= end {\n            return Err(io::Error::other(\"resident handoff deadline elapsed\"));\n        }\n        let (stream, _) = tokio::time::timeout_at(\n            tokio::time::Instant::from_std(end), self.listener.accept(),\n        ).await.map_err(|_| io::Error::other(\"resident accept deadline elapsed\"))??;\n        if Instant::now() >= end {\n            return Err(io::Error::other(\"resident accept completed after deadline\"));\n        }\n        Ok((stream.into_std()?, self.guard))\n        // Keep exact pathname custody until the original service finishes.\n    }\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "required": [
+        "//! Root-owned learning trust, read separately from deployment and role packets.\n//! This file carries already enrolled public credentials, never signing keys.\n\nuse std::io;\nuse std::path::Path;\n\nuse codex_hepta_learning_ledger::AuthenticatedPrincipalV1;\nuse codex_hepta_learning_ledger::LearningEvidenceRoleV1;\nuse codex_hepta_learning_ledger::LearningEvidenceTrustV1;\nuse codex_hepta_learning_ledger::LearningEvidenceVerifierV1;\nuse codex_hepta_learning_ledger::TrustedLearningSignerV1;\nuse codex_hepta_types::Digest32;\nuse codex_hepta_types::StableId;\nuse serde::Deserialize;\nuse serde::Serialize;\n\nuse crate::authority_host_config::read_root_json;\n\nconst PURPOSE: &str = \"hepta.host-resident-learning.trusted-evidence.v3\";\n\n#[path = \"authority_host_task_prefreeze_trust.rs\"]\nmod original_source;\npub(super) use original_source::{OriginalDistributionPin, OriginalSourceTrust};\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct TrustFile {\n    schema_version: u32,\n    purpose: String,\n    scope_digest: String,\n    objective_digest: String,\n    authority_epoch: u64,\n    signers: Vec<Signer>,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct Signer {\n    principal: Principal,\n    controller_id: String,\n    verifying_key: [u8; 32],\n    roles: Vec<Role>,\n    revoked_at: Option<u64>,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct Principal {\n    principal_id: String,\n    credential_chain_digest: String,\n    signing_key_digest: String,\n    scope_digest: String,\n    authority_epoch: u64,\n    authenticated_at: u64,\n    expires_at: u64,\n}\n\n#[derive(Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\nenum Role {\n    Generator,\n    Observer,\n    Evaluator,\n    CreditAllocator,\n    UnlearningAuthority,\n    Selector,\n}\n\nimpl From<Role> for LearningEvidenceRoleV1 {\n    fn from(value: Role) -> Self {\n        match value {\n            Role::Generator => Self::Generator,\n            Role::Observer => Self::Observer,\n            Role::Evaluator => Self::Evaluator,\n            Role::CreditAllocator => Self::CreditAllocator,\n            Role::UnlearningAuthority => Self::UnlearningAuthority,\n            Role::Selector => Self::Selector,\n        }\n    }\n}\n\n/// Root loads this from its independent Root0600 operational trust file. The\n/// daemon may reconstruct the same public data only after the private sealed\n/// Root enrollment path authenticates its producer and exact recipient.\npub(super) struct OriginalHostTrust {\n    pub(super) verifier: LearningEvidenceVerifierV1,\n    signers: Vec<TrustedLearningSignerV1>,\n    pub(super) encoded: Vec<u8>,\n}\n\nimpl OriginalHostTrust {\n    pub(super) fn read(path: &Path) -> io::Result<Self> {\n        let value: TrustFile = read_root_json(path)?;\n        Self::from_value(value)\n    }\n\n    // Only the private authenticated Root-enrollment receiver calls this.\n    pub(super) fn from_root_enrollment(bytes: &[u8]) -> io::Result<Self> {\n        if bytes.is_empty() || bytes.len() > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND {\n            return Err(io::Error::other(\"original trust exceeds sealed descriptor bound\"));\n        }\n        Self::from_value(serde_json::from_slice(bytes).map_err(io::Error::other)?)\n    }\n\n    fn from_value(value: TrustFile) -> io::Result<Self> {\n        let encoded = serde_json::to_vec(&value).map_err(io::Error::other)?;\n        if value.schema_version != 3\n            || value.purpose != PURPOSE\n            || value.signers.is_empty()\n            || value.signers.len() > 64\n        {\n            return Err(io::Error::other(\"original host learning trust profile differs\"));\n        }\n        let signers = value\n            .signers\n            .into_iter()\n            .map(|signer| {\n                let principal = signer.principal;\n                Ok(TrustedLearningSignerV1 {\n                    principal: AuthenticatedPrincipalV1 {\n                        principal_id: StableId::new(principal.principal_id)\n                            .map_err(io::Error::other)?,\n                        credential_chain_digest: digest(&principal.credential_chain_digest)?,\n                        signing_key_digest: digest(&principal.signing_key_digest)?,\n                        scope_digest: digest(&principal.scope_digest)?,\n                        authority_epoch: principal.authority_epoch,\n                        authenticated_at: principal.authenticated_at,\n                        expires_at: principal.expires_at,\n                    },\n                    controller_id: StableId::new(signer.controller_id).map_err(io::Error::other)?,\n                    verifying_key: signer.verifying_key,\n                    roles: signer.roles.into_iter().map(Into::into).collect(),\n                    revoked_at: signer.revoked_at,\n                })\n            })\n            .collect::<io::Result<Vec<_>>>()?;\n        let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {\n            scope_digest: digest(&value.scope_digest)?,\n            objective_digest: digest(&value.objective_digest)?,\n            authority_epoch: value.authority_epoch,\n            signers: signers.clone(),\n        })\n        .map_err(io::Error::other)?;\n        Ok(Self { verifier, signers, encoded })\n    }\n\n    pub(super) fn observer(\n        &self,\n        original_actor: &StableId,\n        now: u64,\n    ) -> io::Result<TrustedLearningSignerV1> {\n        let signer = self\n            .signers\n            .iter()\n            .find(|signer| &signer.principal.principal_id == original_actor)\n            .ok_or_else(|| io::Error::other(\"original Material actor is not enrolled\"))?;\n        self.verifier\n            .require_signer_binding(LearningEvidenceRoleV1::Observer, signer, now)\n            .map_err(io::Error::other)?;\n        Ok(signer.clone())\n    }\n}\n\npub(super) fn digest(value: &str) -> io::Result<Digest32> {\n    let digest = value.parse::<Digest32>().map_err(io::Error::other)?;\n    if digest.to_string() != value {\n        return Err(io::Error::other(\"noncanonical original digest\"));\n    }\n    Ok(digest)\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/production_resident_enrollment.rs",
+      "required": [
+        "//! A single late handoff joins the existing delivery actor, never another loop.\n\nuse std::os::unix::net::UnixDatagram;\nuse std::time::Instant;\nuse codex_arg0::Arg0DispatchPaths;\nuse crate::{AgentdConfig, AgentdError};\n\npub(super) struct PendingResidentEnrollment {\n    pub(super) socket: UnixDatagram,\n    pub(super) end: Instant,\n}\n\npub(super) async fn run_original(\n    config: AgentdConfig,\n    arg0_paths: Arg0DispatchPaths,\n    pending: PendingResidentEnrollment,\n) -> Result<(), AgentdError> {\n    let identity = config.identity().clone();\n    // The old exclusive Config guard still requires the actual Circuit\n    // bootstrap/invocation, Objective profile and AuthBus trust before opt-in.\n    let (config, enrollment) = config.with_root_resident_learning_enrollment()?;\n    let original = crate::run(config, arg0_paths);\n    tokio::pin!(original);\n    let receive = crate::root_production_handoff::receive_original_resident_enrollment(\n        pending.socket, &identity, pending.end,\n    );\n    tokio::pin!(receive);\n    let root = tokio::select! {\n        result = &mut original => return result,\n        result = &mut receive => result,\n    };\n    let joined = match root {\n        Err(error) => Err(error),\n        Ok(root) => {\n            // This ACK confirms only the original local outbox/source join.\n            // Root's actual Admit remains solely in the original delivery code.\n            let join = crate::AgentdRootResidentEnrollmentV3::enroll_original_root(&enrollment, root);\n            tokio::pin!(join);\n            tokio::select! {\n                result = &mut original => {\n                    result?;\n                    return Err(AgentdError::Protocol(\n                        \"resident local enrollment ACK unknown at daemon shutdown\".into(),\n                    ));\n                }\n                result = &mut join => result.map_err(|error| AgentdError::Protocol(error.to_string())),\n            }\n        }\n    };\n    if let Err(error) = &joined {\n        tracing::error!(error = %error, \"original resident enrollment refused; no retry or replacement claim\");\n    }\n    // Never drop the ordinary daemon future to hide an enrollment failure.\n    // Its existing cancellation, worker cleanup and writer shutdown must finish.\n    original.await?;\n    joined\n}\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "required": [
+        "//! One late V3 Root packet, separate from both original V1 handoffs.\n\nuse super::*;\nuse std::time::Instant;\n\nconst FRAME_V3: &[u8] = b\"HEPTA_ROOT_RESIDENT_ENROLLMENT_V3\";\n\npub(crate) fn send_original_resident_enrollment(\n    socket: UnixDatagram,\n    bootstrap: &File,\n    root_pidfd: &OwnedFd,\n    timeout: Duration,\n) -> Result<(), AgentdError> {\n    // SAFETY: both calls only inspect the current kernel credentials.\n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(refused(\"resident enrollment requires original Root\"));\n    }\n    let peer = root_pair(&socket, timeout)?;\n    if peer.pid as u32 != std::process::id() {\n        return Err(refused(\"resident enrollment pair belongs to another Root\"));\n    }\n    validate_bootstrap(bootstrap)?;\n    require_root_pin(root_pidfd, std::process::id())?;\n    send_packet(&socket, FRAME_V3, &[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()], timeout)\n}\n\npub(crate) async fn receive_original_resident_enrollment(\n    socket: UnixDatagram,\n    identity: &crate::AgentdIdentity,\n    idle_end: Instant,\n) -> Result<crate::AgentdRootResidentLearningClientV3, AgentdError> {\n    // Idle waiting is bounded by the already running original Root session.\n    // The packet carries its own shorter absolute 30-second handoff deadline.\n    let peer = root_pair(&socket, Duration::from_secs(30))?;\n    if Instant::now() >= idle_end { return Err(refused(\"resident enrollment expired\")); }\n    socket.set_nonblocking(true)?;\n    let socket = tokio::net::UnixDatagram::from_std(socket)?;\n    tokio::time::timeout_at(tokio::time::Instant::from_std(idle_end), socket.readable())\n        .await.map_err(|_| refused(\"resident enrollment expired\"))??;\n    let (bootstrap, pidfd) = receive_once(socket.as_raw_fd())?;\n    validate_bootstrap(&bootstrap)?;\n    require_root_pin(&pidfd, peer.pid as u32)?;\n    if Instant::now() >= idle_end { return Err(refused(\"resident enrollment expired\")); }\n    crate::authority_host_runtime::connect_original_resident_enrollment(\n        bootstrap, pidfd, peer.pid as u32, identity, idle_end,\n    ).await.map_err(|error| AgentdError::Protocol(error.to_string()))\n}\n\nfn receive_once(socket: std::os::fd::RawFd) -> Result<(File, OwnedFd), AgentdError> {\n    let mut bytes = [0_u8; FRAME_V3.len() + 1];\n    let mut control = [0_usize; 32];\n    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };\n    // SAFETY: all pointer fields below name bounded buffers retained here.\n    let mut message: libc::msghdr = unsafe { mem::zeroed() };\n    message.msg_iov = &mut vector; message.msg_iovlen = 1;\n    message.msg_control = control.as_mut_ptr().cast(); message.msg_controllen = mem::size_of_val(&control);\n    // SAFETY: recvmsg writes only these live buffers and owns received rights\n    // with CLOEXEC. A stale readiness indication fails, without another recv.\n    let length = unsafe { libc::recvmsg(socket, &mut message, libc::MSG_CMSG_CLOEXEC | libc::MSG_DONTWAIT) };\n    if length < 0 { return Err(io::Error::last_os_error().into()); }\n    // SAFETY: the original parser consumes only this completed bounded buffer.\n    let (mut rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };\n    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0\n        || rights.len() != 2 || length as usize != FRAME_V3.len()\n        || &bytes[..FRAME_V3.len()] != FRAME_V3\n    { return Err(refused(\"resident enrollment requires exact purpose and two rights\")); }\n    let pidfd = rights.pop().ok_or_else(|| refused(\"resident Root pidfd absent\"))?;\n    let bootstrap = rights.pop().ok_or_else(|| refused(\"resident sealed input absent\"))?;\n    Ok((File::from(bootstrap), pidfd))\n}\n\npub(crate) fn require_original_resident_process_pin(pidfd: &OwnedFd, pid: u32) -> Result<(), AgentdError> {\n    require_root_pin(pidfd, pid)\n}\n\n#[cfg(test)]\n#[path = \"root_resident_enrollment_handoff_tests.rs\"]\nmod tests;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "required": [
+        "\n#[path = \"authority_host_resident_listener.rs\"]\npub(super) mod resident;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "required": [
+        "\n#[path = \"authority_host_resident_launch.rs\"]\nmod resident_launch;\npub use resident_launch::RootResidentCandidateProcessInputsV3;\npub(crate) use resident_launch::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,\n    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,\n    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};\npub use resident_launch::prepare_host_resident_candidate_v3;\npub use resident_launch::recover_host_resident_candidate_v3;\n",
+        "\npub use resident_launch::RootResidentCandidateEnrollmentInputsV3;\npub use resident_launch::RootResidentCandidateEnrollmentServiceV3;\npub use resident_launch::prepare_host_resident_candidate_enrollment_v3;\npub use resident_launch::recover_host_resident_candidate_enrollment_v3;\npub(crate) use resident_launch::connect_original_resident_enrollment;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "required": [
+        "\n#[cfg(target_os = \"linux\")]\n#[path = \"../authority_host_resident_cli.rs\"]\nmod resident_cli;\n#[cfg(target_os = \"linux\")]\n#[path = \"../authority_host_resident_enrollment_cli.rs\"]\nmod resident_enrollment_cli;\n",
+        "    }\n    if command == \"serve-resident-learning-late\" || command == \"recover-resident-learning-late\" {\n        if pidfd_stdin {\n            return Err(\"late resident service requires its named original pidfds\".into());\n        }\n        let purpose = if command == \"serve-resident-learning-late\" {\n            resident_enrollment_cli::Command::Fresh\n        } else {\n            resident_enrollment_cli::Command::Recover\n        };\n        return resident_enrollment_cli::run(options, purpose);\n    }\n    if command == \"serve-resident-learning\" || command == \"recover-resident-learning\" {\n        if pidfd_stdin {\n            return Err(\"resident service requires its named original consumer pidfd\".into());\n        }\n        let purpose = if command == \"serve-resident-learning\" {\n            resident_cli::Command::Fresh\n        } else {\n            resident_cli::Command::Recover\n        };\n        return resident_cli::run(options, purpose);\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "required": [
+        "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateProcessInputsV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::prepare_host_resident_candidate_v3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::recover_host_resident_candidate_v3;\n",
+        "\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateEnrollmentInputsV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateEnrollmentServiceV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::prepare_host_resident_candidate_enrollment_v3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::recover_host_resident_candidate_enrollment_v3;\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "required": [
+        "\n#[path = \"production_resident_enrollment.rs\"]\nmod resident_enrollment;\n",
+        "    resident_handoff: Option<UnixDatagram>,\n    resident_end: Option<Instant>,\n",
+        "                    resident_handoff,\n",
+        "                    resident_handoff,\n                    resident_end: None,\n",
+        "                    mut inputs,\n",
+        "                inputs.resident_end = inputs.resident_handoff.as_ref().map(|_| session_end);\n",
+        "            resident_handoff,\n            resident_end,\n",
+        "            let result = match (resident_handoff, resident_end) {\n                (None, None) => crate::run(config, arg0_paths).await,\n                (Some(socket), Some(end)) => resident_enrollment::run_original(\n                    config, arg0_paths,\n                    resident_enrollment::PendingResidentEnrollment { socket, end },\n                ).await,\n                _ => Err(AgentdError::Invalid(\"resident original session boundary missing\".into())),\n            };\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "required": [
+        "const FLAGS: [&str; 21] = [\n",
+        "    \"--root-resident-learning-handoff-fd\",\n",
+        "    pub(super) resident_handoff: Option<UnixDatagram>,\n",
+        "    let resident_handoff = selected\n        .remove(\"--root-resident-learning-handoff-fd\")\n        .map(descriptor_number)\n        .transpose()?;\n    if resident_handoff.is_some() && learning_handoff.is_some() {\n        return Err(invalid(\"resident V3 and original V1 learning handoffs are exclusive\"));\n    }\n",
+        "        resident_handoff,\n",
+        "        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let resident_handoff = resident_handoff\n",
+        "            resident_handoff,\n"
+      ]
+    },
+    {
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "required": [
+        "\n#[path = \"root_resident_enrollment_handoff.rs\"]\nmod resident_enrollment;\npub(crate) use resident_enrollment::receive_original_resident_enrollment;\npub(crate) use resident_enrollment::send_original_resident_enrollment;\npub(crate) use resident_enrollment::require_original_resident_process_pin;\n"
+      ]
+    }
+  ],
+  "not_a_qualification_result": true,
+  "old_boundary_additions": [
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs",
+        "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn seal_bytes(",
+          "require_root()?",
+          "bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND",
+          "libc::memfd_create(",
+          "libc::F_ADD_SEALS",
+          "validate_sealed(&file, bytes.len() as u64)?",
+          "retained != bytes"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+        "id": "root_original_private_sealed_bytes",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs",
+          "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs"
+        ],
+        "symbol": "seal_bytes"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn seal_bytes(",
+          "require_root()?",
+          "bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND",
+          "libc::memfd_create(",
+          "libc::F_ADD_SEALS",
+          "validate_sealed(&file, bytes.len() as u64)?",
+          "retained != bytes"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+        "id": "root_original_private_sealed_bytes",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+        ],
+        "symbol": "seal_bytes"
+      },
+      "index": 178
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+        "codex-rs/hepta-agentd/src/material_host_workflow.rs"
+      ],
+      "after": {
+        "caller_markers": [
+          "FrozenLearningScopeV2::freeze("
+        ],
+        "definition_markers": [
+          "pub fn freeze(",
+          "LearningIterationError::SlowReleaseRequired",
+          "update_rule.is_zero()",
+          "initial_head.as_array()",
+          "update_rule.as_array()"
+        ],
+        "definition_path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+        "id": "learning_frozen_update_scope_constructor",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+          "codex-rs/hepta-agentd/src/material_host_workflow.rs"
+        ],
+        "symbol": "FrozenLearningScopeV2::freeze"
+      },
+      "before": {
+        "caller_markers": [
+          "FrozenLearningScopeV2::freeze("
+        ],
+        "definition_markers": [
+          "pub fn freeze(",
+          "LearningIterationError::SlowReleaseRequired",
+          "update_rule.is_zero()",
+          "initial_head.as_array()",
+          "update_rule.as_array()"
+        ],
+        "definition_path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+        "id": "learning_frozen_update_scope_constructor",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs"
+        ],
+        "symbol": "FrozenLearningScopeV2::freeze"
+      },
+      "index": 182
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn encode_original_owner_snapshot_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "id": "learning_original_owner_snapshot_encode",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs"
+        ],
+        "symbol": "encode_original_owner_snapshot_v1"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn encode_original_owner_snapshot_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "id": "learning_original_owner_snapshot_encode",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs"
+        ],
+        "symbol": "encode_original_owner_snapshot_v1"
+      },
+      "index": 296
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+        "codex-rs/hepta-agentd/src/material_host_workflow.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn decode_original_owner_snapshot_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "id": "learning_original_owner_snapshot_decode",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+          "codex-rs/hepta-agentd/src/material_host_workflow.rs"
+        ],
+        "symbol": "decode_original_owner_snapshot_v1"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn decode_original_owner_snapshot_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "id": "learning_original_owner_snapshot_decode",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs"
+        ],
+        "symbol": "decode_original_owner_snapshot_v1"
+      },
+      "index": 297
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_command_initial("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "id": "learning_original_material_initial_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+        ],
+        "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_command_initial("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "id": "learning_original_material_initial_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"
+        ],
+        "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial"
+      },
+      "index": 360
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn register_host_resident_learning_v3("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "id": "root_resident_original_register",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+        ],
+        "symbol": "register_host_resident_learning_v3"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn register_host_resident_learning_v3("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "id": "root_resident_original_register",
+        "product_callers": [],
+        "symbol": "register_host_resident_learning_v3"
+      },
+      "index": 394
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_host_resident_learning_v3("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "id": "root_resident_original_recover",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+        ],
+        "symbol": "recover_host_resident_learning_v3"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_host_resident_learning_v3("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "id": "root_resident_original_recover",
+        "product_callers": [],
+        "symbol": "recover_host_resident_learning_v3"
+      },
+      "index": 395
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn open_original_issuer_custody("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "id": "root_resident_original_custody_open",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+        ],
+        "symbol": "open_original_issuer_custody"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn open_original_issuer_custody("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "id": "root_resident_original_custody_open",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
+        ],
+        "symbol": "open_original_issuer_custody"
+      },
+      "index": 396
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn register_original_root("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_registration_create",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+        ],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::register_original_root"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn register_original_root("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_registration_create",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
+        ],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::register_original_root"
+      },
+      "index": 398
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn recover_original_root("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_registration_recover",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+        ],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::recover_original_root"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn recover_original_root("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_registration_recover",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
+        ],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::recover_original_root"
+      },
+      "index": 399
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_root_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_client_create",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+        ],
+        "receiver_type": "AgentdRootResidentLearningClientV3",
+        "symbol": "AgentdRootResidentLearningClientV3::from_original_root_stream"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_root_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_client_create",
+        "product_callers": [],
+        "receiver_type": "AgentdRootResidentLearningClientV3",
+        "symbol": "AgentdRootResidentLearningClientV3::from_original_root_stream"
+      },
+      "index": 405
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_original_root_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_client_recover",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+        ],
+        "receiver_type": "AgentdRootResidentLearningClientV3",
+        "symbol": "AgentdRootResidentLearningClientV3::recover_original_root_stream"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_original_root_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_client_recover",
+        "product_callers": [],
+        "receiver_type": "AgentdRootResidentLearningClientV3",
+        "symbol": "AgentdRootResidentLearningClientV3::recover_original_root_stream"
+      },
+      "index": 406
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn with_root_resident_learning_enrollment("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+        "id": "root_resident_late_enrollment_config",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+        ],
+        "receiver_type": "AgentdConfig",
+        "symbol": "AgentdConfig::with_root_resident_learning_enrollment"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn with_root_resident_learning_enrollment("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+        "id": "root_resident_late_enrollment_config",
+        "product_callers": [],
+        "receiver_type": "AgentdConfig",
+        "symbol": "AgentdConfig::with_root_resident_learning_enrollment"
+      },
+      "index": 415
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn enroll_original_root("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+        "id": "root_resident_late_enrollment_submit",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+        ],
+        "receiver_type": "AgentdRootResidentEnrollmentV3",
+        "symbol": "AgentdRootResidentEnrollmentV3::enroll_original_root"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn enroll_original_root("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+        "id": "root_resident_late_enrollment_submit",
+        "product_callers": [],
+        "receiver_type": "AgentdRootResidentEnrollmentV3",
+        "symbol": "AgentdRootResidentEnrollmentV3::enroll_original_root"
+      },
+      "index": 416
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn new(",
+          "retention.is_empty() || retention.len() > MAX_RETENTION_TASKS",
+          "!plans.insert(task.plan_id.clone())",
+          "!tasks.insert(task.task_digest)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+        "id": "learning_original_evaluation_panel_registration",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+        ],
+        "receiver_type": "OriginalCellEvaluationPanelRegistrationV1",
+        "symbol": "OriginalCellEvaluationPanelRegistrationV1::new"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn new(",
+          "retention.is_empty() || retention.len() > MAX_RETENTION_TASKS",
+          "!plans.insert(task.plan_id.clone())",
+          "!tasks.insert(task.task_digest)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+        "id": "learning_original_evaluation_panel_registration",
+        "product_callers": [],
+        "receiver_type": "OriginalCellEvaluationPanelRegistrationV1",
+        "symbol": "OriginalCellEvaluationPanelRegistrationV1::new"
+      },
+      "index": 425
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn into_candidate_service("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "id": "provider_root_resident_learning_registration_v3_into_candidate_service",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+          "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs"
+        ],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_service"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn into_candidate_service("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "id": "provider_root_resident_learning_registration_v3_into_candidate_service",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_service"
+      },
+      "index": 569
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn run("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "id": "provider_root_resident_candidate_service_v1_run",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+        ],
+        "receiver_type": "RootResidentCandidateServiceV1",
+        "symbol": "RootResidentCandidateServiceV1::run"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn run("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "id": "provider_root_resident_candidate_service_v1_run",
+        "product_callers": [],
+        "receiver_type": "RootResidentCandidateServiceV1",
+        "symbol": "RootResidentCandidateServiceV1::run"
+      },
+      "index": 570
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn receive_root_candidate_stage_handoff("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+        "id": "provider_receive_root_candidate_stage_handoff",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+          "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+        ],
+        "symbol": "receive_root_candidate_stage_handoff"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn receive_root_candidate_stage_handoff("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+        "id": "provider_receive_root_candidate_stage_handoff",
+        "product_callers": [],
+        "symbol": "receive_root_candidate_stage_handoff"
+      },
+      "index": 619
+    }
+  ],
+  "ordinary_tests": [
+    "authority_host_runtime::resident_launch::enrollment::wire::tests::translated_monotonic_deadline_never_renews_the_original_window",
+    "authority_host_runtime::resident_launch::enrollment::wire::tests::expired_and_overlong_original_windows_are_refused_without_waiting"
+  ],
+  "original_boundary_count": 650,
+  "original_protected_count": 451,
+  "original_protected_prefix_sha256": "7d0cd4f4e3af26beb2b223a7aa9ad1ba799ce30911dc6b9c521fabfa197757da",
+  "production_files": {
+    "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs": {
+      "bytes": 4430,
+      "git_blob": "435274b3467d2cfc0efe010d46d826abab85fb69",
+      "sha256": "c1cf6afbb04103ba0278b9e786cd3250fd34ea22b30a4196d5ac41878c909513"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs": {
+      "bytes": 8960,
+      "git_blob": "f971ee38e3384340e50f869b616e53569bb506c5",
+      "sha256": "d423707209a86087faa2606fe3bd86b9ca06dd8c8981869848566efd150a3ce8"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs": {
+      "bytes": 4554,
+      "git_blob": "795919fba7d105b4515b9e1188e3613806f33652",
+      "sha256": "d3efc2e86c9bcf8f69dd7ce99417fa414ea429e772fdf4e594da1646612986ab"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs": {
+      "bytes": 4531,
+      "git_blob": "3850ae525188a7b676be62f5e4f01596cdc5ee3b",
+      "sha256": "5357b294625baa8aaf88f6bc6146b4516640e1ccf2b5935adeec6195523678a1"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs": {
+      "bytes": 2309,
+      "git_blob": "0a783de800e172185fa8b4d2c64be96f8d309e07",
+      "sha256": "cc4d676c1a0188bfbab8083de72372eaea07858be961940bb5db8eddcfadd5a6"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs": {
+      "bytes": 6155,
+      "git_blob": "4d2ccdc0e20944d75b1d1de6751ec9a852b65c36",
+      "sha256": "8338f70c61ba3d0fef9e6e42d616791a3d81dc37286bbf8186ffe49389dfedf3"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs": {
+      "bytes": 5931,
+      "git_blob": "122e69143ac8936615d3e36d01bc49bc0c5c807c",
+      "sha256": "4e0db5650eb3b824e49841e58ce1f93f447376bda19570149a8e47a6943e5c3b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs": {
+      "bytes": 11696,
+      "git_blob": "ee8000d9e727420ef2e662f755a76aee1924813f",
+      "sha256": "c94cf992e29eb2fb458fe252db61bfa1a26d66ce49304f42f26d8d812d1e5083"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs": {
+      "bytes": 2998,
+      "git_blob": "f70dbb2633afa2ce2ff10bbf5227e0199d855a95",
+      "sha256": "048b76f8da77f7e5b8e3e89cf8b9977b6ba3bde75cb52d5acfcbff4b21e0104b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs": {
+      "bytes": 6086,
+      "git_blob": "60bbe15bf97b7ded473dadedc0ba2e7c2b059951",
+      "sha256": "23726c020f6aa0e0d18d231953e04fe0539dd7306d000659f656fc2ece75f2ab"
+    },
+    "codex-rs/hepta-agentd/src/production_resident_enrollment.rs": {
+      "bytes": 2302,
+      "git_blob": "437bf64d0ad7fc535e9bda389e27a6e0520a7b12",
+      "sha256": "c2f0c204d115cfd1e44594432795d8c01a96bc6bcb07e8e89edaba7f41774674"
+    },
+    "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs": {
+      "bytes": 3977,
+      "git_blob": "f21b1acc16bdd39fdcef0631d912b15023ec671f",
+      "sha256": "0acbafc24343285a4b32eff8bf7f96f7838849904b16d678c5748e9effc548e0"
+    }
+  },
+  "projected_boundary_count": 805,
+  "projected_protected_count": 565,
+  "root_parents": [
+    "root_production_handoff::resident_enrollment::tests::exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd",
+    "root_production_handoff::resident_enrollment::tests::v1_marker_cannot_enter_the_v3_resident_handoff",
+    "root_production_handoff::resident_enrollment::tests::sealed_file_alias_cannot_replace_the_original_root_pidfd"
+  ],
+  "test_files": {
+    "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs": {
+      "bytes": 797,
+      "git_blob": "d87c755bbde7e0a96ffb9c3abf2a159deee454a4",
+      "sha256": "077eb07a3345562f70580932bc47395cddbff90097962225d5b35f7c6dbdcff3"
+    },
+    "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs": {
+      "bytes": 3161,
+      "git_blob": "407d194c80f2fd23343edf848d5fa5581f5235a3",
+      "sha256": "cfcde7bc7c479b782aa81b013a628fd0120d9675495e640b301a5247054d1755"
+    }
+  },
+  "view": "Final isolated source proposal; original E1/E3 slices retained, subsequent owner/Source/loader rows appended; unqualified."
+}

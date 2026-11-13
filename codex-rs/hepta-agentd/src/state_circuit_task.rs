@@ -175,6 +175,8 @@ impl AgentdState {
             self.circuit_task_admissions.fetch_add(1, Ordering::AcqRel);
             AdmittedTask(Arc::clone(&self.circuit_task_admissions))
         };
+        #[cfg(target_os = "linux")]
+        let _original_remote_record = crate::CircuitTaskHandleV1::retain_original_remote_record(handle, record)?;
         let request = provider.build(self.identity(), record)?;
         request
             .validate_record(record, record.snapshot.generation)

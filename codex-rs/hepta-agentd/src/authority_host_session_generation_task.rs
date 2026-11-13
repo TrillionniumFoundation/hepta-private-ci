@@ -135,3 +135,15 @@ impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1
         }
     }
 }
+
+#[path = "authority_host_session_generation_root_task.rs"]
+mod root_task;
+pub use root_task::PreparedRootHostCircuitTaskV1;
+pub use root_task::PreparedRootMaterialSourceHostV1;
+pub use root_task::OriginalRootMaterialSourceRegistrationV1;
+pub use root_task::OriginalRootPrefreezeSourceRegistrationV1;
+
+#[path = "authority_host_session_generation_task_loader.rs"]
+mod task_input_loader;
+pub use task_input_loader::PreparedRootHostLoadedQ24TaskV1;
+pub use task_input_loader::RootHostOriginalTaskLearningFilesV1;

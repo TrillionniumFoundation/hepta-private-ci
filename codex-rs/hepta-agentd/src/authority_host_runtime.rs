@@ -42,7 +42,13 @@ pub(crate) use listeners::validate_runtime_lanes;
 mod session;
 pub use session::PreparedHostAuthoritySession;
 pub use session::PreparedRootHostInitialGenerationV1;
+pub use session::PreparedRootHostCircuitTaskV1;
+pub use session::PreparedRootMaterialSourceHostV1;
+pub use session::OriginalRootMaterialSourceRegistrationV1;
+pub use session::OriginalRootPrefreezeSourceRegistrationV1;
 pub use session::RootHostInitialTaskInstallationErrorV1;
+pub use session::PreparedRootHostLoadedQ24TaskV1;
+pub use session::RootHostOriginalTaskLearningFilesV1;
 pub use session::RootNotesPolicyPredecessor;
 
 #[path = "authority_host_writer_rotate.rs"]
@@ -53,6 +59,15 @@ pub use writer_rotation::rotate_host_writer_authorization;
 mod resident_registration;
 pub use resident_registration::recover_host_resident_learning_v3;
 pub use resident_registration::register_host_resident_learning_v3;
+
+#[path = "authority_host_resident_launch.rs"]
+mod resident_launch;
+pub use resident_launch::RootResidentCandidateProcessInputsV3;
+pub(crate) use resident_launch::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,
+    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,
+    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};
+pub use resident_launch::prepare_host_resident_candidate_v3;
+pub use resident_launch::recover_host_resident_candidate_v3;
 
 #[path = "authority_host_issuer_renewal.rs"]
 mod issuer_renewal;
@@ -551,3 +566,9 @@ pub(crate) fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
     }
     Ok(())
 }
+
+pub use resident_launch::RootResidentCandidateEnrollmentInputsV3;
+pub use resident_launch::RootResidentCandidateEnrollmentServiceV3;
+pub use resident_launch::prepare_host_resident_candidate_enrollment_v3;
+pub use resident_launch::recover_host_resident_candidate_enrollment_v3;
+pub(crate) use resident_launch::connect_original_resident_enrollment;

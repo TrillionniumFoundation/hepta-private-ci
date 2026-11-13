@@ -19,6 +19,33 @@ use crate::CircuitCellExecutionV1;
 #[cfg(test)]
 #[path = "cell_q24_dataset_source_test_support.rs"]
 pub(crate) mod cell_q24_dataset_source_test_support;
+#[path = "circuit_task_cell_port.rs"]
+mod cell_port;
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_root_bootstrap_codec.rs"]
+pub(crate) mod root_bootstrap_codec;
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_root_bootstrap_cell.rs"]
+pub(crate) mod root_bootstrap_cell;
+#[cfg(target_os = "linux")]
+pub(crate) use source::root_bootstrap::decode as decode_original_root_source;
+#[cfg(target_os = "linux")]
+pub(crate) use source::remote_source::original_binding as original_root_source_binding;
+#[cfg(target_os = "linux")]
+pub(crate) use runtime::original_remote_channel_until;
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_remote.rs"]
+pub(crate) mod remote;
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_root_lane.rs"]
+mod root_lane;
+#[cfg(target_os = "linux")]
+pub use remote::OriginalRootCircuitTaskDaemonInputsV1;
+#[cfg(target_os = "linux")]
+pub(crate) use remote::OriginalRootTaskLane;
+#[cfg(target_os = "linux")]
+pub(crate) use runtime::original_remote_channel;
 #[path = "circuit_task_driver.rs"]
 mod driver;
 #[path = "circuit_task_runtime.rs"]
@@ -32,6 +59,12 @@ pub use runtime::CircuitTaskHandleV1;
 pub use runtime::CircuitTaskRuntimeBootstrapV1;
 pub use runtime::circuit_task_channel_v1;
 pub(crate) use source::CircuitTaskPolicyProjectionV1;
+#[cfg(target_os = "linux")]
+pub(crate) use source::material_source as original_material_source;
+#[cfg(target_os = "linux")]
+pub(crate) use source::prefreeze_source as original_prefreeze_source;
+#[cfg(target_os = "linux")]
+pub use source::prefreeze_source::{OriginalCircuitPrefreezeSourceRequestV1, OriginalCircuitPrefreezeSourceV1};
 pub use source::CircuitTaskSourceInputV1;
 pub use source::CircuitTaskSourcePublicationV1;
 pub use source::CircuitTaskSourceReadbackV1;

@@ -351,6 +351,18 @@ impl OriginalHostInitialOperation {
     }
 }
 
+#[path = "authority_host_generation_input_loader.rs"]
+mod input_loader;
+pub use input_loader::RootHostInitialGenerationFilesV1;
+pub(crate) use input_loader::LoadPurpose as OriginalGenerationLoadPurpose;
+pub(crate) use input_loader::LoadedOriginalGeneration as OriginalLoadedGeneration;
+
+#[path = "authority_host_generation_task_input_loader.rs"]
+mod task_input_loader;
+pub use task_input_loader::RootHostQ24TaskFilesV1;
+pub(crate) use task_input_loader::TaskFilePurpose as OriginalTaskFilePurpose;
+pub(crate) use task_input_loader::OriginalTaskClockStatus;
+
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }

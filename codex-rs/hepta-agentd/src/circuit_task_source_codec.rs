@@ -263,7 +263,7 @@ pub(super) fn dispatch_input(
     Ok(bytes)
 }
 
-fn encode_input(input: &CellStepInputV1) -> Result<Vec<u8>, Error> {
+pub(super) fn encode_input(input: &CellStepInputV1) -> Result<Vec<u8>, Error> {
     if input.scope.principal_digest.is_zero()
         || input.source_frontier.is_zero()
         || input.objective_digest.is_zero()
@@ -315,6 +315,12 @@ pub(super) fn decode_input(bytes: &[u8]) -> Result<CellStepInputV1, Error> {
     outer.blob()?; // Original serialized dispatch, compared in resolve/publish.
     let encoded = outer.blob()?;
     outer.end()?;
+    decode_configuration_input(encoded)
+}
+
+/// The immutable Source configuration has no dispatch yet. Decode only the
+/// same original input bytes; this creates data, never a Source or receipt.
+pub(super) fn decode_configuration_input(encoded: &[u8]) -> Result<CellStepInputV1, Error> {
     let mut r = Reader(encoded);
     let input = CellStepInputV1 {
         operation_id: r.id()?,
