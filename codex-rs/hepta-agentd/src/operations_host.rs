@@ -28,7 +28,7 @@ const QUEUE_RETRY: Duration = Duration::from_millis(50);
 const DISPATCH_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-dispatch.v1\0";
 const ACK_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-ack.v1\0";
 const NOT_APPLIED_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-not-applied.v1\0";
-const QUARANTINE_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-quarantined.v1\0";
+const UNKNOWN_EFFECT_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-unknown-effect.v1\0";
 
 /// Independent grant source. Implementations may talk to an external issuer or
 /// consume an already authenticated owner channel, but agentd never receives a
@@ -248,22 +248,7 @@ async fn apply_and_reconcile(
                     }
                 }
                 Ok(None) => {
-                    let outcome = if matches!(
-                        error,
-                        AutomationError::Invalid
-                            | AutomationError::AccessDenied
-                            | AutomationError::Conflict
-                            | AutomationError::Corrupt
-                    ) {
-                        ReconciliationOutcome::Quarantined
-                    } else {
-                        ReconciliationOutcome::NotApplied
-                    };
-                    let evidence_digest = match outcome {
-                        ReconciliationOutcome::Quarantined => Digest32::of_bytes(QUARANTINE_DOMAIN),
-                        ReconciliationOutcome::NotApplied => Digest32::of_bytes(NOT_APPLIED_DOMAIN),
-                        ReconciliationOutcome::Applied => unreachable!(),
-                    };
+                    let (outcome, evidence_digest) = classify_destination_absence(&error);
                     source
                         .observe_terminal(
                             &operation.scope_id,
@@ -336,6 +321,46 @@ async fn reconcile_reopened_operations(
     }
 }
 
+/// Classify a missing destination receipt after an operation-owner error.
+///
+/// Only deterministic failures proven to occur before the destination owner can
+/// commit are eligible for `NotApplied`. Storage unavailability, queue
+/// uncertainty, timer fencing and dispatch-unknown outcomes are deliberately
+/// quarantined: a missing read is not proof that a prior domain transaction did
+/// not commit, so reopening must reconcile the exact destination identity before
+/// any retry. This keeps an unknown external effect from becoming a retryable
+/// absence merely because the observer was unavailable.
+fn classify_destination_absence(error: &AutomationError) -> (ReconciliationOutcome, Digest32) {
+    match error {
+        // These are rejected while validating the operation/draft or checking
+        // the destination's owner contract, before a destination transaction
+        // can commit. They are the only absence outcomes safe to terminalize
+        // as NotApplied without a later owner lookup.
+        AutomationError::Invalid | AutomationError::AccessDenied => (
+            ReconciliationOutcome::NotApplied,
+            Digest32::of_bytes(NOT_APPLIED_DOMAIN),
+        ),
+        // A conflict/corruption may have been raised after a destination
+        // transaction committed (for example while reading its receipt), and
+        // all storage, fencing and dispatch errors can hide a committed effect.
+        // Keep every such case quarantined until the exact destination owner
+        // supplies a receipt or a proof of absence.
+        AutomationError::Conflict
+        | AutomationError::Corrupt
+        | AutomationError::TimerFenced
+        | AutomationError::Unavailable
+        | AutomationError::Dispatch
+        | AutomationError::DispatchUnknown => {
+            let mut bytes = UNKNOWN_EFFECT_DOMAIN.to_vec();
+            bytes.extend_from_slice(error.to_string().as_bytes());
+            (
+                ReconciliationOutcome::Quarantined,
+                Digest32::of_bytes(&bytes),
+            )
+        }
+    }
+}
+
 fn queue_digest(domain: &[u8], intent: &OperationIntentV1, fence: u64) -> Digest32 {
     let mut bytes = domain.to_vec();
     bytes.extend_from_slice(intent.semantic_digest().as_array());
@@ -349,6 +374,40 @@ fn task_id_from_operation(
     let value = operation.operation_id.as_str();
     let raw = value.strip_prefix("automation.task.create:")?;
     raw.parse().ok()
+}
+
+#[cfg(test)]
+mod classification_tests {
+    use super::classify_destination_absence;
+    use codex_hepta_automation::AutomationError;
+    use codex_hepta_operations::ReconciliationOutcome;
+
+    #[test]
+    fn only_proven_precontact_failures_are_not_applied() {
+        for error in [AutomationError::Invalid, AutomationError::AccessDenied] {
+            let (outcome, _) = classify_destination_absence(&error);
+            assert_eq!(outcome, ReconciliationOutcome::NotApplied);
+        }
+    }
+
+    #[test]
+    fn uncertain_owner_paths_are_quarantined_and_have_reason_bound_evidence() {
+        let errors = [
+            AutomationError::Conflict,
+            AutomationError::Corrupt,
+            AutomationError::TimerFenced,
+            AutomationError::Unavailable,
+            AutomationError::Dispatch,
+            AutomationError::DispatchUnknown,
+        ];
+        let mut digests = std::collections::BTreeSet::new();
+        for error in errors {
+            let (outcome, digest) = classify_destination_absence(&error);
+            assert_eq!(outcome, ReconciliationOutcome::Quarantined);
+            assert!(!digest.is_zero());
+            assert!(digests.insert(digest));
+        }
+    }
 }
 
 #[cfg(test)]
