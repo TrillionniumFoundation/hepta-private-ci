@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-n256-input-lineage-admission-request-v1",
+  "identity": "hcsn-n256-input-lineage-admission-20261113-c06d-001",
+  "base_commit": "a5c5d01aecc7658eb3ce60f4159e89a43ac85ecf",
+  "scope": "read-only binding of authentic new-export bytes to roster, engineering, and streaming identities",
+  "allowed_calls": {
+    "stdlib_verifier_runs": 1,
+    "stdlib_unit_test_suites": 1,
+    "independent_stdlib_reviews": 1
+  },
+  "forbidden_calls": {
+    "dynamic": 0,
+    "matrix_exponential": 0,
+    "oracle_numeric": 0,
+    "serializer_numeric": 0,
+    "torch": 0,
+    "backward": 0,
+    "optimizer": 0,
+    "training": 0
+  },
+  "historical_N256_export_recovered": false,
+  "historical_N256_missing_statement_preserved": true,
+  "new_export_only": true,
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}
