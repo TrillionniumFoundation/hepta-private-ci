@@ -1,0 +1,363 @@
+{
+  "HAP_exchange_inner": {
+    "body": "    fn exchange_inner(\n        &self,\n        stream: &mut UnixStream,\n        handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,\n    ) -> Result<bool, HostIssuerTransportError> {\n        let mut length = [0; 4];\n        if self\n            .owner\n            .read(stream, &mut length[..1], self.owner.end())?\n            == 0\n        {\n            return Ok(false);\n        }\n        let deadline = self.owner.deadline(self.policy.timeout);\n        self.owner.read_until(stream, &mut length[1..], deadline)?;\n        let length = u32::from_be_bytes(length) as usize;\n        if length == 0 || length > self.policy.request_bound {\n            return Err(HostIssuerTransportError::InvalidRequest);\n        }\n        let mut bytes = vec![0; length];\n        self.owner.read_until(stream, &mut bytes, deadline)?;\n        self.owner.check(deadline)?;\n        let response = handle(&bytes)?;\n        self.owner.check(deadline)?;\n        if response.is_empty() || response.len() > self.policy.response_bound {\n            return Err(HostIssuerTransportError::Unavailable);\n        }\n        self.owner\n            .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;\n        self.owner.write_until(stream, &response, deadline)?;\n        self.owner.check(deadline)?;\n        Ok(true)\n    }",
+    "body_pin": {
+      "bytes": 1325,
+      "git_blob": "9a1918c61eb4a07a31704610341cd09b695d9cc0",
+      "sha256": "8c03afc2e09f7c76851647ab94f7ca75cc78287b4cc034b97731fa7d7c147193"
+    },
+    "end_line": 165,
+    "impl": "impl HostAuthorityPeerChannel",
+    "name": "exchange_inner",
+    "start_line": 133
+  },
+  "H_calls": 0,
+  "corrects": "The first prefreeze author text and any repetition treating between-frame idle as 500ms. Frozen original sources and reports are preserved; this is a separate explanatory record.",
+  "findings": [
+    "HAP exchange_inner waits for its first length byte with owner.end(). Only after that byte does it compute owner.deadline(policy.timeout). The remaining frame, handler, response send and final success check use that same inflight deadline.",
+    "Old Material::serve and final prefreeze data-loop set deadline=None before exchange. The outer now+timeout deadline is created inside the handler, after HAP has received the complete request. The post-exchange comparison uses that handler-created deadline. It therefore does not retroactively impose a 500ms between-frame idle limit.",
+    "In both Material and prefreeze clients, the outer read deadline is created before HAP request(), and HAP request starts its own timeout before sending. The caller-initiated request/response therefore has a 500ms maximum here, additionally bounded by that client end.",
+    "The new readiness exchange is separately bounded by the existing absolute startup_end. Root checks before/after hint.request; client checks before passive poll and after the exact echo. The poll uses only that startup deadline and no Source, Cell or Current lock. Data starts at id2 after ready spends id1.",
+    "A late failure can follow a completed underlying read, append, hint or response send. Post-response deadline/current checks report rejection or Unknown; they do not prove no side effects or retract bytes already transmitted.",
+    "Host lifetime/end, client configured lifetime, same-stream fixed counter, 16KiB wire bound and 128 aggregate frames remain unchanged. This explanation does not grant a renewed idle allowance, modify HAP, or extend any actual configured end."
+  ],
+  "format": "hepta-prefreeze-material-time-boundary-correction-v1",
+  "old_material_serve": {
+    "body": "    pub fn serve(self, registration: OriginalRootMaterialSourceRegistrationV1)\n        -> Result<u64, AgentdError>\n    {\n        self.require_current()?;\n        let registration::OriginalRootMaterialSourceRegistrationV1 {\n            material, consumer, consumer_uid, original_consumer_pidfd, stream, nonce,\n        } = registration;\n        if consumer.pid == self.session.registration.peer_pid {\n            return Err(protocol(\"the registered daemon is not the original Material process\"));\n        }\n        let binding = wire::context(&material).map_err(protocol)?;\n        let timeout = Duration::from_millis(self.session.config.timeout_ms.min(500));\n        let lifetime = self.end.checked_duration_since(Instant::now())\n            .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))\n            .ok_or_else(|| protocol(\"original Material Source scope expired\"))?;\n        let mut channel = original_owner_command_channel_v1(stream, consumer, consumer_uid,\n            original_consumer_pidfd, timeout, lifetime).map_err(protocol)?;\n        self.require_current()?;\n        wire::before(self.end).map_err(protocol)?;\n        for id in 1..=wire::LIMIT {\n            let request = wire::request(binding, nonce, id).map_err(protocol)?;\n            let mut failure = None;\n            let mut deadline = None;\n            let exchanged = channel.exchange(|bytes| {\n                let result = (|| -> Result<Vec<u8>, AgentdError> {\n                    let until = (Instant::now() + timeout).min(self.end);\n                    deadline = Some(until);\n                    wire::before(until).map_err(protocol)?;\n                    if bytes != request || wire::context(&material).map_err(protocol)? != binding {\n                        return Err(protocol(\"original Material Source request differs\"));\n                    }\n                    self.require_current()?;\n                    let payload = OriginalRootCircuitTaskCustodyV1::read_original_material_source(\n                        &self.custody, &material.initial.request,\n                    )?;\n                    self.require_current()?;\n                    if wire::context(&material).map_err(protocol)? != binding {\n                        return Err(protocol(\"original Material Source context changed\"));\n                    }\n                    let response = wire::response(&request, &payload).map_err(protocol)?;\n                    wire::before(until).map_err(protocol)?;\n                    Ok(response)\n                })();\n                result.map_err(|error| { failure = Some(error); HostIssuerTransportError::Unavailable })\n            });\n            match exchanged {\n                Ok(false) => { self.require_current()?; return Ok(id - 1); }\n                Ok(true) => {\n                    channel.check_peer_lifetime().map_err(protocol)?;\n                    self.require_current()?;\n                    if wire::context(&material).map_err(protocol)? != binding {\n                        return Err(protocol(\"original Material Source context changed after response\"));\n                    }\n                    let until = deadline.ok_or_else(|| protocol(\"original Source deadline missing\"))?;\n                    wire::before(until).map_err(protocol)?;\n                }\n                Err(error) => return Err(failure.unwrap_or_else(|| protocol(error))),\n            }\n        }\n        Err(protocol(\"original Material Source request bound exhausted\"))\n    }",
+    "body_pin": {
+      "bytes": 3473,
+      "git_blob": "ac03d62ce05c493afaffb3a1634556b1ba4062de",
+      "sha256": "78750ab5732218535dc84ab0cc393f79a2668277258b163a4e99d625420fdca5"
+    },
+    "end_line": 136,
+    "impl": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> PreparedRootMaterialSourceHostV1<SW, CW>",
+    "name": "serve",
+    "start_line": 76
+  },
+  "ordered_code_evidence": {
+    "HAP_client": [
+      {
+        "byte_offset_utf8": 118,
+        "needle": "self.stream.take()"
+      },
+      {
+        "byte_offset_utf8": 383,
+        "needle": "let deadline = self.owner.deadline(self.policy.timeout)"
+      },
+      {
+        "byte_offset_utf8": 620,
+        "needle": "write_until(&mut stream, request, deadline)"
+      },
+      {
+        "byte_offset_utf8": 1074,
+        "needle": "read_until(&mut stream, &mut response, deadline)"
+      },
+      {
+        "byte_offset_utf8": 1137,
+        "needle": "self.owner.check(deadline)"
+      }
+    ],
+    "HAP_server": [
+      {
+        "byte_offset_utf8": 282,
+        "needle": ".read(stream, &mut length[..1], self.owner.end())"
+      },
+      {
+        "byte_offset_utf8": 408,
+        "needle": "let deadline = self.owner.deadline(self.policy.timeout)"
+      },
+      {
+        "byte_offset_utf8": 484,
+        "needle": "read_until(stream, &mut length[1..], deadline)"
+      },
+      {
+        "byte_offset_utf8": 790,
+        "needle": "read_until(stream, &mut bytes, deadline)"
+      },
+      {
+        "byte_offset_utf8": 878,
+        "needle": "let response = handle(&bytes)"
+      },
+      {
+        "byte_offset_utf8": 918,
+        "needle": "self.owner.check(deadline)"
+      },
+      {
+        "byte_offset_utf8": 1223,
+        "needle": "write_until(stream, &response, deadline)"
+      },
+      {
+        "byte_offset_utf8": 1274,
+        "needle": "self.owner.check(deadline)"
+      }
+    ],
+    "client_data": [
+      {
+        "byte_offset_utf8": 157,
+        "needle": "identity != &self.identity"
+      },
+      {
+        "byte_offset_utf8": 313,
+        "needle": "self.slot.try_lock()"
+      },
+      {
+        "byte_offset_utf8": 379,
+        "needle": ".take().ok_or"
+      },
+      {
+        "byte_offset_utf8": 423,
+        "needle": "let deadline = (Instant::now() + self.timeout).min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 526,
+        "needle": "self.require_current()"
+      },
+      {
+        "byte_offset_utf8": 573,
+        "needle": "read_request("
+      },
+      {
+        "byte_offset_utf8": 672,
+        "needle": "checked_add(1)"
+      },
+      {
+        "byte_offset_utf8": 738,
+        "needle": "channel.original.request("
+      },
+      {
+        "byte_offset_utf8": 819,
+        "needle": "wire::before(deadline)"
+      },
+      {
+        "byte_offset_utf8": 866,
+        "needle": "wire::read_response("
+      },
+      {
+        "byte_offset_utf8": 1091,
+        "needle": "decode_current_root_payload("
+      },
+      {
+        "byte_offset_utf8": 1138,
+        "needle": "self.request.require_publication("
+      },
+      {
+        "byte_offset_utf8": 1192,
+        "needle": "channel.original.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 1273,
+        "needle": "self.require_current()"
+      },
+      {
+        "byte_offset_utf8": 1321,
+        "needle": "self.slot.try_lock()"
+      },
+      {
+        "byte_offset_utf8": 1384,
+        "needle": "wire::before(deadline)"
+      },
+      {
+        "byte_offset_utf8": 1417,
+        "needle": "*slot = Some(channel)"
+      },
+      {
+        "byte_offset_utf8": 1448,
+        "needle": "Ok(observed)"
+      }
+    ],
+    "client_ready": [
+      {
+        "byte_offset_utf8": 915,
+        "needle": "let startup_end = startup_end.min(end)"
+      },
+      {
+        "byte_offset_utf8": 1380,
+        "needle": "original_owner_command_channel_v1("
+      },
+      {
+        "byte_offset_utf8": 1680,
+        "needle": "ready::wait_first_frame(socket, startup_end)"
+      },
+      {
+        "byte_offset_utf8": 1735,
+        "needle": "original.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 1924,
+        "needle": "original.exchange(|bytes|"
+      },
+      {
+        "byte_offset_utf8": 1964,
+        "needle": "if bytes != expected"
+      },
+      {
+        "byte_offset_utf8": 2078,
+        "needle": "Ok(expected.clone())"
+      },
+      {
+        "byte_offset_utf8": 2156,
+        "needle": "if !acknowledged"
+      },
+      {
+        "byte_offset_utf8": 2217,
+        "needle": "wire::before(startup_end)"
+      },
+      {
+        "byte_offset_utf8": 2253,
+        "needle": "original.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 2329,
+        "needle": "request.require_evidence("
+      },
+      {
+        "byte_offset_utf8": 2676,
+        "needle": "next: 2"
+      }
+    ],
+    "old_material_deadline": [
+      {
+        "byte_offset_utf8": 1154,
+        "needle": "for id in 1..=wire::LIMIT"
+      },
+      {
+        "byte_offset_utf8": 1310,
+        "needle": "let mut deadline = None"
+      },
+      {
+        "byte_offset_utf8": 1363,
+        "needle": "channel.exchange(|bytes|"
+      },
+      {
+        "byte_offset_utf8": 1477,
+        "needle": "let until = (Instant::now() + timeout).min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 1551,
+        "needle": "deadline = Some(until)"
+      },
+      {
+        "byte_offset_utf8": 1595,
+        "needle": "wire::before(until)"
+      },
+      {
+        "byte_offset_utf8": 2767,
+        "needle": "Ok(true)"
+      },
+      {
+        "byte_offset_utf8": 3123,
+        "needle": "let until = deadline.ok_or_else"
+      },
+      {
+        "byte_offset_utf8": 3226,
+        "needle": "wire::before(until)"
+      }
+    ],
+    "server_ready_and_data": [
+      {
+        "byte_offset_utf8": 1671,
+        "needle": "original_owner_command_channel_v1("
+      },
+      {
+        "byte_offset_utf8": 1829,
+        "needle": "let startup_end = startup_end.min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 2206,
+        "needle": "original_prefreeze_is_pending("
+      },
+      {
+        "byte_offset_utf8": 2276,
+        "needle": "self.source_ready.wait_original(startup_end)"
+      },
+      {
+        "byte_offset_utf8": 2466,
+        "needle": "read_original_prefreeze_source("
+      },
+      {
+        "byte_offset_utf8": 2666,
+        "needle": "let hint = ready::frame"
+      },
+      {
+        "byte_offset_utf8": 2781,
+        "needle": "channel.request(&hint)"
+      },
+      {
+        "byte_offset_utf8": 2938,
+        "needle": "wire::before(startup_end)"
+      },
+      {
+        "byte_offset_utf8": 3344,
+        "needle": "for id in 2..=wire::LIMIT"
+      },
+      {
+        "byte_offset_utf8": 3508,
+        "needle": "let mut deadline = None"
+      },
+      {
+        "byte_offset_utf8": 3561,
+        "needle": "channel.exchange(|bytes|"
+      },
+      {
+        "byte_offset_utf8": 3675,
+        "needle": "let until = (Instant::now() + timeout).min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 4131,
+        "needle": "read_original_prefreeze_source("
+      },
+      {
+        "byte_offset_utf8": 4485,
+        "needle": "wire::response("
+      },
+      {
+        "byte_offset_utf8": 4561,
+        "needle": "wire::before(until)"
+      },
+      {
+        "byte_offset_utf8": 4900,
+        "needle": "Ok(true)"
+      },
+      {
+        "byte_offset_utf8": 4934,
+        "needle": "channel.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 5221,
+        "needle": "wire::before(deadline.ok_or_else"
+      }
+    ]
+  },
+  "project_execution": false,
+  "sources": {
+    "HAP": {
+      "bytes": 6672,
+      "git_blob": "36e4524baea04320b7610325579f0ff206690fab",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352"
+    },
+    "old_material_serve_source": {
+      "bytes": 7220,
+      "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+      "path": "/tmp/hepta-36fa-root-product-composition-v8/after/codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+    },
+    "owner_channel": {
+      "bytes": 2841,
+      "git_blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "sha256": "f2c5a466095a8c7648b1865d48278c81eea5e2007980bc91290eaad67b311406"
+    },
+    "prefreeze_client_after": {
+      "bytes": 7098,
+      "git_blob": "bf5602d6d93d02f7ee4188d6eb8e8c46dd4e01c9",
+      "sha256": "e4f76c52600f0e9513429d6b5afd6320b10c74c003f4ab91b448da1fbe8c10f2"
+    },
+    "prefreeze_source_after": {
+      "bytes": 6979,
+      "git_blob": "db6462c1a64f7d53b56b0a0dd5d19abd3da5ada5",
+      "sha256": "afb9e8bf09b45c85fc85094cf6886e693366e79794d22b7abed1e939abefd6f3"
+    }
+  },
+  "state": "STATIC_CORRECTION_NO_SOURCE_OR_BUDGET_CHANGE"
+}

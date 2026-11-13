@@ -1,0 +1,8 @@
+{
+  "execution": "Exact splice/inverse only. No scanner or project execution; older frozen layers unchanged.",
+  "format": "hepta-e2-exact-bootstrap-caller-review-v1",
+  "identity": "Same consumer_state_root, same one call, same result, same sequencing and errors. No owner clone/open/extra call/authority.",
+  "original_rule": "root_same_registered_bootstrap_seal remains byte-identical except product_callers append in the separate registration delta.",
+  "reason": "Original CALLERS row90 has exact-symbol matching, without a receiver_type. Keep that original rule and spell this new caller with its actual concrete type.",
+  "receiver": "Same retained Arc<PreparedHostAuthoritySession>; &Arc deref coercion borrows the same session."
+}

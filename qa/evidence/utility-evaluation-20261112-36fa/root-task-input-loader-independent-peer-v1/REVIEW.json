@@ -1,0 +1,367 @@
+{
+  "candidate": {
+    "bytes": 386488,
+    "git_blob": "77b05d5ec3f8d3b10a4024b63103e97e8f3fe996",
+    "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/SOURCE_PACKET.json",
+    "sha256": "5ef53c71c2809e99ce91337e2dc3fb49e3ecd4bb3f6360e4120ac4545b996bef"
+  },
+  "execution_approval": false,
+  "findings": [
+    {
+      "detail": [
+        "All 13 before/after payloads, local files and manifest pins were independently recomputed. The seven old preimages equal both frozen v5 and v6 bytes; all six new paths are absent from the canonical b608 inventory and v6 changed view.",
+        "The final splice contract is FINAL_MOUNT_SPLICES.json, 5,935 B / 9df2125591031c389e55a3983e731129668ea1d7. Its seven records contain exactly eight additions; every complete forward and reverse replacement equals the packet bytes. SOURCE_DELTA.patch was independently reconstructed completely.",
+        "The older MOUNT_SPLICES.json remains an intermediate artifact. It was not mistaken for the final eight-addition contract. The manifest correctly binds the final table.",
+        "Existing functions remain byte-for-byte unchanged after removal of these mount/reexport additions. Both new lib exports each retain their own Linux cfg; no old export loses its prior cfg scope."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:files",
+        "BYTE_AND_CONTRACT_PROOF.json:metadata_complete_byte_bindings",
+        "BYTE_AND_CONTRACT_PROOF.json:source_delta_exact"
+      ],
+      "id": "F01_EXACT_LAYER_AND_MOUNTS",
+      "status": "VERIFIED_STATIC"
+    },
+    {
+      "detail": [
+        "Public RootHostQ24TaskFilesV1 is a set of owned File inputs, not a publication or receipt. The public prepare/recover methods consume the actual PreparedRootHostInitialGenerationV1 and return only PreparedRootHostLoadedQ24TaskV1.",
+        "The loaded wrapper has private task and clock_status fields. It has no Clone implementation or derive, Deref/AsRef, into_inner, owner getter, runtime getter, clock getter, caller callback or local Config installation entry. Its only current public method is read_loaded_original_root_task_generation.",
+        "The crate-private HostAuthorityService::load_original_root_q24_task_inputs has exactly one actual call site in the fixed source chain: the private load_original_task_files helper. Its crate-private LoadedOriginalTaskInputs is immediately consumed by PreparedRootHostInitialGenerationV1::prepare_original_root_task; only the sealed wrapper leaves that helper.",
+        "All references to the new type/helper names were enumerated across the complete 100-file frozen changed view plus six new modules. Existing original construction and private custody methods were also read. This is a source closure argument for these fixed files, not a general claim against future source changes.",
+        "The old into_original_q24_task(config, inputs) and local runtime owner loop remain available to their original callers and remain unmodified. The new loader has no path to return the inner inputs, Task or runtime to those APIs."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:public_methods",
+        "BYTE_AND_CONTRACT_PROOF.json:new_symbol_references"
+      ],
+      "id": "F02_PUBLIC_AND_INTERNAL_CLOCK_CLOSURE",
+      "sources": [
+        {
+          "bytes": 7244,
+          "git_blob": "21df9c6cc994ef629dde11ad492b3ed5893f6647",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "sha256": "e0db425a15e2f939f709058e53a12f98ddef3cd13d2b78c6ebf5e06ec21c0f83"
+        },
+        {
+          "bytes": 5173,
+          "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+        },
+        {
+          "bytes": 5994,
+          "git_blob": "76039e36fe9dbdc5e5b4d0e35777532ebe016fc8",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "sha256": "9af75b25d4409278c4dd2af4be54e7e5c42f6cf2d4895ad79401b80c24f01499"
+        }
+      ],
+      "status": "VERIFIED_FIXED_SOURCE_CHAIN"
+    },
+    {
+      "detail": [
+        "The callback clones the same original HostAuthorityService clock Arc; callers cannot choose a replacement clock. Same callback and wrapper share one AtomicU8 through Arc and the unchanged absolute end.",
+        "The only state mutation is compare_exchange(0, code, AcqRel, Acquire). Codes 1/2/3 preserve original AuthorityTrustError Invalid/Conflict/Unavailable; 4 denotes checked microsecond overflow and 5 absolute-end expiry. No store, swap, reset, setter, new deadline or success token exists.",
+        "First failure means the first successful CAS among observed contenders, not a separately measured wall-clock ordering of racing failures. Later failures, recovery of the underlying clock or end expiry cannot replace it.",
+        "Every later callback starts with require_healthy and returns fenced MAX without consulting a recovered clock after failure. Successful time conversion checks healthy again before returning the sample. Millis-to-micros uses checked_mul(1000); failure is retained and fenced.",
+        "The wrapper checks clock health before original readback and again after it. A successful original result is withheld on clock failure. If both original operation and clock fail, Protocol text retains both errors rather than substituting success.",
+        "The independent Python proof checks 120 order permutations of the inspected first-write transition; it does not run Rust atomics or constitute a concurrency test."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:clock_callback_order",
+        "BYTE_AND_CONTRACT_PROOF.json:clock_first_failure"
+      ],
+      "id": "F03_PERMANENT_FIRST_CLOCK_CAUSE",
+      "sources": [
+        {
+          "bytes": 2293,
+          "git_blob": "9e567d5e115056284f4850927ed330b3f4442a8e",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_clock.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_clock.rs",
+          "sha256": "c2b9ab74e406ea9b39969d7e19c2c10e2072960398eb67f8b7e8cc52f2abd569"
+        },
+        {
+          "bytes": 7244,
+          "git_blob": "21df9c6cc994ef629dde11ad492b3ed5893f6647",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "sha256": "e0db425a15e2f939f709058e53a12f98ddef3cd13d2b78c6ebf5e06ec21c0f83"
+        },
+        {
+          "bytes": 5173,
+          "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+        }
+      ],
+      "status": "VERIFIED_STATIC_WITH_PURE_TRANSITION_CHECK"
+    },
+    {
+      "detail": [
+        "The exact original Ready factory delegates to into_original_root_task_channel and circuit_q24_task_channel_v1. The profile stores the clock for the root lane and for the original feature-control adapter.",
+        "PublishedCircuitFeatureTaskV1::control builds its guarded clock closure but does not invoke it. ControlledNeuronFeaturePortV1::new stores the closure after original definition/runtime/unresolved checks; circuit_task_channel_v1 stores the clock in OriginalOwners and an unpolled owner-loop closure.",
+        "Thus the callback is not sampled in these constructor bodies. A later factory failure can follow journal/Source/Cell changes, but no callback failure is silently dropped by the inspected constructor path. Initial direct original clock errors during loading return the original failure immediately before the wrapper is constructed.",
+        "There is currently no public serving method on the loaded wrapper. The next assembly must remain in its private module subtree, consume the fixed Root remote lane, and preserve retained-error checks. This layer cannot be treated as completed CLI wiring."
+      ],
+      "id": "F04_CONSTRUCTOR_DOES_NOT_RUN_LOCAL_OWNER_LOOP",
+      "references": [
+        {
+          "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+        },
+        {
+          "git_blob": "38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf",
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs"
+        },
+        {
+          "git_blob": "90962d888c43b96e4a8e6bd44b9b3b73b52eff4c",
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+        },
+        {
+          "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+        },
+        {
+          "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+          "path": "codex-rs/hepta-neuron/src/feature_control.rs"
+        }
+      ],
+      "status": "VERIFIED_STATIC"
+    },
+    {
+      "detail": [
+        "A MAX pair is invalid-time fencing, not a successful sample or authority grant. This review relies on actual v6 afterimages of the two separately reviewed refusal layers; it does not rely on the numeric value alone.",
+        "Root remote execute rejects either MAX before initial recovery/lookup, the inference admission sample, decide and commit. Root CLOCK encode, daemon decode and daemon runtime merging independently reject MAX.",
+        "The original feature-control adapter already rejects admitted/dispatch/entered >= deadline. The new completion disjunct returns Indeterminate after a worker may have run and before receipt/outcome settlement; old finite late Cancelled and its costs are unchanged.",
+        "The original Driver and Cell-port adapters remain fallible/guarded at their reviewed boundaries. Source readback and completion require the original authenticated same task/Cell receipts; a clock error does not manufacture them.",
+        "Old local Cell/runtime are not MAX-safe merely because these remote checks exist. The loader wrapper must not be opened in later integration to feed its clock into the old local execute/Config path."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:clock_consumer_v6_bindings",
+        "/tmp/hepta-36fa-clock-rejection-independent-review-v1/REVIEW.json"
+      ],
+      "id": "F05_MAX_CONSUMERS_REQUIRE_THE_TWO_FROZEN_STRENGTHENINGS",
+      "status": "VERIFIED_DEPENDENCY_NOT_UNIVERSAL_SENTINEL_CLAIM"
+    },
+    {
+      "detail": [
+        "Before reading task deployment or opening original journals, the public method checks the actual session and absolute end, matches InitialHostPhase::Ready, and validates the actual custody readback against the same retained OriginalHostInitialOperation.",
+        "The private service loader receives that same service and self.end. After loading, the operation and session are checked again; the original factory then repeats actual Ready/registered identity/current-operation/session checks.",
+        "Create and Recover are separate named consuming public methods. The deployment source_mode must exactly match that selected purpose and maps only to the corresponding original CircuitQ24TaskOpenModeV1 variant.",
+        "On loading failure the original Ready is consumed; only the original same-operation error/readback wrapper is returned. There is no Create fallback, new Ready, replacement operation, retries or renewed deadline."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:guards:ready_precedes_all_input_opening"
+      ],
+      "id": "F06_READY_SESSION_OPERATION_AND_FIXED_END",
+      "sources": [
+        {
+          "bytes": 5173,
+          "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+        },
+        {
+          "bytes": 7244,
+          "git_blob": "21df9c6cc994ef629dde11ad492b3ed5893f6647",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "sha256": "e0db425a15e2f939f709058e53a12f98ddef3cd13d2b78c6ebf5e06ec21c0f83"
+        }
+      ],
+      "status": "VERIFIED_STATIC"
+    },
+    {
+      "detail": [
+        "Deployment uses the existing read_root_json boundary: Root-owned single-link 0600 regular file, no-follow open and 64 KiB content cap. The exact schema version, purpose, source_mode and clock_epoch strings are checked. All new DTO structs deny unknown fields.",
+        "The eight mandatory descriptors plus zero, one or two optional adapter descriptors must be pairwise distinct by dev/inode, regular, uid 0, nlink 1 and mode exactly 0600 including rejection of special bits.",
+        "Source and Cell journal/witness descriptors require O_RDWR without O_APPEND; inference-control requires O_RDWR|O_APPEND; model descriptors require O_RDONLY without append. No pathname is opened by the descriptor checker.",
+        "Recover rejects empty Source/Cell journals and witness files shorter than the existing 112-byte header before original opens. An existing empty inference-control journal is not automatically a failure: original replay and actual receipts govern whether work/readback is allowed.",
+        "DurableInferenceControl::open_file uses only the consumed descriptor and original bounded replay/lock path. The diagnostic PathBuf is retained for diagnostics and does not select or reopen another store.",
+        "Pairwise checks cover this input set. They do not establish global absence of duplicated descriptors held elsewhere, immutable metadata after the check, or physical termination of blocking I/O exactly at end. These stronger claims are not made."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:original_references"
+      ],
+      "id": "F07_PROTECTED_FILES_AND_NO_PATH_SUBSTITUTION",
+      "sources": [
+        {
+          "bytes": 2978,
+          "git_blob": "1ba2e71f277b00b3bfe607ffca0dda892501de70",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_files.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_files.rs",
+          "sha256": "cbabb600509224c0ebb53cd176f91d59c845029eec759979d0b499f86d6ba6e3"
+        },
+        {
+          "bytes": 7244,
+          "git_blob": "21df9c6cc994ef629dde11ad492b3ed5893f6647",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "sha256": "e0db425a15e2f939f709058e53a12f98ddef3cd13d2b78c6ebf5e06ec21c0f83"
+        }
+      ],
+      "status": "VERIFIED_STATIC_CONTRACT"
+    },
+    {
+      "detail": [
+        "The independent review matches all 14 original record declarations, all 109 explicit constructor fields and the frozen field map exactly. No result/receipt/publication is substituted with a digest-only record.",
+        "Definition retains all runtime, calibration, resource, sparse mechanism, candidate and memory/input/queue fields and invokes the original semantic_digest. Bundle retains all 13 components, complete lineage and rollback predecessor and invokes original digest. IDs/generations use original checked constructors.",
+        "Source retains all scope fields, full observation bytes and candidate masks, frontier/objective/NDU/time/lease values. Routes retain the original candidate/outcome/selected edge list. Circuit uses the original BoundedCircuitDefinitionV2 and fence uses the original TaskFlowFence::new.",
+        "The original protected clock supplies the epoch comparison. Source monotonic cannot be in the future; deadline must exceed monotonic, and Create must still be before that deadline. Recover preserves original history rather than rewriting time to make it fresh.",
+        "The actual model files are consumed by LoadedCellQ24ModelV1::open_files. Original codec bounds each file to 32,780 bytes, validates exact matrix/adapter layout and dimensions, computes actual byte component digests, and constructs immutable parsed matrices. Every resulting component must equal the full declared bundle.",
+        "Witness scope/generation/max records are full provisioned input values checked by the original witness opener and then bound by the original Source/Cell factory. They are not selected from fixture constants. The original publication/current/bundle/registry/Cell/model checks remain in the unchanged factory."
+      ],
+      "evidence": [
+        "BYTE_AND_CONTRACT_PROOF.json:records",
+        "BYTE_AND_CONTRACT_PROOF.json:guards:protected_data_and_materials"
+      ],
+      "id": "F08_FULL_ORIGINAL_DATA_AND_REAL_MODEL",
+      "sources": [
+        {
+          "bytes": 8348,
+          "git_blob": "a92749db78da8203491db0bcc2dcd0ef99b89338",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_types.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_types.rs",
+          "sha256": "fb0cd7ae67a35b94e1d3c6e5f8c1c5bf40062f2f54b5789f95dda0dd277bab5a"
+        },
+        {
+          "bytes": 9082,
+          "git_blob": "c2e1105ca04643c657ad8e86b3c5dffed57811dd",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_model_types.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_model_types.rs",
+          "sha256": "6b4fc86d8f1373f03127504dc5282924d9b4f8a28f5ba229cd60c2d6c914136a"
+        },
+        {
+          "bytes": 7244,
+          "git_blob": "21df9c6cc994ef629dde11ad492b3ed5893f6647",
+          "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+          "sha256": "e0db425a15e2f939f709058e53a12f98ddef3cd13d2b78c6ebf5e06ec21c0f83"
+        }
+      ],
+      "status": "VERIFIED_STATIC_COMPLETE_FIELD_BINDING"
+    },
+    {
+      "detail": [
+        "FileAnchorWitnessStore::open and original Source/Cell creation/recovery can establish or advance original durable state before a later failure. The result is not described as no-effect or a rollback proof.",
+        "An inference worker can already have run before completion clock failure; Indeterminate retains unresolved original journal state and forbids treating the operation as NotApplied or retryable.",
+        "No extra installer, Config, AutomationStore, signer, owner, runtime, reset, deadline extension, test bypass or channel clone is introduced in this layer.",
+        "Absolute-end checks are repeated before/after protected stages and on callback/readback. They withhold late success; they are not a proof of physical cancellation of arbitrary blocking OS work."
+      ],
+      "id": "F09_ERROR_AND_SIDE_EFFECT_BOUNDARY",
+      "status": "REQUIRED_PRECISE_INTERPRETATION"
+    }
+  ],
+  "format": "hepta-independent-root-task-input-loader-review-v1",
+  "manifest": {
+    "bytes": 7075,
+    "git_blob": "b6231ac8d0108a260d35244cebce1a9cf2bbb131",
+    "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/MANIFEST.json",
+    "sha256": "4cb0115d712492c709e59bacb538fc44d8651712b3afdd712a3ea4ef87d5846a"
+  },
+  "native_h_calls": 0,
+  "project_execution": false,
+  "pure_proof": {
+    "bytes": 71883,
+    "git_blob": "2b079b30540fadf36aa6202ed0d3830cb7111cd2",
+    "local": "/tmp/hepta-36fa-root-task-input-loader-independent-review-v1/BYTE_AND_CONTRACT_PROOF.json",
+    "sha256": "15c794cbb9b7d735d11c7d2cd0e59af15823090565594e383a32a4d24763cb0d"
+  },
+  "qualification_pass": false,
+  "remaining_integration_obligations": [
+    "Keep remote 9f780f and feature ade928 refusal layers in the same exact source view.",
+    "Later loaded-task serving must remain private and purpose-fixed; preserve pre/post retained clock checks and expose no Task/runtime/clock/local Config extraction.",
+    "Finish real normal CLI and same-session construction with concrete protected inputs; this layer alone supplies no serving entry or executable full-chain proof.",
+    "Register the three new public methods, two public types and eight original owner/helper call sites using the unchanged typed collector/protection workflow against final exact bytes.",
+    "Run required compile/format/tests/native qualification only under the later exact engineering contract; none occurred here."
+  ],
+  "result": {
+    "acceptance_boundary": "The fixed source is suitable for the next static integration review with its required clock-rejection dependencies. No new concrete static blocker was found in this layer. It does not yet provide a normal serving entry and is not represented as an executable/qualified path.",
+    "concrete_blockers": [],
+    "key_conclusion": "The callback exits its private loader only in crate-private inputs, whose sole actual consumer consumes the original Ready into the original Config-free factory and seals the result. The returned non-Clone wrapper has no task/runtime/clock extraction API; its only public method is checked readback. The first retained clock failure is a non-resetting shared CAS state."
+  },
+  "reviewer": "/root/native_ci_audit",
+  "reviewer_execution": {
+    "correction": "The initial reviewer field regex matched the word result: in a pre-existing CellTrainingLineageV1 doc comment. It was corrected to match declaration field lines only. Original candidate, source packet and source references were unchanged.",
+    "final_exit": 0,
+    "final_script": {
+      "bytes": 21146,
+      "git_blob": "c1644b2b78d8bc9967f5e8bd75e59b7964754891",
+      "local": "/tmp/hepta-36fa-root-task-input-loader-independent-review-v1/verify_task_inputs_v2.py",
+      "sha256": "a1d498ad04d2de0a6695197e063bea91c16b5c33c6b7ce7680e2875988aec13b"
+    },
+    "first_attempt": {
+      "bytes": 712,
+      "git_blob": "a92321cc01f35bcc215af83a5d36643b39535f12",
+      "local": "/tmp/hepta-36fa-root-task-input-loader-independent-review-v1/EXECUTION_01.original.json",
+      "sha256": "47277510d0b06e56bd5cc0290b1f6a61311f65d00d9351b762ebadfb2138188d"
+    },
+    "initial_script": {
+      "bytes": 21138,
+      "git_blob": "fb035de192a0e31031588ab3a81f25bff1d62936",
+      "local": "/tmp/hepta-36fa-root-task-input-loader-independent-review-v1/verify_task_inputs.py",
+      "sha256": "0e7c13dfce8a07affc7e2acd26ee145bca1863f4d627db85b628490cb092d62b"
+    },
+    "limits": "Both attempts used reviewer-owned Python standard library for fixed-byte and schema checks only; neither imported nor executed project, author preparation, Rust, QA or H code.",
+    "result": "13 paths, 8 complete inverse insertions, 14/109 original fields, 38 exact original references, fixed 106-file changed view and exact clock dependencies all matched.",
+    "second_attempt": {
+      "bytes": 624,
+      "git_blob": "42c5f4cdbfb85b85ad9b1f290a9bbe49c78860df",
+      "local": "/tmp/hepta-36fa-root-task-input-loader-independent-review-v1/EXECUTION_02.original.json",
+      "sha256": "ba9cd7846c314de5c40722b0da450e8a61f2a4e7b09e5cc39d9a16dfc698652a"
+    }
+  },
+  "scope": {
+    "baseline_b608_inventory": {
+      "bytes": 5631947,
+      "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+      "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+    },
+    "exact_insertions": 8,
+    "exact_v6_composition": {
+      "bytes": 42919,
+      "git_blob": "cbf945f1d602aa8545d18a1a2c2fce72fcea755b",
+      "sha256": "44d1af9cdb11d6241f340e3210420939243b8111f60eb6b21b41d3559f47ab6b"
+    },
+    "execution_count": 0,
+    "existing_mount_files": 7,
+    "files": 13,
+    "frozen_layer": "Second task-input layer 77b05d5e only, with exact original/v6 dependencies and first loader e78f already separately reviewed.",
+    "independent_clock_review": {
+      "bytes": 23537,
+      "git_blob": "af62893f66b0e18eea32e2d05d06d1020aae9457",
+      "local": "/tmp/hepta-36fa-clock-rejection-independent-review-v1/REVIEW.json",
+      "sha256": "2de759fb4c04ca896aef2f94b100b4de637428151cc6a9e469ec04074042600d"
+    },
+    "new_production_modules": 6,
+    "new_tests": 0,
+    "not_in_scope": [
+      "Not the later normal CLI or full same-session orchestration; it is not present in this layer.",
+      "Not a compiler or Rust name-resolution proof; no tests or collectors were executed.",
+      "Not a qualification or permission for H, a daemon start, source publication or runtime owner actions.",
+      "Not a statement that arbitrary future crate consumers or old local execution are MAX-safe."
+    ],
+    "prior_generation_loader_review": {
+      "bytes": 26725,
+      "git_blob": "6076f0eaff81b9cd5c2ab56e5246fcb7cedb492a",
+      "local": "/tmp/hepta-36fa-root-generation-input-loader-independent-review-v1/REVIEW.json",
+      "sha256": "705abdcd2773e981fd20c8449bdea7dbfe99fdaeb8eefb47653f22beeeb94257"
+    },
+    "required_production_refusal_layers": {
+      "feature": "ade9282388680285416c7829000b7081e22550ef",
+      "remote": "9f780f963b0e9585b5b85a83f87de593f604bfa5"
+    }
+  },
+  "source_or_ref_write": false,
+  "state": "STATIC_REVIEW_COMPLETED_NO_NEW_CONCRETE_BLOCKER_IN_FIXED_LAYER",
+  "storage": {
+    "all_pins_are_computed_content_identities": true,
+    "original_frozen_inputs_modified": false,
+    "root_owns_later_archival": true,
+    "this_reviewer_performed_git_create_or_get": false
+  }
+}

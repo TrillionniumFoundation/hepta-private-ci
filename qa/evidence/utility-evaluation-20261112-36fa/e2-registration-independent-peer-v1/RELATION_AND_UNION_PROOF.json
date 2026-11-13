@@ -1,0 +1,2534 @@
+{
+  "actual_typed_collector_executed": false,
+  "explicit_ownership_anchors": [
+    {
+      "line": 53,
+      "needle": "pub(crate) struct DaemonClient {",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 58,
+      "needle": "pub(super) task: Mutex<Lane>,",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 59,
+      "needle": "pub(super) loans: Arc<DaemonLoans>,",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 61,
+      "needle": "reverse: Mutex<Option<Lane>>,",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 99,
+      "needle": "loans: DaemonLoans::new(pending)",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 116,
+      "needle": "self.loans.attach(state, cancellation)?;",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 124,
+      "needle": "while reverse.serve_one(|frame| loans.respond(frame))?",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 204,
+      "needle": "pub(crate) struct DaemonCellPort(pub(super) Arc<DaemonClient>);",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "line": 76,
+      "needle": "pub(super) struct ReverseClient {",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      }
+    },
+    {
+      "line": 77,
+      "needle": "lane: Arc<Mutex<Lane>>,",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      }
+    },
+    {
+      "line": 82,
+      "needle": "pub(super) fn new(lane: Lane, binding: Digest32) -> Self",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      }
+    },
+    {
+      "line": 104,
+      "needle": "pub(super) struct Lane {",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "line": 110,
+      "needle": "budget: Arc<Budget>,",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "line": 83,
+      "needle": "fn begin(&self) -> Result<Instant, Error>",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "line": 131,
+      "needle": "self.budget.begin()",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "line": 153,
+      "needle": "let result = channel.exchange(",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "line": 105,
+      "needle": "Option<HostAuthorityPeerChannel>",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "line": 99,
+      "needle": "async fn connect(path: &Path, end: Instant) -> Result<UnixStream, AgentdError>",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "source": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      }
+    },
+    {
+      "line": 102,
+      "needle": "tokio::net::UnixStream::connect(path)",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "source": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      }
+    },
+    {
+      "line": 7,
+      "needle": "pub(crate) struct OriginalTaskHostLanes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      }
+    },
+    {
+      "line": 16,
+      "needle": "pub(crate) fn bind_original_task_host_lanes(&self)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      }
+    },
+    {
+      "line": 32,
+      "needle": "pub(crate) fn serve(self)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      }
+    },
+    {
+      "line": 136,
+      "needle": "original_root: Option<Box<dyn super::root_lane::OriginalRootLaneFactory>>",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "source": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      }
+    },
+    {
+      "line": 269,
+      "needle": "self.original_root.take().ok_or(Error::Unavailable)?.take()",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "source": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      }
+    },
+    {
+      "line": 36,
+      "needle": "pump: Box<dyn OriginalRootCellPump>",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      }
+    },
+    {
+      "line": 37,
+      "needle": "source: Arc<DurableCircuitTaskSourceV1<SW>>",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      }
+    },
+    {
+      "line": 129,
+      "needle": "original.pump.execute(admission, input)",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      }
+    },
+    {
+      "line": 69,
+      "needle": "let reverse = ReverseClient::new(Lane::new(",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      }
+    },
+    {
+      "line": 21,
+      "needle": "RootMaterial(std::sync::Arc<material::Client>)",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "source": {
+        "bytes": 4126,
+        "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+        "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+      }
+    },
+    {
+      "line": 38,
+      "needle": "OriginalReadback::RootMaterial(original) =>",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "source": {
+        "bytes": 4126,
+        "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+        "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+      }
+    },
+    {
+      "line": 87,
+      "needle": "original.read(identity, &record.snapshot.run_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "source": {
+        "bytes": 4126,
+        "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+        "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+      }
+    },
+    {
+      "line": 102,
+      "needle": "original.read(identity, run_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "source": {
+        "bytes": 4126,
+        "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+        "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+      }
+    }
+  ],
+  "format": "hepta-independent-e2-registration-relation-and-union-proof-v1",
+  "new_listed_call_pairs": [
+    {
+      "call_sites": [
+        {
+          "line": 40,
+          "text": "        self.read_original_root_task_generation()?;"
+        },
+        {
+          "line": 57,
+          "text": "        self.read_original_root_task_generation()?;"
+        },
+        {
+          "line": 74,
+          "text": "                root.read_original_root_task_generation()?;"
+        },
+        {
+          "line": 90,
+          "text": "                root.read_original_root_task_generation()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+      "receiver": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::read_original_root_task_generation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 34,
+          "text": "        self.read_original_root_task_generation()?;"
+        },
+        {
+          "line": 60,
+          "text": "        self.read_original_root_task_generation()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+      "receiver": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::read_original_root_task_generation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 40,
+          "text": "        self.read_original_root_task_generation()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+      "receiver": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::read_original_root_task_generation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 176,
+          "text": "    if !matches!(root.read_original_root_task_generation().map_err(|_| Error::Unavailable)?,"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+      "receiver": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::read_original_root_task_generation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 64,
+          "text": "    root.require_original_root_task_source(&original.readback).map_err(|_| Error::Unavailable)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_require_original_root_task_source",
+      "receiver": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::require_original_root_task_source"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 50,
+          "text": "        let original_host = self.session.bind_original_task_host_lanes()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "id": "e2_prepared_host_authority_session_bind_original_task_host_lanes",
+      "receiver": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::bind_original_task_host_lanes"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 71,
+          "text": "            let host = scope.spawn(move || original_host.serve());"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "id": "e2_original_task_host_lanes_serve",
+      "receiver": "OriginalTaskHostLanes",
+      "symbol": "OriginalTaskHostLanes::serve"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 49,
+          "text": "        let bound = listeners::TaskListeners::bind(&task_path, &loan_path, self.session.config.peer_gid)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "id": "e2_task_listeners_bind",
+      "receiver": "TaskListeners",
+      "symbol": "TaskListeners::bind"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 73,
+          "text": "                let (task, loan) = bound.accept(&root.session.owner_pidfd, startup_end)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "id": "e2_task_listeners_accept",
+      "receiver": "TaskListeners",
+      "symbol": "TaskListeners::accept"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 89,
+          "text": "                listeners::wait_first_frame(task_fd, &root.session.owner_pidfd, startup_end)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "id": "e2_wait_first_frame",
+      "receiver": null,
+      "symbol": "wait_first_frame"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 61,
+          "text": "        OriginalRootCircuitTaskCustodyV1::require_original_source(&self.custody, source)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "id": "e2_original_root_circuit_task_custody_v1_require_original_source",
+      "receiver": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::require_original_source"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 111,
+          "text": "            let (runtime, custody) = OriginalRootInitialGenerationCustodyV1::into_original_root_task_channel("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "id": "e2_original_root_initial_generation_custody_v1_into_original_root_task_channel",
+      "receiver": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::into_original_root_task_channel"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 47,
+          "text": "        let (binding, registry, source, capacity) = self.runtime.original_root_handoff_data()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "id": "e2_circuit_q24_task_runtime_v1_original_root_handoff_data",
+      "receiver": "CircuitQ24TaskRuntimeV1",
+      "symbol": "CircuitQ24TaskRuntimeV1::original_root_handoff_data"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 48,
+          "text": "        let lane = self.runtime.take_original_root_lane()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "id": "e2_circuit_q24_task_runtime_v1_take_original_root_lane",
+      "receiver": "CircuitQ24TaskRuntimeV1",
+      "symbol": "CircuitQ24TaskRuntimeV1::take_original_root_lane"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 51,
+          "text": "        let lane = self.runtime.take_original_root_lane()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "id": "e2_circuit_q24_task_runtime_v1_take_original_root_lane",
+      "receiver": "CircuitQ24TaskRuntimeV1",
+      "symbol": "CircuitQ24TaskRuntimeV1::take_original_root_lane"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 179,
+          "text": "        let _original_remote_record = handle.retain_original_remote_record(record)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 9191,
+        "git_blob": "b568139b1bcd674b2ba2715176bf693842a26a3e",
+        "sha256": "717dee96ad8d67ece958794ec481982be4920013911d3b4926bcd8850ad755de"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "id": "e2_circuit_task_handle_v1_retain_original_remote_record",
+      "receiver": "CircuitTaskHandleV1",
+      "symbol": "CircuitTaskHandleV1::retain_original_remote_record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 13,
+          "text": "        let (registry, capacity) = self.bootstrap.original_root_handoff_registry()"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1401,
+        "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+        "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "id": "e2_circuit_task_runtime_bootstrap_v1_original_root_handoff_registry",
+      "receiver": "CircuitTaskRuntimeBootstrapV1",
+      "symbol": "CircuitTaskRuntimeBootstrapV1::original_root_handoff_registry"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 23,
+          "text": "        let pump = self.bootstrap.take_original_root_lane()"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1401,
+        "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+        "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "id": "e2_circuit_task_runtime_bootstrap_v1_take_original_root_lane",
+      "receiver": "CircuitTaskRuntimeBootstrapV1",
+      "symbol": "CircuitTaskRuntimeBootstrapV1::take_original_root_lane"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 103,
+          "text": "    { self.cells.execute_original_remote(admission, input, &mut self.clock).map_err(Error::from) }"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 5080,
+        "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+        "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "id": "e2_agentd_circuit_cell_owner_v1_execute_original_remote",
+      "receiver": "AgentdCircuitCellOwnerV1",
+      "symbol": "AgentdCircuitCellOwnerV1::execute_original_remote"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 23,
+          "text": "    let (client, capacity) = DaemonClient::new_until(identity, inputs, Arc::clone(&pending), end).map_err(agent_error)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_new_until",
+      "receiver": "DaemonClient",
+      "symbol": "DaemonClient::new_until"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 73,
+          "text": "        self.original_remote.as_ref().map(|client| client.begin_original_record(record))"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_begin_original_record",
+      "receiver": "DaemonClient",
+      "symbol": "DaemonClient::begin_original_record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 31,
+          "text": "            let (reverse, mut reverse_terminal) = original.run_reverse(&state, cancellation.clone())"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_run_reverse",
+      "receiver": "DaemonClient",
+      "symbol": "DaemonClient::run_reverse"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 72,
+          "text": "            original.stop_reverse();"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_stop_reverse",
+      "receiver": "DaemonClient",
+      "symbol": "DaemonClient::stop_reverse"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 59,
+          "text": "                            let sampled = original.sample_original_clock()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_sample_original_clock",
+      "receiver": "DaemonClient",
+      "symbol": "DaemonClient::sample_original_clock"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 35,
+          "text": "                    store, fence, cells: DaemonCellPort::new(Arc::clone(&original)),"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_new",
+      "receiver": "DaemonCellPort",
+      "symbol": "DaemonCellPort::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 62,
+          "text": "    fn registry(&self) -> &CircuitCellRegistryV1 { self.original_registry() }"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3722,
+        "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+        "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_original_registry",
+      "receiver": "DaemonCellPort",
+      "symbol": "DaemonCellPort::original_registry"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 65,
+          "text": "    { self.original_lookup(scope, operation, request) }"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3722,
+        "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+        "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_original_lookup",
+      "receiver": "DaemonCellPort",
+      "symbol": "DaemonCellPort::original_lookup"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 70,
+          "text": "        let result = self.original_execute(admission, input, before);"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3722,
+        "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+        "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_original_execute",
+      "receiver": "DaemonCellPort",
+      "symbol": "DaemonCellPort::original_execute"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 99,
+          "text": "            loans: DaemonLoans::new(pending), resolved: Mutex::new(None), stop_reverse };"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_new",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 116,
+          "text": "        self.loans.attach(state, cancellation)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_attach",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::attach"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 108,
+          "text": "        self.loans.begin_record(record, remote_source::encode_record(&request, record)?)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_begin_record",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::begin_record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 28,
+          "text": "            let (id, encoded) = self.loans.record(record)?;"
+        },
+        {
+          "line": 46,
+          "text": "            let (record_id, _) = self.loans.record(record)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4984,
+        "git_blob": "1d9fdaffad6bbac309ae41e38dcba5c2c0289377",
+        "sha256": "29e6794840e16f5b3a7f6d3bb924f1891dc0ad64ba2c262a99ea8bd80f3c873e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_record",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 138,
+          "text": "        let (id, _) = self.loans.current_record()?;"
+        },
+        {
+          "line": 160,
+          "text": "        let (record_id, _) = self.loans.current_record()?;"
+        },
+        {
+          "line": 183,
+          "text": "        let (record_id, _) = self.loans.current_record()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_current_record",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::current_record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 77,
+          "text": "        let (id, encoded_record) = self.loans.current_record()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4984,
+        "git_blob": "1d9fdaffad6bbac309ae41e38dcba5c2c0289377",
+        "sha256": "29e6794840e16f5b3a7f6d3bb924f1891dc0ad64ba2c262a99ea8bd80f3c873e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_current_record",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::current_record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 172,
+          "text": "        let id = self.loans.retain_admission(admission)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_retain_admission",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::retain_admission"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 58,
+          "text": "            let id = self.loans.retain_completion(request, self.registry.definition().clone(),"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4984,
+        "git_blob": "1d9fdaffad6bbac309ae41e38dcba5c2c0289377",
+        "sha256": "29e6794840e16f5b3a7f6d3bb924f1891dc0ad64ba2c262a99ea8bd80f3c873e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_retain_completion",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::retain_completion"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 124,
+          "text": "                    (|| { while reverse.serve_one(|frame| loans.respond(frame))? {} Ok(()) })();"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_respond",
+      "receiver": "DaemonLoans",
+      "symbol": "DaemonLoans::respond"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 69,
+          "text": "    let reverse = ReverseClient::new(Lane::new(streams.reverse, binding, streams.nonce, LanePurpose::Loan, budget)?, binding);"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_new",
+      "receiver": "ReverseClient",
+      "symbol": "ReverseClient::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 91,
+          "text": "        reverse.check_record(frame.loan, &frame.body)?;"
+        },
+        {
+          "line": 96,
+          "text": "        reverse.check_record(frame.loan, &frame.body)?;"
+        },
+        {
+          "line": 101,
+          "text": "    reverse.check_record(record.id, &record.encoded)?;"
+        },
+        {
+          "line": 169,
+          "text": "    reverse.check_record(record.id, &record.encoded)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_check_record",
+      "receiver": "ReverseClient",
+      "symbol": "ReverseClient::check_record"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 124,
+          "text": "            let admission = reverse.open_admission(frame.loan, record.id, &record.encoded)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_open_admission",
+      "receiver": "ReverseClient",
+      "symbol": "ReverseClient::open_admission"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 158,
+          "text": "            let completion = reverse.completion(frame.loan, record.id, &record.encoded, &saved)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_completion",
+      "receiver": "ReverseClient",
+      "symbol": "ReverseClient::completion"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 133,
+          "text": "            let terminal = reverse.terminal(frame.loan, record.id);"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_terminal",
+      "receiver": "ReverseClient",
+      "symbol": "ReverseClient::terminal"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 20,
+          "text": "        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;"
+        },
+        {
+          "line": 25,
+          "text": "                if let Ok(now_ms) = admission.require_current() {"
+        },
+        {
+          "line": 140,
+          "text": "                        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;"
+        },
+        {
+          "line": 167,
+          "text": "        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_original_remote_admission_require_current",
+      "receiver": "OriginalRemoteAdmission",
+      "symbol": "OriginalRemoteAdmission::require_current"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 158,
+          "text": "        let payload = completion.into_original_payload(owner.binding, encoded_record, &saved)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_original_remote_completion_into_original_payload",
+      "receiver": "OriginalRemoteCompletion",
+      "symbol": "OriginalRemoteCompletion::into_original_payload"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 93,
+          "text": "                    OriginalRootTaskStreams::new(task, loan, session_nonce, end)).map_err(protocol)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_original_root_task_streams_new",
+      "receiver": "OriginalRootTaskStreams",
+      "symbol": "OriginalRootTaskStreams::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 53,
+          "text": "            OriginalRootTaskStreams::new(task, loan, session_nonce, self.end))"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_original_root_task_streams_new",
+      "receiver": "OriginalRootTaskStreams",
+      "symbol": "OriginalRootTaskStreams::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 25,
+          "text": "        Ok(crate::circuit_task::OriginalRootTaskLane::from_original_factory("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1401,
+        "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+        "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_original_root_task_lane_from_original_factory",
+      "receiver": "OriginalRootTaskLane",
+      "symbol": "OriginalRootTaskLane::from_original_factory"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 92,
+          "text": "                crate::circuit_task::remote::serve(root, &identity, lane,"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_remote_serve",
+      "receiver": null,
+      "symbol": "remote::serve"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 52,
+          "text": "        crate::circuit_task::remote::serve(self, &identity, lane,"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_remote_serve",
+      "receiver": null,
+      "symbol": "remote::serve"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 23,
+          "text": "        let (bootstrap, invocation) = crate::circuit_task::original_remote_channel("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1210,
+        "git_blob": "c45c8b0beb595f9a121c4436225a48d9bbf01df6",
+        "sha256": "50daef2871fcbce54bdf071ecdcc9f032ffc310b5dd2ab203b73f7125c887c6e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "id": "e2_original_remote_channel",
+      "receiver": null,
+      "symbol": "original_remote_channel"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 13,
+          "text": "        let (bootstrap, invocation) = crate::circuit_task::original_remote_channel_until("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1210,
+        "git_blob": "c45c8b0beb595f9a121c4436225a48d9bbf01df6",
+        "sha256": "50daef2871fcbce54bdf071ecdcc9f032ffc310b5dd2ab203b73f7125c887c6e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "id": "e2_original_remote_channel_until",
+      "receiver": null,
+      "symbol": "original_remote_channel_until"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 195,
+          "text": "        original_root: Some(super::root_lane::retain(Arc::clone(&original_owners), capacity)),"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_root_lane_retain",
+      "receiver": null,
+      "symbol": "root_lane::retain"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 269,
+          "text": "        self.original_root.take().ok_or(Error::Unavailable)?.take()"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_lane_factory_take",
+      "receiver": "OriginalRootLaneFactory",
+      "symbol": "OriginalRootLaneFactory::take"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 262,
+          "text": "        self.original_root.as_ref().ok_or(Error::Unavailable)?.original_handoff_registry()"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_lane_factory_original_handoff_registry",
+      "receiver": "OriginalRootLaneFactory",
+      "symbol": "OriginalRootLaneFactory::original_handoff_registry"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 129,
+          "text": "                original.pump.execute(admission, input)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_cell_pump_execute",
+      "receiver": "OriginalRootCellPump",
+      "symbol": "OriginalRootCellPump::execute"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 145,
+          "text": "            data::encode_decision(&original.pump.read(&dispatch, &input)?.decision)?"
+        },
+        {
+          "line": 157,
+          "text": "            let execution = original.pump.read(dispatch, &input)?;"
+        },
+        {
+          "line": 160,
+          "text": "            let again = original.pump.read(dispatch, &input)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_cell_pump_read",
+      "receiver": "OriginalRootCellPump",
+      "symbol": "OriginalRootCellPump::read"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 104,
+          "text": "            let clock = original.pump.clock();"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_cell_pump_clock",
+      "receiver": "OriginalRootCellPump",
+      "symbol": "OriginalRootCellPump::clock"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 87,
+          "text": "        let budget = Budget::new(end)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_budget_new",
+      "receiver": "Budget",
+      "symbol": "Budget::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 67,
+          "text": "    let budget = Budget::new(streams.end)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_budget_new",
+      "receiver": "Budget",
+      "symbol": "Budget::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 97,
+          "text": "            task: Mutex::new(Lane::new(task, binding, inputs.session_nonce, LanePurpose::Task, Arc::clone(&budget))?),"
+        },
+        {
+          "line": 98,
+          "text": "            reverse: Mutex::new(Some(Lane::new(reverse, binding, inputs.session_nonce, LanePurpose::Loan, budget)?)),"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_new",
+      "receiver": "Lane",
+      "symbol": "Lane::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 68,
+          "text": "    let mut task = Lane::new(streams.task, binding, streams.nonce, LanePurpose::Task, Arc::clone(&budget))?;"
+        },
+        {
+          "line": 69,
+          "text": "    let reverse = ReverseClient::new(Lane::new(streams.reverse, binding, streams.nonce, LanePurpose::Loan, budget)?, binding);"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_new",
+      "receiver": "Lane",
+      "symbol": "Lane::new"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 93,
+          "text": "        let bytes = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 111,
+          "text": "        let bytes = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 126,
+          "text": "        let reply = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 157,
+          "text": "        let bytes = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 193,
+          "text": "    let bytes = lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_call",
+      "receiver": "Lane",
+      "symbol": "Lane::call"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 139,
+          "text": "        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 173,
+          "text": "        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 196,
+          "text": "        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_call",
+      "receiver": "Lane",
+      "symbol": "Lane::call"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 33,
+          "text": "            let response = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 48,
+          "text": "            let saved_input = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 60,
+          "text": "            let response = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        },
+        {
+          "line": 85,
+          "text": "        let encoded = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4984,
+        "git_blob": "1d9fdaffad6bbac309ae41e38dcba5c2c0289377",
+        "sha256": "29e6794840e16f5b3a7f6d3bb924f1891dc0ad64ba2c262a99ea8bd80f3c873e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_call",
+      "receiver": "Lane",
+      "symbol": "Lane::call"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 124,
+          "text": "                    (|| { while reverse.serve_one(|frame| loans.respond(frame))? {} Ok(()) })();"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_serve_one",
+      "receiver": "Lane",
+      "symbol": "Lane::serve_one"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 72,
+          "text": "    while task.serve_one(|frame| {"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_serve_one",
+      "receiver": "Lane",
+      "symbol": "Lane::serve_one"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 86,
+          "text": "        let binding = remote_source::original_binding(identity, &inputs.fence, &inputs.registry, &inputs.source)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_remote_source_original_binding",
+      "receiver": null,
+      "symbol": "remote_source::original_binding"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 106,
+          "text": "        let binding = crate::circuit_task::original_root_source_binding("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_remote_source_original_binding",
+      "receiver": null,
+      "symbol": "remote_source::original_binding"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 107,
+          "text": "        let request = remote_source::expected_request(&self.source, self.fence.generation, record)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_remote_source_expected_request",
+      "receiver": null,
+      "symbol": "remote_source::expected_request"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 29,
+          "text": "            let request = remote_source::expected_request(&self.source, self.fence.generation, record)?;"
+        },
+        {
+          "line": 47,
+          "text": "            let request = remote_source::expected_request(&self.source, self.fence.generation, record)?;"
+        },
+        {
+          "line": 79,
+          "text": "        if remote_source::expected_request(&self.source, self.fence.generation, &record)? != *request {"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4984,
+        "git_blob": "1d9fdaffad6bbac309ae41e38dcba5c2c0289377",
+        "sha256": "29e6794840e16f5b3a7f6d3bb924f1891dc0ad64ba2c262a99ea8bd80f3c873e"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_remote_source_expected_request",
+      "receiver": null,
+      "symbol": "remote_source::expected_request"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 149,
+          "text": "        remote_source::original_completion_bytes(&definition, &request, &saved_input, original)?;"
+        },
+        {
+          "line": 203,
+          "text": "                let payload = remote_source::original_completion_bytes(&completion.definition,"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_original_completion_bytes",
+      "receiver": null,
+      "symbol": "original_completion_bytes"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 66,
+          "text": "    let binding = original.source.original_remote_binding()?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_binding",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_binding"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 15,
+          "text": "        let (binding, source) = self.invocation.original_root_handoff_source()"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1401,
+        "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+        "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_root_handoff_source",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_root_handoff_source"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 74,
+          "text": "        original.source.require_original_remote_binding(binding)?;"
+        },
+        {
+          "line": 76,
+          "text": "        original.source.require_original_remote_binding(binding)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_require_original_remote_binding",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::require_original_remote_binding"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 95,
+          "text": "        original.source.original_remote_request(identity, &frame.body)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_request",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_request"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 122,
+          "text": "            let saved = original.source.original_remote_saved_input(identity, &record.encoded)?;"
+        },
+        {
+          "line": 140,
+          "text": "            let saved = original.source.original_remote_saved_input(identity, &record.encoded)?;"
+        },
+        {
+          "line": 148,
+          "text": "            original.source.original_remote_saved_input(identity, &record.encoded)?"
+        },
+        {
+          "line": 152,
+          "text": "            let saved = original.source.original_remote_saved_input(identity, &record.encoded)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_saved_input",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_saved_input"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 117,
+          "text": "            let saved = original.source.original_remote_resolve(identity, &record.encoded, &dispatch, mode)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_resolve",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_resolve"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 159,
+          "text": "            original.source.publish_original_remote_completion(identity, &record.encoded, completion, &execution)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_publish_original_remote_completion",
+      "receiver": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::publish_original_remote_completion"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 95,
+          "text": "        config.with_original_root_circuit_task_until(inputs, descriptor.end)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "id": "e2_agentd_config_with_original_root_circuit_task_until",
+      "receiver": "AgentdConfig",
+      "symbol": "AgentdConfig::with_original_root_circuit_task_until"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 239,
+          "text": "                    config = launch.install_original_root_task(config).await?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 13161,
+        "git_blob": "6ccf0bb873caaad408cf3fbf3bb489216b80f5a9",
+        "sha256": "9914e00a4bf762a89c15990e30d25d6c21719b29fd161af608a13b8ec142537d"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/main.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "id": "e2_agentd_production_launch_install_original_root_task",
+      "receiver": "AgentdProductionLaunch",
+      "symbol": "AgentdProductionLaunch::install_original_root_task"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 123,
+          "text": "                    crate::receive_root_original_task_handoff(handoff, remaining(bootstrap_deadline)?)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 20557,
+        "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+        "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "id": "e2_receive_root_original_task_handoff",
+      "receiver": null,
+      "symbol": "receive_root_original_task_handoff"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 64,
+          "text": "        crate::root_production_handoff::send_original_task_handoff("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "id": "e2_send_original_task_handoff",
+      "receiver": null,
+      "symbol": "send_original_task_handoff"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 220,
+          "text": "            Some(handoff) => handoff.install(config, &self.root).await,"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 20557,
+        "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+        "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "id": "e2_root_original_task_handoff_v1_install",
+      "receiver": "RootOriginalTaskHandoffV1",
+      "symbol": "RootOriginalTaskHandoffV1::install"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 52,
+          "text": "        let descriptor = crate::root_original_task_descriptor::seal("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "e2_root_original_task_descriptor_seal",
+      "receiver": null,
+      "symbol": "root_original_task_descriptor::seal"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 49,
+          "text": "    let descriptor = crate::root_original_task_descriptor::read(&file, root.pid as u32)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "e2_root_original_task_descriptor_read",
+      "receiver": null,
+      "symbol": "root_original_task_descriptor::read"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 75,
+          "text": "        descriptor.require_original_identity(config.identity())?;"
+        },
+        {
+          "line": 84,
+          "text": "        descriptor.require_original_identity(config.identity())?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "e2_descriptor_require_original_identity",
+      "receiver": "Descriptor",
+      "symbol": "Descriptor::require_original_identity"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 16,
+          "text": "    OriginalCellQ24MaterialReceiptConfigV1::original_source_loan_binding(config, at)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs",
+      "id": "e2_original_cell_q24_material_receipt_config_v1_original_source_loan_binding",
+      "receiver": "OriginalCellQ24MaterialReceiptConfigV1",
+      "symbol": "OriginalCellQ24MaterialReceiptConfigV1::original_source_loan_binding"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 26,
+          "text": "        let source = CircuitTaskSourceReadbackV1::from_original_material_root_stream("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1858,
+        "git_blob": "fd5f79399cb5c8b6ce63765f7e5ca2ff6c8a865c",
+        "sha256": "de01b089d4b74ba4d27ea47231292c0dfd31480fc642bcea008ce327db68c1b4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "e2_circuit_task_source_readback_v1_from_original_material_root_stream",
+      "receiver": "CircuitTaskSourceReadbackV1",
+      "symbol": "CircuitTaskSourceReadbackV1::from_original_material_root_stream"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 86,
+          "text": "            OriginalReadback::RootMaterial(original) => {\n                let observed = original.read(identity, &record.snapshot.run_id)?;"
+        },
+        {
+          "line": 102,
+          "text": "            OriginalReadback::RootMaterial(original) => original.read(identity, run_id),"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 4126,
+        "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+        "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "e2_material_client_read",
+      "receiver": null,
+      "symbol": "material::Client::read"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 16,
+          "text": "        let payload = self.source.encode_original_material_publication(&self.identity, &observed)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1224,
+        "git_blob": "def8f0f90c3fe260686f1b828095f6f3ca04a259",
+        "sha256": "8baa78a95d91801cd3ff7112e9f1046ec67c900cb0d81165e7f5bd33515c2544"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "e2_circuit_task_source_readback_v1_encode_original_material_publication",
+      "receiver": "CircuitTaskSourceReadbackV1",
+      "symbol": "CircuitTaskSourceReadbackV1::encode_original_material_publication"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 12,
+          "text": "        let observed = self.task.read_original_material_publication("
+        },
+        {
+          "line": 18,
+          "text": "        if self.task.read_original_material_publication("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1224,
+        "git_blob": "def8f0f90c3fe260686f1b828095f6f3ca04a259",
+        "sha256": "8baa78a95d91801cd3ff7112e9f1046ec67c900cb0d81165e7f5bd33515c2544"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs",
+      "id": "e2_published_circuit_feature_task_v1_read_original_material_publication",
+      "receiver": "PublishedCircuitFeatureTaskV1",
+      "symbol": "PublishedCircuitFeatureTaskV1::read_original_material_publication"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 102,
+          "text": "                    let payload = OriginalRootCircuitTaskCustodyV1::read_original_material_source("
+        }
+      ],
+      "caller_identity": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "id": "e2_original_root_circuit_task_custody_v1_read_original_material_source",
+      "receiver": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_material_source"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 87,
+          "text": "        crate::cell_q24_dataset::require_source(identity, &observed, &self.config.initial.request)"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 7045,
+        "git_blob": "eebd90ee8ae68ec3b28a77fb492401d0c4bd64e8",
+        "sha256": "19c3379f7715b8b14dfabe922dc7ab5c477499fd64eec80f51e93554b4256e58"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "id": "e2_cell_q24_dataset_require_source",
+      "receiver": null,
+      "symbol": "cell_q24_dataset::require_source"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 15,
+          "text": "        crate::cell_q24_dataset::require_source(&self.identity, &observed, request).map_err(invalid)?;"
+        }
+      ],
+      "caller_identity": {
+        "bytes": 1224,
+        "git_blob": "def8f0f90c3fe260686f1b828095f6f3ca04a259",
+        "sha256": "8baa78a95d91801cd3ff7112e9f1046ec67c900cb0d81165e7f5bd33515c2544"
+      },
+      "caller_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "id": "e2_cell_q24_dataset_require_source",
+      "receiver": null,
+      "symbol": "cell_q24_dataset::require_source"
+    }
+  ],
+  "old_exact_appended_call_pairs": [
+    {
+      "call_sites": [
+        {
+          "line": 51,
+          "text": "        let original_bootstrap = crate::PreparedHostAuthoritySession::seal_bootstrap(&self.session, consumer_state_root)?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "id": "root_same_registered_bootstrap_seal",
+      "index": 90,
+      "source": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "symbol": "PreparedHostAuthoritySession::seal_bootstrap"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 60,
+          "text": "        crate::send_root_production_handoff(production_handoff, &original_bootstrap,"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "id": "root_original_two_descriptor_send",
+      "index": 101,
+      "source": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "symbol": "send_root_production_handoff"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 25,
+          "text": "        let bound = super::super::listeners::bind_runtime_lanes(&self.config, || Ok(()))?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "id": "root_original_bound_native_lanes",
+      "index": 114,
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      },
+      "symbol": "bind_runtime_lanes"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 33,
+          "text": "        super::super::listeners::serve_bound_lanes(self.service, self.config,"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "id": "root_original_bound_native_lane_acceptance",
+      "index": 115,
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      },
+      "symbol": "serve_bound_lanes"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 61,
+          "text": "    let sealed = crate::authority_host_bootstrap_seal::seal_bytes(&out.finish())?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "root_original_private_sealed_bytes",
+      "index": 178,
+      "source": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "symbol": "seal_bytes"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 72,
+          "text": "            let runtime = circuit_q24_task_channel_v1(identity, profile)?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "id": "circuit_q24_ordinary_profile_assembly",
+      "index": 208,
+      "source": {
+        "bytes": 3680,
+        "git_blob": "38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf",
+        "sha256": "c1f1a4d456b5e0409c4d6dd05c25adbfed51ecc437d44d1de6fde6ce095fb94a"
+      },
+      "symbol": "circuit_q24_task_channel_v1"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 85,
+          "text": "        let mut channel = original_owner_command_channel_v1(stream, consumer, consumer_uid,"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "id": "learning_original_owner_command_channel",
+      "index": 295,
+      "source": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "symbol": "original_owner_command_channel_v1"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 56,
+          "text": "        let original = original_owner_command_channel_v1(stream, root, /*uid*/ 0,"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "learning_original_owner_command_channel",
+      "index": 295,
+      "source": {
+        "bytes": 7045,
+        "git_blob": "eebd90ee8ae68ec3b28a77fb492401d0c4bd64e8",
+        "sha256": "19c3379f7715b8b14dfabe922dc7ab5c477499fd64eec80f51e93554b4256e58"
+      },
+      "symbol": "original_owner_command_channel_v1"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 30,
+          "text": "        OriginalCellQ24MaterialReceiptOwnersV1::into_command_owner("
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "id": "learning_original_material_command_bootstrap",
+      "index": 298,
+      "source": {
+        "bytes": 1858,
+        "git_blob": "fd5f79399cb5c8b6ce63765f7e5ca2ff6c8a865c",
+        "sha256": "de01b089d4b74ba4d27ea47231292c0dfd31480fc642bcea008ce327db68c1b4"
+      },
+      "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::into_command_owner"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 109,
+          "text": "                &OriginalRootInitialGenerationCustodyV1::read_original_operation(&custody)?,"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+      "index": 624,
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 58,
+          "text": "        let observed = OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;"
+        },
+        {
+          "line": 116,
+          "text": "                &OriginalRootCircuitTaskCustodyV1::read_original_operation(&custody)?,"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "index": 629,
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 57,
+          "text": "        let observed = OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "index": 629,
+      "source": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 80,
+          "text": "        let completion = OriginalRootCircuitTaskCustodyV1::drain_completed_task(&self.custody)?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_drain_completed_task",
+      "index": 630,
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "symbol": "OriginalRootCircuitTaskCustodyV1::drain_completed_task"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 59,
+          "text": "        OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;"
+        },
+        {
+          "line": 107,
+          "text": "            OriginalHostInitialOperation::require_observed("
+        },
+        {
+          "line": 114,
+          "text": "            OriginalHostInitialOperation::require_observed("
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "root_host_initial_original_host_initial_operation_require_observed",
+      "index": 640,
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "symbol": "OriginalHostInitialOperation::require_observed"
+    },
+    {
+      "call_sites": [
+        {
+          "line": 58,
+          "text": "        OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;"
+        }
+      ],
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "id": "root_host_initial_original_host_initial_operation_require_observed",
+      "index": 640,
+      "source": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "symbol": "OriginalHostInitialOperation::require_observed"
+    }
+  ],
+  "project_code_executed": false,
+  "rejected_false_receiver_candidates": [
+    {
+      "id": "agentd_production_operation_runtime",
+      "index": 7,
+      "reason": "attach is DaemonLoans::attach, not AgentdProductionOperationRuntimeConfig::attach."
+    },
+    {
+      "id": "root_live_admin_exchange",
+      "index": 123,
+      "reason": "exchange is HostAuthorityPeerChannel::exchange, not RootAdminCapability::exchange."
+    },
+    {
+      "id": "root_learning_original_handoff_consume",
+      "index": 173,
+      "reason": "connect is the private socket helper and tokio UnixStream::connect, not RootLearningHandoffV1::connect."
+    },
+    {
+      "id": "root_resident_gate_begin_dispatch",
+      "index": 423,
+      "reason": "begin is the private wire Budget::begin, not RootResidentLearningEffectGateV3::begin."
+    },
+    {
+      "id": "provider_original_version_local_read_binding_v1_respond",
+      "index": 601,
+      "reason": "respond is DaemonLoans::respond, not OriginalVersionLocalReadBindingV1::respond."
+    }
+  ],
+  "root_union_seed": {
+    "E2_boundary_slice": [
+      666,
+      757
+    ],
+    "E2_guard_slice": [
+      470,
+      531
+    ],
+    "E3_boundary_slice": [
+      650,
+      666
+    ],
+    "E3_guard_slice": [
+      451,
+      470
+    ],
+    "exact_appends_preserve_E3": true,
+    "final_registration": false,
+    "old_caller_overlap": [
+      178
+    ],
+    "review": {
+      "bytes": 12408,
+      "git_blob": "e2fdec03a694c5793ae2b920aa155bf217fabaa2",
+      "sha256": "c602cf8609c18c0db647669d4e7fd040b24237b68896e5f624228c15f4333a6f"
+    },
+    "source": {
+      "bytes": 2635042,
+      "git_blob": "1b55bc0cc5be4d47b7273f3c451f2eeff02fc542",
+      "sha256": "0b9de72801011ae07b52edc4a625e9ddaec35224f2ad5b9fb420d31065e3fc97"
+    }
+  },
+  "tests": {
+    "actual_execution": false,
+    "delta_identity": {
+      "bytes": 15168,
+      "git_blob": "038734f2209b5c1bc7ff21ccc50af506b3ca1944",
+      "sha256": "c95760f56f56b932813c1bf46f25f850e7c092a4c225408f3d7cf315e6d717c2"
+    },
+    "known_material_test_missing_brace": "Original e120 body ends without its third function closing brace; separate 0cefd metadata/source successor appends only } plus LF. This frozen v2 source index predates that correction.",
+    "no_runner_budget_or_filter_changes": true,
+    "ordinary_linux_tests": [
+      "circuit_task::driver::tests::original_root_bootstrap::original_root_bootstrap_preserves_complete_registry_and_cells",
+      "circuit_task::driver::tests::original_root_bootstrap::original_root_bootstrap_rejects_noncanonical_or_incomplete_data",
+      "circuit_task::driver::tests::original_root_bootstrap::original_completion_loan_encodes_the_actual_receipt_and_readback",
+      "circuit_task::driver::tests::original_root_bootstrap::original_completion_loan_refuses_foreign_run_and_saved_input",
+      "circuit_task::source::readback::material::tests::material_source_payload_retains_complete_original_publication",
+      "circuit_task::source::readback::material::tests::material_source_encoding_refuses_rebound_publication",
+      "circuit_task::source::readback::material::tests::material_source_encoding_refuses_withdrawn_original_for_all_views"
+    ],
+    "root_ignore_attributes": [
+      "#[ignore = \"requires original Root host bind and actual signed owner fixtures\"]",
+      "#[ignore = \"requires original Root host bind and actual signed owner fixtures\"]"
+    ],
+    "root_parents": [
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_keeps_unstarted_source_incomplete",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_refusal_retains_only_the_same_operation"
+    ],
+    "root_test_source": {
+      "bytes": 4314,
+      "git_blob": "5ec921edab70750f2c378a07c219f3a9ddd34563",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_root_task_tests.rs",
+      "sha256": "25c5be95fb6eaada077d1e1c934f148cf22beddf4ea481687940efb02c8738d7"
+    },
+    "separate_clock_regression": {
+      "crate": "codex-hepta-neuron",
+      "ignored": false,
+      "instruction": "Use original lib test scope; this is a proposed new case, not a selected or executed result.",
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "test": "feature_control::tests::feature_control_invalid_completion_clock_retains_original_unresolved_dispatch"
+    }
+  }
+}

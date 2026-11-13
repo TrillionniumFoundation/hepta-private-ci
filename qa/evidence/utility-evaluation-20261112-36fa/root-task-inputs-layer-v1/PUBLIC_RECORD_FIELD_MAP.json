@@ -1,0 +1,195 @@
+[
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "cell_id",
+      "bundle_digest",
+      "state_schema_digest",
+      "runtime",
+      "native",
+      "candidates",
+      "max_input_bytes",
+      "max_queue_age_micros",
+      "max_resident_bytes"
+    ],
+    "original_type": "CellDefinitionV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "candidate_id",
+      "activation_index",
+      "kind"
+    ],
+    "original_type": "CellCandidateV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "candidate_id",
+      "allowed"
+    ],
+    "original_type": "CellCandidateMaskV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "agent_id",
+      "cell_id",
+      "run_id",
+      "principal_digest"
+    ],
+    "original_type": "CellScopeV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "config_id",
+      "generation",
+      "model_id",
+      "model_manifest_digest",
+      "encoder_digest",
+      "head_digest",
+      "weights_digest",
+      "tokenizer_digest",
+      "preprocessor_digest",
+      "quantization_digest",
+      "runtime_digest",
+      "device_digest",
+      "normalization_digest",
+      "native_config_digest",
+      "input_feature_dimension",
+      "state_width",
+      "modulator_dimension",
+      "calibration",
+      "resource_envelope"
+    ],
+    "original_type": "NeuronRuntimeConfigV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "calibration_artifact_digest",
+      "ood_artifact_digest",
+      "generation",
+      "valid_from_sequence",
+      "expires_after_sequence",
+      "zero_confidence_error_q24",
+      "maximum_in_domain_error_q24",
+      "minimum_confidence_ppm",
+      "maximum_ood_ppm",
+      "minimum_active_ppm",
+      "maximum_active_ppm",
+      "maximum_projection_count",
+      "measured_ece_ppm",
+      "maximum_ece_ppm",
+      "measured_false_acceptance_ppm",
+      "maximum_false_acceptance_ppm"
+    ],
+    "original_type": "NeuronCalibrationProfileV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "p95_latency_micros",
+      "p99_latency_micros",
+      "transient_allocation_bytes",
+      "checkpoint_bytes",
+      "write_amplification_ppm"
+    ],
+    "original_type": "NeuronResourceEnvelopeV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "model_digest",
+      "normalization_digest",
+      "generation",
+      "width",
+      "top_k",
+      "temporal_decay_q24",
+      "inhibition_gain_q24",
+      "inhibition",
+      "activity_decay_q24",
+      "target_activity_q24",
+      "threshold_rate_q24",
+      "threshold_min_q24",
+      "threshold_max_q24",
+      "eligibility_decay_q24"
+    ],
+    "original_type": "SparseConfig"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "source",
+      "target",
+      "weight_q24"
+    ],
+    "original_type": "InhibitoryEdge"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "artifact_id",
+      "generation",
+      "components",
+      "training_lineage",
+      "rollback_predecessor"
+    ],
+    "original_type": "CellCompatibilityBundleV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "base",
+      "organ_adapter",
+      "cell_adapter",
+      "heads",
+      "composition",
+      "encoder",
+      "tokenizer",
+      "normalizer",
+      "calibration",
+      "numeric_profile",
+      "output_schema",
+      "state_schema",
+      "state_semantics"
+    ],
+    "original_type": "CellBundleComponentsV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "source_bundle",
+      "dataset",
+      "update_rule",
+      "evaluation_profile"
+    ],
+    "original_type": "CellTrainingLineageV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "scope",
+      "source_frontier",
+      "objective_digest",
+      "ndu_snapshot_digest",
+      "monotonic_micros",
+      "deadline_micros",
+      "observation",
+      "candidates",
+      "lease_duration_ms"
+    ],
+    "original_type": "CircuitTaskSourceInputV1"
+  },
+  {
+    "all_original_fields_explicit": true,
+    "original_fields": [
+      "candidate_id",
+      "outcome",
+      "selected_edges"
+    ],
+    "original_type": "CircuitCellRouteV1"
+  }
+]

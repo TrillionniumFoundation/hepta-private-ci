@@ -1,0 +1,26 @@
+{
+  "added_bytes": 2,
+  "after": {
+    "bytes": 7530,
+    "git_blob": "b41a43f27a8af61e881829b74a58338ddbb6034a",
+    "sha256": "bfee953f40656c9768a8d2c2f0059f39093498ad1efd58ad2ec2a24ce70cb675"
+  },
+  "all_original_assertions_and_bodies_preserved": true,
+  "before": {
+    "bytes": 7528,
+    "git_blob": "1c8ea95921a5846f3d7c02dd7591c04b8e3a9320",
+    "sha256": "e74caced8e82f45ca2b64b34b33aa5adcccec97062fe474e26991a04d7199633"
+  },
+  "change": "Append exactly } followed by LF. All original 7528 bytes remain an exact prefix.",
+  "finding": "The original frozen e120 test file omitted the closing brace of its final withdrawn-Source case. Complete local bytes and packet after_utf8 agree; this is a source defect, not output truncation.",
+  "format": "hepta-e2-material-test-closure-review-v1",
+  "not_claimed": [
+    "Rust compilation",
+    "tests passing",
+    "IPC execution",
+    "authorization qualification"
+  ],
+  "original_packet_git_blob": "e120273ac730addd8cc47f31e829692afa17bc0d",
+  "project_or_h_executed": false,
+  "source_git_written": false
+}

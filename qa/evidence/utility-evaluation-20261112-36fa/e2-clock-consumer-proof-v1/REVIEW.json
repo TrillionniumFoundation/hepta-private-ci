@@ -1,0 +1,99 @@
+{
+  "feature_branch": [
+    {
+      "guard": "admitted>=deadline refuses MAX before admit_generation; original persisted readback branch takes no clock.",
+      "sample": "admitted"
+    },
+    {
+      "guard": "dispatch>=deadline refuses MAX before dispatch_generation; existing admission remains unresolved.",
+      "sample": "dispatch"
+    },
+    {
+      "guard": "entered>=deadline refuses MAX before worker.execute; dispatch may already be durable.",
+      "sample": "entered"
+    },
+    {
+      "guard": "Independent one-line feature layer explicitly refuses MAX with Indeterminate before queue update, Cancelled classification, build receipt or settle_generation. Worker may already have executed; no repeat is authorized.",
+      "sample": "completed"
+    }
+  ],
+  "format": "hepta-e2-closed-clock-consumer-proof-v1",
+  "git_source_written": false,
+  "h_or_project_execution": false,
+  "loader_dependency": "Evaluation owns permanent poison and first actual clock error retention. Its final call graph must consume the one-shot original owners as Root remote pump. Original local AgentdCircuitCellOwnerV1::execute is not changed or claimed safe for the new sentinel.",
+  "mechanism_case": "Original journal Worker fixture returns MAX only after worker count becomes one; exact unresolved/no terminal and no redispatch both same-port and reopen. Test source only, not executed.",
+  "no_general_proof": "This enumerates the two actual Q24 profile clock edges and their concrete consumers. It is not a global Rust analysis, full-source collector result, runtime trace, cancellation join proof, or proof of no previous side effects.",
+  "profile": "Root-composed circuit_q24_task_profile has exactly two clock consumers: profile.clock into original task channel, and a cell_micros projection into original PublishedTask::control.",
+  "references": [
+    {
+      "bytes": 4962,
+      "git_blob": "781485715249d11c05609239a346ede033ccbdf3",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+      "sha256": "204bc31e9162b6b52214a569d6fa926f3ece078d0fdc876087eeaf2f7c1142f8"
+    },
+    {
+      "bytes": 2149,
+      "git_blob": "a3aa1990030da739164d9682bcbc61453cd16428",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
+      "sha256": "5365427e0982921142bf205550d422f8978de3ef6f5edcf2ff79a7bbb816fd0c"
+    },
+    {
+      "bytes": 10719,
+      "git_blob": "41c76f880fe05d71b298834c6cef936291f6c9e0",
+      "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+      "sha256": "45347b020decc2c213cecfccf6b395dc2d514d3e5eb2ee03cace27c60f673e23"
+    },
+    {
+      "bytes": 13098,
+      "git_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc"
+    }
+  ],
+  "source_proposals": [
+    {
+      "bytes": 66844,
+      "git_blob": "9f780f963b0e9585b5b85a83f87de593f604bfa5",
+      "path": "remote-clock-rejection-increment-v1",
+      "sha256": "e3056b6b268b3c5503485fe125330f6405e9e56f4ac09b9ab472d962c62b963e"
+    },
+    {
+      "bytes": 27556,
+      "git_blob": "ade9282388680285416c7829000b7081e22550ef",
+      "path": "feature-clock-rejection-increment-v1",
+      "sha256": "f173cc5db210014d7e9ad52f6098ec95f2abfb2f2916123ff1acc1b8fcc81755"
+    },
+    {
+      "bytes": 28419,
+      "git_blob": "b2dc4c80ce5918463f3713fd6d916f0aeb1c85c0",
+      "path": "feature-clock-regression-tests-v1",
+      "sha256": "4d352b8744d77391e2c8662dea0fc7890103a81e8bdfebc3a3495c18cb6ab9b6"
+    }
+  ],
+  "task_branch": [
+    {
+      "entry": "OriginalRootCellPump::clock -> Root CLOCK response",
+      "guard": "Remote four-file layer rejects either MAX field before response encoding; daemon decoder and post max(now_ms) each reject before original Driver receives it."
+    },
+    {
+      "entry": "OriginalRootCellPump::execute -> execute_original_remote",
+      "guard": "First sample rejects both MAX fields before any lookup/enter/recover; inference callback rejects before sampled.set; decide and commit each reject before downstream numerical or owner mutation."
+    },
+    {
+      "entry": "infer_cell_with_clock first/second callback",
+      "guard": "Existing admission_for_step refuses MAX>=deadline before new admission; second callback MAX refuses checked queue bound and >=deadline before control call and queue persistence. Prior actual admission is retained."
+    },
+    {
+      "entry": "recover_cell_inference",
+      "guard": "Only receives the initial remote sample after explicit MAX rejection; genuine finite expired clocks retain original read-only recovery semantics."
+    },
+    {
+      "entry": "GuardedCellDispatchV1",
+      "guard": "Existing circuit and Cell deadline >= checks reject MAX before execute_feature; observed sample remains finite."
+    },
+    {
+      "entry": "OriginalRootCellPump::read and Source receipt publication",
+      "guard": "No live-clock sample: reads original same-operation decision/receipt; cannot manufacture new time/cost from sentinel. Original current/Source checks retained."
+    }
+  ]
+}

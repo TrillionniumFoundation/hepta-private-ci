@@ -1,0 +1,15 @@
+{
+  "full_inverse_equal": true,
+  "splices": [
+    {
+      "after_utf8": "ready::wait_original_source_first_frame(socket, startup_end)?;",
+      "before_utf8": "ready::wait_first_frame(socket, startup_end)?;",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+    },
+    {
+      "after_utf8": "pub(super) fn wait_original_source_first_frame(socket: RawFd, end: Instant)",
+      "before_utf8": "pub(super) fn wait_first_frame(socket: RawFd, end: Instant)",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs"
+    }
+  ]
+}

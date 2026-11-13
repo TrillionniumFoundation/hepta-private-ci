@@ -1,0 +1,19 @@
+{
+  "bounds": {
+    "data_frames": "2..=128, hence at most 127 Source reads",
+    "exchange_maximum_ms": 500,
+    "maximum_lifetime_seconds": 300,
+    "ready_frame": 1,
+    "startup": "same original <=30s absolute startup, clamped to original task end",
+    "total_frames": 128,
+    "whole_source_response_bytes": 16384
+  },
+  "changed_public_signature": "OriginalCircuitPrefreezeSourceV1::from_original_stream(request, evidence, identity, ledger, stream, root, original_root_pidfd, timeout, lifetime, startup_end: Instant) -> Result<Self, CircuitTaskErrorV1>",
+  "cold_existing_state": "The Material host performs one typed actual Source observation. Completed Source is checked against the same original Cell and Current immediately. Only original ReconciliationRequired (Missing/Pending) waits for the publication event. All other errors are returned.",
+  "event_semantics": "Private one-time Mutex/Condvar latch belonging to the same concrete task and its once-exported host. No owner lock spans the wait, no polling/retry, spurious wake refuses, late wake refuses.",
+  "format": "hepta-e2-prefreeze-ready-contract-v1",
+  "no_new_public_owners_or_getters": true,
+  "real_completion_trigger": "circuit_task_remote_service::serve calls the private Root observer only after handle(Publish), the original Source binding check and the original Root current check succeed. The observer performs another same-task Source/Cell/current read before waking the latch.",
+  "root_registration_and_serve": "Unchanged from c66c; the same startup_end supplied by the real supervisor is retained.",
+  "wire_semantics": "The SAME authenticated HAP stream reverses direction once for a fixed 64-byte HCPRERDY binding/nonce/frame-1 request and exact echo. Client waits before sending Source requests. The hint carries no Source bytes or completion authority."
+}

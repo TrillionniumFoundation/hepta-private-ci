@@ -1,0 +1,418 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs
+@@ -2,13 +2,12 @@
+ //! It still serves only that same Task/Cell/Source, with one original 128-frame
+ //! budget and the same absolute session end. No second Source lane is opened.
+ 
+-use std::os::fd::AsRawFd;
+ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+ use codex_hepta_contracts::HostIssuerTransportError;
+ use codex_hepta_neuron::AnchorWitnessStore;
+ use crate::{AgentdError, AgentdRootAuthorityPeer, OriginalRootCircuitTaskCustodyV1};
+ use crate::circuit_task::original_material_source::wire;
+-use crate::circuit_task::original_prefreeze_source::read_request;
++use crate::circuit_task::original_prefreeze_source::{read_request, ready};
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ use super::PreparedRootMaterialSourceHostV1;
+ 
+@@ -48,17 +47,33 @@
+         let lifetime = self.end.checked_duration_since(Instant::now())
+             .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))
+             .ok_or_else(|| protocol("the original pre-freeze Source scope expired"))?;
+-        let socket = stream.as_raw_fd();
+         let mut channel = original_owner_command_channel_v1(stream, consumer, request.consumer_uid,
+             original_consumer_pidfd, timeout, lifetime).map_err(protocol)?;
+-        // channel owns this same fd throughout the non-reading poll. The wait
+-        // spends only the supplied common startup window; actual requests keep
+-        // their original 500ms maximum. Partial first frames get no extra time.
+-        wait_first_frame(socket, startup_end.min(self.end))?;
++        let startup_end = startup_end.min(self.end);
++        wire::before(startup_end).map_err(protocol)?;
++        // One actual cold read handles already-completed recovered Source.
++        // Only Missing/Pending waits for the original publication path; there
++        // is no Source polling, retry, new Task or second request allowance.
++        if OriginalRootCircuitTaskCustodyV1::original_prefreeze_is_pending(&self.custody, &request)? {
++            self.source_ready.wait_original(startup_end)?;
++        }
++        channel.check_peer_lifetime().map_err(protocol)?;
++        self.require_current()?;
++        OriginalRootCircuitTaskCustodyV1::read_original_prefreeze_source(&self.custody, &request)?;
++        self.require_current()?;
++        if require_evidence()? != binding { return Err(protocol("pre-freeze enrollment changed")); }
++        let hint = ready::frame(binding, request.nonce)?;
++        wire::before(startup_end).map_err(protocol)?;
++        if channel.request(&hint).map_err(protocol)? != hint {
++            return Err(protocol("the fixed Source readiness acknowledgment differs"));
++        }
++        wire::before(startup_end).map_err(protocol)?;
+         channel.check_peer_lifetime().map_err(protocol)?;
+         self.require_current()?;
+         if require_evidence()? != binding { return Err(protocol("pre-freeze enrollment changed")); }
+-        for id in 1..=wire::LIMIT {
++        // The ready exchange consumes frame 1 of the SAME 128-frame allowance.
++        // It contains no Source data, owner, receipt, or completion authority.
++        for id in 2..=wire::LIMIT {
+             let expected = read_request(binding, request.nonce, id).map_err(protocol)?;
+             let mut failure = None;
+             let mut deadline = None;
+@@ -102,21 +117,6 @@
+     }
+ }
+ 
+-fn wait_first_frame(socket: std::os::fd::RawFd, end: Instant) -> Result<(), AgentdError> {
+-    let remaining = end.checked_duration_since(Instant::now())
+-        .filter(|value| !value.is_zero() && *value <= Duration::from_secs(30))
+-        .ok_or_else(|| protocol("the common Source startup window expired"))?;
+-    let timeout = i32::try_from(remaining.as_millis().max(1)).map_err(protocol)?;
+-    let mut descriptor = libc::pollfd { fd: socket, events: libc::POLLIN, revents: 0 };
+-    // SAFETY: the live original channel owns socket for this call. The single
+-    // initialized pollfd is valid, and poll neither consumes nor duplicates it.
+-    let ready = unsafe { libc::poll(&mut descriptor, 1, timeout) };
+-    if ready != 1 || descriptor.revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0
+-        || descriptor.revents & libc::POLLIN == 0
+-    { return Err(protocol("no original Source first frame within the common startup window")); }
+-    wire::before(end).map_err(protocol)
+-}
+-
+ fn protocol(error: impl std::fmt::Display) -> AgentdError {
+     AgentdError::Protocol(format!("original pre-freeze Source loan: {error}"))
+ }
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
+@@ -3,6 +3,9 @@
+ 
+ #[path = "authority_host_session_generation_task_service.rs"]
+ mod original_service;
++
++#[path = "authority_host_task_source_ready.rs"]
++mod original_source_ready;
+ 
+ #[path = "authority_host_session_generation_task_handoff.rs"]
+ mod ordinary_handoff;
+@@ -42,6 +45,7 @@
+     runtime: CircuitQ24TaskRuntimeV1<SW, CW>,
+     custody: Arc<OriginalRootCircuitTaskCustodyV1<SW, CW>>,
+     material_source_taken: bool,
++    source_ready: Arc<original_source_ready::Hint>,
+     end: std::time::Instant,
+ }
+ 
+@@ -122,7 +126,8 @@
+         match install {
+             Ok((runtime, custody)) => Ok(PreparedRootHostCircuitTaskV1 {
+                 session: Arc::new(session), operation: Arc::new(operation), runtime,
+-                custody: Arc::new(custody), material_source_taken: false, end,
++                custody: Arc::new(custody), material_source_taken: false,
++                source_ready: Arc::new(original_source_ready::Hint::new()), end,
+             }),
+             Err(failure) => Err(RootHostInitialTaskInstallationErrorV1 {
+                 session, operation, end, failure,
+--- a/codex-rs/hepta-agentd/src/authority_host_session_material_source.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_material_source.rs
+@@ -28,6 +28,7 @@
+     session: Arc<PreparedHostAuthoritySession>,
+     operation: Arc<OriginalHostInitialOperation>,
+     custody: Arc<OriginalRootCircuitTaskCustodyV1<SW, CW>>,
++    source_ready: Arc<super::original_source_ready::Hint>,
+     end: Instant,
+ }
+ 
+@@ -48,7 +49,8 @@
+         self.material_source_taken = true;
+         let host = PreparedRootMaterialSourceHostV1 {
+             session: Arc::clone(&self.session), operation: Arc::clone(&self.operation),
+-            custody: Arc::clone(&self.custody), end: self.end,
++            custody: Arc::clone(&self.custody),
++            source_ready: Arc::clone(&self.source_ready), end: self.end,
+         };
+         host.require_current()?;
+         Ok(host)
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs
+@@ -0,0 +1,65 @@
++//! A private, single-task scheduling hint. It never authenticates completion.
++//! Every notification follows the original same-Task/Cell/Source read; every
++//! recipient performs its own current read before any Source data is accepted.
++
++use std::sync::{Condvar, Mutex};
++use std::time::Instant;
++use codex_hepta_neuron::AnchorWitnessStore;
++use crate::{AgentdError, OriginalRootCircuitTaskCustodyV1};
++use super::{PreparedRootHostCircuitTaskV1, invalid};
++
++enum State { Waiting, Observed }
++
++/// One latch belongs to the concrete Root task and its once-exported reader.
++/// The state is only a wake-up hint, not a cached Source publication or grant.
++pub(super) struct Hint { state: Mutex<State>, changed: Condvar }
++
++impl Hint {
++    pub(super) fn new() -> Self {
++        Self { state: Mutex::new(State::Waiting), changed: Condvar::new() }
++    }
++
++    fn observed(&self) -> Result<(), AgentdError> {
++        let mut state = self.state.lock().map_err(|_| invalid("Source hint poisoned"))?;
++        *state = State::Observed;
++        self.changed.notify_one();
++        Ok(())
++    }
++
++    pub(super) fn wait_original(&self, end: Instant) -> Result<(), AgentdError> {
++        let state = self.state.lock().map_err(|_| invalid("Source hint poisoned"))?;
++        if matches!(*state, State::Observed) {
++            return require_before(end);
++        }
++        let remaining = end.checked_duration_since(Instant::now())
++            .filter(|value| !value.is_zero())
++            .ok_or_else(|| invalid("the original Source startup expired"))?;
++        // A spurious wake-up is a refusal, not a retry or a fresh time window.
++        // No Source, Cell, Current, issuer or lease lock spans this wait.
++        let (state, result) = self.changed.wait_timeout(state, remaining)
++            .map_err(|_| invalid("Source hint poisoned"))?;
++        if result.timed_out() || !matches!(*state, State::Observed) {
++            return Err(invalid("the original Source publication was not observed"));
++        }
++        require_before(end)
++    }
++}
++
++impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>
++where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
++{
++    /// Only the fixed task service calls this after its successful original
++    /// publication path. A fresh same-Arc read is required before waking the
++    /// private Material observer; no caller can set readiness from a digest.
++    pub(crate) fn observe_original_root_source_publication(&self) -> Result<(), AgentdError> {
++        self.read_original_root_task_generation()?;
++        OriginalRootCircuitTaskCustodyV1::require_original_completed_source(&self.custody)?;
++        self.read_original_root_task_generation()?;
++        self.source_ready.observed()
++    }
++}
++
++fn require_before(end: Instant) -> Result<(), AgentdError> {
++    if Instant::now() >= end { return Err(invalid("the original Source startup expired")); }
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
+@@ -72,9 +72,13 @@
+     while task.serve_one(|frame| {
+         require_root_current(root)?;
+         original.source.require_original_remote_binding(binding)?;
++        let publication = frame.operation == Operation::Publish;
+         let response = handle(identity, &mut original, &reverse, &mut retained, frame)?;
+         original.source.require_original_remote_binding(binding)?;
+         require_root_current(root)?;
++        if publication {
++            root.observe_original_root_source_publication().map_err(|_| Error::Unavailable)?;
++        }
+         Ok(response)
+     })? {
+         count = count.checked_add(1).ok_or(Error::Unavailable)?;
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs
+@@ -2,7 +2,7 @@
+ //! Material pair. Private aliases share its one channel, counter and deadline.
+ //! No raw payload constructor or Source-view getter is public.
+ 
+-use std::os::fd::OwnedFd;
++use std::os::fd::{AsRawFd, OwnedFd};
+ use std::os::unix::net::UnixStream;
+ use std::sync::{Arc, Mutex};
+ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+@@ -23,6 +23,9 @@
+ #[path = "circuit_task_source_prefreeze_client.rs"]
+ mod client;
+ pub use client::OriginalCircuitPrefreezeSourceV1;
++
++#[path = "circuit_task_source_prefreeze_ready.rs"]
++pub(crate) mod ready;
+ 
+ struct Channel {
+     original: HostAuthorityPeerChannel,
+@@ -52,7 +55,7 @@
+         stream: UnixStream, root: AgentdRootAuthorityPeer, root_pidfd: OwnedFd,
+         request: Arc<OriginalCircuitPrefreezeSourceRequestV1>, evidence: SignedLearningEvidenceV1,
+         verifier: LearningEvidenceVerifierV1, identity: AgentdIdentity,
+-        timeout: Duration, lifetime: Duration,
++        timeout: Duration, lifetime: Duration, startup_end: Instant,
+     ) -> Result<Self, Error> {
+         if timeout.is_zero() || timeout > wire::TIMEOUT
+             || lifetime.is_zero() || lifetime > Duration::from_secs(300)
+@@ -62,16 +65,33 @@
+             || request.source.scope.agent_id.as_str() != identity.agent_id.as_str()
+         { return Err(Error::InvalidBinding); }
+         let end = Instant::now() + lifetime;
++        let startup_end = startup_end.min(end);
++        if startup_end.checked_duration_since(Instant::now())
++            .is_none_or(|remaining| remaining.is_zero() || remaining > Duration::from_secs(30))
++        { return Err(Error::InvalidBinding); }
+         let binding = request.require_evidence(&verifier, request.trust_distribution_digest,
+             request.trust_generation, &evidence, now()?)?;
+-        let original = original_owner_command_channel_v1(stream, root, /*uid*/ 0,
++        let socket = stream.as_raw_fd();
++        let mut original = original_owner_command_channel_v1(stream, root, /*uid*/ 0,
+             root_pidfd, timeout, lifetime).map_err(|_| Error::Unavailable)?;
++        // The authenticated original channel owns this fd throughout the wait.
++        // Waiting sends no request and does not consume a new Source slot.
++        ready::wait_first_frame(socket, startup_end)?;
++        original.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
++        let expected = ready::frame(binding, request.nonce).map_err(|_| Error::InvalidBinding)?;
++        let acknowledged = original.exchange(|bytes| {
++            if bytes != expected { return Err(codex_hepta_contracts::HostIssuerTransportError::InvalidRequest); }
++            Ok(expected.clone())
++        }).map_err(|_| Error::CommitUncertain)?;
++        if !acknowledged { return Err(Error::Unavailable); }
++        wire::before(startup_end)?;
++        original.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
+         if request.require_evidence(&verifier, request.trust_distribution_digest,
+             request.trust_generation, &evidence, now()?)? != binding
+         { return Err(Error::InvalidBinding); }
+         wire::before(end)?;
+         Ok(Self { original: OriginalReadback::RootPrefreeze(Arc::new(Client {
+-            slot: Mutex::new(Some(Channel { original, next: 1 })), request, evidence,
++            slot: Mutex::new(Some(Channel { original, next: 2 })), request, evidence,
+             verifier, identity, binding, timeout, end,
+         })) })
+     }
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs
+@@ -6,7 +6,7 @@
+ use std::sync::{Arc, Mutex};
+ use std::os::fd::OwnedFd;
+ use std::os::unix::net::UnixStream;
+-use std::time::Duration;
++use std::time::{Duration, Instant};
+ use codex_hepta_learning_ledger::{LedgerWriter, SignedLearningEvidenceV1};
+ use codex_hepta_neuron::FileAnchorWitnessStore;
+ use crate::{AgentdIdentity, AgentdRootAuthorityPeer, CircuitTaskSourcePublicationV1,
+@@ -30,11 +30,14 @@
+     /// Consume the real stream/pidfd and retain the already-open original
+     /// ledger. Root separately requires its opaque protected registration.
+     /// Neither these data nor the Generator signature can register that reader.
++    /// Wait for the same Root task's single hint within the supplied common
++    /// startup window before any Source request. The hint is scheduling only;
++    /// the first observation still validates the actual current Source/Cell.
+     pub fn from_original_stream(
+         request: OriginalCircuitPrefreezeSourceRequestV1, evidence: SignedLearningEvidenceV1,
+         identity: AgentdIdentity, ledger: Arc<Mutex<LedgerWriter>>,
+         stream: UnixStream, root: AgentdRootAuthorityPeer, original_root_pidfd: OwnedFd,
+-        timeout: Duration, lifetime: Duration,
++        timeout: Duration, lifetime: Duration, startup_end: Instant,
+     ) -> Result<Self, Error> {
+         let verifier = {
+             let original = ledger.try_lock().map_err(|_| Error::Unavailable)?;
+@@ -44,7 +47,7 @@
+         let request = Arc::new(request);
+         let source = CircuitTaskSourceReadbackV1::from_original_prefreeze_root_stream(
+             stream, root, original_root_pidfd, Arc::clone(&request), evidence.clone(), verifier,
+-            identity.clone(), timeout, lifetime,
++            identity.clone(), timeout, lifetime, startup_end,
+         )?;
+         {
+             let original = ledger.try_lock().map_err(|_| Error::Unavailable)?;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs
+@@ -0,0 +1,30 @@
++//! Fixed one-time scheduling exchange on the already authenticated Source
++//! stream. It spends frame 1 of the original allowance and proves no task result.
++
++use std::os::fd::RawFd;
++use std::time::{Duration, Instant};
++use codex_hepta_types::Digest32;
++use crate::AgentdError;
++use super::{Error, read_request, wire};
++
++pub(crate) fn frame(binding: Digest32, nonce: [u8; 16]) -> Result<Vec<u8>, AgentdError> {
++    let mut bytes = read_request(binding, nonce, /*id*/ 1)
++        .map_err(|error| AgentdError::Protocol(error.to_string()))?;
++    bytes[..8].copy_from_slice(b"HCPRERDY");
++    Ok(bytes)
++}
++
++pub(super) fn wait_first_frame(socket: RawFd, end: Instant) -> Result<(), Error> {
++    let remaining = end.checked_duration_since(Instant::now())
++        .filter(|value| !value.is_zero() && *value <= Duration::from_secs(30))
++        .ok_or(Error::Unavailable)?;
++    let timeout = i32::try_from(remaining.as_millis().max(1)).map_err(|_| Error::Unavailable)?;
++    let mut descriptor = libc::pollfd { fd: socket, events: libc::POLLIN, revents: 0 };
++    // SAFETY: the live original channel owns socket for this call. The single
++    // initialized pollfd is valid; poll neither reads nor duplicates the fd.
++    let ready = unsafe { libc::poll(&mut descriptor, 1, timeout) };
++    if ready != 1 || descriptor.revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0
++        || descriptor.revents & libc::POLLIN == 0
++    { return Err(Error::Unavailable); }
++    wire::before(end)
++}
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs
+@@ -6,18 +6,39 @@
+ use crate::OriginalCircuitPrefreezeSourceRequestV1;
+ 
+ impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW> {
++    /// This cold-path observation never waits for a future event when the
++    /// original journals already contain completion. Only the original typed
++    /// Missing/Pending result is eligible for the later one-shot wait.
++    pub(crate) fn original_prefreeze_is_pending(
++        &self, request: &OriginalCircuitPrefreezeSourceRequestV1,
++    ) -> Result<bool, AgentdError> {
++        self.require_original_prefreeze_task(request)?;
++        let observed = self.source.read_run_publication(&self.identity, &request.source.scope.run_id);
++        match observed {
++            Ok(_) => { self.read_original_prefreeze_source(request)?; Ok(false) }
++            Err(crate::CircuitTaskErrorV1::ReconciliationRequired) => {
++                self.require_original_prefreeze_task(request)?;
++                Ok(true)
++            }
++            Err(error) => Err(invalid(error)),
++        }
++    }
++
++    pub(crate) fn require_original_completed_source(&self) -> Result<(), AgentdError> {
++        require_root()?;
++        self.read_original_operation()?;
++        self.source.require_original_input(&self.identity, self.task.source()).map_err(invalid)?;
++        self.task.read_original_material_publication(
++            &self.cell, &self.source, &self.identity, &self.task.source().scope.run_id,
++        )?;
++        self.read_original_operation()?;
++        Ok(())
++    }
++
+     pub(crate) fn read_original_prefreeze_source(
+         &self, request: &OriginalCircuitPrefreezeSourceRequestV1,
+     ) -> Result<Vec<u8>, AgentdError> {
+-        require_root()?;
+-        self.read_original_operation()?;
+-        if self.operation.recovery.operation_id != request.generation_operation_id
+-            || self.operation.recovery.intent_digest != request.generation_intent_digest
+-            || self.task.source() != &request.source
+-            || crate::circuit_feature_task_digest_v1(self.task.definition(), self.task.source())?
+-                != request.task_digest
+-        { return Err(invalid("pre-freeze disclosure differs from the original task custody")); }
+-        self.source.require_original_input(&self.identity, &request.source).map_err(invalid)?;
++        self.require_original_prefreeze_task(request)?;
+         let run = &request.source.scope.run_id;
+         let observed = self.task.read_original_material_publication(
+             &self.cell, &self.source, &self.identity, run,
+@@ -33,4 +54,18 @@
+         self.read_original_operation()?;
+         Ok(payload)
+     }
++
++    fn require_original_prefreeze_task(
++        &self, request: &OriginalCircuitPrefreezeSourceRequestV1,
++    ) -> Result<(), AgentdError> {
++        require_root()?;
++        self.read_original_operation()?;
++        if self.operation.recovery.operation_id != request.generation_operation_id
++            || self.operation.recovery.intent_digest != request.generation_intent_digest
++            || self.task.source() != &request.source
++            || crate::circuit_feature_task_digest_v1(self.task.definition(), self.task.source())?
++                != request.task_digest
++        { return Err(invalid("pre-freeze disclosure differs from the original task custody")); }
++        self.source.require_original_input(&self.identity, &request.source).map_err(invalid)
++    }
+ }

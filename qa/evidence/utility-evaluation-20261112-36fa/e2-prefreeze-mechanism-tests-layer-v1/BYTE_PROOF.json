@@ -1,0 +1,38 @@
+{
+  "all_old_methods_whole_bytes_preserved": true,
+  "checks": [
+    {
+      "exact_inverse_equal": true,
+      "old_complete_prefix_preserved": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_tests.rs",
+      "suffix_only": "\n#[path = \"authority_host_prefreeze_source_tests.rs\"]\nmod prefreeze;\n"
+    },
+    {
+      "exact_inverse_equal": true,
+      "old_complete_prefix_preserved": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "suffix_only": "\n#[cfg(test)]\n#[path = \"authority_host_task_source_ready_tests.rs\"]\nmod tests;\n"
+    },
+    {
+      "exact_inverse_equal": true,
+      "old_complete_prefix_preserved": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs",
+      "suffix_only": "\n#[path = \"circuit_task_source_prefreeze_tests.rs\"]\nmod prefreeze;\n"
+    },
+    {
+      "exact_inverse_equal": true,
+      "old_complete_prefix_preserved": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "suffix_only": "\n#[cfg(test)]\n#[path = \"circuit_task_source_prefreeze_support_tests.rs\"]\npub(crate) mod test_support;\n"
+    }
+  ],
+  "format": "hepta-prefreeze-test-byte-proof-v1",
+  "lexical_delimiters": "Balanced by author text helper, not Rust parsing/compilation",
+  "new_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_tests.rs",
+    "codex-rs/hepta-agentd/src/authority_host_task_source_ready_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_tests.rs"
+  ],
+  "new_test_methods": 4
+}

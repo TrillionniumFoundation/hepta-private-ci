@@ -1,0 +1,22 @@
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs
+@@ -76,7 +76,7 @@
+             root_pidfd, timeout, lifetime).map_err(|_| Error::Unavailable)?;
+         // The authenticated original channel owns this fd throughout the wait.
+         // Waiting sends no request and does not consume a new Source slot.
+-        ready::wait_first_frame(socket, startup_end)?;
++        ready::wait_original_source_first_frame(socket, startup_end)?;
+         original.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
+         let expected = ready::frame(binding, request.nonce).map_err(|_| Error::InvalidBinding)?;
+         let acknowledged = original.exchange(|bytes| {
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs
+@@ -14,7 +14,7 @@
+     Ok(bytes)
+ }
+ 
+-pub(super) fn wait_first_frame(socket: RawFd, end: Instant) -> Result<(), Error> {
++pub(super) fn wait_original_source_first_frame(socket: RawFd, end: Instant) -> Result<(), Error> {
+     let remaining = end.checked_duration_since(Instant::now())
+         .filter(|value| !value.is_zero() && *value <= Duration::from_secs(30))
+         .ok_or(Error::Unavailable)?;

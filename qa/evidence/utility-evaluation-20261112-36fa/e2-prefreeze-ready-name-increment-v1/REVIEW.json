@@ -1,0 +1,13 @@
+{
+  "change": "Rename only the new private definition and its one qualified production call. Preserve every function body, parameter, borrow, count, deadline, poll flag and error.",
+  "evidence": "Two exact unique replacements; reversing them restores both entire v9 files.",
+  "format": "hepta-prefreeze-ready-name-review-v1",
+  "project_or_h_executed": false,
+  "reason": "The unchanged existing e2_wait_first_frame boundary matches the literal unqualified symbol. The new private Source readiness helper is distinct from the original listener helper.",
+  "source_git_written": false,
+  "unchanged": [
+    "original listener definition and its original caller",
+    "existing CALLERS row and scanner",
+    "ready exchange bytes, same channel/counter/end, peer authentication and actual Source checks"
+  ]
+}

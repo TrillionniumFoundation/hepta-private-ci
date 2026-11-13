@@ -1,0 +1,97 @@
+{
+  "all_images_have_final_lf": true,
+  "all_new_production_modules_below_500_lines": true,
+  "checks": [
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "splices": 1
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "splices": 7
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "splices": 2
+    },
+    {
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "splices": 1
+    }
+  ],
+  "delimiter_scan": "Author-only lexical delimiter check, not a Rust parser or compilation.",
+  "format": "hepta-e2-prefreeze-pure-byte-proof-v1",
+  "new_files": [
+    "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+    "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_registration.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_prefreeze_source.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs"
+  ],
+  "project_or_h_executed": false,
+  "source_paths": 20
+}

@@ -1,0 +1,709 @@
+{
+  "definitions": [
+    {
+      "definition": {
+        "bytes": 5369,
+        "git_blob": "a1936f4b783fc31bd8e78d6d68dc2e9af66ff998",
+        "sha256": "ee604b5a1486d38a7a03410c3cb705dcb09b74e923c39d59d60a98cd0a9516ee"
+      },
+      "definition_utf8": "pub(super) fn run(mut options: BTreeMap<OsString, OsString>, command: Command)\n    -> Result<(), Box<dyn std::error::Error>>\n{\n    let mut take_path = |key: &str| options.remove(OsStr::new(key)).map(PathBuf::from)\n        .ok_or(\"missing required original Root loading option\");\n    let config = take_path(\"--config\")?;\n    let registration = take_path(\"--registration\")?;\n    let generation_deployment = take_path(\"--generation-deployment\")?;\n    let task_deployment = take_path(\"--task-deployment\")?;\n    let service_deployment = take_path(\"--task-learning-service\")?;\n    let readback = match command {\n        Command::Fresh => None,\n        Command::Recover => Some(take_path(\"--resident-readback\")?),\n    };\n    let mut raw = Vec::new();\n    for key in REQUIRED_FDS {\n        raw.push((key, options.remove(OsStr::new(key)).ok_or(\"missing required original descriptor slot\")?));\n    }\n    for key in OPTIONAL_FDS {\n        if let Some(value) = options.remove(OsStr::new(key)) { raw.push((key, value)); }\n    }\n    if !options.is_empty() { return Err(\"unknown original Root task loading option\".into()); }\n    let mut claimed = BTreeSet::new();\n    let mut descriptors = BTreeMap::new();\n    for (key, value) in raw {\n        descriptors.insert(key, super::inherited_descriptor(&value, &mut claimed)?);\n    }\n    let mut files = Descriptors(descriptors);\n    let owner_pidfd = files.take_original_descriptor(\"--owner-pidfd\")?;\n    let generation = RootHostInitialGenerationFilesV1 {\n        registry_snapshot: files.file(\"--generation-registry-fd\")?,\n        selected_payload: files.file(\"--generation-payload-fd\")?,\n        withdrawal_snapshot: files.file(\"--withdrawal-snapshot-fd\")?,\n        target_journal: files.file(\"--generation-journal-fd\")?,\n        target_witness: files.file(\"--generation-witness-fd\")?,\n    };\n    let task = RootHostQ24TaskFilesV1 {\n        source_journal: files.file(\"--task-source-journal-fd\")?,\n        source_witness: files.file(\"--task-source-witness-fd\")?,\n        cell_journal: files.file(\"--task-cell-journal-fd\")?,\n        cell_witness: files.file(\"--task-cell-witness-fd\")?,\n        inference_control: files.file(\"--task-inference-control-fd\")?,\n        model: CellQ24ModelFilesV1 {\n            base: files.file(\"--task-model-base-fd\")?, encoder: files.file(\"--task-model-encoder-fd\")?,\n            heads: files.file(\"--task-model-heads-fd\")?,\n            organ_adapter: files.optional_file(\"--task-model-organ-fd\"),\n            cell_adapter: files.optional_file(\"--task-model-cell-fd\"),\n        },\n    };\n    let service = RootHostOriginalTaskLearningFilesV1 {\n        production_handoff: UnixDatagram::from(files.take_original_descriptor(\"--root-production-handoff-fd\")?),\n        task_handoff: UnixDatagram::from(files.take_original_descriptor(\"--root-original-task-handoff-fd\")?),\n        original_task_root_pidfd: files.take_original_descriptor(\"--task-root-pidfd\")?,\n        resident: RootResidentCandidateEnrollmentInputsV3 {\n            stage_handoff: UnixDatagram::from(files.take_original_descriptor(\"--candidate-stage-handoff-fd\")?),\n            enrollment_handoff: UnixDatagram::from(files.take_original_descriptor(\"--resident-enrollment-handoff-fd\")?),\n            original_root_pidfd: files.take_original_descriptor(\"--resident-root-pidfd\")?,\n            original_consumer_pidfd: files.take_original_descriptor(\"--resident-consumer-pidfd\")?,\n            baseline_files: CellQ24ModelFilesV1 {\n                base: files.file(\"--baseline-base-fd\")?, encoder: files.file(\"--baseline-encoder-fd\")?,\n                heads: files.file(\"--baseline-heads-fd\")?,\n                organ_adapter: files.optional_file(\"--baseline-organ-fd\"),\n                cell_adapter: files.optional_file(\"--baseline-cell-fd\"),\n            },\n        },\n        material_stream: UnixStream::from(files.take_original_descriptor(\"--material-source-stream-fd\")?),\n        original_material_pidfd: files.take_original_descriptor(\"--material-consumer-pidfd\")?,\n    };\n    if !files.0.is_empty() { return Err(\"unconsumed original descriptor slot\".into()); }\n    require_distinct_writer_files(&generation, &task, &service.resident.baseline_files)?;\n    // This original open is the only session/issuer opening in the flow.\n    // The task and resident branches subsequently use its retained instances.\n    let session = PreparedHostAuthoritySession::open(&config, &registration, owner_pidfd)?;\n    match command {\n        Command::Fresh => {\n            let mut generation = session.prepare_original_initial_generation_from_files(&generation_deployment, generation)?;\n            PreparedRootHostInitialGenerationV1::publish_original_generation(&mut generation)?;\n            let task = generation.prepare_original_root_task_from_files(&task_deployment, task)?;\n            task.serve_loaded_original_task_and_resident(&service_deployment, service)?;\n        }\n        Command::Recover => {\n            let generation = session.recover_original_initial_generation_from_files(&generation_deployment, generation)?;\n            let task = generation.recover_original_root_task_from_files(&task_deployment, task)?;\n            let readback = readback.ok_or(\"the original resident readback authorization is missing\")?;\n            task.recover_loaded_original_task_and_resident(&service_deployment, service, &readback)?;\n        }\n    }\n    Ok(())\n}",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "run",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(super) fn run(mut options: BTreeMap<OsString, OsString>, command: Command)\n    -> Result<(), Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 34,
+      "symbol": "run",
+      "visibility": "pub(super)"
+    },
+    {
+      "definition": {
+        "bytes": 206,
+        "git_blob": "0cfea33b09b2b4546f200c806d1e9572e1348da4",
+        "sha256": "9de27830284b63f81c2dd468ac813a1b2b96204822ffbb265439d88eb685d590"
+      },
+      "definition_utf8": "fn take_original_descriptor(&mut self, name: &'static str) -> Result<OwnedFd, Box<dyn std::error::Error>> {\n        self.0.remove(name).ok_or_else(|| \"original descriptor was already consumed\".into())\n    }",
+      "disposition_reason": "Consumes a single previously original-claimed descriptor; no arbitrary descriptor duplication or reopening.",
+      "method": "take_original_descriptor",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "Descriptors",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn take_original_descriptor(&mut self, name: &'static str) -> Result<OwnedFd, Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 126,
+      "symbol": "Descriptors::take_original_descriptor",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 151,
+        "git_blob": "e9f28267ba4c69f8a2336ca64b363f72a60ee978",
+        "sha256": "a99f38445c2afa5cd8181cc925e2f491ae43a7fc080542ebbfbb253f47c2c894"
+      },
+      "definition_utf8": "fn file(&mut self, name: &'static str) -> Result<File, Box<dyn std::error::Error>> {\n        Ok(File::from(self.take_original_descriptor(name)?))\n    }",
+      "disposition_reason": "Typed File conversion of a once-claimed owned FD; the fixed owner-specific loader later verifies its actual attributes.",
+      "method": "file",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "Descriptors",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn file(&mut self, name: &'static str) -> Result<File, Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 129,
+      "symbol": "Descriptors::file",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 103,
+        "git_blob": "eabfb41e1211ac8c9a781200a1b86687685ef092",
+        "sha256": "2f214c6f67e47134265fbe88fdc6de47ec377cb8fa180cb3f7feb199f0c9106b"
+      },
+      "definition_utf8": "fn optional_file(&mut self, name: &'static str) -> Option<File> { self.0.remove(name).map(File::from) }",
+      "disposition_reason": "Consumes only one of the fixed optional model descriptor slots; absence is passed to the unchanged model factory.",
+      "method": "optional_file",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "Descriptors",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn optional_file(&mut self, name: &'static str) -> Option<File>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 132,
+      "symbol": "Descriptors::optional_file",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 1319,
+        "git_blob": "8bd4f4d1d4291947369ef33808b052d5f0eaffda",
+        "sha256": "5541f11a4915b9445afe5dab064210deee078262c061e84261f5269a1946d8ef"
+      },
+      "definition_utf8": "fn require_distinct_writer_files(generation: &RootHostInitialGenerationFilesV1,\n    task: &RootHostQ24TaskFilesV1, baseline: &CellQ24ModelFilesV1,\n) -> Result<(), Box<dyn std::error::Error>> {\n    let mut writers = BTreeSet::new();\n    for file in [&generation.target_journal, &generation.target_witness, &task.source_journal,\n        &task.source_witness, &task.cell_journal, &task.cell_witness, &task.inference_control]\n    {\n        let metadata = file.metadata()?;\n        if !writers.insert((metadata.dev(), metadata.ino())) {\n            return Err(\"one original writer file cannot serve two owner roles\".into());\n        }\n    }\n    let mut readers = vec![&generation.registry_snapshot, &generation.selected_payload,\n        &generation.withdrawal_snapshot, &task.model.base, &task.model.encoder, &task.model.heads,\n        &baseline.base, &baseline.encoder, &baseline.heads];\n    readers.extend([task.model.organ_adapter.as_ref(), task.model.cell_adapter.as_ref(),\n        baseline.organ_adapter.as_ref(), baseline.cell_adapter.as_ref()].into_iter().flatten());\n    for file in readers {\n        let metadata = file.metadata()?;\n        if writers.contains(&(metadata.dev(), metadata.ino())) {\n            return Err(\"an original writer file cannot alias a read-only input\".into());\n        }\n    }\n    Ok(())\n}",
+      "disposition_reason": "Cross-owner inode/device alias rejection before any owner factory or store write.",
+      "method": "require_distinct_writer_files",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn require_distinct_writer_files(generation: &RootHostInitialGenerationFilesV1,\n    task: &RootHostQ24TaskFilesV1, baseline: &CellQ24ModelFilesV1,\n) -> Result<(), Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 135,
+      "symbol": "require_distinct_writer_files",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 266,
+        "git_blob": "2184bddefceea1698935cd59d8876b1b18dad280",
+        "sha256": "aec154f0e537eae330b9ff77e29e17b5ea904f15c5f5fb35d972f0b4280dfd75"
+      },
+      "definition_utf8": "pub fn serve_loaded_original_task_and_resident(\n        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n    ) -> Result<(), AgentdError> {\n        self.run_loaded_original_services(service_file, files, OriginalTaskResidentPurpose::Fresh)\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "serve_loaded_original_task_and_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub fn serve_loaded_original_task_and_resident(\n        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n    ) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 52,
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::serve_loaded_original_task_and_resident",
+      "visibility": "pub"
+    },
+    {
+      "definition": {
+        "bytes": 365,
+        "git_blob": "a661510ab0ef158bd35c0ff7aabd50c77f203473",
+        "sha256": "b587ed82f6383293780f1d6cdcd50f404f9f8c64f9763434a914c9be57c9f220"
+      },
+      "definition_utf8": "pub fn recover_loaded_original_task_and_resident(\n        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n        original_resident_readback: &Path,\n    ) -> Result<(), AgentdError> {\n        self.run_loaded_original_services(service_file, files,\n            OriginalTaskResidentPurpose::Readback(original_resident_readback.to_owned()))\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "recover_loaded_original_task_and_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub fn recover_loaded_original_task_and_resident(\n        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n        original_resident_readback: &Path,\n    ) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 60,
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::recover_loaded_original_task_and_resident",
+      "visibility": "pub"
+    },
+    {
+      "definition": {
+        "bytes": 8160,
+        "git_blob": "844fe2f071316d5f5f29281e5f6a5ef0598212c8",
+        "sha256": "cf7210483ee77627e56313fa9ea8b5b34e052f6f4cc0a461839d928990813fef"
+      },
+      "definition_utf8": "fn run_loaded_original_services(\n        mut self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n        purpose: OriginalTaskResidentPurpose,\n    ) -> Result<(), AgentdError> {\n        self.clock_status.require_healthy()?;\n        self.read_loaded_original_root_task_generation()?;\n        let specification: ServiceFile = read_root_json(service_file)?;\n        if specification.schema_version != 1\n            || specification.purpose != \"hepta.root.same-task-material-resident.service.v1\"\n            || specification.task_nonce == [0; 16]\n        { return Err(protocol(\"original Root service purpose differs\")); }\n        let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;\n        let (material_host, followups) = self.task.take_original_loader_followups()?;\n        let startup_end = followups.require_startup_end(Instant::now() + Duration::from_secs(30))?;\n        self.clock_status.require_healthy()?;\n        let RootHostOriginalTaskLearningFilesV1 { production_handoff, task_handoff,\n            original_task_root_pidfd, resident, material_stream, original_material_pidfd } = files;\n        let (material_registration, prefreeze) = followups.prepare_prefreeze(\n            &specification.prefreeze_disclosure, &specification.resident_evidence_trust,\n            material_stream, original_material_pidfd, startup_end,\n        )?;\n        self.clock_status.require_healthy()?;\n        let paths = OriginalTaskResidentPaths { deployment: specification.resident_deployment };\n        let clock_status = self.clock_status;\n        let mut task = self.task;\n        std::thread::scope(|scope| {\n            let (task_done_sender, mut task_done) = tokio::sync::oneshot::channel();\n            let task_thread = scope.spawn(move || {\n                let result = PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task_before(\n                    &mut task, production_handoff, task_handoff, original_task_root_pidfd,\n                    &specification.consumer_state_root, specification.task_socket,\n                    specification.loan_socket, specification.task_nonce, startup_end,\n                );\n                let _ = task_done_sender.send(());\n                result\n            });\n            // Start the only Source lane before the late signed freeze is\n            // required. The same client later enters the actual Material pair;\n            // this export cannot also create a post-freeze Source connection.\n            let (material_done_sender, mut material_done) = tokio::sync::oneshot::channel();\n            let material_thread = scope.spawn(move || {\n                let result = PreparedRootMaterialSourceHostV1::serve_original_prefreeze(material_host, material_registration);\n                let _ = material_done_sender.send(());\n                result\n            });\n            let work_result = runtime.block_on(async {\n                let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;\n                let prepare = async {\n                    let RootResidentCandidateEnrollmentInputsV3 { stage_handoff, enrollment_handoff,\n                        original_root_pidfd, original_consumer_pidfd, baseline_files } = resident;\n                    // Readability only wakes the receiver. The complete\n                    // original frame, Root pin, purpose, recipient and roles\n                    // must authenticate before any late deployment is read.\n                    let stage_handoff = wait_original_stage_message(stage_handoff, startup_end).await?;\n                    let remaining = startup_end.checked_duration_since(Instant::now())\n                        .filter(|value| !value.is_zero()).ok_or_else(|| protocol(\"original stage deadline elapsed\"))?;\n                    let stage_transport = crate::root_production_handoff::receive_original_candidate_stage_transport(\n                        stage_handoff, remaining)?;\n                    clock_status.require_healthy()?;\n                    let original = OriginalTaskResidentInputs {\n                        stage_transport, enrollment_handoff, original_root_pidfd,\n                        original_consumer_pidfd, baseline_files,\n                    };\n                    let prepared = followups.prepare_resident(paths, original, &prefreeze, purpose, startup_end)?;\n                    clock_status.require_healthy()?;\n                    let service = prepared.enroll().await?;\n                    followups.require_original_task_followups()?;\n                    prefreeze.require_original_prefreeze_trust()?;\n                    clock_status.require_healthy()?;\n                    Ok::<_, AgentdError>(service)\n                };\n                tokio::pin!(prepare);\n                let resident = tokio::select! {\n                    biased;\n                    value = &mut prepare => value?,\n                    _ = &mut task_done => return Err(protocol(\"task service ended before resident enrollment; same-operation readback required\")),\n                    _ = &mut material_done => return Err(protocol(\"original Source service ended before resident enrollment; same-operation readback required\")),\n                    signal = tokio::signal::ctrl_c() => {\n                        return merge_results(signal.map_err(AgentdError::from),\n                            Err(protocol(\"original enrollment interrupted; effects Unknown, same-operation readback required\")));\n                    }\n                    _ = terminate.recv() => return Err(protocol(\"original enrollment terminated; effects Unknown, same-operation readback required\")),\n                };\n                let cancellation = CancellationToken::new();\n                let resident_work = RootResidentCandidateEnrollmentServiceV3::run(resident, cancellation.clone());\n                tokio::pin!(resident_work);\n                let result = tokio::select! {\n                    biased;\n                    value = &mut resident_work => value,\n                    _ = &mut task_done => {\n                        cancellation.cancel();\n                        merge_results(resident_work.await, Err(protocol(\"task service ended while candidate service was active\")))\n                    }\n                    _ = &mut material_done => {\n                        cancellation.cancel();\n                        merge_results(resident_work.await, Err(protocol(\"Material service ended while candidate service was active\")))\n                    }\n                    signal = tokio::signal::ctrl_c() => {\n                        cancellation.cancel();\n                        let result = resident_work.await;\n                        merge_results(merge_results(result, signal.map_err(AgentdError::from)),\n                            Err(protocol(\"original services interrupted; effects Unknown\")))\n                    }\n                    _ = terminate.recv() => {\n                        cancellation.cancel();\n                        merge_results(resident_work.await, Err(protocol(\"original services terminated; effects Unknown\")))\n                    }\n                };\n                merge_results(merge_results(result, followups.require_original_task_followups()), prefreeze.require_original_prefreeze_trust())\n            });\n            // Join actual submitted work, including error paths. No timeout,\n            // abort or dropped future is relabeled as a completed thread.\n            // Deadlines reject late results. Synchronous original I/O may\n            // still block; no physical termination bound is asserted here.\n            let task_result = task_thread.join().map_err(|_| protocol(\"original task service panicked; effects Unknown\"))\n                .and_then(|value| value.map(|_| ()));\n            let material_result = material_thread.join().map_err(|_| protocol(\"original Material service panicked; effects Unknown\"))\n                .and_then(|value| value.map(|_| ()));\n            merge_results(merge_results(merge_results(work_result, task_result), material_result),\n                clock_status.require_healthy())\n        })\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "run_loaded_original_services",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "fn run_loaded_original_services(\n        mut self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n        purpose: OriginalTaskResidentPurpose,\n    ) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 68,
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::run_loaded_original_services",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 818,
+        "git_blob": "80218cd284d609cbe93a1b4bd90b5ada8c3df863",
+        "sha256": "ffdbbf4baebe1047a5e2959dd8fde145267068e83af2638fb28ce91af65e03f5"
+      },
+      "definition_utf8": "async fn wait_original_stage_message(socket: UnixDatagram, end: Instant) -> Result<UnixDatagram, AgentdError> {\n    let remaining = end.checked_duration_since(Instant::now()).filter(|value| !value.is_zero())\n        .ok_or_else(|| protocol(\"original stage startup ended\"))?;\n    crate::root_production_handoff::root_pair(&socket, remaining.min(Duration::from_secs(30)))?;\n    socket.set_nonblocking(true)?;\n    let original = tokio::io::unix::AsyncFd::new(socket)?;\n    let ready = tokio::time::timeout_at(end.into(), original.readable()).await\n        .map_err(|_| protocol(\"original stage handoff deadline elapsed\"))??;\n    drop(ready);\n    let socket = original.into_inner();\n    socket.set_nonblocking(false)?;\n    if Instant::now() >= end { return Err(protocol(\"original stage handoff ended\")); }\n    Ok(socket)\n}",
+      "disposition_reason": "Readability wake only under the one original end; no owner or completion result is inferred before the complete original wire receive.",
+      "method": "wait_original_stage_message",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "async fn wait_original_stage_message(socket: UnixDatagram, end: Instant) -> Result<UnixDatagram, AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 192,
+      "symbol": "wait_original_stage_message",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 360,
+        "git_blob": "37ce1d6b4d1354be8a65c427b8ec3f5bdbab4f5e",
+        "sha256": "daf16330b6f2cd2d209959527b175ae5bf3f1c5b52290e8cf15350c192002298"
+      },
+      "definition_utf8": "fn merge_results(first: Result<(), AgentdError>, second: Result<(), AgentdError>) -> Result<(), AgentdError> {\n    match (first, second) {\n        (Ok(()), Ok(())) => Ok(()),\n        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),\n        (Err(first), Err(second)) => Err(protocol(format!(\"{first}; additional original failure: {second}\"))),\n    }\n}",
+      "disposition_reason": "Combines two already obtained Results; no authority, owner, I/O or success fallback is introduced.",
+      "method": "merge_results",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": null,
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn merge_results(first: Result<(), AgentdError>, second: Result<(), AgentdError>) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 207,
+      "symbol": "merge_results",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 138,
+        "git_blob": "7f6ef5d308d8685770461947fd08365c566c0856",
+        "sha256": "835e450a2645cc67426413d069f5775ebafc764f0dba96251ef7f3f482c55f08"
+      },
+      "definition_utf8": "fn protocol(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Protocol(format!(\"loaded original task assembly: {error}\"))\n}",
+      "disposition_reason": "Maps an existing Display error to the original Invalid error; no owner or grant is constructed.",
+      "method": "protocol",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": null,
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn protocol(error: impl std::fmt::Display) -> AgentdError",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 215,
+      "symbol": "protocol",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 785,
+        "git_blob": "1608c58652d687ea19da7093fcb3d95ceab730ef",
+        "sha256": "9f48da8c3e6e0f4de1e10a5bb34b5a7e28a927f614eafb0192affcf047bc9d46"
+      },
+      "definition_utf8": "pub(crate) fn take_original_loader_followups(&mut self) -> Result<(\n        PreparedRootMaterialSourceHostV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,\n        OriginalLoadedTaskFollowups,\n    ), AgentdError> {\n        // The existing single-use bit is consumed by the original exporter.\n        // Failure does not return it, the task lane, or a fresh execution right.\n        let material = PreparedRootHostCircuitTaskV1::prepare_original_material_source_host(self)?;\n        let followups = OriginalLoadedTaskFollowups {\n            session: Arc::clone(&self.session), operation: Arc::clone(&self.operation),\n            custody: Arc::clone(&self.custody), end: self.end,\n        };\n        followups.require_original_task_followups()?;\n        Ok((material, followups))\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "take_original_loader_followups",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "PreparedRootHostCircuitTaskV1<FileAnchorWitnessStore, FileAnchorWitnessStore>",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn take_original_loader_followups(&mut self) -> Result<(\n        PreparedRootMaterialSourceHostV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,\n        OriginalLoadedTaskFollowups,\n    ), AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 29,
+      "symbol": "PreparedRootHostCircuitTaskV1<FileAnchorWitnessStore, FileAnchorWitnessStore>::take_original_loader_followups",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 582,
+        "git_blob": "30530fa670c383ab3313b5460146d78a66ab3f24",
+        "sha256": "68c2b09afb4dbc880e417ed4660a1fff402014f7bd134f98b0df9e2ce91a6f41"
+      },
+      "definition_utf8": "pub(crate) fn require_original_task_followups(&self) -> Result<(), AgentdError> {\n        require_original_session(&self.session, self.end)?;\n        let observed = OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;\n        if !matches!(observed, NeuronGenerationInitialReadbackV1::Published(_)) {\n            return Err(AgentdError::Invalid(\"the original task generation is not Published\".into()));\n        }\n        OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;\n        require_original_session(&self.session, self.end)\n    }",
+      "disposition_reason": "Original Session plus same-custody Published/current and same-operation checks; no alternate Current.",
+      "method": "require_original_task_followups",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(crate) fn require_original_task_followups(&self) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 46,
+      "symbol": "OriginalLoadedTaskFollowups::require_original_task_followups",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 696,
+        "git_blob": "290c394a2b98e9d3ed2587be3c3d6e81f4a042af",
+        "sha256": "8f4670721682dd5863f3df498c9d83d36808fbc9eb94f88206ee7bfb49aea977"
+      },
+      "definition_utf8": "pub(crate) fn prepare_resident(\n        &self, paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,\n        prefreeze: &OriginalTaskPrefreezeState, purpose: OriginalTaskResidentPurpose, startup_end: Instant,\n    ) -> Result<OriginalTaskResidentPrepared, AgentdError> {\n        self.require_original_task_followups()?;\n        let prepared = crate::authority_host_runtime::prepare_original_task_resident(\n            &self.session.service, &self.session.config, &self.session.registration,\n            &self.custody, paths, original, prefreeze, purpose, startup_end.min(self.end), self.end,\n        )?;\n        self.require_original_task_followups()?;\n        Ok(prepared)\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_resident(\n        &self, paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,\n        prefreeze: &OriginalTaskPrefreezeState, purpose: OriginalTaskResidentPurpose, startup_end: Instant,\n    ) -> Result<OriginalTaskResidentPrepared, AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 56,
+      "symbol": "OriginalLoadedTaskFollowups::prepare_resident",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 678,
+        "git_blob": "fd21af21a65e65a3a6a51ef49cbf54ddefa26dda",
+        "sha256": "468c755004259a285fd04c5a908c636b21bd720c11c0cc0eabb2fb3c703e3019"
+      },
+      "definition_utf8": "pub(crate) fn prepare_prefreeze(\n        &self, disclosure_file: &Path, evidence_file: &Path,\n        stream: UnixStream, original_material_pidfd: OwnedFd, startup_end: Instant,\n    ) -> Result<(crate::OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError> {\n        self.require_original_task_followups()?;\n        let original = crate::authority_host_runtime::prepare_original_task_prefreeze(\n            &self.session.config, &self.session.registration, disclosure_file, evidence_file,\n            stream, original_material_pidfd, startup_end.min(self.end),\n        )?;\n        self.require_original_task_followups()?;\n        Ok(original)\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_prefreeze",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_prefreeze(\n        &self, disclosure_file: &Path, evidence_file: &Path,\n        stream: UnixStream, original_material_pidfd: OwnedFd, startup_end: Instant,\n    ) -> Result<(crate::OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 69,
+      "symbol": "OriginalLoadedTaskFollowups::prepare_prefreeze",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 185,
+        "git_blob": "c71ba5eb9bcd5aeb09325762201a3dce69f6400e",
+        "sha256": "fa61501725cbde3b4860d4ac0bc60e276d7bded37d6ea83b6d0d1b14c341bea7"
+      },
+      "definition_utf8": "pub(crate) fn require_startup_end(&self, requested: Instant) -> Result<Instant, AgentdError> {\n        self.require_original_task_followups()?;\n        Ok(requested.min(self.end))\n    }",
+      "disposition_reason": "Only clamps the supplied common startup to the existing same-task end and rejects expiry.",
+      "method": "require_startup_end",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(crate) fn require_startup_end(&self, requested: Instant) -> Result<Instant, AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 82,
+      "symbol": "OriginalLoadedTaskFollowups::require_startup_end",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 1191,
+        "git_blob": "fc8ed65b3075c738ae6d05ceee8d216a6cc04c36",
+        "sha256": "dae5cbbc69f9454fbda595729a15304195121903c254652e6a568c5fce79018b"
+      },
+      "definition_utf8": "fn original(self) -> Result<CircuitTaskSourceInputV1, AgentdError> {\n        Ok(CircuitTaskSourceInputV1 {\n            scope: CellScopeV1 {\n                agent_id: StableId::new(self.agent_id).map_err(protocol)?,\n                cell_id: StableId::new(self.cell_id).map_err(protocol)?,\n                run_id: StableId::new(self.run_id).map_err(protocol)?,\n                principal_digest: trust::digest(&self.principal_digest)?,\n            },\n            source_frontier: trust::digest(&self.source_frontier)?,\n            objective_digest: trust::digest(&self.objective_digest)?,\n            ndu_snapshot_digest: trust::digest(&self.ndu_snapshot_digest)?,\n            monotonic_micros: self.monotonic_micros, deadline_micros: self.deadline_micros,\n            observation: self.observation,\n            candidates: self.candidates.into_iter().map(|candidate| {\n                Ok(CellCandidateMaskV1 {\n                    candidate_id: StableId::new(candidate.candidate_id).map_err(protocol)?,\n                    allowed: candidate.allowed,\n                })\n            }).collect::<Result<_, AgentdError>>()?,\n            lease_duration_ms: self.lease_duration_ms,\n        })\n    }",
+      "disposition_reason": "Decodes a complete public data record. SourceInput and signed evidence still require the original downstream full verifier; neither conversion constructs an opaque publication or execution receipt.",
+      "method": "original",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "SourceInput",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn original(self) -> Result<CircuitTaskSourceInputV1, AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 66,
+      "symbol": "SourceInput::original",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 1083,
+        "git_blob": "3efac8c05b57cb202292e1f9dabe7ec0a6b64295",
+        "sha256": "26e127002e792bb5639b763fbf4afeba8560c83ca98907a848496f5593d9a5f7"
+      },
+      "definition_utf8": "fn original(self) -> Result<SignedLearningEvidenceV1, AgentdError> {\n        let signature = STANDARD_NO_PAD.decode(&self.signature).map_err(protocol)?;\n        if signature.len() != 64 || STANDARD_NO_PAD.encode(&signature) != self.signature {\n            return Err(protocol(\"original disclosure signature encoding differs\"));\n        }\n        Ok(SignedLearningEvidenceV1 {\n            evidence_id: StableId::new(self.evidence_id).map_err(protocol)?,\n            principal_id: StableId::new(self.principal_id).map_err(protocol)?,\n            role: LearningEvidenceRoleV1::Generator,\n            trust_digest: trust::digest(&self.trust_digest)?,\n            scope_digest: trust::digest(&self.scope_digest)?,\n            objective_digest: trust::digest(&self.objective_digest)?,\n            authority_epoch: self.authority_epoch, issued_at: self.issued_at,\n            expires_at: self.expires_at, payload_digest: trust::digest(&self.payload_digest)?,\n            signature: signature.try_into().map_err(|_| protocol(\"original disclosure signature width differs\"))?,\n        })\n    }",
+      "disposition_reason": "Decodes a complete public data record. SourceInput and signed evidence still require the original downstream full verifier; neither conversion constructs an opaque publication or execution receipt.",
+      "method": "original",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "GeneratorEvidence",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn original(self) -> Result<SignedLearningEvidenceV1, AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 99,
+      "symbol": "GeneratorEvidence::original",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 3460,
+        "git_blob": "ce7a65cc2e4c3efadea7270d88c124543a9719eb",
+        "sha256": "bb277c952403f5372d6373d48e9e66857a637fe50e59109681ea32efa5b44af7"
+      },
+      "definition_utf8": "pub(crate) fn prepare_original_task_prefreeze(\n    config: &HostAuthorityServiceConfig, original: &HostAuthorityRegistration,\n    disclosure_file: &Path, trusted_evidence: &Path,\n    stream: UnixStream, original_consumer_pidfd: OwnedFd, startup_end: Instant,\n) -> Result<(OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError> {\n    wire::remaining(startup_end)?;\n    let value: DisclosureFile = read_root_json(disclosure_file)?;\n    if value.schema_version != 1\n        || value.purpose != \"hepta.root.original-task-prefreeze-disclosure.v1\"\n        || matches!(value.consumer.uid, 0 | u32::MAX)\n        || matches!(value.consumer.gid, 0 | u32::MAX)\n        || value.consumer.pid == original.peer_pid || value.consumer.pid == std::process::id()\n        || value.nonce == [0; 16] || config.peer_uid == 0\n    { return Err(protocol(\"protected original pre-freeze disclosure differs\")); }\n    let at = now()?;\n    let trust = trust::OriginalSourceTrust::read_original_signed_distribution(trusted_evidence, &value.trust_root,\n        &value.signed_distribution, &value.trust, at)?;\n    let generator = trust.original_signer(&StableId::new(value.generator_actor).map_err(protocol)?,\n        LearningEvidenceRoleV1::Generator, at)?;\n    let experience = trust.original_signer(&StableId::new(value.experience_actor).map_err(protocol)?,\n        LearningEvidenceRoleV1::Observer, at)?;\n    let dataset = trust.original_signer(&StableId::new(value.dataset_actor).map_err(protocol)?,\n        LearningEvidenceRoleV1::Observer, at)?;\n    let consumer = AgentdRootAuthorityPeer { pid: value.consumer.pid,\n        boot_id: value.consumer.boot_id, process_start_ticks: value.consumer.process_start_ticks };\n    wire::Process::require_original(&wire::Process::from_peer(&consumer))?;\n    crate::authority_host_runtime::verify_process_credentials(consumer.pid, value.consumer.uid, value.consumer.gid)?;\n    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, consumer.pid)?;\n    let activated = trust.original_activation();\n    let source = value.source.original()?;\n    let request = OriginalCircuitPrefreezeSourceRequestV1 {\n        generation_operation_id: value.generation_operation_id,\n        generation_intent_digest: trust::digest(&value.generation_intent_digest)?,\n        task_digest: trust::digest(&value.task_digest)?, source: source.clone(),\n        ledger_binding_digest: trust::digest(&value.ledger_binding_digest)?,\n        evidence_trust_digest: activated.verifier().trust_digest(),\n        trust_distribution_digest: activated.distribution_digest(), trust_generation: activated.generation(),\n        generator, experience_signer: experience.clone(), dataset_signer: dataset.clone(),\n        consumer, consumer_uid: value.consumer.uid, nonce: value.nonce,\n    };\n    // The same fixed request is authenticated below, before its stream can be\n    // served. Root's file authorizes disclosure; the Generator cannot choose a\n    // different task, recipient or trust by sending a different signed request.\n    let registration = OriginalRootPrefreezeSourceRegistrationV1::from_original_supervisor(\n        request, activated, value.evidence.original()?, original_consumer_pidfd, stream, startup_end,\n    )?;\n    trust.require_original_distribution_window(now()?)?;\n    wire::remaining(startup_end)?;\n    Ok((registration, OriginalTaskPrefreezeState { trust, source, experience, dataset }))\n}",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_original_task_prefreeze",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_original_task_prefreeze(\n    config: &HostAuthorityServiceConfig, original: &HostAuthorityRegistration,\n    disclosure_file: &Path, trusted_evidence: &Path,\n    stream: UnixStream, original_consumer_pidfd: OwnedFd, startup_end: Instant,\n) -> Result<(OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 127,
+      "symbol": "prepare_original_task_prefreeze",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 169,
+        "git_blob": "fbacaa273436aec6da2aaa5f37ea5cbe82e321af",
+        "sha256": "8e4b649727c846c8e34bb7e4c11b53d1edaa8e3e19446e3ce94d1ca6afc491f5"
+      },
+      "definition_utf8": "pub(crate) fn require_original_prefreeze_trust(&self) -> Result<(), AgentdError> {\n        self.trust.require_original_distribution_window(now()?)?;\n        Ok(())\n    }",
+      "disposition_reason": "Re-verifies the retained original signed immutable distribution at the actual current time.",
+      "method": "require_original_prefreeze_trust",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "OriginalTaskPrefreezeState",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(crate) fn require_original_prefreeze_trust(&self) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 179,
+      "symbol": "OriginalTaskPrefreezeState::require_original_prefreeze_trust",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 83,
+        "git_blob": "afa0f8978dc182cad731bfe9bcd084423747c0fd",
+        "sha256": "b719bda8736867edf8dae0321a34e8fc60ddb706ea3081061fe35453d5c97ca8"
+      },
+      "definition_utf8": "pub(super) fn evidence(&self) -> &trust::OriginalHostTrust { &self.trust.evidence }",
+      "disposition_reason": "Private immutable borrow of the already authenticated retained full trust metadata; no owner, signing key, permit or clock is returned.",
+      "method": "evidence",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "OriginalTaskPrefreezeState",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "pub(super) fn evidence(&self) -> &trust::OriginalHostTrust",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 184,
+      "symbol": "OriginalTaskPrefreezeState::evidence",
+      "visibility": "pub(super)"
+    },
+    {
+      "definition": {
+        "bytes": 1213,
+        "git_blob": "aeed74fb91f67433c1734734e0cb7cb2e090fc18",
+        "sha256": "ee0878202ebdb4f4ba6e98c6bc19b7e56749699320aeb7cee039c953ff494dfa"
+      },
+      "definition_utf8": "pub(super) fn require_material(&self, material: &OriginalCellQ24MaterialReceiptConfigV1)\n        -> Result<(), AgentdError>\n    {\n        self.trust.require_original_distribution_window(now()?)?;\n        let initial = &material.initial;\n        if material.verifier.trust_digest() != self.trust.evidence.verifier.trust_digest()\n            || material.experience_signer != self.experience || material.dataset_signer != self.dataset\n            || initial.owners.experience != self.experience.principal.principal_id\n            || initial.owners.dataset != self.dataset.principal.principal_id\n            || initial.owners.evidence_trust_digest != self.trust.evidence.verifier.trust_digest()\n            || initial.request.agent_id != self.source.scope.agent_id\n            || initial.request.cell_id != self.source.scope.cell_id\n            || initial.request.source_run_id != self.source.scope.run_id\n            || initial.request.principal_id.as_str() != self.source.scope.principal_digest.to_string()\n            || initial.request.envelope.objective_digest != self.source.objective_digest\n        { return Err(protocol(\"late Material differs from the original pre-freeze enrollment\")); }\n        Ok(())\n    }",
+      "disposition_reason": "Requires full retained E/D signer, trust, owner and source-scope equality before late material registration.",
+      "method": "require_material",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "OriginalTaskPrefreezeState",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(super) fn require_material(&self, material: &OriginalCellQ24MaterialReceiptConfigV1)\n        -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 186,
+      "symbol": "OriginalTaskPrefreezeState::require_material",
+      "visibility": "pub(super)"
+    },
+    {
+      "definition": {
+        "bytes": 122,
+        "git_blob": "e81544e3a6f266c61ad1a272fb3e50d80801aaf2",
+        "sha256": "3ff69c0b9a49b8d04ca9bfe670d969a543dbf0c1cfbce5e66809ce557cb8ee02"
+      },
+      "definition_utf8": "fn now() -> Result<u64, AgentdError> {\n    Ok(SystemTime::now().duration_since(UNIX_EPOCH).map_err(protocol)?.as_secs())\n}",
+      "disposition_reason": "Fallible real wall-clock sample; no synthesized or fallback time.",
+      "method": "now",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn now() -> Result<u64, AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 206,
+      "symbol": "now",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 3178,
+        "git_blob": "a64adb50cd68795ec2438af15e7f4d64de520198",
+        "sha256": "3d03283f035096487dcdf3c4ed4fac26c06d56695ceba281e9ddb4010c620cfa"
+      },
+      "definition_utf8": "pub(in super::super) fn read_original_signed_distribution(\n        evidence_path: &Path, root_path: &Path, distribution_path: &Path,\n        pin: &OriginalDistributionPin, at: u64,\n    ) -> io::Result<Self> {\n        let evidence = OriginalHostTrust::read(evidence_path)?;\n        let root: RootFile = read_root_json(root_path)?;\n        let signed: DistributionFile = read_root_json(distribution_path)?;\n        if root.schema_version != 1 || root.purpose != \"hepta.root.learning-trust-root.v1\"\n            || signed.schema_version != 1\n            || signed.purpose != \"hepta.root.original-learning-trust-distribution.v1\"\n        { return Err(io::Error::other(\"original learning trust purpose differs\")); }\n        let root = LearningTrustRootV1 {\n            root_id: StableId::new(root.root_id).map_err(io::Error::other)?,\n            scope_digest: digest(&root.scope_digest)?, verifying_key: root.verifying_key,\n            valid_from: root.valid_from, expires_at: root.expires_at, revoked_at: root.revoked_at,\n        };\n        let signature = STANDARD_NO_PAD.decode(&signed.signature).map_err(io::Error::other)?;\n        if signature.len() != 64 || STANDARD_NO_PAD.encode(&signature) != signed.signature {\n            return Err(io::Error::other(\"original distribution signature encoding differs\"));\n        }\n        let signed = SignedLearningTrustDistributionV1 {\n            distribution: LearningTrustDistributionV1 {\n                distribution_id: StableId::new(signed.distribution_id).map_err(io::Error::other)?,\n                generation: signed.generation, effective_at: signed.effective_at,\n                trust: LearningEvidenceTrustV1 {\n                    scope_digest: evidence.verifier.scope_digest(),\n                    objective_digest: evidence.verifier.objective_digest(),\n                    authority_epoch: evidence.verifier.authority_epoch(),\n                    signers: evidence.signers.clone(),\n                },\n            },\n            root_id: StableId::new(signed.root_id).map_err(io::Error::other)?,\n            issued_at: signed.issued_at, expires_at: signed.expires_at,\n            signature: signature.try_into().map_err(|_| io::Error::other(\"original signature width differs\"))?,\n        };\n        // None here validates one already selected immutable distribution. It\n        // is not a request to advance an existing ledger's trust generation.\n        let activated = activate_learning_trust(&root, signed.clone(), None, at)\n            .map_err(io::Error::other)?;\n        if activated.root_id().as_str() != pin.root_id\n            || activated.root_digest() != digest(&pin.root_digest)?\n            || activated.distribution_id().as_str() != pin.distribution_id\n            || activated.distribution_digest() != digest(&pin.distribution_digest)?\n            || activated.generation() != pin.generation\n            || activated.verifier().trust_digest() != digest(&pin.evidence_trust_digest)?\n            || activated.verifier().trust_digest() != evidence.verifier.trust_digest()\n        { return Err(io::Error::other(\"original protected trust pins differ\")); }\n        Ok(Self { evidence, root, signed, activated })\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "read_original_signed_distribution",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(in super::super) fn read_original_signed_distribution(\n        evidence_path: &Path, root_path: &Path, distribution_path: &Path,\n        pin: &OriginalDistributionPin, at: u64,\n    ) -> io::Result<Self>",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 65,
+      "symbol": "OriginalSourceTrust::read_original_signed_distribution",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 763,
+        "git_blob": "1e3dcaa52b3afd25818f273a53ebeff83683831d",
+        "sha256": "381735ad9bf79157ec900b53ba5be4d45bf25b811699f667cb9408c70d24938b"
+      },
+      "definition_utf8": "pub(in super::super) fn require_original_distribution_window(&self, at: u64) -> io::Result<()> {\n        let actual = activate_learning_trust(&self.root, self.signed.clone(), None, at)\n            .map_err(io::Error::other)?;\n        if actual.root_id() != self.activated.root_id()\n            || actual.root_digest() != self.activated.root_digest()\n            || actual.distribution_id() != self.activated.distribution_id()\n            || actual.distribution_digest() != self.activated.distribution_digest()\n            || actual.generation() != self.activated.generation()\n            || actual.verifier().trust_digest() != self.evidence.verifier.trust_digest()\n        { return Err(io::Error::other(\"original immutable trust changed\")); }\n        Ok(())\n    }",
+      "disposition_reason": "Re-verifies the same original signed distribution and exact pins; no trust rotation or replacement.",
+      "method": "require_original_distribution_window",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(in super::super) fn require_original_distribution_window(&self, at: u64) -> io::Result<()>",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 115,
+      "symbol": "OriginalSourceTrust::require_original_distribution_window",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 117,
+        "git_blob": "ac11b618c389fc3c3ebbe00008359265e46b14df",
+        "sha256": "4449ee1b2d914b8e88f611b94d71b0fc12536286fd86977625ab34f10857005f"
+      },
+      "definition_utf8": "pub(in super::super) fn original_activation(&self) -> ActivatedLearningTrustV1 {\n        self.activated.clone()\n    }",
+      "disposition_reason": "Private clone of the already original-verified immutable ActivatedLearningTrust; this does not instantiate or rotate a LedgerWriter or disclose an owner.",
+      "method": "original_activation",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "pub(in super::super) fn original_activation(&self) -> ActivatedLearningTrustV1",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 128,
+      "symbol": "OriginalSourceTrust::original_activation",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 555,
+        "git_blob": "881dd2267c1ae0562061c32706461ec27851e3af",
+        "sha256": "41afa0af1171a6850eebff8d52fb61a46557af3b85ab4301bcd0815e6195dabf"
+      },
+      "definition_utf8": "pub(in super::super) fn original_signer(\n        &self, actor: &StableId, role: LearningEvidenceRoleV1, at: u64,\n    ) -> io::Result<TrustedLearningSignerV1> {\n        self.require_original_distribution_window(at)?;\n        let signer = self.evidence.signers.iter()\n            .find(|value| &value.principal.principal_id == actor)\n            .ok_or_else(|| io::Error::other(\"original disclosed actor is not enrolled\"))?;\n        self.evidence.verifier.require_signer_binding(role, signer, at).map_err(io::Error::other)?;\n        Ok(signer.clone())\n    }",
+      "disposition_reason": "Private role-specific lookup from the original activated complete trust, with exact domain/role binding; the public signer metadata is not a disclosure grant.",
+      "method": "original_signer",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "pub(in super::super) fn original_signer(\n        &self, actor: &StableId, role: LearningEvidenceRoleV1, at: u64,\n    ) -> io::Result<TrustedLearningSignerV1>",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 132,
+      "symbol": "OriginalSourceTrust::original_signer",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 5430,
+        "git_blob": "555c0c962c4f48ea378055ff1c935773a3a8413f",
+        "sha256": "3ba1b8a86ff00b8c00e69fc302659f349f78ae2787b5be6b3548b5168ad5af8b"
+      },
+      "definition_utf8": "pub(crate) fn prepare_original_task_resident(\n    service: &HostAuthorityService, config: &HostAuthorityServiceConfig,\n    original_registration: &HostAuthorityRegistration,\n    custody: &OriginalRootCircuitTaskCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,\n    paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,\n    prefreeze: &OriginalTaskPrefreezeState,\n    purpose: OriginalTaskResidentPurpose, startup_end: Instant, task_end: Instant,\n) -> Result<OriginalTaskResidentPrepared, AgentdError> {\n    wire::remaining(startup_end)?;\n    prefreeze.require_original_prefreeze_trust()?;\n    let trust = prefreeze.evidence();\n    let OriginalTaskResidentInputs { stage_transport, enrollment_handoff, original_root_pidfd,\n        original_consumer_pidfd, baseline_files } = original;\n    let baseline = Arc::new(LoadedCellQ24ModelV1::open_files(baseline_files).map_err(protocol)?);\n    let inputs::OriginalDeployment { profile, inputs, consumer, handoff_timeout, enrollment_profile } =\n        inputs::OriginalDeployment::read(&paths.deployment, trust, baseline)?;\n    prefreeze.require_material(&inputs.material)?;\n    let (peer, uid, requested_timeout, lifetime) = consumer.into_peer();\n    if uid != config.peer_uid || matches!(config.peer_gid, 0 | u32::MAX)\n        || peer.pid != original_registration.peer_pid\n        || peer.boot_id != original_registration.boot_id\n        || peer.process_start_ticks != original_registration.process_start_ticks\n    { return Err(protocol(\"resident recipient is not this original registered daemon\")); }\n    let timeout = requested_timeout.min(Duration::from_millis(config.timeout_ms.min(500)));\n    if timeout.is_zero() { return Err(protocol(\"original resident command timeout is empty\")); }\n    let recipient = wire::Process::from_peer(&peer);\n    wire::Process::require_original(&recipient)?;\n    crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, config.peer_gid)?;\n    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)?;\n    let connect_end = (Instant::now() + handoff_timeout).min(startup_end).min(task_end);\n    let session_end = (Instant::now() + lifetime).min(task_end);\n    wire::remaining(connect_end)?;\n    let (authorization, readback) = match purpose {\n        OriginalTaskResidentPurpose::Fresh => (wire::Authorization::Fresh, None),\n        OriginalTaskResidentPurpose::Readback(path) => {\n            let value: ReadbackFile = read_root_json(&path)?;\n            if value.schema_version != 3 || value.purpose != \"hepta.host-resident-learning.readback-deployment.v3\" {\n                return Err(protocol(\"original resident readback purpose differs\"));\n            }\n            let authorization = wire::Authorization::Readback { intent: value.intent.clone(), lease: value.lease.clone() };\n            let readback = RootResidentLearningReadbackAuthorizationV3::from_original_root(\n                &profile, value.intent, value.lease)?;\n            (authorization, Some(readback))\n        }\n    };\n    let handoff = stage_transport.bind_original_profile(&profile)?;\n    wire::remaining(connect_end)?;\n    // A protected configuration and signed freeze do not prove A ran. Reach\n    // the retained original Source and same-Arc Cell before any registration.\n    let _actual_source = OriginalRootCircuitTaskCustodyV1::read_original_material_source(\n        custody, &inputs.material.initial.request)?;\n    prefreeze.require_material(&inputs.material)?;\n    wire::remaining(connect_end)?;\n    let binding = profile.binding();\n    let registration = match readback {\n        Some(readback) => HostAuthorityService::recover_resident_learning_v3(service, profile, readback)?,\n        None => HostAuthorityService::register_resident_learning_v3(service, profile)?,\n    };\n    wire::remaining(connect_end)?;\n    let listener: ResidentListener = ResidentListener::bind_original(config, binding)?;\n    let (path, device, inode) = listener.original_node();\n    // Read monotonic first. Subsequent Instant sampling can only reduce each\n    // transmitted remainder; neither deadline is reset by enrollment.\n    let now_ns = wire::now_ns()?;\n    let connect_before_ns = now_ns.checked_add(u64::try_from(wire::remaining(connect_end)?.as_nanos()).map_err(protocol)?)\n        .ok_or_else(|| protocol(\"original resident connect deadline overflow\"))?;\n    let session_end_ns = now_ns.checked_add(u64::try_from(wire::remaining(session_end)?.as_nanos()).map_err(protocol)?)\n        .ok_or_else(|| protocol(\"original resident session deadline overflow\"))?;\n    let packet = wire::Packet { schema_version: 3, purpose: wire::PURPOSE.into(),\n        root: wire::Process::current()?, consumer: recipient, consumer_uid: uid, consumer_gid: config.peer_gid,\n        profile: enrollment_profile, trusted_evidence: String::from_utf8(trust.encoded.clone()).map_err(protocol)?,\n        socket: path.clone(), socket_device: device, socket_inode: inode,\n        connect_before_ns, session_end_ns, command_timeout_ms: u64::try_from(timeout.as_millis()).map_err(protocol)?,\n        authorization };\n    wire::remaining(connect_end)?;\n    prefreeze.require_original_prefreeze_trust()?;\n    Ok(OriginalTaskResidentPrepared { registration, inputs, handoff, listener, packet,\n        enrollment_handoff, original_root_pidfd, original_consumer_pidfd, peer, uid, timeout,\n        connect_end, session_end })\n}",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_original_task_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_original_task_resident(\n    service: &HostAuthorityService, config: &HostAuthorityServiceConfig,\n    original_registration: &HostAuthorityRegistration,\n    custody: &OriginalRootCircuitTaskCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,\n    paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,\n    prefreeze: &OriginalTaskPrefreezeState,\n    purpose: OriginalTaskResidentPurpose, startup_end: Instant, task_end: Instant,\n) -> Result<OriginalTaskResidentPrepared, AgentdError>",
+      "source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "start_line": 53,
+      "symbol": "prepare_original_task_resident",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 1381,
+        "git_blob": "676564e2e31f3e9d03f12bfaeec8acc26b1dad3a",
+        "sha256": "6ca3ff2436802fc70d66769b368a9e51a693fa5f3515813dce8cd6ab5d3dec18"
+      },
+      "definition_utf8": "pub(crate) async fn enroll(self) -> Result<RootResidentCandidateEnrollmentServiceV3, AgentdError> {\n        let Self { registration, inputs, handoff, listener, packet, enrollment_handoff,\n            original_root_pidfd, original_consumer_pidfd, peer, uid, timeout, connect_end, session_end } = self;\n        wire::remaining(connect_end)?;\n        let sealed = wire::seal(&packet)?;\n        crate::root_production_handoff::send_original_resident_enrollment(\n            enrollment_handoff, &sealed, &original_root_pidfd, wire::remaining(connect_end)?)?;\n        let (stream, socket_guard) = listener.accept_original(connect_end).await?;\n        wire::Process::require_original(&packet.consumer)?;\n        crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, packet.consumer_gid)?;\n        crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)?;\n        wire::remaining(connect_end)?;\n        let service = RootResidentLearningRegistrationV3::into_candidate_service(registration, inputs, handoff,\n            RootResidentLearningConsumerV3 { stream, peer, uid, original_consumer_pidfd,\n                timeout, lifetime: wire::remaining(session_end)? }).map_err(protocol)?;\n        wire::remaining(connect_end)?;\n        Ok(RootResidentCandidateEnrollmentServiceV3 { service, socket_guard, session_end })\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "enroll",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "OriginalTaskResidentPrepared",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) async fn enroll(self) -> Result<RootResidentCandidateEnrollmentServiceV3, AgentdError>",
+      "source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "start_line": 135,
+      "symbol": "OriginalTaskResidentPrepared::enroll",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 148,
+        "git_blob": "ee8c10f29f672a76b1eae2c04a87d1fa4c4b5caa",
+        "sha256": "b32b2d8e7ae37bd01eaf27ddbf685e1bb72eec83537545dd4ae1aa933a8fabf3"
+      },
+      "definition_utf8": "fn protocol(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Protocol(format!(\"same-session original resident assembly: {error}\"))\n}",
+      "disposition_reason": "Maps an existing Display error to the original Invalid error; no owner or grant is constructed.",
+      "method": "protocol",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": null,
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn protocol(error: impl std::fmt::Display) -> AgentdError",
+      "source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "start_line": 155,
+      "symbol": "protocol",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 1255,
+        "git_blob": "f8c43e09187b8fbf8517c6ade2b355f49ed0317b",
+        "sha256": "582c7476271242a39b8d2c43d86af80b8f82c094fe777a9c663df34f76a78913"
+      },
+      "definition_utf8": "pub(crate) fn receive_original_candidate_stage_transport(\n    socket: UnixDatagram, timeout: Duration,\n) -> Result<OriginalRootCandidateStageTransportV1, AgentdError> {\n    require_root()?;\n    let root = super::super::root_pair(&socket, timeout)?;\n    let (bytes, mut descriptors) = wire::receive(&socket, timeout)?;\n    let sender = descriptors.remove(0);\n    super::super::require_root_pin(&sender, root.pid as u32)?;\n    let packet: Packet = serde_json::from_slice(&bytes)?;\n    if packet.purpose != PURPOSE || packet.recipient.pid != std::process::id()\n        || packet.lanes.len() != ROLES.len()\n    { return Err(refused(\"original late transport purpose, recipient and ten roles required\")); }\n    require_process(&packet.recipient)?;\n    let now = wire::monotonic_ns()?;\n    for (index, lane) in packet.lanes.iter().enumerate() {\n        if lane.role != ROLES[index] { return Err(refused(\"original late transport role order differs\")); }\n        let lifetime = lane.end_ns.checked_sub(now).ok_or_else(|| refused(\"expired original role\"))?;\n        require_timing(index, lane.timeout_ns, lifetime)?;\n    }\n    super::super::require_root_pin(&sender, root.pid as u32)?;\n    Ok(OriginalRootCandidateStageTransportV1 { packet, descriptors, sender })\n}",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "receive_original_candidate_stage_transport",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_transport.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn receive_original_candidate_stage_transport(\n    socket: UnixDatagram, timeout: Duration,\n) -> Result<OriginalRootCandidateStageTransportV1, AgentdError>",
+      "source": {
+        "bytes": 2360,
+        "git_blob": "1aba7f79209c0eb74dab64597e88aa28a3a7cf48",
+        "sha256": "c75d918d933471ac62f937758905e4b5292b8b1e9f4fb6fae6c889ea1dcccd50"
+      },
+      "start_line": 13,
+      "symbol": "receive_original_candidate_stage_transport",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 673,
+        "git_blob": "90484338a3dc3e46a87e675f02c7940e7844a8e2",
+        "sha256": "82d399262e857df87341a60412f42fb1a8a790aebd57f68bf46c4c1c2dc7c831"
+      },
+      "definition_utf8": "pub(crate) fn bind_original_profile(self, profile: &RootResidentLearningProfileV3)\n        -> Result<RootCandidateStageHandoffV1, AgentdError>\n    {\n        require_root()?;\n        crate::root_observation_stream::check_lifetime(&self.sender)\n            .map_err(|_| refused(\"original handoff Root exited\"))?;\n        // No self-comparison, parsed claim or mere readability can satisfy this\n        // independent full profile check. Failure closes every retained right.\n        validate_packet(&self.packet, profile.binding())?;\n        Ok(RootCandidateStageHandoffV1 {\n            packet: self.packet, descriptors: self.descriptors, sender: self.sender,\n        })\n    }",
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "bind_original_profile",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_transport.rs",
+      "receiver_type": "OriginalRootCandidateStageTransportV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn bind_original_profile(self, profile: &RootResidentLearningProfileV3)\n        -> Result<RootCandidateStageHandoffV1, AgentdError>",
+      "source": {
+        "bytes": 2360,
+        "git_blob": "1aba7f79209c0eb74dab64597e88aa28a3a7cf48",
+        "sha256": "c75d918d933471ac62f937758905e4b5292b8b1e9f4fb6fae6c889ea1dcccd50"
+      },
+      "start_line": 37,
+      "symbol": "OriginalRootCandidateStageTransportV1::bind_original_profile",
+      "visibility": "pub(crate)"
+    }
+  ],
+  "state": "EXACT_TEXT_NOT_RUST_TYPECHECK"
+}

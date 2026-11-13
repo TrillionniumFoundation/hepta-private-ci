@@ -1,0 +1,22 @@
+[
+  {
+    "after": {
+      "bytes": 6563,
+      "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+      "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+    },
+    "before": {
+      "bytes": 6524,
+      "git_blob": "6d5e38822bc2cace461f3dab10adf9b11f393474",
+      "sha256": "913c266ac06a429003c94134ceaf8e2d905f0215335e4ab959ec41f4f962042f"
+    },
+    "exact_splices": [
+      {
+        "new": "let original_bootstrap = crate::PreparedHostAuthoritySession::seal_bootstrap(&self.session, consumer_state_root)?;",
+        "old": "let original_bootstrap = self.session.seal_bootstrap(consumer_state_root)?;"
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+    "reverse_full_bytes_equal": true
+  }
+]

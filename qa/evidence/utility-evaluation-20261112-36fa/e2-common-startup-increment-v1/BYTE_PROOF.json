@@ -1,0 +1,20 @@
+{
+  "after": {
+    "bytes": 7547,
+    "git_blob": "947e048fa70eba8cdf797993ff6d7f62c5995a8e",
+    "sha256": "7c6af95a5abd54cc4263a819e6bdf8bd7f636cd1116c933a57c033b7e7551db7"
+  },
+  "before": {
+    "bytes": 6563,
+    "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+    "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+  },
+  "borrow_arguments_counts": "The same mutable self and every original owned/borrowed argument are forwarded exactly once; no clone/reopen/new lane.",
+  "bounds": "supplied startup_end min original thirty-second maximum min same Task end; checked before any original side effects.",
+  "format": "hepta-e2-common-startup-byte-proof-v1",
+  "new_private_signature": "PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task_before(&mut self, production_handoff, task_handoff, original_root_pidfd, consumer_state_root, task_path, loan_path, session_nonce, startup_end: Instant)",
+  "old_body_suffix_completely_preserved": true,
+  "old_public_body": "now delegates to the one extracted body with its original now+30s clamp",
+  "old_public_signature": "unchanged",
+  "one_unique_forward_and_inverse": true
+}

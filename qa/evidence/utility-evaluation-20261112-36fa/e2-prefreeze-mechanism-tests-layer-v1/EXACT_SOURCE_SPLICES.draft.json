@@ -1,0 +1,26 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+    "kind": "exact_suffix_append",
+    "before_bytes": 7098,
+    "append_utf8": "\n#[cfg(test)]\n#[path = \"circuit_task_source_prefreeze_support_tests.rs\"]\npub(crate) mod test_support;\n"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs",
+    "kind": "exact_suffix_append",
+    "before_bytes": 7530,
+    "append_utf8": "\n#[path = \"circuit_task_source_prefreeze_tests.rs\"]\nmod prefreeze;\n"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_tests.rs",
+    "kind": "exact_suffix_append",
+    "before_bytes": 9943,
+    "append_utf8": "\n#[path = \"authority_host_prefreeze_source_tests.rs\"]\nmod prefreeze;\n"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+    "kind": "exact_suffix_append",
+    "before_bytes": 2896,
+    "append_utf8": "\n#[cfg(test)]\n#[path = \"authority_host_task_source_ready_tests.rs\"]\nmod tests;\n"
+  }
+]

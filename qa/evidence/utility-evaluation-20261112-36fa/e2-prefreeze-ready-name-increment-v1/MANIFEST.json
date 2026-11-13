@@ -1,0 +1,59 @@
+{
+  "files": [
+    {
+      "bytes": 574,
+      "git_blob": "2929be9a3ba18847f389c59f07f59bf7fa13bfdf",
+      "path": "EXACT_SOURCE_SPLICES.json",
+      "sha256": "d7a4e389f6eee18cfe0120bf3093ddf9dc9daafdc1b6f71cfd77aafea7d340c8"
+    },
+    {
+      "bytes": 809,
+      "git_blob": "457afe23dc6646effc8b08bdf174a19e7a9e1844",
+      "path": "REVIEW.json",
+      "sha256": "80f82fd5df7bc886b53b7490bd96f7030764f2eaa96001b9990d4b718bb70c9c"
+    },
+    {
+      "bytes": 1286,
+      "git_blob": "7fe4d0f3ee625e73eaa327ac56c53dbd065c6b19",
+      "path": "SOURCE_DELTA.patch",
+      "sha256": "f0849292fcf4dc4d712835604be1f4cf81d2aac50abf2293369acf973ca4907d"
+    },
+    {
+      "bytes": 19077,
+      "git_blob": "41c767eef9b5abb72ab4d60c632081a71dad60e2",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "51668e17e47339eb88802d05688e951cefd00e1552c1b9a4eebdf69324218e26"
+    }
+  ],
+  "format": "hepta-prefreeze-ready-name-manifest-v1",
+  "project_or_h_executed": false,
+  "source_git_written": false,
+  "sources": [
+    {
+      "after": {
+        "bytes": 7216,
+        "git_blob": "6dfeea079f8d3bba2b568eaf83663f33c116527f",
+        "sha256": "f3e939dabff5fd2b245c34b2f6d4bf4ef9564bdb49f556c5542d05ea4ccec756"
+      },
+      "before": {
+        "bytes": 7200,
+        "git_blob": "07a3c286e7374a3e8d0f86160fcbc16e56a42463",
+        "sha256": "ecae17252c9d12ea9f63cf6c3d70064bdad8be6c06783380778f0e54ee671ba2"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+    },
+    {
+      "after": {
+        "bytes": 1494,
+        "git_blob": "222dc9070238c4aa15eea7b4e3a8804d6294f7f6",
+        "sha256": "acd5c2887f6e2a5bcf3277b0fc6d025904d7bd22a408810c725be3f57450e2ae"
+      },
+      "before": {
+        "bytes": 1478,
+        "git_blob": "9ef613a1b364d04e026383079c13a71a81d156e6",
+        "sha256": "5f11cdfc092af0a4efada3ef7e530055e335c70d33e3ff3817c74d2d499225ec"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs"
+    }
+  ]
+}

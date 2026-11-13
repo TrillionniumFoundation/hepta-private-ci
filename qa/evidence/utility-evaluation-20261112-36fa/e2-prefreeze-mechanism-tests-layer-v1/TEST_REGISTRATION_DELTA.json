@@ -1,0 +1,36 @@
+{
+  "actual_final_union_count": null,
+  "all_methods_unexecuted": true,
+  "append_root_parent": [
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::prefreeze::root_prefreeze_ready_reads_existing_source_without_future_event"
+  ],
+  "existing_root_order_and_filters_unchanged": true,
+  "final_source_contract_owner": "Root; compose these exact postimages with the other independent source layers.",
+  "format": "hepta-prefreeze-test-registration-component-v1",
+  "tests": [
+    {
+      "fqn": "circuit_task::source::readback::material::tests::prefreeze::prefreeze_request_reads_actual_source_without_future_evidence",
+      "root_only": false,
+      "scope": "Actual original Driver Receipt/Source/Cell/witness bytes plus original verifier; withdrawal refuses despite still-valid signature.",
+      "source_file": "circuit_task_source_prefreeze_tests.rs"
+    },
+    {
+      "fqn": "circuit_task::source::readback::material::tests::prefreeze::prefreeze_request_refuses_rebinding_and_other_enrolled_generator",
+      "root_only": false,
+      "scope": "Full recipient/nonce/task/input/controller rebinding and independently valid other enrolled Generator are rejected exactly; original positive control remains valid.",
+      "source_file": "circuit_task_source_prefreeze_tests.rs"
+    },
+    {
+      "fqn": "authority_host_runtime::session::generation::task::root_task::original_source_ready::tests::original_source_hint_latches_without_renewing_the_original_deadline",
+      "root_only": false,
+      "scope": "Real one-shot thread notification before/around wait, explicit join, and original expired deadline refusal. No Source authority is implied by this test signal.",
+      "source_file": "authority_host_task_source_ready_tests.rs"
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::prefreeze::root_prefreeze_ready_reads_existing_source_without_future_event",
+      "root_only": true,
+      "scope": "Real original protected Root fixture and signed ObjectiveStart run. Pending before execution, actual completed Source/Cell observation without an event after execution; existing-state path only, not process-cold IPC.",
+      "source_file": "authority_host_prefreeze_source_tests.rs"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "changed_boundary": "Replace external guessed timing with actual original publication notification plus one existing-state cold read.",
+  "documentation_correction": "c66c described 500ms between-frame idle too broadly. The original HAP exchange waits for its first byte under the original owner lifetime, then bounds the in-flight exchange by timeout. This successor does not change that implementation; only the initial readiness wait is explicitly clamped to the same startup deadline.",
+  "format": "hepta-e2-prefreeze-ready-author-review-v1",
+  "future_tests": "Meaningful mechanism cases and exact registration delta are a separate successor; no existing test success is claimed.",
+  "not_authority": "The latch and wire echo are scheduling only. Root checks the same current Source/Cell before the hint and again on every actual data request; the consumer checks actual fixed publication after the authenticated exchange. The protected supervisor disclosure and original Generator/trust authentication remain separate requirements.",
+  "preserved": [
+    "Original HAP peer/UID/pidfd and f42 refusal",
+    "Same one-use Material host and same private task/session/custody Arcs",
+    "Same original Source, Cell and Current owners",
+    "Original daemon Driver/AutomationStore/Receipt and Source publication body",
+    "Same 128 total frames, same absolute ends, no reconnection or retry",
+    "Every prefreeze/material data read remains original-current authenticated"
+  ],
+  "refusal_limits": [
+    "Premature Source Missing/Pending waits once; changed, withdrawn, invalid or unavailable Source refuses.",
+    "A publication that became durable before a later failure can remain unknown without a hint. Existing-state cold readback can later inspect it, never redispatch.",
+    "The original synchronous Source/Cell read can overrun a deadline; postchecks reject success, not prove physical cancellation.",
+    "A blocked wait samples the peer before and after; it does not promise immediate peer-exit wake before its bounded common startup deadline.",
+    "No full daemon/Root process-cold execution or ordinary Material CLI run has been observed."
+  ],
+  "status": "Fixed source proposal only; no formatting, compilation, tests, collector or H."
+}

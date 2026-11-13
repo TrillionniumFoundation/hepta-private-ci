@@ -1,0 +1,29 @@
+--- review_bytes.py
++++ review_bytes_v2.py
+@@ -53,8 +53,11 @@
+     if not isinstance(raw, bytes):
+         raw = json_bytes(raw)
+     path.parent.mkdir(parents=True, exist_ok=True)
+-    with path.open('xb') as stream:
+-        stream.write(raw)
++    if path.exists():
++        assert path.read_bytes() == raw, path
++    else:
++        with path.open('xb') as stream:
++            stream.write(raw)
+     assert path.read_bytes() == raw
+     return dict(path=str(path), **pin(raw))
+ 
+@@ -429,7 +432,11 @@
+         abstract = row['id'] in {
+             'e2_original_root_lane_factory_take', 'e2_original_root_lane_factory_original_handoff_registry',
+             'e2_original_root_cell_pump_execute', 'e2_original_root_cell_pump_read', 'e2_original_root_cell_pump_clock'}
+-        assert len(bodies) == (0 if abstract else 1), (row['id'], len(bodies))
++        assert len(bodies) == 1, (row['id'], len(bodies))
++        if abstract:
++            assert bodies[0]['visibility'] == 'private'
++            assert receiver + ' for ' in bodies[0]['impl_header']
++            assert 'trait ' + receiver + ':' in view[path]
+         definition_audit.append(dict(id=row['id'], path=path, symbol=row['symbol'], receiver=receiver,
+                                      abstract_trait_method=abstract, matches=len(bodies),
+                                      identity=pin(bodies[0]['body'].encode()) if bodies else None))

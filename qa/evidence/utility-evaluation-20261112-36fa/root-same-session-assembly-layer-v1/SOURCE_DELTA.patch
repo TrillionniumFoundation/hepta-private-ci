@@ -1,0 +1,1213 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs
+@@ -0,0 +1,159 @@
++//! One normal Root entry opens one existing session, loads original files,
++//! consumes one generation/task purpose, and retains that same host for V3.
++//! The original descriptor parser claims ALL numbers before any owner opens.
++
++use std::collections::{BTreeMap, BTreeSet};
++use std::ffi::{OsStr, OsString};
++use std::fs::File;
++use std::os::fd::OwnedFd;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::net::{UnixDatagram, UnixStream};
++use std::path::PathBuf;
++
++use codex_hepta_agentd::{CellQ24ModelFilesV1, PreparedHostAuthoritySession,
++    RootHostInitialGenerationFilesV1, RootHostQ24TaskFilesV1, PreparedRootHostInitialGenerationV1,
++    RootHostOriginalTaskLearningFilesV1, RootResidentCandidateEnrollmentInputsV3};
++
++#[derive(Clone, Copy)]
++pub(super) enum Command { Fresh, Recover }
++
++const REQUIRED_FDS: [&str; 26] = [
++    "--owner-pidfd", "--generation-registry-fd", "--generation-payload-fd",
++    "--withdrawal-snapshot-fd", "--generation-journal-fd", "--generation-witness-fd",
++    "--task-source-journal-fd", "--task-source-witness-fd", "--task-cell-journal-fd",
++    "--task-cell-witness-fd", "--task-inference-control-fd", "--task-model-base-fd",
++    "--task-model-encoder-fd", "--task-model-heads-fd", "--root-production-handoff-fd",
++    "--root-original-task-handoff-fd", "--task-root-pidfd", "--candidate-stage-handoff-fd",
++    "--resident-enrollment-handoff-fd", "--resident-root-pidfd", "--resident-consumer-pidfd",
++    "--material-source-stream-fd", "--material-consumer-pidfd", "--baseline-base-fd",
++    "--baseline-encoder-fd", "--baseline-heads-fd",
++];
++const OPTIONAL_FDS: [&str; 4] = ["--task-model-organ-fd", "--task-model-cell-fd",
++    "--baseline-organ-fd", "--baseline-cell-fd"];
++
++pub(super) fn run(mut options: BTreeMap<OsString, OsString>, command: Command)
++    -> Result<(), Box<dyn std::error::Error>>
++{
++    let mut take_path = |key: &str| options.remove(OsStr::new(key)).map(PathBuf::from)
++        .ok_or("missing required original Root loading option");
++    let config = take_path("--config")?;
++    let registration = take_path("--registration")?;
++    let generation_deployment = take_path("--generation-deployment")?;
++    let task_deployment = take_path("--task-deployment")?;
++    let service_deployment = take_path("--task-learning-service")?;
++    let readback = match command {
++        Command::Fresh => None,
++        Command::Recover => Some(take_path("--resident-readback")?),
++    };
++    let mut raw = Vec::new();
++    for key in REQUIRED_FDS {
++        raw.push((key, options.remove(OsStr::new(key)).ok_or("missing required original descriptor slot")?));
++    }
++    for key in OPTIONAL_FDS {
++        if let Some(value) = options.remove(OsStr::new(key)) { raw.push((key, value)); }
++    }
++    if !options.is_empty() { return Err("unknown original Root task loading option".into()); }
++    let mut claimed = BTreeSet::new();
++    let mut descriptors = BTreeMap::new();
++    for (key, value) in raw {
++        descriptors.insert(key, super::inherited_descriptor(&value, &mut claimed)?);
++    }
++    let mut files = Descriptors(descriptors);
++    let owner_pidfd = files.take_original_descriptor("--owner-pidfd")?;
++    let generation = RootHostInitialGenerationFilesV1 {
++        registry_snapshot: files.file("--generation-registry-fd")?,
++        selected_payload: files.file("--generation-payload-fd")?,
++        withdrawal_snapshot: files.file("--withdrawal-snapshot-fd")?,
++        target_journal: files.file("--generation-journal-fd")?,
++        target_witness: files.file("--generation-witness-fd")?,
++    };
++    let task = RootHostQ24TaskFilesV1 {
++        source_journal: files.file("--task-source-journal-fd")?,
++        source_witness: files.file("--task-source-witness-fd")?,
++        cell_journal: files.file("--task-cell-journal-fd")?,
++        cell_witness: files.file("--task-cell-witness-fd")?,
++        inference_control: files.file("--task-inference-control-fd")?,
++        model: CellQ24ModelFilesV1 {
++            base: files.file("--task-model-base-fd")?, encoder: files.file("--task-model-encoder-fd")?,
++            heads: files.file("--task-model-heads-fd")?,
++            organ_adapter: files.optional_file("--task-model-organ-fd"),
++            cell_adapter: files.optional_file("--task-model-cell-fd"),
++        },
++    };
++    let service = RootHostOriginalTaskLearningFilesV1 {
++        production_handoff: UnixDatagram::from(files.take_original_descriptor("--root-production-handoff-fd")?),
++        task_handoff: UnixDatagram::from(files.take_original_descriptor("--root-original-task-handoff-fd")?),
++        original_task_root_pidfd: files.take_original_descriptor("--task-root-pidfd")?,
++        resident: RootResidentCandidateEnrollmentInputsV3 {
++            stage_handoff: UnixDatagram::from(files.take_original_descriptor("--candidate-stage-handoff-fd")?),
++            enrollment_handoff: UnixDatagram::from(files.take_original_descriptor("--resident-enrollment-handoff-fd")?),
++            original_root_pidfd: files.take_original_descriptor("--resident-root-pidfd")?,
++            original_consumer_pidfd: files.take_original_descriptor("--resident-consumer-pidfd")?,
++            baseline_files: CellQ24ModelFilesV1 {
++                base: files.file("--baseline-base-fd")?, encoder: files.file("--baseline-encoder-fd")?,
++                heads: files.file("--baseline-heads-fd")?,
++                organ_adapter: files.optional_file("--baseline-organ-fd"),
++                cell_adapter: files.optional_file("--baseline-cell-fd"),
++            },
++        },
++        material_stream: UnixStream::from(files.take_original_descriptor("--material-source-stream-fd")?),
++        original_material_pidfd: files.take_original_descriptor("--material-consumer-pidfd")?,
++    };
++    if !files.0.is_empty() { return Err("unconsumed original descriptor slot".into()); }
++    require_distinct_writer_files(&generation, &task, &service.resident.baseline_files)?;
++    // This original open is the only session/issuer opening in the flow.
++    // The task and resident branches subsequently use its retained instances.
++    let session = PreparedHostAuthoritySession::open(&config, &registration, owner_pidfd)?;
++    match command {
++        Command::Fresh => {
++            let mut generation = session.prepare_original_initial_generation_from_files(&generation_deployment, generation)?;
++            PreparedRootHostInitialGenerationV1::publish_original_generation(&mut generation)?;
++            let task = generation.prepare_original_root_task_from_files(&task_deployment, task)?;
++            task.serve_loaded_original_task_and_resident(&service_deployment, service)?;
++        }
++        Command::Recover => {
++            let generation = session.recover_original_initial_generation_from_files(&generation_deployment, generation)?;
++            let task = generation.recover_original_root_task_from_files(&task_deployment, task)?;
++            let readback = readback.ok_or("the original resident readback authorization is missing")?;
++            task.recover_loaded_original_task_and_resident(&service_deployment, service, &readback)?;
++        }
++    }
++    Ok(())
++}
++
++struct Descriptors(BTreeMap<&'static str, OwnedFd>);
++impl Descriptors {
++    fn take_original_descriptor(&mut self, name: &'static str) -> Result<OwnedFd, Box<dyn std::error::Error>> {
++        self.0.remove(name).ok_or_else(|| "original descriptor was already consumed".into())
++    }
++    fn file(&mut self, name: &'static str) -> Result<File, Box<dyn std::error::Error>> {
++        Ok(File::from(self.take_original_descriptor(name)?))
++    }
++    fn optional_file(&mut self, name: &'static str) -> Option<File> { self.0.remove(name).map(File::from) }
++}
++
++fn require_distinct_writer_files(generation: &RootHostInitialGenerationFilesV1,
++    task: &RootHostQ24TaskFilesV1, baseline: &CellQ24ModelFilesV1,
++) -> Result<(), Box<dyn std::error::Error>> {
++    let mut writers = BTreeSet::new();
++    for file in [&generation.target_journal, &generation.target_witness, &task.source_journal,
++        &task.source_witness, &task.cell_journal, &task.cell_witness, &task.inference_control]
++    {
++        let metadata = file.metadata()?;
++        if !writers.insert((metadata.dev(), metadata.ino())) {
++            return Err("one original writer file cannot serve two owner roles".into());
++        }
++    }
++    let mut readers = vec![&generation.registry_snapshot, &generation.selected_payload,
++        &generation.withdrawal_snapshot, &task.model.base, &task.model.encoder, &task.model.heads,
++        &baseline.base, &baseline.encoder, &baseline.heads];
++    readers.extend([task.model.organ_adapter.as_ref(), task.model.cell_adapter.as_ref(),
++        baseline.organ_adapter.as_ref(), baseline.cell_adapter.as_ref()].into_iter().flatten());
++    for file in readers {
++        let metadata = file.metadata()?;
++        if writers.contains(&(metadata.dev(), metadata.ino())) {
++            return Err("an original writer file cannot alias a read-only input".into());
++        }
++    }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs
+@@ -0,0 +1,217 @@
++//! The loaded callback stays inside this private subtree. Only the original
++//! remote task pump and its strengthened feature control can consume it.
++//! All normally returning branches join the actual owned service threads.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::{UnixDatagram, UnixStream};
++use std::path::{Path, PathBuf};
++use std::time::{Duration, Instant};
++
++use serde::Deserialize;
++use tokio_util::sync::CancellationToken;
++
++use super::PreparedRootHostLoadedQ24TaskV1;
++use crate::{AgentdError, RootResidentCandidateEnrollmentInputsV3,
++    RootResidentCandidateEnrollmentServiceV3, PreparedRootHostCircuitTaskV1,
++    PreparedRootMaterialSourceHostV1};
++use crate::authority_host_config::read_root_json;
++use crate::authority_host_runtime::{OriginalTaskResidentInputs,
++    OriginalTaskResidentPaths, OriginalTaskResidentPurpose};
++
++/// Supervisor-owned descriptors only. Material must be a distinct actual
++/// non-Root peer; an inherited socketpair created as Root cannot attest it.
++/// The ten original roles arrive through the unchanged separate 21-right frame.
++pub struct RootHostOriginalTaskLearningFilesV1 {
++    pub production_handoff: UnixDatagram,
++    pub task_handoff: UnixDatagram,
++    pub original_task_root_pidfd: OwnedFd,
++    pub resident: RootResidentCandidateEnrollmentInputsV3,
++    pub material_stream: UnixStream,
++    pub original_material_pidfd: OwnedFd,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct ServiceFile {
++    schema_version: u32,
++    purpose: String,
++    consumer_state_root: PathBuf,
++    task_socket: PathBuf,
++    loan_socket: PathBuf,
++    task_nonce: [u8; 16],
++    resident_deployment: PathBuf,
++    resident_evidence_trust: PathBuf,
++    prefreeze_disclosure: PathBuf,
++}
++
++impl PreparedRootHostLoadedQ24TaskV1 {
++    /// Run the real ordinary task and enroll its later original candidate on
++    /// the SAME Root session. This requires the real post-A Generator/Observer
++    /// intake and signed freeze supplied by their owners; no data is invented
++    /// when those owners have not completed that distinct stage.
++    pub fn serve_loaded_original_task_and_resident(
++        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,
++    ) -> Result<(), AgentdError> {
++        self.run_loaded_original_services(service_file, files, OriginalTaskResidentPurpose::Fresh)
++    }
++
++    /// The original existing task and V3 checkpoint remain readback-only where
++    /// their original factories require it. Failure never selects Fresh again.
++    pub fn recover_loaded_original_task_and_resident(
++        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,
++        original_resident_readback: &Path,
++    ) -> Result<(), AgentdError> {
++        self.run_loaded_original_services(service_file, files,
++            OriginalTaskResidentPurpose::Readback(original_resident_readback.to_owned()))
++    }
++
++    fn run_loaded_original_services(
++        mut self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,
++        purpose: OriginalTaskResidentPurpose,
++    ) -> Result<(), AgentdError> {
++        self.clock_status.require_healthy()?;
++        self.read_loaded_original_root_task_generation()?;
++        let specification: ServiceFile = read_root_json(service_file)?;
++        if specification.schema_version != 1
++            || specification.purpose != "hepta.root.same-task-material-resident.service.v1"
++            || specification.task_nonce == [0; 16]
++        { return Err(protocol("original Root service purpose differs")); }
++        let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
++        let (material_host, followups) = self.task.take_original_loader_followups()?;
++        let startup_end = followups.require_startup_end(Instant::now() + Duration::from_secs(30))?;
++        self.clock_status.require_healthy()?;
++        let RootHostOriginalTaskLearningFilesV1 { production_handoff, task_handoff,
++            original_task_root_pidfd, resident, material_stream, original_material_pidfd } = files;
++        let (material_registration, prefreeze) = followups.prepare_prefreeze(
++            &specification.prefreeze_disclosure, &specification.resident_evidence_trust,
++            material_stream, original_material_pidfd, startup_end,
++        )?;
++        self.clock_status.require_healthy()?;
++        let paths = OriginalTaskResidentPaths { deployment: specification.resident_deployment };
++        let clock_status = self.clock_status;
++        let mut task = self.task;
++        std::thread::scope(|scope| {
++            let (task_done_sender, mut task_done) = tokio::sync::oneshot::channel();
++            let task_thread = scope.spawn(move || {
++                let result = PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task_before(
++                    &mut task, production_handoff, task_handoff, original_task_root_pidfd,
++                    &specification.consumer_state_root, specification.task_socket,
++                    specification.loan_socket, specification.task_nonce, startup_end,
++                );
++                let _ = task_done_sender.send(());
++                result
++            });
++            // Start the only Source lane before the late signed freeze is
++            // required. The same client later enters the actual Material pair;
++            // this export cannot also create a post-freeze Source connection.
++            let (material_done_sender, mut material_done) = tokio::sync::oneshot::channel();
++            let material_thread = scope.spawn(move || {
++                let result = PreparedRootMaterialSourceHostV1::serve_original_prefreeze(material_host, material_registration);
++                let _ = material_done_sender.send(());
++                result
++            });
++            let work_result = runtime.block_on(async {
++                let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
++                let prepare = async {
++                    let RootResidentCandidateEnrollmentInputsV3 { stage_handoff, enrollment_handoff,
++                        original_root_pidfd, original_consumer_pidfd, baseline_files } = resident;
++                    // Readability only wakes the receiver. The complete
++                    // original frame, Root pin, purpose, recipient and roles
++                    // must authenticate before any late deployment is read.
++                    let stage_handoff = wait_original_stage_message(stage_handoff, startup_end).await?;
++                    let remaining = startup_end.checked_duration_since(Instant::now())
++                        .filter(|value| !value.is_zero()).ok_or_else(|| protocol("original stage deadline elapsed"))?;
++                    let stage_transport = crate::root_production_handoff::receive_original_candidate_stage_transport(
++                        stage_handoff, remaining)?;
++                    clock_status.require_healthy()?;
++                    let original = OriginalTaskResidentInputs {
++                        stage_transport, enrollment_handoff, original_root_pidfd,
++                        original_consumer_pidfd, baseline_files,
++                    };
++                    let prepared = followups.prepare_resident(paths, original, &prefreeze, purpose, startup_end)?;
++                    clock_status.require_healthy()?;
++                    let service = prepared.enroll().await?;
++                    followups.require_original_task_followups()?;
++                    prefreeze.require_original_prefreeze_trust()?;
++                    clock_status.require_healthy()?;
++                    Ok::<_, AgentdError>(service)
++                };
++                tokio::pin!(prepare);
++                let resident = tokio::select! {
++                    biased;
++                    value = &mut prepare => value?,
++                    _ = &mut task_done => return Err(protocol("task service ended before resident enrollment; same-operation readback required")),
++                    _ = &mut material_done => return Err(protocol("original Source service ended before resident enrollment; same-operation readback required")),
++                    signal = tokio::signal::ctrl_c() => {
++                        return merge_results(signal.map_err(AgentdError::from),
++                            Err(protocol("original enrollment interrupted; effects Unknown, same-operation readback required")));
++                    }
++                    _ = terminate.recv() => return Err(protocol("original enrollment terminated; effects Unknown, same-operation readback required")),
++                };
++                let cancellation = CancellationToken::new();
++                let resident_work = RootResidentCandidateEnrollmentServiceV3::run(resident, cancellation.clone());
++                tokio::pin!(resident_work);
++                let result = tokio::select! {
++                    biased;
++                    value = &mut resident_work => value,
++                    _ = &mut task_done => {
++                        cancellation.cancel();
++                        merge_results(resident_work.await, Err(protocol("task service ended while candidate service was active")))
++                    }
++                    _ = &mut material_done => {
++                        cancellation.cancel();
++                        merge_results(resident_work.await, Err(protocol("Material service ended while candidate service was active")))
++                    }
++                    signal = tokio::signal::ctrl_c() => {
++                        cancellation.cancel();
++                        let result = resident_work.await;
++                        merge_results(merge_results(result, signal.map_err(AgentdError::from)),
++                            Err(protocol("original services interrupted; effects Unknown")))
++                    }
++                    _ = terminate.recv() => {
++                        cancellation.cancel();
++                        merge_results(resident_work.await, Err(protocol("original services terminated; effects Unknown")))
++                    }
++                };
++                merge_results(merge_results(result, followups.require_original_task_followups()), prefreeze.require_original_prefreeze_trust())
++            });
++            // Join actual submitted work, including error paths. No timeout,
++            // abort or dropped future is relabeled as a completed thread.
++            // Deadlines reject late results. Synchronous original I/O may
++            // still block; no physical termination bound is asserted here.
++            let task_result = task_thread.join().map_err(|_| protocol("original task service panicked; effects Unknown"))
++                .and_then(|value| value.map(|_| ()));
++            let material_result = material_thread.join().map_err(|_| protocol("original Material service panicked; effects Unknown"))
++                .and_then(|value| value.map(|_| ()));
++            merge_results(merge_results(merge_results(work_result, task_result), material_result),
++                clock_status.require_healthy())
++        })
++    }
++}
++
++async fn wait_original_stage_message(socket: UnixDatagram, end: Instant) -> Result<UnixDatagram, AgentdError> {
++    let remaining = end.checked_duration_since(Instant::now()).filter(|value| !value.is_zero())
++        .ok_or_else(|| protocol("original stage startup ended"))?;
++    crate::root_production_handoff::root_pair(&socket, remaining.min(Duration::from_secs(30)))?;
++    socket.set_nonblocking(true)?;
++    let original = tokio::io::unix::AsyncFd::new(socket)?;
++    let ready = tokio::time::timeout_at(end.into(), original.readable()).await
++        .map_err(|_| protocol("original stage handoff deadline elapsed"))??;
++    drop(ready);
++    let socket = original.into_inner();
++    socket.set_nonblocking(false)?;
++    if Instant::now() >= end { return Err(protocol("original stage handoff ended")); }
++    Ok(socket)
++}
++
++fn merge_results(first: Result<(), AgentdError>, second: Result<(), AgentdError>) -> Result<(), AgentdError> {
++    match (first, second) {
++        (Ok(()), Ok(())) => Ok(()),
++        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
++        (Err(first), Err(second)) => Err(protocol(format!("{first}; additional original failure: {second}"))),
++    }
++}
++
++fn protocol(error: impl std::fmt::Display) -> AgentdError {
++    AgentdError::Protocol(format!("loaded original task assembly: {error}"))
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs
+@@ -11,6 +11,12 @@
+ #[path = "authority_host_resident_enrollment_connect.rs"]
+ mod connect;
+ pub(crate) use connect::connect_original_resident_enrollment;
++
++#[path = "authority_host_task_resident_enrollment.rs"]
++mod original_task;
++pub(crate) use original_task::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,
++    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,
++    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};
+ 
+ /// No stream created before the daemon's credential drop is accepted here.
+ /// Root creates one protected listener; the actual daemon connects after A.
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_launch.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_launch.rs
+@@ -163,3 +163,6 @@
+ pub use enrollment::prepare_host_resident_candidate_enrollment_v3;
+ pub use enrollment::recover_host_resident_candidate_enrollment_v3;
+ pub(crate) use enrollment::connect_original_resident_enrollment;
++pub(crate) use enrollment::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,
++    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,
++    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs
+@@ -17,6 +17,10 @@
+ use crate::authority_host_config::read_root_json;
+ 
+ const PURPOSE: &str = "hepta.host-resident-learning.trusted-evidence.v3";
++
++#[path = "authority_host_task_prefreeze_trust.rs"]
++mod original_source;
++pub(super) use original_source::{OriginalDistributionPin, OriginalSourceTrust};
+ 
+ #[derive(Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+--- a/codex-rs/hepta-agentd/src/authority_host_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_runtime.rs
+@@ -48,6 +48,7 @@
+ pub use session::OriginalRootPrefreezeSourceRegistrationV1;
+ pub use session::RootHostInitialTaskInstallationErrorV1;
+ pub use session::PreparedRootHostLoadedQ24TaskV1;
++pub use session::RootHostOriginalTaskLearningFilesV1;
+ pub use session::RootNotesPolicyPredecessor;
+ 
+ #[path = "authority_host_writer_rotate.rs"]
+@@ -62,6 +63,9 @@
+ #[path = "authority_host_resident_launch.rs"]
+ mod resident_launch;
+ pub use resident_launch::RootResidentCandidateProcessInputsV3;
++pub(crate) use resident_launch::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,
++    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,
++    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};
+ pub use resident_launch::prepare_host_resident_candidate_v3;
+ pub use resident_launch::recover_host_resident_candidate_v3;
+ 
+--- a/codex-rs/hepta-agentd/src/authority_host_session.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session.rs
+@@ -30,6 +30,7 @@
+ pub use generation::OriginalRootPrefreezeSourceRegistrationV1;
+ pub use generation::RootHostInitialTaskInstallationErrorV1;
+ pub use generation::PreparedRootHostLoadedQ24TaskV1;
++pub use generation::RootHostOriginalTaskLearningFilesV1;
+ 
+ /// One Root session's immutable registration, retained actual process handle
+ /// and original service. This wrapper is not Clone and creates no additional
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
+@@ -26,6 +26,7 @@
+ pub use task::OriginalRootMaterialSourceRegistrationV1;
+ pub use task::OriginalRootPrefreezeSourceRegistrationV1;
+ pub use task::PreparedRootHostLoadedQ24TaskV1;
++pub use task::RootHostOriginalTaskLearningFilesV1;
+ 
+ enum InitialHostPhase<W: AnchorWitnessStore> {
+     Fresh(RootHostInitialGenerationInputsV1<W>),
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
+@@ -9,6 +9,9 @@
+ 
+ #[path = "authority_host_session_generation_task_handoff.rs"]
+ mod ordinary_handoff;
++
++#[path = "authority_host_session_task_followups.rs"]
++mod loaded_followups;
+ 
+ use std::sync::Arc;
+ use codex_hepta_neuron::AnchorWitnessStore;
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
+@@ -146,3 +146,4 @@
+ #[path = "authority_host_session_generation_task_loader.rs"]
+ mod task_input_loader;
+ pub use task_input_loader::PreparedRootHostLoadedQ24TaskV1;
++pub use task_input_loader::RootHostOriginalTaskLearningFilesV1;
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs
+@@ -20,6 +20,10 @@
+ use crate::authority_host_service::OriginalHostInitialOperation;
+ use crate::authority_host_service::OriginalTaskFilePurpose;
+ use crate::authority_host_service::OriginalTaskClockStatus;
++
++#[path = "authority_host_loaded_task_service.rs"]
++mod original_service;
++pub use original_service::RootHostOriginalTaskLearningFilesV1;
+ 
+ /// The original task plus its same callback's first-error observation. There
+ /// is no task/owner getter and no way to clear a failed clock or obtain a new
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs
+@@ -0,0 +1,86 @@
++//! One original task export retains the same session for Material and V3.
++//! No owner, task, runtime, clock or live capability leaves this private tree.
++
++use std::sync::Arc;
++use std::time::Instant;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::path::Path;
++
++use codex_hepta_neuron::FileAnchorWitnessStore;
++
++use super::{OriginalHostInitialOperation, OriginalRootCircuitTaskCustodyV1,
++    PreparedHostAuthoritySession, PreparedRootHostCircuitTaskV1,
++    PreparedRootMaterialSourceHostV1, require_original_session};
++use crate::AgentdError;
++use crate::authority_host_runtime::{OriginalTaskResidentPrepared,
++    OriginalTaskResidentInputs, OriginalTaskResidentPaths, OriginalTaskResidentPurpose,
++    OriginalTaskPrefreezeState};
++use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;
++
++pub(crate) struct OriginalLoadedTaskFollowups {
++    session: Arc<PreparedHostAuthoritySession>,
++    operation: Arc<OriginalHostInitialOperation>,
++    custody: Arc<OriginalRootCircuitTaskCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
++    end: Instant,
++}
++
++impl PreparedRootHostCircuitTaskV1<FileAnchorWitnessStore, FileAnchorWitnessStore> {
++    pub(crate) fn take_original_loader_followups(&mut self) -> Result<(
++        PreparedRootMaterialSourceHostV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
++        OriginalLoadedTaskFollowups,
++    ), AgentdError> {
++        // The existing single-use bit is consumed by the original exporter.
++        // Failure does not return it, the task lane, or a fresh execution right.
++        let material = PreparedRootHostCircuitTaskV1::prepare_original_material_source_host(self)?;
++        let followups = OriginalLoadedTaskFollowups {
++            session: Arc::clone(&self.session), operation: Arc::clone(&self.operation),
++            custody: Arc::clone(&self.custody), end: self.end,
++        };
++        followups.require_original_task_followups()?;
++        Ok((material, followups))
++    }
++}
++
++impl OriginalLoadedTaskFollowups {
++    pub(crate) fn require_original_task_followups(&self) -> Result<(), AgentdError> {
++        require_original_session(&self.session, self.end)?;
++        let observed = OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;
++        if !matches!(observed, NeuronGenerationInitialReadbackV1::Published(_)) {
++            return Err(AgentdError::Invalid("the original task generation is not Published".into()));
++        }
++        OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;
++        require_original_session(&self.session, self.end)
++    }
++
++    pub(crate) fn prepare_resident(
++        &self, paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,
++        prefreeze: &OriginalTaskPrefreezeState, purpose: OriginalTaskResidentPurpose, startup_end: Instant,
++    ) -> Result<OriginalTaskResidentPrepared, AgentdError> {
++        self.require_original_task_followups()?;
++        let prepared = crate::authority_host_runtime::prepare_original_task_resident(
++            &self.session.service, &self.session.config, &self.session.registration,
++            &self.custody, paths, original, prefreeze, purpose, startup_end.min(self.end), self.end,
++        )?;
++        self.require_original_task_followups()?;
++        Ok(prepared)
++    }
++
++    pub(crate) fn prepare_prefreeze(
++        &self, disclosure_file: &Path, evidence_file: &Path,
++        stream: UnixStream, original_material_pidfd: OwnedFd, startup_end: Instant,
++    ) -> Result<(crate::OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError> {
++        self.require_original_task_followups()?;
++        let original = crate::authority_host_runtime::prepare_original_task_prefreeze(
++            &self.session.config, &self.session.registration, disclosure_file, evidence_file,
++            stream, original_material_pidfd, startup_end.min(self.end),
++        )?;
++        self.require_original_task_followups()?;
++        Ok(original)
++    }
++
++    pub(crate) fn require_startup_end(&self, requested: Instant) -> Result<Instant, AgentdError> {
++        self.require_original_task_followups()?;
++        Ok(requested.min(self.end))
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs
+@@ -0,0 +1,208 @@
++//! Root-protected disclosure configuration exists before A. It contains no
++//! RunStart, Decision, Source result, completed receipt or Dataset freeze.
++//! The actual owner must still authenticate every Source/Cell observation.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::path::{Path, PathBuf};
++use std::time::{Instant, SystemTime, UNIX_EPOCH};
++
++use base64::Engine;
++use base64::engine::general_purpose::STANDARD_NO_PAD;
++use codex_hepta_learning_ledger::{LearningEvidenceRoleV1, SignedLearningEvidenceV1,
++    TrustedLearningSignerV1};
++use codex_hepta_neuron::{CellCandidateMaskV1, CellScopeV1};
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use super::{protocol, trust, wire};
++use crate::{AgentdError, AgentdRootAuthorityPeer, CircuitTaskSourceInputV1,
++    OriginalCellQ24MaterialReceiptConfigV1, OriginalCircuitPrefreezeSourceRequestV1,
++    OriginalRootPrefreezeSourceRegistrationV1};
++use crate::authority_host_config::{HostAuthorityRegistration, read_root_json};
++use crate::HostAuthorityServiceConfig;
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct DisclosureFile {
++    schema_version: u32,
++    purpose: String,
++    generation_operation_id: String,
++    generation_intent_digest: String,
++    task_digest: String,
++    source: SourceInput,
++    ledger_binding_digest: String,
++    trust_root: PathBuf,
++    signed_distribution: PathBuf,
++    trust: trust::OriginalDistributionPin,
++    generator_actor: String,
++    experience_actor: String,
++    dataset_actor: String,
++    consumer: Consumer,
++    nonce: [u8; 16],
++    evidence: GeneratorEvidence,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Consumer {
++    uid: u32, gid: u32, pid: u32, boot_id: String, process_start_ticks: u64,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct SourceInput {
++    agent_id: String, cell_id: String, run_id: String,
++    principal_digest: String, source_frontier: String, objective_digest: String,
++    ndu_snapshot_digest: String, monotonic_micros: u64, deadline_micros: u64,
++    observation: Vec<u8>, candidates: Vec<Candidate>, lease_duration_ms: u64,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Candidate { candidate_id: String, allowed: bool }
++
++impl SourceInput {
++    fn original(self) -> Result<CircuitTaskSourceInputV1, AgentdError> {
++        Ok(CircuitTaskSourceInputV1 {
++            scope: CellScopeV1 {
++                agent_id: StableId::new(self.agent_id).map_err(protocol)?,
++                cell_id: StableId::new(self.cell_id).map_err(protocol)?,
++                run_id: StableId::new(self.run_id).map_err(protocol)?,
++                principal_digest: trust::digest(&self.principal_digest)?,
++            },
++            source_frontier: trust::digest(&self.source_frontier)?,
++            objective_digest: trust::digest(&self.objective_digest)?,
++            ndu_snapshot_digest: trust::digest(&self.ndu_snapshot_digest)?,
++            monotonic_micros: self.monotonic_micros, deadline_micros: self.deadline_micros,
++            observation: self.observation,
++            candidates: self.candidates.into_iter().map(|candidate| {
++                Ok(CellCandidateMaskV1 {
++                    candidate_id: StableId::new(candidate.candidate_id).map_err(protocol)?,
++                    allowed: candidate.allowed,
++                })
++            }).collect::<Result<_, AgentdError>>()?,
++            lease_duration_ms: self.lease_duration_ms,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct GeneratorEvidence {
++    evidence_id: String, principal_id: String, trust_digest: String,
++    scope_digest: String, objective_digest: String, authority_epoch: u64,
++    issued_at: u64, expires_at: u64, payload_digest: String, signature: String,
++}
++
++impl GeneratorEvidence {
++    fn original(self) -> Result<SignedLearningEvidenceV1, AgentdError> {
++        let signature = STANDARD_NO_PAD.decode(&self.signature).map_err(protocol)?;
++        if signature.len() != 64 || STANDARD_NO_PAD.encode(&signature) != self.signature {
++            return Err(protocol("original disclosure signature encoding differs"));
++        }
++        Ok(SignedLearningEvidenceV1 {
++            evidence_id: StableId::new(self.evidence_id).map_err(protocol)?,
++            principal_id: StableId::new(self.principal_id).map_err(protocol)?,
++            role: LearningEvidenceRoleV1::Generator,
++            trust_digest: trust::digest(&self.trust_digest)?,
++            scope_digest: trust::digest(&self.scope_digest)?,
++            objective_digest: trust::digest(&self.objective_digest)?,
++            authority_epoch: self.authority_epoch, issued_at: self.issued_at,
++            expires_at: self.expires_at, payload_digest: trust::digest(&self.payload_digest)?,
++            signature: signature.try_into().map_err(|_| protocol("original disclosure signature width differs"))?,
++        })
++    }
++}
++
++/// Private retained data joins the pre-A enrollment to the later signed
++/// Material configuration. This is not a public reader or a Source owner.
++pub(crate) struct OriginalTaskPrefreezeState {
++    trust: trust::OriginalSourceTrust,
++    source: CircuitTaskSourceInputV1,
++    experience: TrustedLearningSignerV1,
++    dataset: TrustedLearningSignerV1,
++}
++
++pub(crate) fn prepare_original_task_prefreeze(
++    config: &HostAuthorityServiceConfig, original: &HostAuthorityRegistration,
++    disclosure_file: &Path, trusted_evidence: &Path,
++    stream: UnixStream, original_consumer_pidfd: OwnedFd, startup_end: Instant,
++) -> Result<(OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError> {
++    wire::remaining(startup_end)?;
++    let value: DisclosureFile = read_root_json(disclosure_file)?;
++    if value.schema_version != 1
++        || value.purpose != "hepta.root.original-task-prefreeze-disclosure.v1"
++        || matches!(value.consumer.uid, 0 | u32::MAX)
++        || matches!(value.consumer.gid, 0 | u32::MAX)
++        || value.consumer.pid == original.peer_pid || value.consumer.pid == std::process::id()
++        || value.nonce == [0; 16] || config.peer_uid == 0
++    { return Err(protocol("protected original pre-freeze disclosure differs")); }
++    let at = now()?;
++    let trust = trust::OriginalSourceTrust::read_original_signed_distribution(trusted_evidence, &value.trust_root,
++        &value.signed_distribution, &value.trust, at)?;
++    let generator = trust.original_signer(&StableId::new(value.generator_actor).map_err(protocol)?,
++        LearningEvidenceRoleV1::Generator, at)?;
++    let experience = trust.original_signer(&StableId::new(value.experience_actor).map_err(protocol)?,
++        LearningEvidenceRoleV1::Observer, at)?;
++    let dataset = trust.original_signer(&StableId::new(value.dataset_actor).map_err(protocol)?,
++        LearningEvidenceRoleV1::Observer, at)?;
++    let consumer = AgentdRootAuthorityPeer { pid: value.consumer.pid,
++        boot_id: value.consumer.boot_id, process_start_ticks: value.consumer.process_start_ticks };
++    wire::Process::require_original(&wire::Process::from_peer(&consumer))?;
++    crate::authority_host_runtime::verify_process_credentials(consumer.pid, value.consumer.uid, value.consumer.gid)?;
++    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, consumer.pid)?;
++    let activated = trust.original_activation();
++    let source = value.source.original()?;
++    let request = OriginalCircuitPrefreezeSourceRequestV1 {
++        generation_operation_id: value.generation_operation_id,
++        generation_intent_digest: trust::digest(&value.generation_intent_digest)?,
++        task_digest: trust::digest(&value.task_digest)?, source: source.clone(),
++        ledger_binding_digest: trust::digest(&value.ledger_binding_digest)?,
++        evidence_trust_digest: activated.verifier().trust_digest(),
++        trust_distribution_digest: activated.distribution_digest(), trust_generation: activated.generation(),
++        generator, experience_signer: experience.clone(), dataset_signer: dataset.clone(),
++        consumer, consumer_uid: value.consumer.uid, nonce: value.nonce,
++    };
++    // The same fixed request is authenticated below, before its stream can be
++    // served. Root's file authorizes disclosure; the Generator cannot choose a
++    // different task, recipient or trust by sending a different signed request.
++    let registration = OriginalRootPrefreezeSourceRegistrationV1::from_original_supervisor(
++        request, activated, value.evidence.original()?, original_consumer_pidfd, stream, startup_end,
++    )?;
++    trust.require_original_distribution_window(now()?)?;
++    wire::remaining(startup_end)?;
++    Ok((registration, OriginalTaskPrefreezeState { trust, source, experience, dataset }))
++}
++
++impl OriginalTaskPrefreezeState {
++    pub(crate) fn require_original_prefreeze_trust(&self) -> Result<(), AgentdError> {
++        self.trust.require_original_distribution_window(now()?)?;
++        Ok(())
++    }
++
++    pub(super) fn evidence(&self) -> &trust::OriginalHostTrust { &self.trust.evidence }
++
++    pub(super) fn require_material(&self, material: &OriginalCellQ24MaterialReceiptConfigV1)
++        -> Result<(), AgentdError>
++    {
++        self.trust.require_original_distribution_window(now()?)?;
++        let initial = &material.initial;
++        if material.verifier.trust_digest() != self.trust.evidence.verifier.trust_digest()
++            || material.experience_signer != self.experience || material.dataset_signer != self.dataset
++            || initial.owners.experience != self.experience.principal.principal_id
++            || initial.owners.dataset != self.dataset.principal.principal_id
++            || initial.owners.evidence_trust_digest != self.trust.evidence.verifier.trust_digest()
++            || initial.request.agent_id != self.source.scope.agent_id
++            || initial.request.cell_id != self.source.scope.cell_id
++            || initial.request.source_run_id != self.source.scope.run_id
++            || initial.request.principal_id.as_str() != self.source.scope.principal_digest.to_string()
++            || initial.request.envelope.objective_digest != self.source.objective_digest
++        { return Err(protocol("late Material differs from the original pre-freeze enrollment")); }
++        Ok(())
++    }
++}
++
++fn now() -> Result<u64, AgentdError> {
++    Ok(SystemTime::now().duration_since(UNIX_EPOCH).map_err(protocol)?.as_secs())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs
+@@ -0,0 +1,142 @@
++//! Existing Root-pinned learning trust for the fixed Source disclosure.
++//! Activation verifies the original signed distribution; it neither rotates
++//! the ledger nor creates a root, signer, grant or replacement trust history.
++
++use std::io;
++use std::path::Path;
++
++use base64::Engine;
++use base64::engine::general_purpose::STANDARD_NO_PAD;
++use codex_hepta_learning_ledger::{ActivatedLearningTrustV1, LearningEvidenceRoleV1,
++    LearningEvidenceTrustV1, LearningTrustDistributionV1, LearningTrustRootV1,
++    SignedLearningTrustDistributionV1, TrustedLearningSignerV1, activate_learning_trust};
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use super::{OriginalHostTrust, digest};
++use crate::authority_host_config::read_root_json;
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(in super::super) struct OriginalDistributionPin {
++    root_id: String,
++    root_digest: String,
++    distribution_id: String,
++    distribution_digest: String,
++    generation: u64,
++    evidence_trust_digest: String,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct RootFile {
++    schema_version: u32,
++    purpose: String,
++    root_id: String,
++    scope_digest: String,
++    verifying_key: [u8; 32],
++    valid_from: u64,
++    expires_at: u64,
++    revoked_at: Option<u64>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct DistributionFile {
++    schema_version: u32,
++    purpose: String,
++    distribution_id: String,
++    generation: u64,
++    effective_at: u64,
++    root_id: String,
++    issued_at: u64,
++    expires_at: u64,
++    signature: String,
++}
++
++pub(in super::super) struct OriginalSourceTrust {
++    pub(in super::super) evidence: OriginalHostTrust,
++    root: LearningTrustRootV1,
++    signed: SignedLearningTrustDistributionV1,
++    activated: ActivatedLearningTrustV1,
++}
++
++impl OriginalSourceTrust {
++    pub(in super::super) fn read_original_signed_distribution(
++        evidence_path: &Path, root_path: &Path, distribution_path: &Path,
++        pin: &OriginalDistributionPin, at: u64,
++    ) -> io::Result<Self> {
++        let evidence = OriginalHostTrust::read(evidence_path)?;
++        let root: RootFile = read_root_json(root_path)?;
++        let signed: DistributionFile = read_root_json(distribution_path)?;
++        if root.schema_version != 1 || root.purpose != "hepta.root.learning-trust-root.v1"
++            || signed.schema_version != 1
++            || signed.purpose != "hepta.root.original-learning-trust-distribution.v1"
++        { return Err(io::Error::other("original learning trust purpose differs")); }
++        let root = LearningTrustRootV1 {
++            root_id: StableId::new(root.root_id).map_err(io::Error::other)?,
++            scope_digest: digest(&root.scope_digest)?, verifying_key: root.verifying_key,
++            valid_from: root.valid_from, expires_at: root.expires_at, revoked_at: root.revoked_at,
++        };
++        let signature = STANDARD_NO_PAD.decode(&signed.signature).map_err(io::Error::other)?;
++        if signature.len() != 64 || STANDARD_NO_PAD.encode(&signature) != signed.signature {
++            return Err(io::Error::other("original distribution signature encoding differs"));
++        }
++        let signed = SignedLearningTrustDistributionV1 {
++            distribution: LearningTrustDistributionV1 {
++                distribution_id: StableId::new(signed.distribution_id).map_err(io::Error::other)?,
++                generation: signed.generation, effective_at: signed.effective_at,
++                trust: LearningEvidenceTrustV1 {
++                    scope_digest: evidence.verifier.scope_digest(),
++                    objective_digest: evidence.verifier.objective_digest(),
++                    authority_epoch: evidence.verifier.authority_epoch(),
++                    signers: evidence.signers.clone(),
++                },
++            },
++            root_id: StableId::new(signed.root_id).map_err(io::Error::other)?,
++            issued_at: signed.issued_at, expires_at: signed.expires_at,
++            signature: signature.try_into().map_err(|_| io::Error::other("original signature width differs"))?,
++        };
++        // None here validates one already selected immutable distribution. It
++        // is not a request to advance an existing ledger's trust generation.
++        let activated = activate_learning_trust(&root, signed.clone(), None, at)
++            .map_err(io::Error::other)?;
++        if activated.root_id().as_str() != pin.root_id
++            || activated.root_digest() != digest(&pin.root_digest)?
++            || activated.distribution_id().as_str() != pin.distribution_id
++            || activated.distribution_digest() != digest(&pin.distribution_digest)?
++            || activated.generation() != pin.generation
++            || activated.verifier().trust_digest() != digest(&pin.evidence_trust_digest)?
++            || activated.verifier().trust_digest() != evidence.verifier.trust_digest()
++        { return Err(io::Error::other("original protected trust pins differ")); }
++        Ok(Self { evidence, root, signed, activated })
++    }
++
++    pub(in super::super) fn require_original_distribution_window(&self, at: u64) -> io::Result<()> {
++        let actual = activate_learning_trust(&self.root, self.signed.clone(), None, at)
++            .map_err(io::Error::other)?;
++        if actual.root_id() != self.activated.root_id()
++            || actual.root_digest() != self.activated.root_digest()
++            || actual.distribution_id() != self.activated.distribution_id()
++            || actual.distribution_digest() != self.activated.distribution_digest()
++            || actual.generation() != self.activated.generation()
++            || actual.verifier().trust_digest() != self.evidence.verifier.trust_digest()
++        { return Err(io::Error::other("original immutable trust changed")); }
++        Ok(())
++    }
++
++    pub(in super::super) fn original_activation(&self) -> ActivatedLearningTrustV1 {
++        self.activated.clone()
++    }
++
++    pub(in super::super) fn original_signer(
++        &self, actor: &StableId, role: LearningEvidenceRoleV1, at: u64,
++    ) -> io::Result<TrustedLearningSignerV1> {
++        self.require_original_distribution_window(at)?;
++        let signer = self.evidence.signers.iter()
++            .find(|value| &value.principal.principal_id == actor)
++            .ok_or_else(|| io::Error::other("original disclosed actor is not enrolled"))?;
++        self.evidence.verifier.require_signer_binding(role, signer, at).map_err(io::Error::other)?;
++        Ok(signer.clone())
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs
+@@ -0,0 +1,157 @@
++//! The existing V3 registration is opened on the task's SAME retained Root
++//! service. Its late signed Material must match the earlier fixed disclosure
++//! and uses that same evidence trust; no second Source lane is constructed.
++
++use super::*;
++use std::path::PathBuf;
++use std::time::Instant;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use crate::{AgentdError, HostAuthorityService, OriginalRootCircuitTaskCustodyV1,
++    RootCandidateStageHandoffV1};
++use crate::authority_host_config::HostAuthorityRegistration;
++
++#[path = "authority_host_task_prefreeze_inputs.rs"]
++mod prefreeze;
++pub(crate) use prefreeze::{OriginalTaskPrefreezeState, prepare_original_task_prefreeze};
++
++pub(crate) struct OriginalTaskResidentPaths {
++    pub(crate) deployment: PathBuf,
++}
++
++pub(crate) enum OriginalTaskResidentPurpose {
++    Fresh,
++    Readback(PathBuf),
++}
++
++pub(crate) struct OriginalTaskResidentInputs {
++    pub(crate) stage_transport: crate::root_production_handoff::OriginalRootCandidateStageTransportV1,
++    pub(crate) enrollment_handoff: UnixDatagram,
++    pub(crate) original_root_pidfd: OwnedFd,
++    pub(crate) original_consumer_pidfd: OwnedFd,
++    pub(crate) baseline_files: CellQ24ModelFilesV1,
++}
++
++pub(crate) struct OriginalTaskResidentPrepared {
++    registration: RootResidentLearningRegistrationV3,
++    inputs: crate::RootResidentCandidateInputsV1,
++    handoff: RootCandidateStageHandoffV1,
++    listener: ResidentListener,
++    packet: wire::Packet,
++    enrollment_handoff: UnixDatagram,
++    original_root_pidfd: OwnedFd,
++    original_consumer_pidfd: OwnedFd,
++    peer: crate::AgentdRootAuthorityPeer,
++    uid: u32,
++    timeout: Duration,
++    connect_end: Instant,
++    session_end: Instant,
++}
++
++/// Crate-private fixed assembly. It accepts the concrete retained task custody,
++/// never a caller checker or a decoded Source/Cell receipt. Root's old issuer
++/// factory is deliberately absent: the provided service already owns it.
++pub(crate) fn prepare_original_task_resident(
++    service: &HostAuthorityService, config: &HostAuthorityServiceConfig,
++    original_registration: &HostAuthorityRegistration,
++    custody: &OriginalRootCircuitTaskCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
++    paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,
++    prefreeze: &OriginalTaskPrefreezeState,
++    purpose: OriginalTaskResidentPurpose, startup_end: Instant, task_end: Instant,
++) -> Result<OriginalTaskResidentPrepared, AgentdError> {
++    wire::remaining(startup_end)?;
++    prefreeze.require_original_prefreeze_trust()?;
++    let trust = prefreeze.evidence();
++    let OriginalTaskResidentInputs { stage_transport, enrollment_handoff, original_root_pidfd,
++        original_consumer_pidfd, baseline_files } = original;
++    let baseline = Arc::new(LoadedCellQ24ModelV1::open_files(baseline_files).map_err(protocol)?);
++    let inputs::OriginalDeployment { profile, inputs, consumer, handoff_timeout, enrollment_profile } =
++        inputs::OriginalDeployment::read(&paths.deployment, trust, baseline)?;
++    prefreeze.require_material(&inputs.material)?;
++    let (peer, uid, requested_timeout, lifetime) = consumer.into_peer();
++    if uid != config.peer_uid || matches!(config.peer_gid, 0 | u32::MAX)
++        || peer.pid != original_registration.peer_pid
++        || peer.boot_id != original_registration.boot_id
++        || peer.process_start_ticks != original_registration.process_start_ticks
++    { return Err(protocol("resident recipient is not this original registered daemon")); }
++    let timeout = requested_timeout.min(Duration::from_millis(config.timeout_ms.min(500)));
++    if timeout.is_zero() { return Err(protocol("original resident command timeout is empty")); }
++    let recipient = wire::Process::from_peer(&peer);
++    wire::Process::require_original(&recipient)?;
++    crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, config.peer_gid)?;
++    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)?;
++    let connect_end = (Instant::now() + handoff_timeout).min(startup_end).min(task_end);
++    let session_end = (Instant::now() + lifetime).min(task_end);
++    wire::remaining(connect_end)?;
++    let (authorization, readback) = match purpose {
++        OriginalTaskResidentPurpose::Fresh => (wire::Authorization::Fresh, None),
++        OriginalTaskResidentPurpose::Readback(path) => {
++            let value: ReadbackFile = read_root_json(&path)?;
++            if value.schema_version != 3 || value.purpose != "hepta.host-resident-learning.readback-deployment.v3" {
++                return Err(protocol("original resident readback purpose differs"));
++            }
++            let authorization = wire::Authorization::Readback { intent: value.intent.clone(), lease: value.lease.clone() };
++            let readback = RootResidentLearningReadbackAuthorizationV3::from_original_root(
++                &profile, value.intent, value.lease)?;
++            (authorization, Some(readback))
++        }
++    };
++    let handoff = stage_transport.bind_original_profile(&profile)?;
++    wire::remaining(connect_end)?;
++    // A protected configuration and signed freeze do not prove A ran. Reach
++    // the retained original Source and same-Arc Cell before any registration.
++    let _actual_source = OriginalRootCircuitTaskCustodyV1::read_original_material_source(
++        custody, &inputs.material.initial.request)?;
++    prefreeze.require_material(&inputs.material)?;
++    wire::remaining(connect_end)?;
++    let binding = profile.binding();
++    let registration = match readback {
++        Some(readback) => HostAuthorityService::recover_resident_learning_v3(service, profile, readback)?,
++        None => HostAuthorityService::register_resident_learning_v3(service, profile)?,
++    };
++    wire::remaining(connect_end)?;
++    let listener: ResidentListener = ResidentListener::bind_original(config, binding)?;
++    let (path, device, inode) = listener.original_node();
++    // Read monotonic first. Subsequent Instant sampling can only reduce each
++    // transmitted remainder; neither deadline is reset by enrollment.
++    let now_ns = wire::now_ns()?;
++    let connect_before_ns = now_ns.checked_add(u64::try_from(wire::remaining(connect_end)?.as_nanos()).map_err(protocol)?)
++        .ok_or_else(|| protocol("original resident connect deadline overflow"))?;
++    let session_end_ns = now_ns.checked_add(u64::try_from(wire::remaining(session_end)?.as_nanos()).map_err(protocol)?)
++        .ok_or_else(|| protocol("original resident session deadline overflow"))?;
++    let packet = wire::Packet { schema_version: 3, purpose: wire::PURPOSE.into(),
++        root: wire::Process::current()?, consumer: recipient, consumer_uid: uid, consumer_gid: config.peer_gid,
++        profile: enrollment_profile, trusted_evidence: String::from_utf8(trust.encoded.clone()).map_err(protocol)?,
++        socket: path.clone(), socket_device: device, socket_inode: inode,
++        connect_before_ns, session_end_ns, command_timeout_ms: u64::try_from(timeout.as_millis()).map_err(protocol)?,
++        authorization };
++    wire::remaining(connect_end)?;
++    prefreeze.require_original_prefreeze_trust()?;
++    Ok(OriginalTaskResidentPrepared { registration, inputs, handoff, listener, packet,
++        enrollment_handoff, original_root_pidfd, original_consumer_pidfd, peer, uid, timeout,
++        connect_end, session_end })
++}
++
++impl OriginalTaskResidentPrepared {
++    pub(crate) async fn enroll(self) -> Result<RootResidentCandidateEnrollmentServiceV3, AgentdError> {
++        let Self { registration, inputs, handoff, listener, packet, enrollment_handoff,
++            original_root_pidfd, original_consumer_pidfd, peer, uid, timeout, connect_end, session_end } = self;
++        wire::remaining(connect_end)?;
++        let sealed = wire::seal(&packet)?;
++        crate::root_production_handoff::send_original_resident_enrollment(
++            enrollment_handoff, &sealed, &original_root_pidfd, wire::remaining(connect_end)?)?;
++        let (stream, socket_guard) = listener.accept_original(connect_end).await?;
++        wire::Process::require_original(&packet.consumer)?;
++        crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, packet.consumer_gid)?;
++        crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)?;
++        wire::remaining(connect_end)?;
++        let service = RootResidentLearningRegistrationV3::into_candidate_service(registration, inputs, handoff,
++            RootResidentLearningConsumerV3 { stream, peer, uid, original_consumer_pidfd,
++                timeout, lifetime: wire::remaining(session_end)? }).map_err(protocol)?;
++        wire::remaining(connect_end)?;
++        Ok(RootResidentCandidateEnrollmentServiceV3 { service, socket_guard, session_end })
++    }
++}
++
++fn protocol(error: impl std::fmt::Display) -> AgentdError {
++    AgentdError::Protocol(format!("same-session original resident assembly: {error}"))
++}
+--- a/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs
++++ b/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs
+@@ -6,6 +6,9 @@
+ #[cfg(target_os = "linux")]
+ #[path = "../authority_host_resident_enrollment_cli.rs"]
+ mod resident_enrollment_cli;
++#[cfg(target_os = "linux")]
++#[path = "../authority_host_loaded_task_cli.rs"]
++mod loaded_task_cli;
+ 
+ #[cfg(target_os = "linux")]
+ fn main() -> Result<(), Box<dyn std::error::Error>> {
+@@ -29,6 +32,17 @@
+                 return Err("duplicate option".into());
+             }
+         }
++    }
++    if command == "serve-original-task-learning" || command == "recover-original-task-learning" {
++        if pidfd_stdin {
++            return Err("original task loading requires all named original descriptors".into());
++        }
++        let purpose = if command == "serve-original-task-learning" {
++            loaded_task_cli::Command::Fresh
++        } else {
++            loaded_task_cli::Command::Recover
++        };
++        return loaded_task_cli::run(options, purpose);
+     }
+     if command == "serve-resident-learning-late" || command == "recover-resident-learning-late" {
+         if pidfd_stdin {
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -162,6 +162,8 @@
+ pub use authority_host_runtime::RootHostInitialTaskInstallationErrorV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::PreparedRootHostLoadedQ24TaskV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::RootHostOriginalTaskLearningFilesV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootNotesPolicyPredecessor;
+ #[cfg(target_os = "linux")]
+--- a/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs
+@@ -24,6 +24,10 @@
+ 
+ #[path = "root_candidate_stage_handoff_wire.rs"]
+ mod wire;
++
++#[path = "root_candidate_stage_transport.rs"]
++mod late_transport;
++pub(crate) use late_transport::{OriginalRootCandidateStageTransportV1, receive_original_candidate_stage_transport};
+ 
+ const PURPOSE: &str = "hepta.original-root-candidate-stage-handoff.v1";
+ const ROLES: [&str; 10] = [
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_transport.rs
+@@ -0,0 +1,50 @@
++//! Receive and authenticate the complete original transport before reading a
++//! late protected profile. This held frame cannot produce role streams until
++//! the independently loaded full profile passes the original validator.
++
++use super::*;
++
++pub(crate) struct OriginalRootCandidateStageTransportV1 {
++    packet: Packet,
++    descriptors: Vec<OwnedFd>,
++    sender: OwnedFd,
++}
++
++pub(crate) fn receive_original_candidate_stage_transport(
++    socket: UnixDatagram, timeout: Duration,
++) -> Result<OriginalRootCandidateStageTransportV1, AgentdError> {
++    require_root()?;
++    let root = super::super::root_pair(&socket, timeout)?;
++    let (bytes, mut descriptors) = wire::receive(&socket, timeout)?;
++    let sender = descriptors.remove(0);
++    super::super::require_root_pin(&sender, root.pid as u32)?;
++    let packet: Packet = serde_json::from_slice(&bytes)?;
++    if packet.purpose != PURPOSE || packet.recipient.pid != std::process::id()
++        || packet.lanes.len() != ROLES.len()
++    { return Err(refused("original late transport purpose, recipient and ten roles required")); }
++    require_process(&packet.recipient)?;
++    let now = wire::monotonic_ns()?;
++    for (index, lane) in packet.lanes.iter().enumerate() {
++        if lane.role != ROLES[index] { return Err(refused("original late transport role order differs")); }
++        let lifetime = lane.end_ns.checked_sub(now).ok_or_else(|| refused("expired original role"))?;
++        require_timing(index, lane.timeout_ns, lifetime)?;
++    }
++    super::super::require_root_pin(&sender, root.pid as u32)?;
++    Ok(OriginalRootCandidateStageTransportV1 { packet, descriptors, sender })
++}
++
++impl OriginalRootCandidateStageTransportV1 {
++    pub(crate) fn bind_original_profile(self, profile: &RootResidentLearningProfileV3)
++        -> Result<RootCandidateStageHandoffV1, AgentdError>
++    {
++        require_root()?;
++        crate::root_observation_stream::check_lifetime(&self.sender)
++            .map_err(|_| refused("original handoff Root exited"))?;
++        // No self-comparison, parsed claim or mere readability can satisfy this
++        // independent full profile check. Failure closes every retained right.
++        validate_packet(&self.packet, profile.binding())?;
++        Ok(RootCandidateStageHandoffV1 {
++            packet: self.packet, descriptors: self.descriptors, sender: self.sender,
++        })
++    }
++}
+--- a/codex-rs/hepta-agentd/src/root_production_handoff.rs
++++ b/codex-rs/hepta-agentd/src/root_production_handoff.rs
+@@ -41,6 +41,7 @@
+ pub use candidate_stages::RootCandidateStageHandoffV1;
+ pub use candidate_stages::receive_root_candidate_stage_handoff;
+ pub use candidate_stages::send_root_candidate_stage_handoff;
++pub(crate) use candidate_stages::{OriginalRootCandidateStageTransportV1, receive_original_candidate_stage_transport};
+ 
+ /// Consume exactly one inherited unnamed pair. The retained creator must be
+ /// actual UID0, and the second transferred descriptor must pin that same Root.

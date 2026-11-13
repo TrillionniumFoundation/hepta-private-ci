@@ -1,0 +1,1831 @@
+{
+  "base_callers": {
+    "bytes": 1902614,
+    "git_blob": "8875892749c45665abdce90310a7a47d90308b9b",
+    "sha256": "4032c99e77d9aa7c36f987e927962be470eb469ee30911ef16d577f257ec56ac"
+  },
+  "new_rows": [
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_root_task_generation"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::read_original_root_task_generation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn pending_original_root_task_operations"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_pending_original_root_task_operations",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::pending_original_root_task_operations"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn drain_completed_original_root_task"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_drain_completed_original_root_task",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::drain_completed_original_root_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn prepare_original_root_task"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_initial_generation_v1_prepare_original_root_task",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::prepare_original_root_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn handoff_and_serve_original_root_circuit_task"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_handoff_and_serve_original_root_circuit_task",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn serve_original_root_circuit_task"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_serve_original_root_circuit_task",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::serve_original_root_circuit_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_original_root_task_source"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_require_original_root_task_source",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::require_original_root_task_source"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn bind_original_task_host_lanes"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "id": "e2_prepared_host_authority_session_bind_original_task_host_lanes",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "receiver_type": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::bind_original_task_host_lanes"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn serve"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "id": "e2_original_task_host_lanes_serve",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "receiver_type": "OriginalTaskHostLanes",
+      "symbol": "OriginalTaskHostLanes::serve"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn bind"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "id": "e2_task_listeners_bind",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "receiver_type": "TaskListeners",
+      "symbol": "TaskListeners::bind"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn accept"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "id": "e2_task_listeners_accept",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "receiver_type": "TaskListeners",
+      "symbol": "TaskListeners::accept"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn wait_first_frame"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "id": "e2_wait_first_frame",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "symbol": "wait_first_frame"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_original_source"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "id": "e2_original_root_circuit_task_custody_v1_require_original_source",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs"
+      ],
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::require_original_source"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn into_original_root_task_channel"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "id": "e2_original_root_initial_generation_custody_v1_into_original_root_task_channel",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+      ],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::into_original_root_task_channel"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_root_handoff_data"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "id": "e2_circuit_q24_task_runtime_v1_original_root_handoff_data",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "receiver_type": "CircuitQ24TaskRuntimeV1",
+      "symbol": "CircuitQ24TaskRuntimeV1::original_root_handoff_data"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn take_original_root_lane"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "id": "e2_circuit_q24_task_runtime_v1_take_original_root_lane",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs"
+      ],
+      "receiver_type": "CircuitQ24TaskRuntimeV1",
+      "symbol": "CircuitQ24TaskRuntimeV1::take_original_root_lane"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn retain_original_remote_record"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "id": "e2_circuit_task_handle_v1_retain_original_remote_record",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/state_circuit_task.rs"
+      ],
+      "receiver_type": "CircuitTaskHandleV1",
+      "symbol": "CircuitTaskHandleV1::retain_original_remote_record"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_root_handoff_registry"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "id": "e2_circuit_task_runtime_bootstrap_v1_original_root_handoff_registry",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs"
+      ],
+      "receiver_type": "CircuitTaskRuntimeBootstrapV1",
+      "symbol": "CircuitTaskRuntimeBootstrapV1::original_root_handoff_registry"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn take_original_root_lane"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "id": "e2_circuit_task_runtime_bootstrap_v1_take_original_root_lane",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs"
+      ],
+      "receiver_type": "CircuitTaskRuntimeBootstrapV1",
+      "symbol": "CircuitTaskRuntimeBootstrapV1::take_original_root_lane"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn execute_original_remote"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "id": "e2_agentd_circuit_cell_owner_v1_execute_original_remote",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs"
+      ],
+      "receiver_type": "AgentdCircuitCellOwnerV1",
+      "symbol": "AgentdCircuitCellOwnerV1::execute_original_remote"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new_until"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_new_until",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+      ],
+      "receiver_type": "DaemonClient",
+      "symbol": "DaemonClient::new_until"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn begin_original_record"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_begin_original_record",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+      ],
+      "receiver_type": "DaemonClient",
+      "symbol": "DaemonClient::begin_original_record"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn run_reverse"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_run_reverse",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+      ],
+      "receiver_type": "DaemonClient",
+      "symbol": "DaemonClient::run_reverse"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn stop_reverse"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_stop_reverse",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+      ],
+      "receiver_type": "DaemonClient",
+      "symbol": "DaemonClient::stop_reverse"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn sample_original_clock"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_sample_original_clock",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+      ],
+      "receiver_type": "DaemonClient",
+      "symbol": "DaemonClient::sample_original_clock"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_execution"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_client_original_execution",
+      "product_callers": [],
+      "receiver_type": "DaemonClient",
+      "symbol": "DaemonClient::original_execution"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_new",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+      ],
+      "receiver_type": "DaemonCellPort",
+      "symbol": "DaemonCellPort::new"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_registry"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_original_registry",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs"
+      ],
+      "receiver_type": "DaemonCellPort",
+      "symbol": "DaemonCellPort::original_registry"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_lookup"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_original_lookup",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs"
+      ],
+      "receiver_type": "DaemonCellPort",
+      "symbol": "DaemonCellPort::original_lookup"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_execute"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "id": "e2_daemon_cell_port_original_execute",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs"
+      ],
+      "receiver_type": "DaemonCellPort",
+      "symbol": "DaemonCellPort::original_execute"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_new",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::new"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn attach"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_attach",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::attach"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn begin_record"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_begin_record",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::begin_record"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn record"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_record",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::record"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn current_record"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_current_record",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::current_record"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn retain_admission"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_retain_admission",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::retain_admission"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn retain_completion"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_retain_completion",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::retain_completion"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn respond"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "id": "e2_daemon_loans_respond",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+      ],
+      "receiver_type": "DaemonLoans",
+      "symbol": "DaemonLoans::respond"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_new",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "ReverseClient",
+      "symbol": "ReverseClient::new"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn check_record"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_check_record",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "ReverseClient",
+      "symbol": "ReverseClient::check_record"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn open_admission"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_open_admission",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "ReverseClient",
+      "symbol": "ReverseClient::open_admission"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn completion"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_completion",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "ReverseClient",
+      "symbol": "ReverseClient::completion"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn terminal"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_reverse_client_terminal",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "ReverseClient",
+      "symbol": "ReverseClient::terminal"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_current"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_original_remote_admission_require_current",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_cell_remote.rs"
+      ],
+      "receiver_type": "OriginalRemoteAdmission",
+      "symbol": "OriginalRemoteAdmission::require_current"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn into_original_payload"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "id": "e2_original_remote_completion_into_original_payload",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs"
+      ],
+      "receiver_type": "OriginalRemoteCompletion",
+      "symbol": "OriginalRemoteCompletion::into_original_payload"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_original_root_task_streams_new",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs"
+      ],
+      "receiver_type": "OriginalRootTaskStreams",
+      "symbol": "OriginalRootTaskStreams::new"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn from_original_factory"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_original_root_task_lane_from_original_factory",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs"
+      ],
+      "receiver_type": "OriginalRootTaskLane",
+      "symbol": "OriginalRootTaskLane::from_original_factory"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn serve"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "id": "e2_remote_serve",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs"
+      ],
+      "symbol": "remote::serve"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn channel"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "id": "e2_original_remote_channel",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/config_original_root_task.rs"
+      ],
+      "symbol": "original_remote_channel"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn channel_until"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "id": "e2_original_remote_channel_until",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/config_original_root_task.rs"
+      ],
+      "symbol": "original_remote_channel_until"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn retain"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_root_lane_retain",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+      ],
+      "symbol": "root_lane::retain"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn take"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_lane_factory_take",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+      ],
+      "receiver_type": "OriginalRootLaneFactory",
+      "symbol": "OriginalRootLaneFactory::take"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_handoff_registry"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_lane_factory_original_handoff_registry",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+      ],
+      "receiver_type": "OriginalRootLaneFactory",
+      "symbol": "OriginalRootLaneFactory::original_handoff_registry"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn execute"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_cell_pump_execute",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "OriginalRootCellPump",
+      "symbol": "OriginalRootCellPump::execute"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_cell_pump_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "OriginalRootCellPump",
+      "symbol": "OriginalRootCellPump::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn clock"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "id": "e2_original_root_cell_pump_clock",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "OriginalRootCellPump",
+      "symbol": "OriginalRootCellPump::clock"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_budget_new",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "Budget",
+      "symbol": "Budget::new"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn before"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_budget_before",
+      "product_callers": [],
+      "receiver_type": "Budget",
+      "symbol": "Budget::before"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn new"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_new",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "Lane",
+      "symbol": "Lane::new"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn call"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_call",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs"
+      ],
+      "receiver_type": "Lane",
+      "symbol": "Lane::call"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn serve_one"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "id": "e2_lane_serve_one",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "Lane",
+      "symbol": "Lane::serve_one"
+    },
+    {
+      "call_pattern": "\\b(?:remote_source::original_binding|original_root_source_binding)\\s*\\(",
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_binding"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_remote_source_original_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs"
+      ],
+      "symbol": "remote_source::original_binding"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn expected_request"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_remote_source_expected_request",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs"
+      ],
+      "symbol": "remote_source::expected_request"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_completion_bytes"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_original_completion_bytes",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs"
+      ],
+      "symbol": "original_completion_bytes"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_remote_binding"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_binding"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_root_handoff_source"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_root_handoff_source",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_root_handoff_source"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_original_remote_binding"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_require_original_remote_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::require_original_remote_binding"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_remote_request"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_request",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_request"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_remote_saved_input"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_saved_input",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_saved_input"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_remote_resolve"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_original_remote_resolve",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::original_remote_resolve"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn publish_original_remote_completion"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "id": "e2_durable_circuit_task_source_v1_publish_original_remote_completion",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+      ],
+      "receiver_type": "DurableCircuitTaskSourceV1",
+      "symbol": "DurableCircuitTaskSourceV1::publish_original_remote_completion"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn with_original_root_circuit_task"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "id": "e2_agentd_config_with_original_root_circuit_task",
+      "product_callers": [],
+      "receiver_type": "AgentdConfig",
+      "symbol": "AgentdConfig::with_original_root_circuit_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn with_original_root_circuit_task_until"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "id": "e2_agentd_config_with_original_root_circuit_task_until",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_original_task_handoff.rs"
+      ],
+      "receiver_type": "AgentdConfig",
+      "symbol": "AgentdConfig::with_original_root_circuit_task_until"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn install_original_root_task"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "id": "e2_agentd_production_launch_install_original_root_task",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/main.rs"
+      ],
+      "receiver_type": "AgentdProductionLaunch",
+      "symbol": "AgentdProductionLaunch::install_original_root_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn receive_root_original_task_handoff"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "id": "e2_receive_root_original_task_handoff",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "symbol": "receive_root_original_task_handoff"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn send_original_task_handoff"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "id": "e2_send_original_task_handoff",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "symbol": "send_original_task_handoff"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn install"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "id": "e2_root_original_task_handoff_v1_install",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher.rs"
+      ],
+      "receiver_type": "RootOriginalTaskHandoffV1",
+      "symbol": "RootOriginalTaskHandoffV1::install"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn seal"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "e2_root_original_task_descriptor_seal",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "symbol": "root_original_task_descriptor::seal"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "e2_root_original_task_descriptor_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_original_task_handoff.rs"
+      ],
+      "symbol": "root_original_task_descriptor::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_original_identity"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "id": "e2_descriptor_require_original_identity",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_original_task_handoff.rs"
+      ],
+      "receiver_type": "Descriptor",
+      "symbol": "Descriptor::require_original_identity"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn prepare_original_material_source_host"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_prepare_original_material_source_host",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::prepare_original_material_source_host"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn serve"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "id": "e2_prepared_root_material_source_host_v1_serve",
+      "product_callers": [],
+      "receiver_type": "PreparedRootMaterialSourceHostV1",
+      "symbol": "PreparedRootMaterialSourceHostV1::serve"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn from_original_supervisor"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs",
+      "id": "e2_original_root_material_source_registration_v1_from_original_supervisor",
+      "product_callers": [],
+      "receiver_type": "OriginalRootMaterialSourceRegistrationV1",
+      "symbol": "OriginalRootMaterialSourceRegistrationV1::from_original_supervisor"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn into_original_root_source_command_owner"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "id": "e2_original_cell_q24_material_receipt_owners_v1_into_original_root_source_command_owner",
+      "product_callers": [],
+      "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+      "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::into_original_root_source_command_owner"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_source_loan_binding"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs",
+      "id": "e2_original_cell_q24_material_receipt_config_v1_original_source_loan_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs"
+      ],
+      "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+      "symbol": "OriginalCellQ24MaterialReceiptConfigV1::original_source_loan_binding"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn from_original_material_root_stream"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "e2_circuit_task_source_readback_v1_from_original_material_root_stream",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs"
+      ],
+      "receiver_type": "CircuitTaskSourceReadbackV1",
+      "symbol": "CircuitTaskSourceReadbackV1::from_original_material_root_stream"
+    },
+    {
+      "call_pattern": "\\bOriginalReadback::RootMaterial\\(original\\)\\s*=>\\s*(?:\\{\\s*let\\s+observed\\s*=\\s*)?original\\.read\\s*\\(",
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "e2_material_client_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+      ],
+      "symbol": "material::Client::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn encode_original_material_publication"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "id": "e2_circuit_task_source_readback_v1_encode_original_material_publication",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs"
+      ],
+      "receiver_type": "CircuitTaskSourceReadbackV1",
+      "symbol": "CircuitTaskSourceReadbackV1::encode_original_material_publication"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_material_publication"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs",
+      "id": "e2_published_circuit_feature_task_v1_read_original_material_publication",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs"
+      ],
+      "receiver_type": "PublishedCircuitFeatureTaskV1",
+      "symbol": "PublishedCircuitFeatureTaskV1::read_original_material_publication"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_material_source"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "id": "e2_original_root_circuit_task_custody_v1_read_original_material_source",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+      ],
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_material_source"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_source"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "id": "e2_cell_q24_dataset_require_source",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs"
+      ],
+      "symbol": "cell_q24_dataset::require_source"
+    }
+  ],
+  "old_row_changes": [
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "after": {
+        "call_pattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)seal_bootstrap\\s*\\(",
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn seal_bootstrap(&self",
+          "self.service.seal_registered_bootstrap(",
+          "&self.config",
+          "&self.registration",
+          "&self.owner_pidfd"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "id": "root_same_registered_bootstrap_seal",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+        ],
+        "symbol": "PreparedHostAuthoritySession::seal_bootstrap"
+      },
+      "before": {
+        "call_pattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)seal_bootstrap\\s*\\(",
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn seal_bootstrap(&self",
+          "self.service.seal_registered_bootstrap(",
+          "&self.config",
+          "&self.registration",
+          "&self.owner_pidfd"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "id": "root_same_registered_bootstrap_seal",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "codex-rs/hepta-agentd/src/native_g2_entry/activation.rs"
+        ],
+        "symbol": "PreparedHostAuthoritySession::seal_bootstrap"
+      },
+      "id": "root_same_registered_bootstrap_seal",
+      "index": 90
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn send_root_production_handoff(",
+          "libc::geteuid()",
+          "peer.pid as u32 != std::process::id()",
+          "validate_bootstrap(bootstrap)?",
+          "require_root_pin(root_pidfd, std::process::id())?",
+          "&[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()]"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+        "id": "root_original_two_descriptor_send",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+        ],
+        "symbol": "send_root_production_handoff"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn send_root_production_handoff(",
+          "libc::geteuid()",
+          "peer.pid as u32 != std::process::id()",
+          "validate_bootstrap(bootstrap)?",
+          "require_root_pin(root_pidfd, std::process::id())?",
+          "&[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()]"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+        "id": "root_original_two_descriptor_send",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "symbol": "send_root_production_handoff"
+      },
+      "id": "root_original_two_descriptor_send",
+      "index": 101
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs"
+      ],
+      "after": {
+        "call_pattern": "\\bbind_runtime_lanes\\s*\\(",
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(super) fn bind_runtime_lanes(",
+          "let lanes = validate_runtime_lanes(config)?",
+          "let listener = UnixListener::bind(path)?",
+          "listener.set_nonblocking(true)?",
+          "ready()?",
+          "Ok(BoundLanes {"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "id": "root_original_bound_native_lanes",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs"
+        ],
+        "symbol": "bind_runtime_lanes"
+      },
+      "before": {
+        "call_pattern": "\\bbind_runtime_lanes\\s*\\(",
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(super) fn bind_runtime_lanes(",
+          "let lanes = validate_runtime_lanes(config)?",
+          "let listener = UnixListener::bind(path)?",
+          "listener.set_nonblocking(true)?",
+          "ready()?",
+          "Ok(BoundLanes {"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "id": "root_original_bound_native_lanes",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session.rs"
+        ],
+        "symbol": "bind_runtime_lanes"
+      },
+      "id": "root_original_bound_native_lanes",
+      "index": 114
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs"
+      ],
+      "after": {
+        "call_pattern": "\\bserve_bound_lanes\\s*\\(",
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(super) fn serve_bound_lanes(",
+          "bound: BoundLanes",
+          "let BoundLanes { _guard, listeners } = bound",
+          "owner_alive(owner, end)?",
+          "listener.accept()",
+          "service.serve(lane, stream, policy, pidfd)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "id": "root_original_bound_native_lane_acceptance",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs"
+        ],
+        "symbol": "serve_bound_lanes"
+      },
+      "before": {
+        "call_pattern": "\\bserve_bound_lanes\\s*\\(",
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(super) fn serve_bound_lanes(",
+          "bound: BoundLanes",
+          "let BoundLanes { _guard, listeners } = bound",
+          "owner_alive(owner, end)?",
+          "listener.accept()",
+          "service.serve(lane, stream, policy, pidfd)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "id": "root_original_bound_native_lane_acceptance",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session.rs"
+        ],
+        "symbol": "serve_bound_lanes"
+      },
+      "id": "root_original_bound_native_lane_acceptance",
+      "index": 115
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn seal_bytes(",
+          "require_root()?",
+          "bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND",
+          "libc::memfd_create(",
+          "libc::F_ADD_SEALS",
+          "validate_sealed(&file, bytes.len() as u64)?",
+          "retained != bytes"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+        "id": "root_original_private_sealed_bytes",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs"
+        ],
+        "symbol": "seal_bytes"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn seal_bytes(",
+          "require_root()?",
+          "bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND",
+          "libc::memfd_create(",
+          "libc::F_ADD_SEALS",
+          "validate_sealed(&file, bytes.len() as u64)?",
+          "retained != bytes"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+        "id": "root_original_private_sealed_bytes",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+        ],
+        "symbol": "seal_bytes"
+      },
+      "id": "root_original_private_sealed_bytes",
+      "index": 178
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs"
+      ],
+      "after": {
+        "caller_markers": [
+          "self.require_no_circuit_task_profile()?",
+          "self.require_circuit_task_execution_profile()?",
+          "circuit_q24_task_channel_v1(self.identity(), profile)?",
+          "runtime.install(self)?"
+        ],
+        "definition_markers": [
+          "pub fn circuit_q24_task_channel_v1<",
+          "published.require_bundle(&profile.bundle)?",
+          "circuit_task_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+        "id": "circuit_q24_ordinary_profile_assembly",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs"
+        ],
+        "symbol": "circuit_q24_task_channel_v1"
+      },
+      "before": {
+        "caller_markers": [
+          "self.require_no_circuit_task_profile()?",
+          "self.require_circuit_task_execution_profile()?",
+          "circuit_q24_task_channel_v1(self.identity(), profile)?",
+          "runtime.install(self)?"
+        ],
+        "definition_markers": [
+          "pub fn circuit_q24_task_channel_v1<",
+          "published.require_bundle(&profile.bundle)?",
+          "circuit_task_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+        "id": "circuit_q24_ordinary_profile_assembly",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"
+        ],
+        "symbol": "circuit_q24_task_channel_v1"
+      },
+      "id": "circuit_q24_ordinary_profile_assembly",
+      "index": 208
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_source_material.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_owner_command_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "id": "learning_original_owner_command_channel",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+          "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+          "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+          "codex-rs/hepta-agentd/src/circuit_task_source_material.rs"
+        ],
+        "symbol": "original_owner_command_channel_v1"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_owner_command_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "id": "learning_original_owner_command_channel",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+          "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+          "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+          "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+        ],
+        "symbol": "original_owner_command_channel_v1"
+      },
+      "id": "learning_original_owner_command_channel",
+      "index": 295
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn into_command_owner<"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "id": "learning_original_material_command_bootstrap",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs"
+        ],
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::into_command_owner"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn into_command_owner<"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "id": "learning_original_material_command_bootstrap",
+        "product_callers": [],
+        "receiver_type": "OriginalCellQ24MaterialReceiptOwnersV1",
+        "symbol": "OriginalCellQ24MaterialReceiptOwnersV1::into_command_owner"
+      },
+      "id": "learning_original_material_command_bootstrap",
+      "index": 298
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+      },
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+      "index": 624
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+        ],
+        "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+        "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+        "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+      },
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "index": 629
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn drain_completed_task("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_circuit_task_custody_v1_drain_completed_task",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+        ],
+        "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+        "symbol": "OriginalRootCircuitTaskCustodyV1::drain_completed_task"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn drain_completed_task("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_circuit_task_custody_v1_drain_completed_task",
+        "product_callers": [],
+        "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+        "symbol": "OriginalRootCircuitTaskCustodyV1::drain_completed_task"
+      },
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_drain_completed_task",
+      "index": 630
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+      ],
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn require_observed("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+        "id": "root_host_initial_original_host_initial_operation_require_observed",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+        ],
+        "receiver_type": "OriginalHostInitialOperation",
+        "symbol": "OriginalHostInitialOperation::require_observed"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn require_observed("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+        "id": "root_host_initial_original_host_initial_operation_require_observed",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalHostInitialOperation",
+        "symbol": "OriginalHostInitialOperation::require_observed"
+      },
+      "id": "root_host_initial_original_host_initial_operation_require_observed",
+      "index": 640
+    }
+  ],
+  "rejected_other_receiver_candidates": [
+    {
+      "id": "agentd_production_operation_runtime",
+      "index": 7,
+      "reason": "attach is DaemonLoans::attach, not AgentdProductionOperationRuntimeConfig::attach."
+    },
+    {
+      "id": "root_live_admin_exchange",
+      "index": 123,
+      "reason": "exchange is HostAuthorityPeerChannel::exchange, not RootAdminCapability::exchange."
+    },
+    {
+      "id": "root_learning_original_handoff_consume",
+      "index": 173,
+      "reason": "connect is the private socket helper and tokio UnixStream::connect, not RootLearningHandoffV1::connect."
+    },
+    {
+      "id": "root_resident_gate_begin_dispatch",
+      "index": 423,
+      "reason": "begin is the private wire Budget::begin, not RootResidentLearningEffectGateV3::begin."
+    },
+    {
+      "id": "provider_original_version_local_read_binding_v1_respond",
+      "index": 601,
+      "reason": "respond is DaemonLoans::respond, not OriginalVersionLocalReadBindingV1::respond."
+    }
+  ],
+  "required_boundary_ids_append": [
+    "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+    "e2_prepared_root_host_circuit_task_v1_pending_original_root_task_operations",
+    "e2_prepared_root_host_circuit_task_v1_drain_completed_original_root_task",
+    "e2_prepared_root_host_initial_generation_v1_prepare_original_root_task",
+    "e2_prepared_root_host_circuit_task_v1_handoff_and_serve_original_root_circuit_task",
+    "e2_prepared_root_host_circuit_task_v1_serve_original_root_circuit_task",
+    "e2_prepared_root_host_circuit_task_v1_require_original_root_task_source",
+    "e2_prepared_host_authority_session_bind_original_task_host_lanes",
+    "e2_original_task_host_lanes_serve",
+    "e2_task_listeners_bind",
+    "e2_task_listeners_accept",
+    "e2_wait_first_frame",
+    "e2_original_root_circuit_task_custody_v1_require_original_source",
+    "e2_original_root_initial_generation_custody_v1_into_original_root_task_channel",
+    "e2_circuit_q24_task_runtime_v1_original_root_handoff_data",
+    "e2_circuit_q24_task_runtime_v1_take_original_root_lane",
+    "e2_circuit_task_handle_v1_retain_original_remote_record",
+    "e2_circuit_task_runtime_bootstrap_v1_original_root_handoff_registry",
+    "e2_circuit_task_runtime_bootstrap_v1_take_original_root_lane",
+    "e2_agentd_circuit_cell_owner_v1_execute_original_remote",
+    "e2_daemon_client_new_until",
+    "e2_daemon_client_begin_original_record",
+    "e2_daemon_client_run_reverse",
+    "e2_daemon_client_stop_reverse",
+    "e2_daemon_client_sample_original_clock",
+    "e2_daemon_client_original_execution",
+    "e2_daemon_cell_port_new",
+    "e2_daemon_cell_port_original_registry",
+    "e2_daemon_cell_port_original_lookup",
+    "e2_daemon_cell_port_original_execute",
+    "e2_daemon_loans_new",
+    "e2_daemon_loans_attach",
+    "e2_daemon_loans_begin_record",
+    "e2_daemon_loans_record",
+    "e2_daemon_loans_current_record",
+    "e2_daemon_loans_retain_admission",
+    "e2_daemon_loans_retain_completion",
+    "e2_daemon_loans_respond",
+    "e2_reverse_client_new",
+    "e2_reverse_client_check_record",
+    "e2_reverse_client_open_admission",
+    "e2_reverse_client_completion",
+    "e2_reverse_client_terminal",
+    "e2_original_remote_admission_require_current",
+    "e2_original_remote_completion_into_original_payload",
+    "e2_original_root_task_streams_new",
+    "e2_original_root_task_lane_from_original_factory",
+    "e2_remote_serve",
+    "e2_original_remote_channel",
+    "e2_original_remote_channel_until",
+    "e2_root_lane_retain",
+    "e2_original_root_lane_factory_take",
+    "e2_original_root_lane_factory_original_handoff_registry",
+    "e2_original_root_cell_pump_execute",
+    "e2_original_root_cell_pump_read",
+    "e2_original_root_cell_pump_clock",
+    "e2_budget_new",
+    "e2_budget_before",
+    "e2_lane_new",
+    "e2_lane_call",
+    "e2_lane_serve_one",
+    "e2_remote_source_original_binding",
+    "e2_remote_source_expected_request",
+    "e2_original_completion_bytes",
+    "e2_durable_circuit_task_source_v1_original_remote_binding",
+    "e2_durable_circuit_task_source_v1_original_root_handoff_source",
+    "e2_durable_circuit_task_source_v1_require_original_remote_binding",
+    "e2_durable_circuit_task_source_v1_original_remote_request",
+    "e2_durable_circuit_task_source_v1_original_remote_saved_input",
+    "e2_durable_circuit_task_source_v1_original_remote_resolve",
+    "e2_durable_circuit_task_source_v1_publish_original_remote_completion",
+    "e2_agentd_config_with_original_root_circuit_task",
+    "e2_agentd_config_with_original_root_circuit_task_until",
+    "e2_agentd_production_launch_install_original_root_task",
+    "e2_receive_root_original_task_handoff",
+    "e2_send_original_task_handoff",
+    "e2_root_original_task_handoff_v1_install",
+    "e2_root_original_task_descriptor_seal",
+    "e2_root_original_task_descriptor_read",
+    "e2_descriptor_require_original_identity",
+    "e2_prepared_root_host_circuit_task_v1_prepare_original_material_source_host",
+    "e2_prepared_root_material_source_host_v1_serve",
+    "e2_original_root_material_source_registration_v1_from_original_supervisor",
+    "e2_original_cell_q24_material_receipt_owners_v1_into_original_root_source_command_owner",
+    "e2_original_cell_q24_material_receipt_config_v1_original_source_loan_binding",
+    "e2_circuit_task_source_readback_v1_from_original_material_root_stream",
+    "e2_material_client_read",
+    "e2_circuit_task_source_readback_v1_encode_original_material_publication",
+    "e2_published_circuit_feature_task_v1_read_original_material_publication",
+    "e2_original_root_circuit_task_custody_v1_read_original_material_source",
+    "e2_cell_q24_dataset_require_source"
+  ]
+}

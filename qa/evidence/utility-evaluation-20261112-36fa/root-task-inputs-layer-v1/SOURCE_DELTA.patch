@@ -1,0 +1,994 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation.rs
+@@ -357,6 +357,12 @@
+ pub(crate) use input_loader::LoadPurpose as OriginalGenerationLoadPurpose;
+ pub(crate) use input_loader::LoadedOriginalGeneration as OriginalLoadedGeneration;
+ 
++#[path = "authority_host_generation_task_input_loader.rs"]
++mod task_input_loader;
++pub use task_input_loader::RootHostQ24TaskFilesV1;
++pub(crate) use task_input_loader::TaskFilePurpose as OriginalTaskFilePurpose;
++pub(crate) use task_input_loader::OriginalTaskClockStatus;
++
+ fn invalid(error: impl std::fmt::Display) -> AgentdError {
+     AgentdError::Invalid(error.to_string())
+ }
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_task_clock.rs
+@@ -0,0 +1,59 @@
++//! Retain the first actual failure of this one task's protected clock.
++//! A callback adapter cannot report Result, so its consumers must explicitly
++//! reject MAX before computing outcomes or writing state. The ordinary remote
++//! and original feature-control refusal increments are required dependencies.
++
++use std::sync::Arc;
++use std::sync::atomic::AtomicU8;
++use std::sync::atomic::Ordering;
++use std::time::Instant;
++
++use codex_hepta_contracts::AuthorityTrustError;
++
++use super::invalid;
++use crate::AgentdError;
++
++/// Crate-private failure observation only: no owner, time setter, reset,
++/// success token, deadline extension or mutable access to the actual clock.
++#[derive(Clone)]
++pub(crate) struct OriginalTaskClockStatus {
++    first_failure: Arc<AtomicU8>,
++    end: Instant,
++}
++
++impl OriginalTaskClockStatus {
++    pub(super) fn new(end: Instant) -> Self {
++        Self { first_failure: Arc::new(AtomicU8::new(0)), end }
++    }
++
++    pub(super) fn record_original_error(&self, error: AuthorityTrustError) {
++        let code = match error {
++            AuthorityTrustError::Invalid => 1,
++            AuthorityTrustError::Conflict => 2,
++            AuthorityTrustError::Unavailable => 3,
++        };
++        self.record(code);
++    }
++
++    pub(super) fn record_overflow(&self) { self.record(4); }
++
++    fn record(&self, code: u8) {
++        // Preserve the first actual cause even if later clock reads recover,
++        // another failure happens, or the absolute end subsequently expires.
++        let _ = self.first_failure.compare_exchange(0, code, Ordering::AcqRel, Ordering::Acquire);
++    }
++
++    pub(crate) fn require_healthy(&self) -> Result<(), AgentdError> {
++        if Instant::now() >= self.end { self.record(5); }
++        let message = match self.first_failure.load(Ordering::Acquire) {
++            0 => return Ok(()),
++            1 => "original protected task clock: Invalid",
++            2 => "original protected task clock: Conflict",
++            3 => "original protected task clock: Unavailable",
++            4 => "original protected task clock: microsecond projection overflow",
++            5 => "original protected task clock: absolute task end expired",
++            _ => "original protected task clock: invalid retained failure state",
++        };
++        Err(invalid(message))
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_task_input_files.rs
+@@ -0,0 +1,76 @@
++//! Check the actual retained descriptors before the original factories open
++//! them. No pathname is opened, created, reset or substituted by this module.
++
++use std::collections::BTreeSet;
++use std::fs::File;
++use std::os::fd::AsRawFd;
++use std::os::unix::fs::MetadataExt;
++
++use super::RootHostQ24TaskFilesV1;
++use super::TaskFilePurpose;
++use super::invalid;
++use crate::AgentdError;
++
++#[derive(Clone, Copy)]
++enum Access { ReadOnly, ReadWrite, ReadAppend }
++
++pub(super) fn require_descriptors(
++    files: &RootHostQ24TaskFilesV1,
++    purpose: TaskFilePurpose,
++) -> Result<(), AgentdError> {
++    let mut identities = BTreeSet::new();
++    for (file, access) in [
++        (&files.source_journal, Access::ReadWrite),
++        (&files.source_witness, Access::ReadWrite),
++        (&files.cell_journal, Access::ReadWrite),
++        (&files.cell_witness, Access::ReadWrite),
++        (&files.inference_control, Access::ReadAppend),
++        (&files.model.base, Access::ReadOnly),
++        (&files.model.encoder, Access::ReadOnly),
++        (&files.model.heads, Access::ReadOnly),
++    ] {
++        require_one(file, access, &mut identities)?;
++    }
++    for file in [files.model.organ_adapter.as_ref(), files.model.cell_adapter.as_ref()]
++        .into_iter().flatten()
++    {
++        require_one(file, Access::ReadOnly, &mut identities)?;
++    }
++    if purpose == TaskFilePurpose::Recover
++        && (files.source_journal.metadata()?.len() == 0
++            || files.cell_journal.metadata()?.len() == 0
++            || files.source_witness.metadata()?.len() < 112
++            || files.cell_witness.metadata()?.len() < 112)
++    {
++        return Err(invalid("task recovery cannot initialize an absent journal or witness history"));
++    }
++    // A real existing control journal may have no entries before first
++    // execution. Its original replay and the same Source/Cell receipts decide
++    // whether readback is possible; absence is never translated into Execute.
++    Ok(())
++}
++
++fn require_one(
++    file: &File,
++    access: Access,
++    identities: &mut BTreeSet<(u64, u64)>,
++) -> Result<(), AgentdError> {
++    let metadata = file.metadata()?;
++    if !metadata.is_file() || metadata.uid() != 0
++        || metadata.mode() & 0o7777 != 0o600 || metadata.nlink() != 1
++        || !identities.insert((metadata.dev(), metadata.ino()))
++    {
++        return Err(invalid("task files must be distinct Root0600 single-link regular descriptors"));
++    }
++    // SAFETY: F_GETFL observes this borrowed descriptor; ownership stays here.
++    let flags = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_GETFL) };
++    let (mode, append) = match access {
++        Access::ReadOnly => (libc::O_RDONLY, 0),
++        Access::ReadWrite => (libc::O_RDWR, 0),
++        Access::ReadAppend => (libc::O_RDWR, libc::O_APPEND),
++    };
++    if flags < 0 || flags & libc::O_ACCMODE != mode || flags & libc::O_APPEND != append {
++        return Err(invalid("task descriptor access or append mode differs from its fixed role"));
++    }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs
+@@ -0,0 +1,160 @@
++//! Load one actual Q24 task from protected records and existing descriptors.
++//! Original factories perform all publication, owner and model verification.
++
++use std::path::Path;
++use std::sync::Arc;
++use std::time::Instant;
++
++use codex_hepta_contracts::AuthorityClock;
++use codex_hepta_neuron::DurableInferenceControl;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++
++use super::HostAuthorityService;
++use super::invalid;
++use crate::AgentdError;
++use crate::CircuitCellTimeV1;
++use crate::CircuitQ24TaskFilesV1;
++use crate::CircuitQ24TaskOpenModeV1;
++use crate::LoadedCellQ24ModelV1;
++use crate::OriginalRootCircuitTaskInputsV1;
++use crate::authority_host_config::read_root_json;
++
++#[path = "authority_host_generation_task_model_types.rs"]
++mod model_types;
++#[path = "authority_host_generation_task_input_types.rs"]
++mod types;
++#[path = "authority_host_generation_task_input_files.rs"]
++mod files;
++#[path = "authority_host_generation_task_clock.rs"]
++mod clock;
++
++pub use types::RootHostQ24TaskFilesV1;
++pub(crate) use types::TaskFilePurpose;
++pub(crate) use clock::OriginalTaskClockStatus;
++
++pub(crate) struct LoadedOriginalTaskInputs {
++    pub(crate) inputs: OriginalRootCircuitTaskInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
++    pub(crate) clock_status: OriginalTaskClockStatus,
++}
++
++impl HostAuthorityService {
++    pub(crate) fn load_original_root_q24_task_inputs(
++        &self,
++        deployment: &Path,
++        original_files: RootHostQ24TaskFilesV1,
++        purpose: TaskFilePurpose,
++        end: Instant,
++    ) -> Result<LoadedOriginalTaskInputs, AgentdError> {
++        require_before(end)?;
++        let value: types::Deployment = read_root_json(deployment)?;
++        if value.schema_version != 1
++            || value.purpose != "hepta.root.original-q24-task.existing-inputs.v1"
++            || value.source_mode != purpose
++            || value.clock_epoch != "root_protected_unix_ms_and_micros.v1"
++        {
++            return Err(invalid("task deployment purpose, lifecycle or protected clock epoch differs"));
++        }
++        files::require_descriptors(&original_files, purpose)?;
++        let definition = value.definition.into_original()?;
++        let source = value.source.into_original()?;
++        let bundle = value.bundle.into_original()?;
++        let fence = value.fence.into_original()?;
++        let routes = value.routes.into_iter().map(types::Route::into_original)
++            .collect::<Result<Vec<_>, _>>()?;
++        let now = self.clock.now_unix_ms().map_err(invalid)?;
++        let micros = now.checked_mul(1000)
++            .ok_or_else(|| invalid("the actual protected clock is outside the Cell epoch"))?;
++        if source.monotonic_micros > micros || source.deadline_micros <= source.monotonic_micros
++            || (purpose == TaskFilePurpose::Create && micros >= source.deadline_micros)
++            || definition.bundle_digest != bundle.digest().map_err(invalid)?
++            || source.scope.cell_id != definition.cell_id
++        {
++            return Err(invalid("actual task data is outside the original binding or clock window"));
++        }
++        let RootHostQ24TaskFilesV1 {
++            source_journal, source_witness, cell_journal, cell_witness,
++            inference_control, model,
++        } = original_files;
++        let model = Arc::new(LoadedCellQ24ModelV1::open_files(model).map_err(invalid)?);
++        if model.components() != &bundle.components {
++            return Err(invalid("actual model files differ from the complete original bundle"));
++        }
++        require_before(end)?;
++        // Scope and generation are pre-provisioned Root data, not guessed
++        // fixture labels or a manufactured Source publication. The original
++        // witness checks its full physical header/history and original owners
++        // subsequently bind their journals/CAS to that exact witness.
++        let source_witness = FileAnchorWitnessStore::open(
++            source_witness, value.source_witness.scope(),
++            value.source_witness.generation()?, value.source_witness.max_records,
++        ).map_err(invalid)?;
++        require_before(end)?;
++        let cell_witness = FileAnchorWitnessStore::open(
++            cell_witness, value.cell_witness.scope(),
++            value.cell_witness.generation()?, value.cell_witness.max_records,
++        ).map_err(invalid)?;
++        require_before(end)?;
++        // The original Linux API operates exclusively on this consumed file.
++        // Its diagnostic path is never opened and cannot select another store.
++        let inference_control = DurableInferenceControl::open_file(
++            inference_control, value.inference_control_diagnostic_path,
++            value.inference_control_capacity,
++        ).map_err(invalid)?;
++        let original_clock = Arc::clone(&self.clock);
++        let clock_status = OriginalTaskClockStatus::new(end);
++        let callback_status = clock_status.clone();
++        let clock = Arc::new(move || {
++            if callback_status.require_healthy().is_err() {
++                return fenced_time();
++            }
++            let circuit_millis = match original_clock.now_unix_ms() {
++                Ok(value) => value,
++                Err(error) => {
++                    callback_status.record_original_error(error);
++                    return fenced_time();
++                }
++            };
++            let Some(cell_micros) = circuit_millis.checked_mul(1000) else {
++                callback_status.record_overflow();
++                return fenced_time();
++            };
++            if callback_status.require_healthy().is_err() {
++                return fenced_time();
++            }
++            CircuitCellTimeV1 { circuit_millis, cell_micros }
++        });
++        self.clock.now_unix_ms().map_err(invalid)?;
++        require_before(end)?;
++        clock_status.require_healthy()?;
++        let inputs = OriginalRootCircuitTaskInputsV1 {
++            definition, source,
++            files: CircuitQ24TaskFilesV1 {
++                source_journal, source_witness, cell_journal, cell_witness, inference_control,
++            },
++            source_mode: match purpose {
++                TaskFilePurpose::Create => CircuitQ24TaskOpenModeV1::Create,
++                TaskFilePurpose::Recover => CircuitQ24TaskOpenModeV1::Recover,
++            },
++            fence, circuit: value.circuit, routes, bundle, model,
++            worker_generation: value.worker_generation,
++            maximum_cell_records: value.maximum_cell_records,
++            queue_capacity: value.queue_capacity,
++            clock,
++        };
++        Ok(LoadedOriginalTaskInputs { inputs, clock_status })
++    }
++}
++
++fn require_before(end: Instant) -> Result<(), AgentdError> {
++    if Instant::now() >= end { return Err(invalid("original task input deadline expired")); }
++    Ok(())
++}
++
++fn fenced_time() -> CircuitCellTimeV1 {
++    // The existing factory clock is infallible. MAX is an invalid-time fence,
++    // not a successful sample. This loader requires the separate exact Root
++    // remote and feature-control refusal increments; without them MAX could
++    // reach recovery/outcome/cost state. No cached time or reset is permitted.
++    // First cause is retained by the returned non-Clone task wrapper.
++    CircuitCellTimeV1 { circuit_millis: u64::MAX, cell_micros: u64::MAX }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_task_input_types.rs
+@@ -0,0 +1,241 @@
++//! Bounded Root-owned task configuration data, never an admission or receipt.
++//! The original task factory remains responsible for publication, Source,
++//! registry, Cell, model and current-generation authentication.
++
++use std::fs::File;
++use std::path::PathBuf;
++
++use codex_hepta_automation::BoundedCircuitDefinitionV2;
++use codex_hepta_automation::CircuitExitV2;
++use codex_hepta_automation::TaskFlowFence;
++use codex_hepta_contracts::AgentId;
++use codex_hepta_learning_artifacts::CellBundleComponentsV1;
++use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
++use codex_hepta_learning_artifacts::CellTrainingLineageV1;
++use codex_hepta_neuron::CellCandidateMaskV1;
++use codex_hepta_neuron::CellScopeV1;
++use codex_hepta_neuron::JournalScope;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use super::invalid;
++use super::model_types::Definition;
++use crate::AgentdError;
++use crate::CellQ24ModelFilesV1;
++use crate::CircuitCellRouteV1;
++use crate::CircuitTaskSourceInputV1;
++
++/// Existing, host-selected descriptors. This value does not create paths,
++/// represent a verified publication, or retain an alternative writer.
++pub struct RootHostQ24TaskFilesV1 {
++    pub source_journal: File,
++    pub source_witness: File,
++    pub cell_journal: File,
++    pub cell_witness: File,
++    pub inference_control: File,
++    pub model: CellQ24ModelFilesV1,
++}
++
++#[derive(Clone, Copy, Eq, PartialEq, Deserialize)]
++#[serde(rename_all = "snake_case")]
++pub(crate) enum TaskFilePurpose { Create, Recover }
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Deployment {
++    pub schema_version: u32,
++    pub purpose: String,
++    pub source_mode: TaskFilePurpose,
++    pub clock_epoch: String,
++    pub definition: Definition,
++    pub source: SourceInput,
++    pub source_witness: Witness,
++    pub cell_witness: Witness,
++    pub inference_control_diagnostic_path: PathBuf,
++    pub inference_control_capacity: usize,
++    pub fence: Fence,
++    pub circuit: BoundedCircuitDefinitionV2,
++    pub routes: Vec<Route>,
++    pub bundle: Bundle,
++    pub worker_generation: u64,
++    pub maximum_cell_records: usize,
++    pub queue_capacity: usize,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Witness {
++    scope_digest: [u8; 32],
++    objective_digest: [u8; 32],
++    generation: u64,
++    pub max_records: usize,
++}
++
++impl Witness {
++    pub(super) fn scope(&self) -> JournalScope {
++        JournalScope {
++            scope_digest: Digest32::from_array(self.scope_digest),
++            objective_digest: Digest32::from_array(self.objective_digest),
++        }
++    }
++    pub(super) fn generation(&self) -> Result<Generation, AgentdError> {
++        Generation::new(self.generation).map_err(invalid)
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct SourceInput {
++    agent_id: String,
++    cell_id: String,
++    run_id: String,
++    principal_digest: [u8; 32],
++    source_frontier: [u8; 32],
++    objective_digest: [u8; 32],
++    ndu_snapshot_digest: [u8; 32],
++    monotonic_micros: u64,
++    deadline_micros: u64,
++    observation: Vec<u8>,
++    candidates: Vec<Mask>,
++    lease_duration_ms: u64,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Mask { candidate_id: String, allowed: bool }
++
++impl SourceInput {
++    pub(super) fn into_original(self) -> Result<CircuitTaskSourceInputV1, AgentdError> {
++        Ok(CircuitTaskSourceInputV1 {
++            scope: CellScopeV1 {
++                agent_id: StableId::new(self.agent_id).map_err(invalid)?,
++                cell_id: StableId::new(self.cell_id).map_err(invalid)?,
++                run_id: StableId::new(self.run_id).map_err(invalid)?,
++                principal_digest: Digest32::from_array(self.principal_digest),
++            },
++            source_frontier: Digest32::from_array(self.source_frontier),
++            objective_digest: Digest32::from_array(self.objective_digest),
++            ndu_snapshot_digest: Digest32::from_array(self.ndu_snapshot_digest),
++            monotonic_micros: self.monotonic_micros,
++            deadline_micros: self.deadline_micros,
++            observation: self.observation,
++            candidates: self.candidates.into_iter().map(|candidate| {
++                Ok(CellCandidateMaskV1 {
++                    candidate_id: StableId::new(candidate.candidate_id).map_err(invalid)?,
++                    allowed: candidate.allowed,
++                })
++            }).collect::<Result<_, AgentdError>>()?,
++            lease_duration_ms: self.lease_duration_ms,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Fence {
++    owner_agent_id: AgentId,
++    owner_id: String,
++    owner_epoch: u64,
++    generation: u64,
++    fencing_token: String,
++}
++
++impl Fence {
++    pub(super) fn into_original(self) -> Result<TaskFlowFence, AgentdError> {
++        // These are the actual preheld Agent-local values. The original daemon
++        // AutomationStore still authenticates its own fence; this is no mint.
++        TaskFlowFence::new(self.owner_agent_id, self.owner_id, self.owner_epoch,
++            self.generation, self.fencing_token).map_err(invalid)
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Route {
++    candidate_id: String,
++    outcome: CircuitExitV2,
++    selected_edges: Vec<String>,
++}
++
++impl Route {
++    pub(super) fn into_original(self) -> Result<CircuitCellRouteV1, AgentdError> {
++        Ok(CircuitCellRouteV1 {
++            candidate_id: StableId::new(self.candidate_id).map_err(invalid)?,
++            outcome: self.outcome,
++            selected_edges: self.selected_edges,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Bundle {
++    artifact_id: String,
++    generation: u64,
++    components: Components,
++    training_lineage: Option<Lineage>,
++    rollback_predecessor: Option<[u8; 32]>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Components {
++    base: [u8; 32],
++    organ_adapter: Option<[u8; 32]>,
++    cell_adapter: Option<[u8; 32]>,
++    heads: [u8; 32],
++    composition: [u8; 32],
++    encoder: [u8; 32],
++    tokenizer: [u8; 32],
++    normalizer: [u8; 32],
++    calibration: [u8; 32],
++    numeric_profile: [u8; 32],
++    output_schema: [u8; 32],
++    state_schema: [u8; 32],
++    state_semantics: [u8; 32],
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Lineage {
++    source_bundle: [u8; 32],
++    dataset: [u8; 32],
++    update_rule: [u8; 32],
++    evaluation_profile: [u8; 32],
++}
++
++impl Bundle {
++    pub(super) fn into_original(self) -> Result<CellCompatibilityBundleV1, AgentdError> {
++        let c = self.components;
++        let bundle = CellCompatibilityBundleV1 {
++            artifact_id: StableId::new(self.artifact_id).map_err(invalid)?,
++            generation: Generation::new(self.generation).map_err(invalid)?,
++            components: CellBundleComponentsV1 {
++                base: Digest32::from_array(c.base),
++                organ_adapter: c.organ_adapter.map(Digest32::from_array),
++                cell_adapter: c.cell_adapter.map(Digest32::from_array),
++                heads: Digest32::from_array(c.heads),
++                composition: Digest32::from_array(c.composition),
++                encoder: Digest32::from_array(c.encoder),
++                tokenizer: Digest32::from_array(c.tokenizer),
++                normalizer: Digest32::from_array(c.normalizer),
++                calibration: Digest32::from_array(c.calibration),
++                numeric_profile: Digest32::from_array(c.numeric_profile),
++                output_schema: Digest32::from_array(c.output_schema),
++                state_schema: Digest32::from_array(c.state_schema),
++                state_semantics: Digest32::from_array(c.state_semantics),
++            },
++            training_lineage: self.training_lineage.map(|lineage| CellTrainingLineageV1 {
++                source_bundle: Digest32::from_array(lineage.source_bundle),
++                dataset: Digest32::from_array(lineage.dataset),
++                update_rule: Digest32::from_array(lineage.update_rule),
++                evaluation_profile: Digest32::from_array(lineage.evaluation_profile),
++            }),
++            rollback_predecessor: self.rollback_predecessor.map(Digest32::from_array),
++        };
++        bundle.digest().map_err(invalid)?;
++        Ok(bundle)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_task_model_types.rs
+@@ -0,0 +1,240 @@
++//! Complete public Cell definition data from a protected Root deployment file.
++//! Conversion grants no authority: the original semantic digest, model worker
++//! and published-task factory validate every field against the real selection.
++
++use codex_hepta_neuron::CellCandidateKindV1;
++use codex_hepta_neuron::CellCandidateV1;
++use codex_hepta_neuron::CellDefinitionV1;
++use codex_hepta_neuron::InhibitoryEdge;
++use codex_hepta_neuron::NeuronCalibrationProfileV1;
++use codex_hepta_neuron::NeuronResourceEnvelopeV1;
++use codex_hepta_neuron::NeuronRuntimeConfigV1;
++use codex_hepta_neuron::SparseConfig;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use super::invalid;
++use crate::AgentdError;
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Definition {
++    cell_id: String,
++    bundle_digest: [u8; 32],
++    state_schema_digest: [u8; 32],
++    runtime: Runtime,
++    native: Native,
++    candidates: Vec<Candidate>,
++    max_input_bytes: usize,
++    max_queue_age_micros: u64,
++    max_resident_bytes: u64,
++}
++
++impl Definition {
++    pub(super) fn into_original(self) -> Result<CellDefinitionV1, AgentdError> {
++        let definition = CellDefinitionV1 {
++            cell_id: StableId::new(self.cell_id).map_err(invalid)?,
++            bundle_digest: Digest32::from_array(self.bundle_digest),
++            state_schema_digest: Digest32::from_array(self.state_schema_digest),
++            runtime: self.runtime.into_original()?,
++            native: self.native.into_original()?,
++            candidates: self.candidates.into_iter().map(Candidate::into_original)
++                .collect::<Result<_, _>>()?,
++            max_input_bytes: self.max_input_bytes,
++            max_queue_age_micros: self.max_queue_age_micros,
++            max_resident_bytes: self.max_resident_bytes,
++        };
++        definition.semantic_digest().map_err(invalid)?;
++        Ok(definition)
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Candidate {
++    candidate_id: String,
++    activation_index: usize,
++    kind: CandidateKind,
++}
++
++#[derive(Deserialize)]
++#[serde(rename_all = "snake_case")]
++enum CandidateKind { Action, Abstain, SlowPath }
++
++impl Candidate {
++    fn into_original(self) -> Result<CellCandidateV1, AgentdError> {
++        Ok(CellCandidateV1 {
++            candidate_id: StableId::new(self.candidate_id).map_err(invalid)?,
++            activation_index: self.activation_index,
++            kind: match self.kind {
++                CandidateKind::Action => CellCandidateKindV1::Action,
++                CandidateKind::Abstain => CellCandidateKindV1::Abstain,
++                CandidateKind::SlowPath => CellCandidateKindV1::SlowPath,
++            },
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Runtime {
++    config_id: String,
++    generation: u64,
++    model_id: String,
++    model_manifest_digest: [u8; 32],
++    encoder_digest: [u8; 32],
++    head_digest: [u8; 32],
++    weights_digest: [u8; 32],
++    tokenizer_digest: [u8; 32],
++    preprocessor_digest: [u8; 32],
++    quantization_digest: [u8; 32],
++    runtime_digest: [u8; 32],
++    device_digest: [u8; 32],
++    normalization_digest: [u8; 32],
++    native_config_digest: [u8; 32],
++    input_feature_dimension: usize,
++    state_width: usize,
++    modulator_dimension: usize,
++    calibration: Calibration,
++    resource_envelope: ResourceEnvelope,
++}
++
++impl Runtime {
++    fn into_original(self) -> Result<NeuronRuntimeConfigV1, AgentdError> {
++        Ok(NeuronRuntimeConfigV1 {
++            config_id: StableId::new(self.config_id).map_err(invalid)?,
++            generation: Generation::new(self.generation).map_err(invalid)?,
++            model_id: StableId::new(self.model_id).map_err(invalid)?,
++            model_manifest_digest: Digest32::from_array(self.model_manifest_digest),
++            encoder_digest: Digest32::from_array(self.encoder_digest),
++            head_digest: Digest32::from_array(self.head_digest),
++            weights_digest: Digest32::from_array(self.weights_digest),
++            tokenizer_digest: Digest32::from_array(self.tokenizer_digest),
++            preprocessor_digest: Digest32::from_array(self.preprocessor_digest),
++            quantization_digest: Digest32::from_array(self.quantization_digest),
++            runtime_digest: Digest32::from_array(self.runtime_digest),
++            device_digest: Digest32::from_array(self.device_digest),
++            normalization_digest: Digest32::from_array(self.normalization_digest),
++            native_config_digest: Digest32::from_array(self.native_config_digest),
++            input_feature_dimension: self.input_feature_dimension,
++            state_width: self.state_width,
++            modulator_dimension: self.modulator_dimension,
++            calibration: self.calibration.into_original()?,
++            resource_envelope: self.resource_envelope.into_original(),
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Calibration {
++    calibration_artifact_digest: [u8; 32],
++    ood_artifact_digest: [u8; 32],
++    generation: u64,
++    valid_from_sequence: u64,
++    expires_after_sequence: u64,
++    zero_confidence_error_q24: i64,
++    maximum_in_domain_error_q24: i64,
++    minimum_confidence_ppm: u32,
++    maximum_ood_ppm: u32,
++    minimum_active_ppm: u32,
++    maximum_active_ppm: u32,
++    maximum_projection_count: u32,
++    measured_ece_ppm: u32,
++    maximum_ece_ppm: u32,
++    measured_false_acceptance_ppm: u32,
++    maximum_false_acceptance_ppm: u32,
++}
++
++impl Calibration {
++    fn into_original(self) -> Result<NeuronCalibrationProfileV1, AgentdError> {
++        Ok(NeuronCalibrationProfileV1 {
++            calibration_artifact_digest: Digest32::from_array(self.calibration_artifact_digest),
++            ood_artifact_digest: Digest32::from_array(self.ood_artifact_digest),
++            generation: Generation::new(self.generation).map_err(invalid)?,
++            valid_from_sequence: self.valid_from_sequence,
++            expires_after_sequence: self.expires_after_sequence,
++            zero_confidence_error_q24: self.zero_confidence_error_q24,
++            maximum_in_domain_error_q24: self.maximum_in_domain_error_q24,
++            minimum_confidence_ppm: self.minimum_confidence_ppm,
++            maximum_ood_ppm: self.maximum_ood_ppm,
++            minimum_active_ppm: self.minimum_active_ppm,
++            maximum_active_ppm: self.maximum_active_ppm,
++            maximum_projection_count: self.maximum_projection_count,
++            measured_ece_ppm: self.measured_ece_ppm,
++            maximum_ece_ppm: self.maximum_ece_ppm,
++            measured_false_acceptance_ppm: self.measured_false_acceptance_ppm,
++            maximum_false_acceptance_ppm: self.maximum_false_acceptance_ppm,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct ResourceEnvelope {
++    p95_latency_micros: u64,
++    p99_latency_micros: u64,
++    transient_allocation_bytes: u64,
++    checkpoint_bytes: u64,
++    write_amplification_ppm: u32,
++}
++
++impl ResourceEnvelope {
++    fn into_original(self) -> NeuronResourceEnvelopeV1 {
++        NeuronResourceEnvelopeV1 {
++            p95_latency_micros: self.p95_latency_micros,
++            p99_latency_micros: self.p99_latency_micros,
++            transient_allocation_bytes: self.transient_allocation_bytes,
++            checkpoint_bytes: self.checkpoint_bytes,
++            write_amplification_ppm: self.write_amplification_ppm,
++        }
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Native {
++    model_digest: [u8; 32],
++    normalization_digest: [u8; 32],
++    generation: u64,
++    width: usize,
++    top_k: usize,
++    temporal_decay_q24: i64,
++    inhibition_gain_q24: i64,
++    inhibition: Vec<Inhibition>,
++    activity_decay_q24: i64,
++    target_activity_q24: i64,
++    threshold_rate_q24: i64,
++    threshold_min_q24: i64,
++    threshold_max_q24: i64,
++    eligibility_decay_q24: i64,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Inhibition { source: usize, target: usize, weight_q24: i64 }
++
++impl Native {
++    fn into_original(self) -> Result<SparseConfig, AgentdError> {
++        Ok(SparseConfig {
++            model_digest: Digest32::from_array(self.model_digest),
++            normalization_digest: Digest32::from_array(self.normalization_digest),
++            generation: Generation::new(self.generation).map_err(invalid)?,
++            width: self.width,
++            top_k: self.top_k,
++            temporal_decay_q24: self.temporal_decay_q24,
++            inhibition_gain_q24: self.inhibition_gain_q24,
++            inhibition: self.inhibition.into_iter().map(|edge| InhibitoryEdge {
++                source: edge.source, target: edge.target, weight_q24: edge.weight_q24,
++            }).collect(),
++            activity_decay_q24: self.activity_decay_q24,
++            target_activity_q24: self.target_activity_q24,
++            threshold_rate_q24: self.threshold_rate_q24,
++            threshold_min_q24: self.threshold_min_q24,
++            threshold_max_q24: self.threshold_max_q24,
++            eligibility_decay_q24: self.eligibility_decay_q24,
++        })
++    }
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_runtime.rs
+@@ -46,6 +46,7 @@
+ pub use session::PreparedRootMaterialSourceHostV1;
+ pub use session::OriginalRootMaterialSourceRegistrationV1;
+ pub use session::RootHostInitialTaskInstallationErrorV1;
++pub use session::PreparedRootHostLoadedQ24TaskV1;
+ pub use session::RootNotesPolicyPredecessor;
+ 
+ #[path = "authority_host_writer_rotate.rs"]
+--- a/codex-rs/hepta-agentd/src/authority_host_service.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_service.rs
+@@ -65,6 +65,9 @@
+ pub use generation::RootHostInitialGenerationFilesV1;
+ pub(crate) use generation::OriginalGenerationLoadPurpose;
+ pub(crate) use generation::OriginalLoadedGeneration;
++pub use generation::RootHostQ24TaskFilesV1;
++pub(crate) use generation::OriginalTaskFilePurpose;
++pub(crate) use generation::OriginalTaskClockStatus;
+ 
+ /// A lane is fixed by its private listener, never selected by a wire request.
+ #[derive(Clone, Copy, Debug)]
+--- a/codex-rs/hepta-agentd/src/authority_host_session.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session.rs
+@@ -28,6 +28,7 @@
+ pub use generation::PreparedRootMaterialSourceHostV1;
+ pub use generation::OriginalRootMaterialSourceRegistrationV1;
+ pub use generation::RootHostInitialTaskInstallationErrorV1;
++pub use generation::PreparedRootHostLoadedQ24TaskV1;
+ 
+ /// One Root session's immutable registration, retained actual process handle
+ /// and original service. This wrapper is not Clone and creates no additional
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
+@@ -24,6 +24,7 @@
+ pub use task::PreparedRootHostCircuitTaskV1;
+ pub use task::PreparedRootMaterialSourceHostV1;
+ pub use task::OriginalRootMaterialSourceRegistrationV1;
++pub use task::PreparedRootHostLoadedQ24TaskV1;
+ 
+ enum InitialHostPhase<W: AnchorWitnessStore> {
+     Fresh(RootHostInitialGenerationInputsV1<W>),
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
+@@ -141,3 +141,7 @@
+ pub use root_task::PreparedRootHostCircuitTaskV1;
+ pub use root_task::PreparedRootMaterialSourceHostV1;
+ pub use root_task::OriginalRootMaterialSourceRegistrationV1;
++
++#[path = "authority_host_session_generation_task_loader.rs"]
++mod task_input_loader;
++pub use task_input_loader::PreparedRootHostLoadedQ24TaskV1;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs
+@@ -0,0 +1,113 @@
++//! The same Ready, session and absolute end feed the original task factory.
++//! Loading failure retains only same-operation readback, never Create retry.
++
++use std::path::Path;
++
++use codex_hepta_neuron::AnchorWitnessStore;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++
++use super::InitialHostPhase;
++use super::OriginalInstallationFailure;
++use super::PreparedRootHostCircuitTaskV1;
++use super::PreparedRootHostInitialGenerationV1;
++use super::RootHostInitialTaskInstallationErrorV1;
++use super::invalid;
++use super::require_original_session;
++use crate::AgentdError;
++use crate::HostAuthorityService;
++use crate::OriginalRootInitialGenerationCustodyV1;
++use crate::RootHostQ24TaskFilesV1;
++use crate::authority_host_service::OriginalHostInitialOperation;
++use crate::authority_host_service::OriginalTaskFilePurpose;
++use crate::authority_host_service::OriginalTaskClockStatus;
++
++/// The original task plus its same callback's first-error observation. There
++/// is no task/owner getter and no way to clear a failed clock or obtain a new
++/// factory lane. Normal serving is provided only by the fixed later assembly.
++pub struct PreparedRootHostLoadedQ24TaskV1 {
++    task: PreparedRootHostCircuitTaskV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
++    clock_status: OriginalTaskClockStatus,
++}
++
++impl PreparedRootHostLoadedQ24TaskV1 {
++    pub fn read_loaded_original_root_task_generation(
++        &self,
++    ) -> Result<crate::neuron_generation_current::NeuronGenerationInitialReadbackV1, AgentdError> {
++        self.clock_status.require_healthy()?;
++        let result = PreparedRootHostCircuitTaskV1::read_original_root_task_generation(&self.task);
++        self.require_original_result(result)
++    }
++
++    fn require_original_result<T>(&self, result: Result<T, AgentdError>) -> Result<T, AgentdError> {
++        match (result, self.clock_status.require_healthy()) {
++            (Ok(value), Ok(())) => Ok(value),
++            (Err(error), Ok(())) | (Ok(_), Err(error)) => Err(error),
++            (Err(error), Err(clock)) => Err(AgentdError::Protocol(format!(
++                "original task refused: {error}; retained clock cause: {clock}"
++            ))),
++        }
++    }
++}
++
++impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W> {
++    /// Consume this actual Ready and existing supervisor files for one Create
++    /// assembly. Model, registry and exact Source/Cell authentication remain in
++    /// the unchanged factory. This does not execute an ingress or claim a task.
++    pub fn prepare_original_root_task_from_files(
++        self,
++        deployment: &Path,
++        files: RootHostQ24TaskFilesV1,
++    ) -> Result<PreparedRootHostLoadedQ24TaskV1, RootHostInitialTaskInstallationErrorV1> {
++        self.load_original_task_files(deployment, files, OriginalTaskFilePurpose::Create)
++    }
++
++    /// Consume this actual Ready and recover the original Source/Cell history.
++    /// Missing or empty journals/witnesses are refused before original opening;
++    /// there is no Create fallback, different operation or deadline extension.
++    pub fn recover_original_root_task_from_files(
++        self,
++        deployment: &Path,
++        files: RootHostQ24TaskFilesV1,
++    ) -> Result<PreparedRootHostLoadedQ24TaskV1, RootHostInitialTaskInstallationErrorV1> {
++        self.load_original_task_files(deployment, files, OriginalTaskFilePurpose::Recover)
++    }
++
++    fn load_original_task_files(
++        self,
++        deployment: &Path,
++        files: RootHostQ24TaskFilesV1,
++        purpose: OriginalTaskFilePurpose,
++    ) -> Result<PreparedRootHostLoadedQ24TaskV1, RootHostInitialTaskInstallationErrorV1> {
++        let loaded = (|| -> Result<_, AgentdError> {
++            require_original_session(&self.session, self.end)?;
++            let InitialHostPhase::Ready(custody) = &self.phase else {
++                return Err(invalid("original generation must be Ready before opening task state"));
++            };
++            OriginalHostInitialOperation::require_observed(
++                &self.operation,
++                &OriginalRootInitialGenerationCustodyV1::read_original_operation(custody)?,
++            )?;
++            let loaded = HostAuthorityService::load_original_root_q24_task_inputs(
++                &self.session.service, deployment, files, purpose, self.end,
++            )?;
++            OriginalHostInitialOperation::require_observed(
++                &self.operation,
++                &OriginalRootInitialGenerationCustodyV1::read_original_operation(custody)?,
++            )?;
++            require_original_session(&self.session, self.end)?;
++            Ok(loaded)
++        })();
++        match loaded {
++            Ok(loaded) => {
++                let task = PreparedRootHostInitialGenerationV1::prepare_original_root_task(self, loaded.inputs)?;
++                Ok(PreparedRootHostLoadedQ24TaskV1 { task, clock_status: loaded.clock_status })
++            }
++            Err(error) => {
++                let Self { session, operation, end, phase: _ } = self;
++                Err(RootHostInitialTaskInstallationErrorV1 {
++                    session, operation, end, failure: OriginalInstallationFailure::Host(error),
++                })
++            }
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -159,6 +159,8 @@
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootHostInitialTaskInstallationErrorV1;
+ #[cfg(target_os = "linux")]
++pub use authority_host_runtime::PreparedRootHostLoadedQ24TaskV1;
++#[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootNotesPolicyPredecessor;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootResidentCandidateProcessInputsV3;
+@@ -202,6 +204,8 @@
+ pub use authority_host_service::RootHostInitialGenerationRecoveryV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_service::RootHostInitialGenerationFilesV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_service::RootHostQ24TaskFilesV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_service::resident::AgentdRootResidentLearningClientV3;
+ #[cfg(target_os = "linux")]

@@ -1,0 +1,408 @@
+{
+  "byte_results": {
+    "all_nine_splices_unique_old_new_full_forward_inverse_equal": true,
+    "all_three_complete_patches_independently_reconstructed": true,
+    "all_three_manifest_and_metadata_sets_fully_hashed": true,
+    "all_unchanged_original_statements_preserved": true,
+    "feature_new_append_bytes": 2011,
+    "feature_original_test_prefix_bytes": 12439,
+    "feature_production_exact_delta_bytes": 25,
+    "files": [
+      {
+        "after": {
+          "bytes": 7788,
+          "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+          "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+        },
+        "baseline": "exact-v5-composed-file",
+        "before": {
+          "bytes": 7326,
+          "git_blob": "7da8c7b20bba82b648eec3420733f49997561501",
+          "sha256": "7b2f1501aaff75a4ceaad94303c739c0fb0fbd70c8db0049d8f5fae4de16327d"
+        },
+        "forward_and_reverse_complete_bytes_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+        "splice_count": 4
+      },
+      {
+        "after": {
+          "bytes": 8637,
+          "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+          "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+        },
+        "baseline": "exact-v5-composed-file",
+        "before": {
+          "bytes": 8481,
+          "git_blob": "3d18fc0d8ce1c9e2a3a7e863bd7bdadac04497ad",
+          "sha256": "68655fc061366fb2435ba687277b4697eb42356c9ecb16f0e0a56a6d14ce7945"
+        },
+        "forward_and_reverse_complete_bytes_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+        "splice_count": 1
+      },
+      {
+        "after": {
+          "bytes": 11108,
+          "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+          "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+        },
+        "baseline": "exact-v5-composed-file",
+        "before": {
+          "bytes": 10937,
+          "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+          "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+        },
+        "forward_and_reverse_complete_bytes_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+        "splice_count": 1
+      },
+      {
+        "after": {
+          "bytes": 4635,
+          "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+          "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+        },
+        "baseline": "exact-v5-composed-file",
+        "before": {
+          "bytes": 4376,
+          "git_blob": "c3da579114e1b4b2af2dd52785afc67980595051",
+          "sha256": "72b6616733eaa6213c17a44a9f7ceaf7caa3eb93b56194fa88435c9ea47c9a0c"
+        },
+        "forward_and_reverse_complete_bytes_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+        "splice_count": 1
+      },
+      {
+        "after": {
+          "bytes": 13123,
+          "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+          "sha256": "3b1252b664111baf22778f8ca9c4495e0f3e4806fdcb54149c718d58f9b79bd3"
+        },
+        "baseline": "unchanged-original-b608-file",
+        "before": {
+          "bytes": 13098,
+          "git_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+          "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc"
+        },
+        "forward_and_reverse_complete_bytes_equal": true,
+        "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+        "splice_count": 1
+      },
+      {
+        "after": {
+          "bytes": 14450,
+          "git_blob": "615b3b2179756eff1be112a0648e72311c22457f",
+          "sha256": "04f16c757331031d484bce4646bbb1f11e1d3301f05de40d78c6c3dedbdffde1"
+        },
+        "baseline": "unchanged-original-b608-file",
+        "before": {
+          "bytes": 12439,
+          "git_blob": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+          "sha256": "4d55b3c2125f8fa811467b5b38197f29c92a2d70979063dcf3f341a1f917dca8"
+        },
+        "forward_and_reverse_complete_bytes_equal": true,
+        "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+        "splice_count": 1
+      }
+    ],
+    "reference_files_bound_to_v5_or_b608": [
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+        "pin": {
+          "bytes": 5080,
+          "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+          "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+        }
+      },
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+        "pin": {
+          "bytes": 3722,
+          "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+          "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+        }
+      },
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+        "pin": {
+          "bytes": 13631,
+          "git_blob": "90075e64c2df933be2f3bcbdb64cc5bf68f32d2b",
+          "sha256": "b96884e676a82ef8a4e8cf083374aa63753709d6bc362a8afecda867906d327d"
+        }
+      },
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+        "pin": {
+          "bytes": 11790,
+          "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+          "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+        }
+      },
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_cell.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+        "pin": {
+          "bytes": 13463,
+          "git_blob": "f6c8214d9f5e065d8869195c83e50ec721cf9965",
+          "sha256": "08d13892425abdd4fb9c7f170aaaa857a8c57a8e61c16bad1c6248f4508a3049"
+        }
+      },
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+        "pin": {
+          "bytes": 9177,
+          "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+          "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+        }
+      },
+      {
+        "baseline": "v5",
+        "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+        "pin": {
+          "bytes": 8679,
+          "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+          "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+        }
+      },
+      {
+        "baseline": "b608",
+        "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
+        "path": "codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
+        "pin": {
+          "bytes": 2149,
+          "git_blob": "a3aa1990030da739164d9682bcbc61453cd16428",
+          "sha256": "5365427e0982921142bf205550d422f8978de3ef6f5edcf2ff79a7bbb816fd0c"
+        }
+      },
+      {
+        "baseline": "b608",
+        "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-neuron/src/cell_inference.rs",
+        "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+        "pin": {
+          "bytes": 10719,
+          "git_blob": "41c76f880fe05d71b298834c6cef936291f6c9e0",
+          "sha256": "45347b020decc2c213cecfccf6b395dc2d514d3e5eb2ee03cace27c60f673e23"
+        }
+      },
+      {
+        "baseline": "b608",
+        "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-neuron/src/cell.rs",
+        "path": "codex-rs/hepta-neuron/src/cell.rs",
+        "pin": {
+          "bytes": 11087,
+          "git_blob": "7f99ec906d3102582e4a9ba4ea6353b56a69d82b",
+          "sha256": "621ad9da132a298fa4dffd58bc870720adf5978d5e6e3ac38fcf6bf870a52edc"
+        }
+      },
+      {
+        "baseline": "b608",
+        "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-neuron/src/cell_types.rs",
+        "path": "codex-rs/hepta-neuron/src/cell_types.rs",
+        "pin": {
+          "bytes": 12226,
+          "git_blob": "712fe850d16abeea3dc859827e0082bf3343c780",
+          "sha256": "04e0d7e973103f79275d1b552f60394b697c45402a9c3452d029a934090961c6"
+        }
+      }
+    ]
+  },
+  "conclusion": {
+    "H_remains_stopped": true,
+    "complete_new_clock_producer_and_all_product_consumers_accepted": false,
+    "concrete_blockers_in_these_fixed_layers": [],
+    "is_execution_approval": false,
+    "known_remote_and_feature_completion_source_defect_addressed_statically": true,
+    "may_integrate_for_further_prequalification_review": true,
+    "qualification": false
+  },
+  "format": "independent-remote-and-feature-clock-rejection-review-v1",
+  "inputs_and_reproducer": {
+    "exit_code": 0,
+    "meaning": "Only full bytes, JSON schemas, fixed source anchors and reviewer-written integer predicates were evaluated. No project code was imported or executed.",
+    "proof": {
+      "path": "/tmp/hepta-36fa-clock-rejection-independent-review-v1/BYTE_AND_CONSUMER_PROOF.json",
+      "pin": {
+        "bytes": 40635,
+        "git_blob": "502dd4cda798d275ba91ca8f7eff41e41eee579a",
+        "sha256": "75940990aec53e264b8bdc3209a0c0f491cf8f65e92f18f802054ce0380256c1"
+      }
+    },
+    "pure_script": {
+      "path": "/tmp/hepta-36fa-clock-rejection-independent-review-v1/verify_clock_layers.py",
+      "pin": {
+        "bytes": 18381,
+        "git_blob": "80cad0bb0ca516085c332b206855c5da8ece20e3",
+        "sha256": "af0d40f243fc74cee2cbf3e175b7c4c157404d4c0648d752a77e5bb3172f06cd"
+      }
+    },
+    "raw_pure_script_result": {
+      "path": "/tmp/hepta-36fa-clock-rejection-independent-review-v1/EXECUTION_01.original.json",
+      "pin": {
+        "bytes": 431,
+        "git_blob": "514c9f371b0da78e97be665814071f06eba25511",
+        "sha256": "2d5942969590d0df7a34c9f6a3af4faaa5ff0d30a9846fa1e03c1b9a38a8e3f7"
+      }
+    }
+  },
+  "known_consumer_graph": [
+    "The private one-shot original Root factory creates OriginalPump. Its clock method reaches Root CLOCK encoding, and its execute method calls the strengthened execute_original_remote with the same original clock.",
+    "CLOCK decoding returns Result. The remote runtime revalidates the post-merge sample, and each original Driver call propagates Err before its associated next work. The original Driver also preserves its first fallible error while its Cell adapter runs and reports it afterward.",
+    "The original daemon Cell port samples before and after the actual remote operation. original_execution already rejects MAX before retaining/sending its admission; the existing post-sample guard rejects MAX after the operation without asserting no operation happened.",
+    "Inside the strengthened remote Cell, all four actual clock() sites were enumerated. The original inference and GuardedCellDispatch boundaries receive only the accepted sample or the explicit refused marker.",
+    "Inside the original Feature port, all four self.clock calls were enumerated. Readback and already-present-record branches do not sample a replacement live clock."
+  ],
+  "normal_semantics_preserved": [
+    "For every non-MAX input, each new predicate reduces exactly to the old predicate; all surrounding bytes are identical. Reviewer integer grids cover single-field MAX, both-field MAX, backward, equal, finite-late and adjacent-boundary examples, not project behavior.",
+    "Finite expired/read-only pending recovery retains its original branch structure when the other original currentness guards permit it. No fresh inference is authorized by the new condition.",
+    "Finite late Feature success continues to preserve real native cost and settle its original Cancelled receipt. Only the invalid sentinel is distinguished from finite lateness.",
+    "The same original 128-request shared task/loan counter, 500 ms exchange timeout, per-session absolute end, sequence, nonce, actual peer lifetime and no-restoration-on-transport-failure remain in the unchanged wire module.",
+    "No new queue, retry, deadline extension, grant, owner, state reset, remote fallback, test-only production bypass or changed policy calculation is introduced."
+  ],
+  "original_finding": {
+    "boundary": "This is a source/control-flow finding. It is not evidence of an actual affected run, observed state mutation, model invocation or forged cost.",
+    "confirmed": "In the old remote Cell path, MAX passed the initial nonregression guard and could reach pending readback, decide_cell and commit_cell_step before a final loan error. MAX at the old Feature completion sample could be treated as a finite overdue completion and produce/settle a Cancelled receipt.",
+    "historical_preservation": "Original source packets and earlier time-scoped reviews remain intact. This finding and these corrective layers do not rewrite their contents or reclassify prior H Unknown.",
+    "path": "/tmp/hepta-36fa-root-clock-failure-static-finding-v1/FINDING.json",
+    "pin": {
+      "bytes": 2884,
+      "git_blob": "afa9fc1968583bfb3f30f712a4ad9f8622e17358",
+      "sha256": "5586573c167d9ba4d4eb36fc3d0b1262c8702be83a714d42c7453f1097c9decc"
+    }
+  },
+  "regression_source_review": {
+    "cleanup": "The unchanged synchronous Fixture Drop owns its temporary directory cleanup; no async task/join or physical process-exit claim is made.",
+    "executed": false,
+    "mechanism": [
+      "Uses the original Fixture, its real DurableInferenceControl journal, original binding/definition and existing explicit Worker lifecycle fixture. It does not fabricate a terminal record or call settle directly.",
+      "The new clock returns 11 until the existing Worker increments its atomic call count, then MAX. The test demands exact Indeterminate after one worker call and four samples, unresolved original state, original dispatch timestamp 11 and no terminal readback.",
+      "Same-port reentry must not call either worker or clock again, and the journal bytes must equal the saved pending bytes.",
+      "The first port is dropped before reopening the same original journal. Reopened readback remains None, execute remains Indeterminate, the worker count remains one and original bytes remain equal. Its supplied clock panics if a replacement sample is incorrectly requested.",
+      "This is a meaningful source-level regression for the old completion-sentinel path, not numerical correctness, real Root authority, authenticated IPC, process cold recovery or a test PASS."
+    ],
+    "new_method": "feature_control_invalid_completion_clock_retains_original_unresolved_dispatch",
+    "new_tests": 1,
+    "old_tests_retained": 5,
+    "positive_control": "The entire old finite-late Cancelled/cost test remains byte-identical, including measured memory 13, transient 17, latency 23, original queue lower bound and exact readback."
+  },
+  "rejection_boundaries": [
+    {
+      "before": "State-owner lookup, pending inference recovery, acceptance of a committed replay and fresh enter_cell_step.",
+      "check": "Either time.circuit_millis or time.cell_micros equal to u64::MAX now returns the existing CircuitCellErrorV1::ReconciliationRequired.",
+      "location": "circuit_cell_remote.rs: initial sample",
+      "retained": "Input/registry binding and original live-admission checks still occur in their original order. The check is not a claim of zero earlier IPC/currentness observations."
+    },
+    {
+      "before": "The marker cannot become a valid recorded Circuit sample or reach the control port as an accepted dispatch time.",
+      "check": "Either MAX field sets the existing invalid_clock flag and returns the original rejected numeric marker, without sampled.set.",
+      "location": "circuit_cell_remote.rs: infer_cell_with_clock callback",
+      "original_consumer_proof": "infer_cell_with_clock first calls admission_for_step, which rejects >= the u64 input deadline before owner.admit_inference. Its second sample is rejected before execute_feature and before record_host_queue_age. Since u64::MAX is at least every u64 deadline, both original boundaries reject it.",
+      "retained": "A first admission may already have become durable before a later invalid sample. Pending state remains; no refund, retry or zero-cost substitute is introduced."
+    },
+    {
+      "before": "decide_cell numerical/policy/proposal work and commit_cell_step owner mutation, respectively.",
+      "check": "Each new sample rejects either MAX field in addition to the original backwards-clock conditions.",
+      "location": "circuit_cell_remote.rs: decision and commit samples",
+      "retained": "The same pending/replay/final require_current logic remains. Prior actual inference work is not erased by a later ReconciliationRequired."
+    },
+    {
+      "before": "Response framing/delivery as an accepted clock.",
+      "check": "The original Root pump clock is sampled once; either MAX field refuses before encoding the 16-byte payload.",
+      "location": "circuit_task_remote_service.rs: CLOCK response",
+      "retained": "Original record/loan, same Source binding, actual Root current-state and Lane deadline checks still surround handling. At transport boundaries the original error mapping may be CommitUncertain/Unavailable; this report does not promise the local ReconciliationRequired enum reaches the daemon verbatim."
+    },
+    {
+      "before": "Exposure of a valid time value to the runtime.",
+      "check": "A complete authenticated 16-byte response is decoded; either MAX field returns ReconciliationRequired before Ok(clock).",
+      "location": "circuit_task_remote_client.rs: CLOCK decoding",
+      "retained": "The original Lane exchange has already consumed its request and may have restored the channel before this higher-level body validation. This check does not refund the request or independently promise permanent transport poison; the producer-specific permanent failure contract is separate."
+    },
+    {
+      "before": "The Driver consumes time for run creation, recovery, claim, completion or Advance.",
+      "check": "After max(sampled.circuit_millis, actual current RunStart time), either MAX field is rejected before the fallible Driver clock closure returns Ok.",
+      "location": "circuit_task_remote_runtime.rs: merged current RunStart sample",
+      "retained": "Cancellation, actual RunStart authentication, original reverse-channel ownership and cleanup remain byte-identical. The merge itself cannot reintroduce an accepted MAX."
+    },
+    {
+      "before": "Updating queue cost, converting status to Cancelled, clearing outputs, building or encoding a receipt and settle_generation.",
+      "check": "The exact added 25-byte completed == u64::MAX || disjunct returns original NeuronModelError::Indeterminate.",
+      "location": "feature_control.rs: completed sample",
+      "other_samples": "Admitted, dispatch and entered already reject >= their original u64 deadline. The completed sample was the missing check because a finite late completion is intentionally settled as Cancelled.",
+      "retained": "The real worker and durable admission/dispatch may already have executed. The record stays unresolved. The source does not assert NotExecuted, zero effects, permission to retry, or replacement of measured costs."
+    }
+  ],
+  "remaining_dependencies": [
+    "The new protected Root task-clock producer was not part of these three immutable packets. It must retain its first real AuthorityClock/overflow/deadline error permanently and cannot rely on a transient MAX alone.",
+    "The original local circuit_cell::execute and local runtime are deliberately unmodified and are not proved universally MAX-safe. A later private task-loader wrapper must prevent its new sentinel-producing clock from escaping into those old local paths, or obtain a separate explicit correction. This report is not acceptance of that later consumer closure.",
+    "These source changes and their later composition need exact registration/protection refresh plus the actual original formatter/compiler/source/native gates when separately authorized. None ran here.",
+    "A rejected post-dispatch or post-worker sample keeps execution uncertainty and original cost records. No new H or retry is authorized by this review."
+  ],
+  "reviewer": "/root/native_ci_audit",
+  "scope": {
+    "H_calls": 0,
+    "compiler_formatter_QA_collector_or_Rust_tests_executed": false,
+    "frozen_input_layers": [
+      {
+        "manifest": {
+          "bytes": 2969,
+          "git_blob": "38cf35220c83400f7030cf0133db989c2f113a77",
+          "sha256": "2d416c8073d621720929cc3b5317e455845814bea726c1d93323ffb2c6b0a87c"
+        },
+        "name": "remote-clock-rejection-increment-v1",
+        "packet": {
+          "bytes": 66844,
+          "git_blob": "9f780f963b0e9585b5b85a83f87de593f604bfa5",
+          "sha256": "e3056b6b268b3c5503485fe125330f6405e9e56f4ac09b9ab472d962c62b963e"
+        }
+      },
+      {
+        "manifest": {
+          "bytes": 1515,
+          "git_blob": "c37e5c7a21ad47be1d34d970a415499ff7cb6bd2",
+          "sha256": "69b1e21d8d3b2e648b8f6a47cb2da7606c7561d92adc08532abdb02fb3d05d0e"
+        },
+        "name": "feature-clock-rejection-increment-v1",
+        "packet": {
+          "bytes": 27556,
+          "git_blob": "ade9282388680285416c7829000b7081e22550ef",
+          "sha256": "f173cc5db210014d7e9ad52f6098ec95f2abfb2f2916123ff1acc1b8fcc81755"
+        }
+      },
+      {
+        "manifest": {
+          "bytes": 1524,
+          "git_blob": "35ea2262ae0eb9e5ab82e215c4cd7953e6a260f8",
+          "sha256": "17362ba89576343a43b314ca5ee3be9819742f167ed2d65e945617d2d94e569b"
+        },
+        "name": "feature-clock-regression-tests-v1",
+        "packet": {
+          "bytes": 28419,
+          "git_blob": "b2dc4c80ce5918463f3713fd6d916f0aeb1c85c0",
+          "sha256": "4d352b8744d77391e2c8662dea0fc7890103a81e8bdfebc3a3495c18cb6ab9b6"
+        }
+      }
+    ],
+    "new_protected_task_clock_final_consumer_closure_reviewed_here": false,
+    "new_protected_task_clock_producer_reviewed_here": false,
+    "new_test_methods": 1,
+    "old_local_Cell_or_local_runtime_changed": false,
+    "original_base": "Four remote files are exact Root composition-v5 beforeimages; feature_control and its tests match complete original b608 beforeimages.",
+    "production_files": 5,
+    "source_Git_or_ref_writes": false,
+    "splices": 9,
+    "test_files": 1
+  },
+  "status": "NO_NEW_CONCRETE_STATIC_BLOCKER_IN_FIXED_FIVE_PRODUCTION_FILES_AND_ONE_TEST_FILE",
+  "storage_boundary": "Local complete-byte computed pins only. No new reviewer artifact was uploaded or full-GET through Git by this agent; Root owns evidence publication."
+}

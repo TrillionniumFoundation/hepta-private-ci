@@ -1,0 +1,8 @@
+{
+  "format": "hepta-e2-common-startup-review-v1",
+  "implementation": "One exact body extraction, no duplicate handoff logic. The public API retains its old timing; the private integrated entry consumes the existing common deadline.",
+  "project_or_h_executed": false,
+  "reason": "The loader computes one common startup before disclosure preparation. The original public method could otherwise start a later independent thirty-second window.",
+  "registration_obligation": "The extracted original body callers move from the public method to the new private method. Preserve each original boundary rule/flags and exact source scope; register the new wrapper edge and full new body. Do not claim old public body whole-byte equality for this successor.",
+  "source_git_written": false
+}

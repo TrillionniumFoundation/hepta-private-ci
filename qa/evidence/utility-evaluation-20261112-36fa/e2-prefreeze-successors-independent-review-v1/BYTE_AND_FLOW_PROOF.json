@@ -1,0 +1,751 @@
+{
+  "H_calls": 0,
+  "all_declared_checks_passed": true,
+  "common_startup": {
+    "delegation_once": true,
+    "original_body_retains_original_scoped_threads_and_join": true,
+    "original_body_retains_single_lane_before_bind_send": true,
+    "original_body_suffix_exact": true,
+    "private_clamp": "let startup_end = startup_end.min(Instant::now() + Duration::from_secs(30)).min(self.end);",
+    "public_signature_same": true,
+    "sole_splice_forward_and_inverse_exact": true,
+    "suffix_bytes": 4521,
+    "suffix_pin": {
+      "bytes": 4521,
+      "git_blob": "21b2cf293abd1191f630e2796ed5ee9b55068dad",
+      "sha256": "7eb29f810c35fd71c65cab3a2f885b5fd5185551e4a560f0c2f55272d2b0bad5"
+    }
+  },
+  "exact_cases": [
+    {
+      "body_pin": {
+        "bytes": 2945,
+        "git_blob": "c3e9152fcb317c847302760fab2d3f00a628b633",
+        "sha256": "49763b6013e5ac91ff3a3401a8c915b25d4bd894e126857e70b182660f6c6a02"
+      },
+      "exact_body": "async fn root_prefreeze_ready_reads_existing_source_without_future_event() -> anyhow::Result<()> {\n    let mut fixture = HostFixture::new(\"root-prefreeze-existing-source\", OriginalHeadCase::Current).await?;\n    let mut task = None;\n    let mut returned_host = None;\n    let body: anyhow::Result<()> = async {\n        let evidence = EvidenceFixture::new(fixture.original.source.clone(),\n            crate::circuit_feature_task_digest_v1(&fixture.original.definition, &fixture.original.source)?,\n            OPERATION, Digest32::from_array(fixture.binding.request_sha256))?;\n        let mut generation = fixture.bind()?;\n        PreparedRootHostInitialGenerationV1::publish_original_generation(&mut generation)?;\n        let (config, inputs, runtime, request) = fixture.original.take_task_inputs(4)?;\n        let (host, installed) = PreparedRootHostInitialGenerationV1::into_original_q24_task(generation, config, inputs)\n            .map_err(|error| anyhow::anyhow!(\"{error}\"))?;\n        returned_host = Some(host);\n        anyhow::ensure!(OriginalRootCircuitTaskCustodyV1::original_prefreeze_is_pending(\n            &installed.custody, &evidence.request)?, \"an unstarted Source was already complete\");\n        match OriginalRootCircuitTaskCustodyV1::require_original_completed_source(&installed.custody) {\n            Err(crate::AgentdError::Invalid(message)) if message == crate::CircuitTaskErrorV1::ReconciliationRequired.to_string() => {},\n            Err(error) => anyhow::bail!(\"unrelated original Source refusal: {error}\"),\n            Ok(_) => anyhow::bail!(\"the unstarted original Source was accepted\"),\n        }\n        task = Some(start_original_task(installed, runtime, request).await?);\n        let original = task.as_ref().ok_or_else(|| anyhow::anyhow!(\"original task missing\"))?;\n        original.execute().await?;\n        let journal = fixture.original.generation_bytes()?;\n        anyhow::ensure!(!OriginalRootCircuitTaskCustodyV1::original_prefreeze_is_pending(\n            &original.installed.custody, &evidence.request)?, \"completed existing Source waited for a future event\");\n        OriginalRootCircuitTaskCustodyV1::require_original_completed_source(&original.installed.custody)?;\n        let first = OriginalRootCircuitTaskCustodyV1::read_original_prefreeze_source(\n            &original.installed.custody, &evidence.request)?;\n        let second = OriginalRootCircuitTaskCustodyV1::read_original_prefreeze_source(\n            &original.installed.custody, &evidence.request)?;\n        anyhow::ensure!(first == second, \"same original complete Source payload changed\");\n        anyhow::ensure!(fixture.original.generation_bytes()? == journal, \"readiness observation mutated the generation\");\n        Ok(())\n    }.await;\n    let task_cleanup = match task { Some(task) => task.finish().await, None => Ok(()) };\n    drop(returned_host);\n    let peer_cleanup = fixture.finish();\n    body?;\n    task_cleanup?;\n    peer_cleanup\n}",
+      "ignored": true,
+      "line": 11,
+      "name": "root_prefreeze_ready_reads_existing_source_without_future_event",
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_tests.rs"
+    },
+    {
+      "body_pin": {
+        "bytes": 1247,
+        "git_blob": "74ede77bd74a88fd8219b24e2d8477d0cff23385",
+        "sha256": "54bab8d3f87795a7a39bb83600416c4cfea142db44ea982822c1cf358deaf0c1"
+      },
+      "exact_body": "fn original_source_hint_latches_without_renewing_the_original_deadline() -> anyhow::Result<()> {\n    let hint = Arc::new(Hint::new());\n    let start = Arc::new(Barrier::new(2));\n    let other_hint = Arc::clone(&hint);\n    let other_start = Arc::clone(&start);\n    let worker = std::thread::spawn(move || {\n        other_start.wait();\n        other_hint.observed()\n    });\n    let end = Instant::now() + Duration::from_millis(500);\n    start.wait();\n    let result = hint.wait_original(end);\n    let joined = worker.join().map_err(|_| anyhow::anyhow!(\"hint notifier panicked\"));\n    result?;\n    joined??;\n    // A notification retained before the next wait is not lost, and neither\n    // an already latched notification nor an empty latch can renew the end.\n    hint.wait_original(end)?;\n    let expired = Instant::now();\n    let unopened = Hint::new();\n    for original in [hint.as_ref(), &unopened] {\n        match original.wait_original(expired) {\n            Err(AgentdError::Invalid(message)) if message == \"the original Source startup expired\" => {},\n            Err(error) => anyhow::bail!(\"unrelated readiness error: {error}\"),\n            Ok(_) => anyhow::bail!(\"a retained hint renewed an expired startup\"),\n        }\n    }\n    Ok(())\n}",
+      "ignored": false,
+      "line": 9,
+      "name": "original_source_hint_latches_without_renewing_the_original_deadline",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready_tests.rs"
+    },
+    {
+      "body_pin": {
+        "bytes": 1529,
+        "git_blob": "5ae0973d5d1d63d14d83b40089f654cc7f35cd7e",
+        "sha256": "4232399b57d97df8ad662e80b73c265da37748e39c25ab557c573d6ad0bb585c"
+      },
+      "exact_body": "async fn prefreeze_request_reads_actual_source_without_future_evidence() -> anyhow::Result<()> {\n    let fixture = completed_source().await?;\n    let input = original::source(\"A\", b\"actual Material source fixture\");\n    let task = crate::circuit_feature_task_digest_v1(&cell::definition(), &input)?;\n    let evidence = EvidenceFixture::new(input, task, \"prefreeze-test-operation\", cell::d(\"initial intent\"))?;\n    let admitted = evidence.verify()?;\n    let before = fixture.bytes()?;\n    let view = fixture.source.readback();\n    let payload = view.encode_original_material_publication(&fixture.identity, &fixture.publication)?;\n    let observed = decode_current_root_payload(&payload)?;\n    evidence.request.require_publication(&observed)?;\n    anyhow::ensure!(observed == fixture.publication, \"the full original publication changed\");\n    anyhow::ensure!(fixture.bytes()? == before, \"pre-freeze observation wrote original journals\");\n\n    fixture.source.withdraw_source(&cell::id(\"A\"))?;\n    let withdrawn = fixture.bytes()?;\n    anyhow::ensure!(evidence.verify()? == admitted, \"the independent signature fixture changed\");\n    anyhow::ensure!(view.encode_original_material_publication(&fixture.identity, &observed)\n        == Err(Error::Unavailable), \"a still-valid signature cannot revive withdrawn Source\");\n    anyhow::ensure!(fixture.bytes()? == withdrawn, \"refused observation changed the withdrawal\");\n    anyhow::ensure!(fixture.calls.load(Ordering::SeqCst) == 1, \"pre-freeze read redispatched inference\");\n    Ok(())\n}",
+      "ignored": false,
+      "line": 9,
+      "name": "prefreeze_request_reads_actual_source_without_future_evidence",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_tests.rs"
+    },
+    {
+      "body_pin": {
+        "bytes": 2448,
+        "git_blob": "df63032cd1ccf9f6b6c29671ee597be30c3ccc1d",
+        "sha256": "322802787b3227cdb5e48494b137890d8c4d293e5313e39577f7e07adf188243"
+      },
+      "exact_body": "async fn prefreeze_request_refuses_rebinding_and_other_enrolled_generator() -> anyhow::Result<()> {\n    let fixture = completed_source().await?;\n    let input = original::source(\"A\", b\"actual Material source fixture\");\n    let task = crate::circuit_feature_task_digest_v1(&cell::definition(), &input)?;\n    let mut evidence = EvidenceFixture::new(input, task, \"prefreeze-test-operation\", cell::d(\"initial intent\"))?;\n    let original_binding = evidence.verify()?;\n    let before = fixture.bytes()?;\n\n    evidence.request.consumer.pid += 1;\n    anyhow::ensure!(evidence.verify() == Err(Error::InvalidBinding), \"recipient substitution was accepted\");\n    evidence.request.consumer.pid -= 1;\n    evidence.request.nonce[0] ^= 1;\n    anyhow::ensure!(evidence.verify() == Err(Error::InvalidBinding), \"nonce substitution was accepted\");\n    evidence.request.nonce[0] ^= 1;\n    evidence.request.task_digest = cell::d(\"different task\");\n    anyhow::ensure!(evidence.verify() == Err(Error::InvalidBinding), \"another task was accepted\");\n    evidence.request.task_digest = task;\n    evidence.request.source.observation.push(1);\n    anyhow::ensure!(evidence.verify() == Err(Error::InvalidBinding), \"changed full input was accepted\");\n    evidence.request.source.observation.pop();\n    let controller = evidence.request.generator.controller_id.clone();\n    evidence.request.generator.controller_id = cell::id(\"different-controller\");\n    anyhow::ensure!(evidence.verify() == Err(Error::InvalidBinding), \"changed signer controller was accepted\");\n    evidence.request.generator.controller_id = controller;\n\n    let other = evidence.another_valid_generator()?;\n    evidence.verifier.verify(LearningEvidenceRoleV1::Generator, &other,\n        &evidence.request.signing_payload()?, AT)?;\n    anyhow::ensure!(evidence.request.require_evidence(&evidence.verifier,\n        evidence.request.trust_distribution_digest, evidence.request.trust_generation, &other, AT)\n        == Err(Error::InvalidBinding), \"another valid enrolled Generator selected this disclosure\");\n    anyhow::ensure!(evidence.verify()? == original_binding, \"the original complete binding no longer verifies\");\n    evidence.request.require_publication(&fixture.publication)?;\n    anyhow::ensure!(fixture.bytes()? == before, \"signature refusal wrote original Source/Cell evidence\");\n    anyhow::ensure!(fixture.calls.load(Ordering::SeqCst) == 1, \"signature refusal redispatched inference\");\n    Ok(())\n}",
+      "ignored": false,
+      "line": 34,
+      "name": "prefreeze_request_refuses_rebinding_and_other_enrolled_generator",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_tests.rs"
+    }
+  ],
+  "format": "hepta-prefreeze-successors-independent-byte-proof-v1",
+  "inputs": [
+    {
+      "bytes": 423326,
+      "git_blob": "c66c54e9989023b79f62b10575350293d21301a0",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-source-layer-v1/SOURCE_PACKET.json",
+      "sha256": "f0761096aeb8bfd74640d0875fc5a1a3fb6bf777a0188846ace84b2ed52f4810"
+    },
+    {
+      "bytes": 100450,
+      "git_blob": "3181789965054fd440568f0ac4d4e242194d34f3",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-ready-increment-v1/SOURCE_PACKET.json",
+      "sha256": "335b620b4956606cf3392726a57645a35ac2475c907a428e501e3d6eba3976e9"
+    },
+    {
+      "bytes": 1661,
+      "git_blob": "b25e6aa1d04f7b619f7eba5be3108bfa95e6a2ab",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1/MANIFEST.json",
+      "sha256": "ff093bcba23411890f91d72e7bed5affba9726670d047a518f3f235e3062abdc"
+    },
+    {
+      "bytes": 1180,
+      "git_blob": "37a6be671ec1d21c817e4010162387db83c20f33",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1/BYTE_PROOF.json",
+      "sha256": "5192c8b94d49786f4a62887b781f796437cc117b58a7daf81fb05c8ff66d9c53"
+    },
+    {
+      "bytes": 2030,
+      "git_blob": "c47a40b446876a18da8470e161ee9a863140a2f2",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1/EXACT_SOURCE_SPLICES.json",
+      "sha256": "9eec693be29ef9d00c3a357d5848b27aeb7983df3ffdcd62a8693137b397a7cb"
+    },
+    {
+      "bytes": 786,
+      "git_blob": "e5c072615b3ccf1e79c272b17e21244424c1e345",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1/REVIEW.json",
+      "sha256": "fd4bc54251c48e7a417c9616b7da2c358161e772a2baaaa5fbb5e09daa3d4220"
+    },
+    {
+      "bytes": 1611,
+      "git_blob": "fb114e62c931e47a31a06a0ef4e692652f5e1462",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1/SOURCE_DELTA.patch",
+      "sha256": "ab07338405d720df959ec2c9ebdf35e44236128e4a33b7c3f089e633e72c4385"
+    },
+    {
+      "bytes": 15138,
+      "git_blob": "07cb756ca663e7fd802e008e258cb3828d73e636",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1/SOURCE_PACKET.json",
+      "sha256": "1fa5b42638c64327e507c5d15891f478db334d6841a0652f651131b2f516f177"
+    },
+    {
+      "bytes": 4708,
+      "git_blob": "7e041dc5a4a7c4cae10aae2cfaf253d0729e1dda",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/MANIFEST.json",
+      "sha256": "b0d04b28d7e03eec30c2a9245fb3b5519374744c6f0c1b948071cca963bad6e4"
+    },
+    {
+      "bytes": 1676,
+      "git_blob": "82972644514ab072a50b76513f1d7f981d7121e3",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/BYTE_PROOF.json",
+      "sha256": "e604139e6b8fd1a6a6c341fc2a02556f97d60e809f2713ff549bff8b9f2d2041"
+    },
+    {
+      "bytes": 1132,
+      "git_blob": "ea07c73b7caba0d9327462736255fad78b1a462d",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/EXACT_SOURCE_SPLICES.json",
+      "sha256": "e686262d9036cb7a83c83d74badc10460990269b0a1d94237818bf8f3c18a8b9"
+    },
+    {
+      "bytes": 2901,
+      "git_blob": "060ebab652805e28f6d25a252a00aeaa87ec20cf",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/REVIEW.json",
+      "sha256": "9666c5268e6a0794fccfb95f798401fb8be595e232d831fd51ea922b55f87496"
+    },
+    {
+      "bytes": 16177,
+      "git_blob": "75fa042d4056ab4ddec36294e1c74037f43d39dc",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/SOURCE_DELTA.patch",
+      "sha256": "7aa31ea4cb60be3ebc575f7f3766e9371bf22127c88b337af8e43c8f9c1e1e4a"
+    },
+    {
+      "bytes": 75062,
+      "git_blob": "474fe0d12b9d73cb94136e4e46d09394e495bbe3",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/SOURCE_PACKET.json",
+      "sha256": "776725926373f234128508b5971d192984ed29361199d6d418be620e9fe0777b"
+    },
+    {
+      "bytes": 2339,
+      "git_blob": "3df024f08f791c2058a090c1c73fab58b7028584",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1/TEST_REGISTRATION_DELTA.json",
+      "sha256": "ceb69c2c6376a0d2ec107a83340cba9fd5a8c926e4312443a8f80ef38b0d40b5"
+    }
+  ],
+  "layers": [
+    {
+      "layer": "common-startup-increment-v1",
+      "rows": [
+        {
+          "after": {
+            "bytes": 7547,
+            "git_blob": "947e048fa70eba8cdf797993ff6d7f62c5995a8e",
+            "sha256": "7c6af95a5abd54cc4263a819e6bdf8bd7f636cd1116c933a57c033b7e7551db7"
+          },
+          "before": {
+            "bytes": 6563,
+            "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+            "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+          },
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 660,
+                "git_blob": "059dbcba6512330b9035708c41ab8bf64d3d6af6",
+                "sha256": "12edebd94a8fae23d17dd7a12bd5d848ca27d34e8fe8c2d7562826fd66901cb0"
+              },
+              "line": 34,
+              "name": "handoff_and_serve_original_root_circuit_task",
+              "receiver": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+              "visibility": "pub"
+            },
+            {
+              "body_pin": {
+                "bytes": 5007,
+                "git_blob": "211ded1f9c84ed0e823ad28cbb95cdafc5508d0d",
+                "sha256": "cfb3430661a0a07cf5f757e8a1c30a30cbe3ea54b768ba229e360c2f0766b9a2"
+              },
+              "line": 49,
+              "name": "handoff_and_serve_original_root_circuit_task_before",
+              "receiver": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+              "visibility": "pub(crate)"
+            }
+          ],
+          "new_function_count": 2,
+          "old_function_count": 1,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+          "v9_exact": true
+        }
+      ],
+      "source_packet": {
+        "bytes": 15138,
+        "git_blob": "07cb756ca663e7fd802e008e258cb3828d73e636",
+        "sha256": "1fa5b42638c64327e507c5d15891f478db334d6841a0652f651131b2f516f177"
+      }
+    },
+    {
+      "layer": "prefreeze-mechanism-tests-layer-v1",
+      "rows": [
+        {
+          "after": {
+            "bytes": 10012,
+            "git_blob": "1eb3432006b983ac1ad99adfbce0fa285e0e0ab4",
+            "sha256": "ac8d98911d8802e113d69a0bf05af623d3d56faa166674a412ab706b85edf397"
+          },
+          "before": {
+            "bytes": 9943,
+            "git_blob": "c5e96ad25bfa5a4a30b53f8812f5332ed717a8a3",
+            "sha256": "84a155c566d76c9c0dde019f8bc1fb2b56665bff67b8e897fb7389ef283caa37"
+          },
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 2891,
+                "git_blob": "011b0486b842a46d157257074a9571a0d99082ba",
+                "sha256": "f467fd5ecd90b387724e03e4bb19a3acef896dc03a66441f04aad78df58fb08d"
+              },
+              "line": 8,
+              "name": "root_host_initial_publication_enters_original_task_factory_and_drain",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 241,
+                "git_blob": "1bb241448bce186377862f2124c4442c15950054",
+                "sha256": "148b4b75d17997c9fe08532967cb5ec5f302d27c1c082c9141190e17708c2cd6"
+              },
+              "line": 52,
+              "name": "root_host_initial_binding_refuses_same_issuer_revoked_grant",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 263,
+                "git_blob": "433dd3a8ad01c6ad6069b1781d0d9a9f9e8f4747",
+                "sha256": "78528b9401c31a77f32b8effce78c768b3ab9fab40d651df5ab39703b0d94858"
+              },
+              "line": 59,
+              "name": "root_host_initial_binding_refuses_stale_original_consumer_head",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1131,
+                "git_blob": "66adec46111bedc990bf553e5258d238377b1999",
+                "sha256": "c32b108bafc32c11a7d2c42a9ebc595b11f9e1a367f7e73d65465db3022a8fc9"
+              },
+              "line": 66,
+              "name": "root_host_initial_binding_refuses_another_complete_intent",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1278,
+                "git_blob": "1d7f8256260252137259f41a01cec4bb435e70f6",
+                "sha256": "be67230858708879f93ea9ecdea655500c529262a491dbbf16be54bc30bc3e5f"
+              },
+              "line": 89,
+              "name": "root_host_initial_existing_state_reopens_after_old_session_is_dropped",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1081,
+                "git_blob": "792ac14168894f4f576d334dde81046fc8c203ed",
+                "sha256": "966d28b784674c819db1e893fc0c90e18817981852a8aae21cd43738afc6171a"
+              },
+              "line": 112,
+              "name": "rejected_binding",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1402,
+                "git_blob": "390fe976a31a1d8272e91d1974c8d196770f88a7",
+                "sha256": "27cb643f8c0a1c889a09eec1e696d7fa68646534faa3c893eaeb8b14a64f229b"
+              },
+              "line": 135,
+              "name": "root_host_initial_request_reads_the_exact_binding_without_preparing",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 897,
+                "git_blob": "17e3e341cda07c6c2793eab2f354521283658572",
+                "sha256": "26b3be0d44741dd26797a1f3810cd7e377105f0040698451c86263547b2de40b"
+              },
+              "line": 159,
+              "name": "start_original_task",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 8,
+          "old_function_count": 8,
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_tests.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 3419,
+            "git_blob": "0228b155d12fce9d561923ca2b21a5ede68182f5",
+            "sha256": "b895a80f8b4e42b5a7923b23508c893dcc628216aee3a12b0a032e21e6bd7dbd"
+          },
+          "before": null,
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 2945,
+                "git_blob": "c3e9152fcb317c847302760fab2d3f00a628b633",
+                "sha256": "49763b6013e5ac91ff3a3401a8c915b25d4bd894e126857e70b182660f6c6a02"
+              },
+              "line": 11,
+              "name": "root_prefreeze_ready_reads_existing_source_without_future_event",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 1,
+          "old_function_count": 0,
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_tests.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 2975,
+            "git_blob": "5be053e1e9398be68655604e3af54d566721fb87",
+            "sha256": "a58f5a524a93b874db8c3cab223961f22b64451d8b2cddcb97f11c26a94e2f3a"
+          },
+          "before": {
+            "bytes": 2896,
+            "git_blob": "6aaba91a36843e8c759d522bd349dc72a9e7d652",
+            "sha256": "b89b46715c968e7e660149e5a4cb4d2a05b819948e4814bcb66ef0d15a7993fb"
+          },
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 115,
+                "git_blob": "89895e97989837aba2f02a6583bca0c660817f79",
+                "sha256": "91de4ed84a580ec9f2182daaa0e3cad5478618bddde4ed9b6f2edd5faa3352d1"
+              },
+              "line": 18,
+              "name": "new",
+              "receiver": "impl Hint",
+              "visibility": "pub(super)"
+            },
+            {
+              "body_pin": {
+                "bytes": 230,
+                "git_blob": "44fe04c3924ab38042d7a0ab65a35026729492df",
+                "sha256": "dd7e9536b049dd61e7e331faf70423e04659ee829ff6b5e2bdfd94fc3cc2f8bb"
+              },
+              "line": 22,
+              "name": "observed",
+              "receiver": "impl Hint",
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 941,
+                "git_blob": "c66f357da398473a4bea811f65a8d2b43b22c1a4",
+                "sha256": "13949845bf70922b993e4957d221ff82d55ca4551874e8409d718e8ebd9ce062"
+              },
+              "line": 29,
+              "name": "wait_original",
+              "receiver": "impl Hint",
+              "visibility": "pub(super)"
+            },
+            {
+              "body_pin": {
+                "bytes": 334,
+                "git_blob": "26ca20235da975084fad0d65530587489ef97fba",
+                "sha256": "5fb583a97491e7a9e440b717b7f3c5aaba4577c76fe8eafb6edc2b32dacc0105"
+              },
+              "line": 54,
+              "name": "observe_original_root_source_publication",
+              "receiver": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+              "visibility": "pub(crate)"
+            },
+            {
+              "body_pin": {
+                "bytes": 166,
+                "git_blob": "e5c8d48c55f38f47ed8317786aab2d43894557dd",
+                "sha256": "f16be6be9beebb79ea47a3f9c5fd1b637559e21973ff7ec53d710d5e4b1a18d1"
+              },
+              "line": 62,
+              "name": "require_before",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 5,
+          "old_function_count": 5,
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 1485,
+            "git_blob": "bb3301a6100d4fc0ecd7fed5e9a7abc0d83797b9",
+            "sha256": "4dd0bb073528bba44f3a3e0eb4858bb294b89a308bdc283428123b5fc1f87dd7"
+          },
+          "before": null,
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 1247,
+                "git_blob": "74ede77bd74a88fd8219b24e2d8477d0cff23385",
+                "sha256": "54bab8d3f87795a7a39bb83600416c4cfea142db44ea982822c1cf358deaf0c1"
+              },
+              "line": 9,
+              "name": "original_source_hint_latches_without_renewing_the_original_deadline",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 1,
+          "old_function_count": 0,
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready_tests.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 7597,
+            "git_blob": "e6640edf809790d24ee91712f5cbaaae82ee05d3",
+            "sha256": "d43dafe44c6ff8cc63760a4426c991da683efee70399e95cea02f5797473167c"
+          },
+          "before": {
+            "bytes": 7530,
+            "git_blob": "b41a43f27a8af61e881829b74a58338ddbb6034a",
+            "sha256": "bfee953f40656c9768a8d2c2f0059f39093498ad1efd58ad2ec2a24ce70cb675"
+          },
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 249,
+                "git_blob": "46a083f9a962cf80a3c4f440e1996d5cb2be0843",
+                "sha256": "bc67fb25095f704cda3eea2af10ef8cb8639395bec42a96b7b0d499b06a50953"
+              },
+              "line": 26,
+              "name": "bytes",
+              "receiver": "impl Fixture",
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 2262,
+                "git_blob": "6766db02fcb4b1d53e154078656d6a70a35fd7ed",
+                "sha256": "6e54e6ac9ed159817e0bdb770586f57bb69619294435d683bc3376844ffb07ad"
+              },
+              "line": 33,
+              "name": "completed_source",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1589,
+                "git_blob": "54f4e940ae3f10f083614a2072035ff55ab1cb93",
+                "sha256": "70603e4f28850243af4fb26e05cf14456d61e8971b166bd2854e4528053ca7aa"
+              },
+              "line": 77,
+              "name": "material_source_payload_retains_complete_original_publication",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1300,
+                "git_blob": "13e8524362fd969c6ac851126008d5cc83d19bfd",
+                "sha256": "7c9af4e575ea7e0a40d950f762230b57b97a9259476265fc747543ecc445a0c1"
+              },
+              "line": 107,
+              "name": "material_source_encoding_refuses_rebound_publication",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1048,
+                "git_blob": "416f84617965642a2c17a2e3fe5d16db4c39113c",
+                "sha256": "f0ae0a22b842065ec1f56b2173e068b92fd9754edb6ab707c8a687cb58f257a7"
+              },
+              "line": 128,
+              "name": "material_source_encoding_refuses_withdrawn_original_for_all_views",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 5,
+          "old_function_count": 5,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 7200,
+            "git_blob": "07a3c286e7374a3e8d0f86160fcbc16e56a42463",
+            "sha256": "ecae17252c9d12ea9f63cf6c3d70064bdad8be6c06783380778f0e54ee671ba2"
+          },
+          "before": {
+            "bytes": 7098,
+            "git_blob": "bf5602d6d93d02f7ee4188d6eb8e8c46dd4e01c9",
+            "sha256": "e4f76c52600f0e9513429d6b5afd6320b10c74c003f4ab91b448da1fbe8c10f2"
+          },
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 248,
+                "git_blob": "b77ccf1673316afd2acd638cc9f602e3abced9d6",
+                "sha256": "fe2c471a2aefbc04e9059e49a5a0a7843a04f9edda4fd4a97f02dca07429d11d"
+              },
+              "line": 47,
+              "name": "require_original_prefreeze_current",
+              "receiver": "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 2783,
+                "git_blob": "1faedf1dbce076b93f25d3d537cfbf2ff9709625",
+                "sha256": "91485fe26bc7fd71a12386e5816ec064f17e9ba7e5fab6f44001fe7d52aac8b3"
+              },
+              "line": 54,
+              "name": "from_original_prefreeze_root_stream",
+              "receiver": "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 1466,
+                "git_blob": "715dd21e5b4345149099f0d3ed5448dd495633b9",
+                "sha256": "5ee456f971f26e80ede3751f30d5eb9360b51f6143e90642a370e62404e34fdd"
+              },
+              "line": 101,
+              "name": "read_prefreeze",
+              "receiver": "impl Client",
+              "visibility": "pub(super)"
+            },
+            {
+              "body_pin": {
+                "bytes": 317,
+                "git_blob": "a042ac8c0b4cd1e76c3ca2dfbdc751b2b0d93aa9",
+                "sha256": "db60fe8bb79086da0b8d07aaf37fc97037d03a77f99ed9524ee730efee4ad183"
+              },
+              "line": 129,
+              "name": "require_current",
+              "receiver": "impl Client",
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 423,
+                "git_blob": "abcbbf8358157733b22092a4998c84a4a5394015",
+                "sha256": "b60c27c7692142771b525189f30d8432a87dbef9fa60ebf9649ecab540ec4beb"
+              },
+              "line": 137,
+              "name": "read_request",
+              "receiver": null,
+              "visibility": "pub(crate)"
+            },
+            {
+              "body_pin": {
+                "bytes": 153,
+                "git_blob": "7588917b58be6cc7026d1c8781c2bf24726496c9",
+                "sha256": "dc7501288d2471e8b3042b7107a08853fb21e5cd297b98cacb913ceb5482bb1e"
+              },
+              "line": 148,
+              "name": "now",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 6,
+          "old_function_count": 6,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 4789,
+            "git_blob": "ab9f33e6053b9fd113f519bba42aeef37217c974",
+            "sha256": "5cdedb5ebea5987540d3d80325027e10112016476795d6d68d0b4d44ad6775f6"
+          },
+          "before": null,
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 1856,
+                "git_blob": "7162dafe437e76f4e14667ae9265a9a9b5759584",
+                "sha256": "42f11559f84befed0924159a76afd3db89909a1a71727e20a7648633197fa47e"
+              },
+              "line": 23,
+              "name": "new",
+              "receiver": "impl EvidenceFixture",
+              "visibility": "pub(crate)"
+            },
+            {
+              "body_pin": {
+                "bytes": 223,
+                "git_blob": "20fafad34b81efbf1d3b023e5d74ffa8c4e96429",
+                "sha256": "fc443a725852959a2d52c884392de773e2bc04e916529dd5ff3f00a141fd34d8"
+              },
+              "line": 49,
+              "name": "verify",
+              "receiver": "impl EvidenceFixture",
+              "visibility": "pub(crate)"
+            },
+            {
+              "body_pin": {
+                "bytes": 174,
+                "git_blob": "278846ffee46df3116b4beb4651e8968b9993a08",
+                "sha256": "b3c08f623e05d78b08c2a43b5a1a764e1e19ee0c9aca3e1b989e1cc13126ed18"
+              },
+              "line": 54,
+              "name": "another_valid_generator",
+              "receiver": "impl EvidenceFixture",
+              "visibility": "pub(crate)"
+            },
+            {
+              "body_pin": {
+                "bytes": 788,
+                "git_blob": "229a1ef234fbb6cc6a2006af82c35b9d6ad53be3",
+                "sha256": "648e34985b9ecbacd08c2b2f8dd1d0bd435557a0384f45ed285741f4a6e7ebdb"
+              },
+              "line": 59,
+              "name": "signer",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 841,
+                "git_blob": "b81980bf5f285810819504be870a2f8f51baeba1",
+                "sha256": "b028e70667a26f2937818137e9a6e1c4826039a15f83b36aaa820462f874e3a4"
+              },
+              "line": 75,
+              "name": "sign",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 5,
+          "old_function_count": 0,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_support_tests.rs",
+          "v9_exact": true
+        },
+        {
+          "after": {
+            "bytes": 4326,
+            "git_blob": "af99aa15ba41ada94ac1cafe9e3417cd62668b75",
+            "sha256": "45a084b0520e174e8a32981a892077bc8a743fb834dbf77abd2087dff425556e"
+          },
+          "before": null,
+          "declarations": [
+            {
+              "body_pin": {
+                "bytes": 1529,
+                "git_blob": "5ae0973d5d1d63d14d83b40089f654cc7f35cd7e",
+                "sha256": "4232399b57d97df8ad662e80b73c265da37748e39c25ab557c573d6ad0bb585c"
+              },
+              "line": 9,
+              "name": "prefreeze_request_reads_actual_source_without_future_evidence",
+              "receiver": null,
+              "visibility": "private"
+            },
+            {
+              "body_pin": {
+                "bytes": 2448,
+                "git_blob": "df63032cd1ccf9f6b6c29671ee597be30c3ccc1d",
+                "sha256": "322802787b3227cdb5e48494b137890d8c4d293e5313e39577f7e07adf188243"
+              },
+              "line": 34,
+              "name": "prefreeze_request_refuses_rebinding_and_other_enrolled_generator",
+              "receiver": null,
+              "visibility": "private"
+            }
+          ],
+          "new_function_count": 2,
+          "old_function_count": 0,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_tests.rs",
+          "v9_exact": true
+        }
+      ],
+      "source_packet": {
+        "bytes": 75062,
+        "git_blob": "474fe0d12b9d73cb94136e4e46d09394e495bbe3",
+        "sha256": "776725926373f234128508b5971d192984ed29361199d6d418be620e9fe0777b"
+      }
+    }
+  ],
+  "limits": [
+    "Lexical braces and signatures are not Rust type checking.",
+    "Tests do not establish real Root disclosure registration, cross-UID IPC, full cold recovery, or a functioning normal Material CLI.",
+    "No production method body is changed by the test layer.",
+    "The hint thread is joined before propagated Result errors; inherited RootSession timeout/cancellation does not prove worker termination."
+  ],
+  "method_classification": "One ignored Root case and three ordinary mechanism cases; no results executed.",
+  "project_execution": false,
+  "source_git_writes": false,
+  "source_or_registry_edits": false,
+  "test_mounts": [
+    {
+      "append": "\n#[cfg(test)]\n#[path = \"circuit_task_source_prefreeze_support_tests.rs\"]\npub(crate) mod test_support;\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "prefix_preserved": true,
+      "unchanged_function_count": 6
+    },
+    {
+      "append": "\n#[path = \"circuit_task_source_prefreeze_tests.rs\"]\nmod prefreeze;\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs",
+      "prefix_preserved": true,
+      "unchanged_function_count": 5
+    },
+    {
+      "append": "\n#[path = \"authority_host_prefreeze_source_tests.rs\"]\nmod prefreeze;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_tests.rs",
+      "prefix_preserved": true,
+      "unchanged_function_count": 8
+    },
+    {
+      "append": "\n#[cfg(test)]\n#[path = \"authority_host_task_source_ready_tests.rs\"]\nmod tests;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "prefix_preserved": true,
+      "unchanged_function_count": 5
+    }
+  ]
+}

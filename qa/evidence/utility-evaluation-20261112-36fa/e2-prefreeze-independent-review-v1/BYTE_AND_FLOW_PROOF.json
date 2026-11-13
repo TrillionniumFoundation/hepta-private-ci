@@ -1,0 +1,1947 @@
+{
+  "H_calls": 0,
+  "bound_algebra": {
+    "frame_bytes": 64,
+    "max_lifetime_seconds": 300,
+    "max_startup_seconds": 30,
+    "maximum_source_reads": 127,
+    "ready": 1,
+    "source_ids_first": 2,
+    "source_ids_last": 128,
+    "timeout_ms": 500,
+    "total_same_stream_frames": 128,
+    "whole_response_bound": 16384
+  },
+  "combined_new_paths": 9,
+  "combined_paths": 23,
+  "executed_project_code": false,
+  "format": "hepta-prefreeze-two-layer-independent-byte-flow-v1",
+  "layers": [
+    {
+      "api": {
+        "bytes": 2851,
+        "git_blob": "6476a9c51dcc8c19399f4bfd8478533853113fe1",
+        "sha256": "38e2c15a68f71856f999e9e908e5009631708f6104960040f86510c37976ccc1"
+      },
+      "changed_functions": [
+        {
+          "after_body": {
+            "bytes": 990,
+            "git_blob": "d92179d39d68dcaf88007bb8c7f05e1e540f77b3",
+            "sha256": "a287951cf5e6f9388088c64f15f8a9752bff904abcabc224aa88d98375db521d"
+          },
+          "before_body": {
+            "bytes": 979,
+            "git_blob": "5e0729e65614a3951eb878236e92a826997e57ea",
+            "sha256": "3f3093466263bd2413b7ed1282350784d2514dc2694de64100c3e0f844073d5d"
+          },
+          "key": [
+            null,
+            "decode_current_root_payload"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 556,
+            "git_blob": "ece3c6cb3e578441c2cc279d791d96bbbed4227f",
+            "sha256": "9f6593ab5363fc9df82259ab18078ff3195221c0a6120c327320e17f6265c7e9"
+          },
+          "before_body": {
+            "bytes": 385,
+            "git_blob": "fb93886e4164d473fd7ef63fcb49b791cafbb12c",
+            "sha256": "028137ac03767a01e735ebd320012de3549c8ad27b7409561783b619a652a74f"
+          },
+          "key": [
+            "impl<W: AnchorWitnessStore> Clone for CircuitTaskSourceReadbackV1<W>",
+            "clone"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 929,
+            "git_blob": "26d5038c781e2a7706e743a071e8d96b840bd65d",
+            "sha256": "f815dfe181bbf1dc7e5d793694ffca6571650de2bb03bf8af0308dc28afd622a"
+          },
+          "before_body": {
+            "bytes": 804,
+            "git_blob": "a879b67751f1404902d10cf784e3bfdbd13b29cc",
+            "sha256": "be42ec1875b6e10aeb8f4ef8f456441e03eeaee38395929957a24e21ede1eb9e"
+          },
+          "key": [
+            "impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W>",
+            "require_original_input"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 978,
+            "git_blob": "d5db260e818d8d58e55a959c08daa7d39d0254d5",
+            "sha256": "5bff5e4523c6ac3508225f97298c8b5e51ca75a15257e7a6a674696ba3ac36ae"
+          },
+          "before_body": {
+            "bytes": 629,
+            "git_blob": "e76631a2167357e4d9e00afd364ed16fb7cd4bc8",
+            "sha256": "bd518fa26b3c383dd7a0a0cf27acb5c550015775bdd7ed0268684ff75ba08771"
+          },
+          "key": [
+            "impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W>",
+            "read_publication"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 600,
+            "git_blob": "f2c862d6a991aeafdfcd0b17eca22f664c5e7a7e",
+            "sha256": "157a3585e4ea4e70f3e097a49a64ab501d7f70ac00b1137efdd00fa60f40afaf"
+          },
+          "before_body": {
+            "bytes": 440,
+            "git_blob": "3ce8f213d6fe18ab0435fcdcc9500b5292c598cb",
+            "sha256": "cba601d4f2262bb72270ecb42ae1e41acd97b69dcc2884bf0b3f9cb76c5fcb46"
+          },
+          "key": [
+            "impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W>",
+            "read_run_publication"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+        }
+      ],
+      "directory": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-source-layer-v1",
+      "files": [
+        {
+          "after": {
+            "bytes": 7012,
+            "git_blob": "23e0fda64e9ef05e4c91f980e55a2219f72bb6dd",
+            "sha256": "7414c5913e3313cc732ef01a9a84bc2571ac9405a0d4af13344f501177907220"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 2474,
+            "git_blob": "788e972900f9f3964f5d7e90a195d8d80ad518c5",
+            "sha256": "3738c98351d37a561ec6aca9d934aa27b73603a8cd50c3a3a81cc25df183f09b"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_registration.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 20985,
+            "git_blob": "30a5658bfc4a134e04563f3ea39ee63212d57a00",
+            "sha256": "83438cb0bc35b2528e9083b81995e1fcd9751f9c72b9d1b2f1bf5ec0c1f7b1ad"
+          },
+          "before": {
+            "bytes": 20925,
+            "git_blob": "45b3954acb214c4e6457e76ea091597383245f8a",
+            "sha256": "2f01210eff89c014da90b555531a3ec7101d00db41cf09d439f1470bf4d5cdb3"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 18136,
+            "git_blob": "7da843e6c93ad5f38a48f2d9b4e178268efa3a15",
+            "sha256": "0c2dd9441617be5ba2bef90bb6b431436f66d48d4d0716a7c61e3819afd8e4c0"
+          },
+          "before": {
+            "bytes": 18073,
+            "git_blob": "ddf1fc08c9e594fa9abd246b1a6f8a0b8794516e",
+            "sha256": "3beb376df907d9ff70c26a8dca7a306f6ad5c7cc89add119e90778006f1a9573"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 8753,
+            "git_blob": "0a37de1fd03bc09127c961372b6ba8ed5b506489",
+            "sha256": "0861dee32e89445384628808371c6aae79123184c75af8658ee2852dbc2bd3e4"
+          },
+          "before": {
+            "bytes": 8696,
+            "git_blob": "251f87f83a9adab2f462fb3f850ccc83e4f9c30e",
+            "sha256": "60d63867a99a607519c2b15614853ace21a9a9ad5b7546300eac5a4e354c86a8"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 6147,
+            "git_blob": "1f01360fa1935f1d37b203ba5af97a9a0d766be0",
+            "sha256": "5afdd0379cb2ca5e5e04155a9bc7534596b12757196298fe0e07120fd28b4cc2"
+          },
+          "before": {
+            "bytes": 6079,
+            "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+            "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 6056,
+            "git_blob": "16111935da5e430b16bc87bda0d7f6087cd9b3ed",
+            "sha256": "cf23e7780aef8ee086b8d5e5fed09a76b49257ad62462c69bde2350c61ff11d5"
+          },
+          "before": {
+            "bytes": 5994,
+            "git_blob": "76039e36fe9dbdc5e5b4d0e35777532ebe016fc8",
+            "sha256": "9af75b25d4409278c4dd2af4be54e7e5c42f6cf2d4895ad79401b80c24f01499"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 7345,
+            "git_blob": "66e6d08bfa623587e12b029f00272948b9dbde38",
+            "sha256": "978e47780d8be97954503e881a0c4de9eea4e7c5bc63402e796f91f29dfb63cf"
+          },
+          "before": {
+            "bytes": 7220,
+            "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+            "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 1205,
+            "git_blob": "7af1540fa95d2fe1b293f5c00431cf6cc13c922a",
+            "sha256": "2a6a0323efeb6a62523e885f431581ef888d4e749eb48dc4f49f20a45b3cd177"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/cell_q24_material_prefreeze_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 1924,
+            "git_blob": "f3beaa65c906f160d6e4af5d664c74c36b94016a",
+            "sha256": "282aac61d1cce728fb2b9df64aed3f9bf25c7189179f05bf3de41459a515defb"
+          },
+          "before": {
+            "bytes": 1858,
+            "git_blob": "fd5f79399cb5c8b6ce63765f7e5ca2ff6c8a865c",
+            "sha256": "de01b089d4b74ba4d27ea47231292c0dfd31480fc642bcea008ce327db68c1b4"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 6477,
+            "git_blob": "438553060a9fff774449e9f6ea3846366de78924",
+            "sha256": "e07e723dd306647bea7da48f452281cc30a07154522ef259216cd451d9054505"
+          },
+          "before": {
+            "bytes": 6240,
+            "git_blob": "a004b90ac1c372360ff63e306e3b360ab164264f",
+            "sha256": "18864159c5fa8d2a80f7c4b22e9d54075d9cdfbfa2493a5f237a04c9d26b4e55"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 16410,
+            "git_blob": "ce364783fa7d8ab7d0a0034654c9ee2eed5420cc",
+            "sha256": "9a93b37d73509fb0b8a98bce248ab462be209874bd732e571ef479a63340de02"
+          },
+          "before": {
+            "bytes": 16326,
+            "git_blob": "2aa4cf6481938e5f4cda2da2179cda4faab5375b",
+            "sha256": "146100b2a2a7470a48ce5ff819edc756902ee41e50b819e7908b8bfd798fe6b2"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 7056,
+            "git_blob": "437b38152134685fcfc7922fab8cddfe72264f3b",
+            "sha256": "bc652664a1d48640dabbdeee01f1156da9dc54a58526508586652b9442efc68f"
+          },
+          "before": {
+            "bytes": 7045,
+            "git_blob": "eebd90ee8ae68ec3b28a77fb492401d0c4bd64e8",
+            "sha256": "19c3379f7715b8b14dfabe922dc7ab5c477499fd64eec80f51e93554b4256e58"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 5891,
+            "git_blob": "b7f724f867d072d29e60063dc824b00b800cd25f",
+            "sha256": "42b925fd5269ad36737de5bfe1a04aa38321151e0b14e83260f60373b0ff2ad3"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 5847,
+            "git_blob": "044f599c302802eb0cb2b51cec670b4bbab2b092",
+            "sha256": "0bb43e9fa1520c74aeeb7109267516b99a9d0e746292ccfacbdb218bfc16a0b1"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 6352,
+            "git_blob": "f77a9bcdbaeab69215a3fe98a5273b15926de7d9",
+            "sha256": "07eb87843d0f7b0efdfda369b43ff4cb0b4bdeb3885b3bb4e071284c52cab38e"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 5193,
+            "git_blob": "74a05506c9e7870a5ddf3e0afa6cd5e837b18996",
+            "sha256": "e40413d2c77af607f4c38aa2faccb4dcb5926ac84b4e6fecc758a25940f7dcfc"
+          },
+          "before": {
+            "bytes": 4126,
+            "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+            "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 74656,
+            "git_blob": "77e155ecc42ff309404be9e080d2ff7460c492b5",
+            "sha256": "504ea3eca7b7c185485cdd488ddcff6f3d8167757ef436f5ce995b16b70c4be1"
+          },
+          "before": {
+            "bytes": 74426,
+            "git_blob": "a16a038acafbe6d407f18aa4e0117556b2acb91f",
+            "sha256": "058b85c28c426f52450b09a69e2b733b00f509201786c643841cdbbcaa4fd1f1"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 1996,
+            "git_blob": "1ed8650eb26c78c2f5d98811e1aff9d00f7f7650",
+            "sha256": "f212725e181d8ff528a94c61e64735b9579b9f734d2a843c05cc21159cf31c8a"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 7332,
+            "git_blob": "4934fa223e2768f8d845c385cfb4b568407a7344",
+            "sha256": "cc137fead8f2af6fa0da02d56d1fb38badd8f5a6ab406709ca7fdc8a223281ea"
+          },
+          "before": {
+            "bytes": 7242,
+            "git_blob": "39c9d0ffc7d2b88b5eaac8f19f70e071466ec807",
+            "sha256": "1492aae9010d932b89f78f6e60b4f1a7bd5483809880faf49bfd75398c198a52"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        }
+      ],
+      "manifest": {
+        "bytes": 10190,
+        "git_blob": "b5b032a092e3c45d7754a1343a3702aefad27ce0",
+        "sha256": "a2e829f46df1eb5e4c90d0e3554eaa25074061d91325828415a0614cb5a4fd5e"
+      },
+      "new_functions": [
+        {
+          "body_pin": {
+            "bytes": 4566,
+            "git_blob": "bd74f4dd04a3953d2cc63d1636a3f70e8744de27",
+            "sha256": "7624858177f0f49813087a714dbc1e151b8962d6340b6634714828782d4aea06"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> PreparedRootMaterialSourceHostV1<SW, CW>",
+            "serve_original_prefreeze"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 994,
+            "git_blob": "825cb9a2a4a5eb2f6d19216c05d0a04b6bf1714f",
+            "sha256": "38ef068d30203065989522ed7129f99141ac5234a65faa1062ba6a639a4099c8"
+          },
+          "key": [
+            null,
+            "wait_first_frame"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 140,
+            "git_blob": "26151794fd25aec5a27b0810e3e357949c93045b",
+            "sha256": "f7d62488961ae6d4c968c25bb83707d3ffe850ecf9815239357a2a480f86d620"
+          },
+          "key": [
+            null,
+            "protocol"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1031,
+            "git_blob": "a0d64618d91b8f495f7bbf3c77b1d6778db33548",
+            "sha256": "d3bb8da3322ad38819f02b217e1368cedc8ade7f77b0723c13a1e708873014ea"
+          },
+          "key": [
+            "impl OriginalRootPrefreezeSourceRegistrationV1",
+            "from_original_supervisor"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_registration.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 652,
+            "git_blob": "c63fbdafa9923cb8a4c9f75d9ee1a810931b7644",
+            "sha256": "d3303c9c116476da43e0dba2fb4b1d8c8b46d0ae5134431d5d9f224c154805ef"
+          },
+          "key": [
+            "impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore> OriginalCellQ24MaterialReceiptOwnersV1<EW, DW>",
+            "into_original_prefreeze_source_command_owner"
+          ],
+          "path": "codex-rs/hepta-agentd/src/cell_q24_material_prefreeze_source.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 248,
+            "git_blob": "b77ccf1673316afd2acd638cc9f602e3abced9d6",
+            "sha256": "fe2c471a2aefbc04e9059e49a5a0a7843a04f9edda4fd4a97f02dca07429d11d"
+          },
+          "key": [
+            "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+            "require_original_prefreeze_current"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1661,
+            "git_blob": "cdd59fd404935d65cb8970830b2507faa4165c0f",
+            "sha256": "fbe690e5942c462b33d6bba43a9705b4625a09c9532e74cb23632c63cf19059b"
+          },
+          "key": [
+            "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+            "from_original_prefreeze_root_stream"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1466,
+            "git_blob": "715dd21e5b4345149099f0d3ed5448dd495633b9",
+            "sha256": "5ee456f971f26e80ede3751f30d5eb9360b51f6143e90642a370e62404e34fdd"
+          },
+          "key": [
+            "impl Client",
+            "read_prefreeze"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 317,
+            "git_blob": "a042ac8c0b4cd1e76c3ca2dfbdc751b2b0d93aa9",
+            "sha256": "db60fe8bb79086da0b8d07aaf37fc97037d03a77f99ed9524ee730efee4ad183"
+          },
+          "key": [
+            "impl Client",
+            "require_current"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 423,
+            "git_blob": "abcbbf8358157733b22092a4998c84a4a5394015",
+            "sha256": "b60c27c7692142771b525189f30d8432a87dbef9fa60ebf9649ecab540ec4beb"
+          },
+          "key": [
+            null,
+            "read_request"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 153,
+            "git_blob": "7588917b58be6cc7026d1c8781c2bf24726496c9",
+            "sha256": "dc7501288d2471e8b3042b7107a08853fb21e5cd297b98cacb913ceb5482bb1e"
+          },
+          "key": [
+            null,
+            "now"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1160,
+            "git_blob": "895715702e978626a51976ad8d74fd716e237880",
+            "sha256": "1e33fd7ec9c01d60e5db3a0c1580631d3a34c02f3394ab411f283342a0b4c2b7"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceV1",
+            "from_original_stream"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 563,
+            "git_blob": "cc604bb37048a502875e50c67daf3fd4c22e4ca4",
+            "sha256": "8a5bd4bca8f66bb88a91427d4dea750637f6021582c003f94088d73a69ecc38c"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceV1",
+            "read_original_publication"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 644,
+            "git_blob": "71c53870230ea0c12dbc6474c644703b87738376",
+            "sha256": "3bee4d3a4efb1342a0f64cf5562fbd4abc33d70c84c2677dd69e16e55915806d"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceV1",
+            "append_original_experience_v2"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1403,
+            "git_blob": "9383f998a5843e0d1169d5af70709f3d00063fb4",
+            "sha256": "12c59c6e74652716d09811de9673b6eea2df66f5cfba346e17a0d448368d6d23"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceV1",
+            "into_original_material_parts"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 2115,
+            "git_blob": "5965f9092e59aada76211ecab67f42063f9f32de",
+            "sha256": "ac96555b8ae4f30ceace61846b47572e0242d57aa234bb043aa6f877e57dc366"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceRequestV1",
+            "signing_payload"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1423,
+            "git_blob": "eb3f2d70b87d574cdafe46e9ea4410e05bf2acce",
+            "sha256": "018f80d0b766d07e9bd56c38875d39e92d55e8e3ebbea03b5d26f6c26e1b1b66"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceRequestV1",
+            "require_evidence"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 420,
+            "git_blob": "78120ef0a00ffb7c6a448ec0c57d21c9826c6ecf",
+            "sha256": "9f46d145d5b741f83e46889dfa8ea84275ccfef74d43f600c912d774b705e2fa"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceRequestV1",
+            "require_ledger"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 495,
+            "git_blob": "e7bc0248d55ad6a77b417c0d9b4e832f6ae4d293",
+            "sha256": "36f40cd1233ea20397492346f3d019b3f094abff837199c36a8679120ad64255"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceRequestV1",
+            "require_publication"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 1589,
+            "git_blob": "feb216eacdcfd129b3b19e2c3eaef737e6a43cfd",
+            "sha256": "277e426a6792397b80124151158f3cd9b49782a3c7496695c72c21dbb034d838"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+            "read_original_prefreeze_source"
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs"
+        }
+      ],
+      "packet": {
+        "bytes": 423326,
+        "git_blob": "c66c54e9989023b79f62b10575350293d21301a0",
+        "sha256": "f0761096aeb8bfd74640d0875fc5a1a3fb6bf777a0188846ace84b2ed52f4810"
+      },
+      "splices": {
+        "bytes": 7855,
+        "git_blob": "dceb4dbfa368da5e5546026ee74848ff4bdee5cd",
+        "sha256": "84fe9bd39afa41632dc61a208f6fbe791a2a0a8977812d8f6223858511501fbf"
+      },
+      "splices_count": 20,
+      "unchanged_functions": 90
+    },
+    {
+      "api": {
+        "bytes": 1846,
+        "git_blob": "e44113bbf7f37cf0b7a2fbe4b81db4e09c0c0cd9",
+        "sha256": "0ac66043d51b46977e2019ec9833491ecaf63dc8cb0b83181db64b9609f6f518"
+      },
+      "changed_functions": [
+        {
+          "after_body": {
+            "bytes": 5546,
+            "git_blob": "082531437465a9553f333ce81762b7900f00d69c",
+            "sha256": "51c4596c690b38076f5610d64d351eeb102928a34dd28e88c330a38e965c2d09"
+          },
+          "before_body": {
+            "bytes": 4566,
+            "git_blob": "bd74f4dd04a3953d2cc63d1636a3f70e8744de27",
+            "sha256": "7624858177f0f49813087a714dbc1e151b8962d6340b6634714828782d4aea06"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> PreparedRootMaterialSourceHostV1<SW, CW>",
+            "serve_original_prefreeze"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 2018,
+            "git_blob": "7939f678c95be3c88e92096a01364fbfa93d302e",
+            "sha256": "00f84bfb9a7fa5e92a0e8ab37a52037882919e2ce6c570240250e588e040dc5e"
+          },
+          "before_body": {
+            "bytes": 1942,
+            "git_blob": "6666b3bddcf1c7ffc690402df8fa0a592bfaff34",
+            "sha256": "feeb80c4051220d07c90482b51a2917fcd0f461975c89fb33cf70b405eb918cc"
+          },
+          "key": [
+            "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+            "prepare_original_root_task"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 719,
+            "git_blob": "a484890445d25d4ea5d3f93ce03fd2fcd0bdec7d",
+            "sha256": "026a8444841f7ba96ae41e5f27e4b5272e52382ca1bdabcc8268cbae8c540fe9"
+          },
+          "before_body": {
+            "bytes": 661,
+            "git_blob": "964599d3cb7a5c86b7511f02898a7ef0a73c89ce",
+            "sha256": "92a98abdfa11fe38d4ccc75e0bcda0fbb54134ba1b9de605c6dd686f1088e24b"
+          },
+          "key": [
+            "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+            "prepare_original_material_source_host"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 1542,
+            "git_blob": "d21d9a5fc4bfdf65819a2f37ed071c078c8fc5b7",
+            "sha256": "40c5b079b037f9c0a4f9a2b1266be1be30a47ab9f2b9ec0f2c42e27f83188e1c"
+          },
+          "before_body": {
+            "bytes": 1348,
+            "git_blob": "9c735da5e37b4b2bc5bdf6f915315c7153da1cbe",
+            "sha256": "b233ce869b50e7ed7d777c8f514976af08220d5f709806147b0bb12f236d6897"
+          },
+          "key": [
+            null,
+            "serve"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 2783,
+            "git_blob": "1faedf1dbce076b93f25d3d537cfbf2ff9709625",
+            "sha256": "91485fe26bc7fd71a12386e5816ec064f17e9ba7e5fab6f44001fe7d52aac8b3"
+          },
+          "before_body": {
+            "bytes": 1661,
+            "git_blob": "cdd59fd404935d65cb8970830b2507faa4165c0f",
+            "sha256": "fbe690e5942c462b33d6bba43a9705b4625a09c9532e74cb23632c63cf19059b"
+          },
+          "key": [
+            "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+            "from_original_prefreeze_root_stream"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 1195,
+            "git_blob": "5d5d1f5044f0495e9ceaf01ba4d280d844c63b94",
+            "sha256": "d50e91e3076d15d7a6014c5b98af4eca750aaf3a69ea641a910f583ea1bd080b"
+          },
+          "before_body": {
+            "bytes": 1160,
+            "git_blob": "895715702e978626a51976ad8d74fd716e237880",
+            "sha256": "1e33fd7ec9c01d60e5db3a0c1580631d3a34c02f3394ab411f283342a0b4c2b7"
+          },
+          "key": [
+            "impl OriginalCircuitPrefreezeSourceV1",
+            "from_original_stream"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs"
+        },
+        {
+          "after_body": {
+            "bytes": 1025,
+            "git_blob": "106c928df79c4f8187c06be35b1aa679bd5d4280",
+            "sha256": "391a4163bbbf7bab89a2630a5990e47fe712ae7c0c989abe1285ae5b37d89bed"
+          },
+          "before_body": {
+            "bytes": 1589,
+            "git_blob": "feb216eacdcfd129b3b19e2c3eaef737e6a43cfd",
+            "sha256": "277e426a6792397b80124151158f3cd9b49782a3c7496695c72c21dbb034d838"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+            "read_original_prefreeze_source"
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs"
+        }
+      ],
+      "directory": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-ready-increment-v1",
+      "files": [
+        {
+          "after": {
+            "bytes": 6979,
+            "git_blob": "db6462c1a64f7d53b56b0a0dd5d19abd3da5ada5",
+            "sha256": "afb9e8bf09b45c85fc85094cf6886e693366e79794d22b7abed1e939abefd6f3"
+          },
+          "before": {
+            "bytes": 7012,
+            "git_blob": "23e0fda64e9ef05e4c91f980e55a2219f72bb6dd",
+            "sha256": "7414c5913e3313cc732ef01a9a84bc2571ac9405a0d4af13344f501177907220"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+          "removed_function_definitions": [
+            {
+              "body_pin": {
+                "bytes": 994,
+                "git_blob": "825cb9a2a4a5eb2f6d19216c05d0a04b6bf1714f",
+                "sha256": "38ef068d30203065989522ed7129f99141ac5234a65faa1062ba6a639a4099c8"
+              },
+              "key": [
+                null,
+                "wait_first_frame"
+              ],
+              "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs"
+            }
+          ],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 6351,
+            "git_blob": "8af712133c104822e6b085d47806ef59e0606e82",
+            "sha256": "53d35b0fe30a5ca056972d772c8129538f925913c1149484401f4e07ead2d532"
+          },
+          "before": {
+            "bytes": 6147,
+            "git_blob": "1f01360fa1935f1d37b203ba5af97a9a0d766be0",
+            "sha256": "5afdd0379cb2ca5e5e04155a9bc7534596b12757196298fe0e07120fd28b4cc2"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 7462,
+            "git_blob": "3b81f5877a3547b0e25c3cd3874560b7f61b79db",
+            "sha256": "ab9d9370f6d78d1d13b8dd2c9665c0ef197dbf4a1a0a97436a093760e6807bc9"
+          },
+          "before": {
+            "bytes": 7345,
+            "git_blob": "66e6d08bfa623587e12b029f00272948b9dbde38",
+            "sha256": "978e47780d8be97954503e881a0c4de9eea4e7c5bc63402e796f91f29dfb63cf"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 2896,
+            "git_blob": "6aaba91a36843e8c759d522bd349dc72a9e7d652",
+            "sha256": "b89b46715c968e7e660149e5a4cb4d2a05b819948e4814bcb66ef0d15a7993fb"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 8831,
+            "git_blob": "43fda7077296b4e5758918ff2fc9405df4f22a4d",
+            "sha256": "612185f3356a32413b0f207df242575ca556775a54ed686cc576825a48da8cab"
+          },
+          "before": {
+            "bytes": 8637,
+            "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+            "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 7098,
+            "git_blob": "bf5602d6d93d02f7ee4188d6eb8e8c46dd4e01c9",
+            "sha256": "e4f76c52600f0e9513429d6b5afd6320b10c74c003f4ab91b448da1fbe8c10f2"
+          },
+          "before": {
+            "bytes": 5891,
+            "git_blob": "b7f724f867d072d29e60063dc824b00b800cd25f",
+            "sha256": "42b925fd5269ad36737de5bfe1a04aa38321151e0b14e83260f60373b0ff2ad3"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 6127,
+            "git_blob": "03014959764c26a61d4f14f4af2623c522211266",
+            "sha256": "3fe8591204f055dfad5a5e363f0a0960b9f09718f389a4be612d13293e2568ed"
+          },
+          "before": {
+            "bytes": 5847,
+            "git_blob": "044f599c302802eb0cb2b51cec670b4bbab2b092",
+            "sha256": "0bb43e9fa1520c74aeeb7109267516b99a9d0e746292ccfacbdb218bfc16a0b1"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        },
+        {
+          "after": {
+            "bytes": 1478,
+            "git_blob": "9ef613a1b364d04e026383079c13a71a81d156e6",
+            "sha256": "5f11cdfc092af0a4efada3ef7e530055e335c70d33e3ff3817c74d2d499225ec"
+          },
+          "before": null,
+          "new_file": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": false
+        },
+        {
+          "after": {
+            "bytes": 3549,
+            "git_blob": "b8ca0dc1b57615568fbd43e240a6d67d7759789a",
+            "sha256": "f088f9407f0bed7fcbccd9ec7992a62c45bcd1a66a034413497768fbb73fadbd"
+          },
+          "before": {
+            "bytes": 1996,
+            "git_blob": "1ed8650eb26c78c2f5d98811e1aff9d00f7f7650",
+            "sha256": "f212725e181d8ff528a94c61e64735b9579b9f734d2a843c05cc21159cf31c8a"
+          },
+          "new_file": false,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+          "removed_function_definitions": [],
+          "reverse_exact": true
+        }
+      ],
+      "manifest": {
+        "bytes": 5536,
+        "git_blob": "ad3b74217a9f7b1cd5b7828a68174d2e7b195597",
+        "sha256": "bf37a8851146ee7507ba72cf230973350f1c0f4312716d3b8f336a07d91763be"
+      },
+      "new_functions": [
+        {
+          "body_pin": {
+            "bytes": 115,
+            "git_blob": "89895e97989837aba2f02a6583bca0c660817f79",
+            "sha256": "91de4ed84a580ec9f2182daaa0e3cad5478618bddde4ed9b6f2edd5faa3352d1"
+          },
+          "key": [
+            "impl Hint",
+            "new"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 230,
+            "git_blob": "44fe04c3924ab38042d7a0ab65a35026729492df",
+            "sha256": "dd7e9536b049dd61e7e331faf70423e04659ee829ff6b5e2bdfd94fc3cc2f8bb"
+          },
+          "key": [
+            "impl Hint",
+            "observed"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 941,
+            "git_blob": "c66f357da398473a4bea811f65a8d2b43b22c1a4",
+            "sha256": "13949845bf70922b993e4957d221ff82d55ca4551874e8409d718e8ebd9ce062"
+          },
+          "key": [
+            "impl Hint",
+            "wait_original"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 334,
+            "git_blob": "26ca20235da975084fad0d65530587489ef97fba",
+            "sha256": "5fb583a97491e7a9e440b717b7f3c5aaba4577c76fe8eafb6edc2b32dacc0105"
+          },
+          "key": [
+            "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+            "observe_original_root_source_publication"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 166,
+            "git_blob": "e5c8d48c55f38f47ed8317786aab2d43894557dd",
+            "sha256": "f16be6be9beebb79ea47a3f9c5fd1b637559e21973ff7ec53d710d5e4b1a18d1"
+          },
+          "key": [
+            null,
+            "require_before"
+          ],
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 278,
+            "git_blob": "5dea8de7c57137984a13a726d40560ef1b8a2a06",
+            "sha256": "137b44a322d7f4cec3be8d2421f02d34afaca068b85d22f70138c7ad9bced72c"
+          },
+          "key": [
+            null,
+            "frame"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 880,
+            "git_blob": "eb351e7030eaf36a50ccf4614a6fb8e0f9d5ae46",
+            "sha256": "9e7d1ec7318cc4e61d500328a8a565c146723817afa710ec3975347bfc1e6731"
+          },
+          "key": [
+            null,
+            "wait_first_frame"
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 655,
+            "git_blob": "17ce2e40997c0002666b391ae6eb6b2ce0d8c5d8",
+            "sha256": "28fd7b7d372c8d7f81d3e231ddba8c21d399885641e3e43021775870c3c51abe"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+            "original_prefreeze_is_pending"
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 467,
+            "git_blob": "540d6566ce459b3d3c843576ae6766a14f1985e5",
+            "sha256": "682fd8cf33690a21173bb181c29639e6a68db1a569606db4a7a3771837795227"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+            "require_original_completed_source"
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs"
+        },
+        {
+          "body_pin": {
+            "bytes": 764,
+            "git_blob": "8f879ba9b903382f754547bc3b28e25eb2671e0f",
+            "sha256": "577331a71cef0d64e8f9bd7c7f2811194aa73c23b3f010aecc052f7b57c5686b"
+          },
+          "key": [
+            "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+            "require_original_prefreeze_task"
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs"
+        }
+      ],
+      "packet": {
+        "bytes": 100450,
+        "git_blob": "3181789965054fd440568f0ac4d4e242194d34f3",
+        "sha256": "335b620b4956606cf3392726a57645a35ac2475c907a428e501e3d6eba3976e9"
+      },
+      "splices": {
+        "bytes": 15380,
+        "git_blob": "1a5942a4d61d6ec49d7001e2a78aa74c3cfb316d",
+        "sha256": "b468e1afbcddfb3740abad5b679f1d20a98cb85eb3594b7795a0eec2b15aa355"
+      },
+      "splices_count": 24,
+      "unchanged_functions": 19
+    }
+  ],
+  "new_declarations": [
+    {
+      "body_pin": {
+        "bytes": 5546,
+        "git_blob": "082531437465a9553f333ce81762b7900f00d69c",
+        "sha256": "51c4596c690b38076f5610d64d351eeb102928a34dd28e88c330a38e965c2d09"
+      },
+      "impl": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> PreparedRootMaterialSourceHostV1<SW, CW>",
+      "line": 23,
+      "name": "serve_original_prefreeze",
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+      "visibility": "pub"
+    },
+    {
+      "body_pin": {
+        "bytes": 140,
+        "git_blob": "26151794fd25aec5a27b0810e3e357949c93045b",
+        "sha256": "f7d62488961ae6d4c968c25bb83707d3ffe850ecf9815239357a2a480f86d620"
+      },
+      "impl": null,
+      "line": 120,
+      "name": "protocol",
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 1031,
+        "git_blob": "a0d64618d91b8f495f7bbf3c77b1d6778db33548",
+        "sha256": "d3bb8da3322ad38819f02b217e1368cedc8ade7f77b0723c13a1e708873014ea"
+      },
+      "impl": "impl OriginalRootPrefreezeSourceRegistrationV1",
+      "line": 28,
+      "name": "from_original_supervisor",
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_registration.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 652,
+        "git_blob": "c63fbdafa9923cb8a4c9f75d9ee1a810931b7644",
+        "sha256": "d3303c9c116476da43e0dba2fb4b1d8c8b46d0ae5134431d5d9f224c154805ef"
+      },
+      "impl": "impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore> OriginalCellQ24MaterialReceiptOwnersV1<EW, DW>",
+      "line": 12,
+      "name": "into_original_prefreeze_source_command_owner",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_prefreeze_source.rs",
+      "visibility": "pub"
+    },
+    {
+      "body_pin": {
+        "bytes": 248,
+        "git_blob": "b77ccf1673316afd2acd638cc9f602e3abced9d6",
+        "sha256": "fe2c471a2aefbc04e9059e49a5a0a7843a04f9edda4fd4a97f02dca07429d11d"
+      },
+      "impl": "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+      "line": 47,
+      "name": "require_original_prefreeze_current",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 2783,
+        "git_blob": "1faedf1dbce076b93f25d3d537cfbf2ff9709625",
+        "sha256": "91485fe26bc7fd71a12386e5816ec064f17e9ba7e5fab6f44001fe7d52aac8b3"
+      },
+      "impl": "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+      "line": 54,
+      "name": "from_original_prefreeze_root_stream",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 1466,
+        "git_blob": "715dd21e5b4345149099f0d3ed5448dd495633b9",
+        "sha256": "5ee456f971f26e80ede3751f30d5eb9360b51f6143e90642a370e62404e34fdd"
+      },
+      "impl": "impl Client",
+      "line": 101,
+      "name": "read_prefreeze",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "visibility": "pub(super)"
+    },
+    {
+      "body_pin": {
+        "bytes": 317,
+        "git_blob": "a042ac8c0b4cd1e76c3ca2dfbdc751b2b0d93aa9",
+        "sha256": "db60fe8bb79086da0b8d07aaf37fc97037d03a77f99ed9524ee730efee4ad183"
+      },
+      "impl": "impl Client",
+      "line": 129,
+      "name": "require_current",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 423,
+        "git_blob": "abcbbf8358157733b22092a4998c84a4a5394015",
+        "sha256": "b60c27c7692142771b525189f30d8432a87dbef9fa60ebf9649ecab540ec4beb"
+      },
+      "impl": null,
+      "line": 137,
+      "name": "read_request",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 153,
+        "git_blob": "7588917b58be6cc7026d1c8781c2bf24726496c9",
+        "sha256": "dc7501288d2471e8b3042b7107a08853fb21e5cd297b98cacb913ceb5482bb1e"
+      },
+      "impl": null,
+      "line": 148,
+      "name": "now",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 1195,
+        "git_blob": "5d5d1f5044f0495e9ceaf01ba4d280d844c63b94",
+        "sha256": "d50e91e3076d15d7a6014c5b98af4eca750aaf3a69ea641a910f583ea1bd080b"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceV1",
+      "line": 36,
+      "name": "from_original_stream",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+      "visibility": "pub"
+    },
+    {
+      "body_pin": {
+        "bytes": 563,
+        "git_blob": "cc604bb37048a502875e50c67daf3fd4c22e4ca4",
+        "sha256": "8a5bd4bca8f66bb88a91427d4dea750637f6021582c003f94088d73a69ecc38c"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceV1",
+      "line": 62,
+      "name": "read_original_publication",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+      "visibility": "pub"
+    },
+    {
+      "body_pin": {
+        "bytes": 644,
+        "git_blob": "71c53870230ea0c12dbc6474c644703b87738376",
+        "sha256": "3bee4d3a4efb1342a0f64cf5562fbd4abc33d70c84c2677dd69e16e55915806d"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceV1",
+      "line": 76,
+      "name": "append_original_experience_v2",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+      "visibility": "pub"
+    },
+    {
+      "body_pin": {
+        "bytes": 1403,
+        "git_blob": "9383f998a5843e0d1169d5af70709f3d00063fb4",
+        "sha256": "12c59c6e74652716d09811de9673b6eea2df66f5cfba346e17a0d448368d6d23"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceV1",
+      "line": 89,
+      "name": "into_original_material_parts",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 2115,
+        "git_blob": "5965f9092e59aada76211ecab67f42063f9f32de",
+        "sha256": "ac96555b8ae4f30ceace61846b47572e0242d57aa234bb043aa6f877e57dc366"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceRequestV1",
+      "line": 38,
+      "name": "signing_payload",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+      "visibility": "pub"
+    },
+    {
+      "body_pin": {
+        "bytes": 1423,
+        "git_blob": "eb3f2d70b87d574cdafe46e9ea4410e05bf2acce",
+        "sha256": "018f80d0b766d07e9bd56c38875d39e92d55e8e3ebbea03b5d26f6c26e1b1b66"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceRequestV1",
+      "line": 76,
+      "name": "require_evidence",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 420,
+        "git_blob": "78120ef0a00ffb7c6a448ec0c57d21c9826c6ecf",
+        "sha256": "9f46d145d5b741f83e46889dfa8ea84275ccfef74d43f600c912d774b705e2fa"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceRequestV1",
+      "line": 103,
+      "name": "require_ledger",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 495,
+        "git_blob": "e7bc0248d55ad6a77b417c0d9b4e832f6ae4d293",
+        "sha256": "36f40cd1233ea20397492346f3d019b3f094abff837199c36a8679120ad64255"
+      },
+      "impl": "impl OriginalCircuitPrefreezeSourceRequestV1",
+      "line": 113,
+      "name": "require_publication",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 655,
+        "git_blob": "17ce2e40997c0002666b391ae6eb6b2ce0d8c5d8",
+        "sha256": "28fd7b7d372c8d7f81d3e231ddba8c21d399885641e3e43021775870c3c51abe"
+      },
+      "impl": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+      "line": 12,
+      "name": "original_prefreeze_is_pending",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 467,
+        "git_blob": "540d6566ce459b3d3c843576ae6766a14f1985e5",
+        "sha256": "682fd8cf33690a21173bb181c29639e6a68db1a569606db4a7a3771837795227"
+      },
+      "impl": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+      "line": 27,
+      "name": "require_original_completed_source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 1025,
+        "git_blob": "106c928df79c4f8187c06be35b1aa679bd5d4280",
+        "sha256": "391a4163bbbf7bab89a2630a5990e47fe712ae7c0c989abe1285ae5b37d89bed"
+      },
+      "impl": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+      "line": 38,
+      "name": "read_original_prefreeze_source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 764,
+        "git_blob": "8f879ba9b903382f754547bc3b28e25eb2671e0f",
+        "sha256": "577331a71cef0d64e8f9bd7c7f2811194aa73c23b3f010aecc052f7b57c5686b"
+      },
+      "impl": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+      "line": 58,
+      "name": "require_original_prefreeze_task",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 115,
+        "git_blob": "89895e97989837aba2f02a6583bca0c660817f79",
+        "sha256": "91de4ed84a580ec9f2182daaa0e3cad5478618bddde4ed9b6f2edd5faa3352d1"
+      },
+      "impl": "impl Hint",
+      "line": 18,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "visibility": "pub(super)"
+    },
+    {
+      "body_pin": {
+        "bytes": 230,
+        "git_blob": "44fe04c3924ab38042d7a0ab65a35026729492df",
+        "sha256": "dd7e9536b049dd61e7e331faf70423e04659ee829ff6b5e2bdfd94fc3cc2f8bb"
+      },
+      "impl": "impl Hint",
+      "line": 22,
+      "name": "observed",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 941,
+        "git_blob": "c66f357da398473a4bea811f65a8d2b43b22c1a4",
+        "sha256": "13949845bf70922b993e4957d221ff82d55ca4551874e8409d718e8ebd9ce062"
+      },
+      "impl": "impl Hint",
+      "line": 29,
+      "name": "wait_original",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "visibility": "pub(super)"
+    },
+    {
+      "body_pin": {
+        "bytes": 334,
+        "git_blob": "26ca20235da975084fad0d65530587489ef97fba",
+        "sha256": "5fb583a97491e7a9e440b717b7f3c5aaba4577c76fe8eafb6edc2b32dacc0105"
+      },
+      "impl": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "line": 54,
+      "name": "observe_original_root_source_publication",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 166,
+        "git_blob": "e5c8d48c55f38f47ed8317786aab2d43894557dd",
+        "sha256": "f16be6be9beebb79ea47a3f9c5fd1b637559e21973ff7ec53d710d5e4b1a18d1"
+      },
+      "impl": null,
+      "line": 62,
+      "name": "require_before",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "visibility": "private"
+    },
+    {
+      "body_pin": {
+        "bytes": 278,
+        "git_blob": "5dea8de7c57137984a13a726d40560ef1b8a2a06",
+        "sha256": "137b44a322d7f4cec3be8d2421f02d34afaca068b85d22f70138c7ad9bced72c"
+      },
+      "impl": null,
+      "line": 10,
+      "name": "frame",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "body_pin": {
+        "bytes": 880,
+        "git_blob": "eb351e7030eaf36a50ccf4614a6fb8e0f9d5ae46",
+        "sha256": "9e7d1ec7318cc4e61d500328a8a565c146723817afa710ec3975347bfc1e6731"
+      },
+      "impl": null,
+      "line": 17,
+      "name": "wait_first_frame",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs",
+      "visibility": "pub(super)"
+    }
+  ],
+  "ordered_flow": {
+    "HAP_client": [
+      {
+        "byte_offset_utf8": 118,
+        "needle": "self.stream.take()"
+      },
+      {
+        "byte_offset_utf8": 383,
+        "needle": "let deadline = self.owner.deadline(self.policy.timeout)"
+      },
+      {
+        "byte_offset_utf8": 620,
+        "needle": "write_until(&mut stream, request, deadline)"
+      },
+      {
+        "byte_offset_utf8": 1074,
+        "needle": "read_until(&mut stream, &mut response, deadline)"
+      },
+      {
+        "byte_offset_utf8": 1137,
+        "needle": "self.owner.check(deadline)"
+      }
+    ],
+    "HAP_server": [
+      {
+        "byte_offset_utf8": 282,
+        "needle": ".read(stream, &mut length[..1], self.owner.end())"
+      },
+      {
+        "byte_offset_utf8": 408,
+        "needle": "let deadline = self.owner.deadline(self.policy.timeout)"
+      },
+      {
+        "byte_offset_utf8": 484,
+        "needle": "read_until(stream, &mut length[1..], deadline)"
+      },
+      {
+        "byte_offset_utf8": 790,
+        "needle": "read_until(stream, &mut bytes, deadline)"
+      },
+      {
+        "byte_offset_utf8": 878,
+        "needle": "let response = handle(&bytes)"
+      },
+      {
+        "byte_offset_utf8": 918,
+        "needle": "self.owner.check(deadline)"
+      },
+      {
+        "byte_offset_utf8": 1223,
+        "needle": "write_until(stream, &response, deadline)"
+      },
+      {
+        "byte_offset_utf8": 1274,
+        "needle": "self.owner.check(deadline)"
+      }
+    ],
+    "actual_publish": [
+      {
+        "byte_offset_utf8": 1013,
+        "needle": "let publication = frame.operation == Operation::Publish"
+      },
+      {
+        "byte_offset_utf8": 1078,
+        "needle": "let response = handle("
+      },
+      {
+        "byte_offset_utf8": 1167,
+        "needle": "original.source.require_original_remote_binding(binding)"
+      },
+      {
+        "byte_offset_utf8": 1234,
+        "needle": "require_root_current(root)"
+      },
+      {
+        "byte_offset_utf8": 1271,
+        "needle": "if publication"
+      },
+      {
+        "byte_offset_utf8": 1300,
+        "needle": "root.observe_original_root_source_publication()"
+      },
+      {
+        "byte_offset_utf8": 1400,
+        "needle": "Ok(response)"
+      }
+    ],
+    "client_data": [
+      {
+        "byte_offset_utf8": 157,
+        "needle": "identity != &self.identity"
+      },
+      {
+        "byte_offset_utf8": 313,
+        "needle": "self.slot.try_lock()"
+      },
+      {
+        "byte_offset_utf8": 379,
+        "needle": ".take().ok_or"
+      },
+      {
+        "byte_offset_utf8": 423,
+        "needle": "let deadline = (Instant::now() + self.timeout).min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 526,
+        "needle": "self.require_current()"
+      },
+      {
+        "byte_offset_utf8": 573,
+        "needle": "read_request("
+      },
+      {
+        "byte_offset_utf8": 672,
+        "needle": "checked_add(1)"
+      },
+      {
+        "byte_offset_utf8": 738,
+        "needle": "channel.original.request("
+      },
+      {
+        "byte_offset_utf8": 819,
+        "needle": "wire::before(deadline)"
+      },
+      {
+        "byte_offset_utf8": 866,
+        "needle": "wire::read_response("
+      },
+      {
+        "byte_offset_utf8": 1091,
+        "needle": "decode_current_root_payload("
+      },
+      {
+        "byte_offset_utf8": 1138,
+        "needle": "self.request.require_publication("
+      },
+      {
+        "byte_offset_utf8": 1192,
+        "needle": "channel.original.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 1273,
+        "needle": "self.require_current()"
+      },
+      {
+        "byte_offset_utf8": 1321,
+        "needle": "self.slot.try_lock()"
+      },
+      {
+        "byte_offset_utf8": 1384,
+        "needle": "wire::before(deadline)"
+      },
+      {
+        "byte_offset_utf8": 1417,
+        "needle": "*slot = Some(channel)"
+      },
+      {
+        "byte_offset_utf8": 1448,
+        "needle": "Ok(observed)"
+      }
+    ],
+    "client_ready": [
+      {
+        "byte_offset_utf8": 915,
+        "needle": "let startup_end = startup_end.min(end)"
+      },
+      {
+        "byte_offset_utf8": 1380,
+        "needle": "original_owner_command_channel_v1("
+      },
+      {
+        "byte_offset_utf8": 1680,
+        "needle": "ready::wait_first_frame(socket, startup_end)"
+      },
+      {
+        "byte_offset_utf8": 1735,
+        "needle": "original.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 1924,
+        "needle": "original.exchange(|bytes|"
+      },
+      {
+        "byte_offset_utf8": 1964,
+        "needle": "if bytes != expected"
+      },
+      {
+        "byte_offset_utf8": 2078,
+        "needle": "Ok(expected.clone())"
+      },
+      {
+        "byte_offset_utf8": 2156,
+        "needle": "if !acknowledged"
+      },
+      {
+        "byte_offset_utf8": 2217,
+        "needle": "wire::before(startup_end)"
+      },
+      {
+        "byte_offset_utf8": 2253,
+        "needle": "original.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 2329,
+        "needle": "request.require_evidence("
+      },
+      {
+        "byte_offset_utf8": 2676,
+        "needle": "next: 2"
+      }
+    ],
+    "old_material_deadline": [
+      {
+        "byte_offset_utf8": 1154,
+        "needle": "for id in 1..=wire::LIMIT"
+      },
+      {
+        "byte_offset_utf8": 1310,
+        "needle": "let mut deadline = None"
+      },
+      {
+        "byte_offset_utf8": 1363,
+        "needle": "channel.exchange(|bytes|"
+      },
+      {
+        "byte_offset_utf8": 1477,
+        "needle": "let until = (Instant::now() + timeout).min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 1551,
+        "needle": "deadline = Some(until)"
+      },
+      {
+        "byte_offset_utf8": 1595,
+        "needle": "wire::before(until)"
+      },
+      {
+        "byte_offset_utf8": 2767,
+        "needle": "Ok(true)"
+      },
+      {
+        "byte_offset_utf8": 3123,
+        "needle": "let until = deadline.ok_or_else"
+      },
+      {
+        "byte_offset_utf8": 3226,
+        "needle": "wire::before(until)"
+      }
+    ],
+    "server_ready_and_data": [
+      {
+        "byte_offset_utf8": 1671,
+        "needle": "original_owner_command_channel_v1("
+      },
+      {
+        "byte_offset_utf8": 1829,
+        "needle": "let startup_end = startup_end.min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 2206,
+        "needle": "original_prefreeze_is_pending("
+      },
+      {
+        "byte_offset_utf8": 2276,
+        "needle": "self.source_ready.wait_original(startup_end)"
+      },
+      {
+        "byte_offset_utf8": 2466,
+        "needle": "read_original_prefreeze_source("
+      },
+      {
+        "byte_offset_utf8": 2666,
+        "needle": "let hint = ready::frame"
+      },
+      {
+        "byte_offset_utf8": 2781,
+        "needle": "channel.request(&hint)"
+      },
+      {
+        "byte_offset_utf8": 2938,
+        "needle": "wire::before(startup_end)"
+      },
+      {
+        "byte_offset_utf8": 3344,
+        "needle": "for id in 2..=wire::LIMIT"
+      },
+      {
+        "byte_offset_utf8": 3508,
+        "needle": "let mut deadline = None"
+      },
+      {
+        "byte_offset_utf8": 3561,
+        "needle": "channel.exchange(|bytes|"
+      },
+      {
+        "byte_offset_utf8": 3675,
+        "needle": "let until = (Instant::now() + timeout).min(self.end)"
+      },
+      {
+        "byte_offset_utf8": 4131,
+        "needle": "read_original_prefreeze_source("
+      },
+      {
+        "byte_offset_utf8": 4485,
+        "needle": "wire::response("
+      },
+      {
+        "byte_offset_utf8": 4561,
+        "needle": "wire::before(until)"
+      },
+      {
+        "byte_offset_utf8": 4900,
+        "needle": "Ok(true)"
+      },
+      {
+        "byte_offset_utf8": 4934,
+        "needle": "channel.check_peer_lifetime()"
+      },
+      {
+        "byte_offset_utf8": 5221,
+        "needle": "wire::before(deadline.ok_or_else"
+      }
+    ]
+  },
+  "original_references": [
+    {
+      "bytes": 6672,
+      "git_blob": "36e4524baea04320b7610325579f0ff206690fab",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352"
+    },
+    {
+      "bytes": 2841,
+      "git_blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "sha256": "f2c5a466095a8c7648b1865d48278c81eea5e2007980bc91290eaad67b311406"
+    },
+    {
+      "bytes": 6682,
+      "git_blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852"
+    },
+    {
+      "bytes": 2043,
+      "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+      "path": "/tmp/hepta-36fa-root-product-composition-v8/after/codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+    }
+  ],
+  "reviewer_lexer": {
+    "bytes": 26929,
+    "git_blob": "c9d2f6a2d15c36b9dd128d391082397b046f2548",
+    "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/review_bytes_v2.py",
+    "sha256": "b751602142bf2446e60b8937848d8c268da08b518e2a56e3cc2713b72c27040d"
+  },
+  "source_write": false,
+  "sources": [
+    {
+      "bytes": 6979,
+      "git_blob": "db6462c1a64f7d53b56b0a0dd5d19abd3da5ada5",
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+      "sha256": "afb9e8bf09b45c85fc85094cf6886e693366e79794d22b7abed1e939abefd6f3"
+    },
+    {
+      "bytes": 2474,
+      "git_blob": "788e972900f9f3964f5d7e90a195d8d80ad518c5",
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source_registration.rs",
+      "sha256": "3738c98351d37a561ec6aca9d934aa27b73603a8cd50c3a3a81cc25df183f09b"
+    },
+    {
+      "bytes": 20985,
+      "git_blob": "30a5658bfc4a134e04563f3ea39ee63212d57a00",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "sha256": "83438cb0bc35b2528e9083b81995e1fcd9751f9c72b9d1b2f1bf5ec0c1f7b1ad"
+    },
+    {
+      "bytes": 18136,
+      "git_blob": "7da843e6c93ad5f38a48f2d9b4e178268efa3a15",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "sha256": "0c2dd9441617be5ba2bef90bb6b431436f66d48d4d0716a7c61e3819afd8e4c0"
+    },
+    {
+      "bytes": 8753,
+      "git_blob": "0a37de1fd03bc09127c961372b6ba8ed5b506489",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "sha256": "0861dee32e89445384628808371c6aae79123184c75af8658ee2852dbc2bd3e4"
+    },
+    {
+      "bytes": 6351,
+      "git_blob": "8af712133c104822e6b085d47806ef59e0606e82",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "sha256": "53d35b0fe30a5ca056972d772c8129538f925913c1149484401f4e07ead2d532"
+    },
+    {
+      "bytes": 6056,
+      "git_blob": "16111935da5e430b16bc87bda0d7f6087cd9b3ed",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "sha256": "cf23e7780aef8ee086b8d5e5fed09a76b49257ad62462c69bde2350c61ff11d5"
+    },
+    {
+      "bytes": 7462,
+      "git_blob": "3b81f5877a3547b0e25c3cd3874560b7f61b79db",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "sha256": "ab9d9370f6d78d1d13b8dd2c9665c0ef197dbf4a1a0a97436a093760e6807bc9"
+    },
+    {
+      "bytes": 2896,
+      "git_blob": "6aaba91a36843e8c759d522bd349dc72a9e7d652",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+      "sha256": "b89b46715c968e7e660149e5a4cb4d2a05b819948e4814bcb66ef0d15a7993fb"
+    },
+    {
+      "bytes": 1205,
+      "git_blob": "7af1540fa95d2fe1b293f5c00431cf6cc13c922a",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_prefreeze_source.rs",
+      "sha256": "2a6a0323efeb6a62523e885f431581ef888d4e749eb48dc4f49f20a45b3cd177"
+    },
+    {
+      "bytes": 1924,
+      "git_blob": "f3beaa65c906f160d6e4af5d664c74c36b94016a",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "sha256": "282aac61d1cce728fb2b9df64aed3f9bf25c7189179f05bf3de41459a515defb"
+    },
+    {
+      "bytes": 6477,
+      "git_blob": "438553060a9fff774449e9f6ea3846366de78924",
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "sha256": "e07e723dd306647bea7da48f452281cc30a07154522ef259216cd451d9054505"
+    },
+    {
+      "bytes": 8831,
+      "git_blob": "43fda7077296b4e5758918ff2fc9405df4f22a4d",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "sha256": "612185f3356a32413b0f207df242575ca556775a54ed686cc576825a48da8cab"
+    },
+    {
+      "bytes": 16410,
+      "git_blob": "ce364783fa7d8ab7d0a0034654c9ee2eed5420cc",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "sha256": "9a93b37d73509fb0b8a98bce248ab462be209874bd732e571ef479a63340de02"
+    },
+    {
+      "bytes": 7056,
+      "git_blob": "437b38152134685fcfc7922fab8cddfe72264f3b",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "sha256": "bc652664a1d48640dabbdeee01f1156da9dc54a58526508586652b9442efc68f"
+    },
+    {
+      "bytes": 7098,
+      "git_blob": "bf5602d6d93d02f7ee4188d6eb8e8c46dd4e01c9",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "sha256": "e4f76c52600f0e9513429d6b5afd6320b10c74c003f4ab91b448da1fbe8c10f2"
+    },
+    {
+      "bytes": 6127,
+      "git_blob": "03014959764c26a61d4f14f4af2623c522211266",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+      "sha256": "3fe8591204f055dfad5a5e363f0a0960b9f09718f389a4be612d13293e2568ed"
+    },
+    {
+      "bytes": 6352,
+      "git_blob": "f77a9bcdbaeab69215a3fe98a5273b15926de7d9",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_context.rs",
+      "sha256": "07eb87843d0f7b0efdfda369b43ff4cb0b4bdeb3885b3bb4e071284c52cab38e"
+    },
+    {
+      "bytes": 1478,
+      "git_blob": "9ef613a1b364d04e026383079c13a71a81d156e6",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs",
+      "sha256": "5f11cdfc092af0a4efada3ef7e530055e335c70d33e3ff3817c74d2d499225ec"
+    },
+    {
+      "bytes": 5193,
+      "git_blob": "74a05506c9e7870a5ddf3e0afa6cd5e837b18996",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "sha256": "e40413d2c77af607f4c38aa2faccb4dcb5926ac84b4e6fecc758a25940f7dcfc"
+    },
+    {
+      "bytes": 74656,
+      "git_blob": "77e155ecc42ff309404be9e080d2ff7460c492b5",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "504ea3eca7b7c185485cdd488ddcff6f3d8167757ef436f5ce995b16b70c4be1"
+    },
+    {
+      "bytes": 3549,
+      "git_blob": "b8ca0dc1b57615568fbd43e240a6d67d7759789a",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+      "sha256": "f088f9407f0bed7fcbccd9ec7992a62c45bcd1a66a034413497768fbb73fadbd"
+    },
+    {
+      "bytes": 7332,
+      "git_blob": "4934fa223e2768f8d845c385cfb4b568407a7344",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "sha256": "cc137fead8f2af6fa0da02d56d1fb38badd8f5a6ab406709ca7fdc8a223281ea"
+    }
+  ],
+  "state": "STATIC_ONLY_NOT_COMPILED",
+  "timing_correction": {
+    "bytes": 16340,
+    "git_blob": "578d1915e751dbb3c57b468ab88800dd51399a04",
+    "path": "/tmp/hepta-36fa-e2-prefreeze-independent-review-v1/TIMING_CORRECTION.json",
+    "sha256": "9bc6fda8ec6d7ed19cc9f5fc5db8a031acf26876f08640b36974dc86d6915944"
+  },
+  "unchanged_original_material_serve_body": {
+    "bytes": 3473,
+    "git_blob": "ac03d62ce05c493afaffb3a1634556b1ba4062de",
+    "sha256": "78750ab5732218535dc84ab0cc393f79a2668277258b163a4e99d625420fdca5"
+  }
+}

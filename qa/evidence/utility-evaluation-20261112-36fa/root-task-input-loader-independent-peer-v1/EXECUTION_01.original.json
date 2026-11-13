@@ -1,0 +1,7 @@
+{
+  "chunk_id": "4acfa6",
+  "wall_time_seconds": 0.252888871,
+  "exit_code": 1,
+  "original_token_count": 145,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-task-input-loader-independent-review-v1/verify_task_inputs.py\", line 205, in <module>\n    assert declared == constructed == row['original_fields'], (name,declared,constructed,row['original_fields'])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('CellTrainingLineageV1', ['source_bundle', 'dataset', 'update_rule', 'result', 'evaluation_profile'], ['source_bundle', 'dataset', 'update_rule', 'evaluation_profile'], ['source_bundle', 'dataset', 'update_rule', 'evaluation_profile'])\n"
+}

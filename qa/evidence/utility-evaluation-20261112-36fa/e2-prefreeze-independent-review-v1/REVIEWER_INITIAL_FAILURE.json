@@ -1,0 +1,7 @@
+{
+  "candidate_changed": false,
+  "cause": "Reviewer required every AFTER literal to be unique. The valid ready successor repeats an AFTER anchor. Forward replacements have unique BEFORE positions and full exact final equality. V2 uses those actual forward positions in reverse order, with exact span checking and complete inverse equality.",
+  "exception": "AssertionError: ('prefreeze-ready-increment-v1', 'codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs', 'nonunique after')",
+  "source": "Prior tool execution transcript; original v1 script retained, no reconstructed tool SDK claimed",
+  "state": "REVIEWER_ASSUMPTION_FAILURE_NOT_CANDIDATE_FAILURE"
+}

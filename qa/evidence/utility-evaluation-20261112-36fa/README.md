@@ -1,3 +1,45 @@
+# Current checkpoint — 2026-11-13 16:45 UTC: HOLD / qualification=false
+
+Real qualified authorized A → independent B → Adopt or complete NoUpdate → new C → daemon and Root cold-recovery chains: **0**.
+
+This checkpoint preserves the current fixed proposals and independent static reviews. It is not source/native qualification, deployment permission, evidence of real usefulness, or a completed negative comparison.
+
+## Current engineering view
+
+The exact v10 partial source view contains **127 changed paths: 90 new and 37 modified original files**, yielding 15,333 files against b6084394a4a38ab495c16eaba09e879f04a96f8e. Its complete source-pin report is `root-product-composition-v10/PREQUALIFICATION_COMPOSITION_REVIEW.json` (Git blob c9affb62332d09d0d35149775d08ae51a695fa7a). It includes the prior clock-error corrections, original Task input loader, pre-freeze same-Source observation/intake, actual-publication readiness, common startup window, mechanism tests, same-session Root CLI assembly, and the first private helper-name disambiguation.
+
+The pre-freeze path fixes a real causal gap: first observation no longer requires the future Decision, Outcome or freeze that must be derived from that observation. It receives complete actual Source/Cell records from the same retained task, calls the unchanged signed experience intake, and consumes the same client/ledger into the original Material owner. The original supervisor's explicit disclosure and process checks remain necessary; a role signature alone is not a read grant.
+
+The readiness hint follows the actual Publish path and a complete same-custody Source/Cell read. A single cold read handles an already-completed recovered task. The hint uses frame 1 of the same 128-frame allowance; data uses frames 2–128. It conveys timing only, not data, permission or a completion receipt. The common startup deadline can only become earlier.
+
+The fixed same-session CLI proposal is `root-same-session-assembly-layer-v1/SOURCE_PACKET.json` (e3da28abccd5ef0f787f1d1c54dac80d8cce1b3f). It connects Fresh/Recover to one retained Session and actual Task, pre-freeze Material host and V3 service. The original 21-right handoff first becomes a private unusable holder only after original process, purpose, ordering and role checks. Later full Material input is still validated before producing the original usable handoff. No second issuer or grant is created.
+
+A non-Root ordinary Material startup CLI remains in progress and is not supplied by this v10 view. Actual original model, training, selector, version and FinalUse services, signed deployment inputs, independent evaluation evidence, cost evidence and useful A/B/C workloads remain real external requirements. Neither fixtures nor complete public records establish their authorization or availability.
+
+## Independent review and preserved corrections
+
+- Task input loader review: `root-task-input-loader-independent-peer-v1/REVIEW.json`, 7887839faf24f9745769b1d5d1914d5e60325784. The clock status preserves original errors; a numeric sentinel is not accepted as a valid time.
+- Clock corrections: `clock-rejection-independent-peer-v1/REVIEW.json`, af62893f66b0e18eea32e2d05d06d1020aae9457. Original failed proposals and the meaningful feature regression remain preserved; the regression has not run.
+- Source/readiness: `e2-prefreeze-independent-review-v1/REVIEW.json`, b66009d8c2ccfd90f517f2d10f30ee59ecf2598f; common-startup and tests: `e2-prefreeze-successors-independent-review-v1/REVIEW.json`, 63ad382051c54040b29a6377ee065cbee2a2a0ff. These are bounded static reviews, not compiler or runtime verdicts.
+- The timing correction is separately retained as `e2-prefreeze-independent-review-v1/TIMING_CORRECTION.json`, 578d1915e751dbb3c57b468ab88800dd51399a04. Server frame-to-frame idle is bounded by the original host end. HAP inflight processing and the client's active round trip retain their 500 ms bounds. The outer server deadline is initialized inside the handler after the complete request is received; earlier wording claiming 500 ms between frames was inaccurate. A late refusal can occur after a response was sent and does not establish no effects.
+- The original Material test's missing closing brace and the separate two-byte successor are both retained. No test success is inferred.
+- Registration retains the original 650 boundary rows, 451 protection rows and all forbidden/rule fields. The E1/E3/E2 seed is 757 boundaries and 531 protections, **not the final loader/prefreeze union**. Declaration metadata corrections are separate records; historical metadata is unchanged.
+- The v10 composer's first pure-data attempt assumed only insert-after splices and stopped on an insert-before entry. Its script and original error are retained. The successor supports both exact insertion forms and verifies all full preimages, forward results and inverses; it did not change candidate source.
+
+The third CLI layer's independent review, remaining explicit receiver corrections, the non-Root Material CLI and the final combined registration/contracts/workflow are still pending at this checkpoint.
+
+## Execution and source status
+
+The previously authorized source-only H request returned a timeout without a job id. Admission, execution, physical source state and all gate outcomes remain **Unknown**. The separately bounded metadata lookup returned no job rows and then refused with its durable inventory bound; it is exhausted. No new H request, replacement start, broader lookup, alias repair or executor source repair is authorized or performed here. Elapsed wall time alone does not prove non-execution or termination.
+
+The PR source branch remains cc57c7198db6293ccca562253c42fffbe2a04633; the isolated E1 source branch remains 99fada80470f175ba14004ea9fcb006853c7d98f. These new proposals are retained as immutable evidence and are not yet a complete source candidate on either branch. Required formatting, scoped fix/test, complete caller/source gates, native execution and actual cold recovery are not established.
+
+Missing evidence remains Unknown/InsufficientEvidence. Complete Ineligible/NoUpdate requires the full original comparison and hard constraints. Objective Fraud requires separate reproducible deterministic evidence; none is asserted by this checkpoint.
+
+---
+
+## Prior checkpoint, preserved verbatim
+
 # Current checkpoint: Material readback and clock-error correction; runtime remains Unknown
 
 Checkpoint: 2026-11-13 15:51 UTC. **HOLD — qualification=false; real qualified A → B → C → daemon/Root cold-recovery chains: 0.**

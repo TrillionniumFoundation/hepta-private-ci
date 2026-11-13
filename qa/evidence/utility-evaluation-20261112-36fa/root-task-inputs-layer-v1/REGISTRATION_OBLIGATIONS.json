@@ -1,0 +1,31 @@
+{
+  "crate_owner_calls": [
+    "HostAuthorityService::load_original_root_q24_task_inputs",
+    "PreparedRootHostInitialGenerationV1::prepare_original_root_task",
+    "OriginalHostInitialOperation::require_observed",
+    "OriginalRootInitialGenerationCustodyV1::read_original_operation",
+    "PreparedRootHostCircuitTaskV1::read_original_root_task_generation",
+    "FileAnchorWitnessStore::open",
+    "DurableInferenceControl::open_file",
+    "LoadedCellQ24ModelV1::open_files"
+  ],
+  "project_gate_run": false,
+  "public_methods": [
+    "PreparedRootHostInitialGenerationV1::prepare_original_root_task_from_files",
+    "PreparedRootHostInitialGenerationV1::recover_original_root_task_from_files",
+    "PreparedRootHostLoadedQ24TaskV1::read_loaded_original_root_task_generation"
+  ],
+  "public_types": [
+    "RootHostQ24TaskFilesV1",
+    "PreparedRootHostLoadedQ24TaskV1"
+  ],
+  "state": "PENDING_ORIGINAL_TYPED_COLLECTOR_AND_FULL_UNION",
+  "tests_added": 0,
+  "unchanged": [
+    "typed collector",
+    "ignore rules",
+    "old protected bodies",
+    "existing tests and workflow",
+    "all budgets"
+  ]
+}

@@ -1,0 +1,202 @@
+--- DECLARATION_DISPOSITIONS.before.json
++++ DECLARATION_DISPOSITIONS.after.json
+@@ -115,16 +115,16 @@
+     }
+   },
+   {
+-    "body": "    pub fn handoff_and_serve_original_root_circuit_task(\n        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,\n        original_root_pidfd: OwnedFd, consumer_state_root: &Path,\n        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16],\n    ) -> Result<u64, AgentdError> {\n        let startup_end = (Instant::now() + Duration::from_secs(30)).min(self.end);\n        self.read_original_root_task_generation()?;\n        let identity = self.session.registration.registered_identity.identity()?;\n        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0\n            || self.session.config.peer_uid == 0\n            || self.session.registration.peer_pid == std::process::id()\n            || session_nonce == [0; 16]\n        { return Err(AgentdError::Invalid(\"original Root task registration differs\".into())); }\n        let (binding, registry, source, capacity) = self.runtime.original_root_handoff_data()?;\n        let lane = self.runtime.take_original_root_lane()?;\n        let bound = listeners::TaskListeners::bind(&task_path, &loan_path, self.session.config.peer_gid)?;\n        let original_host = self.session.bind_original_task_host_lanes()?;\n        let original_bootstrap = self.session.seal_bootstrap(consumer_state_root)?;\n        let descriptor = crate::root_original_task_descriptor::seal(\n            std::process::id(), self.session.registration.peer_pid,\n            self.session.config.peer_uid, self.session.config.peer_gid,\n            &task_path, &loan_path, session_nonce, self.end, capacity, binding, &registry, &source,\n        )?;\n        self.read_original_root_task_generation()?;\n        let remaining = startup_end.checked_duration_since(Instant::now())\n            .filter(|value| !value.is_zero()).ok_or_else(|| AgentdError::Invalid(\"Root task startup expired\".into()))?;\n        crate::send_root_production_handoff(production_handoff, &original_bootstrap,\n            &original_root_pidfd, remaining)?;\n        let remaining = startup_end.checked_duration_since(Instant::now())\n            .filter(|value| !value.is_zero()).ok_or_else(|| AgentdError::Invalid(\"Root task startup expired\".into()))?;\n        crate::root_production_handoff::send_original_task_handoff(\n            task_handoff, &descriptor, &original_root_pidfd, remaining,\n        )?;\n        let root: &PreparedRootHostCircuitTaskV1<SW, CW> = self;\n        std::thread::scope(|scope| {\n            // This is a real, already-Root host process. The ordinary daemon\n            // performs its own process credential drop before either connect.\n            let host = scope.spawn(move || original_host.serve());\n            let task_result = (|| {\n                let (task, loan) = bound.accept(&root.session.owner_pidfd, startup_end)?;\n                root.read_original_root_task_generation()?;\n                require_before(startup_end)?;\n                let lifetime = root.end.checked_duration_since(Instant::now())\n                    .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))\n                    .ok_or_else(|| AgentdError::Invalid(\"original Root task scope expired\".into()))?;\n                let policy = HostAuthorityPeerPolicy {\n                    peer: HostIssuerPeer { uid: root.session.config.peer_uid, pid: root.session.registration.peer_pid },\n                    timeout: Duration::from_millis(root.session.config.timeout_ms.min(500)), lifetime,\n                    request_bound: 65_536, response_bound: 65_536,\n                };\n                let task_fd = task.as_raw_fd();\n                let task = HostAuthorityPeerChannel::from_stream(task, policy, root.session.owner_pidfd.try_clone()?)\n                    .map_err(protocol)?;\n                let loan = HostAuthorityPeerChannel::from_stream(loan, policy, root.session.owner_pidfd.try_clone()?)\n                    .map_err(protocol)?;\n                listeners::wait_first_frame(task_fd, &root.session.owner_pidfd, startup_end)?;\n                root.read_original_root_task_generation()?;\n                let end = root.end;\n                crate::circuit_task::remote::serve(root, &identity, lane,\n                    OriginalRootTaskStreams::new(task, loan, session_nonce, end)).map_err(protocol)\n            })();\n            let host_result = host.join()\n                .map_err(|_| AgentdError::Protocol(\"original Root service panicked\".into()))?\n                .map_err(AgentdError::from);\n            match (task_result, host_result) {\n                (Ok(count), Ok(())) => Ok(count),\n                (Err(task), Ok(())) => Err(task),\n                (Ok(_), Err(host)) => Err(host),\n                (Err(task), Err(host)) => Err(AgentdError::Protocol(format!(\n                    \"original task result Unknown: {task}; original host termination: {host}\"))),\n            }\n        })\n    }",
++    "body": "    pub fn handoff_and_serve_original_root_circuit_task(\n        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,\n        original_root_pidfd: OwnedFd, consumer_state_root: &Path,\n        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16],\n    ) -> Result<u64, AgentdError> {\n        let startup_end = (Instant::now() + Duration::from_secs(30)).min(self.end);\n        self.read_original_root_task_generation()?;\n        let identity = self.session.registration.registered_identity.identity()?;\n        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0\n            || self.session.config.peer_uid == 0\n            || self.session.registration.peer_pid == std::process::id()\n            || session_nonce == [0; 16]\n        { return Err(AgentdError::Invalid(\"original Root task registration differs\".into())); }\n        let (binding, registry, source, capacity) = self.runtime.original_root_handoff_data()?;\n        let lane = self.runtime.take_original_root_lane()?;\n        let bound = listeners::TaskListeners::bind(&task_path, &loan_path, self.session.config.peer_gid)?;\n        let original_host = self.session.bind_original_task_host_lanes()?;\n        let original_bootstrap = crate::PreparedHostAuthoritySession::seal_bootstrap(&self.session, consumer_state_root)?;\n        let descriptor = crate::root_original_task_descriptor::seal(\n            std::process::id(), self.session.registration.peer_pid,\n            self.session.config.peer_uid, self.session.config.peer_gid,\n            &task_path, &loan_path, session_nonce, self.end, capacity, binding, &registry, &source,\n        )?;\n        self.read_original_root_task_generation()?;\n        let remaining = startup_end.checked_duration_since(Instant::now())\n            .filter(|value| !value.is_zero()).ok_or_else(|| AgentdError::Invalid(\"Root task startup expired\".into()))?;\n        crate::send_root_production_handoff(production_handoff, &original_bootstrap,\n            &original_root_pidfd, remaining)?;\n        let remaining = startup_end.checked_duration_since(Instant::now())\n            .filter(|value| !value.is_zero()).ok_or_else(|| AgentdError::Invalid(\"Root task startup expired\".into()))?;\n        crate::root_production_handoff::send_original_task_handoff(\n            task_handoff, &descriptor, &original_root_pidfd, remaining,\n        )?;\n        let root: &PreparedRootHostCircuitTaskV1<SW, CW> = self;\n        std::thread::scope(|scope| {\n            // This is a real, already-Root host process. The ordinary daemon\n            // performs its own process credential drop before either connect.\n            let host = scope.spawn(move || original_host.serve());\n            let task_result = (|| {\n                let (task, loan) = bound.accept(&root.session.owner_pidfd, startup_end)?;\n                root.read_original_root_task_generation()?;\n                require_before(startup_end)?;\n                let lifetime = root.end.checked_duration_since(Instant::now())\n                    .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))\n                    .ok_or_else(|| AgentdError::Invalid(\"original Root task scope expired\".into()))?;\n                let policy = HostAuthorityPeerPolicy {\n                    peer: HostIssuerPeer { uid: root.session.config.peer_uid, pid: root.session.registration.peer_pid },\n                    timeout: Duration::from_millis(root.session.config.timeout_ms.min(500)), lifetime,\n                    request_bound: 65_536, response_bound: 65_536,\n                };\n                let task_fd = task.as_raw_fd();\n                let task = HostAuthorityPeerChannel::from_stream(task, policy, root.session.owner_pidfd.try_clone()?)\n                    .map_err(protocol)?;\n                let loan = HostAuthorityPeerChannel::from_stream(loan, policy, root.session.owner_pidfd.try_clone()?)\n                    .map_err(protocol)?;\n                listeners::wait_first_frame(task_fd, &root.session.owner_pidfd, startup_end)?;\n                root.read_original_root_task_generation()?;\n                let end = root.end;\n                crate::circuit_task::remote::serve(root, &identity, lane,\n                    OriginalRootTaskStreams::new(task, loan, session_nonce, end)).map_err(protocol)\n            })();\n            let host_result = host.join()\n                .map_err(|_| AgentdError::Protocol(\"original Root service panicked\".into()))?\n                .map_err(AgentdError::from);\n            match (task_result, host_result) {\n                (Ok(count), Ok(())) => Ok(count),\n                (Err(task), Ok(())) => Err(task),\n                (Ok(_), Err(host)) => Err(host),\n                (Err(task), Err(host)) => Err(AgentdError::Protocol(format!(\n                    \"original task result Unknown: {task}; original host termination: {host}\"))),\n            }\n        })\n    }",
+     "boundary_ids": [
+       "e2_prepared_root_host_circuit_task_v1_handoff_and_serve_original_root_circuit_task"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 6521,
+-    "identity": {
+-      "bytes": 4879,
+-      "git_blob": "30de570808a6dab52866c02163683824943281e4",
+-      "sha256": "5ea3ea479d65fad5b8227317d522e779f87fe8563e2b7536227a5fb1860a928a"
++    "end": 6560,
++    "identity": {
++      "bytes": 4918,
++      "git_blob": "69a4afb62f3c65e948ad72fc1d97b679c7a24160",
++      "sha256": "9d4c4f1aa69c331072b61f5bb3f17b17506765f6714257b3457f553d99839b62"
+     },
+     "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+     "name": "handoff_and_serve_original_root_circuit_task",
+@@ -456,16 +456,16 @@
+     }
+   },
+   {
+-    "body": "    pub(crate) fn execute_original_remote(\n        &mut self,\n        admission: OriginalRemoteAdmission,\n        input: CellStepInputV1,\n        mut clock: impl FnMut() -> CircuitCellTimeV1,\n    ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {\n        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;\n        let original_clock = &mut clock;\n        let loan_failed = Cell::new(false);\n        let mut clock = || {\n            if !loan_failed.get() {\n                if let Ok(now_ms) = admission.require_current() {\n                    let sampled = original_clock();\n                    return CircuitCellTimeV1 {\n                        circuit_millis: sampled.circuit_millis.max(now_ms),\n                        cell_micros: sampled.cell_micros,\n                    };\n                }\n                loan_failed.set(true);\n            }\n            CircuitCellTimeV1 { circuit_millis: u64::MAX, cell_micros: u64::MAX }\n        };\n        let dispatch = admission.dispatch();\n        let binding = self.registry.bind_input(dispatch, &input)?;\n        let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, &input)?;\n        if admission.owner_agent_id() != input.scope.agent_id.as_str()\n            || admission.definition_digest() != self.registry.definition_digest()\n            || admission\n                .execution_request_digest()\n                .is_none_or(|digest| digest.as_str() != request_digest.to_string())\n        {\n            return Err(CircuitCellErrorV1::ScopeMismatch);\n        }\n        let time = clock();\n        if time.circuit_millis < admission.observed_at_ms() {\n            return Err(CircuitCellErrorV1::ReconciliationRequired);\n        }\n        let admission_deadline = admission\n            .lease_expires_at_ms()\n            .min(admission.run_deadline_ms());\n        let read_only =\n            admission.reconciliation_only() || time.circuit_millis >= admission_deadline;\n        let committed =\n            match self\n                .state_owner\n                .lookup(&input.scope, &input.operation_id, request_digest)\n            {\n                Ok(receipt) => receipt,\n                Err(CellExecutionError::InferencePending) => None,\n                Err(error) => return Err(error.into()),\n            };\n        let mut last_time = time;\n        let decision = if let Some(receipt) = committed {\n            receipt\n        } else {\n            let pending = self.state_owner.pending_inference(&input.scope)?;\n            let inferred = if pending.is_some() {\n                recover_cell_inference(\n                    &binding.cell,\n                    &self.state_owner,\n                    &self.encoder,\n                    input.clone(),\n                    &mut self.inference_control,\n                    time.cell_micros,\n                )?\n            } else {\n                if read_only {\n                    return Err(CircuitCellErrorV1::ReconciliationRequired);\n                }\n                match enter_cell_step(\n                    &binding.cell,\n                    &self.state_owner,\n                    &self.encoder,\n                    input.clone(),\n                    time.cell_micros,\n                )? {\n                    CellStepEntryV1::Ready(prepared) => {\n                        let sampled = Cell::new(time);\n                        // The inference entry samples immediately after durable\n                        // admission. Use that same live sample for the Circuit\n                        // guard so its queue measurement ends at this boundary.\n                        let mut dispatch_clock = || sampled.get();\n                        let mut guarded = GuardedCellDispatchV1::new(\n                            &mut self.inference_control,\n                            &mut dispatch_clock,\n                            time,\n                            admission_deadline,\n                            input.deadline_micros,\n                        );\n                        let mut invalid_clock = false;\n                        let inferred = infer_cell_with_clock(\n                            *prepared,\n                            &mut self.state_owner,\n                            &mut guarded,\n                            || {\n                                let before = sampled.get();\n                                let now = clock();\n                                if now.circuit_millis < before.circuit_millis\n                                    || now.cell_micros < before.cell_micros\n                                    || now.circuit_millis >= admission_deadline\n                                {\n                                    invalid_clock = true;\n                                    return u64::MAX;\n                                }\n                                sampled.set(now);\n                                now.cell_micros\n                            },\n                        );\n                        if invalid_clock {\n                            return Err(CircuitCellErrorV1::ReconciliationRequired);\n                        }\n                        let inferred = inferred?;\n                        last_time = guarded\n                            .observed_at()\n                            .ok_or(CircuitCellErrorV1::ReconciliationRequired)?;\n                        inferred\n                    }\n                    CellStepEntryV1::Replayed(receipt) => {\n                        if loan_failed.get() {\n                            return Err(CircuitCellErrorV1::ReconciliationRequired);\n                        }\n                        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;\n                        return finish(binding, dispatch, &input, *receipt);\n                    }\n                }\n            };\n            let decided_at = clock();\n            if decided_at.circuit_millis < last_time.circuit_millis\n                || decided_at.cell_micros < last_time.cell_micros\n            {\n                return Err(CircuitCellErrorV1::ReconciliationRequired);\n            }\n            let proposal = decide_cell(inferred, decided_at.cell_micros)?;\n            let committed_at = clock();\n            if committed_at.circuit_millis < decided_at.circuit_millis\n                || committed_at.cell_micros < decided_at.cell_micros\n            {\n                return Err(CircuitCellErrorV1::ReconciliationRequired);\n            }\n            commit_cell_step(&mut self.state_owner, proposal, committed_at.cell_micros)?\n        };\n        if loan_failed.get() {\n            return Err(CircuitCellErrorV1::ReconciliationRequired);\n        }\n        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;\n        finish(binding, dispatch, &input, decision)\n    }",
++    "body": "    pub(crate) fn execute_original_remote(\n        &mut self,\n        admission: OriginalRemoteAdmission,\n        input: CellStepInputV1,\n        mut clock: impl FnMut() -> CircuitCellTimeV1,\n    ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {\n        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;\n        let original_clock = &mut clock;\n        let loan_failed = Cell::new(false);\n        let mut clock = || {\n            if !loan_failed.get() {\n                if let Ok(now_ms) = admission.require_current() {\n                    let sampled = original_clock();\n                    return CircuitCellTimeV1 {\n                        circuit_millis: sampled.circuit_millis.max(now_ms),\n                        cell_micros: sampled.cell_micros,\n                    };\n                }\n                loan_failed.set(true);\n            }\n            CircuitCellTimeV1 { circuit_millis: u64::MAX, cell_micros: u64::MAX }\n        };\n        let dispatch = admission.dispatch();\n        let binding = self.registry.bind_input(dispatch, &input)?;\n        let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, &input)?;\n        if admission.owner_agent_id() != input.scope.agent_id.as_str()\n            || admission.definition_digest() != self.registry.definition_digest()\n            || admission\n                .execution_request_digest()\n                .is_none_or(|digest| digest.as_str() != request_digest.to_string())\n        {\n            return Err(CircuitCellErrorV1::ScopeMismatch);\n        }\n        let time = clock();\n        if time.circuit_millis == u64::MAX\n            || time.cell_micros == u64::MAX\n            || time.circuit_millis < admission.observed_at_ms()\n        {\n            return Err(CircuitCellErrorV1::ReconciliationRequired);\n        }\n        let admission_deadline = admission\n            .lease_expires_at_ms()\n            .min(admission.run_deadline_ms());\n        let read_only =\n            admission.reconciliation_only() || time.circuit_millis >= admission_deadline;\n        let committed =\n            match self\n                .state_owner\n                .lookup(&input.scope, &input.operation_id, request_digest)\n            {\n                Ok(receipt) => receipt,\n                Err(CellExecutionError::InferencePending) => None,\n                Err(error) => return Err(error.into()),\n            };\n        let mut last_time = time;\n        let decision = if let Some(receipt) = committed {\n            receipt\n        } else {\n            let pending = self.state_owner.pending_inference(&input.scope)?;\n            let inferred = if pending.is_some() {\n                recover_cell_inference(\n                    &binding.cell,\n                    &self.state_owner,\n                    &self.encoder,\n                    input.clone(),\n                    &mut self.inference_control,\n                    time.cell_micros,\n                )?\n            } else {\n                if read_only {\n                    return Err(CircuitCellErrorV1::ReconciliationRequired);\n                }\n                match enter_cell_step(\n                    &binding.cell,\n                    &self.state_owner,\n                    &self.encoder,\n                    input.clone(),\n                    time.cell_micros,\n                )? {\n                    CellStepEntryV1::Ready(prepared) => {\n                        let sampled = Cell::new(time);\n                        // The inference entry samples immediately after durable\n                        // admission. Use that same live sample for the Circuit\n                        // guard so its queue measurement ends at this boundary.\n                        let mut dispatch_clock = || sampled.get();\n                        let mut guarded = GuardedCellDispatchV1::new(\n                            &mut self.inference_control,\n                            &mut dispatch_clock,\n                            time,\n                            admission_deadline,\n                            input.deadline_micros,\n                        );\n                        let mut invalid_clock = false;\n                        let inferred = infer_cell_with_clock(\n                            *prepared,\n                            &mut self.state_owner,\n                            &mut guarded,\n                            || {\n                                let before = sampled.get();\n                                let now = clock();\n                                if now.circuit_millis == u64::MAX\n                                    || now.cell_micros == u64::MAX\n                                    || now.circuit_millis < before.circuit_millis\n                                    || now.cell_micros < before.cell_micros\n                                    || now.circuit_millis >= admission_deadline\n                                {\n                                    invalid_clock = true;\n                                    return u64::MAX;\n                                }\n                                sampled.set(now);\n                                now.cell_micros\n                            },\n                        );\n                        if invalid_clock {\n                            return Err(CircuitCellErrorV1::ReconciliationRequired);\n                        }\n                        let inferred = inferred?;\n                        last_time = guarded\n                            .observed_at()\n                            .ok_or(CircuitCellErrorV1::ReconciliationRequired)?;\n                        inferred\n                    }\n                    CellStepEntryV1::Replayed(receipt) => {\n                        if loan_failed.get() {\n                            return Err(CircuitCellErrorV1::ReconciliationRequired);\n                        }\n                        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;\n                        return finish(binding, dispatch, &input, *receipt);\n                    }\n                }\n            };\n            let decided_at = clock();\n            if decided_at.circuit_millis == u64::MAX\n                || decided_at.cell_micros == u64::MAX\n                || decided_at.circuit_millis < last_time.circuit_millis\n                || decided_at.cell_micros < last_time.cell_micros\n            {\n                return Err(CircuitCellErrorV1::ReconciliationRequired);\n            }\n            let proposal = decide_cell(inferred, decided_at.cell_micros)?;\n            let committed_at = clock();\n            if committed_at.circuit_millis == u64::MAX\n                || committed_at.cell_micros == u64::MAX\n                || committed_at.circuit_millis < decided_at.circuit_millis\n                || committed_at.cell_micros < decided_at.cell_micros\n            {\n                return Err(CircuitCellErrorV1::ReconciliationRequired);\n            }\n            commit_cell_step(&mut self.state_owner, proposal, committed_at.cell_micros)?\n        };\n        if loan_failed.get() {\n            return Err(CircuitCellErrorV1::ReconciliationRequired);\n        }\n        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;\n        finish(binding, dispatch, &input, decision)\n    }",
+     "boundary_ids": [
+       "e2_agentd_circuit_cell_owner_v1_execute_original_remote"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 7323,
+-    "identity": {
+-      "bytes": 6848,
+-      "git_blob": "2aef5aff5f6997b4d76d8957636cbe5b7fa4f712",
+-      "sha256": "4ec520dae8350c3363769c3f03b994fbf662c1e8eea47d0b537662a28a6f58da"
++    "end": 7785,
++    "identity": {
++      "bytes": 7310,
++      "git_blob": "eb805eb1d8efd3ba04d6f9c63276aee146748f4a",
++      "sha256": "e371107743e555209ce8e032ba4c9380011f977c256a2c96abcea44d8a0ac66a"
+     },
+     "impl_header": "impl<O, P, E> AgentdCircuitCellOwnerV1<O, P, E>\nwhere\n    O: CellStateOwnerV1,\n    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,\n    E: CellInputEncoderV1,",
+     "name": "execute_original_remote",
+@@ -1032,16 +1032,16 @@
+     }
+   },
+   {
+-    "body": "    pub(crate) fn sample_original_clock(&self) -> Result<CircuitCellTimeV1, Error> {\n        let (id, _) = self.loans.current_record()?;\n        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {\n            operation: Operation::Clock, loan: id, body: Vec::new(),\n        })?;\n        if bytes.len() != 16 { return Err(Error::InvalidBinding); }\n        Ok(CircuitCellTimeV1 {\n            circuit_millis: u64::from_be_bytes(bytes[..8].try_into().map_err(|_| Error::InvalidBinding)?),\n            cell_micros: u64::from_be_bytes(bytes[8..].try_into().map_err(|_| Error::InvalidBinding)?),\n        })\n    }",
++    "body": "    pub(crate) fn sample_original_clock(&self) -> Result<CircuitCellTimeV1, Error> {\n        let (id, _) = self.loans.current_record()?;\n        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {\n            operation: Operation::Clock, loan: id, body: Vec::new(),\n        })?;\n        if bytes.len() != 16 { return Err(Error::InvalidBinding); }\n        let clock = CircuitCellTimeV1 {\n            circuit_millis: u64::from_be_bytes(bytes[..8].try_into().map_err(|_| Error::InvalidBinding)?),\n            cell_micros: u64::from_be_bytes(bytes[8..].try_into().map_err(|_| Error::InvalidBinding)?),\n        };\n        if clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX {\n            return Err(Error::ReconciliationRequired);\n        }\n        Ok(clock)\n    }",
+     "boundary_ids": [
+       "e2_daemon_client_sample_original_clock"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 7215,
+-    "identity": {
+-      "bytes": 632,
+-      "git_blob": "6bf1572f02c85a64df73704f448778f89f1ab001",
+-      "sha256": "35a5de8a5632e3a2593a32d15717bf494ad4d3cf347c4633afec6c1ffb1bec47"
++    "end": 7386,
++    "identity": {
++      "bytes": 803,
++      "git_blob": "5a7140ec2e184bf5f504fd1037fe833a90e0a9b5",
++      "sha256": "8d49cb0a9b2e622db7e664c4c382d85270c04a640bc0adba4f1daaa28e74ca3b"
+     },
+     "impl_header": "impl DaemonClient",
+     "name": "sample_original_clock",
+@@ -1060,7 +1060,7 @@
+       "e2_daemon_client_original_execution"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 8860,
++    "end": 9031,
+     "identity": {
+       "bytes": 1643,
+       "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+@@ -1069,7 +1069,7 @@
+     "impl_header": "impl DaemonClient",
+     "name": "original_execution",
+     "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+-    "start": 7217,
++    "start": 7388,
+     "visibility": "pub(super)",
+     "whole_source_required": {
+       "bytes": 11108,
+@@ -1083,7 +1083,7 @@
+       "e2_daemon_cell_port_new"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 10241,
++    "end": 10412,
+     "identity": {
+       "bytes": 73,
+       "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+@@ -1092,7 +1092,7 @@
+     "impl_header": "impl DaemonCellPort",
+     "name": "new",
+     "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+-    "start": 10168,
++    "start": 10339,
+     "visibility": "pub(crate)",
+     "whole_source_required": {
+       "bytes": 11108,
+@@ -1106,7 +1106,7 @@
+       "e2_daemon_cell_port_original_registry"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 10331,
++    "end": 10502,
+     "identity": {
+       "bytes": 89,
+       "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+@@ -1115,7 +1115,7 @@
+     "impl_header": "impl DaemonCellPort",
+     "name": "original_registry",
+     "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+-    "start": 10242,
++    "start": 10413,
+     "visibility": "pub(crate)",
+     "whole_source_required": {
+       "bytes": 11108,
+@@ -1129,7 +1129,7 @@
+       "e2_daemon_cell_port_original_lookup"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 10621,
++    "end": 10792,
+     "identity": {
+       "bytes": 289,
+       "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+@@ -1138,7 +1138,7 @@
+     "impl_header": "impl DaemonCellPort",
+     "name": "original_lookup",
+     "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+-    "start": 10332,
++    "start": 10503,
+     "visibility": "pub(crate)",
+     "whole_source_required": {
+       "bytes": 11108,
+@@ -1152,7 +1152,7 @@
+       "e2_daemon_cell_port_original_execute"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 10934,
++    "end": 11105,
+     "identity": {
+       "bytes": 312,
+       "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+@@ -1161,7 +1161,7 @@
+     "impl_header": "impl DaemonCellPort",
+     "name": "original_execute",
+     "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+-    "start": 10622,
++    "start": 10793,
+     "visibility": "pub(crate)",
+     "whole_source_required": {
+       "bytes": 11108,
+@@ -1461,16 +1461,16 @@
+     }
+   },
+   {
+-    "body": "pub(crate) fn channel_until(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,\n    end: std::time::Instant) -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DaemonClient>), AgentdError>\n{\n    TaskFlowFence::new(inputs.fence.owner_agent_id.clone(), &inputs.fence.owner_id,\n        inputs.fence.owner_epoch, inputs.fence.generation, &inputs.fence.fencing_token)\n        .map_err(|error| AgentdError::Invalid(error.to_string()))?;\n    let pending = Arc::new(AtomicUsize::new(0));\n    let fence = inputs.fence.clone();\n    let (client, capacity) = DaemonClient::new_until(identity, inputs, Arc::clone(&pending), end).map_err(agent_error)?;\n    let (sender, mut receiver) = mpsc::channel::<Command>(capacity);\n    let handle = CircuitTaskHandleV1 { sender, generation: fence.generation, pending,\n        original_remote: Some(Arc::clone(&client)) };\n    let original = Arc::clone(&client);\n    let bootstrap = CircuitTaskRuntimeBootstrapV1 {\n        identity: identity.clone(), handle, original_root: None,\n        owner: Box::new(move |store, state, cancellation| Box::pin(async move {\n            let (reverse, mut reverse_terminal) = original.run_reverse(&state, cancellation.clone())\n                .map_err(agent_error)?;\n            let result = async {\n                let mut driver = CircuitTaskDriverV1 {\n                    store, fence, cells: DaemonCellPort::new(Arc::clone(&original)),\n                    inputs: Arc::clone(&original),\n                };\n                loop {\n                    let command = tokio::select! {\n                        _ = cancellation.cancelled() => return Ok(()),\n                        stopped = &mut reverse_terminal => {\n                            let detail = match stopped { Ok(Ok(())) => \"Root loan stream closed\".to_owned(),\n                                Ok(Err(error)) => error.to_string(), Err(error) => error.to_string() };\n                            return Err(AgentdError::Protocol(format!(\"original Root loan ended: {detail}\")));\n                        }\n                        command = receiver.recv() => command,\n                    };\n                    let Some(command) = command else {\n                        cancellation.cancelled().await;\n                        return Ok(());\n                    };\n                    if command.response.is_closed() { continue; }\n                    let Command { request, record, mode, response, _pending } = command;\n                    let result = match request.validate_record(&record, driver.fence.generation) {\n                        Err(error) => Err(error),\n                        Ok(()) => driver.execute(&request, mode, || {\n                            if cancellation.is_cancelled() { return Err(Error::Unavailable); }\n                            let now_ms = state.require_current_run_start(&record).map_err(|_| Error::Unavailable)?;\n                            let sampled = original.sample_original_clock()?;\n                            Ok(CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),\n                                cell_micros: sampled.cell_micros })\n                        }).await,\n                    };\n                    let _ = response.send(result);\n                    drop(_pending);\n                }\n            }.await;\n            original.stop_reverse();\n            let joined = reverse.join().map_err(|_| AgentdError::Protocol(\"original Root loan worker panicked\".into()))?;\n            if !cancellation.is_cancelled() { joined.map_err(agent_error)?; }\n            result\n        })),\n    };\n    Ok((bootstrap, client))\n}",
++    "body": "pub(crate) fn channel_until(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,\n    end: std::time::Instant) -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DaemonClient>), AgentdError>\n{\n    TaskFlowFence::new(inputs.fence.owner_agent_id.clone(), &inputs.fence.owner_id,\n        inputs.fence.owner_epoch, inputs.fence.generation, &inputs.fence.fencing_token)\n        .map_err(|error| AgentdError::Invalid(error.to_string()))?;\n    let pending = Arc::new(AtomicUsize::new(0));\n    let fence = inputs.fence.clone();\n    let (client, capacity) = DaemonClient::new_until(identity, inputs, Arc::clone(&pending), end).map_err(agent_error)?;\n    let (sender, mut receiver) = mpsc::channel::<Command>(capacity);\n    let handle = CircuitTaskHandleV1 { sender, generation: fence.generation, pending,\n        original_remote: Some(Arc::clone(&client)) };\n    let original = Arc::clone(&client);\n    let bootstrap = CircuitTaskRuntimeBootstrapV1 {\n        identity: identity.clone(), handle, original_root: None,\n        owner: Box::new(move |store, state, cancellation| Box::pin(async move {\n            let (reverse, mut reverse_terminal) = original.run_reverse(&state, cancellation.clone())\n                .map_err(agent_error)?;\n            let result = async {\n                let mut driver = CircuitTaskDriverV1 {\n                    store, fence, cells: DaemonCellPort::new(Arc::clone(&original)),\n                    inputs: Arc::clone(&original),\n                };\n                loop {\n                    let command = tokio::select! {\n                        _ = cancellation.cancelled() => return Ok(()),\n                        stopped = &mut reverse_terminal => {\n                            let detail = match stopped { Ok(Ok(())) => \"Root loan stream closed\".to_owned(),\n                                Ok(Err(error)) => error.to_string(), Err(error) => error.to_string() };\n                            return Err(AgentdError::Protocol(format!(\"original Root loan ended: {detail}\")));\n                        }\n                        command = receiver.recv() => command,\n                    };\n                    let Some(command) = command else {\n                        cancellation.cancelled().await;\n                        return Ok(());\n                    };\n                    if command.response.is_closed() { continue; }\n                    let Command { request, record, mode, response, _pending } = command;\n                    let result = match request.validate_record(&record, driver.fence.generation) {\n                        Err(error) => Err(error),\n                        Ok(()) => driver.execute(&request, mode, || {\n                            if cancellation.is_cancelled() { return Err(Error::Unavailable); }\n                            let now_ms = state.require_current_run_start(&record).map_err(|_| Error::Unavailable)?;\n                            let sampled = original.sample_original_clock()?;\n                            let sampled = CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),\n                                cell_micros: sampled.cell_micros };\n                            if sampled.circuit_millis == u64::MAX || sampled.cell_micros == u64::MAX {\n                                return Err(Error::ReconciliationRequired);\n                            }\n                            Ok(sampled)\n                        }).await,\n                    };\n                    let _ = response.send(result);\n                    drop(_pending);\n                }\n            }.await;\n            original.stop_reverse();\n            let joined = reverse.join().map_err(|_| AgentdError::Protocol(\"original Root loan worker panicked\".into()))?;\n            if !cancellation.is_cancelled() { joined.map_err(agent_error)?; }\n            result\n        })),\n    };\n    Ok((bootstrap, client))\n}",
+     "boundary_ids": [
+       "e2_original_remote_channel_until"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 4252,
+-    "identity": {
+-      "bytes": 3620,
+-      "git_blob": "da5cba2c5631e315bdb8e4c801414c9ab1504150",
+-      "sha256": "25dcbede30819baa449da4300b9eebc29ab8a7a0496df7a2243eb57a8f13ee0a"
++    "end": 4511,
++    "identity": {
++      "bytes": 3879,
++      "git_blob": "f12d559f359692a41e1c982c3c1b9f6bb1fd8d01",
++      "sha256": "ff9feb787c0e89de3ef2e3655d511c772ac50971f466ccaaeddbe537548a8992"
+     },
+     "impl_header": null,
+     "name": "channel_until",
+@@ -3271,7 +3271,7 @@
+       "e2_agentd_production_launch_install_original_root_task"
+     ],
+     "disposition": "explicit E2 boundary",
+-    "end": 7980,
++    "end": 8344,
+     "identity": {
+       "bytes": 304,
+       "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+@@ -3280,7 +3280,7 @@
+     "impl_header": "impl AgentdProductionLaunch",
+     "name": "install_original_root_task",
+     "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+-    "start": 7676,
++    "start": 8040,
+     "visibility": "pub",
+     "whole_source_required": {
+       "bytes": 20557,

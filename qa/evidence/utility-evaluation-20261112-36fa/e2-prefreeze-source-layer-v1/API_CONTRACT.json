@@ -1,0 +1,43 @@
+{
+  "client": "OriginalCircuitPrefreezeSourceV1::from_original_stream(request, evidence, identity, ledger: Arc<Mutex<LedgerWriter>>, stream, root, original_root_pidfd, timeout, lifetime) -> Result<Self, CircuitTaskErrorV1>; non-Clone",
+  "format": "hepta-e2-prefreeze-fixed-source-api-v1",
+  "future_inputs_not_required_for_first_read": [
+    "RunStart record",
+    "Circuit task request",
+    "Source result/digest",
+    "Decision",
+    "Outcome",
+    "Dataset freeze"
+  ],
+  "intake": "append_original_experience_v2(&mut self, &OriginalCircuitExperienceRequestV1) -> Result<OriginalCircuitExperienceReceiptV1, OriginalCircuitExperienceErrorV1>; delegates original intake",
+  "material": "OriginalCellQ24MaterialReceiptOwnersV1::into_original_prefreeze_source_command_owner(self, source: OriginalCircuitPrefreezeSourceV1, baseline: Arc<LoadedCellQ24ModelV1>) -> Result<OriginalCellQ24MaterialCommandOwnerV1<EW,DW,FileAnchorWitnessStore>, OriginalCellQ24MaterialCommandErrorV1>",
+  "ordinary_loader_owner": "evaluation_audit; protected Root disclosure and separate nonRoot Material CLI are distinct follow-up assembly, not implemented by these library methods",
+  "read": "read_original_publication(&self) -> Result<CircuitTaskSourcePublicationV1, CircuitTaskErrorV1>; fixed task only",
+  "registration": "OriginalRootPrefreezeSourceRegistrationV1::from_original_supervisor(request, trust: ActivatedLearningTrustV1, evidence: SignedLearningEvidenceV1, original_consumer_pidfd: OwnedFd, stream: UnixStream, startup_end: Instant) -> Result<Self, AgentdError>; crate-only, protected supervisor disclosure required",
+  "request_fields": [
+    "generation_operation_id: String",
+    "generation_intent_digest: Digest32",
+    "task_digest: Digest32",
+    "source: CircuitTaskSourceInputV1",
+    "ledger_binding_digest: Digest32",
+    "evidence_trust_digest: Digest32",
+    "trust_distribution_digest: Digest32",
+    "trust_generation: u64",
+    "generator: TrustedLearningSignerV1",
+    "experience_signer: TrustedLearningSignerV1",
+    "dataset_signer: TrustedLearningSignerV1",
+    "consumer: AgentdRootAuthorityPeer",
+    "consumer_uid: u32",
+    "nonce: [u8; 16]"
+  ],
+  "request_type": "OriginalCircuitPrefreezeSourceRequestV1",
+  "root_service": "PreparedRootMaterialSourceHostV1::serve_original_prefreeze(self, registration) -> Result<u64, AgentdError>; consumes the same once-export host as post-freeze serve",
+  "signing_payload": "OriginalCircuitPrefreezeSourceRequestV1::signing_payload(&self) -> Result<Vec<u8>, CircuitTaskErrorV1>",
+  "unchanged_bounds": {
+    "exchange_maximum_ms": 500,
+    "first_frame_wait": "Only the existing common startup_end, at most 30s, clamped to same host end; no fresh window or subsequent idle extension.",
+    "maximum_lifetime_seconds": 300,
+    "requests_shared": 128,
+    "whole_response_bytes": 16384
+  }
+}

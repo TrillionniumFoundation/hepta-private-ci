@@ -1,0 +1,390 @@
+{
+  "Git_writes": false,
+  "H_calls": 0,
+  "classification_counts": {
+    "CRATE_PRIVILEGED_ORIGINAL_OWNER_LOADER_BOUNDARY": 2,
+    "DATA_ONLY_CONVERSION_EXACT_MODULE_GUARD": 20,
+    "PRIVATE_ABSOLUTE_DEADLINE_GUARD": 2,
+    "PRIVATE_PERMANENT_CLOCK_FENCE_GUARD": 7,
+    "PRIVATE_PROTECTED_INPUT_IO_GUARD": 8,
+    "PRIVATE_READY_PHASE_ASSEMBLY_BOUNDARY_OR_EXACT_SCOPE_GUARD": 1,
+    "PUBLIC_PRIVILEGED_ENTRY_BOUNDARY": 5
+  },
+  "collector_executed": false,
+  "confirmed_old_edges": [
+    {
+      "caller_method": "prepare_original_initial_generation_from_files",
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_host_authority_service_bind_original_initial_operation",
+      "index": 634,
+      "receiver_type": "HostAuthorityService",
+      "sites": [
+        {
+          "line": 37,
+          "text": "        let operation = HostAuthorityService::bind_original_initial_operation(&self.service, &inputs, end)?;"
+        }
+      ],
+      "symbol": "HostAuthorityService::bind_original_initial_operation"
+    },
+    {
+      "caller_method": "recover_original_initial_generation_from_files",
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_host_authority_service_recover_original_initial_operation",
+      "index": 635,
+      "receiver_type": "HostAuthorityService",
+      "sites": [
+        {
+          "line": 60,
+          "text": "        let (operation, custody) = HostAuthorityService::recover_original_initial_operation(&self.service, inputs, end)?;"
+        }
+      ],
+      "symbol": "HostAuthorityService::recover_original_initial_operation"
+    },
+    {
+      "caller_method": "read_loaded_original_root_task_generation",
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_circuit_task_v1_read_original_root_task_generation",
+      "index": 666,
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "sites": [
+        {
+          "line": 37,
+          "text": "        let result = PreparedRootHostCircuitTaskV1::read_original_root_task_generation(&self.task);"
+        }
+      ],
+      "symbol": "PreparedRootHostCircuitTaskV1::read_original_root_task_generation"
+    },
+    {
+      "caller_method": "load_original_task_files",
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+      "index": 624,
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "sites": [
+        {
+          "line": 88,
+          "text": "                &OriginalRootInitialGenerationCustodyV1::read_original_operation(custody)?,"
+        },
+        {
+          "line": 95,
+          "text": "                &OriginalRootInitialGenerationCustodyV1::read_original_operation(custody)?,"
+        }
+      ],
+      "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+    },
+    {
+      "caller_method": "load_original_task_files",
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_original_host_initial_operation_require_observed",
+      "index": 640,
+      "receiver_type": "OriginalHostInitialOperation",
+      "sites": [
+        {
+          "line": 86,
+          "text": "            OriginalHostInitialOperation::require_observed("
+        },
+        {
+          "line": 93,
+          "text": "            OriginalHostInitialOperation::require_observed("
+        }
+      ],
+      "symbol": "OriginalHostInitialOperation::require_observed"
+    },
+    {
+      "caller_method": "load_original_task_files",
+      "caller_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "id": "e2_prepared_root_host_initial_generation_v1_prepare_original_root_task",
+      "index": 669,
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "sites": [
+        {
+          "line": 102,
+          "text": "                let task = PreparedRootHostInitialGenerationV1::prepare_original_root_task(self, loaded.inputs)?;"
+        }
+      ],
+      "symbol": "PreparedRootHostInitialGenerationV1::prepare_original_root_task"
+    }
+  ],
+  "counts": {
+    "composed_paths": 17,
+    "lexical_false_same_name_candidates_rejected": 367,
+    "new_crate_owner_loader_methods": 2,
+    "new_declarations": 45,
+    "new_private_Ready_assembly_method": 1,
+    "new_public_methods": 5,
+    "old_boundary_new_caller_pairs": 6,
+    "old_exact_call_sites": 8
+  },
+  "format": "hepta-two-loader-registration-metadata-review-v1",
+  "important_limits": [
+    "The five public new methods have no product callers within these exact two packets. Later CLI or Material layers are deliberately not inferred into this table.",
+    "Existing owner/service factories are not necessarily rows in the frozen 757-boundary table. True calls to these APIs are separately listed, not mislabeled as calls to a similarly named protected low-level host.",
+    "LearningArtifactOwnerService is a distinct struct owning LearningArtifactOwnerHost, not a receiver alias. Its open call does not add a direct caller to LearningArtifactOwnerHost::open.",
+    "Full-source identities, exact function bodies/signatures, module-private DTO conversions, input-open guards and permanent clock fence methods are all enumerated. Root still decides exact final registration rows and complete module-shape protection.",
+    "No authority/forbidden/old caller or required-marker field was changed. No project collector, Rust compiler, tests or source gate was run.",
+    "Earlier optional reference lookup found missing local learning-artifacts/lib.rs; owner_service.rs and owner_host.rs actual declarations resolve the distinct receiver without that file. This is a local reference lookup limit, not a source or H failure."
+  ],
+  "new_entry_points": [
+    {
+      "callers": [
+        {
+          "declaration_index": 16,
+          "exact_expression": "HostAuthorityService::load_original_initial_generation_inputs(",
+          "locations": [
+            {
+              "line": 32,
+              "utf8_byte_offset": 1383
+            }
+          ],
+          "method": "prepare_original_initial_generation_from_files",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+          "receiver": "impl PreparedHostAuthoritySession",
+          "source_pin": {
+            "bytes": 3348,
+            "git_blob": "55be939758a6f061a761dd97573aef527b006e33",
+            "sha256": "7d4f75d55bc0ee0f5209a81a0a1e094f083de38e94908ba12a30f445a2f4e685"
+          }
+        },
+        {
+          "declaration_index": 17,
+          "exact_expression": "HostAuthorityService::load_original_initial_generation_inputs(",
+          "locations": [
+            {
+              "line": 55,
+              "utf8_byte_offset": 2733
+            }
+          ],
+          "method": "recover_original_initial_generation_from_files",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+          "receiver": "impl PreparedHostAuthoritySession",
+          "source_pin": {
+            "bytes": 3348,
+            "git_blob": "55be939758a6f061a761dd97573aef527b006e33",
+            "sha256": "7d4f75d55bc0ee0f5209a81a0a1e094f083de38e94908ba12a30f445a2f4e685"
+          }
+        }
+      ],
+      "classification": "CRATE_PRIVILEGED_ORIGINAL_OWNER_LOADER_BOUNDARY",
+      "declaration_index": 6,
+      "end_line": 198,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs",
+      "receiver": "impl HostAuthorityService",
+      "signature": "pub(crate) fn load_original_initial_generation_inputs(\n        &self,\n        original_state: &Path,\n        deployment: &Path,\n        original_files: RootHostInitialGenerationFilesV1,\n        purpose: LoadPurpose,\n        end: Instant,\n    ) -> Result<LoadedOriginalGeneration, AgentdError>",
+      "source_pin": {
+        "bytes": 9949,
+        "git_blob": "a7c07a3f2c211d7c8b32ac14f9dcd76a38ccfa87",
+        "sha256": "e84f5873b3d9d12962e8fcaa292057bbc47a5d442d9bcedffffa0f53428cde21"
+      },
+      "start_line": 67
+    },
+    {
+      "callers": [],
+      "classification": "PUBLIC_PRIVILEGED_ENTRY_BOUNDARY",
+      "declaration_index": 16,
+      "end_line": 42,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+      "receiver": "impl PreparedHostAuthoritySession",
+      "signature": "pub fn prepare_original_initial_generation_from_files(\n        self,\n        deployment: &Path,\n        files: RootHostInitialGenerationFilesV1,\n    ) -> Result<PreparedRootHostInitialGenerationV1<FileAnchorWitnessStore>, AgentdError>",
+      "source_pin": {
+        "bytes": 3348,
+        "git_blob": "55be939758a6f061a761dd97573aef527b006e33",
+        "sha256": "7d4f75d55bc0ee0f5209a81a0a1e094f083de38e94908ba12a30f445a2f4e685"
+      },
+      "start_line": 25
+    },
+    {
+      "callers": [],
+      "classification": "PUBLIC_PRIVILEGED_ENTRY_BOUNDARY",
+      "declaration_index": 17,
+      "end_line": 65,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+      "receiver": "impl PreparedHostAuthoritySession",
+      "signature": "pub fn recover_original_initial_generation_from_files(\n        self,\n        deployment: &Path,\n        files: RootHostInitialGenerationFilesV1,\n    ) -> Result<PreparedRootHostInitialGenerationV1<FileAnchorWitnessStore>, AgentdError>",
+      "source_pin": {
+        "bytes": 3348,
+        "git_blob": "55be939758a6f061a761dd97573aef527b006e33",
+        "sha256": "7d4f75d55bc0ee0f5209a81a0a1e094f083de38e94908ba12a30f445a2f4e685"
+      },
+      "start_line": 48
+    },
+    {
+      "callers": [
+        {
+          "declaration_index": 44,
+          "exact_expression": "HostAuthorityService::load_original_root_q24_task_inputs(",
+          "locations": [
+            {
+              "line": 90,
+              "utf8_byte_offset": 4138
+            }
+          ],
+          "method": "load_original_task_files",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "receiver": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+          "source_pin": {
+            "bytes": 5173,
+            "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+            "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+          }
+        }
+      ],
+      "classification": "CRATE_PRIVILEGED_ORIGINAL_OWNER_LOADER_BOUNDARY",
+      "declaration_index": 25,
+      "end_line": 145,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_task_input_loader.rs",
+      "receiver": "impl HostAuthorityService",
+      "signature": "pub(crate) fn load_original_root_q24_task_inputs(\n        &self,\n        deployment: &Path,\n        original_files: RootHostQ24TaskFilesV1,\n        purpose: TaskFilePurpose,\n        end: Instant,\n    ) -> Result<LoadedOriginalTaskInputs, AgentdError>",
+      "source_pin": {
+        "bytes": 7244,
+        "git_blob": "21df9c6cc994ef629dde11ad492b3ed5893f6647",
+        "sha256": "e0db425a15e2f939f709058e53a12f98ddef3cd13d2b78c6ebf5e06ec21c0f83"
+      },
+      "start_line": 41
+    },
+    {
+      "callers": [],
+      "classification": "PUBLIC_PRIVILEGED_ENTRY_BOUNDARY",
+      "declaration_index": 40,
+      "end_line": 39,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "receiver": "impl PreparedRootHostLoadedQ24TaskV1",
+      "signature": "pub fn read_loaded_original_root_task_generation(\n        &self,\n    ) -> Result<crate::neuron_generation_current::NeuronGenerationInitialReadbackV1, AgentdError>",
+      "source_pin": {
+        "bytes": 5173,
+        "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+        "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+      },
+      "start_line": 33
+    },
+    {
+      "callers": [],
+      "classification": "PUBLIC_PRIVILEGED_ENTRY_BOUNDARY",
+      "declaration_index": 42,
+      "end_line": 62,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "receiver": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+      "signature": "pub fn prepare_original_root_task_from_files(\n        self,\n        deployment: &Path,\n        files: RootHostQ24TaskFilesV1,\n    ) -> Result<PreparedRootHostLoadedQ24TaskV1, RootHostInitialTaskInstallationErrorV1>",
+      "source_pin": {
+        "bytes": 5173,
+        "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+        "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+      },
+      "start_line": 56
+    },
+    {
+      "callers": [],
+      "classification": "PUBLIC_PRIVILEGED_ENTRY_BOUNDARY",
+      "declaration_index": 43,
+      "end_line": 73,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "receiver": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+      "signature": "pub fn recover_original_root_task_from_files(\n        self,\n        deployment: &Path,\n        files: RootHostQ24TaskFilesV1,\n    ) -> Result<PreparedRootHostLoadedQ24TaskV1, RootHostInitialTaskInstallationErrorV1>",
+      "source_pin": {
+        "bytes": 5173,
+        "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+        "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+      },
+      "start_line": 67
+    },
+    {
+      "callers": [
+        {
+          "declaration_index": 42,
+          "exact_expression": "self.load_original_task_files(",
+          "locations": [
+            {
+              "line": 61,
+              "utf8_byte_offset": 2715
+            }
+          ],
+          "method": "prepare_original_root_task_from_files",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "receiver": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+          "source_pin": {
+            "bytes": 5173,
+            "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+            "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+          }
+        },
+        {
+          "declaration_index": 43,
+          "exact_expression": "self.load_original_task_files(",
+          "locations": [
+            {
+              "line": 72,
+              "utf8_byte_offset": 3274
+            }
+          ],
+          "method": "recover_original_root_task_from_files",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+          "receiver": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+          "source_pin": {
+            "bytes": 5173,
+            "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+            "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+          }
+        }
+      ],
+      "classification": "PRIVATE_READY_PHASE_ASSEMBLY_BOUNDARY_OR_EXACT_SCOPE_GUARD",
+      "declaration_index": 44,
+      "end_line": 112,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs",
+      "receiver": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+      "signature": "fn load_original_task_files(\n        self,\n        deployment: &Path,\n        files: RootHostQ24TaskFilesV1,\n        purpose: OriginalTaskFilePurpose,\n    ) -> Result<PreparedRootHostLoadedQ24TaskV1, RootHostInitialTaskInstallationErrorV1>",
+      "source_pin": {
+        "bytes": 5173,
+        "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+        "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+      },
+      "start_line": 75
+    }
+  ],
+  "project_execution": false,
+  "proof": {
+    "bytes": 450033,
+    "git_blob": "aaeb93891998f1e07cc07227a42af425e2bc0250",
+    "path": "/tmp/hepta-36fa-root-loader-registration-obligations-v1/REGISTRATION_OBLIGATIONS.json",
+    "sha256": "961eac4dc1211f5ba0a98b3de10e0c1535812fb1eff28f99a6c2490e14bb5995"
+  },
+  "pure_verification": {
+    "exit_code": 0,
+    "script": {
+      "bytes": 14123,
+      "git_blob": "a4b6868d1793002e4ade47d7f844f58fb8b900cc",
+      "path": "/tmp/hepta-36fa-root-loader-registration-obligations-v1/finish_obligations.py",
+      "sha256": "5a3ebf1048aba3609f67ae8ea75e9c2317e63ca7063d1105a226d87c5c83f064"
+    }
+  },
+  "scope": "Only exact e78f0413 and 77b05d5e, composed 17 complete paths; excludes later CLI, Material and prefreeze layers.",
+  "seed": {
+    "bytes": 2635042,
+    "git_blob": "1b55bc0cc5be4d47b7273f3c451f2eeff02fc542",
+    "path": "/tmp/hepta-36fa-root-registration-union-seed-v1/CALLERS_E1_E3_E2_SEED.toml",
+    "sha256": "0b9de72801011ae07b52edc4a625e9ddaec35224f2ad5b9fb420d31065e3fc97"
+  },
+  "source_packets": [
+    {
+      "bytes": 287484,
+      "git_blob": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+      "layer": "inputs-layer-v1",
+      "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/SOURCE_PACKET.json",
+      "sha256": "7f4d2087943efc969eda7ca540d21e51c52418db5ecfe81a8be77a9362d98d4b"
+    },
+    {
+      "bytes": 386488,
+      "git_blob": "77b05d5ec3f8d3b10a4024b63103e97e8f3fe996",
+      "layer": "task-inputs-layer-v1",
+      "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/task-inputs-layer-v1/SOURCE_PACKET.json",
+      "sha256": "5ef53c71c2809e99ce91337e2dc3fb49e3ecd4bb3f6360e4120ac4545b996bef"
+    }
+  ],
+  "source_registry_ref_edits": false,
+  "state": "STATIC_METADATA_FOR_ROOT_SOLE_REGISTRY_WRITER",
+  "storage": "Computed identities only; Root owns Git evidence persistence."
+}

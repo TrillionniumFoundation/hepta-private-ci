@@ -1,0 +1,7 @@
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs
+@@ -141,3 +141,4 @@
+     anyhow::ensure!(fixture.bytes()? == withdrawn, "refused reads preserve the actual withdrawal");
+     anyhow::ensure!(fixture.calls.load(Ordering::SeqCst) == 1, "withdrawal cannot repeat inference");
+     Ok(())
++}

@@ -1,0 +1,1173 @@
+{
+  "H_calls": 0,
+  "baseline_composition": {
+    "local": "/tmp/hepta-36fa-root-product-composition-v5/PREQUALIFICATION_COMPOSITION_REVIEW.json",
+    "pin": {
+      "bytes": 42398,
+      "git_blob": "59014cde8a2ed41b652260773f81e09d7e3f67eb",
+      "sha256": "9c13973200e580ebd982d4d20118b8a802c4f344eb40895e357c6178f4560dab"
+    }
+  },
+  "baseline_inventory": {
+    "bytes": 5631947,
+    "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+    "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+  },
+  "explicit_scope_limits": [
+    "The old local circuit_cell::execute and local runtime path are not modified or proved universally MAX-safe.",
+    "A future protected task-clock producer must separately retain its first real error and remain poisoned. Its implementation and final full consumer graph were not frozen in these layers.",
+    "The source rejects a synthetic clock value, not prior durable inference/admission costs. A post-worker Indeterminate is Unknown, not NotExecuted or retry authorization.",
+    "No Rust, QA, compiler, collector, H, source Git/ref, owner construction or fixture execution occurred."
+  ],
+  "files": [
+    {
+      "after": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      },
+      "baseline": "exact-v5-composed-file",
+      "before": {
+        "bytes": 7326,
+        "git_blob": "7da8c7b20bba82b648eec3420733f49997561501",
+        "sha256": "7b2f1501aaff75a4ceaad94303c739c0fb0fbd70c8db0049d8f5fae4de16327d"
+      },
+      "forward_and_reverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "splice_count": 4
+    },
+    {
+      "after": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "baseline": "exact-v5-composed-file",
+      "before": {
+        "bytes": 8481,
+        "git_blob": "3d18fc0d8ce1c9e2a3a7e863bd7bdadac04497ad",
+        "sha256": "68655fc061366fb2435ba687277b4697eb42356c9ecb16f0e0a56a6d14ce7945"
+      },
+      "forward_and_reverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "baseline": "exact-v5-composed-file",
+      "before": {
+        "bytes": 10937,
+        "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+        "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+      },
+      "forward_and_reverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "baseline": "exact-v5-composed-file",
+      "before": {
+        "bytes": 4376,
+        "git_blob": "c3da579114e1b4b2af2dd52785afc67980595051",
+        "sha256": "72b6616733eaa6213c17a44a9f7ceaf7caa3eb93b56194fa88435c9ea47c9a0c"
+      },
+      "forward_and_reverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 13123,
+        "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+        "sha256": "3b1252b664111baf22778f8ca9c4495e0f3e4806fdcb54149c718d58f9b79bd3"
+      },
+      "baseline": "unchanged-original-b608-file",
+      "before": {
+        "bytes": 13098,
+        "git_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+        "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc"
+      },
+      "forward_and_reverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 14450,
+        "git_blob": "615b3b2179756eff1be112a0648e72311c22457f",
+        "sha256": "04f16c757331031d484bce4646bbb1f11e1d3301f05de40d78c6c3dedbdffde1"
+      },
+      "baseline": "unchanged-original-b608-file",
+      "before": {
+        "bytes": 12439,
+        "git_blob": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+        "sha256": "4d55b3c2125f8fa811467b5b38197f29c92a2d70979063dcf3f341a1f917dca8"
+      },
+      "forward_and_reverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "splice_count": 1
+    }
+  ],
+  "format": "independent-clock-rejection-source-proof-v1",
+  "layers": [
+    {
+      "exact_patch_reconstructed": true,
+      "files": [
+        {
+          "after": {
+            "bytes": 7788,
+            "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+            "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+          },
+          "baseline": "exact-v5-composed-file",
+          "before": {
+            "bytes": 7326,
+            "git_blob": "7da8c7b20bba82b648eec3420733f49997561501",
+            "sha256": "7b2f1501aaff75a4ceaad94303c739c0fb0fbd70c8db0049d8f5fae4de16327d"
+          },
+          "forward_and_reverse_complete_bytes_equal": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+          "splice_count": 4
+        },
+        {
+          "after": {
+            "bytes": 8637,
+            "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+            "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+          },
+          "baseline": "exact-v5-composed-file",
+          "before": {
+            "bytes": 8481,
+            "git_blob": "3d18fc0d8ce1c9e2a3a7e863bd7bdadac04497ad",
+            "sha256": "68655fc061366fb2435ba687277b4697eb42356c9ecb16f0e0a56a6d14ce7945"
+          },
+          "forward_and_reverse_complete_bytes_equal": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+          "splice_count": 1
+        },
+        {
+          "after": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "baseline": "exact-v5-composed-file",
+          "before": {
+            "bytes": 10937,
+            "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+            "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+          },
+          "forward_and_reverse_complete_bytes_equal": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "splice_count": 1
+        },
+        {
+          "after": {
+            "bytes": 4635,
+            "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+            "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+          },
+          "baseline": "exact-v5-composed-file",
+          "before": {
+            "bytes": 4376,
+            "git_blob": "c3da579114e1b4b2af2dd52785afc67980595051",
+            "sha256": "72b6616733eaa6213c17a44a9f7ceaf7caa3eb93b56194fa88435c9ea47c9a0c"
+          },
+          "forward_and_reverse_complete_bytes_equal": true,
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+          "splice_count": 1
+        }
+      ],
+      "manifest": {
+        "bytes": 2969,
+        "git_blob": "38cf35220c83400f7030cf0133db989c2f113a77",
+        "sha256": "2d416c8073d621720929cc3b5317e455845814bea726c1d93323ffb2c6b0a87c"
+      },
+      "metadata": [
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/remote-clock-rejection-increment-v1/EXACT_SOURCE_SPLICES.json",
+          "pin": {
+            "bytes": 5086,
+            "git_blob": "c8d4fff60a25da7c3e0c6dad4fe9f4032eac32e2",
+            "sha256": "eaf0b86e6c9676d76368fe659e730283b5d53c3ffe97ecad1d66170a5de7cbb5"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/remote-clock-rejection-increment-v1/REVIEW.json",
+          "pin": {
+            "bytes": 1966,
+            "git_blob": "eafa93398a9b7472b7139a6de89afabf417758a3",
+            "sha256": "afb536919409184b943efe91cc6c5a22f63867230334ec84c4fd955dd8b7b85c"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/remote-clock-rejection-increment-v1/SOURCE_PACKET.json",
+          "pin": {
+            "bytes": 66844,
+            "git_blob": "9f780f963b0e9585b5b85a83f87de593f604bfa5",
+            "sha256": "e3056b6b268b3c5503485fe125330f6405e9e56f4ac09b9ab472d962c62b963e"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/remote-clock-rejection-increment-v1/source.patch",
+          "pin": {
+            "bytes": 4963,
+            "git_blob": "d5d383c7e54cc61937acffd68caac16ea2fa8a3b",
+            "sha256": "9437ac17034c90eb0f03f5c8d461b8c70e6f6e10427a1f37fbd678340d939eec"
+          }
+        }
+      ],
+      "name": "remote-clock-rejection-increment-v1",
+      "packet": {
+        "bytes": 66844,
+        "git_blob": "9f780f963b0e9585b5b85a83f87de593f604bfa5",
+        "sha256": "e3056b6b268b3c5503485fe125330f6405e9e56f4ac09b9ab472d962c62b963e"
+      }
+    },
+    {
+      "exact_patch_reconstructed": true,
+      "files": [
+        {
+          "after": {
+            "bytes": 13123,
+            "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+            "sha256": "3b1252b664111baf22778f8ca9c4495e0f3e4806fdcb54149c718d58f9b79bd3"
+          },
+          "baseline": "unchanged-original-b608-file",
+          "before": {
+            "bytes": 13098,
+            "git_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+            "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc"
+          },
+          "forward_and_reverse_complete_bytes_equal": true,
+          "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+          "splice_count": 1
+        }
+      ],
+      "manifest": {
+        "bytes": 1515,
+        "git_blob": "c37e5c7a21ad47be1d34d970a415499ff7cb6bd2",
+        "sha256": "69b1e21d8d3b2e648b8f6a47cb2da7606c7561d92adc08532abdb02fb3d05d0e"
+      },
+      "metadata": [
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-rejection-increment-v1/EXACT_SOURCE_SPLICES.json",
+          "pin": {
+            "bytes": 796,
+            "git_blob": "6ab51e1ff2095184a485a339fa5adbee88e67713",
+            "sha256": "3af028a2052fabf901e56d568bb4755c6f48a835d0f8753350916faa37dea46a"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-rejection-increment-v1/REVIEW.json",
+          "pin": {
+            "bytes": 1086,
+            "git_blob": "940b74f2db7462a878531f301c22a02042ceb3a4",
+            "sha256": "ae292d712da1a5ead3ebb353f5187b1072bb17af0855c417b86cfaeda890408c"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-rejection-increment-v1/SOURCE_PACKET.json",
+          "pin": {
+            "bytes": 27556,
+            "git_blob": "ade9282388680285416c7829000b7081e22550ef",
+            "sha256": "f173cc5db210014d7e9ad52f6098ec95f2abfb2f2916123ff1acc1b8fcc81755"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-rejection-increment-v1/source.patch",
+          "pin": {
+            "bytes": 595,
+            "git_blob": "ede0ea857acdbcbfa66c2a5f66b080876f5a2dad",
+            "sha256": "8537387a18c396226b1cace0ae33e510c57e44aa5e1d10e5e7ebe10b34474812"
+          }
+        }
+      ],
+      "name": "feature-clock-rejection-increment-v1",
+      "packet": {
+        "bytes": 27556,
+        "git_blob": "ade9282388680285416c7829000b7081e22550ef",
+        "sha256": "f173cc5db210014d7e9ad52f6098ec95f2abfb2f2916123ff1acc1b8fcc81755"
+      }
+    },
+    {
+      "exact_patch_reconstructed": true,
+      "files": [
+        {
+          "after": {
+            "bytes": 14450,
+            "git_blob": "615b3b2179756eff1be112a0648e72311c22457f",
+            "sha256": "04f16c757331031d484bce4646bbb1f11e1d3301f05de40d78c6c3dedbdffde1"
+          },
+          "baseline": "unchanged-original-b608-file",
+          "before": {
+            "bytes": 12439,
+            "git_blob": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+            "sha256": "4d55b3c2125f8fa811467b5b38197f29c92a2d70979063dcf3f341a1f917dca8"
+          },
+          "forward_and_reverse_complete_bytes_equal": true,
+          "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+          "splice_count": 1
+        }
+      ],
+      "manifest": {
+        "bytes": 1524,
+        "git_blob": "35ea2262ae0eb9e5ab82e215c4cd7953e6a260f8",
+        "sha256": "17362ba89576343a43b314ca5ee3be9819742f167ed2d65e945617d2d94e569b"
+      },
+      "metadata": [
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-regression-tests-v1/EXACT_SOURCE_SPLICES.json",
+          "pin": {
+            "bytes": 28333,
+            "git_blob": "0adf4e251c013f48f3e6df7d72dce7ccc8d8d461",
+            "sha256": "7575280fec8da2d4b3748ce2d45e51e20341c9b018b6ca126a2b12d0f6330430"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-regression-tests-v1/REVIEW.json",
+          "pin": {
+            "bytes": 1394,
+            "git_blob": "e16b48880b5386430ccd1c696314a463f14b2204",
+            "sha256": "d75eb62b387e71bb24d1776bab5d3a32683aed9db23238ba219aa987f702cb80"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-regression-tests-v1/SOURCE_PACKET.json",
+          "pin": {
+            "bytes": 28419,
+            "git_blob": "b2dc4c80ce5918463f3713fd6d916f0aeb1c85c0",
+            "sha256": "4d352b8744d77391e2c8662dea0fc7890103a81e8bdfebc3a3495c18cb6ab9b6"
+          }
+        },
+        {
+          "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/feature-clock-regression-tests-v1/source.patch",
+          "pin": {
+            "bytes": 2309,
+            "git_blob": "4a9fd5bff5bc1b3fa62980156e12c1034e84e7dd",
+            "sha256": "2748248f7492bdb8fdd1e15b0533581eed948f130d3ac89d818c0750f4242e76"
+          }
+        }
+      ],
+      "name": "feature-clock-regression-tests-v1",
+      "packet": {
+        "bytes": 28419,
+        "git_blob": "b2dc4c80ce5918463f3713fd6d916f0aeb1c85c0",
+        "sha256": "4d352b8744d77391e2c8662dea0fc7890103a81e8bdfebc3a3495c18cb6ab9b6"
+      }
+    }
+  ],
+  "manual_consumer_flow_witnesses": [
+    {
+      "meaning": "Either MAX field refuses before state lookup, pending recovery, replay acceptance or fresh entry. Finite read-only recovery structure is unchanged.",
+      "name": "remote first sample",
+      "ordered_anchors": [
+        {
+          "line": 47,
+          "text": "let time = clock();"
+        },
+        {
+          "line": 48,
+          "text": "time.circuit_millis == u64::MAX"
+        },
+        {
+          "line": 49,
+          "text": "time.cell_micros == u64::MAX"
+        },
+        {
+          "line": 52,
+          "text": "return Err(CircuitCellErrorV1::ReconciliationRequired);"
+        },
+        {
+          "line": 57,
+          "text": "let read_only ="
+        },
+        {
+          "line": 59,
+          "text": "let committed ="
+        },
+        {
+          "line": 72,
+          "text": "let pending = self.state_owner.pending_inference(&input.scope)?;"
+        },
+        {
+          "line": 74,
+          "text": "recover_cell_inference("
+        },
+        {
+          "line": 83,
+          "text": "if read_only"
+        },
+        {
+          "line": 86,
+          "text": "enter_cell_step("
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "source_pin": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      }
+    },
+    {
+      "meaning": "MAX is not stored as a valid Circuit sample. Existing infer_cell_with_clock rejects the numeric marker before admission or dispatch; an earlier persisted admission remains pending.",
+      "name": "remote inference callback",
+      "ordered_anchors": [
+        {
+          "line": 113,
+          "text": "let now = clock();"
+        },
+        {
+          "line": 114,
+          "text": "now.circuit_millis == u64::MAX"
+        },
+        {
+          "line": 115,
+          "text": "now.cell_micros == u64::MAX"
+        },
+        {
+          "line": 120,
+          "text": "invalid_clock = true;"
+        },
+        {
+          "line": 121,
+          "text": "return u64::MAX;"
+        },
+        {
+          "line": 123,
+          "text": "sampled.set(now);"
+        },
+        {
+          "line": 124,
+          "text": "now.cell_micros"
+        },
+        {
+          "line": 127,
+          "text": "if invalid_clock"
+        },
+        {
+          "line": 128,
+          "text": "return Err(CircuitCellErrorV1::ReconciliationRequired);"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "source_pin": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      }
+    },
+    {
+      "meaning": "A MAX decision sample cannot reach numerical/policy proposal computation; a MAX commit sample cannot reach owner.commit. Later error is not proof previous inference did not run.",
+      "name": "remote decision and commit",
+      "ordered_anchors": [
+        {
+          "line": 145,
+          "text": "let decided_at = clock();"
+        },
+        {
+          "line": 146,
+          "text": "decided_at.circuit_millis == u64::MAX"
+        },
+        {
+          "line": 147,
+          "text": "decided_at.cell_micros == u64::MAX"
+        },
+        {
+          "line": 151,
+          "text": "return Err(CircuitCellErrorV1::ReconciliationRequired);"
+        },
+        {
+          "line": 153,
+          "text": "let proposal = decide_cell("
+        },
+        {
+          "line": 154,
+          "text": "let committed_at = clock();"
+        },
+        {
+          "line": 155,
+          "text": "committed_at.circuit_millis == u64::MAX"
+        },
+        {
+          "line": 156,
+          "text": "committed_at.cell_micros == u64::MAX"
+        },
+        {
+          "line": 160,
+          "text": "return Err(CircuitCellErrorV1::ReconciliationRequired);"
+        },
+        {
+          "line": 162,
+          "text": "commit_cell_step("
+        },
+        {
+          "line": 164,
+          "text": "if loan_failed.get()"
+        },
+        {
+          "line": 167,
+          "text": "admission.require_current()"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "source_pin": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      }
+    },
+    {
+      "meaning": "Refusal precedes the complete 16-byte CLOCK payload encoding and Lane response.",
+      "name": "Root CLOCK encoding",
+      "ordered_anchors": [
+        {
+          "line": 103,
+          "text": "Operation::Clock if frame.loan == record.id && frame.body.is_empty()"
+        },
+        {
+          "line": 104,
+          "text": "let clock = original.pump.clock();"
+        },
+        {
+          "line": 105,
+          "text": "clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX"
+        },
+        {
+          "line": 106,
+          "text": "return Err(Error::ReconciliationRequired);"
+        },
+        {
+          "line": 108,
+          "text": "clock.circuit_millis.to_be_bytes()"
+        },
+        {
+          "line": 109,
+          "text": "clock.cell_micros.to_be_bytes()"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source_pin": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      }
+    },
+    {
+      "meaning": "Only a complete bound response is decoded; either MAX field returns an existing error before exposing time. Higher-level failure does not refund the already consumed request.",
+      "name": "daemon CLOCK decoding",
+      "ordered_anchors": [
+        {
+          "line": 137,
+          "text": "pub(crate) fn sample_original_clock("
+        },
+        {
+          "line": 140,
+          "text": "Operation::Clock, loan: id, body: Vec::new()"
+        },
+        {
+          "line": 142,
+          "text": "if bytes.len() != 16"
+        },
+        {
+          "line": 143,
+          "text": "let clock = CircuitCellTimeV1"
+        },
+        {
+          "line": 147,
+          "text": "clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX"
+        },
+        {
+          "line": 148,
+          "text": "return Err(Error::ReconciliationRequired);"
+        },
+        {
+          "line": 150,
+          "text": "Ok(clock)"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source_pin": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      }
+    },
+    {
+      "meaning": "The merge can introduce MAX even if the wire sample was finite; the new check covers the merged result before the Driver closure returns Ok.",
+      "name": "daemon merged current RunStart time",
+      "ordered_anchors": [
+        {
+          "line": 57,
+          "text": "if cancellation.is_cancelled()"
+        },
+        {
+          "line": 58,
+          "text": "let now_ms = state.require_current_run_start"
+        },
+        {
+          "line": 59,
+          "text": "let sampled = original.sample_original_clock()?;"
+        },
+        {
+          "line": 60,
+          "text": "circuit_millis: sampled.circuit_millis.max(now_ms)"
+        },
+        {
+          "line": 62,
+          "text": "sampled.circuit_millis == u64::MAX || sampled.cell_micros == u64::MAX"
+        },
+        {
+          "line": 63,
+          "text": "return Err(Error::ReconciliationRequired);"
+        },
+        {
+          "line": 65,
+          "text": "Ok(sampled)"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "source_pin": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      }
+    },
+    {
+      "meaning": "A MAX first sample fails admission_for_step before durable admission. A MAX second sample fails the original >= u64 deadline before feature execution and host queue persistence, while prior admitted work is retained.",
+      "name": "original inference two samples",
+      "ordered_anchors": [
+        {
+          "line": 103,
+          "text": "pub fn infer_cell_with_clock("
+        },
+        {
+          "line": 112,
+          "text": "let admitted_at_micros = clock_micros();"
+        },
+        {
+          "line": 113,
+          "text": "let mut admission = admission_for_step(&prepared, admitted_at_micros)?;"
+        },
+        {
+          "line": 115,
+          "text": "owner.admit_inference(admission.clone())?;"
+        },
+        {
+          "line": 119,
+          "text": "let dispatch_at_micros = clock_micros();"
+        },
+        {
+          "line": 124,
+          "text": "if dispatch_at_micros >= prepared.input.deadline_micros"
+        },
+        {
+          "line": 125,
+          "text": "return Err(CellExecutionError::DeadlineExceeded);"
+        },
+        {
+          "line": 127,
+          "text": "let result = control.execute_feature(&request);"
+        },
+        {
+          "line": 128,
+          "text": "owner.record_host_queue_age("
+        }
+      ],
+      "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+      "source_pin": {
+        "bytes": 10719,
+        "git_blob": "41c76f880fe05d71b298834c6cef936291f6c9e0",
+        "sha256": "45347b020decc2c213cecfccf6b395dc2d514d3e5eb2ee03cace27c60f673e23"
+      }
+    },
+    {
+      "meaning": "All four original samples reject MAX: the first three through >= a u64 deadline, the last through the added explicit disjunct. Completion rejection happens after actual worker contact but before new queue/status/receipt/settle work.",
+      "name": "original feature four samples",
+      "ordered_anchors": [
+        {
+          "line": 261,
+          "text": "let admitted = (self.clock)();"
+        },
+        {
+          "line": 263,
+          "text": "admitted < binding.not_before_micros || admitted >= deadline"
+        },
+        {
+          "line": 268,
+          "text": ".admit_generation(admitted,"
+        },
+        {
+          "line": 273,
+          "text": "let dispatch = (self.clock)();"
+        },
+        {
+          "line": 274,
+          "text": "dispatch < admitted || dispatch >= deadline"
+        },
+        {
+          "line": 278,
+          "text": ".dispatch_generation(dispatch,"
+        },
+        {
+          "line": 282,
+          "text": "let entered = (self.clock)();"
+        },
+        {
+          "line": 283,
+          "text": "entered < dispatch || entered >= deadline"
+        },
+        {
+          "line": 288,
+          "text": "let mut observation = self.worker.execute(request)?;"
+        },
+        {
+          "line": 289,
+          "text": "let completed = (self.clock)();"
+        },
+        {
+          "line": 290,
+          "text": "completed == u64::MAX || completed < entered"
+        },
+        {
+          "line": 292,
+          "text": "return Err(NeuronModelError::Indeterminate);"
+        },
+        {
+          "line": 294,
+          "text": "observation.queue_age_micros ="
+        },
+        {
+          "line": 298,
+          "text": "if completed >= deadline"
+        },
+        {
+          "line": 299,
+          "text": "observation.status = NeuronFeatureTerminalStatusV1::Cancelled;"
+        },
+        {
+          "line": 303,
+          "text": "build_neuron_feature_receipt_v1("
+        },
+        {
+          "line": 307,
+          "text": ".settle_generation("
+        }
+      ],
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "source_pin": {
+        "bytes": 13123,
+        "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+        "sha256": "3b1252b664111baf22778f8ca9c4495e0f3e4806fdcb54149c718d58f9b79bd3"
+      }
+    },
+    {
+      "meaning": "The fixed remote Root service reaches the strengthened remote method, not the old local execute method.",
+      "name": "original Root pump selects only remote Cell method",
+      "ordered_anchors": [
+        {
+          "line": 92,
+          "text": "impl<O, P, E, C> OriginalRootCellPump for OriginalPump<O, P, E, C>"
+        },
+        {
+          "line": 99,
+          "text": "fn clock(&mut self) -> CircuitCellTimeV1 { (self.clock)() }"
+        },
+        {
+          "line": 101,
+          "text": "fn execute(&mut self, admission: OriginalRemoteAdmission"
+        },
+        {
+          "line": 103,
+          "text": "self.cells.execute_original_remote(admission, input, &mut self.clock)"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "source_pin": {
+        "bytes": 5080,
+        "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+        "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+      }
+    },
+    {
+      "meaning": "Existing remote client rejects its before sample prior to retaining/sending Execute; original post sample rejection does not assert Execute was unperformed.",
+      "name": "original daemon Cell port pre/post samples",
+      "ordered_anchors": [
+        {
+          "line": 61,
+          "text": "impl OriginalCellPort for super::remote::DaemonCellPort"
+        },
+        {
+          "line": 69,
+          "text": "let before = clock();"
+        },
+        {
+          "line": 70,
+          "text": "let result = self.original_execute(admission, input, before);"
+        },
+        {
+          "line": 71,
+          "text": "let after = clock();"
+        },
+        {
+          "line": 73,
+          "text": "after.circuit_millis == u64::MAX || after.cell_micros == u64::MAX"
+        },
+        {
+          "line": 74,
+          "text": "return Err(CircuitCellErrorV1::ReconciliationRequired);"
+        },
+        {
+          "line": 75,
+          "text": "result"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "source_pin": {
+        "bytes": 3722,
+        "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+        "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+      }
+    },
+    {
+      "meaning": "The existing Driver retains its first fallible current-run/clock error and propagates it after the synchronous Cell return. This does not prove a future new producer retains its own error.",
+      "name": "original Task Driver first error remains retained",
+      "ordered_anchors": [
+        {
+          "line": 159,
+          "text": "let mut clock_error = None;"
+        },
+        {
+          "line": 160,
+          "text": "let execution = self.cells.execute("
+        },
+        {
+          "line": 161,
+          "text": "if clock_error.is_none()"
+        },
+        {
+          "line": 167,
+          "text": "Err(error) => clock_error = Some(error)"
+        },
+        {
+          "line": 171,
+          "text": "circuit_millis: u64::MAX"
+        },
+        {
+          "line": 172,
+          "text": "cell_micros: u64::MAX"
+        },
+        {
+          "line": 175,
+          "text": "if let Some(error) = clock_error"
+        },
+        {
+          "line": 176,
+          "text": "return Err(error);"
+        },
+        {
+          "line": 178,
+          "text": "let execution = execution?;"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+      "source_pin": {
+        "bytes": 13631,
+        "git_blob": "90075e64c2df933be2f3bcbdb64cc5bf68f32d2b",
+        "sha256": "b96884e676a82ef8a4e8cf083374aa63753709d6bc362a8afecda867906d327d"
+      }
+    }
+  ],
+  "new_report_Git_objects_created_or_fetched": false,
+  "predicate_reasoning": {
+    "every_u64_deadline_is_lte_MAX": "Mathematical domain property; existing >= deadline rejects MAX at the first three Feature samples and original inference admission/dispatch.",
+    "explanation": "Reviewer-owned finite boundary arithmetic only, not execution of Rust/project tests. Whole-byte inverse establishes unchanged predicates for every non-MAX input; the enumerated finite sample grid is an additional sanity check.",
+    "feature_completion_cases": 100,
+    "feature_completion_cases_sha256": "9e4a7b8dfb1bcd04de553e3745a3f0edc37b33efc2c692e825a0701b998ad7de",
+    "two_field_grids": [
+      {
+        "boundary": "initial",
+        "cases": 100,
+        "cases_sha256": "509269b4db6d2966c756320dfb1e0aa640b5da6fc89b649c13f0c5dcd95f7baf",
+        "either_max_rejects": true,
+        "finite_cases_unchanged": true
+      },
+      {
+        "boundary": "inference",
+        "cases": 100,
+        "cases_sha256": "af7cb94d2cdecf4a3a6178f5729285a7084457a48c1f88c4522afad8d5eb4328",
+        "either_max_rejects": true,
+        "finite_cases_unchanged": true
+      },
+      {
+        "boundary": "decide",
+        "cases": 100,
+        "cases_sha256": "aa5cad54338bec093ac3d09c75b155305157ad6ffd9d29f6779651b815508310",
+        "either_max_rejects": true,
+        "finite_cases_unchanged": true
+      },
+      {
+        "boundary": "commit",
+        "cases": 100,
+        "cases_sha256": "aa5cad54338bec093ac3d09c75b155305157ad6ffd9d29f6779651b815508310",
+        "either_max_rejects": true,
+        "finite_cases_unchanged": true
+      },
+      {
+        "boundary": "wire",
+        "cases": 100,
+        "cases_sha256": "ebbe76f6d2bf68a9146a55e7288cb7a4b2a4862fec63b7b80d603c5734d9d774",
+        "either_max_rejects": true,
+        "finite_cases_unchanged": true
+      },
+      {
+        "boundary": "merged",
+        "cases": 100,
+        "cases_sha256": "ebbe76f6d2bf68a9146a55e7288cb7a4b2a4862fec63b7b80d603c5734d9d774",
+        "either_max_rejects": true,
+        "finite_cases_unchanged": true
+      }
+    ],
+    "u64_max": 18446744073709551615
+  },
+  "project_code_executed": false,
+  "qualification": false,
+  "references": [
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "pin": {
+        "bytes": 5080,
+        "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+        "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+      }
+    },
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "pin": {
+        "bytes": 3722,
+        "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+        "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+      }
+    },
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+      "pin": {
+        "bytes": 13631,
+        "git_blob": "90075e64c2df933be2f3bcbdb64cc5bf68f32d2b",
+        "sha256": "b96884e676a82ef8a4e8cf083374aa63753709d6bc362a8afecda867906d327d"
+      }
+    },
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "pin": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      }
+    },
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "pin": {
+        "bytes": 13463,
+        "git_blob": "f6c8214d9f5e065d8869195c83e50ec721cf9965",
+        "sha256": "08d13892425abdd4fb9c7f170aaaa857a8c57a8e61c16bad1c6248f4508a3049"
+      }
+    },
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "pin": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      }
+    },
+    {
+      "baseline": "v5",
+      "local": "/tmp/hepta-36fa-root-product-composition-v5/after/codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "pin": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      }
+    },
+    {
+      "baseline": "b608",
+      "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
+      "pin": {
+        "bytes": 2149,
+        "git_blob": "a3aa1990030da739164d9682bcbc61453cd16428",
+        "sha256": "5365427e0982921142bf205550d422f8978de3ef6f5edcf2ff79a7bbb816fd0c"
+      }
+    },
+    {
+      "baseline": "b608",
+      "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-neuron/src/cell_inference.rs",
+      "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+      "pin": {
+        "bytes": 10719,
+        "git_blob": "41c76f880fe05d71b298834c6cef936291f6c9e0",
+        "sha256": "45347b020decc2c213cecfccf6b395dc2d514d3e5eb2ee03cace27c60f673e23"
+      }
+    },
+    {
+      "baseline": "b608",
+      "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-neuron/src/cell.rs",
+      "path": "codex-rs/hepta-neuron/src/cell.rs",
+      "pin": {
+        "bytes": 11087,
+        "git_blob": "7f99ec906d3102582e4a9ba4ea6353b56a69d82b",
+        "sha256": "621ad9da132a298fa4dffd58bc870720adf5978d5e6e3ac38fcf6bf870a52edc"
+      }
+    },
+    {
+      "baseline": "b608",
+      "local": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-neuron/src/cell_types.rs",
+      "path": "codex-rs/hepta-neuron/src/cell_types.rs",
+      "pin": {
+        "bytes": 12226,
+        "git_blob": "712fe850d16abeea3dc859827e0082bf3343c780",
+        "sha256": "04e0d7e973103f79275d1b552f60394b697c45402a9c3452d029a934090961c6"
+      }
+    }
+  ],
+  "regression_test": {
+    "appended_bytes": 2011,
+    "executed": false,
+    "name": "feature_control_invalid_completion_clock_retains_original_unresolved_dispatch",
+    "new_test_count": 1,
+    "old_prefix_bytes_equal": true,
+    "original_test_count": 5,
+    "original_worker_calls_before_success_observation": true,
+    "source_anchors_relative_to_append": [
+      {
+        "line": 7,
+        "text": "let worker_calls = Arc::clone(&calls);"
+      },
+      {
+        "line": 8,
+        "text": "let clock_samples = Arc::clone(&samples);"
+      },
+      {
+        "line": 14,
+        "text": "clock_samples.fetch_add(1, Ordering::SeqCst);"
+      },
+      {
+        "line": 15,
+        "text": "if worker_calls.load(Ordering::SeqCst) == 0 { 11 } else { u64::MAX }"
+      },
+      {
+        "line": 19,
+        "text": "port.execute_feature(&request),"
+      },
+      {
+        "line": 20,
+        "text": "Err(NeuronModelError::Indeterminate)"
+      },
+      {
+        "line": 22,
+        "text": "assert_eq!(calls.load(Ordering::SeqCst), 1);"
+      },
+      {
+        "line": 23,
+        "text": "assert_eq!(samples.load(Ordering::SeqCst), 4);"
+      },
+      {
+        "line": 24,
+        "text": "assert!(checked(port.owner.generation_has_unresolved()));"
+      },
+      {
+        "line": 26,
+        "text": "assert_eq!(record.and_then(|value| value.dispatched_at_micros), Some(11));"
+      },
+      {
+        "line": 27,
+        "text": "assert_eq!(checked(port.read_feature(&request)), None);"
+      },
+      {
+        "line": 28,
+        "text": "let pending_bytes = checked(fs::read(fixture.path()));"
+      },
+      {
+        "line": 30,
+        "text": "port.execute_feature(&request),"
+      },
+      {
+        "line": 31,
+        "text": "Err(NeuronModelError::Indeterminate)"
+      },
+      {
+        "line": 33,
+        "text": "assert_eq!(calls.load(Ordering::SeqCst), 1);"
+      },
+      {
+        "line": 34,
+        "text": "assert_eq!(samples.load(Ordering::SeqCst), 4);"
+      },
+      {
+        "line": 35,
+        "text": "assert_eq!(checked(fs::read(fixture.path())), pending_bytes);"
+      },
+      {
+        "line": 36,
+        "text": "drop(port);"
+      },
+      {
+        "line": 38,
+        "text": "let mut reopened = fixture.port("
+      },
+      {
+        "line": 41,
+        "text": "Arc::new(|| panic!(\"unresolved completion sampled a replacement clock\"))"
+      },
+      {
+        "line": 43,
+        "text": "assert!(checked(reopened.owner.generation_has_unresolved()));"
+      },
+      {
+        "line": 44,
+        "text": "assert_eq!(checked(reopened.read_feature(&request)), None);"
+      },
+      {
+        "line": 46,
+        "text": "reopened.execute_feature(&request),"
+      },
+      {
+        "line": 47,
+        "text": "Err(NeuronModelError::Indeterminate)"
+      },
+      {
+        "line": 49,
+        "text": "assert_eq!(calls.load(Ordering::SeqCst), 1);"
+      },
+      {
+        "line": 50,
+        "text": "assert_eq!(checked(fs::read(fixture.path())), pending_bytes);"
+      }
+    ]
+  },
+  "state": "STATIC_ONLY"
+}

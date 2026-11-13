@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "//! Actual bounded G2 owner entry. The kernel, original Root and original\n//! Supervisor assign roles and generations; argv and JSON never assign them.\n\n#[cfg(target_os = \"linux\")]\n#[path = \"../native_g2_entry/mod.rs\"]\nmod native;\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    #[cfg(target_os = \"linux\")]\n    return native::run();\n    #[cfg(not(target_os = \"linux\"))]\n    Err(\"the original G2 kernel entry requires Linux ABI\".into())\n}\n"
+  },
+  "isError": false
+}

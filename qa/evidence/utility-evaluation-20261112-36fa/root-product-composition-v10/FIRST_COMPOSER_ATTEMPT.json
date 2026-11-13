@@ -1,0 +1,14 @@
+{
+  "format": "hepta-root-v10-composer-first-attempt",
+  "observed": {
+    "chunk_id": "5f006b",
+    "wall_time_seconds": 0.091907224,
+    "exit_code": 1,
+    "original_token_count": 95,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-product-composition-v10/compose.py\", line 32, in <module>\n    splices = [{'path':v['path'],'before_utf8':v['anchor'],'after_utf8':v['anchor']+v['insert_after']} for v in spec['changes']]\n                                                                                    ~^^^^^^^^^^^^^^^^\nKeyError: 'insert_after'\n"
+  },
+  "reason": "Composer assumed every insertion was after its anchor; the immutable third-layer spec also includes one insert_before.",
+  "candidate_source_unchanged": true,
+  "repository_code_executed": false,
+  "H_calls": 0
+}

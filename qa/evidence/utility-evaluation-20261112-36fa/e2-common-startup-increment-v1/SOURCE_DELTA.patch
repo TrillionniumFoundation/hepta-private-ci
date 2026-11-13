@@ -1,0 +1,25 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs
+@@ -37,6 +37,22 @@
+         task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16],
+     ) -> Result<u64, AgentdError> {
+         let startup_end = (Instant::now() + Duration::from_secs(30)).min(self.end);
++        PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task_before(
++            self, production_handoff, task_handoff, original_root_pidfd, consumer_state_root,
++            task_path, loan_path, session_nonce, startup_end,
++        )
++    }
++
++    /// The one ordinary assembly supplies its already-running startup window.
++    /// Reuse the original handoff body and same runtime; neither a delayed
++    /// service thread nor this call may create another thirty-second window.
++    pub(crate) fn handoff_and_serve_original_root_circuit_task_before(
++        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,
++        original_root_pidfd: OwnedFd, consumer_state_root: &Path,
++        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16], startup_end: Instant,
++    ) -> Result<u64, AgentdError> {
++        let startup_end = startup_end.min(Instant::now() + Duration::from_secs(30)).min(self.end);
++        require_before(startup_end)?;
+         self.read_original_root_task_generation()?;
+         let identity = self.session.registration.registered_identity.identity()?;
+         if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0

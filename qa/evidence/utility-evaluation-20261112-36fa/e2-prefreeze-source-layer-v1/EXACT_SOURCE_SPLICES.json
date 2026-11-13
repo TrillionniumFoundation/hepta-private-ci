@@ -1,0 +1,105 @@
+{
+  "format": "hepta-e2-exact-source-splices-v1",
+  "splices": [
+    {
+      "after_utf8": "pub(crate) mod material;\n\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_source_prefreeze.rs\"]\npub(crate) mod prefreeze;\n",
+      "before_utf8": "pub(crate) mod material;\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    },
+    {
+      "after_utf8": "    RootMaterial(std::sync::Arc<material::Client>),\n    #[cfg(target_os = \"linux\")]\n    RootPrefreeze(std::sync::Arc<prefreeze::Client>),\n",
+      "before_utf8": "    RootMaterial(std::sync::Arc<material::Client>),\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    },
+    {
+      "after_utf8": "                OriginalReadback::RootMaterial(original) => OriginalReadback::RootMaterial(std::sync::Arc::clone(original)),\n                #[cfg(target_os = \"linux\")]\n                OriginalReadback::RootPrefreeze(original) => OriginalReadback::RootPrefreeze(std::sync::Arc::clone(original)),\n",
+      "before_utf8": "                OriginalReadback::RootMaterial(original) => OriginalReadback::RootMaterial(std::sync::Arc::clone(original)),\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    },
+    {
+      "after_utf8": "            OriginalReadback::RootMaterial(_) => return Err(Error::InvalidBinding),\n            #[cfg(target_os = \"linux\")]\n            OriginalReadback::RootPrefreeze(_) => return Err(Error::InvalidBinding),\n",
+      "before_utf8": "            OriginalReadback::RootMaterial(_) => return Err(Error::InvalidBinding),\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    },
+    {
+      "after_utf8": "                Ok(observed)\n            }\n            #[cfg(target_os = \"linux\")]\n            OriginalReadback::RootPrefreeze(original) => {\n                let observed = prefreeze::Client::read_prefreeze(original, identity, &record.snapshot.run_id)?;\n                if observed.original_record() != record { return Err(Error::InvalidBinding); }\n                Ok(observed)\n            }\n        }\n    }\n\n    pub fn read_run_publication(",
+      "before_utf8": "                Ok(observed)\n            }\n        }\n    }\n\n    pub fn read_run_publication(",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    },
+    {
+      "after_utf8": "            OriginalReadback::RootMaterial(original) => original.read(identity, run_id),\n            #[cfg(target_os = \"linux\")]\n            OriginalReadback::RootPrefreeze(original) => prefreeze::Client::read_prefreeze(original, identity, run_id),\n",
+      "before_utf8": "            OriginalReadback::RootMaterial(original) => original.read(identity, run_id),\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    },
+    {
+      "after_utf8": "pub(super) fn decode_current_root_payload(payload:",
+      "before_utf8": "fn decode_current_root_payload(payload:",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs"
+    },
+    {
+      "after_utf8": "pub(crate) use readback::material as material_source;\n#[cfg(target_os = \"linux\")]\npub(crate) use readback::prefreeze as prefreeze_source;\n",
+      "before_utf8": "pub(crate) use readback::material as material_source;\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs"
+    },
+    {
+      "after_utf8": "pub(crate) use source::material_source as original_material_source;\n#[cfg(target_os = \"linux\")]\npub(crate) use source::prefreeze_source as original_prefreeze_source;\n#[cfg(target_os = \"linux\")]\npub use source::prefreeze_source::{OriginalCircuitPrefreezeSourceRequestV1, OriginalCircuitPrefreezeSourceV1};\n",
+      "before_utf8": "pub(crate) use source::material_source as original_material_source;\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs"
+    },
+    {
+      "after_utf8": "mod original_material_source;\n\n#[path = \"neuron_generation_initial_prefreeze_source.rs\"]\nmod original_prefreeze_source;\n",
+      "before_utf8": "mod original_material_source;\n",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_utf8": "pub use registration::OriginalRootMaterialSourceRegistrationV1;\n\n#[path = \"authority_host_prefreeze_source.rs\"]\nmod prefreeze;\npub use prefreeze::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use registration::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+    },
+    {
+      "after_utf8": "pub use material_source::OriginalRootMaterialSourceRegistrationV1;\npub use material_source::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use material_source::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+    },
+    {
+      "after_utf8": "pub use root_task::OriginalRootMaterialSourceRegistrationV1;\npub use root_task::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use root_task::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+    },
+    {
+      "after_utf8": "pub use task::OriginalRootMaterialSourceRegistrationV1;\npub use task::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use task::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+    },
+    {
+      "after_utf8": "pub use generation::OriginalRootMaterialSourceRegistrationV1;\npub use generation::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use generation::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs"
+    },
+    {
+      "after_utf8": "pub use session::OriginalRootMaterialSourceRegistrationV1;\npub use session::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use session::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "after_utf8": "pub use authority_host_runtime::OriginalRootMaterialSourceRegistrationV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::OriginalRootPrefreezeSourceRegistrationV1;\n",
+      "before_utf8": "pub use authority_host_runtime::OriginalRootMaterialSourceRegistrationV1;\n",
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after_utf8": "pub use circuit_task::CircuitTaskSourceReadbackV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_task::{OriginalCircuitPrefreezeSourceRequestV1, OriginalCircuitPrefreezeSourceV1};\n",
+      "before_utf8": "pub use circuit_task::CircuitTaskSourceReadbackV1;\n",
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after_utf8": "//! admission bits and all four command connection permits remain unchanged.\n\n#[path = \"cell_q24_material_prefreeze_source.rs\"]\nmod prefreeze;\n",
+      "before_utf8": "//! admission bits and all four command connection permits remain unchanged.\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs"
+    },
+    {
+      "after_utf8": "/// Only the original source owner constructs the local view. The sealed\n/// Material branch consumes the real pair; the pre-freeze branch requires the\n/// fixed supervisor disclosure and the actual Generator/ledger enrollment.\n",
+      "before_utf8": "/// Only the original source owner constructs the local view. The sealed\n/// Material branch comes only from consuming the real original Material pair.\n",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+    }
+  ]
+}

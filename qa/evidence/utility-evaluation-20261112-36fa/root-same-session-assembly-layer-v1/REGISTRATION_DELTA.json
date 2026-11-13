@@ -1,0 +1,1187 @@
+{
+  "concrete_guard_obligations": [
+    {
+      "definition": {
+        "bytes": 206,
+        "git_blob": "0cfea33b09b2b4546f200c806d1e9572e1348da4",
+        "sha256": "9de27830284b63f81c2dd468ac813a1b2b96204822ffbb265439d88eb685d590"
+      },
+      "disposition_reason": "Consumes a single previously original-claimed descriptor; no arbitrary descriptor duplication or reopening.",
+      "method": "take_original_descriptor",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "Descriptors",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn take_original_descriptor(&mut self, name: &'static str) -> Result<OwnedFd, Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 126,
+      "symbol": "Descriptors::take_original_descriptor",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 151,
+        "git_blob": "e9f28267ba4c69f8a2336ca64b363f72a60ee978",
+        "sha256": "a99f38445c2afa5cd8181cc925e2f491ae43a7fc080542ebbfbb253f47c2c894"
+      },
+      "disposition_reason": "Typed File conversion of a once-claimed owned FD; the fixed owner-specific loader later verifies its actual attributes.",
+      "method": "file",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "Descriptors",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn file(&mut self, name: &'static str) -> Result<File, Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 129,
+      "symbol": "Descriptors::file",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 103,
+        "git_blob": "eabfb41e1211ac8c9a781200a1b86687685ef092",
+        "sha256": "2f214c6f67e47134265fbe88fdc6de47ec377cb8fa180cb3f7feb199f0c9106b"
+      },
+      "disposition_reason": "Consumes only one of the fixed optional model descriptor slots; absence is passed to the unchanged model factory.",
+      "method": "optional_file",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "Descriptors",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn optional_file(&mut self, name: &'static str) -> Option<File>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 132,
+      "symbol": "Descriptors::optional_file",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 1319,
+        "git_blob": "8bd4f4d1d4291947369ef33808b052d5f0eaffda",
+        "sha256": "5541f11a4915b9445afe5dab064210deee078262c061e84261f5269a1946d8ef"
+      },
+      "disposition_reason": "Cross-owner inode/device alias rejection before any owner factory or store write.",
+      "method": "require_distinct_writer_files",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn require_distinct_writer_files(generation: &RootHostInitialGenerationFilesV1,\n    task: &RootHostQ24TaskFilesV1, baseline: &CellQ24ModelFilesV1,\n) -> Result<(), Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 135,
+      "symbol": "require_distinct_writer_files",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 818,
+        "git_blob": "80218cd284d609cbe93a1b4bd90b5ada8c3df863",
+        "sha256": "ffdbbf4baebe1047a5e2959dd8fde145267068e83af2638fb28ce91af65e03f5"
+      },
+      "disposition_reason": "Readability wake only under the one original end; no owner or completion result is inferred before the complete original wire receive.",
+      "method": "wait_original_stage_message",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "async fn wait_original_stage_message(socket: UnixDatagram, end: Instant) -> Result<UnixDatagram, AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 192,
+      "symbol": "wait_original_stage_message",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 582,
+        "git_blob": "30530fa670c383ab3313b5460146d78a66ab3f24",
+        "sha256": "68c2b09afb4dbc880e417ed4660a1fff402014f7bd134f98b0df9e2ce91a6f41"
+      },
+      "disposition_reason": "Original Session plus same-custody Published/current and same-operation checks; no alternate Current.",
+      "method": "require_original_task_followups",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(crate) fn require_original_task_followups(&self) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 46,
+      "symbol": "OriginalLoadedTaskFollowups::require_original_task_followups",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 185,
+        "git_blob": "c71ba5eb9bcd5aeb09325762201a3dce69f6400e",
+        "sha256": "fa61501725cbde3b4860d4ac0bc60e276d7bded37d6ea83b6d0d1b14c341bea7"
+      },
+      "disposition_reason": "Only clamps the supplied common startup to the existing same-task end and rejects expiry.",
+      "method": "require_startup_end",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(crate) fn require_startup_end(&self, requested: Instant) -> Result<Instant, AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 82,
+      "symbol": "OriginalLoadedTaskFollowups::require_startup_end",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 169,
+        "git_blob": "fbacaa273436aec6da2aaa5f37ea5cbe82e321af",
+        "sha256": "8e4b649727c846c8e34bb7e4c11b53d1edaa8e3e19446e3ce94d1ca6afc491f5"
+      },
+      "disposition_reason": "Re-verifies the retained original signed immutable distribution at the actual current time.",
+      "method": "require_original_prefreeze_trust",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "OriginalTaskPrefreezeState",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(crate) fn require_original_prefreeze_trust(&self) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 179,
+      "symbol": "OriginalTaskPrefreezeState::require_original_prefreeze_trust",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 1213,
+        "git_blob": "aeed74fb91f67433c1734734e0cb7cb2e090fc18",
+        "sha256": "ee0878202ebdb4f4ba6e98c6bc19b7e56749699320aeb7cee039c953ff494dfa"
+      },
+      "disposition_reason": "Requires full retained E/D signer, trust, owner and source-scope equality before late material registration.",
+      "method": "require_material",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "OriginalTaskPrefreezeState",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(super) fn require_material(&self, material: &OriginalCellQ24MaterialReceiptConfigV1)\n        -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 186,
+      "symbol": "OriginalTaskPrefreezeState::require_material",
+      "visibility": "pub(super)"
+    },
+    {
+      "definition": {
+        "bytes": 122,
+        "git_blob": "e81544e3a6f266c61ad1a272fb3e50d80801aaf2",
+        "sha256": "3ff69c0b9a49b8d04ca9bfe670d969a543dbf0c1cfbce5e66809ce557cb8ee02"
+      },
+      "disposition_reason": "Fallible real wall-clock sample; no synthesized or fallback time.",
+      "method": "now",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "fn now() -> Result<u64, AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 206,
+      "symbol": "now",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 763,
+        "git_blob": "1e3dcaa52b3afd25818f273a53ebeff83683831d",
+        "sha256": "381735ad9bf79157ec900b53ba5be4d45bf25b811699f667cb9408c70d24938b"
+      },
+      "disposition_reason": "Re-verifies the same original signed distribution and exact pins; no trust rotation or replacement.",
+      "method": "require_original_distribution_window",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "concrete_validation_guard_not_a_generic_authority_factory",
+      "signature": "pub(in super::super) fn require_original_distribution_window(&self, at: u64) -> io::Result<()>",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 115,
+      "symbol": "OriginalSourceTrust::require_original_distribution_window",
+      "visibility": "pub(in super::super)"
+    }
+  ],
+  "cross_layer_caller_additions": [
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "dependency": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+      "origin": "the one original Session::open result",
+      "receiver_type": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::prepare_original_initial_generation_from_files"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "dependency": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+      "origin": "same Session, explicit Recover enum; no Fresh fallback",
+      "receiver_type": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::recover_original_initial_generation_from_files"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "dependency": "77b05d5ec3f8d3b10a4024b63103e97e8f3fe996",
+      "origin": "same published generation loaded from actual files",
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::prepare_original_root_task_from_files"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "dependency": "77b05d5ec3f8d3b10a4024b63103e97e8f3fe996",
+      "origin": "same recovered generation and original files",
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::recover_original_root_task_from_files"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "dependency": "77b05d5ec3f8d3b10a4024b63103e97e8f3fe996",
+      "origin": "self is the sealed non-Clone returned Loaded task",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::read_loaded_original_root_task_generation"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "dependency": "07cb756ca663e7fd802e008e258cb3828d73e636",
+      "origin": "same private Task moved only into the actual scoped remote service thread",
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task_before"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "dependency": "3181789965054fd440568f0ac4d4e242194d34f3",
+      "origin": "one original Task export; original registration and same fixed startup_end",
+      "receiver_type": "PreparedRootMaterialSourceHostV1",
+      "symbol": "PreparedRootMaterialSourceHostV1::serve_original_prefreeze"
+    },
+    {
+      "caller": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "dependency": "c66c54e9989023b79f62b10575350293d21301a0",
+      "origin": "Root0600 exact disclosure, original activated signed trust, full actual Generator evidence and real consumer pidfd/stream",
+      "receiver_type": "OriginalRootPrefreezeSourceRegistrationV1",
+      "symbol": "OriginalRootPrefreezeSourceRegistrationV1::from_original_supervisor"
+    }
+  ],
+  "existing_guard_rebindings": [
+    {
+      "after": {
+        "bytes": 8960,
+        "git_blob": "f971ee38e3384340e50f869b616e53569bb506c5",
+        "sha256": "d423707209a86087faa2606fe3bd86b9ca06dd8c8981869848566efd150a3ce8"
+      },
+      "before": {
+        "bytes": 8638,
+        "git_blob": "a6f8ef7d478477d9072747ddb530cf1105e2c3e3",
+        "sha256": "b67e6343872301af145054827ba27cd01cc09a0d76e98f5b9a3bd20de78789ea"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+    },
+    {
+      "after": {
+        "bytes": 5931,
+        "git_blob": "122e69143ac8936615d3e36d01bc49bc0c5c807c",
+        "sha256": "4e0db5650eb3b824e49841e58ce1f93f447376bda19570149a8e47a6943e5c3b"
+      },
+      "before": {
+        "bytes": 5687,
+        "git_blob": "e3a9b5cff03c79fd53be781d34b109a719824a4f",
+        "sha256": "7145bfebd876cf03ea349014e3e52c616f32bf42f24827114cfb3bbbe3896136"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+    },
+    {
+      "after": {
+        "bytes": 6086,
+        "git_blob": "60bbe15bf97b7ded473dadedc0ba2e7c2b059951",
+        "sha256": "23726c020f6aa0e0d18d231953e04fe0539dd7306d000659f656fc2ece75f2ab"
+      },
+      "before": {
+        "bytes": 5933,
+        "git_blob": "382545203959f626ecb6db6f1ace8f029b6157d2",
+        "sha256": "30b7447392ba93537ca951a547065dc25d1355d733a9a9fb8b4b08ca1412c2fd"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs"
+    },
+    {
+      "after": {
+        "bytes": 21288,
+        "git_blob": "c13f84545e1acabc735ba0a9bc96c9a115d76e7d",
+        "sha256": "9fe6f1b53ea701dda2da6335aafd6661952a6f184762bd422c9b460c46140b5b"
+      },
+      "before": {
+        "bytes": 20985,
+        "git_blob": "30a5658bfc4a134e04563f3ea39ee63212d57a00",
+        "sha256": "83438cb0bc35b2528e9083b81995e1fcd9751f9c72b9d1b2f1bf5ec0c1f7b1ad"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "after": {
+        "bytes": 18193,
+        "git_blob": "40ebaacd58ff408473ff5f2aff03cb290aa96ba7",
+        "sha256": "2fdcc47caff69db9daaf46bd9bb0fb5d07463a262bc2f6eb97ce79cfeb531229"
+      },
+      "before": {
+        "bytes": 18136,
+        "git_blob": "7da843e6c93ad5f38a48f2d9b4e178268efa3a15",
+        "sha256": "0c2dd9441617be5ba2bef90bb6b431436f66d48d4d0716a7c61e3819afd8e4c0"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs"
+    },
+    {
+      "after": {
+        "bytes": 8804,
+        "git_blob": "a8577c4125de92dce3cc181d1750053f6d7175bc",
+        "sha256": "d33f86aa7c6857bb1fc4489a172a70d9305da41b7e051ab91b04e8ad028eac12"
+      },
+      "before": {
+        "bytes": 8753,
+        "git_blob": "0a37de1fd03bc09127c961372b6ba8ed5b506489",
+        "sha256": "0861dee32e89445384628808371c6aae79123184c75af8658ee2852dbc2bd3e4"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+    },
+    {
+      "after": {
+        "bytes": 6427,
+        "git_blob": "7ec80ca8f9256b8281c0f9f2a04c4c7dccfc173b",
+        "sha256": "2397b9974d07867708acc87d947ffadd517c655a604d4a181de1fbcd489e30c6"
+      },
+      "before": {
+        "bytes": 6351,
+        "git_blob": "8af712133c104822e6b085d47806ef59e0606e82",
+        "sha256": "53d35b0fe30a5ca056972d772c8129538f925913c1149484401f4e07ead2d532"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+    },
+    {
+      "after": {
+        "bytes": 6120,
+        "git_blob": "f7f9a73502c7a8d07e32c84bffbad4e2b2197f94",
+        "sha256": "f8bd4b2497c0c37fb0bc0bce7633bdd7e97b591efba7e289b881efb4222c73b9"
+      },
+      "before": {
+        "bytes": 6056,
+        "git_blob": "16111935da5e430b16bc87bda0d7f6087cd9b3ed",
+        "sha256": "cf23e7780aef8ee086b8d5e5fed09a76b49257ad62462c69bde2350c61ff11d5"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+    },
+    {
+      "after": {
+        "bytes": 5309,
+        "git_blob": "52eb5cec39464ec25dd1b77285cc5847a8031221",
+        "sha256": "8c915b4f92f17e8dbf22e5b5da99bbe571121a4fd22b655ed136adbd18ded940"
+      },
+      "before": {
+        "bytes": 5173,
+        "git_blob": "148c5fcb240ed8a8651395fb2c90fd2fbca93163",
+        "sha256": "9943f4c0848e6315a8fa11c646f1e0638c5820f27a87ee1302a6d130e7539c15"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs"
+    },
+    {
+      "after": {
+        "bytes": 14949,
+        "git_blob": "e38871c5e9e79361c3e6840796abb406f2b773a1",
+        "sha256": "a32e90107833067a1c8e4e15cf09ea340a75e36033f55328e2dfc6ee00f78c8e"
+      },
+      "before": {
+        "bytes": 14374,
+        "git_blob": "b18250b0b559b3540479d4a19717fcc34c2dab37",
+        "sha256": "e8be9fb1474294be2a41f9260796b8de1474fc5956d7044ee65cd9626fd882f6"
+      },
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "after": {
+        "bytes": 74753,
+        "git_blob": "23b23e21ca2743f2505d71683d4e44f8af77ab25",
+        "sha256": "e46928c3bced5a7d265dd2e90beafb1d2014489e33315dbbb2694a8820315e64"
+      },
+      "before": {
+        "bytes": 74656,
+        "git_blob": "77e155ecc42ff309404be9e080d2ff7460c492b5",
+        "sha256": "504ea3eca7b7c185485cdd488ddcff6f3d8167757ef436f5ce995b16b70c4be1"
+      },
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after": {
+        "bytes": 14920,
+        "git_blob": "8be2547e1333eedcaa63396bb506ace52bfa62ca",
+        "sha256": "28444d5c55077222a8d1ffec06e77e4b505611968a2e3e09db097e5585d92f12"
+      },
+      "before": {
+        "bytes": 14737,
+        "git_blob": "406590d3d6537f2538a4d19615df6193eb415886",
+        "sha256": "9945cf398eae2373f6c6fd3a0fde1586b3d9dee097c4b663cb317368ff5e8dc6"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after": {
+        "bytes": 10254,
+        "git_blob": "416fe1e814a63b372dc243c61699e62f7bcc468f",
+        "sha256": "667c5b46aecac913df56776427cefed89134d813d091c73cf9ade723f1b4752b"
+      },
+      "before": {
+        "bytes": 10136,
+        "git_blob": "ee5c5e3fcc659e886f1c6107347264c078bec0a8",
+        "sha256": "c3a14fec0f28b073f59b37b797e6d71325be7402b4aba6597f8c4835dd990a15"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+    }
+  ],
+  "new_full_source_guards": [
+    {
+      "bytes": 8950,
+      "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+    },
+    {
+      "bytes": 12361,
+      "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+    },
+    {
+      "bytes": 4170,
+      "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+    },
+    {
+      "bytes": 10325,
+      "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+    },
+    {
+      "bytes": 6459,
+      "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+    },
+    {
+      "bytes": 8929,
+      "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+    },
+    {
+      "bytes": 2360,
+      "git_blob": "1aba7f79209c0eb74dab64597e88aa28a3a7cf48",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_transport.rs",
+      "sha256": "c75d918d933471ac62f937758905e4b5292b8b1e9f4fb6fae6c889ea1dcccd50"
+    }
+  ],
+  "new_private_concrete_boundary_candidates": [
+    {
+      "definition": {
+        "bytes": 5369,
+        "git_blob": "a1936f4b783fc31bd8e78d6d68dc2e9af66ff998",
+        "sha256": "ee604b5a1486d38a7a03410c3cb705dcb09b74e923c39d59d60a98cd0a9516ee"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "run",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(super) fn run(mut options: BTreeMap<OsString, OsString>, command: Command)\n    -> Result<(), Box<dyn std::error::Error>>",
+      "source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "start_line": 34,
+      "symbol": "run",
+      "visibility": "pub(super)"
+    },
+    {
+      "definition": {
+        "bytes": 8160,
+        "git_blob": "844fe2f071316d5f5f29281e5f6a5ef0598212c8",
+        "sha256": "cf7210483ee77627e56313fa9ea8b5b34e052f6f4cc0a461839d928990813fef"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "run_loaded_original_services",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "fn run_loaded_original_services(\n        mut self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n        purpose: OriginalTaskResidentPurpose,\n    ) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 68,
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::run_loaded_original_services",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 785,
+        "git_blob": "1608c58652d687ea19da7093fcb3d95ceab730ef",
+        "sha256": "9f48da8c3e6e0f4de1e10a5bb34b5a7e28a927f614eafb0192affcf047bc9d46"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "take_original_loader_followups",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "PreparedRootHostCircuitTaskV1<FileAnchorWitnessStore, FileAnchorWitnessStore>",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn take_original_loader_followups(&mut self) -> Result<(\n        PreparedRootMaterialSourceHostV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,\n        OriginalLoadedTaskFollowups,\n    ), AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 29,
+      "symbol": "PreparedRootHostCircuitTaskV1<FileAnchorWitnessStore, FileAnchorWitnessStore>::take_original_loader_followups",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 696,
+        "git_blob": "290c394a2b98e9d3ed2587be3c3d6e81f4a042af",
+        "sha256": "8f4670721682dd5863f3df498c9d83d36808fbc9eb94f88206ee7bfb49aea977"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_resident(\n        &self, paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,\n        prefreeze: &OriginalTaskPrefreezeState, purpose: OriginalTaskResidentPurpose, startup_end: Instant,\n    ) -> Result<OriginalTaskResidentPrepared, AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 56,
+      "symbol": "OriginalLoadedTaskFollowups::prepare_resident",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 678,
+        "git_blob": "fd21af21a65e65a3a6a51ef49cbf54ddefa26dda",
+        "sha256": "468c755004259a285fd04c5a908c636b21bd720c11c0cc0eabb2fb3c703e3019"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_prefreeze",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalLoadedTaskFollowups",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_prefreeze(\n        &self, disclosure_file: &Path, evidence_file: &Path,\n        stream: UnixStream, original_material_pidfd: OwnedFd, startup_end: Instant,\n    ) -> Result<(crate::OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError>",
+      "source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "start_line": 69,
+      "symbol": "OriginalLoadedTaskFollowups::prepare_prefreeze",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 3460,
+        "git_blob": "ce7a65cc2e4c3efadea7270d88c124543a9719eb",
+        "sha256": "bb277c952403f5372d6373d48e9e66857a637fe50e59109681ea32efa5b44af7"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_original_task_prefreeze",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_original_task_prefreeze(\n    config: &HostAuthorityServiceConfig, original: &HostAuthorityRegistration,\n    disclosure_file: &Path, trusted_evidence: &Path,\n    stream: UnixStream, original_consumer_pidfd: OwnedFd, startup_end: Instant,\n) -> Result<(OriginalRootPrefreezeSourceRegistrationV1, OriginalTaskPrefreezeState), AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 127,
+      "symbol": "prepare_original_task_prefreeze",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 3178,
+        "git_blob": "a64adb50cd68795ec2438af15e7f4d64de520198",
+        "sha256": "3d03283f035096487dcdf3c4ed4fac26c06d56695ceba281e9ddb4010c620cfa"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "read_original_signed_distribution",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(in super::super) fn read_original_signed_distribution(\n        evidence_path: &Path, root_path: &Path, distribution_path: &Path,\n        pin: &OriginalDistributionPin, at: u64,\n    ) -> io::Result<Self>",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 65,
+      "symbol": "OriginalSourceTrust::read_original_signed_distribution",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 5430,
+        "git_blob": "555c0c962c4f48ea378055ff1c935773a3a8413f",
+        "sha256": "3ba1b8a86ff00b8c00e69fc302659f349f78ae2787b5be6b3548b5168ad5af8b"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "prepare_original_task_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn prepare_original_task_resident(\n    service: &HostAuthorityService, config: &HostAuthorityServiceConfig,\n    original_registration: &HostAuthorityRegistration,\n    custody: &OriginalRootCircuitTaskCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,\n    paths: OriginalTaskResidentPaths, original: OriginalTaskResidentInputs,\n    prefreeze: &OriginalTaskPrefreezeState,\n    purpose: OriginalTaskResidentPurpose, startup_end: Instant, task_end: Instant,\n) -> Result<OriginalTaskResidentPrepared, AgentdError>",
+      "source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "start_line": 53,
+      "symbol": "prepare_original_task_resident",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 1381,
+        "git_blob": "676564e2e31f3e9d03f12bfaeec8acc26b1dad3a",
+        "sha256": "6ca3ff2436802fc70d66769b368a9e51a693fa5f3515813dce8cd6ab5d3dec18"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "enroll",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "OriginalTaskResidentPrepared",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) async fn enroll(self) -> Result<RootResidentCandidateEnrollmentServiceV3, AgentdError>",
+      "source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "start_line": 135,
+      "symbol": "OriginalTaskResidentPrepared::enroll",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 1255,
+        "git_blob": "f8c43e09187b8fbf8517c6ade2b355f49ed0317b",
+        "sha256": "582c7476271242a39b8d2c43d86af80b8f82c094fe777a9c663df34f76a78913"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "receive_original_candidate_stage_transport",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_transport.rs",
+      "receiver_type": null,
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn receive_original_candidate_stage_transport(\n    socket: UnixDatagram, timeout: Duration,\n) -> Result<OriginalRootCandidateStageTransportV1, AgentdError>",
+      "source": {
+        "bytes": 2360,
+        "git_blob": "1aba7f79209c0eb74dab64597e88aa28a3a7cf48",
+        "sha256": "c75d918d933471ac62f937758905e4b5292b8b1e9f4fb6fae6c889ea1dcccd50"
+      },
+      "start_line": 13,
+      "symbol": "receive_original_candidate_stage_transport",
+      "visibility": "pub(crate)"
+    },
+    {
+      "definition": {
+        "bytes": 673,
+        "git_blob": "90484338a3dc3e46a87e675f02c7940e7844a8e2",
+        "sha256": "82d399262e857df87341a60412f42fb1a8a790aebd57f68bf46c4c1c2dc7c831"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "bind_original_profile",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_transport.rs",
+      "receiver_type": "OriginalRootCandidateStageTransportV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub(crate) fn bind_original_profile(self, profile: &RootResidentLearningProfileV3)\n        -> Result<RootCandidateStageHandoffV1, AgentdError>",
+      "source": {
+        "bytes": 2360,
+        "git_blob": "1aba7f79209c0eb74dab64597e88aa28a3a7cf48",
+        "sha256": "c75d918d933471ac62f937758905e4b5292b8b1e9f4fb6fae6c889ea1dcccd50"
+      },
+      "start_line": 37,
+      "symbol": "OriginalRootCandidateStageTransportV1::bind_original_profile",
+      "visibility": "pub(crate)"
+    }
+  ],
+  "new_public_boundaries": [
+    {
+      "definition": {
+        "bytes": 266,
+        "git_blob": "2184bddefceea1698935cd59d8876b1b18dad280",
+        "sha256": "aec154f0e537eae330b9ff77e29e17b5ea904f15c5f5fb35d972f0b4280dfd75"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "serve_loaded_original_task_and_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub fn serve_loaded_original_task_and_resident(\n        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n    ) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 52,
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::serve_loaded_original_task_and_resident",
+      "visibility": "pub"
+    },
+    {
+      "definition": {
+        "bytes": 365,
+        "git_blob": "a661510ab0ef158bd35c0ff7aabd50c77f203473",
+        "sha256": "b587ed82f6383293780f1d6cdcd50f404f9f8c64f9763434a914c9be57c9f220"
+      },
+      "disposition_reason": "The exact declared receiver/signature and fixed implementation are retained for the original canonical boundary rules; no wildcard private-symbol registration is proposed.",
+      "method": "recover_loaded_original_task_and_resident",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "PreparedRootHostLoadedQ24TaskV1",
+      "registration_disposition": "concrete_privileged_entry_or_owner_transition_candidate",
+      "signature": "pub fn recover_loaded_original_task_and_resident(\n        self, service_file: &Path, files: RootHostOriginalTaskLearningFilesV1,\n        original_resident_readback: &Path,\n    ) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 60,
+      "symbol": "PreparedRootHostLoadedQ24TaskV1::recover_loaded_original_task_and_resident",
+      "visibility": "pub"
+    }
+  ],
+  "new_tests": 0,
+  "non_boundary_helpers_and_reasons": [
+    {
+      "definition": {
+        "bytes": 360,
+        "git_blob": "37ce1d6b4d1354be8a65c427b8ec3f5bdbab4f5e",
+        "sha256": "daf16330b6f2cd2d209959527b175ae5bf3f1c5b52290e8cf15350c192002298"
+      },
+      "disposition_reason": "Combines two already obtained Results; no authority, owner, I/O or success fallback is introduced.",
+      "method": "merge_results",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": null,
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn merge_results(first: Result<(), AgentdError>, second: Result<(), AgentdError>) -> Result<(), AgentdError>",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 207,
+      "symbol": "merge_results",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 138,
+        "git_blob": "7f6ef5d308d8685770461947fd08365c566c0856",
+        "sha256": "835e450a2645cc67426413d069f5775ebafc764f0dba96251ef7f3f482c55f08"
+      },
+      "disposition_reason": "Maps an existing Display error to the original Invalid error; no owner or grant is constructed.",
+      "method": "protocol",
+      "path": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": null,
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn protocol(error: impl std::fmt::Display) -> AgentdError",
+      "source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "start_line": 215,
+      "symbol": "protocol",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 1191,
+        "git_blob": "fc8ed65b3075c738ae6d05ceee8d216a6cc04c36",
+        "sha256": "dae5cbbc69f9454fbda595729a15304195121903c254652e6a568c5fce79018b"
+      },
+      "disposition_reason": "Decodes a complete public data record. SourceInput and signed evidence still require the original downstream full verifier; neither conversion constructs an opaque publication or execution receipt.",
+      "method": "original",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "SourceInput",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn original(self) -> Result<CircuitTaskSourceInputV1, AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 66,
+      "symbol": "SourceInput::original",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 1083,
+        "git_blob": "3efac8c05b57cb202292e1f9dabe7ec0a6b64295",
+        "sha256": "26e127002e792bb5639b763fbf4afeba8560c83ca98907a848496f5593d9a5f7"
+      },
+      "disposition_reason": "Decodes a complete public data record. SourceInput and signed evidence still require the original downstream full verifier; neither conversion constructs an opaque publication or execution receipt.",
+      "method": "original",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "GeneratorEvidence",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn original(self) -> Result<SignedLearningEvidenceV1, AgentdError>",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 99,
+      "symbol": "GeneratorEvidence::original",
+      "visibility": "private"
+    },
+    {
+      "definition": {
+        "bytes": 83,
+        "git_blob": "afa0f8978dc182cad731bfe9bcd084423747c0fd",
+        "sha256": "b719bda8736867edf8dae0321a34e8fc60ddb706ea3081061fe35453d5c97ca8"
+      },
+      "disposition_reason": "Private immutable borrow of the already authenticated retained full trust metadata; no owner, signing key, permit or clock is returned.",
+      "method": "evidence",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_inputs.rs",
+      "receiver_type": "OriginalTaskPrefreezeState",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "pub(super) fn evidence(&self) -> &trust::OriginalHostTrust",
+      "source": {
+        "bytes": 10325,
+        "git_blob": "59a939257db421b08d7eb55e652850ab60e8ac95",
+        "sha256": "6a3acef3588d179df4c9a92f3fe278ea45239e225466c801ecaf2c79df9377cc"
+      },
+      "start_line": 184,
+      "symbol": "OriginalTaskPrefreezeState::evidence",
+      "visibility": "pub(super)"
+    },
+    {
+      "definition": {
+        "bytes": 117,
+        "git_blob": "ac11b618c389fc3c3ebbe00008359265e46b14df",
+        "sha256": "4449ee1b2d914b8e88f611b94d71b0fc12536286fd86977625ab34f10857005f"
+      },
+      "disposition_reason": "Private clone of the already original-verified immutable ActivatedLearningTrust; this does not instantiate or rotate a LedgerWriter or disclose an owner.",
+      "method": "original_activation",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "pub(in super::super) fn original_activation(&self) -> ActivatedLearningTrustV1",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 128,
+      "symbol": "OriginalSourceTrust::original_activation",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 555,
+        "git_blob": "881dd2267c1ae0562061c32706461ec27851e3af",
+        "sha256": "41afa0af1171a6850eebff8d52fb61a46557af3b85ab4301bcd0815e6195dabf"
+      },
+      "disposition_reason": "Private role-specific lookup from the original activated complete trust, with exact domain/role binding; the public signer metadata is not a disclosure grant.",
+      "method": "original_signer",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalSourceTrust",
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "pub(in super::super) fn original_signer(\n        &self, actor: &StableId, role: LearningEvidenceRoleV1, at: u64,\n    ) -> io::Result<TrustedLearningSignerV1>",
+      "source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "start_line": 132,
+      "symbol": "OriginalSourceTrust::original_signer",
+      "visibility": "pub(in super::super)"
+    },
+    {
+      "definition": {
+        "bytes": 148,
+        "git_blob": "ee8c10f29f672a76b1eae2c04a87d1fa4c4b5caa",
+        "sha256": "b32b2d8e7ae37bd01eaf27ddbf685e1bb72eec83537545dd4ae1aa933a8fabf3"
+      },
+      "disposition_reason": "Maps an existing Display error to the original Invalid error; no owner or grant is constructed.",
+      "method": "protocol",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": null,
+      "registration_disposition": "non_boundary_data_helper_with_full_source_guard",
+      "signature": "fn protocol(error: impl std::fmt::Display) -> AgentdError",
+      "source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "start_line": 155,
+      "symbol": "protocol",
+      "visibility": "private"
+    }
+  ],
+  "old_boundary_caller_additions": [
+    {
+      "actual_receiver_origin": "generation is the exact return from session.prepare_original_initial_generation_from_files; same FileAnchorWitnessStore concrete target",
+      "boundary_id": "root_host_initial_prepared_root_host_initial_generation_v1_publish_original_generation",
+      "call_expression": "PreparedRootHostInitialGenerationV1::publish_original_generation(&mut generation)?;",
+      "caller_source": {
+        "bytes": 8950,
+        "git_blob": "ad5fda39d5093ff4e9fdd823e65dec9a099dab90",
+        "sha256": "9a55d4dfb87c4d08ba8a3043183d7d8ea4f24a47834fd6ef6f45760b0a5dde97"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "line": 110,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_loaded_task_cli.rs",
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::publish_original_generation"
+    },
+    {
+      "actual_receiver_origin": "resident is returned by the fixed same-session prepared.enroll; original cancellation token is retained and awaited",
+      "boundary_id": "e3_root_candidate_late_run",
+      "call_expression": "RootResidentCandidateEnrollmentServiceV3::run(resident, cancellation.clone())",
+      "caller_source": {
+        "bytes": 12361,
+        "git_blob": "b84d81f9cc34a9b70f01bad4c0e599496ca0cee9",
+        "sha256": "8db0f9f68ca341d596a6965243dc6203d8b0db0d763837047218d3cf81e991da"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "line": 152,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_loaded_task_service.rs",
+      "receiver_type": "RootResidentCandidateEnrollmentServiceV3",
+      "symbol": "RootResidentCandidateEnrollmentServiceV3::run"
+    },
+    {
+      "actual_receiver_origin": "self is the concrete Loaded task private PreparedRootHostCircuitTask<FileAnchorWitnessStore,FileAnchorWitnessStore>; original one-use bit is consumed",
+      "boundary_id": "e2_prepared_root_host_circuit_task_v1_prepare_original_material_source_host",
+      "call_expression": "PreparedRootHostCircuitTaskV1::prepare_original_material_source_host(self)?;",
+      "caller_source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "line": 35,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "PreparedRootHostCircuitTaskV1",
+      "symbol": "PreparedRootHostCircuitTaskV1::prepare_original_material_source_host"
+    },
+    {
+      "actual_receiver_origin": "self.custody is cloned only from that same Task private Arc; no constructor, getter or alternate Current",
+      "boundary_id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "call_expression": "OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;",
+      "caller_source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "line": 48,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+    },
+    {
+      "actual_receiver_origin": "self.operation is the same Task private Arc; observed is the actual same-custody original Published readback",
+      "boundary_id": "root_host_initial_original_host_initial_operation_require_observed",
+      "call_expression": "OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;",
+      "caller_source": {
+        "bytes": 4170,
+        "git_blob": "88498c4c52b8a946e7168aa14f67c58a016697a2",
+        "sha256": "cdbf5ab871f1e03c4038c70c1027f142c867d753846d4abae655690b7f75a186"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "line": 52,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_session_task_followups.rs",
+      "receiver_type": "OriginalHostInitialOperation",
+      "symbol": "OriginalHostInitialOperation::require_observed"
+    },
+    {
+      "actual_receiver_origin": "exact original Root0600 parser; the full returned signer list is additionally verified by original signed distribution activation",
+      "boundary_id": "e3_root_resident_trust_read",
+      "call_expression": "OriginalHostTrust::read(evidence_path)?;",
+      "caller_source": {
+        "bytes": 6459,
+        "git_blob": "b20e92b3026c504a1a2e3155cf8caa62e6110743",
+        "sha256": "a99362960cb63997f34b32c88f5ded7c94e56aa9b7ad0a2ef0b9746beea31127"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "line": 69,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_prefreeze_trust.rs",
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::read"
+    },
+    {
+      "actual_receiver_origin": "trust is retained from the original pre-freeze signed distribution, baseline is actual LoadedCellQ24Model::open_files",
+      "boundary_id": "e3_root_resident_deployment_read",
+      "call_expression": "inputs::OriginalDeployment::read(&paths.deployment, trust, baseline)?;",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+      "line": 68,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "OriginalDeployment",
+      "symbol": "OriginalDeployment::read"
+    },
+    {
+      "actual_receiver_origin": "custody is the same retained Task Arc; request comes from the exact late original initial snapshot",
+      "boundary_id": "e2_original_root_circuit_task_custody_v1_read_original_material_source",
+      "call_expression": "OriginalRootCircuitTaskCustodyV1::read_original_material_source(",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "line": 102,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_material_source"
+    },
+    {
+      "actual_receiver_origin": "service is borrowed from the same retained PreparedHostAuthoritySession; explicit readback grant and lease",
+      "boundary_id": "root_resident_service_recover",
+      "call_expression": "HostAuthorityService::recover_resident_learning_v3(service, profile, readback)?",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "line": 108,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "HostAuthorityService",
+      "symbol": "HostAuthorityService::recover_resident_learning_v3"
+    },
+    {
+      "actual_receiver_origin": "service is borrowed from the same retained PreparedHostAuthoritySession; no issuer reopening",
+      "boundary_id": "root_resident_service_register",
+      "call_expression": "HostAuthorityService::register_resident_learning_v3(service, profile)?",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "line": 109,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "HostAuthorityService",
+      "symbol": "HostAuthorityService::register_resident_learning_v3"
+    },
+    {
+      "actual_receiver_origin": "concrete original listener uses the same session config, protected parent and full profile binding",
+      "boundary_id": "e3_root_resident_listener_bind",
+      "call_expression": "let listener: ResidentListener = ResidentListener::bind_original(config, binding)?;",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "line": 112,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "ResidentListener",
+      "symbol": "ResidentListener::bind_original"
+    },
+    {
+      "actual_receiver_origin": "listener is explicitly annotated ResidentListener from the preceding original constructor",
+      "boundary_id": "e3_root_resident_listener_accept",
+      "call_expression": "listener.accept_original(connect_end).await?;",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "line": 142,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "ResidentListener",
+      "symbol": "ResidentListener::accept_original"
+    },
+    {
+      "actual_receiver_origin": "registration is returned by exactly the same original service branch, handoff only after old full-profile validator",
+      "boundary_id": "provider_root_resident_learning_registration_v3_into_candidate_service",
+      "call_expression": "RootResidentLearningRegistrationV3::into_candidate_service(registration, inputs, handoff,",
+      "caller_source": {
+        "bytes": 8929,
+        "git_blob": "68f26ee4097add008d3568ed840444f1c40dbb3a",
+        "sha256": "678c9d78bd5fd0a953665c10f52de56f0f97e4a91fac73152db5e2a56aa5f1c7"
+      },
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "line": 147,
+      "previous_row_unchanged_except_append": true,
+      "product_caller_addition": "codex-rs/hepta-agentd/src/authority_host_task_resident_enrollment.rs",
+      "receiver_type": "RootResidentLearningRegistrationV3",
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_service"
+    }
+  ],
+  "qa_or_workflow_changes": [],
+  "remaining": [
+    "Root final union must select original canonical privileged declarations and run its original complete gates when permitted.",
+    "No project collector, Rust parser, compile, QA or H was run."
+  ],
+  "seed": {
+    "boundaries": 757,
+    "bytes": 2635042,
+    "git_blob": "1b55bc0cc5be4d47b7273f3c451f2eeff02fc542",
+    "path": "/tmp/hepta-36fa-root-registration-union-seed-v1/CALLERS_E1_E3_E2_SEED.toml",
+    "protected_files": 531,
+    "sha256": "0b9de72801011ae07b52edc4a625e9ddaec35224f2ad5b9fb420d31065e3fc97"
+  },
+  "state": "MACHINE_READABLE_SOURCE_OBLIGATIONS_NOT_COLLECTOR_PASS",
+  "unchanged": [
+    "old caller symbols/receivers/definitions/markers except explicit append obligations",
+    "all old forbidden constraints",
+    "scanner and ignore rules",
+    "Root parents and exact JUnit selection",
+    "command/transport budgets"
+  ]
+}

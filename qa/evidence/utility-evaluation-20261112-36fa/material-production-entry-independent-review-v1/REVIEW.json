@@ -1,0 +1,54 @@
+{
+  "archive_status": "Computed local report identities; five new original source blobs were actually full-GET, no Git create by this reviewer.",
+  "conclusion": "The four explicit b608 Agentd executable entry points do not assemble the original Material pair, ActivatedTrust, LedgerWriter, or Material service. The examined frozen E2 extension adds a library bridge consuming a real pair; it does not supply a normal Material CLI/startup loader. A separate typed nonRoot loader is an actual integration gap, not an existing facility or a test-fixture substitute.",
+  "entry_scope": [
+    {
+      "entry": "codex-hepta-agentd",
+      "finding": "Original Agentd production startup receives Config/writer and selected process bootstrap descriptors, then runs Agentd. No Material pair/ledger/owner construction in this entry."
+    },
+    {
+      "entry": "hepta-agentd-browser",
+      "finding": "Standalone Browser/Servo caller consumes explicit FinalUse authority; unrelated to Material owner construction."
+    },
+    {
+      "entry": "hepta-authority-host",
+      "finding": "Root initialization/registration/session/native/text/notes/learning handoff CLI. Root ownership is not an independent nonRoot Material service; no pair/ledger factory call here."
+    },
+    {
+      "entry": "hepta-g2-native-owner",
+      "finding": "Actual native G2 entry, not assumed to be a test. Its owner path receives original Root writer handoff after UID 60001 drop and constructs AgentdG2NativeOperationHost, then serves Observe/Prepare/Dispatch/Retire/Current/Reconcile. It supplies no Q24 Material pair/ledger/activated-trust loader."
+    }
+  ],
+  "execution": {
+    "H_calls": 0,
+    "Rust_compiled": false,
+    "new_source_objects_or_refs": false,
+    "project_code_executed": false,
+    "source_or_registry_modified": false,
+    "tests_run": false
+  },
+  "format": "hepta-material-production-entry-independent-review-v1",
+  "loader_risks_and_reuse": [
+    "FileAnchorWitnessStore::open(File,JournalScope,Generation,max_records) initializes a zero-length file. A Recover startup must reject missing/empty state before this call; the method name does not establish a read-only or recover-only guarantee.",
+    "Material validate_config validates signer keys and freeze role/domain/window and commits full freeze signature bytes to journal binding. Cryptographic freeze reauthentication against current ledger is subsequently performed by verify_freeze and LedgerWriter::freeze_dataset on original owner operations. Do not overclaim the constructor alone verifies the full freeze payload.",
+    "Existing e78f and 77b05 loader file/DTO helpers are private and require Root UID 0, 0600, regular/nlink/access-role/distinct FD checks. They are not a public nonRoot Material loader. Reusing their bounded decoding design requires a separately explicit Material process/FD ownership contract and must not loosen those original Root checks.",
+    "No observed production CLI supplies the two Material signing keys, authorized file handles, independent ledger witness/trust-root history, or authentic Evaluator freeze. The new fourth layer must consume actual deployment custody for these inputs; qualification fixtures and fabricated receipts are not substitutes.",
+    "The selected scope is four explicit Cargo bins and their named dispatch paths, the fixed Material factories and the frozen E2 bridge. It is not proof of every transitive call in the repository or of a deployed service state."
+  ],
+  "minimal_existing_chain": [
+    "Authorize and pre-hold the actual ledger file, its separately retained witness, both containing-directory handles, binding and limits. For existing history use witness recover/frontier and an independently justified LedgerRecovery acknowledgment, then DurableLedger::recover. Both recovery paths may sync/truncate incomplete tails; they are real recovery operations, not read-only or automatically authorized by this report.",
+    "Obtain a genuinely pretrusted LearningTrustRootV1 and full signed distribution. activate_learning_trust verifies the original root signature, domain, validity and generation; ActivatedLearningTrustV1 cannot be replaced by a bare signer list or untrusted child-selected root. Persisted rotation provenance must remain independent.",
+    "Consume the backend, witness and ActivatedLearningTrustV1 through LedgerWriter::from_durable (or separately reviewed segmented equivalent). It syncs the directory handles and checks original binding/witness/frontier consistency. Do not reopen the same live writer through a second loader.",
+    "Load the actual complete freeze plan and Evaluator SignedLearningEvidenceV1. dataset_freeze_signing_payload_v2 derives its head/frontiers/cuts/full source-record digest list from the actual ledger snapshot; LedgerWriter::freeze_dataset verifies that exact payload through its ActivatedTrust verifier and derives the original receipt. A snapshot codec, caller receipt, or digest alone grants nothing.",
+    "Load complete OriginalCellQ24MaterialReceiptConfigV1: original initial snapshot, scope, dataset rule, freeze plan/evidence, both TrustedLearningSignerV1 bindings, verifier, and max signature lifetime. The two real SigningKey values must match those exact configured signer public keys and original Experience/Dataset owner IDs.",
+    "Supply distinct existing Experience/Dataset journal files and original witness objects to Material owners create or recover according to explicit lifecycle purpose. Fresh creation is not atomic; partial initialization must remain visible. Recover refuses missing owners and remains Recovered, so it does not regain Fresh command execution authority.",
+    "For the frozen E2 Root Source path, consume the actual pair through into_original_root_source_command_owner(stream, actual Root peer/pidfd, nonce, identity, original Arc<Mutex<LedgerWriter>>, original loaded model, timeout,lifetime). It constructs only the Source transport and delegates to the original into_command_owner. Four original command connection permits, signer/ledger/freeze binding and original readback checks remain in the old owner."
+  ],
+  "proof": {
+    "bytes": 42020,
+    "git_blob": "80358643ebcbf7f47e230c6d0605da51d8b72f9d",
+    "path": "/tmp/hepta-36fa-material-production-entry-independent-review-v1/BYTE_AND_API_PROOF.json",
+    "sha256": "8c8929d0c6bf722267d6a110cad0c846847e1734ffe6beafbfd6378cfc5f21d9"
+  },
+  "state": "STATIC_INTERFACE_FINDINGS_NOT_EXECUTED"
+}

@@ -1,0 +1,13 @@
+{
+  "format": "hepta-root-registration-union-proof-reconciliation-v1",
+  "original_execution": {
+    "chunk_id": "ca4ae9",
+    "wall_time_seconds": 0.657727833,
+    "exit_code": 1,
+    "original_token_count": 298,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-registration-union-seed-build-v1.py\", line 55, in <module>\n    parsed=tomllib.loads(old)['boundary'];assert len(parsed)==1 and parsed[0]['id']==name\n           ^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 121, in loads\n    pos, header = create_dict_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 295, in create_dict_rule\n    pos, key = parse_key(src, pos)\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 382, in parse_key\n    pos, key_part = parse_key_part(src, pos)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 416, in parse_key_part\n    raise suffixed_err(src, pos, \"Invalid initial character for a key part\")\ntomllib.TOMLDecodeError: Invalid initial character for a key part (at end of document)\n"
+  },
+  "cause": "Root's block-extraction regex searched from the second '[' of the same table header. It selected an invalid one-character TOML fragment. No input packet, CALLERS source, scanner, rule, guard, or project code changed.",
+  "correction": "Search for the next table header only after the complete exact current table marker. Preserve the full forward and inverse equality requirements.",
+  "qualification": false
+}

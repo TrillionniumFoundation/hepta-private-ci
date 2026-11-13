@@ -1,0 +1,425 @@
+{
+  "all_nonselected_fields_equal": true,
+  "author": "native_ci_audit at Root instruction",
+  "changed_fields_only": [
+    "body",
+    "start",
+    "end",
+    "identity"
+  ],
+  "changes": [
+    {
+      "after": {
+        "end": 6560,
+        "identity": {
+          "bytes": 4918,
+          "git_blob": "69a4afb62f3c65e948ad72fc1d97b679c7a24160",
+          "sha256": "9d4c4f1aa69c331072b61f5bb3f17b17506765f6714257b3457f553d99839b62"
+        },
+        "start": 1642
+      },
+      "before": {
+        "end": 6521,
+        "identity": {
+          "bytes": 4879,
+          "git_blob": "30de570808a6dab52866c02163683824943281e4",
+          "sha256": "5ea3ea479d65fad5b8227317d522e779f87fe8563e2b7536227a5fb1860a928a"
+        },
+        "start": 1642
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 5,
+      "name": "handoff_and_serve_original_root_circuit_task",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "source": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "visibility": "pub"
+    },
+    {
+      "after": {
+        "end": 7785,
+        "identity": {
+          "bytes": 7310,
+          "git_blob": "eb805eb1d8efd3ba04d6f9c63276aee146748f4a",
+          "sha256": "e371107743e555209ce8e032ba4c9380011f977c256a2c96abcea44d8a0ac66a"
+        },
+        "start": 475
+      },
+      "before": {
+        "end": 7323,
+        "identity": {
+          "bytes": 6848,
+          "git_blob": "2aef5aff5f6997b4d76d8957636cbe5b7fa4f712",
+          "sha256": "4ec520dae8350c3363769c3f03b994fbf662c1e8eea47d0b537662a28a6f58da"
+        },
+        "start": 475
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": "impl<O, P, E> AgentdCircuitCellOwnerV1<O, P, E>\nwhere\n    O: CellStateOwnerV1,\n    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,\n    E: CellInputEncoderV1,",
+      "index": 20,
+      "name": "execute_original_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "source": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 7386,
+        "identity": {
+          "bytes": 803,
+          "git_blob": "5a7140ec2e184bf5f504fd1037fe833a90e0a9b5",
+          "sha256": "8d49cb0a9b2e622db7e664c4c382d85270c04a640bc0adba4f1daaa28e74ca3b"
+        },
+        "start": 6583
+      },
+      "before": {
+        "end": 7215,
+        "identity": {
+          "bytes": 632,
+          "git_blob": "6bf1572f02c85a64df73704f448778f89f1ab001",
+          "sha256": "35a5de8a5632e3a2593a32d15717bf494ad4d3cf347c4633afec6c1ffb1bec47"
+        },
+        "start": 6583
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": "impl DaemonClient",
+      "index": 46,
+      "name": "sample_original_clock",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 9031,
+        "identity": {
+          "bytes": 1643,
+          "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+          "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+        },
+        "start": 7388
+      },
+      "before": {
+        "end": 8860,
+        "identity": {
+          "bytes": 1643,
+          "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+          "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+        },
+        "start": 7217
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonClient",
+      "index": 47,
+      "name": "original_execution",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(super)"
+    },
+    {
+      "after": {
+        "end": 10412,
+        "identity": {
+          "bytes": 73,
+          "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+          "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+        },
+        "start": 10339
+      },
+      "before": {
+        "end": 10241,
+        "identity": {
+          "bytes": 73,
+          "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+          "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+        },
+        "start": 10168
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 48,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 10502,
+        "identity": {
+          "bytes": 89,
+          "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+          "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+        },
+        "start": 10413
+      },
+      "before": {
+        "end": 10331,
+        "identity": {
+          "bytes": 89,
+          "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+          "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+        },
+        "start": 10242
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 49,
+      "name": "original_registry",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 10792,
+        "identity": {
+          "bytes": 289,
+          "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+          "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+        },
+        "start": 10503
+      },
+      "before": {
+        "end": 10621,
+        "identity": {
+          "bytes": 289,
+          "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+          "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+        },
+        "start": 10332
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 50,
+      "name": "original_lookup",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 11105,
+        "identity": {
+          "bytes": 312,
+          "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+          "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+        },
+        "start": 10793
+      },
+      "before": {
+        "end": 10934,
+        "identity": {
+          "bytes": 312,
+          "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+          "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+        },
+        "start": 10622
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 51,
+      "name": "original_execute",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 4511,
+        "identity": {
+          "bytes": 3879,
+          "git_blob": "f12d559f359692a41e1c982c3c1b9f6bb1fd8d01",
+          "sha256": "ff9feb787c0e89de3ef2e3655d511c772ac50971f466ccaaeddbe537548a8992"
+        },
+        "start": 632
+      },
+      "before": {
+        "end": 4252,
+        "identity": {
+          "bytes": 3620,
+          "git_blob": "da5cba2c5631e315bdb8e4c801414c9ab1504150",
+          "sha256": "25dcbede30819baa449da4300b9eebc29ab8a7a0496df7a2243eb57a8f13ee0a"
+        },
+        "start": 632
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": null,
+      "index": 65,
+      "name": "channel_until",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "source": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 8344,
+        "identity": {
+          "bytes": 304,
+          "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+          "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+        },
+        "start": 8040
+      },
+      "before": {
+        "end": 7980,
+        "identity": {
+          "bytes": 304,
+          "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+          "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+        },
+        "start": 7676
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl AgentdProductionLaunch",
+      "index": 148,
+      "name": "install_original_root_task",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "source": {
+        "bytes": 20557,
+        "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+        "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+      },
+      "visibility": "pub"
+    }
+  ],
+  "comparison_target": "Each original whole_source_required pin, using 67 fixed E2 paths and six Root-v6 shared file images; the UFCS handoff source is the final E2 own image.",
+  "counts": {
+    "changed_function_body": 4,
+    "changed_records": 10,
+    "declarations": 157,
+    "offset_only": 6,
+    "unchanged_records": 147,
+    "unique_matches": 157
+  },
+  "execution": {
+    "H": false,
+    "QA": false,
+    "Rust": false,
+    "author_preparation_code": false,
+    "project_collector": false,
+    "refs_modified": false,
+    "source_modified": false
+  },
+  "format": "hepta-e2-declaration-metadata-only-successor-review-v1",
+  "full_inverse_to_original_bytes": true,
+  "input_metadata": {
+    "bytes": 241072,
+    "git_blob": "38a6b98fdc3bae730e746c3fb299697d28fb7c56",
+    "sha256": "7c5144d7db7193bd5071bc4eb8f8590908c5e2cd388070947646ee9d4bbb5cfb"
+  },
+  "limits": [
+    "This is metadata repair only. It does not repair, execute, compile or qualify any Rust source.",
+    "Original Material3 test missing closing brace remains a separate source issue with independently frozen two-byte successor; it is not changed by this metadata layer.",
+    "Root owns integration and actual Git archival. All Git object IDs here are computed content identities until independently uploaded/read back."
+  ],
+  "not_execution_or_source_gate_approval": true,
+  "output_metadata": {
+    "bytes": 242020,
+    "git_blob": "bb2b7c5c6b71a2c6bb825fd496c8abb49dbb71ee",
+    "sha256": "2e3591ffab6108225685e758503a7229172490429697cf0f9886581d0259163a"
+  },
+  "reproducer": {
+    "bytes": 26929,
+    "git_blob": "c9d2f6a2d15c36b9dd128d391082397b046f2548",
+    "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/review_bytes_v2.py",
+    "sha256": "b751602142bf2446e60b8937848d8c268da08b518e2a56e3cc2713b72c27040d"
+  },
+  "retained_fields": [
+    "path",
+    "impl_header",
+    "name",
+    "visibility",
+    "boundary_ids",
+    "disposition",
+    "whole_source_required"
+  ],
+  "semantics": [
+    "Existing source objects and original v2 bytes remain unchanged.",
+    "No receiver, symbol, classification, boundary row, caller permission or guard is changed.",
+    "start/end are Python character offsets including original indentation, as in the predecessor format. All selected body bytes and Git/SHA/size identities are recomputed.",
+    "The new shared launcher offset is included because the original whole_source_required already binds the Root-v6 shared body.",
+    "The original metadata directly reused a pre-clock/pre-UFCS draft and cannot be called completely consistent with its final source pins."
+  ],
+  "status": "PREPARED_EXACT_METADATA_ONLY_REQUIRES_ROOT_REVIEW"
+}

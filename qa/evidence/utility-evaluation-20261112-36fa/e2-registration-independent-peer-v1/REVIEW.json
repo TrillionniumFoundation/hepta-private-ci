@@ -1,0 +1,615 @@
+{
+  "baseline": {
+    "bytes": 1902614,
+    "git_blob": "8875892749c45665abdce90310a7a47d90308b9b",
+    "sha256": "4032c99e77d9aa7c36f987e927962be470eb469ee30911ef16d577f257ec56ac"
+  },
+  "execution": {
+    "H": false,
+    "QA": false,
+    "Rust": false,
+    "actual_git_create_or_get_by_reviewer": false,
+    "author_scripts_run": false,
+    "collector": false,
+    "project_modules_imported": false,
+    "reviewer_standard_library_byte_scripts_only": true,
+    "source_git_write": false,
+    "source_ref_write": false
+  },
+  "final_integration_obligations": [
+    "Apply the separate ten-record metadata correction and the separate Material test closing-brace successor without overwriting frozen predecessors.",
+    "Include later loader and pre-freeze exact source/caller layers; empty product_callers in this component are statements only about this frozen E2 view.",
+    "Rebind shared full-file required strings to the final reviewed combined source once; preserve every E1/E3/E2 guard row and do not deduplicate by path.",
+    "Refresh final complete inventory, source-contract hashes/counts, allowlist digest, QA expected IDs/counts and the full Root-parent workflow union from the final bytes.",
+    "Required whole-source strings prove presence of that exact text; they alone do not forbid an appended extra impl/getter. Preserve and run the unchanged full source/shape/typed checks only under later explicit authorization.",
+    "The 757-boundary/531-guard seed is not the final loader-inclusive registration and is not a source-gate PASS."
+  ],
+  "findings": [
+    {
+      "body_changes": [
+        {
+          "after": {
+            "end": 6560,
+            "identity": {
+              "bytes": 4918,
+              "git_blob": "69a4afb62f3c65e948ad72fc1d97b679c7a24160",
+              "sha256": "9d4c4f1aa69c331072b61f5bb3f17b17506765f6714257b3457f553d99839b62"
+            },
+            "start": 1642
+          },
+          "before": {
+            "end": 6521,
+            "identity": {
+              "bytes": 4879,
+              "git_blob": "30de570808a6dab52866c02163683824943281e4",
+              "sha256": "5ea3ea479d65fad5b8227317d522e779f87fe8563e2b7536227a5fb1860a928a"
+            },
+            "start": 1642
+          },
+          "body_changed": true,
+          "changed_fields": [
+            "body",
+            "end",
+            "identity"
+          ],
+          "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+          "index": 5,
+          "name": "handoff_and_serve_original_root_circuit_task",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+          "source": {
+            "bytes": 6563,
+            "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+            "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+          },
+          "visibility": "pub"
+        },
+        {
+          "after": {
+            "end": 7785,
+            "identity": {
+              "bytes": 7310,
+              "git_blob": "eb805eb1d8efd3ba04d6f9c63276aee146748f4a",
+              "sha256": "e371107743e555209ce8e032ba4c9380011f977c256a2c96abcea44d8a0ac66a"
+            },
+            "start": 475
+          },
+          "before": {
+            "end": 7323,
+            "identity": {
+              "bytes": 6848,
+              "git_blob": "2aef5aff5f6997b4d76d8957636cbe5b7fa4f712",
+              "sha256": "4ec520dae8350c3363769c3f03b994fbf662c1e8eea47d0b537662a28a6f58da"
+            },
+            "start": 475
+          },
+          "body_changed": true,
+          "changed_fields": [
+            "body",
+            "end",
+            "identity"
+          ],
+          "impl_header": "impl<O, P, E> AgentdCircuitCellOwnerV1<O, P, E>\nwhere\n    O: CellStateOwnerV1,\n    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,\n    E: CellInputEncoderV1,",
+          "index": 20,
+          "name": "execute_original_remote",
+          "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+          "source": {
+            "bytes": 7788,
+            "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+            "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+          },
+          "visibility": "pub(crate)"
+        },
+        {
+          "after": {
+            "end": 7386,
+            "identity": {
+              "bytes": 803,
+              "git_blob": "5a7140ec2e184bf5f504fd1037fe833a90e0a9b5",
+              "sha256": "8d49cb0a9b2e622db7e664c4c382d85270c04a640bc0adba4f1daaa28e74ca3b"
+            },
+            "start": 6583
+          },
+          "before": {
+            "end": 7215,
+            "identity": {
+              "bytes": 632,
+              "git_blob": "6bf1572f02c85a64df73704f448778f89f1ab001",
+              "sha256": "35a5de8a5632e3a2593a32d15717bf494ad4d3cf347c4633afec6c1ffb1bec47"
+            },
+            "start": 6583
+          },
+          "body_changed": true,
+          "changed_fields": [
+            "body",
+            "end",
+            "identity"
+          ],
+          "impl_header": "impl DaemonClient",
+          "index": 46,
+          "name": "sample_original_clock",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "source": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "visibility": "pub(crate)"
+        },
+        {
+          "after": {
+            "end": 4511,
+            "identity": {
+              "bytes": 3879,
+              "git_blob": "f12d559f359692a41e1c982c3c1b9f6bb1fd8d01",
+              "sha256": "ff9feb787c0e89de3ef2e3655d511c772ac50971f466ccaaeddbe537548a8992"
+            },
+            "start": 632
+          },
+          "before": {
+            "end": 4252,
+            "identity": {
+              "bytes": 3620,
+              "git_blob": "da5cba2c5631e315bdb8e4c801414c9ab1504150",
+              "sha256": "25dcbede30819baa449da4300b9eebc29ab8a7a0496df7a2243eb57a8f13ee0a"
+            },
+            "start": 632
+          },
+          "body_changed": true,
+          "changed_fields": [
+            "body",
+            "end",
+            "identity"
+          ],
+          "impl_header": null,
+          "index": 65,
+          "name": "channel_until",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+          "source": {
+            "bytes": 4635,
+            "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+            "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+          },
+          "visibility": "pub(crate)"
+        }
+      ],
+      "description": "The original 157-row disposition list reused an earlier declaration draft. Ten records do not give the body/span of the existing whole_source_required target: four have changed body/identity and six have offset-only changes.",
+      "id": "E2_DECLARATION_METADATA_STALE",
+      "impact": "The affected records cannot be used as exact current function-byte evidence. The final full-source pins and required full-file strings are separately correct; this defect did not change the registered source or broaden caller permissions.",
+      "offset_changes": [
+        {
+          "after": {
+            "end": 9031,
+            "identity": {
+              "bytes": 1643,
+              "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+              "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+            },
+            "start": 7388
+          },
+          "before": {
+            "end": 8860,
+            "identity": {
+              "bytes": 1643,
+              "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+              "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+            },
+            "start": 7217
+          },
+          "body_changed": false,
+          "changed_fields": [
+            "end",
+            "start"
+          ],
+          "impl_header": "impl DaemonClient",
+          "index": 47,
+          "name": "original_execution",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "source": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "visibility": "pub(super)"
+        },
+        {
+          "after": {
+            "end": 10412,
+            "identity": {
+              "bytes": 73,
+              "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+              "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+            },
+            "start": 10339
+          },
+          "before": {
+            "end": 10241,
+            "identity": {
+              "bytes": 73,
+              "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+              "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+            },
+            "start": 10168
+          },
+          "body_changed": false,
+          "changed_fields": [
+            "end",
+            "start"
+          ],
+          "impl_header": "impl DaemonCellPort",
+          "index": 48,
+          "name": "new",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "source": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "visibility": "pub(crate)"
+        },
+        {
+          "after": {
+            "end": 10502,
+            "identity": {
+              "bytes": 89,
+              "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+              "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+            },
+            "start": 10413
+          },
+          "before": {
+            "end": 10331,
+            "identity": {
+              "bytes": 89,
+              "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+              "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+            },
+            "start": 10242
+          },
+          "body_changed": false,
+          "changed_fields": [
+            "end",
+            "start"
+          ],
+          "impl_header": "impl DaemonCellPort",
+          "index": 49,
+          "name": "original_registry",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "source": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "visibility": "pub(crate)"
+        },
+        {
+          "after": {
+            "end": 10792,
+            "identity": {
+              "bytes": 289,
+              "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+              "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+            },
+            "start": 10503
+          },
+          "before": {
+            "end": 10621,
+            "identity": {
+              "bytes": 289,
+              "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+              "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+            },
+            "start": 10332
+          },
+          "body_changed": false,
+          "changed_fields": [
+            "end",
+            "start"
+          ],
+          "impl_header": "impl DaemonCellPort",
+          "index": 50,
+          "name": "original_lookup",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "source": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "visibility": "pub(crate)"
+        },
+        {
+          "after": {
+            "end": 11105,
+            "identity": {
+              "bytes": 312,
+              "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+              "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+            },
+            "start": 10793
+          },
+          "before": {
+            "end": 10934,
+            "identity": {
+              "bytes": 312,
+              "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+              "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+            },
+            "start": 10622
+          },
+          "body_changed": false,
+          "changed_fields": [
+            "end",
+            "start"
+          ],
+          "impl_header": "impl DaemonCellPort",
+          "index": 51,
+          "name": "original_execute",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "source": {
+            "bytes": 11108,
+            "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+            "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+          },
+          "visibility": "pub(crate)"
+        },
+        {
+          "after": {
+            "end": 8344,
+            "identity": {
+              "bytes": 304,
+              "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+              "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+            },
+            "start": 8040
+          },
+          "before": {
+            "end": 7980,
+            "identity": {
+              "bytes": 304,
+              "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+              "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+            },
+            "start": 7676
+          },
+          "body_changed": false,
+          "changed_fields": [
+            "end",
+            "start"
+          ],
+          "impl_header": "impl AgentdProductionLaunch",
+          "index": 148,
+          "name": "install_original_root_task",
+          "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "source": {
+            "bytes": 20557,
+            "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+            "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+          },
+          "visibility": "pub"
+        }
+      ],
+      "original": {
+        "bytes": 241072,
+        "git_blob": "38a6b98fdc3bae730e746c3fb299697d28fb7c56",
+        "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/registration-components-frozen-v2/DECLARATION_DISPOSITIONS.json",
+        "sha256": "7c5144d7db7193bd5071bc4eb8f8590908c5e2cd388070947646ee9d4bbb5cfb"
+      },
+      "severity": "concrete review-metadata defect",
+      "successor": {
+        "bytes": 1329,
+        "git_blob": "175660923ecf8b0e683359b4f056fc7b27add2f3",
+        "path": "/tmp/hepta-36fa-e2-declaration-metadata-increment-v1/MANIFEST.json",
+        "sha256": "f758a93a4fb4be5a0a3dfd22e9f9dea267770a66bdd9ab1a883757551312953b"
+      },
+      "successor_after": {
+        "bytes": 242020,
+        "git_blob": "bb2b7c5c6b71a2c6bb825fd496c8abb49dbb71ee",
+        "path": "/tmp/hepta-36fa-e2-declaration-metadata-increment-v1/DECLARATION_DISPOSITIONS.after.json",
+        "sha256": "2e3591ffab6108225685e758503a7229172490429697cf0f9886581d0259163a"
+      },
+      "successor_proof": {
+        "bytes": 120266,
+        "git_blob": "890a729bee6fe2b6cdecdcc4fcecd6fe07b06309",
+        "path": "/tmp/hepta-36fa-e2-declaration-metadata-increment-v1/MATCH_AND_INVERSE_PROOF.json",
+        "sha256": "8ede738816e62303b650ef78ab7d098bf5d099e584423fac12ce2748d4dd41cd"
+      },
+      "successor_status": "Prepared locally at explicit Root instruction; all 157 declarations uniquely match their exact target source. Only body/start/end/identity change in ten rows, and reversal restores the full original metadata bytes. Root integration/review remains separate."
+    },
+    {
+      "description": "The e120 test source named by this component ends without the last test function closing brace. The original frozen v2 component therefore does not by itself describe a compilable corrected test source.",
+      "id": "MATERIAL_TEST_MISSING_CLOSING_BRACE_PREVIOUSLY_REPORTED",
+      "independent_review": {
+        "bytes": 4547,
+        "git_blob": "a1e8f207e637b70ccd21385a849daa5c49cdb7ef",
+        "path": "/tmp/hepta-36fa-material-source-tests-independent-review-v1/REVIEW.json",
+        "sha256": "ee6cced29949a69b48eded0d19b4469facf03fe6d5f5d6362d2413b7e40952f5"
+      },
+      "original_test": {
+        "bytes": 7528,
+        "git_blob": "1c8ea95921a5846f3d7c02dd7591c04b8e3a9320",
+        "sha256": "e74caced8e82f45ca2b64b34b33aa5adcccec97062fe474e26991a04d7199633"
+      },
+      "resolution_boundary": "Exactly the original 7528-byte prefix plus } and LF, independently checked. No test was executed. Root must include this independent source layer in its final source map; this review does not rewrite the old component.",
+      "separate_fix_packet": {
+        "bytes": 16205,
+        "git_blob": "0cefd50845cb790b581553b47e84bdcdb1015e91",
+        "sha256": "1164b9a6a15407ca463912e54ca65a667e695349d7f33fe5485b3c71c15c4471"
+      },
+      "separate_fix_review": {
+        "bytes": 1447,
+        "git_blob": "bb2f46ac74977c5eb801197987e5672b184b7af6",
+        "path": "/tmp/hepta-36fa-material-source-tests-independent-review-v1/CLOSURE_INCREMENT_REVIEW.json",
+        "sha256": "025f43adc4453271ebd63daee72bf82a8ae746b92512c64b34faf6d44350b1c8"
+      },
+      "severity": "known concrete source syntax defect in frozen predecessor"
+    }
+  ],
+  "fixed_component": {
+    "bytes": 2160,
+    "git_blob": "7cb9cbfbad4887a79128e085e54792d960fbf3e3",
+    "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/registration-components-frozen-v2/MANIFEST.json",
+    "sha256": "7dde017c014f9b65af17056c58e6498166faebaaa86e9401472b972984babb28"
+  },
+  "format": "hepta-independent-e2-registration-components-review-v1",
+  "isolated_E1_E2_projection": {
+    "bytes": 2553531,
+    "git_blob": "279c2e29c8ba18beb5de750bdebc7eafa41d606a",
+    "sha256": "061f49a19a768d6818cfe563912542142c0e8537c7717e661cb255dbb6e4a181"
+  },
+  "not_execution_or_qualification_approval": true,
+  "other_concrete_static_blockers_found": [],
+  "preservation": {
+    "451_existing_protected_rows": "All old rows remain in order, including duplicate paths. Only seven required strings in five rows change. All forbidden strings, authority/literal fields, function-order rules, top-level requirements and flags are identical.",
+    "650_existing_boundaries": "Every field except the specified 12 ordered caller-list appends is identical. Fifteen appended paths are disjoint from the old lists; no original caller is removed or reordered.",
+    "authority": "Every authority field remains false. ignored_path_fragments remains exactly /tests/, /examples/, _tests.rs. No new extension or path exclusion is introduced.",
+    "bounded_representation": "Three oversized raw artifacts are exactly recovered from four strict base64+LF parts. Part offsets, decoded gzip identity, raw identity and local original bytes all match. Maximum part 262,145 bytes; no raised storage bound.",
+    "full_text": "All 19 unique forward and reverse replacements exactly match the complete 1,902,614-byte baseline and 2,553,531-byte E1+E2 projection.",
+    "new_rows": "91 new boundaries and 61 exact full-file required guards are appended. All old required boundary IDs remain an ordered prefix and the 91 new IDs append in the same order.",
+    "specific_rows": "Protected row 411 and original feature-control row 198 are wholly identical. Original feature required markers and ordered sequences remain present in the reviewed MAX-strengthened source."
+  },
+  "publication": "Local immutable files with computed identities, for Root independent review and archival. No runtime or qualification result is asserted.",
+  "reproducible_evidence": [
+    {
+      "bytes": 26662,
+      "git_blob": "b3c2a526f094bc20462c8ca6cd5b667363e6dcb7",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/review_bytes.py",
+      "sha256": "44010c1dadc978446a7bf75f1cbfb9b286c3e489ee12426f192bec570c5f05ad"
+    },
+    {
+      "bytes": 26929,
+      "git_blob": "c9d2f6a2d15c36b9dd128d391082397b046f2548",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/review_bytes_v2.py",
+      "sha256": "b751602142bf2446e60b8937848d8c268da08b518e2a56e3cc2713b72c27040d"
+    },
+    {
+      "bytes": 1411,
+      "git_blob": "1c0a4727f5cb99ccd9c1fe2978935f7ff431968a",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/REVIEWER_ASSUMPTION_CORRECTION.patch",
+      "sha256": "7cc33b3ed736f639604ebc4d13eedeaaaa6341cbd3f5d74c2bea1ee11da1fea2"
+    },
+    {
+      "bytes": 567,
+      "git_blob": "fb47ac986f8118f5cbe78e3741c083f1c4e9f975",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/EXECUTION_01.original.json",
+      "sha256": "4fc542665fa67d495e105965f2b4b970a714fab3d5d8bdf36560c5cf445d82d3"
+    },
+    {
+      "bytes": 633,
+      "git_blob": "8bc5ec9903767dcf075d904ebb5f01582b7924a0",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/EXECUTION_02.original.json",
+      "sha256": "b1244368d25774e71aac8e509a9710da87e53ba8a2b8ef0808d3a9c2aebb79d3"
+    },
+    {
+      "bytes": 184988,
+      "git_blob": "71e558a8541e683a821d89634df5cd2679c069d6",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/BYTE_AND_SOURCE_PROOF.json",
+      "sha256": "38a922195805836325b6d9bf3484b8b0697b55b7b5f1cd21647996efc412f6eb"
+    },
+    {
+      "bytes": 11335,
+      "git_blob": "5fcf5bc20287203d6d15ba5e1b58bbd743e2d43a",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/review_relations.py",
+      "sha256": "874a281b2d1622c845bf038ef61b9af24de6e87db61ee33909a8a64084dcbdde"
+    },
+    {
+      "bytes": 389,
+      "git_blob": "fbbf6fe3e53a39d5e4a9f63d779e6869b733fd83",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/RELATION_EXECUTION_01.original.json",
+      "sha256": "7dd0dc8f3af2f54cb1a8575731637beb8eee7ceae081dce60aa9b7ebeda750eb"
+    },
+    {
+      "bytes": 98489,
+      "git_blob": "e97f5bcee777cefcf2783389476d1812b1fda0e4",
+      "path": "/tmp/hepta-36fa-e2-registration-independent-review-v1/RELATION_AND_UNION_PROOF.json",
+      "sha256": "a2fbf2a9b679bb38ffa256431962dc183ec7e43d8c3a78db566d76b71ae69879"
+    }
+  ],
+  "reviewer": "native_ci_audit",
+  "reviewer_failures_preserved": [
+    "One initial interactive schema-summary inspection assumed all JSON roots were objects; DECLARATION_DISPOSITIONS is a list. This was an inspection-format error, not an input defect.",
+    "review_bytes.py first expected the five abstract trait rows to have zero concrete function bodies. The fixed source also contains their sole private trait implementations, so that reviewer assertion exited 1. The original script and actual EXECUTION_01 are preserved; review_bytes_v2 requires those private implementations plus the exact trait declaration and exits 0. Candidate bytes were untouched."
+  ],
+  "root_union_seed_cross_check": {
+    "E2_boundary_slice": [
+      666,
+      757
+    ],
+    "E2_guard_slice": [
+      470,
+      531
+    ],
+    "E3_boundary_slice": [
+      650,
+      666
+    ],
+    "E3_guard_slice": [
+      451,
+      470
+    ],
+    "exact_appends_preserve_E3": true,
+    "final_registration": false,
+    "old_caller_overlap": [
+      178
+    ],
+    "review": {
+      "bytes": 12408,
+      "git_blob": "e2fdec03a694c5793ae2b920aa155bf217fabaa2",
+      "sha256": "c602cf8609c18c0db647669d4e7fd040b24237b68896e5f624228c15f4333a6f"
+    },
+    "source": {
+      "bytes": 2635042,
+      "git_blob": "1b55bc0cc5be4d47b7273f3c451f2eeff02fc542",
+      "sha256": "0b9de72801011ae07b52edc4a625e9ddaec35224f2ad5b9fb420d31065e3fc97"
+    }
+  },
+  "scope": [
+    "All nine manifest payloads and the four bounded ASCII parts were read in full and independently hashed.",
+    "All 12 frozen source packets were independently composed into 67 E2 own paths. Six existing shared paths use the exact Root-v6 body already named in SOURCE_PINS; the explicit UFCS handoff uses its final E2 image.",
+    "The complete 19 text splices were applied and reversed byte for byte, and the entire before/after TOML was parsed with the standard library.",
+    "The explicit production function inventory was independently re-enumerated as fixed text: exactly 157 new declaration keys relative to their first E2 before-images.",
+    "All 94 listed new-boundary caller pairs and all 15 appended old-boundary caller pairs have concrete matching call sites; receiver/field/UFCS anchors were independently inspected.",
+    "Root union seed was cross-checked only for the E3/E2 row slices and additive old-caller overlap. It remains an incomplete final registration."
+  ],
+  "status": "STATIC_COMPONENT_REVIEW_COMPLETE_WITH_SEPARATE_METADATA_CORRECTION_AND_KNOWN_TEST_SOURCE_CORRECTION",
+  "test_registration_review": {
+    "ordinary_semantics": "Four bootstrap/receipt cases and three Material content cases are separately reviewed source proposals; the Material syntax successor is necessary. The clock case keeps the original unresolved dispatch after a worker completes with an invalid clock. None were run.",
+    "ordinary_tests": [
+      "circuit_task::driver::tests::original_root_bootstrap::original_root_bootstrap_preserves_complete_registry_and_cells",
+      "circuit_task::driver::tests::original_root_bootstrap::original_root_bootstrap_rejects_noncanonical_or_incomplete_data",
+      "circuit_task::driver::tests::original_root_bootstrap::original_completion_loan_encodes_the_actual_receipt_and_readback",
+      "circuit_task::driver::tests::original_root_bootstrap::original_completion_loan_refuses_foreign_run_and_saved_input",
+      "circuit_task::source::readback::material::tests::material_source_payload_retains_complete_original_publication",
+      "circuit_task::source::readback::material::tests::material_source_encoding_refuses_rebound_publication",
+      "circuit_task::source::readback::material::tests::material_source_encoding_refuses_withdrawn_original_for_all_views"
+    ],
+    "root_parent_candidates": [
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_keeps_unstarted_source_incomplete",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::root_task_tests::root_host_task_factory_refusal_retains_only_the_same_operation"
+    ],
+    "root_semantics": "The two ignored factory cases retain the same original Root fixture and real generation custody. They check that an unstarted task cannot become Source completion and that a mismatched task fence retains only the same failed-operation handle/journal. They do not execute a cross-process task lane.",
+    "separate_feature_test": {
+      "crate": "codex-hepta-neuron",
+      "ignored": false,
+      "instruction": "Use original lib test scope; this is a proposed new case, not a selected or executed result.",
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "test": "feature_control::tests::feature_control_invalid_completion_clock_retains_original_unresolved_dispatch"
+    },
+    "workflow": "The component proposes two additional Root parents but does not modify a runner/workflow, budgets or filters. Existing Root parents cannot be dropped during final integration. Native selected/executed counts remain unknown."
+  },
+  "typed_relationship_review": {
+    "70_other_declarations": "All 70 full helper bodies were read. They are bounded data codecs, immutable admission metadata getters, deadline checks or error projections inside existing private module closures. Decoded CellDecisionReceiptV1 explicitly has AuthorityPosture::DENY_ALL; byte canonicality is not mistaken for signature authentication or owner authority. The helpers do not return live source writers, original receipts capable of admission, Root grants, Config/Store replacement authority, or a replacement Cell pump.",
+    "explicit_boundaries": "86 of the 157 new public/crate/super function declarations map to explicit E2 rows. The remaining five new rows are the two OriginalRootLaneFactory and three OriginalRootCellPump sealed trait methods; their sole private implementations are in the same guarded source.",
+    "five_rejected_false_receivers": [
+      "DaemonLoans::attach is not AgentdProductionOperationRuntimeConfig::attach.",
+      "The Lane-owned HostAuthorityPeerChannel::exchange is not RootAdminCapability::exchange.",
+      "The private connect helper and tokio UnixStream::connect are not RootLearningHandoffV1::connect.",
+      "The private per-channel Budget::begin is not RootResidentLearningEffectGateV3::begin.",
+      "DaemonLoans::respond is not OriginalVersionLocalReadBindingV1::respond."
+    ],
+    "generic_method_disambiguation": "The pure first pass records lexical candidates; the supplemental pass selects concrete OriginalTaskHostLanes::serve versus remote::serve, DaemonCellPort/DaemonLoans/ReverseClient/Budget/Lane constructors, and the second take on Option<Box<dyn OriginalRootLaneFactory>>. Generic same-name hits are not counted as authority edges.",
+    "limits": "This is static source/field/UFCS review of the finite frozen view. It does not assert that a Rust compiler or the unchanged project typed collector accepted these relations or that future loader callers are already registered.",
+    "material_read": "The optional existing call_pattern matches exactly the two private OriginalReadback::RootMaterial arms in circuit_task_source_readback.rs. The enum contains Arc<material::Client>; the pattern does not authorize arbitrary Client::read.",
+    "old_appends": "UFCS preserves distinctions between OriginalRootInitialGenerationCustodyV1 and OriginalRootCircuitTaskCustodyV1. The seal_bootstrap successor explicitly names the same PreparedHostAuthoritySession. The old regex and old boundary semantics remain unchanged.",
+    "old_execute": "The one separately classified Driver::execute body is an exact original body even though its impl generic port context changed; the complete reviewed production file is still required.",
+    "same_source_and_cell": "Root runtime/bootstrap/source handoff methods retain the original typed factory, source and Cell pump. Corresponding listed callers are the exact private bridge/loan/config methods inspected in the earlier frozen production reviews."
+  }
+}

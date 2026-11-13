@@ -1,0 +1,62 @@
+{
+  "all_images_final_lf": true,
+  "all_new_modules_under_500_lines": true,
+  "checks": [
+    {
+      "base": "prefreeze c66c",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_prefreeze_source.rs",
+      "splices": 5
+    },
+    {
+      "base": "prefreeze c66c",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "splices": 3
+    },
+    {
+      "base": "prefreeze c66c",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "splices": 2
+    },
+    {
+      "base": "Root v8",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "splices": 1
+    },
+    {
+      "base": "prefreeze c66c",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze.rs",
+      "splices": 6
+    },
+    {
+      "base": "prefreeze c66c",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_client.rs",
+      "splices": 4
+    },
+    {
+      "base": "prefreeze c66c",
+      "full_forward_equal": true,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_prefreeze_source.rs",
+      "splices": 3
+    }
+  ],
+  "delimiter_check": "Author lexical check only, not Rust parsing or compilation",
+  "format": "hepta-e2-prefreeze-ready-byte-proof-v1",
+  "new_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_task_source_ready.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_prefreeze_ready.rs"
+  ],
+  "source_paths": 9
+}

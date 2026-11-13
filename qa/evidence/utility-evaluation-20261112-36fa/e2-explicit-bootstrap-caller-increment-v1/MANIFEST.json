@@ -1,0 +1,47 @@
+{
+  "files": [
+    {
+      "bytes": 789,
+      "git_blob": "2dabbc8e9afabf12e71c6bdb0c05ff6843e8c2bc",
+      "path": "EXACT_SOURCE_SPLICES.json",
+      "sha256": "0764d3e44853c83d3237ea0539bd28efe110135ecc5ca990fe375369ed7ea80e"
+    },
+    {
+      "bytes": 740,
+      "git_blob": "296fc3b63a41804b159b5852fb9f606fb13a0584",
+      "path": "REVIEW.json",
+      "sha256": "433d20c84b93960af175200aec868cf3bbcd73d8cfef9305a5a4dedacc3b1c77"
+    },
+    {
+      "bytes": 14015,
+      "git_blob": "67668543482066659f910346d23b53408c12e165",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "f4447a6edaf5756eeb4a2d4f6f97efa4dfc640ade0bbd26eb991c6090ae3aa52"
+    },
+    {
+      "bytes": 848,
+      "git_blob": "404a5f2cfc2849c85e5d6fbaa36e1a34a946ccf7",
+      "path": "source.patch",
+      "sha256": "e3a52f8169c0f39597ace55dca55e5d4fca3b804002c0d5eb252789a41e02ef1"
+    }
+  ],
+  "format": "hepta-e2-clock-increment-manifest-v1",
+  "git_source_written": false,
+  "rust_or_project_qa_executed": false,
+  "source_images": [
+    {
+      "after": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "before": {
+        "bytes": 6524,
+        "git_blob": "6d5e38822bc2cace461f3dab10adf9b11f393474",
+        "sha256": "913c266ac06a429003c94134ceaf8e2d905f0215335e4ab959ec41f4f962042f"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+    }
+  ],
+  "source_paths": 1
+}

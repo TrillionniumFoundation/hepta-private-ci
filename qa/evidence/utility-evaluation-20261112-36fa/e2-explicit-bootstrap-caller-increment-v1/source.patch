@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs
+@@ -48,7 +48,7 @@
+         let lane = self.runtime.take_original_root_lane()?;
+         let bound = listeners::TaskListeners::bind(&task_path, &loan_path, self.session.config.peer_gid)?;
+         let original_host = self.session.bind_original_task_host_lanes()?;
+-        let original_bootstrap = self.session.seal_bootstrap(consumer_state_root)?;
++        let original_bootstrap = crate::PreparedHostAuthoritySession::seal_bootstrap(&self.session, consumer_state_root)?;
+         let descriptor = crate::root_original_task_descriptor::seal(
+             std::process::id(), self.session.registration.peer_pid,
+             self.session.config.peer_uid, self.session.config.peer_gid,

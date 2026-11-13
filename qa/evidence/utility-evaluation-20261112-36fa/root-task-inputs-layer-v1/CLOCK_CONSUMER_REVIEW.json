@@ -1,0 +1,116 @@
+{
+  "consumers": [
+    {
+      "behavior": "Root service rejects either MAX before encoding. Client independently rejects either MAX before returning Ok. Runtime independently rejects after max with actual daemon authenticated time, before the original Driver sees it.",
+      "site": "profile.clock -> OriginalRootCellPump::clock -> Operation::Clock"
+    },
+    {
+      "behavior": "Explicit refusal before first sample is used for lookup/recovery; inference sample refuses before state admission proceeds; decided_at refused before decide/cost/outcome; committed_at refused before commit. Original same-admission and terminal checks remain.",
+      "site": "profile.clock -> OriginalRootCellPump::execute -> execute_original_remote"
+    },
+    {
+      "behavior": "admitted, dispatch and entered each reject >= actual deadline before their next state/dispatch action. completed==MAX now returns original Indeterminate before outcome mutation, receipt build, codec encode and settle. Worker may already have executed, so not NotApplied.",
+      "site": "profile.clock.cell_micros -> PublishedTask::control -> feature_control"
+    },
+    {
+      "behavior": "Original Driver receives fallible clock; errors return before claim/event/publication. Its existing poison/execute adapter and DaemonClient pre/post refusal remain. Original authority/RunStart is independently checked; MAX is not an authority time.",
+      "site": "daemon Driver / original Cell-port adapter"
+    },
+    {
+      "behavior": "No direct callback consumer in source/receipt conversion. Publication requires original daemon opaque receipt plus real same-Cell decision readback; Clock/execute errors do not create those receipts. Current/Source binding remains checked before and after each frame.",
+      "site": "Source publication and receipt"
+    }
+  ],
+  "entry": "The loader callback can leave its private module only inside crate-private LoadedOriginalTaskInputs; its sole source caller consumes that value into the original Config-free Ready factory, then seals the Task and status in PreparedRootHostLoadedQ24TaskV1.",
+  "first_failure": "Same Arc AtomicU8 preserves exact first AuthorityTrustError class or overflow/end. Every later sample refuses without consulting a recovered clock. The sealed returned wrapper reports retained first cause, including alongside another task error.",
+  "limits": [
+    "Original local Cell and local runtime semantics are unchanged and not claimed MAX-safe.",
+    "The complete CLI/orchestration has not yet been written in this layer and must not expose the inner Task or clock.",
+    "No compiler, test or runtime proof; required refusal layers are actual fixed source prerequisites."
+  ],
+  "public_closure": [
+    "The two public prepare/recover file methods return only non-Clone PreparedRootHostLoadedQ24TaskV1. It has private Task and status fields, no Deref/Clone/into_inner/owner/runtime/clock getter, and no caller callback.",
+    "Its only current public method is read_loaded_original_root_task_generation; no local Config installation or execution entry is exported. The later fixed orchestration must stay in this private module subtree.",
+    "The original Task retains its runtime privately and permits only fixed Root remote service/handoff consumption. No loader-produced callback is reachable through into_original_q24_task(config,...) or original local runtime installation.",
+    "Crate-private helper calls are enumerated registration obligations; no claim is made against arbitrary later changes to the crate source."
+  ],
+  "references": [
+    {
+      "bytes": 7690,
+      "git_blob": "90962d888c43b96e4a8e6bd44b9b3b73b52eff4c",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "sha256": "6f5c68430bca1ce23c858aa9184ec88a3f0e9dcbd1667c659c2cc99385b0861c"
+    },
+    {
+      "bytes": 5080,
+      "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+    },
+    {
+      "bytes": 8637,
+      "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+    },
+    {
+      "bytes": 11108,
+      "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+    },
+    {
+      "bytes": 4635,
+      "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+    },
+    {
+      "bytes": 13631,
+      "git_blob": "90075e64c2df933be2f3bcbdb64cc5bf68f32d2b",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+      "sha256": "b96884e676a82ef8a4e8cf083374aa63753709d6bc362a8afecda867906d327d"
+    },
+    {
+      "bytes": 3722,
+      "git_blob": "365aca5e09fd5a9ab7a55c8db405425ddc9e14c0",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "sha256": "8bd7c363766c0d1dd09aeccc70dba9063c4582fff974858d4545902301af2238"
+    },
+    {
+      "bytes": 7788,
+      "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+    },
+    {
+      "bytes": 11790,
+      "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+    },
+    {
+      "bytes": 6079,
+      "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+    },
+    {
+      "bytes": 3680,
+      "git_blob": "38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "sha256": "c1f1a4d456b5e0409c4d6dd05c25adbfed51ecc437d44d1de6fde6ce095fb94a"
+    },
+    {
+      "bytes": 13123,
+      "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "sha256": "3b1252b664111baf22778f8ca9c4495e0f3e4806fdcb54149c718d58f9b79bd3"
+    }
+  ],
+  "required_layers": {
+    "feature_clock": "ade9282388680285416c7829000b7081e22550ef",
+    "remote_clock": "9f780f963b0e9585b5b85a83f87de593f604bfa5"
+  },
+  "state": "STATIC_CALL_GRAPH_ONLY_NO_EXECUTION"
+}

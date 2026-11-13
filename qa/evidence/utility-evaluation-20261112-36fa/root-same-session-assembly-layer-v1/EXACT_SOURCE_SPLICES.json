@@ -1,0 +1,80 @@
+{
+  "changes": [
+    {
+      "anchor": "mod ordinary_handoff;\n",
+      "insert_after": "\n#[path = \"authority_host_session_task_followups.rs\"]\nmod loaded_followups;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+    },
+    {
+      "anchor": "use crate::authority_host_service::OriginalTaskClockStatus;\n",
+      "insert_after": "\n#[path = \"authority_host_loaded_task_service.rs\"]\nmod original_service;\npub use original_service::RootHostOriginalTaskLearningFilesV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_loader.rs"
+    },
+    {
+      "anchor": "pub(crate) use connect::connect_original_resident_enrollment;\n",
+      "insert_after": "\n#[path = \"authority_host_task_resident_enrollment.rs\"]\nmod original_task;\npub(crate) use original_task::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,\n    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,\n    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+    },
+    {
+      "anchor": "pub(crate) use enrollment::connect_original_resident_enrollment;\n",
+      "insert_after": "pub(crate) use enrollment::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,\n    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,\n    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+    },
+    {
+      "anchor": "pub use resident_launch::RootResidentCandidateProcessInputsV3;\n",
+      "insert_after": "pub(crate) use resident_launch::{OriginalTaskResidentInputs, OriginalTaskResidentPaths,\n    OriginalTaskResidentPrepared, OriginalTaskResidentPurpose, prepare_original_task_resident,\n    OriginalTaskPrefreezeState, prepare_original_task_prefreeze};\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "anchor": "pub use task_input_loader::PreparedRootHostLoadedQ24TaskV1;\n",
+      "insert_after": "pub use task_input_loader::RootHostOriginalTaskLearningFilesV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+    },
+    {
+      "anchor": "pub use task::PreparedRootHostLoadedQ24TaskV1;\n",
+      "insert_after": "pub use task::RootHostOriginalTaskLearningFilesV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+    },
+    {
+      "anchor": "pub use generation::PreparedRootHostLoadedQ24TaskV1;\n",
+      "insert_after": "pub use generation::RootHostOriginalTaskLearningFilesV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs"
+    },
+    {
+      "anchor": "pub use session::PreparedRootHostLoadedQ24TaskV1;\n",
+      "insert_after": "pub use session::RootHostOriginalTaskLearningFilesV1;\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "anchor": "pub use authority_host_runtime::PreparedRootHostLoadedQ24TaskV1;\n",
+      "insert_after": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootHostOriginalTaskLearningFilesV1;\n",
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "anchor": "mod resident_enrollment_cli;\n",
+      "insert_after": "#[cfg(target_os = \"linux\")]\n#[path = \"../authority_host_loaded_task_cli.rs\"]\nmod loaded_task_cli;\n",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "anchor": "    if command == \"serve-resident-learning-late\" || command == \"recover-resident-learning-late\" {",
+      "insert_before": "    if command == \"serve-original-task-learning\" || command == \"recover-original-task-learning\" {\n        if pidfd_stdin {\n            return Err(\"original task loading requires all named original descriptors\".into());\n        }\n        let purpose = if command == \"serve-original-task-learning\" {\n            loaded_task_cli::Command::Fresh\n        } else {\n            loaded_task_cli::Command::Recover\n        };\n        return loaded_task_cli::run(options, purpose);\n    }\n",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "anchor": "mod wire;\n",
+      "insert_after": "\n#[path = \"root_candidate_stage_transport.rs\"]\nmod late_transport;\npub(crate) use late_transport::{OriginalRootCandidateStageTransportV1, receive_original_candidate_stage_transport};\n",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "anchor": "pub use candidate_stages::send_root_candidate_stage_handoff;\n",
+      "insert_after": "pub(crate) use candidate_stages::{OriginalRootCandidateStageTransportV1, receive_original_candidate_stage_transport};\n",
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+    },
+    {
+      "anchor": "const PURPOSE: &str = \"hepta.host-resident-learning.trusted-evidence.v3\";\n",
+      "insert_after": "\n#[path = \"authority_host_task_prefreeze_trust.rs\"]\nmod original_source;\npub(super) use original_source::{OriginalDistributionPin, OriginalSourceTrust};\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs"
+    }
+  ],
+  "format": "insertion-only-v1"
+}

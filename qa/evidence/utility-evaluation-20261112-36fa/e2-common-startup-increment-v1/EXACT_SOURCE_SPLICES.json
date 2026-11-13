@@ -1,0 +1,10 @@
+{
+  "format": "hepta-e2-exact-source-splices-v1",
+  "splices": [
+    {
+      "after_utf8": "    pub fn handoff_and_serve_original_root_circuit_task(\n        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,\n        original_root_pidfd: OwnedFd, consumer_state_root: &Path,\n        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16],\n    ) -> Result<u64, AgentdError> {\n        let startup_end = (Instant::now() + Duration::from_secs(30)).min(self.end);\n        PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task_before(\n            self, production_handoff, task_handoff, original_root_pidfd, consumer_state_root,\n            task_path, loan_path, session_nonce, startup_end,\n        )\n    }\n\n    /// The one ordinary assembly supplies its already-running startup window.\n    /// Reuse the original handoff body and same runtime; neither a delayed\n    /// service thread nor this call may create another thirty-second window.\n    pub(crate) fn handoff_and_serve_original_root_circuit_task_before(\n        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,\n        original_root_pidfd: OwnedFd, consumer_state_root: &Path,\n        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16], startup_end: Instant,\n    ) -> Result<u64, AgentdError> {\n        let startup_end = startup_end.min(Instant::now() + Duration::from_secs(30)).min(self.end);\n        require_before(startup_end)?;\n",
+      "before_utf8": "    pub fn handoff_and_serve_original_root_circuit_task(\n        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,\n        original_root_pidfd: OwnedFd, consumer_state_root: &Path,\n        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16],\n    ) -> Result<u64, AgentdError> {\n        let startup_end = (Instant::now() + Duration::from_secs(30)).min(self.end);\n",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs"
+    }
+  ]
+}

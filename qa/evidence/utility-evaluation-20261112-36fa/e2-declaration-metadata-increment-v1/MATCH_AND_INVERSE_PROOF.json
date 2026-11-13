@@ -1,0 +1,3523 @@
+{
+  "after": {
+    "bytes": 242020,
+    "git_blob": "bb2b7c5c6b71a2c6bb825fd496c8abb49dbb71ee",
+    "sha256": "2e3591ffab6108225685e758503a7229172490429697cf0f9886581d0259163a"
+  },
+  "all_157_unique_matches": [
+    {
+      "end": 2411,
+      "identity": {
+        "bytes": 1028,
+        "git_blob": "c143a86d8645b12c2fdef157c4fb9da8a36a1897",
+        "sha256": "e901d7c8300e0d8e3cd7c5f7451ca8cd6f265f29b94e0107c073b5c576f8b18a"
+      },
+      "impl_header": "impl OriginalRootMaterialSourceRegistrationV1",
+      "index": 0,
+      "match_count": 1,
+      "name": "from_original_supervisor",
+      "path": "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs",
+      "source": {
+        "bytes": 2414,
+        "git_blob": "61d1366da710d94d46668883f458a72db5bda515",
+        "sha256": "4056a6cd38b5f23dade1f99fc877413105d1034c2dede124d87e08a6f2e4470f"
+      },
+      "start": 1383,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2688,
+      "identity": {
+        "bytes": 457,
+        "git_blob": "65b8ecf96dcc00e324980bb7cf4a244a3b154a9f",
+        "sha256": "37d0d294add465bf470e8cc37719bf3aec0df7d7a13cd68fec33ac9a3d9d8463"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere\n    SW: AnchorWitnessStore + Send + 'static,\n    CW: AnchorWitnessStore + Send + 'static,",
+      "index": 1,
+      "match_count": 1,
+      "name": "read_original_root_task_generation",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "start": 2231,
+      "visibility": "pub"
+    },
+    {
+      "end": 3127,
+      "identity": {
+        "bytes": 296,
+        "git_blob": "97529819166046d4b937eff5e812a89b46754f41",
+        "sha256": "33fa33db419d4b40e4d48f9ea10efcf94ef006e37a05a5d8bf879f2fee2cbbf4"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere\n    SW: AnchorWitnessStore + Send + 'static,\n    CW: AnchorWitnessStore + Send + 'static,",
+      "index": 2,
+      "match_count": 1,
+      "name": "pending_original_root_task_operations",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "start": 2831,
+      "visibility": "pub"
+    },
+    {
+      "end": 3723,
+      "identity": {
+        "bytes": 359,
+        "git_blob": "af8752cabcd50f460b33f8818c85a3eba4c8d902",
+        "sha256": "8f69e687b8a31b52d84e6e74b67ecc4f23121c27587d357bfff31cb2e7abeb74"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere\n    SW: AnchorWitnessStore + Send + 'static,\n    CW: AnchorWitnessStore + Send + 'static,",
+      "index": 3,
+      "match_count": 1,
+      "name": "drain_completed_original_root_task",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "start": 3364,
+      "visibility": "pub"
+    },
+    {
+      "end": 6076,
+      "identity": {
+        "bytes": 1942,
+        "git_blob": "6666b3bddcf1c7ffc690402df8fa0a592bfaff34",
+        "sha256": "feeb80c4051220d07c90482b51a2917fcd0f461975c89fb33cf70b405eb918cc"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W>",
+      "index": 4,
+      "match_count": 1,
+      "name": "prepare_original_root_task",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "source": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "start": 4134,
+      "visibility": "pub"
+    },
+    {
+      "end": 6560,
+      "identity": {
+        "bytes": 4918,
+        "git_blob": "69a4afb62f3c65e948ad72fc1d97b679c7a24160",
+        "sha256": "9d4c4f1aa69c331072b61f5bb3f17b17506765f6714257b3457f553d99839b62"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 5,
+      "match_count": 1,
+      "name": "handoff_and_serve_original_root_circuit_task",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "source": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "start": 1642,
+      "visibility": "pub"
+    },
+    {
+      "end": 3289,
+      "identity": {
+        "bytes": 1786,
+        "git_blob": "e364e3ab6b31626ccc4c60d35940fcc41b6b8898",
+        "sha256": "7e107038932ed715c62484d17c7accf596d2d9c4a63663e3b94a03abbc7e3918"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 6,
+      "match_count": 1,
+      "name": "serve_original_root_circuit_task",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "source": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "start": 1503,
+      "visibility": "pub"
+    },
+    {
+      "end": 3584,
+      "identity": {
+        "bytes": 293,
+        "git_blob": "d537beaf7d5a9f5b6bcdba360100fe9bcc013973",
+        "sha256": "d86cc5863e5d31bb82ca0cb9c3ef9ceb901bdacf1bfffe4e9cf3f1f2440db306"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 7,
+      "match_count": 1,
+      "name": "require_original_root_task_source",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "source": {
+        "bytes": 3587,
+        "git_blob": "2e25a721708049f2f6c90e86959868f6c631b6ff",
+        "sha256": "47932638c933b6f3076f69fbf7a21068cef88e155b973acbb387fab62bdc1597"
+      },
+      "start": 3291,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2538,
+      "identity": {
+        "bytes": 661,
+        "git_blob": "964599d3cb7a5c86b7511f02898a7ef0a73c89ce",
+        "sha256": "92a98abdfa11fe38d4ccc75e0bcda0fbb54134ba1b9de605c6dd686f1088e24b"
+      },
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 8,
+      "match_count": 1,
+      "name": "prepare_original_material_source_host",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "source": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "start": 1877,
+      "visibility": "pub"
+    },
+    {
+      "end": 7077,
+      "identity": {
+        "bytes": 3473,
+        "git_blob": "ac03d62ce05c493afaffb3a1634556b1ba4062de",
+        "sha256": "78750ab5732218535dc84ab0cc393f79a2668277258b163a4e99d625420fdca5"
+      },
+      "impl_header": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> PreparedRootMaterialSourceHostV1<SW, CW>",
+      "index": 9,
+      "match_count": 1,
+      "name": "serve",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "source": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "start": 3604,
+      "visibility": "pub"
+    },
+    {
+      "end": 1405,
+      "identity": {
+        "bytes": 875,
+        "git_blob": "1b78d594a3233c0daaedf1d712b6ceb0049a30f2",
+        "sha256": "6b9d919286c086a8a9a6b8e7f787ce5222afd3739f24b69e97a43de2044a188b"
+      },
+      "impl_header": "impl PreparedHostAuthoritySession",
+      "index": 10,
+      "match_count": 1,
+      "name": "bind_original_task_host_lanes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      },
+      "start": 530,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1630,
+      "identity": {
+        "bytes": 188,
+        "git_blob": "fb0723fb16a4fe39ef98eab2d84dfa9bae445f9c",
+        "sha256": "566f296b01a1cca57f5aa8fd7417b1f77be4f56fbacac1881611e2aafb08e267"
+      },
+      "impl_header": "impl OriginalTaskHostLanes<'_>",
+      "index": 11,
+      "match_count": 1,
+      "name": "serve",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+      "source": {
+        "bytes": 1633,
+        "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+        "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+      },
+      "start": 1442,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1407,
+      "identity": {
+        "bytes": 376,
+        "git_blob": "1c12fa210acf93e93b5530aa7c2955c4608f372b",
+        "sha256": "5419cf8f286a8ae68893b9df45e600551f22b461960d76c7d5c2666e3f0b4cc3"
+      },
+      "impl_header": "impl TaskListeners",
+      "index": 12,
+      "match_count": 1,
+      "name": "bind",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "source": {
+        "bytes": 5139,
+        "git_blob": "7ebfbb75fc66786188d09db8318551490c42836e",
+        "sha256": "3c6c6d5d91031803a4143dddb67f1588752531382ceaff9fa0ac891131b48913"
+      },
+      "start": 1031,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2061,
+      "identity": {
+        "bytes": 652,
+        "git_blob": "3e6c76017a2ffe84927aaff51e16c4a73f823d73",
+        "sha256": "26eea2b30de34728ee96a1560d3d0437c8573028e6ad7c95f0f314d1de717a16"
+      },
+      "impl_header": "impl TaskListeners",
+      "index": 13,
+      "match_count": 1,
+      "name": "accept",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "source": {
+        "bytes": 5139,
+        "git_blob": "7ebfbb75fc66786188d09db8318551490c42836e",
+        "sha256": "3c6c6d5d91031803a4143dddb67f1588752531382ceaff9fa0ac891131b48913"
+      },
+      "start": 1409,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 5138,
+      "identity": {
+        "bytes": 1351,
+        "git_blob": "b10962251948483e458c9d96b9f61b69dd447699",
+        "sha256": "5ac26d87d03dc9b604c023bd213b6ca416cdbf5cedc33acd27e89ce0306700aa"
+      },
+      "impl_header": null,
+      "index": 14,
+      "match_count": 1,
+      "name": "wait_first_frame",
+      "path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+      "source": {
+        "bytes": 5139,
+        "git_blob": "7ebfbb75fc66786188d09db8318551490c42836e",
+        "sha256": "3c6c6d5d91031803a4143dddb67f1588752531382ceaff9fa0ac891131b48913"
+      },
+      "start": 3787,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 19557,
+      "identity": {
+        "bytes": 1186,
+        "git_blob": "8717e19a6bd874f417ed5a4d59f98def66b87d9e",
+        "sha256": "57a097ab5c2c10f40f9da6f034a1381ff7eb5e56fc9296a7c2eff79f6eafcb36"
+      },
+      "impl_header": null,
+      "index": 15,
+      "match_count": 1,
+      "name": "require_source",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "source": {
+        "bytes": 23894,
+        "git_blob": "2613ee4b9dc7a75de3b3bb8f0b614fd59d67e7d5",
+        "sha256": "bfce10fc0578e23507770d6c070478bc910aa92682c9b9822b2e3075e7fecde4"
+      },
+      "start": 18371,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1855,
+      "identity": {
+        "bytes": 900,
+        "git_blob": "ce14f204a746d8bc697b15a7fe61096042a38829",
+        "sha256": "4a7019df8fc6b122c96f84ac493edf1426fb813f09b4cf542d1c26b4cdee0bcc"
+      },
+      "impl_header": "impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore> OriginalCellQ24MaterialReceiptOwnersV1<EW, DW>",
+      "index": 16,
+      "match_count": 1,
+      "name": "into_original_root_source_command_owner",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "source": {
+        "bytes": 1858,
+        "git_blob": "fd5f79399cb5c8b6ce63765f7e5ca2ff6c8a865c",
+        "sha256": "de01b089d4b74ba4d27ea47231292c0dfd31480fc642bcea008ce327db68c1b4"
+      },
+      "start": 955,
+      "visibility": "pub"
+    },
+    {
+      "end": 444,
+      "identity": {
+        "bytes": 137,
+        "git_blob": "8f493b734a22d4255fccfce3b111797f01ceda26",
+        "sha256": "285f5f700f36b1ec2b1411316dd2b5414657d7cfa283ad4fbb8233a2c6892968"
+      },
+      "impl_header": "impl OriginalCellQ24MaterialReceiptConfigV1",
+      "index": 17,
+      "match_count": 1,
+      "name": "original_source_loan_binding",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs",
+      "source": {
+        "bytes": 447,
+        "git_blob": "ab5675559e64699e370caa1d96a0b5a5e11387f5",
+        "sha256": "568feb1a8c929ff1f61465d0c9f7bb1915ba71ec26fb242bb00ac5d3e5691bae"
+      },
+      "start": 307,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1049,
+      "identity": {
+        "bytes": 718,
+        "git_blob": "6db35f8954b5885390adb2d0b9b6bcd6e2d569fb",
+        "sha256": "63f432ffe53d17e080f00e7db625e8254443f883888d35d6e28a808b805bce40"
+      },
+      "impl_header": null,
+      "index": 18,
+      "match_count": 1,
+      "name": "encode",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_registry_bootstrap.rs",
+      "source": {
+        "bytes": 2086,
+        "git_blob": "67095dd0685e6a921d525ad41e95619cc1b118f8",
+        "sha256": "5592b070b410a3feec1add96fea824288343d9db5ff50ce5c331fca234e65d7f"
+      },
+      "start": 331,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2085,
+      "identity": {
+        "bytes": 1034,
+        "git_blob": "a4afaea4c62cd548c0ca5316f4afa9b7bf0dadf9",
+        "sha256": "a021ad73a4b109e78c081cf6bd906061bb132e42813d9de2824d194608b0a937"
+      },
+      "impl_header": null,
+      "index": 19,
+      "match_count": 1,
+      "name": "decode",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_registry_bootstrap.rs",
+      "source": {
+        "bytes": 2086,
+        "git_blob": "67095dd0685e6a921d525ad41e95619cc1b118f8",
+        "sha256": "5592b070b410a3feec1add96fea824288343d9db5ff50ce5c331fca234e65d7f"
+      },
+      "start": 1051,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 7785,
+      "identity": {
+        "bytes": 7310,
+        "git_blob": "eb805eb1d8efd3ba04d6f9c63276aee146748f4a",
+        "sha256": "e371107743e555209ce8e032ba4c9380011f977c256a2c96abcea44d8a0ac66a"
+      },
+      "impl_header": "impl<O, P, E> AgentdCircuitCellOwnerV1<O, P, E>\nwhere\n    O: CellStateOwnerV1,\n    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,\n    E: CellInputEncoderV1,",
+      "index": 20,
+      "match_count": 1,
+      "name": "execute_original_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "source": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      },
+      "start": 475,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1135,
+      "identity": {
+        "bytes": 942,
+        "git_blob": "9d94df79de365f674d04c3e3d3df5c6564213c15",
+        "sha256": "7f14e43e0448bc49c483b330d38656b839795610e4eb40cdd3e69a3afb4794cc"
+      },
+      "impl_header": "impl PublishedCircuitFeatureTaskV1",
+      "index": 21,
+      "match_count": 1,
+      "name": "read_original_material_publication",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs",
+      "source": {
+        "bytes": 1138,
+        "git_blob": "37df880c5fad725baddc29848e4932bdfba5bea0",
+        "sha256": "9978ee1e41a5ca573b1d76138ebb7e122a168133822cc391bad28fc6851ed8ef"
+      },
+      "start": 193,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 933,
+      "identity": {
+        "bytes": 556,
+        "git_blob": "1e1fffac8fc730a3b3c369a43900c4263a78e33a",
+        "sha256": "425ddd045c2dba459adfb38cd358a5576083c85b640065fbb1b96e5ee65dc271"
+      },
+      "impl_header": "impl<SW, CW> CircuitQ24TaskRuntimeV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 22,
+      "match_count": 1,
+      "name": "original_root_handoff_data",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "source": {
+        "bytes": 1401,
+        "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+        "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+      },
+      "start": 377,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1398,
+      "identity": {
+        "bytes": 463,
+        "git_blob": "abfb856e0c8da35ce12088035f9630fd0a3f346d",
+        "sha256": "18d262af959e84f3dc5736bdd4f3b0d30340551fad88a84706ac61d6efe6cf6b"
+      },
+      "impl_header": "impl<SW, CW> CircuitQ24TaskRuntimeV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 23,
+      "match_count": 1,
+      "name": "take_original_root_lane",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "source": {
+        "bytes": 1401,
+        "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+        "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+      },
+      "start": 935,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 10785,
+      "identity": {
+        "bytes": 9388,
+        "git_blob": "e3d39a52398b8fc60772b20d3757bacb761585a2",
+        "sha256": "0b1e021842d5a8033c22e6deb83bacd45e68ebe928bf7a04a2cc6d5f1738c440"
+      },
+      "impl_header": "impl<C, I> CircuitTaskDriverV1<C, I>\nwhere\n    C: OriginalCellPort,\n    I: CircuitTaskInputProviderV1,",
+      "index": 24,
+      "match_count": 1,
+      "name": "execute",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+      "source": {
+        "bytes": 13631,
+        "git_blob": "90075e64c2df933be2f3bcbdb64cc5bf68f32d2b",
+        "sha256": "b96884e676a82ef8a4e8cf083374aa63753709d6bc362a8afecda867906d327d"
+      },
+      "start": 1397,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 1366,
+      "identity": {
+        "bytes": 548,
+        "git_blob": "4460cbe4617ece3f7fe98d146bb9ae31dfec9ee2",
+        "sha256": "3fa065566b8838f3b2cbe0914790b4a3734965e815c5ae4bff175acd7511023d"
+      },
+      "impl_header": "impl AdmissionData",
+      "index": 25,
+      "match_count": 1,
+      "name": "from_original",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 818,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2024,
+      "identity": {
+        "bytes": 656,
+        "git_blob": "06bb7b11da178f9ad5647b0e11515e211d6a8084",
+        "sha256": "0a7a6f581b7ed5ffa62abe5d61d9e696dedc32cc2a8b48ed855950ef9d54f1e7"
+      },
+      "impl_header": "impl AdmissionData",
+      "index": 26,
+      "match_count": 1,
+      "name": "encode",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 1368,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 3349,
+      "identity": {
+        "bytes": 127,
+        "git_blob": "76d52c12fb80b18426c5c349985581db6c1ae862",
+        "sha256": "7f0b7536e7c2ba6d0a8381be449712f02c2e1daf0635ed70fb51235dbfb2c4fd"
+      },
+      "impl_header": "impl ReverseClient",
+      "index": 27,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 3222,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 3487,
+      "identity": {
+        "bytes": 136,
+        "git_blob": "15864288902fe61e1d59f0072e4deea0f49db6a8",
+        "sha256": "4ddb98aa47934ea73eb45ccf6392da10f0e24fac34c728f784950082ee520837"
+      },
+      "impl_header": "impl ReverseClient",
+      "index": 28,
+      "match_count": 1,
+      "name": "check_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 3351,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 4362,
+      "identity": {
+        "bytes": 873,
+        "git_blob": "c403e35ba8747d6d7ab8101486b7442ccd195366",
+        "sha256": "29ddf52ea0f68620718a2b6e0abaf1fdbd6190db32098f55497ffb8c7c82b15c"
+      },
+      "impl_header": "impl ReverseClient",
+      "index": 29,
+      "match_count": 1,
+      "name": "open_admission",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 3489,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 5238,
+      "identity": {
+        "bytes": 874,
+        "git_blob": "25e3fa32a1daf9f36022dc83d56b1a0da033e1cc",
+        "sha256": "7fc99573c4a1a1446f77ae03e7964c4082fba1f43f5c05f8dda46d89da9b94ac"
+      },
+      "impl_header": "impl ReverseClient",
+      "index": 30,
+      "match_count": 1,
+      "name": "completion",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 4364,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 5607,
+      "identity": {
+        "bytes": 367,
+        "git_blob": "90a391ede61dbf4e871ba8786d695e6729f2b3be",
+        "sha256": "7e6cde4eeb2c5eea2906d528eb08e25eb82c5c17b61ef9ee97aa75f0dcb76272"
+      },
+      "impl_header": "impl ReverseClient",
+      "index": 31,
+      "match_count": 1,
+      "name": "terminal",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 5240,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 6121,
+      "identity": {
+        "bytes": 79,
+        "git_blob": "c59fc4cc0b96b6e0d25bed90ec2a8576b149106f",
+        "sha256": "4b7f0ac4c82ca81d61666ffd9b2ea6f1a6905aa4e563d8f57a0bc00644da20f3"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 32,
+      "match_count": 1,
+      "name": "dispatch",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6042,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6190,
+      "identity": {
+        "bytes": 68,
+        "git_blob": "2b378612b67b5f95f2639cac381d388c5d3460da",
+        "sha256": "f138fc1eca3914765eb96d93fb2408b44036fb8ce5f5d41aa0788997e1f6de4d"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 33,
+      "match_count": 1,
+      "name": "owner_agent_id",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6122,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6276,
+      "identity": {
+        "bytes": 85,
+        "git_blob": "77f6c0e25a6df707804ba12434e2e502ed8e497a",
+        "sha256": "2c81d5f5805e2b70f51ba895c00649f3209eea7ca28ca00439110f66e9525909"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 34,
+      "match_count": 1,
+      "name": "definition_digest",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6191,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6382,
+      "identity": {
+        "bytes": 105,
+        "git_blob": "82b1cc0e0b024ffe5932cbcb6926afe41415c773",
+        "sha256": "32792d78446c030d89a9d480a0b2beebf24d2dda1b7e20458d604067c78ffc4c"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 35,
+      "match_count": 1,
+      "name": "execution_request_digest",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6277,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6452,
+      "identity": {
+        "bytes": 69,
+        "git_blob": "5e0d6e9a7708e8040074bd3ea622fef593fd8131",
+        "sha256": "1a2f342b212a2576f07446dc462e8f05cca716f7b2297777b32159fa4675ec14"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 36,
+      "match_count": 1,
+      "name": "observed_at_ms",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6383,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6528,
+      "identity": {
+        "bytes": 75,
+        "git_blob": "4c44747cd23606c2c627d559052e4e2189e875c5",
+        "sha256": "27b9d54eddc969aaaf7dd90db1bffa615489565201f5e69648be669c37797894"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 37,
+      "match_count": 1,
+      "name": "lease_expires_at_ms",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6453,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6598,
+      "identity": {
+        "bytes": 69,
+        "git_blob": "fd75faaff0e0331c7d4a3ae084a0c6d26cfb1ed7",
+        "sha256": "b43b28e87052cb4b12d6b48b1a0e3118bb8972969b20cd37efe23387dd7abaf6"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 38,
+      "match_count": 1,
+      "name": "run_deadline_ms",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6529,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6680,
+      "identity": {
+        "bytes": 81,
+        "git_blob": "edb6e5edbdc66c7372d67e2e95522c9668700d71",
+        "sha256": "c307edace5d055e890ad2410d4f1d755524a864d7ea75679ad51300c0a34bf5e"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 39,
+      "match_count": 1,
+      "name": "reconciliation_only",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6599,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 7233,
+      "identity": {
+        "bytes": 551,
+        "git_blob": "186b72129913b58b9baa6ad3d0355fbbf50ebdaa",
+        "sha256": "7900dc392cc822811c6f8cb14303f8a758200bce39ce2b62867757a5f2705450"
+      },
+      "impl_header": "impl OriginalRemoteAdmission",
+      "index": 40,
+      "match_count": 1,
+      "name": "require_current",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 6682,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 8009,
+      "identity": {
+        "bytes": 392,
+        "git_blob": "be37f6059ce25c966a99b90386a6495e0b728c12",
+        "sha256": "1cf6cbf9fc498c7d003d585cb5053010d5ee0124512939ac3de2c0dce6711a73"
+      },
+      "impl_header": "impl OriginalRemoteCompletion",
+      "index": 41,
+      "match_count": 1,
+      "name": "into_original_payload",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "source": {
+        "bytes": 8679,
+        "git_blob": "97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13",
+        "sha256": "2122f5ded9c9a38819cd82a8ff6625685b41e246486a503648bc68824161b9c1"
+      },
+      "start": 7617,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4976,
+      "identity": {
+        "bytes": 2267,
+        "git_blob": "a471fc71cc6ca3c42ffbea0e65ce48e39ae4ac48",
+        "sha256": "d5928304b1d0f6041997b40dc40685e613cd9db241b130ee7b5190a7effb2c95"
+      },
+      "impl_header": "impl DaemonClient",
+      "index": 42,
+      "match_count": 1,
+      "name": "new_until",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 2709,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 5309,
+      "identity": {
+        "bytes": 331,
+        "git_blob": "ca870a62936fe5f50276d07cd86d4a2691da6c3e",
+        "sha256": "a4f685fc3b58cca5d6acab95a9d547d5b993f89e941879c9b0e72f50a5c50ddd"
+      },
+      "impl_header": "impl DaemonClient",
+      "index": 43,
+      "match_count": 1,
+      "name": "begin_original_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 4978,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6308,
+      "identity": {
+        "bytes": 997,
+        "git_blob": "9534d54cf4574b9da025d52d38b5471cc04d5ea6",
+        "sha256": "6813dd918351e2dff06b3fb4b2a4a4b4f047315cdb4f785091811906f7153cf6"
+      },
+      "impl_header": "impl DaemonClient",
+      "index": 44,
+      "match_count": 1,
+      "name": "run_reverse",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 5311,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6581,
+      "identity": {
+        "bytes": 271,
+        "git_blob": "e542080aac6b13a430df80e1afc052be742b7b1f",
+        "sha256": "f931c959a3e6661c32c9dce0e57f674cf24ac7bab8102fbc67026e897d732a1b"
+      },
+      "impl_header": "impl DaemonClient",
+      "index": 45,
+      "match_count": 1,
+      "name": "stop_reverse",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 6310,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 7386,
+      "identity": {
+        "bytes": 803,
+        "git_blob": "5a7140ec2e184bf5f504fd1037fe833a90e0a9b5",
+        "sha256": "8d49cb0a9b2e622db7e664c4c382d85270c04a640bc0adba4f1daaa28e74ca3b"
+      },
+      "impl_header": "impl DaemonClient",
+      "index": 46,
+      "match_count": 1,
+      "name": "sample_original_clock",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 6583,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 9031,
+      "identity": {
+        "bytes": 1643,
+        "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+        "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+      },
+      "impl_header": "impl DaemonClient",
+      "index": 47,
+      "match_count": 1,
+      "name": "original_execution",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 7388,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 10412,
+      "identity": {
+        "bytes": 73,
+        "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+        "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+      },
+      "impl_header": "impl DaemonCellPort",
+      "index": 48,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 10339,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 10502,
+      "identity": {
+        "bytes": 89,
+        "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+        "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+      },
+      "impl_header": "impl DaemonCellPort",
+      "index": 49,
+      "match_count": 1,
+      "name": "original_registry",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 10413,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 10792,
+      "identity": {
+        "bytes": 289,
+        "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+        "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+      },
+      "impl_header": "impl DaemonCellPort",
+      "index": 50,
+      "match_count": 1,
+      "name": "original_lookup",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 10503,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 11105,
+      "identity": {
+        "bytes": 312,
+        "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+        "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+      },
+      "impl_header": "impl DaemonCellPort",
+      "index": 51,
+      "match_count": 1,
+      "name": "original_execute",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "start": 10793,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2386,
+      "identity": {
+        "bytes": 1217,
+        "git_blob": "3688f6317564801c7cd41e407f49997b5358255e",
+        "sha256": "6229997b6bf11329cc88b9bda3e262459970d1658881849ec4c20e2a8aa3b6da"
+      },
+      "impl_header": null,
+      "index": 52,
+      "match_count": 1,
+      "name": "dispatch",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_data.rs",
+      "source": {
+        "bytes": 6453,
+        "git_blob": "c931ded901b7894ca95bbe0391ca2102c246f171",
+        "sha256": "6c9144aa2bf286cbd33f08be5081b433c9f64fdd70978de498368ed6cfd0bd64"
+      },
+      "start": 1169,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2589,
+      "identity": {
+        "bytes": 201,
+        "git_blob": "538bae0daf9542968d0635eedcf1e7593eebdee1",
+        "sha256": "33d451c6bec0f93c1e0f221795b9961ab6cb8d55e2c98ebd44263911fbbb36c4"
+      },
+      "impl_header": null,
+      "index": 53,
+      "match_count": 1,
+      "name": "encode_dispatch",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_data.rs",
+      "source": {
+        "bytes": 6453,
+        "git_blob": "c931ded901b7894ca95bbe0391ca2102c246f171",
+        "sha256": "6c9144aa2bf286cbd33f08be5081b433c9f64fdd70978de498368ed6cfd0bd64"
+      },
+      "start": 2388,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 3133,
+      "identity": {
+        "bytes": 542,
+        "git_blob": "e9bb9ddba22ea6046f90a4d237f21c7db701b966",
+        "sha256": "7d0f900e3280d91f7eb4527de13a07cf31a5c32e91e92b7700eaeeb7329043db"
+      },
+      "impl_header": null,
+      "index": 54,
+      "match_count": 1,
+      "name": "encode_decision",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_data.rs",
+      "source": {
+        "bytes": 6453,
+        "git_blob": "c931ded901b7894ca95bbe0391ca2102c246f171",
+        "sha256": "6c9144aa2bf286cbd33f08be5081b433c9f64fdd70978de498368ed6cfd0bd64"
+      },
+      "start": 2591,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 5966,
+      "identity": {
+        "bytes": 2599,
+        "git_blob": "18415d75203ea6895f98ec31302e53ec06fbf378",
+        "sha256": "7ca09ba40a914777e7da6541ada38c0830814c308c5aa472ffea9872d5268cac"
+      },
+      "impl_header": null,
+      "index": 55,
+      "match_count": 1,
+      "name": "decision",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_data.rs",
+      "source": {
+        "bytes": 6453,
+        "git_blob": "c931ded901b7894ca95bbe0391ca2102c246f171",
+        "sha256": "6c9144aa2bf286cbd33f08be5081b433c9f64fdd70978de498368ed6cfd0bd64"
+      },
+      "start": 3367,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2553,
+      "identity": {
+        "bytes": 283,
+        "git_blob": "cc5b90bc29f91e97b6538eaaca18346ff0dccb28",
+        "sha256": "4a429cb57b6d8fb5a2943da8e781df013d03cba2f6214f42fdbfccfb885ae5d1"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 56,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 2270,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2866,
+      "identity": {
+        "bytes": 311,
+        "git_blob": "d4449a3d1fd33f1e6f93492a7102406b229d36e2",
+        "sha256": "b64c54bd1be3ff4a959fb88a1358251d8231c22beda04de3b45c4db672cf723f"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 57,
+      "match_count": 1,
+      "name": "attach",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 2555,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 3692,
+      "identity": {
+        "bytes": 824,
+        "git_blob": "c45064b187eb5905e3ef05ee012973b693e48ef1",
+        "sha256": "928c6c9a30b532fcdd20b22de67035d402b34e23342aad1a1f7a57e1e76a9f92"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 58,
+      "match_count": 1,
+      "name": "begin_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 2868,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 4090,
+      "identity": {
+        "bytes": 396,
+        "git_blob": "e188a465a55cb3d38b36705172cbd8d1fdf4b4ac",
+        "sha256": "8d0e45058f7573fd17c0155aaa5cd7f2f1734dd11f64ae6812b63b6889061688"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 59,
+      "match_count": 1,
+      "name": "record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 3694,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 4437,
+      "identity": {
+        "bytes": 345,
+        "git_blob": "087768f2e4ab07bfca193ad190e792e831bd6ccd",
+        "sha256": "7a76e1326c18070861cc4a9fdc7fb73c24e50bced1b827168c22efc3be3766e5"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 60,
+      "match_count": 1,
+      "name": "current_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 4092,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 5244,
+      "identity": {
+        "bytes": 805,
+        "git_blob": "284266def5148c3c33b5566b48212ba790fb92e7",
+        "sha256": "3932a39ede1ddbbfece4de7a678684a3ec5f4cfa0f40caec5a4c3108ffac358d"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 61,
+      "match_count": 1,
+      "name": "retain_admission",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 4439,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 6222,
+      "identity": {
+        "bytes": 976,
+        "git_blob": "cbb336b6ac76a9df61277b25e0b12c9b10d2641d",
+        "sha256": "133f90fe1c2cf4c612e1c2d2e41c69bdd2231e277aa5e309b4ba0b4824d58e72"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 62,
+      "match_count": 1,
+      "name": "retain_completion",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 5246,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 9531,
+      "identity": {
+        "bytes": 3146,
+        "git_blob": "a0ddd2a2c7e2ffad396a1acd3c530f46409824cf",
+        "sha256": "e9f036be8a397e5f519026b2a63e47a14b34c5b31784618795feb7f574e2fa9b"
+      },
+      "impl_header": "impl DaemonLoans",
+      "index": 63,
+      "match_count": 1,
+      "name": "respond",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "source": {
+        "bytes": 10706,
+        "git_blob": "50bad41eda015595c7a69f8498cb2e1a38fd95b4",
+        "sha256": "4fe70b48bd3361d60c941a241f3420636f442f6dd79f3d4a5351fe34b0b5b335"
+      },
+      "start": 6385,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 630,
+      "identity": {
+        "bytes": 278,
+        "git_blob": "e1193dd439d6611a0158f408628a9bbd18cd9638",
+        "sha256": "c2f0cc81a12d7f5493e5d2964aa858f3c7383c5e376e825ed0c9fb1279628878"
+      },
+      "impl_header": null,
+      "index": 64,
+      "match_count": 1,
+      "name": "channel",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "source": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "start": 352,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4511,
+      "identity": {
+        "bytes": 3879,
+        "git_blob": "f12d559f359692a41e1c982c3c1b9f6bb1fd8d01",
+        "sha256": "ff9feb787c0e89de3ef2e3655d511c772ac50971f466ccaaeddbe537548a8992"
+      },
+      "impl_header": null,
+      "index": 65,
+      "match_count": 1,
+      "name": "channel_until",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "source": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "start": 632,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1104,
+      "identity": {
+        "bytes": 178,
+        "git_blob": "b556d3fe5c8e99f8b02c4013ee0eafee81ec3211",
+        "sha256": "f139bf36e19179848ea4b0de5f8adb907229fe3a55cd7ba909c43cc23593746c"
+      },
+      "impl_header": "impl OriginalRootTaskStreams",
+      "index": 66,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "start": 926,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1764,
+      "identity": {
+        "bytes": 233,
+        "git_blob": "14fa702baf95a790e2fd536542ce113d9846f317",
+        "sha256": "a262483e6925029e6670c56a9c41916e87368814e7d430f625edaef5a6cac89a"
+      },
+      "impl_header": "impl<SW: AnchorWitnessStore> OriginalRootTaskLane<SW>",
+      "index": 67,
+      "match_count": 1,
+      "name": "from_original_factory",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "start": 1531,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3219,
+      "identity": {
+        "bytes": 1348,
+        "git_blob": "9c735da5e37b4b2bc5bdf6f915315c7153da1cbe",
+        "sha256": "b233ce869b50e7ed7d777c8f514976af08220d5f709806147b0bb12f236d6897"
+      },
+      "impl_header": null,
+      "index": 68,
+      "match_count": 1,
+      "name": "serve",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "source": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "start": 1871,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2167,
+      "identity": {
+        "bytes": 225,
+        "git_blob": "97ae775d829d85d67c8b91c31356912689890acd",
+        "sha256": "3fef425f64972cc913a5a2546b4b86c66e3da5c28ab502271cde09b1a9c3bbf2"
+      },
+      "impl_header": "impl Budget",
+      "index": 69,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 1942,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2376,
+      "identity": {
+        "bytes": 207,
+        "git_blob": "1f710e31be063b9227e770b8f287a32674ce759d",
+        "sha256": "628aef391458577fdce86b467705ba707daac982d55a2abbbe05a08abab67552"
+      },
+      "impl_header": "impl Budget",
+      "index": 70,
+      "match_count": 1,
+      "name": "before",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 2169,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 3796,
+      "identity": {
+        "bytes": 501,
+        "git_blob": "36cb10860059cf3496608e73c4193a6b7f9c2a9c",
+        "sha256": "452efa8cdae7ac79acac9322cc4ad8d35268f013583177f00c9f146dfac6c8ce"
+      },
+      "impl_header": "impl Lane",
+      "index": 71,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 3295,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 4650,
+      "identity": {
+        "bytes": 852,
+        "git_blob": "dea15e92e8606ef089bbf902b7d3d627d91ab740",
+        "sha256": "9f6579bb28ec939a053743f63d208c309db82c7f3832324f68a1e573a1b64ac3"
+      },
+      "impl_header": "impl Lane",
+      "index": 72,
+      "match_count": 1,
+      "name": "call",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 3798,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 6256,
+      "identity": {
+        "bytes": 1604,
+        "git_blob": "a0c2ba8fcc37db62e1e5ffac8ff956d2a1a1bd08",
+        "sha256": "7a9e189c48ec01dc65716eeae6d7343485a977d4dad3622a1470e6ef29603c10"
+      },
+      "impl_header": "impl Lane",
+      "index": 73,
+      "match_count": 1,
+      "name": "serve_one",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 4652,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 7744,
+      "identity": {
+        "bytes": 175,
+        "git_blob": "8425022335975bf33a8f7ace34d7ba79a248ec67",
+        "sha256": "0b3004b7a171d207e9d67457ba0fca025828748297d7ba4b800ea5a910e00620"
+      },
+      "impl_header": null,
+      "index": 74,
+      "match_count": 1,
+      "name": "bounded",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 7569,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 8012,
+      "identity": {
+        "bytes": 266,
+        "git_blob": "00a7e8c5c3d98e50fccc9c1bc31c9e27000da010",
+        "sha256": "355752934d8eba63201f85c822930bad7864b60ea1a7731f644d36d3a1b1b5bb"
+      },
+      "impl_header": null,
+      "index": 75,
+      "match_count": 1,
+      "name": "blob",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 7746,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 8261,
+      "identity": {
+        "bytes": 184,
+        "git_blob": "b32ba0ada274c6710bacf45279f90bf309a96a88",
+        "sha256": "a75d75e7be0eca8fe6112e1f2cca41989839657e28c022f3d716b0b04be8b889"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 76,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 8077,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 8514,
+      "identity": {
+        "bytes": 252,
+        "git_blob": "d43d4bfe7f94e7853e381b810dcad49335cc69ae",
+        "sha256": "16ddef38d60fae880a7488523a13eea75566ddc487a6f77e7b7e830365636c21"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 77,
+      "match_count": 1,
+      "name": "take",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 8262,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 8622,
+      "identity": {
+        "bytes": 107,
+        "git_blob": "7f6656dfc81dbec967ee5610ab1992765fe5d824",
+        "sha256": "8b9bc423fb5642079b00b42dfe6cfa4bbd1d12c071bb63e33c039a95d3c42dbf"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 78,
+      "match_count": 1,
+      "name": "u64",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 8515,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 8883,
+      "identity": {
+        "bytes": 260,
+        "git_blob": "3e63083285e7e6b593bc78d2798981e78ee65a33",
+        "sha256": "7e77ddada2c36ba3253d4da5003721ba871c8cd295bc9e99bf6e0621f46f61f1"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 79,
+      "match_count": 1,
+      "name": "blob",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 8623,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 9070,
+      "identity": {
+        "bytes": 140,
+        "git_blob": "291795e282fa9d3d905792bb66643f9cfb0dd841",
+        "sha256": "0dc38be6477565165d88cb3c37f2b3a551991d88d3b2284379ce5ef28955f48f"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 80,
+      "match_count": 1,
+      "name": "end",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "source": {
+        "bytes": 9177,
+        "git_blob": "884b2143d7b818c6ea6b5087134453c2c0e5b54e",
+        "sha256": "4db39cc840c7b7b5bfebc1fbba71ab7855f25ce981d50e2884a245551498423f"
+      },
+      "start": 8930,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 1302,
+      "identity": {
+        "bytes": 781,
+        "git_blob": "71121ffefa38012a6e176c92dc9d2876b82b3eee",
+        "sha256": "d9abd8b3e64abaaac7ae929cb1e85e744d0c3a72c58d87134a31215a228156cb"
+      },
+      "impl_header": null,
+      "index": 81,
+      "match_count": 1,
+      "name": "encode",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_cell.rs",
+      "source": {
+        "bytes": 7905,
+        "git_blob": "101254a1284fcad26f6da8127a76a6ba5e46d2b5",
+        "sha256": "b8a4f0ba7e2817422e37cf87a50a0fa333e543af3ca40f000fd400b7e61aca94"
+      },
+      "start": 521,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2268,
+      "identity": {
+        "bytes": 964,
+        "git_blob": "56bac1dd42d35c960119a11ad757be1748d2da4e",
+        "sha256": "6b910c95f5866be78e5f64d610deb2d0c4f85ac2feb57bf4bc30f74eaa2eaddb"
+      },
+      "impl_header": null,
+      "index": 82,
+      "match_count": 1,
+      "name": "decode",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_cell.rs",
+      "source": {
+        "bytes": 7905,
+        "git_blob": "101254a1284fcad26f6da8127a76a6ba5e46d2b5",
+        "sha256": "b8a4f0ba7e2817422e37cf87a50a0fa333e543af3ca40f000fd400b7e61aca94"
+      },
+      "start": 1304,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 475,
+      "identity": {
+        "bytes": 70,
+        "git_blob": "6e5758ef6508fa5c0c2cb68b78baebcedc2941c2",
+        "sha256": "98c3232d14cc982711440292052caec800dd1b05b74ee5be96a96b87423a3e15"
+      },
+      "impl_header": "impl Writer",
+      "index": 83,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 405,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 738,
+      "identity": {
+        "bytes": 262,
+        "git_blob": "78958fdb1b2008d2f9b7e63d6b194d071bcc2811",
+        "sha256": "106c8aac962eabb5cab6c2a3574f48559f8b8094f56ece301dec56a38f3a4121"
+      },
+      "impl_header": "impl Writer",
+      "index": 84,
+      "match_count": 1,
+      "name": "raw",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 476,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 827,
+      "identity": {
+        "bytes": 88,
+        "git_blob": "1e1e6e0184465e9850a051df7094f27f4d69e0ce",
+        "sha256": "d071040ecf9d30189f2d4d11354359320afdcd3a5185a56e6a82121fbf501883"
+      },
+      "impl_header": "impl Writer",
+      "index": 85,
+      "match_count": 1,
+      "name": "byte",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 739,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 928,
+      "identity": {
+        "bytes": 100,
+        "git_blob": "098671810fc86d55d6a58bf950da3115c8ea779a",
+        "sha256": "5cc32a03d448b7fb708ebd8bb91c4d73f479d8b0fcfef10846ba8c3eb7d36df6"
+      },
+      "impl_header": "impl Writer",
+      "index": 86,
+      "match_count": 1,
+      "name": "u32",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 828,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1029,
+      "identity": {
+        "bytes": 100,
+        "git_blob": "43fd9da788df44c38eeed48b54a68ff08e441757",
+        "sha256": "b00fc430e4a657a072bea72f7fca239f0c9a7b1d0e7d169c2373815d7e073718"
+      },
+      "impl_header": "impl Writer",
+      "index": 87,
+      "match_count": 1,
+      "name": "u64",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 929,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1130,
+      "identity": {
+        "bytes": 100,
+        "git_blob": "13c14d2b7c5acb090c446fd47aa7011498cc009a",
+        "sha256": "d29dda6cd937dcca35be33b737e7875cdbb119e4a9617f2a5d323a0c1ec3356d"
+      },
+      "impl_header": "impl Writer",
+      "index": 88,
+      "match_count": 1,
+      "name": "i64",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 1030,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1282,
+      "identity": {
+        "bytes": 151,
+        "git_blob": "b8369caab5c982f89277e097a9adf1dd2fb2111f",
+        "sha256": "ae268f3befbcf2d0eefe8464c5ff0a9fe9db0229b709a9c51227dfb60a0ecbbb"
+      },
+      "impl_header": "impl Writer",
+      "index": 89,
+      "match_count": 1,
+      "name": "size",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 1131,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1513,
+      "identity": {
+        "bytes": 230,
+        "git_blob": "3f6558b7ae9a3fea2d23b268bf6280bf6d32f685",
+        "sha256": "9cd1d6f3fd3c9e0534fc137beaa2dd7fa06d0d3bb1a96487e4ded82038908e33"
+      },
+      "impl_header": "impl Writer",
+      "index": 90,
+      "match_count": 1,
+      "name": "count",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 1283,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1698,
+      "identity": {
+        "bytes": 184,
+        "git_blob": "ca34fed37720a0e198a2af2235d1ce826d03c586",
+        "sha256": "c7820e33eb8433e63098062d35536e8ec90e3d58f61016b615c50c4bb5d9d5f0"
+      },
+      "impl_header": "impl Writer",
+      "index": 91,
+      "match_count": 1,
+      "name": "bytes",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 1514,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1958,
+      "identity": {
+        "bytes": 259,
+        "git_blob": "6884da5f41709282ec760e04d10dffc874aef326",
+        "sha256": "6c2a608f5c86844c0c11fd5cd0b430ee1b61b2d1476c21e65054f10db8f898c1"
+      },
+      "impl_header": "impl Writer",
+      "index": 92,
+      "match_count": 1,
+      "name": "text",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 1699,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2059,
+      "identity": {
+        "bytes": 100,
+        "git_blob": "d92604a97727b5e4e51ec523dd923f79a85de035",
+        "sha256": "5946f069d026dbaefeb2e80ffe706a9c291f25bd47658f026089fb818ab46dc6"
+      },
+      "impl_header": "impl Writer",
+      "index": 93,
+      "match_count": 1,
+      "name": "id",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 1959,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2164,
+      "identity": {
+        "bytes": 104,
+        "git_blob": "a62e1b1fdc89b28e74cdda34f81217c1496863b3",
+        "sha256": "ca0b39daebde170e62447e3e0208e7e8e3cd33e67c9ed308faa865b8521f5638"
+      },
+      "impl_header": "impl Writer",
+      "index": 94,
+      "match_count": 1,
+      "name": "digest",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 2060,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2270,
+      "identity": {
+        "bytes": 105,
+        "git_blob": "2cc5b639af8004ca242e71d90ebf55bce3836250",
+        "sha256": "1d6f2ab1978436dfc60faaae2e09c3cab0a472b8662d034a1a17c1a85102763c"
+      },
+      "impl_header": "impl Writer",
+      "index": 95,
+      "match_count": 1,
+      "name": "generation",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 2165,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2441,
+      "identity": {
+        "bytes": 170,
+        "git_blob": "354933cb99c1320f801bbc102923c41ce535ad7f",
+        "sha256": "102e807225f6785fc452cec1bbde183b43e904a1e37af4c213566c70fab16325"
+      },
+      "impl_header": "impl Writer",
+      "index": 96,
+      "match_count": 1,
+      "name": "json",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 2271,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2494,
+      "identity": {
+        "bytes": 52,
+        "git_blob": "24538dda79af7ee3bf3857a6bcc099254479f433",
+        "sha256": "8792f5e1d916ab335fda2f338e69c91c5cc0255435acd830d159a95beba5b48c"
+      },
+      "impl_header": "impl Writer",
+      "index": 97,
+      "match_count": 1,
+      "name": "finish",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 2442,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2787,
+      "identity": {
+        "bytes": 226,
+        "git_blob": "65769e14d4ce1ea9f49f4da8ca5651d8c94ef82b",
+        "sha256": "6bced7905059a0e9d753abed145f47bd09aba926778a90a33d81ef1347a4ec4c"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 98,
+      "match_count": 1,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 2561,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3040,
+      "identity": {
+        "bytes": 252,
+        "git_blob": "9a3861948f2e700930ee6b65844d25e959ae7bce",
+        "sha256": "c1804305e4a2509183a60f4c19db42ab4f1eeadbca33de611f07adaa3a8474f1"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 99,
+      "match_count": 1,
+      "name": "take",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 2788,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3124,
+      "identity": {
+        "bytes": 83,
+        "git_blob": "0006d4bacaf60a1415a579cf753c197c340cd556",
+        "sha256": "a466f16b4de2b9fbd304d3479b6e28381d7e6cca91a5815fdc1f6ae3c6f21941"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 100,
+      "match_count": 1,
+      "name": "byte",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3041,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3220,
+      "identity": {
+        "bytes": 95,
+        "git_blob": "7e2e2b892bb885a3d3cd48887c8534cd38ecb38d",
+        "sha256": "8d8f7fbfb3ae0ca0a7864e5fa1c44ee55250c22fe217421c14ecf12f8789a501"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 101,
+      "match_count": 1,
+      "name": "u32",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3125,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3316,
+      "identity": {
+        "bytes": 95,
+        "git_blob": "608b3fe7087a61c0cc6c2c36f57e64e7b1407375",
+        "sha256": "ed6b0b28bbf7b8d3a64d0237ab5885ec0461e8c38951a2d82239ad2b21116aa7"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 102,
+      "match_count": 1,
+      "name": "u64",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3221,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3412,
+      "identity": {
+        "bytes": 95,
+        "git_blob": "28d12fe7dc81daebd7eac5c4f50c51a28f349d39",
+        "sha256": "cc90c48fee110fe0de02439a8db8e4e316a8256b57759854a94a412db4a7c580"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 103,
+      "match_count": 1,
+      "name": "i64",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3317,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3550,
+      "identity": {
+        "bytes": 137,
+        "git_blob": "ca285f5e33a4cd5216a0e0c2d7d583ea5aa8ccdc",
+        "sha256": "95f7c950aa22f2926852717761d5026ca3f0bb51d948820eb20eb5576d1729e3"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 104,
+      "match_count": 1,
+      "name": "size",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3413,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3763,
+      "identity": {
+        "bytes": 212,
+        "git_blob": "7387073567d5dc2b2fbd56a79902e576f534a8e2",
+        "sha256": "9dea7242dd7011dd065a6c1653727baab5961328244fcbd6851a0c930a07a51f"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 105,
+      "match_count": 1,
+      "name": "count",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3551,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3998,
+      "identity": {
+        "bytes": 234,
+        "git_blob": "de3782b3ffdc1498bd6169f05517c0a2406c2780",
+        "sha256": "05bde908d745ffad72a77b0854c59838699c723866c4c15a5c47ea1cd8e44cfe"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 106,
+      "match_count": 1,
+      "name": "bytes",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3764,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4333,
+      "identity": {
+        "bytes": 334,
+        "git_blob": "298264730dc46c4fba0e3b05d8563f72f702ef8f",
+        "sha256": "dcbe33a16508150f5ed202bbce4823ca591d54af39e99656066dca8731fa39e1"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 107,
+      "match_count": 1,
+      "name": "text",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 3999,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4471,
+      "identity": {
+        "bytes": 137,
+        "git_blob": "ea01515a4d644b89c1623a76bcbffc3930760bcf",
+        "sha256": "546cd4d7f91b08f7a6fcbaf59dea7872ddcaad8b55f917d1525df1816fbfc83e"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 108,
+      "match_count": 1,
+      "name": "id",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 4334,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4577,
+      "identity": {
+        "bytes": 105,
+        "git_blob": "5a51bc5960f61c14697b904c29bf6ba72cce0f03",
+        "sha256": "62e6622493a0ed78a6cf77b5b1279e2f4f6298f3ecfbdd9cb49e6aadcee4cb92"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 109,
+      "match_count": 1,
+      "name": "digest",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 4472,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4726,
+      "identity": {
+        "bytes": 148,
+        "git_blob": "00020e090b1c462294b8ea9a1168bb198c6efc34",
+        "sha256": "f92e8f7a15a8f9d969480e388ac91decdfe28f036f9aafb1efbefb62472bbd7d"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 110,
+      "match_count": 1,
+      "name": "generation",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 4578,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 5106,
+      "identity": {
+        "bytes": 379,
+        "git_blob": "c95f4a06644c4af15ca78a859ca27ece02277571",
+        "sha256": "896e66544d263931ebc98ed7d7899fba22b4a58eb832262d985815522fb27daa"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 111,
+      "match_count": 1,
+      "name": "json",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 4727,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 5239,
+      "identity": {
+        "bytes": 132,
+        "git_blob": "ccd97bec7c6ebfe196e091c2bdee3c1ad6e01ef0",
+        "sha256": "d3707573e0c31fcc1f051f1adc7c1f97ba57811397f5e2e0019ba91dce9b00c5"
+      },
+      "impl_header": "impl<'a> Reader<'a>",
+      "index": 112,
+      "match_count": 1,
+      "name": "end",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+      "source": {
+        "bytes": 5242,
+        "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+        "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+      },
+      "start": 5107,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2930,
+      "identity": {
+        "bytes": 479,
+        "git_blob": "c834770f3c358a8dfdfac7737c27e86c2244dabe",
+        "sha256": "4c8016075f42ea87b42da7a7f3d33b3ca41c576cb7ccb48492dadb43a2a8b862"
+      },
+      "impl_header": null,
+      "index": 113,
+      "match_count": 1,
+      "name": "retain",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "source": {
+        "bytes": 5080,
+        "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+        "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+      },
+      "start": 2451,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2536,
+      "identity": {
+        "bytes": 369,
+        "git_blob": "bd9885c4b4a513b564012f5158a24b258cec51f2",
+        "sha256": "d9060b3138d7d59dfd1ace6333fe29b71d14d208ae9392387021482a1da1ded8"
+      },
+      "impl_header": "impl CircuitTaskHandleV1",
+      "index": 114,
+      "match_count": 1,
+      "name": "retain_original_remote_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "source": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "start": 2167,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 10228,
+      "identity": {
+        "bytes": 189,
+        "git_blob": "17eac9818a20f57b08dc40588f8e36b76f7bb7d8",
+        "sha256": "6c0070210d6b88e6cfff92b3912c863583ae4cd2c43457195b29c52f874efea7"
+      },
+      "impl_header": "impl CircuitTaskRuntimeBootstrapV1",
+      "index": 115,
+      "match_count": 1,
+      "name": "original_root_handoff_registry",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "source": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "start": 10039,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 10468,
+      "identity": {
+        "bytes": 206,
+        "git_blob": "d5fab2a9f7713eaade586ca8df13f32d3f31f516",
+        "sha256": "7a0baf11e9489fac45f42ebdb28acad4a5fdfd4b719d004dcce023d4ddb539dd"
+      },
+      "impl_header": "impl CircuitTaskRuntimeBootstrapV1",
+      "index": 116,
+      "match_count": 1,
+      "name": "take_original_root_lane",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "source": {
+        "bytes": 11790,
+        "git_blob": "3aa3bf5bcb437f2b283209a7066a69a6892097de",
+        "sha256": "161eefe5bc3632a1b59196163c50909e807152e73dc7febf87700467230a3003"
+      },
+      "start": 10262,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 814,
+      "identity": {
+        "bytes": 513,
+        "git_blob": "199fa080e0f1643243bd69ac57c670fc7a301afd",
+        "sha256": "858d704ad8fa2401ebbdb2477851bf71e96035a8049be57533f77bd54c7ab6d4"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 117,
+      "match_count": 1,
+      "name": "original_root_handoff_source",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs",
+      "source": {
+        "bytes": 1960,
+        "git_blob": "aebdc81d5abc60ab64df221f6cf50d2cbc45e48d",
+        "sha256": "efc324d5d42e0d973529c2eaabd852ec57e5c5e46aad40d6435bc983832fdcba"
+      },
+      "start": 301,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1959,
+      "identity": {
+        "bytes": 775,
+        "git_blob": "666a76543e297ab322527b587da6bffc05740692",
+        "sha256": "6a5c836bd0390be4f08deb2c7d122b53c9828b213efead05fe5c5c7d6f599515"
+      },
+      "impl_header": null,
+      "index": 118,
+      "match_count": 1,
+      "name": "decode",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs",
+      "source": {
+        "bytes": 1960,
+        "git_blob": "aebdc81d5abc60ab64df221f6cf50d2cbc45e48d",
+        "sha256": "efc324d5d42e0d973529c2eaabd852ec57e5c5e46aad40d6435bc983832fdcba"
+      },
+      "start": 1184,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 11232,
+      "identity": {
+        "bytes": 1641,
+        "git_blob": "f79744654a0e26d7ead45e8bca397cb7d28d9520",
+        "sha256": "303288268825f8496d5aabfc0a41fc504d1e1c446cbf9e1ec9924dd564199518"
+      },
+      "impl_header": null,
+      "index": 119,
+      "match_count": 1,
+      "name": "encode_input",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "source": {
+        "bytes": 19407,
+        "git_blob": "934e400e9f88fd779ee7fa8a0d8cf2538b89c2b1",
+        "sha256": "1acaa1c500da3191a23cf8a7aa8ec4d511fd6029294c8d8fe3735b19fdaf57d5"
+      },
+      "start": 9591,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 13157,
+      "identity": {
+        "bytes": 1464,
+        "git_blob": "e2cc63cb1180b8204c475e55152f9f02965fefd9",
+        "sha256": "403d65122ca61fa7a351024983ef8f18492da3768a9de580897b8e06c530f396"
+      },
+      "impl_header": null,
+      "index": 120,
+      "match_count": 1,
+      "name": "decode_configuration_input",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "source": {
+        "bytes": 19407,
+        "git_blob": "934e400e9f88fd779ee7fa8a0d8cf2538b89c2b1",
+        "sha256": "1acaa1c500da3191a23cf8a7aa8ec4d511fd6029294c8d8fe3735b19fdaf57d5"
+      },
+      "start": 11693,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 2646,
+      "identity": {
+        "bytes": 1147,
+        "git_blob": "86a5263cc6ae157330672d2b5ccccfff0269e23f",
+        "sha256": "26a8ed02e912122bda9c5450f6efa61badf694b7f0f21a3a8cdc9270384094b3"
+      },
+      "impl_header": "impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>",
+      "index": 121,
+      "match_count": 1,
+      "name": "from_original_material_root_stream",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "source": {
+        "bytes": 7045,
+        "git_blob": "eebd90ee8ae68ec3b28a77fb492401d0c4bd64e8",
+        "sha256": "19c3379f7715b8b14dfabe922dc7ab5c477499fd64eec80f51e93554b4256e58"
+      },
+      "start": 1499,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4342,
+      "identity": {
+        "bytes": 1678,
+        "git_blob": "f6952793aa7a61bf4d225d23cf3ca29bd8d78481",
+        "sha256": "a99fb98924751398eaeaceeb0766868500a36d20c27e7226b269114340e3c5f1"
+      },
+      "impl_header": "impl Client",
+      "index": 122,
+      "match_count": 1,
+      "name": "read",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "source": {
+        "bytes": 7045,
+        "git_blob": "eebd90ee8ae68ec3b28a77fb492401d0c4bd64e8",
+        "sha256": "19c3379f7715b8b14dfabe922dc7ab5c477499fd64eec80f51e93554b4256e58"
+      },
+      "start": 2664,
+      "visibility": "pub(super)"
+    },
+    {
+      "end": 6967,
+      "identity": {
+        "bytes": 1426,
+        "git_blob": "7f4b5a37cc4066d5f58ba6a7b566cfedd05fe093",
+        "sha256": "8da4002264163cd1ced9ff98164e7f25e5e3ec5f68493e74ae6a5a3eebb98a0c"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W>",
+      "index": 123,
+      "match_count": 1,
+      "name": "encode_original_material_publication",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "source": {
+        "bytes": 7045,
+        "git_blob": "eebd90ee8ae68ec3b28a77fb492401d0c4bd64e8",
+        "sha256": "19c3379f7715b8b14dfabe922dc7ab5c477499fd64eec80f51e93554b4256e58"
+      },
+      "start": 5541,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 894,
+      "identity": {
+        "bytes": 341,
+        "git_blob": "e2e321ee1781fe5ac558cc47ff38fa695bc8f88e",
+        "sha256": "81156c336d53aabae09f92bc0ea72bfccf5bd8eaa87506bbca7227923e0ad22c"
+      },
+      "impl_header": null,
+      "index": 124,
+      "match_count": 1,
+      "name": "context",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "source": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "start": 553,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1036,
+      "identity": {
+        "bytes": 140,
+        "git_blob": "fa2d0978651cc443fd47f3e5d1f22bab40496907",
+        "sha256": "2f40de5cfcc27026f380977f9b6a55cde49ffacbdc402aa8a345bcdc393ea42f"
+      },
+      "impl_header": null,
+      "index": 125,
+      "match_count": 1,
+      "name": "before",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "source": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "start": 896,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1195,
+      "identity": {
+        "bytes": 157,
+        "git_blob": "29101cd4bb6b3bb2a6d77f701ec1ed27630d3cdf",
+        "sha256": "53010a8125776fab81fc5fb27f12d0eac0c0f841f2e6f08a05a0c715343e5dcd"
+      },
+      "impl_header": null,
+      "index": 126,
+      "match_count": 1,
+      "name": "bounded",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "source": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "start": 1038,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1609,
+      "identity": {
+        "bytes": 412,
+        "git_blob": "2f97d5dc3f2a52340167b61925b3dc5ab009dd0b",
+        "sha256": "2dbc57824a7fcaa2d274369aba463a770624ccae83661028efa279ebe269bf0d"
+      },
+      "impl_header": null,
+      "index": 127,
+      "match_count": 1,
+      "name": "request",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "source": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "start": 1197,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1807,
+      "identity": {
+        "bytes": 196,
+        "git_blob": "2257424a26f05585fc493470c88dcc818c095545",
+        "sha256": "c584b3de12335dfc62780244ee2c02f9f24265a2ea42b82b1f0a41745193e3ca"
+      },
+      "impl_header": null,
+      "index": 128,
+      "match_count": 1,
+      "name": "response",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "source": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "start": 1611,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2042,
+      "identity": {
+        "bytes": 233,
+        "git_blob": "83bd8d3137c194a829a7a4276a9a7bd7520e5888",
+        "sha256": "c357a65c8361cc08c434df319ba6dabdc6759a9bbfd3323b2b765178ef0547bf"
+      },
+      "impl_header": null,
+      "index": 129,
+      "match_count": 1,
+      "name": "read_response",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "source": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "start": 1809,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 618,
+      "identity": {
+        "bytes": 310,
+        "git_blob": "7075cc2509d1c30dbfd16aa8ae1e99d69283f855",
+        "sha256": "2624f42355d86cea387c497a9e3d4973444c7a27aa01a112b01860debd230ee6"
+      },
+      "impl_header": null,
+      "index": 130,
+      "match_count": 1,
+      "name": "original_binding",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 308,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1938,
+      "identity": {
+        "bytes": 1156,
+        "git_blob": "c577d4b702e80c8d57f86977490404221c81aa0f",
+        "sha256": "094f13aa6e439df81a98f8332093d390653d0f945caf19e9e6fab5356ed88049"
+      },
+      "impl_header": null,
+      "index": 131,
+      "match_count": 1,
+      "name": "expected_request",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 782,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2095,
+      "identity": {
+        "bytes": 155,
+        "git_blob": "8739bd200731c04a88d9fb2d7b6960dad7fb6904",
+        "sha256": "945114ce42bc832489b9c55437707ec738cd7cd54dcc2c96ad8a63fda5c89733"
+      },
+      "impl_header": null,
+      "index": 132,
+      "match_count": 1,
+      "name": "encode_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 1940,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2211,
+      "identity": {
+        "bytes": 114,
+        "git_blob": "6f23b6aaa48af5fc9c5f077e4d689d3d3368a88e",
+        "sha256": "871244d0d7c37621b88b855d827237b5f2a309fdf22ec5d950b5ffcf92f95d14"
+      },
+      "impl_header": null,
+      "index": 133,
+      "match_count": 1,
+      "name": "decode_record",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 2097,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2331,
+      "identity": {
+        "bytes": 118,
+        "git_blob": "ee290430dbbed11595fc9a88bdddabe97b3ba5dc",
+        "sha256": "90ae6ecfac21070cad105ca5b3c1795a59b406626fe0afe8a0fedba5cc06f1b2"
+      },
+      "impl_header": null,
+      "index": 134,
+      "match_count": 1,
+      "name": "decode_original_input",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 2213,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2499,
+      "identity": {
+        "bytes": 166,
+        "git_blob": "bd5e3bc96d66c6e3a6d62c23341c6aaeaa46bf83",
+        "sha256": "54b3f358dd292d8c12c5534b1e6829996536b636dbadb38eb9b8b39092d1eac1"
+      },
+      "impl_header": null,
+      "index": 135,
+      "match_count": 1,
+      "name": "encode_original_input",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 2333,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2990,
+      "identity": {
+        "bytes": 333,
+        "git_blob": "bd3727976ff68a7125a9092a10ba07e63acab1b7",
+        "sha256": "6f1531af7785086b34cca4ae7f1d7ad813f02e1a3238e8ca2964f1f04ee84929"
+      },
+      "impl_header": null,
+      "index": 136,
+      "match_count": 1,
+      "name": "original_completion_bytes",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 2657,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3274,
+      "identity": {
+        "bytes": 215,
+        "git_blob": "063bc6a267bfca247ed49dca61a51acb9bf3b9f5",
+        "sha256": "46cd9bc845118e43a265dc8d95c1e0e0b12e9379ddba7dadb5678357b01011f3"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 137,
+      "match_count": 1,
+      "name": "original_remote_binding",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 3059,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3593,
+      "identity": {
+        "bytes": 317,
+        "git_blob": "8ad1e2cc1a8e4023315feabde4f5f22ba2270395",
+        "sha256": "6e66adfbeb3c6c515fce50333462a08110617bbe65cef0d99566dd382d62ebce"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 138,
+      "match_count": 1,
+      "name": "require_original_remote_binding",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 3276,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4373,
+      "identity": {
+        "bytes": 778,
+        "git_blob": "845ba4ade279317d8a76392316ddc2c8d7c89629",
+        "sha256": "fbe8710e4f1af85cd88626d0a8a5b74f60e58aecf5e8efdc2e2de9e05f2b1630"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 139,
+      "match_count": 1,
+      "name": "original_remote_request",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 3595,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 5300,
+      "identity": {
+        "bytes": 925,
+        "git_blob": "8a5456f9be1ba0def463229b5f5de711e1e52a1b",
+        "sha256": "8df0e4839ed6f40b5e4c728794951dc496da4622cabc9c1b3eb84ef9f3b6d1c3"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 140,
+      "match_count": 1,
+      "name": "original_remote_saved_input",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 4375,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 6180,
+      "identity": {
+        "bytes": 878,
+        "git_blob": "b119cafaaa6cc9e2a261ab10cd2227a60f7f4fcd",
+        "sha256": "cfc78ed35e052295298e24764d288a6a2673ef3b38b0d1f758d511848be2d19b"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 141,
+      "match_count": 1,
+      "name": "original_remote_resolve",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 5302,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 7886,
+      "identity": {
+        "bytes": 1469,
+        "git_blob": "2070056a1248773312ed467e002589c7ca0af026",
+        "sha256": "68b509b37592e85ef02cb51669d3728093e619f765ccbd05ae741d1a2f4c7762"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W>",
+      "index": 142,
+      "match_count": 1,
+      "name": "publish_original_remote_completion",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "source": {
+        "bytes": 7889,
+        "git_blob": "53bd7258db38d8c58048bd1e8851b1b767bf7122",
+        "sha256": "4d1883c687b72233d87a2e394382ff55095a66278b152e0174e81c5751d3edca"
+      },
+      "start": 6417,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 759,
+      "identity": {
+        "bytes": 495,
+        "git_blob": "95cf68d1f3d2e36aea0242871b37e014f38903b3",
+        "sha256": "ff6d82f0083b6b881c1f7e541fc51b61106295dd7f3802c6fb73e58cad23bc87"
+      },
+      "impl_header": "impl AgentdConfig",
+      "index": 143,
+      "match_count": 1,
+      "name": "with_original_root_circuit_task_until",
+      "path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "source": {
+        "bytes": 1210,
+        "git_blob": "c45c8b0beb595f9a121c4436225a48d9bbf01df6",
+        "sha256": "50daef2871fcbce54bdf071ecdcc9f032ffc310b5dd2ab203b73f7125c887c6e"
+      },
+      "start": 264,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 1207,
+      "identity": {
+        "bytes": 446,
+        "git_blob": "f5560f6db0a712db747b3899e1679f16ab086551",
+        "sha256": "e6c850935daf11b32d90fc1355ec79dd079f747f49212228983eeef116164c7e"
+      },
+      "impl_header": "impl AgentdConfig",
+      "index": 144,
+      "match_count": 1,
+      "name": "with_original_root_circuit_task",
+      "path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "source": {
+        "bytes": 1210,
+        "git_blob": "c45c8b0beb595f9a121c4436225a48d9bbf01df6",
+        "sha256": "50daef2871fcbce54bdf071ecdcc9f032ffc310b5dd2ab203b73f7125c887c6e"
+      },
+      "start": 761,
+      "visibility": "pub"
+    },
+    {
+      "end": 1221,
+      "identity": {
+        "bytes": 890,
+        "git_blob": "9bfde73a7c621eca78ecada6eda29073a8abdeb7",
+        "sha256": "6b657b7f65d63b21483e9372728b9386994949aa53e14b41491474cc897bc218"
+      },
+      "impl_header": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+      "index": 145,
+      "match_count": 1,
+      "name": "read_original_material_source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "source": {
+        "bytes": 1224,
+        "git_blob": "def8f0f90c3fe260686f1b828095f6f3ca04a259",
+        "sha256": "8baa78a95d91801cd3ff7112e9f1046ec67c900cb0d81165e7f5bd33515c2544"
+      },
+      "start": 331,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 712,
+      "identity": {
+        "bytes": 331,
+        "git_blob": "1d287256b8836c2262215eacd3262156cb1d890b",
+        "sha256": "140f395db21e9c47ff7b4f40a36f2b156d4f29e42a0f9a6027c10c6fe76613d9"
+      },
+      "impl_header": "impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW>",
+      "index": 146,
+      "match_count": 1,
+      "name": "require_original_source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "source": {
+        "bytes": 3680,
+        "git_blob": "38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf",
+        "sha256": "c1f1a4d456b5e0409c4d6dd05c25adbfed51ecc437d44d1de6fde6ce095fb94a"
+      },
+      "start": 381,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 3677,
+      "identity": {
+        "bytes": 2224,
+        "git_blob": "9704e11fdbc7c34a9f38970bc31a1b4a4d27994e",
+        "sha256": "47d3061a26ebc5c1f1a9788a0fc9f0797014f5ded7af64e5a09fe2ab6cf14259"
+      },
+      "impl_header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalRootInitialGenerationCustodyV1<W>",
+      "index": 147,
+      "match_count": 1,
+      "name": "into_original_root_task_channel",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+      "source": {
+        "bytes": 3680,
+        "git_blob": "38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf",
+        "sha256": "c1f1a4d456b5e0409c4d6dd05c25adbfed51ecc437d44d1de6fde6ce095fb94a"
+      },
+      "start": 1453,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 8344,
+      "identity": {
+        "bytes": 304,
+        "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+        "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+      },
+      "impl_header": "impl AgentdProductionLaunch",
+      "index": 148,
+      "match_count": 1,
+      "name": "install_original_root_task",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "source": {
+        "bytes": 20557,
+        "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+        "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+      },
+      "start": 8040,
+      "visibility": "pub"
+    },
+    {
+      "end": 2721,
+      "identity": {
+        "bytes": 1352,
+        "git_blob": "1c6995efcf348eacaf071bb75d8008d9676aeb4b",
+        "sha256": "dd91227c4cceda1ebae0698baf05209a056653e15b78543788f1011015c86422"
+      },
+      "impl_header": null,
+      "index": 149,
+      "match_count": 1,
+      "name": "seal",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "source": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "start": 1369,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 4925,
+      "identity": {
+        "bytes": 2202,
+        "git_blob": "86f72bcef167e929a38f5a3273d85f15c0f0a6d4",
+        "sha256": "28fa07f15b1f59643640c613c845971370ad4bbb212e3e53571b8da1391b4089"
+      },
+      "impl_header": null,
+      "index": 150,
+      "match_count": 1,
+      "name": "read",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "source": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "start": 2723,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 5558,
+      "identity": {
+        "bytes": 613,
+        "git_blob": "aa99f0422c186abfd127749df4eb8c0d8dd66c80",
+        "sha256": "99e84ad74c8da4e7fd1d4e0da91cc709bc5ae8e19a8556cb461c18f0d9a851fb"
+      },
+      "impl_header": "impl Descriptor",
+      "index": 151,
+      "match_count": 1,
+      "name": "require_original_identity",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "source": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "start": 4945,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 7971,
+      "identity": {
+        "bytes": 173,
+        "git_blob": "42a61d4d0155e306f07eae69425a35cec7139763",
+        "sha256": "bfa6fd5d49bbbd31692a3f3f7391ef3e681242205bbf02c9bf3965450d841aa7"
+      },
+      "impl_header": null,
+      "index": 152,
+      "match_count": 1,
+      "name": "require_before",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "source": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "start": 7798,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 8119,
+      "identity": {
+        "bytes": 146,
+        "git_blob": "ec5464612d81b4605364f216995506fe12f0c734",
+        "sha256": "fa174e0ecd26a7fd305124608e609b62585032d5567fc3c702a65014d1f029c7"
+      },
+      "impl_header": null,
+      "index": 153,
+      "match_count": 1,
+      "name": "protocol",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+      "source": {
+        "bytes": 8203,
+        "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+        "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+      },
+      "start": 7973,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 2870,
+      "identity": {
+        "bytes": 2130,
+        "git_blob": "59a040191f1db5896a97dd56939ba5ce4dcc8f41",
+        "sha256": "4297136a22449cd6dbc069ba7772d95ebf056d4c769e67427f938d1e38af073a"
+      },
+      "impl_header": null,
+      "index": 154,
+      "match_count": 1,
+      "name": "receive_root_original_task_handoff",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "source": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      },
+      "start": 740,
+      "visibility": "pub"
+    },
+    {
+      "end": 3564,
+      "identity": {
+        "bytes": 692,
+        "git_blob": "e0ecfd0172860c58be2012ce52cd4e5658324e62",
+        "sha256": "27fff865b1de73c016ac0583e213ce4f364c1133ece86eedbf814f20745604f7"
+      },
+      "impl_header": null,
+      "index": 155,
+      "match_count": 1,
+      "name": "send_original_task_handoff",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "source": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      },
+      "start": 2872,
+      "visibility": "pub(crate)"
+    },
+    {
+      "end": 5342,
+      "identity": {
+        "bytes": 1743,
+        "git_blob": "a435a9131b0a2cc40c4b5179b860f78caba31b27",
+        "sha256": "e5527cec9678b8ac02c55cc2d5a9ad7a7c50520458ec60cc59855de2d790225e"
+      },
+      "impl_header": "impl RootOriginalTaskHandoffV1",
+      "index": 156,
+      "match_count": 1,
+      "name": "install",
+      "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+      "source": {
+        "bytes": 5858,
+        "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+        "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+      },
+      "start": 3599,
+      "visibility": "pub(crate)"
+    }
+  ],
+  "all_other_fields_identical": true,
+  "allowed_fields": [
+    "start",
+    "end",
+    "body",
+    "identity"
+  ],
+  "before": {
+    "bytes": 241072,
+    "git_blob": "38a6b98fdc3bae730e746c3fb299697d28fb7c56",
+    "sha256": "7c5144d7db7193bd5071bc4eb8f8590908c5e2cd388070947646ee9d4bbb5cfb"
+  },
+  "changes": [
+    {
+      "after": {
+        "end": 6560,
+        "identity": {
+          "bytes": 4918,
+          "git_blob": "69a4afb62f3c65e948ad72fc1d97b679c7a24160",
+          "sha256": "9d4c4f1aa69c331072b61f5bb3f17b17506765f6714257b3457f553d99839b62"
+        },
+        "start": 1642
+      },
+      "before": {
+        "end": 6521,
+        "identity": {
+          "bytes": 4879,
+          "git_blob": "30de570808a6dab52866c02163683824943281e4",
+          "sha256": "5ea3ea479d65fad5b8227317d522e779f87fe8563e2b7536227a5fb1860a928a"
+        },
+        "start": 1642
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": "impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>\nwhere SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,",
+      "index": 5,
+      "name": "handoff_and_serve_original_root_circuit_task",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+      "source": {
+        "bytes": 6563,
+        "git_blob": "414cf3d12e295b6471421ad24f77807c3cc825e0",
+        "sha256": "845d3e1569b1ba57a98dbdf12cfbe7025037826b248782e6b3975dd878a87ee3"
+      },
+      "visibility": "pub"
+    },
+    {
+      "after": {
+        "end": 7785,
+        "identity": {
+          "bytes": 7310,
+          "git_blob": "eb805eb1d8efd3ba04d6f9c63276aee146748f4a",
+          "sha256": "e371107743e555209ce8e032ba4c9380011f977c256a2c96abcea44d8a0ac66a"
+        },
+        "start": 475
+      },
+      "before": {
+        "end": 7323,
+        "identity": {
+          "bytes": 6848,
+          "git_blob": "2aef5aff5f6997b4d76d8957636cbe5b7fa4f712",
+          "sha256": "4ec520dae8350c3363769c3f03b994fbf662c1e8eea47d0b537662a28a6f58da"
+        },
+        "start": 475
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": "impl<O, P, E> AgentdCircuitCellOwnerV1<O, P, E>\nwhere\n    O: CellStateOwnerV1,\n    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,\n    E: CellInputEncoderV1,",
+      "index": 20,
+      "name": "execute_original_remote",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "source": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 7386,
+        "identity": {
+          "bytes": 803,
+          "git_blob": "5a7140ec2e184bf5f504fd1037fe833a90e0a9b5",
+          "sha256": "8d49cb0a9b2e622db7e664c4c382d85270c04a640bc0adba4f1daaa28e74ca3b"
+        },
+        "start": 6583
+      },
+      "before": {
+        "end": 7215,
+        "identity": {
+          "bytes": 632,
+          "git_blob": "6bf1572f02c85a64df73704f448778f89f1ab001",
+          "sha256": "35a5de8a5632e3a2593a32d15717bf494ad4d3cf347c4633afec6c1ffb1bec47"
+        },
+        "start": 6583
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": "impl DaemonClient",
+      "index": 46,
+      "name": "sample_original_clock",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 9031,
+        "identity": {
+          "bytes": 1643,
+          "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+          "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+        },
+        "start": 7388
+      },
+      "before": {
+        "end": 8860,
+        "identity": {
+          "bytes": 1643,
+          "git_blob": "262643f7e965c0a052262bc74a1d9be98c230ff1",
+          "sha256": "91b69a9ccd2ca82df4796bdab3faee73d566d7edb3e5195977d287795471c89f"
+        },
+        "start": 7217
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonClient",
+      "index": 47,
+      "name": "original_execution",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(super)"
+    },
+    {
+      "after": {
+        "end": 10412,
+        "identity": {
+          "bytes": 73,
+          "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+          "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+        },
+        "start": 10339
+      },
+      "before": {
+        "end": 10241,
+        "identity": {
+          "bytes": 73,
+          "git_blob": "1889d7f03c9c7db5dca951e38601df0dc3f53f85",
+          "sha256": "8b219903d13229e12cfc861c384675f295af70708eb613f07be26f855378e933"
+        },
+        "start": 10168
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 48,
+      "name": "new",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 10502,
+        "identity": {
+          "bytes": 89,
+          "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+          "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+        },
+        "start": 10413
+      },
+      "before": {
+        "end": 10331,
+        "identity": {
+          "bytes": 89,
+          "git_blob": "04132bede9b8240742f6a9cb3f0e338ca7127062",
+          "sha256": "c3a2f1aaa95aab35ab8043a201f455f1c893bfb3406e809c0755174f897c88ab"
+        },
+        "start": 10242
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 49,
+      "name": "original_registry",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 10792,
+        "identity": {
+          "bytes": 289,
+          "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+          "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+        },
+        "start": 10503
+      },
+      "before": {
+        "end": 10621,
+        "identity": {
+          "bytes": 289,
+          "git_blob": "5d8ef6c9b3995d16e1ebcd7496f970b980b584c3",
+          "sha256": "20a39d72e2e70c05a822a23a56ed23a2dd5a95cbe6577eed2963e0d5cd36f79d"
+        },
+        "start": 10332
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 50,
+      "name": "original_lookup",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 11105,
+        "identity": {
+          "bytes": 312,
+          "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+          "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+        },
+        "start": 10793
+      },
+      "before": {
+        "end": 10934,
+        "identity": {
+          "bytes": 312,
+          "git_blob": "50fb3cdb692262b8358dd2b378655590f2cd1bc4",
+          "sha256": "1523b3e5959723ee9ac1b3636b3596ff1ee96dfc6c3ebcde12eb4043fa038efb"
+        },
+        "start": 10622
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl DaemonCellPort",
+      "index": 51,
+      "name": "original_execute",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "source": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 4511,
+        "identity": {
+          "bytes": 3879,
+          "git_blob": "f12d559f359692a41e1c982c3c1b9f6bb1fd8d01",
+          "sha256": "ff9feb787c0e89de3ef2e3655d511c772ac50971f466ccaaeddbe537548a8992"
+        },
+        "start": 632
+      },
+      "before": {
+        "end": 4252,
+        "identity": {
+          "bytes": 3620,
+          "git_blob": "da5cba2c5631e315bdb8e4c801414c9ab1504150",
+          "sha256": "25dcbede30819baa449da4300b9eebc29ab8a7a0496df7a2243eb57a8f13ee0a"
+        },
+        "start": 632
+      },
+      "body_changed": true,
+      "changed_fields": [
+        "body",
+        "end",
+        "identity"
+      ],
+      "impl_header": null,
+      "index": 65,
+      "name": "channel_until",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "source": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "visibility": "pub(crate)"
+    },
+    {
+      "after": {
+        "end": 8344,
+        "identity": {
+          "bytes": 304,
+          "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+          "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+        },
+        "start": 8040
+      },
+      "before": {
+        "end": 7980,
+        "identity": {
+          "bytes": 304,
+          "git_blob": "cc6b7edad4a7cd24f6fd33bbd2102322a4b759be",
+          "sha256": "580dc9b1f442e2e89caedf49627c64a630640cf8f75859f1c319284145e46ee7"
+        },
+        "start": 7676
+      },
+      "body_changed": false,
+      "changed_fields": [
+        "end",
+        "start"
+      ],
+      "impl_header": "impl AgentdProductionLaunch",
+      "index": 148,
+      "name": "install_original_root_task",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "source": {
+        "bytes": 20557,
+        "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+        "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+      },
+      "visibility": "pub"
+    }
+  ],
+  "collector_executed": false,
+  "exact_inverse_equal": true,
+  "format": "hepta-independent-e2-declaration-metadata-rebinding-proof-v1",
+  "old_metadata_preserved": true,
+  "source_changed": false,
+  "source_target_rule": "Exact existing whole_source_required body; 67 frozen own paths with six reviewed Root-v6 shared images."
+}

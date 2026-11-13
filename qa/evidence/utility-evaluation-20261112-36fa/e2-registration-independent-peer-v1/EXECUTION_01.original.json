@@ -1,0 +1,7 @@
+{
+  "chunk_id": "27866f",
+  "wall_time_seconds": 3.201386946,
+  "exit_code": 1,
+  "original_token_count": 107,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-e2-registration-independent-review-v1/review_bytes.py\", line 506, in <module>\n    main()\n  File \"/tmp/hepta-36fa-e2-registration-independent-review-v1/review_bytes.py\", line 432, in main\n    assert len(bodies) == (0 if abstract else 1), (row['id'], len(bodies))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('e2_original_root_lane_factory_take', 1)\n"
+}

@@ -1,0 +1,177 @@
+{
+  "Git_writes": false,
+  "H_calls": 0,
+  "Rust_QA_or_collector_executed": false,
+  "base_and_composition": {
+    "base_review": "ba9a9406bb4fb2786a9ff269f8e9a86da1634154",
+    "nine_final_paths_exact_equal_Root_v9": true,
+    "prefreeze_packet": "c66c54e9989023b79f62b10575350293d21301a0",
+    "ready_packet": "3181789965054fd440568f0ac4d4e242194d34f3",
+    "scope_limit": "Only these nine complete source images were compared to v9; this is not a review of the whole v9 composition.",
+    "v9_directory": "/tmp/hepta-36fa-root-product-composition-v9/after"
+  },
+  "common_startup": [
+    {
+      "evidence": {
+        "delegation_once": true,
+        "original_body_retains_original_scoped_threads_and_join": true,
+        "original_body_retains_single_lane_before_bind_send": true,
+        "original_body_suffix_exact": true,
+        "private_clamp": "let startup_end = startup_end.min(Instant::now() + Duration::from_secs(30)).min(self.end);",
+        "public_signature_same": true,
+        "sole_splice_forward_and_inverse_exact": true,
+        "suffix_bytes": 4521,
+        "suffix_pin": {
+          "bytes": 4521,
+          "git_blob": "21b2cf293abd1191f630e2796ed5ee9b55068dad",
+          "sha256": "7eb29f810c35fd71c65cab3a2f885b5fd5185551e4a560f0c2f55272d2b0bad5"
+        }
+      },
+      "finding": "Original public signature remains exact and delegates once to a new crate-private method."
+    },
+    {
+      "finding": "The public entry still computes min(now+30s, self.end). The crate-private entry clamps the supplied absolute startup_end against its own now+30s and self.end and refuses expiry before original operations.",
+      "implication": "The earliest supplied end wins. Delayed startup cannot create an additional thirty-second allowance. The public entry second clamp can only preserve or shorten its earlier end."
+    },
+    {
+      "finding": "The complete original handoff body suffix is byte-identical.",
+      "preserved": [
+        "same current task read and original registered identity",
+        "Root real/effective UID and nonzero peer UID, distinct PID and nonce checks",
+        "single runtime lane take before listeners, bootstrap seal and either send",
+        "same retained session issuer/writer/checkpoint host and two distinct handoff paths",
+        "remaining startup_end recomputed for each send and accept/first frame",
+        "original 500ms active policy, same original runtime end, same peer PID/UID/pidfd",
+        "single scoped service thread, original task service, original joined result and Unknown combination"
+      ]
+    },
+    {
+      "finding": "The new method is crate-private, not a new externally callable task factory, and no Config, store, signer, lane or owner is introduced.",
+      "registration_obligation": "Final registration must include the new privileged _before method and its actual callers. This peer does not edit or execute the caller collector."
+    }
+  ],
+  "format": "hepta-prefreeze-startup-and-mechanisms-independent-peer-v1",
+  "not_execution_or_qualification_approval": true,
+  "project_code_executed": false,
+  "remaining_scope": [
+    "No Rust compilation, formatting, tests, collector or source gate was executed.",
+    "Normal Root third-layer CLI and the nonRoot Material loader are separate work and are not accepted here.",
+    "Final union caller/protected/workflow registration and actual test execution remain pending.",
+    "No H action or original b608 source retry was made."
+  ],
+  "reviewed_layers": [
+    {
+      "after": "947e048fa70eba8cdf797993ff6d7f62c5995a8e",
+      "directory": "/tmp/hepta-36fa-root-product-e2-proposal-v1/common-startup-increment-v1",
+      "exact_splices": 1,
+      "manifest": "b25e6aa1d04f7b619f7eba5be3108bfa95e6a2ab",
+      "packet": "07cb756ca663e7fd802e008e258cb3828d73e636",
+      "source_paths": 1
+    },
+    {
+      "cases": 4,
+      "directory": "/tmp/hepta-36fa-root-product-e2-proposal-v1/prefreeze-mechanism-tests-layer-v1",
+      "exact_suffix_mounts": 4,
+      "ignored_Root_cases": 1,
+      "manifest": "7e041dc5a4a7c4cae10aae2cfaf253d0729e1dda",
+      "modified": 4,
+      "new_test_files": 4,
+      "ordinary_cases": 3,
+      "packet": "474fe0d12b9d73cb94136e4e46d09394e495bbe3",
+      "source_paths": 8
+    }
+  ],
+  "source_registry_or_ref_writes": false,
+  "status": "NO_NEW_CONFIRMED_STATIC_BLOCKER_WITHIN_THE_TWO_FROZEN_LAYERS",
+  "storage_boundary": "All report blob hashes are computed content identities only. Root is the Git evidence writer.",
+  "tests": [
+    {
+      "actual_chain": "HostFixture -> original signed initial publication -> original task factory -> pending Source observation -> original task execute -> complete same-custody Source/Cell reads twice.",
+      "assertions": [
+        "pre-execution Source is pending and original completed-source check gives the exact ReconciliationRequired classification",
+        "after execution no future event is needed for the existing-state observation",
+        "two complete publication payloads are equal",
+        "readiness observation preserves original generation journal bytes"
+      ],
+      "cleanup": "On Result paths, task.finish().await, host drop and fixture.finish() are evaluated before the original body error is propagated. Existing RootSession timeout/cancellation behavior is inherited; a timed-out or cancelled future does not prove the worker has exited.",
+      "kind": "ignored Root mechanism",
+      "limit": "No process restart, Root disclosure grant, real Material peer, readiness socket exchange or cross-UID full chain is exercised.",
+      "name": "root_prefreeze_ready_reads_existing_source_without_future_event"
+    },
+    {
+      "actual_chain": "One real thread and Barrier, the private Hint latch and original wait_original(end).",
+      "assertions": [
+        "worker is joined before result errors propagate",
+        "an already retained notification remains visible while the same deadline remains live",
+        "both a retained hint and a never-notified hint refuse the exact expired startup error"
+      ],
+      "kind": "ordinary synchronization mechanism",
+      "limit": "Direct private test notification is not Source completion or authorization. No artificial timing value changes a production result. Scheduling delay may cause genuine failure under the unchanged fixed deadline; no result was run.",
+      "name": "original_source_hint_latches_without_renewing_the_original_deadline"
+    },
+    {
+      "actual_chain": "Existing completed_source fixture runs original Driver and publishes its real Receipt into Source/Cell journals; production material encoder and private decoder preserve the complete publication.",
+      "assertions": [
+        "exact full publication equals original",
+        "readback preserves all fixture Source/Cell journal and witness bytes",
+        "actual Source withdrawal makes encoding return exact Unavailable despite the same valid independent Generator signature",
+        "no second inference call"
+      ],
+      "cleanup": "The reused completed_source helper closes its real AutomationStore after success or Result failure before returning. No future-cancellation physical-exit claim is made.",
+      "kind": "ordinary Source content mechanism",
+      "limit": "Fixture signer, PID, trust-distribution identity and ledger-binding constants do not authenticate a real supervisor or Material process; only the documented content/current-source boundary is covered.",
+      "name": "prefreeze_request_reads_actual_source_without_future_evidence"
+    },
+    {
+      "actual_chain": "Production canonical signing payload and original LearningEvidenceVerifierV1 with explicit test keys.",
+      "assertions": [
+        "recipient PID, nonce, task digest, complete Source observation and generator controller substitutions each give exact InvalidBinding",
+        "another enrolled Generator first independently verifies for the same payload, then require_evidence rejects it as the wrong fixed Generator",
+        "the restored complete original request remains a positive control",
+        "original Source/Cell bytes and single model-call count remain unchanged"
+      ],
+      "kind": "ordinary exact signature-binding mechanism",
+      "limit": "This case proves only the stated cryptographic-data boundary if executed. It does not create a real supervisor disclosure registration or exercise channel/pidfd authentication.",
+      "name": "prefreeze_request_refuses_rebinding_and_other_enrolled_generator"
+    }
+  ],
+  "timing": {
+    "client": "Caller-initiated Source request/response remains bounded by its original 500ms deadline and fixed client end.",
+    "effect_limit": "A late refusal may follow original work or an already sent response. No rollback or no-effects inference is permitted.",
+    "path": "/tmp/hepta-36fa-e2-prefreeze-independent-review-v1/TIMING_CORRECTION.json",
+    "separate_correction": "578d1915e751dbb3c57b468ab88800dd51399a04",
+    "server": "Underlying HAP waits for the first frame byte up to owner.end, then uses one inflight timeout. Both old Material and prefreeze wrapper compute their own until inside the handler, not before exchange; their return check does not retroactively limit idle to 500ms."
+  },
+  "unchanged_tests_and_production": {
+    "all_old_parent_function_bodies_exact": true,
+    "fixture_keys_are_dedicated_cfg_test_only_and_not_product_defaults": true,
+    "four_modified_parent_files_are_exact_old_prefix_plus_declared_mount": true,
+    "material_test_brace_successor_b41a_preserved": true,
+    "new_source_files_end_balanced_under_reviewer_lexical_analysis": true,
+    "no_production_field_counter_error_or_deadline_changed_by_test_layer": true,
+    "other_two_mounts_are_inside_existing_test_only_modules": true,
+    "readiness_test_mount_cfg_test": true,
+    "test_support_mount_cfg_test": true
+  },
+  "verification": {
+    "execution": {
+      "bytes": 391,
+      "git_blob": "6a77ba2842519ec46f5f1b8c2db01e76a1888fe9",
+      "path": "/tmp/hepta-36fa-e2-prefreeze-successors-independent-review-v1/VERIFY_EXECUTION.original.json",
+      "sha256": "224fca82834d762e2eab9083470ea00c5680d662b5e05ea137aa64ed60d74c6c"
+    },
+    "proof": {
+      "bytes": 38551,
+      "git_blob": "3d8afdd9b62f97c591e3ead17e16eb70bf4cda8c",
+      "path": "/tmp/hepta-36fa-e2-prefreeze-successors-independent-review-v1/BYTE_AND_FLOW_PROOF.json",
+      "sha256": "da6c07eb1bd326a516aa56157d2aeaacd99a34b52e0d782f1052fba3bff76b1e"
+    },
+    "result": "Pure stdlib byte/lexical assertions exited 0; no author/project code imported or executed.",
+    "script": {
+      "bytes": 11418,
+      "git_blob": "5cbcad2160ac45f4f9c78057e01a3d8de19c4b45",
+      "path": "/tmp/hepta-36fa-e2-prefreeze-successors-independent-review-v1/verify_successors.py",
+      "sha256": "64cc6935b0cf76b65b434740a1b511be7a75759ee28a5ac066d1937cad44bbb2"
+    }
+  }
+}

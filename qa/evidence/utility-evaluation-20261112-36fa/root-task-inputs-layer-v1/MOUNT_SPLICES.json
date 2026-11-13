@@ -1,0 +1,70 @@
+{
+  "baseline": "/tmp/hepta-36fa-root-product-composition-v5/after",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "before": {
+        "bytes": 15550,
+        "sha256": "51b6d1f46e4ec572190cd9eee46888f2a14a236f8bd8d83f5a47d55c5cbaec50",
+        "git_blob": "d99f23d1a15a86fad1c41fc353e4e72e08159a37"
+      },
+      "after": {
+        "bytes": 15762,
+        "sha256": "980cdc9519a20f87c147396bbe64b85dbc42b7d6d1c1fcb1d3a5b691adedea84",
+        "git_blob": "809dc64631c3b061a6398feb15cb296dffb425f8"
+      },
+      "anchor": "pub(crate) use input_loader::LoadedOriginalGeneration as OriginalLoadedGeneration;\n",
+      "addition": "\n#[path = \"authority_host_generation_task_input_loader.rs\"]\nmod task_input_loader;\npub use task_input_loader::RootHostQ24TaskFilesV1;\npub(crate) use task_input_loader::TaskFilePurpose as OriginalTaskFilePurpose;\n",
+      "exact_inverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "before": {
+        "bytes": 23227,
+        "sha256": "5366e63bd62f4229e035c2056fb3f779d330550f5245a6b3d24542aa7cb0ba69",
+        "git_blob": "bc77345d21d9d45e9dcb657374f89cf0bcbf2b11"
+      },
+      "after": {
+        "bytes": 23323,
+        "sha256": "c4ff30db2b729c3df89cb9cbc4f60902976e9def9f62eb5972d606dcca00df97",
+        "git_blob": "ee776b989e748337cea1c335efda6a552b3bbaba"
+      },
+      "anchor": "pub(crate) use generation::OriginalLoadedGeneration;\n",
+      "addition": "pub use generation::RootHostQ24TaskFilesV1;\npub(crate) use generation::OriginalTaskFilePurpose;\n",
+      "exact_inverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "before": {
+        "bytes": 5849,
+        "sha256": "c2c5e4b44413f2dda5c934be9d03b9b8e4d60e8609d902fc912a413f21df8427",
+        "git_blob": "feba361d5e87d7fd849d3a061116a0cdbef69a9b"
+      },
+      "after": {
+        "bytes": 5934,
+        "sha256": "f601f5267ccbf89ca3dfc4daca8c0e6c00f764c38571c2d68499a39eb61258e9",
+        "git_blob": "69bed2cf41de0ec5a416b0278776be18d26a8ed9"
+      },
+      "anchor": "pub use root_task::OriginalRootMaterialSourceRegistrationV1;\n",
+      "addition": "\n#[path = \"authority_host_session_generation_task_loader.rs\"]\nmod task_input_loader;\n",
+      "exact_inverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "before": {
+        "bytes": 74249,
+        "sha256": "7f8c94ccedb0a18003dc831ffb990f9387e88ab167dd824995d9d479ba12851d",
+        "git_blob": "9fc8916464870449b19cdda1b22f2e7a848189b0"
+      },
+      "after": {
+        "bytes": 74333,
+        "sha256": "b5bbd61b1cdcbc080938ed254084609994c9644d62b343c5b568fa3d92214b1c",
+        "git_blob": "73c0b9329fe7e903d20f079991ab327b0a787b87"
+      },
+      "anchor": "#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootHostInitialGenerationFilesV1;\n",
+      "addition": "#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootHostQ24TaskFilesV1;\n",
+      "exact_inverse": true
+    }
+  ],
+  "project_execution": false
+}

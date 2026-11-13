@@ -1,0 +1,28 @@
+{
+  "closure": [
+    "Loaded wrapper remains non-Clone with only private Task/status. The two new public methods consume self and return unit/error. No owner, runtime, clock, callback, Deref or into_inner is returned.",
+    "Same private Task moves into handoff_and_serve_original_root_circuit_task_before, which uses only the strengthened remote pump; the feature-control consumer is the required independent refusal layer.",
+    "Followups clones only the same Session/operation/custody Arcs; it never holds or exposes runtime/writer/clock. The once-only original Material exporter preserves its existing one-use bit.",
+    "The actual first clock-error class remains in the same status Arc. Checks bracket file/data preparation, late enrollment and the actual service join. Original Source/Current/FinalUse checks continue to use their own real fallible protected clocks, never the MAX marker.",
+    "Ordinary local execute is unchanged and is not reachable through the returned Loaded wrapper. No statement is made that MAX is globally safe for the old local API."
+  ],
+  "dependencies": {
+    "common_startup": "07cb756ca663e7fd802e008e258cb3828d73e636",
+    "feature_clock_refusal": "ade9282388680285416c7829000b7081e22550ef",
+    "input_files": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+    "loaded_task_and_poison": "77b05d5ec3f8d3b10a4024b63103e97e8f3fe996",
+    "prefreeze_actual_ready": "3181789965054fd440568f0ac4d4e242194d34f3",
+    "prefreeze_same_source": "c66c54e9989023b79f62b10575350293d21301a0",
+    "remote_clock_refusals": "9f780f963b0e9585b5b85a83f87de593f604bfa5"
+  },
+  "runtime_observed": false,
+  "state": "STATIC_CLOSED_CALL_GRAPH_ONLY",
+  "timing": [
+    "One startup_end is computed before disclosure loading, clamped to the original Task end, and passed unchanged/min-clamped to Task handoff, pre-freeze registration, 21-right receive and late enrollment.",
+    "The ordinary ready dependency consumes frame 1 of the same 128-frame Source HAP; no new Source channel or counter. Complete actual Source reads remain frames 2..128, active roundtrip maximum 500 ms, host end maximum 300 s.",
+    "Correction to an earlier interim message: original HAP server frame-idle waiting is bounded by host end; it is not a new 500 ms idle timeout. Active roundtrip/handler limits remain original and no renewal is added here.",
+    "Late transport readability is only a wake-up. Complete original frame/Root pidfd/purpose/actual recipient/ten ordered roles and timing authenticate before late Root files are read. Original full-profile validation occurs independently before any role-stream handoff.",
+    "All normally returning branches explicitly join actual submitted Task and Material threads; original resident cancellation is awaited. Synchronous original Source/Cell/store I/O can block; no bounded physical thread termination is claimed.",
+    "Errors after Root registration/handoff/owner I/O are not NotApplied. There is no retry, reconnect, Create fallback or new signing authority. Caller retains original files and same-operation readback obligations."
+  ]
+}
