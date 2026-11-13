@@ -1,0 +1,20 @@
+{
+  "format": "hepta-exact-single-readonly-dispatch-intent-v1",
+  "controller_observed_at": "2026-11-13T04:39:49.409Z",
+  "request": {
+    "git_blob": "48d99cb0c7407d6a95e5440068c87e75326e6b8d",
+    "bytes": 1916,
+    "sha256": "8301fa04c756819fd2185e361b202442120d4df6c007db3e78a183a859982e77"
+  },
+  "approval_git_blob": "223fd4cef1952a4efa81b333dc2cef6e411a2d97",
+  "idempotency_key": "hepta-utility-36fa-post-material-concurrency-readonly-v2",
+  "field_count": 6,
+  "no_env": true,
+  "no_stdin": true,
+  "timeout_seconds": 15,
+  "only_old_request_delta": "idempotency_key",
+  "state": "INTENT_BEFORE_FIRST_DISPATCH",
+  "scope": "One original guard observation only. No material restore, source write, signal or native gate authorized.",
+  "cloud_filesystem_available": false,
+  "storage": "Git original intent before host call; no claimed local file write."
+}

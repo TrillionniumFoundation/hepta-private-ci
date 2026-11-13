@@ -1,0 +1,19 @@
+{
+  "format": "hepta-root-combination-obligation-v1",
+  "path": "codex-rs/hepta-agentd/src/lib.rs",
+  "baseline": {
+    "bytes": 71682,
+    "sha256": "d0ee5faa628ca4c5d6f945025e29cfc20f60d11c47bc547d3c3979bd5d0b5084",
+    "git_blob": "e4b140b7f9272313df6d243ff38caab4e68b97d8"
+  },
+  "standalone_postimage": {
+    "bytes": 71795,
+    "sha256": "df90ca7e43c3a33adc8d3012c9bbadd740001ef56edf536d1b55a25976d58514",
+    "git_blob": "1296cc4e3265f31c2f30f95f589b8d59e1210a52"
+  },
+  "exact_insert_after": "#[cfg(target_os = \"linux\")]\npub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandOwnerV1;\n",
+  "insert": "#[cfg(target_os = \"linux\")]\npub use learning_iteration_evidence_client::OriginalCircuitSelectionLocalReadbackV1;\n",
+  "preserve_other_exports": true,
+  "other_writer": "evaluation_audit Version local capability export merged by Root",
+  "no_apply": true
+}

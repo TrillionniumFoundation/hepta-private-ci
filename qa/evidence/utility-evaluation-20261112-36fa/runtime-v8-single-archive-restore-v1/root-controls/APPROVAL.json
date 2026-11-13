@@ -1,0 +1,30 @@
+{
+  "format": "hepta-root-exact-single-archive-dispatch-approval-v1",
+  "status": "APPROVED_ONCE_MATERIAL_ONLY",
+  "approved_at_utc": "2026-11-13T03:53:59.521112+00:00",
+  "executor": "/root/native_ci_audit",
+  "request": {
+    "bytes": 39070,
+    "sha256": "1adf53833dc2d2d99957d59edcc4f4293d376cd7a17c7b1d30489cfb4d6a3123",
+    "git_blob": "b3eb87deffe130b7b839c305988275ab28386775"
+  },
+  "driver": {
+    "bytes": 37114,
+    "sha256": "4d57502ae268bc7216b6ad2e87b70159a94968c5059177b7593c7aac9989aadf",
+    "git_blob": "aae1063cff9d2b95bac5d1db09c831164b4cd060"
+  },
+  "configuration": {
+    "bytes": 807,
+    "sha256": "f2eca954e4f3c2725c0e614451982fabbbeda42188ee4ca273cee1021eb76c9e",
+    "git_blob": "8c2b0c402ad78d1708ca976cee875b78caaca19f"
+  },
+  "review": {
+    "bytes": 8123,
+    "sha256": "021022f0fca2ec0723299bf33fc54780c25482c70238b46a503d3c6a25681d31",
+    "git_blob": "9b2032af6e0068e0d77164e01d71ca4910d9957b"
+  },
+  "idempotency_key": "hepta-utility-36fa-v8-single-archive-restore-v1",
+  "authorization_scope": "One execution of this exact seven-field request. Reconcile an uncertain response only with this same original key and request. No automatic retry, new key, repair variation, native main, tests, source/ref/index mutation, or environment/limit changes. Preserve all originals, partial files and Unknown outcomes.",
+  "dispatch_occurred_in_this_record": false,
+  "qualification": false
+}

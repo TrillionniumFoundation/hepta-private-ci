@@ -1,0 +1,78 @@
+{
+  "actual_result": "455d7c608b3e3224ffe54951859c18de4c77e467",
+  "actual_scope": "04:11:51 initial guard sample; no current-process, task-ownership, or writer attribution. Distinct from 04:08:24 empty observer.",
+  "archive_current_presence": "Not independently reached/observed by this run because the concurrency guard failed before its absence check. Earlier actual ENOENT remains historical.",
+  "archive_publication_started": false,
+  "automatic_third_attempt_authorized": false,
+  "destination_created_by_this_operation": false,
+  "downloads_and_commands": [],
+  "exact_admission_args_key_and_noenv_equal": true,
+  "final_audits": [
+    {
+      "check": "source",
+      "finished_at": "2026-11-13T04:11:51.543391+00:00",
+      "reason": "complete original before source unavailable",
+      "started_at": "2026-11-13T04:11:51.543361+00:00",
+      "status": "unknown"
+    },
+    {
+      "check": "inputs_environment",
+      "environment_unchanged": true,
+      "finished_at": "2026-11-13T04:11:51.545310+00:00",
+      "input_count": 7,
+      "started_at": "2026-11-13T04:11:51.543396+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "materials",
+      "error": "ValueError: original bindings full identity/stat unchanged",
+      "finished_at": "2026-11-13T04:11:51.565444+00:00",
+      "started_at": "2026-11-13T04:11:51.545321+00:00",
+      "status": "unknown",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 761, in main\n  File \"<string>\", line 686, in audit_materials\n  File \"<string>\", line 127, in check\nValueError: original bindings full identity/stat unchanged\n"
+    }
+  ],
+  "format": "hepta-single-archive-restoration-attempt-02-readback-v1",
+  "job": "1a1d31ac7a1-392-86",
+  "native_main_authorized": false,
+  "normal_terminal": {
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "timed_out": false
+  },
+  "old_attempt_unchanged": true,
+  "process_snapshot": {
+    "active_matching_processes": [
+      {
+        "comm": "cargo",
+        "pid": 3168982,
+        "uid": 1000
+      },
+      {
+        "comm": "rustc",
+        "pid": 3184331,
+        "uid": 1000
+      },
+      {
+        "comm": "rustc",
+        "pid": 3184600,
+        "uid": 1000
+      },
+      {
+        "comm": "rustc",
+        "pid": 3185667,
+        "uid": 1000
+      }
+    ],
+    "scope": "Same-UID process names only; no environment/argument values or credentials inspected; no processes killed.",
+    "unreadable_matching_processes": []
+  },
+  "qualification": false,
+  "retained_originals": "Complete current RESULT/normal/stdout and all 8 small result artifacts have actual bounded read SDKs; retained input copies remain referenced by actual ARTIFACTS identity rather than claimed independently retransmitted.",
+  "reviewed_at": "2026-11-13T04:15:21.739124+00:00",
+  "secondary_material_error": "The before-binding variable remained None after the prior guard refusal; preserve Unknown, do not infer bindings changed. Actual after binding pin still matches fixed bytes.",
+  "source_full_before_after": "Not captured, remains Unknown. No replacement success claim.",
+  "status": "KNOWN_PREPARATION_PRECONDITION_FAILURE"
+}

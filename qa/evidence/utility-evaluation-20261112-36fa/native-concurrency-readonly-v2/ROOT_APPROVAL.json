@@ -1,0 +1,34 @@
+{
+  "format": "hepta-root-single-readonly-concurrency-observation-approval-v2",
+  "scope": "One new current readonly observation. No material restoration and no native/source gate dispatch is authorized.",
+  "request": {
+    "git_blob": "48d99cb0c7407d6a95e5440068c87e75326e6b8d",
+    "bytes": 1916,
+    "sha256": "8301fa04c756819fd2185e361b202442120d4df6c007db3e78a183a859982e77"
+  },
+  "original_request": "64b679be4a1b927e7767dbc260b80a30e77398ad",
+  "script": {
+    "git_blob": "45a3a8ff39967288f6449f25e3a9276edcaaf081",
+    "bytes": 1592,
+    "sha256": "cfa2459c1d6f4282cb28e9033fecf6884abfbc79bae1da7090aa21a11b92f9a2"
+  },
+  "only_changed_field": "idempotency_key",
+  "exact_inverse_restores_original_request": true,
+  "idempotency_key": "hepta-utility-36fa-post-material-concurrency-readonly-v2",
+  "preserved_timeout_seconds": 15,
+  "prior_terminal_material_jobs": [
+    "1a1d30d5606-392-80",
+    "1a1d31ac7a1-392-86"
+  ],
+  "prior_quiet_observation_job": "1a1d3179f2a-392-83",
+  "requirements": [
+    "Native audit remains the sole H dispatcher.",
+    "No subprocess command, process signaling, file writes, source/index/ref mutation, download or restore.",
+    "A quiet response describes only its observation time and is not a concurrency lease.",
+    "A transport uncertainty is reconciled by this exact key/request without an alternative key.",
+    "Preserve actual request/admission/status/stdout originals and normal completion."
+  ],
+  "material_restore_authorized": false,
+  "native_dispatch_authorized": false,
+  "source_ref_update_authorized": false
+}

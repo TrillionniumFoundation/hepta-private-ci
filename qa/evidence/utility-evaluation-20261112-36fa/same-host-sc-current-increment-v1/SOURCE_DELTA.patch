@@ -1,0 +1,301 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs
+index 272a18f9f2d0fce4ea66e5ee1f71e7a5c2cea2b5..408a068ce11174a962d5878cb706b7233b628514 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs
+@@ -35,6 +35,10 @@
+             &live,
+             original,
+         ).map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            &live,
++            &shared,
++        ).map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
+         crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(
+             &shared,
+             original.original_context(),
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs
+index c3787949bd2d49bc7e070cc9b8109d2050ea8ae5..2a3c444f6e2d3816ecc49c22162b5a42b0c2431d 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs
+@@ -53,6 +53,10 @@
+             self.live,
+             original,
+         )?;
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            self.live,
++            self.shared,
++        )?;
+         crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(
+             self.shared,
+             original.original_context(),
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
+index 5414b82ca69fbd4d5aad4499da1eadfcab0c00e0..1db1cb54cbeb0601f5d63121e7ecc8cb11bd546a 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
+@@ -87,7 +87,11 @@
+             &live,
+             context,
+         ).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+-        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            &live,
++            &shared,
++        ).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_local_shared_receipt_owner(
+             self, live, shared,
+         )
+     }
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+index 4db88aab962628b6c7414718f5e5c68f55e86b11..c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+@@ -11,6 +11,7 @@
+ pub(super) enum OriginalPredecessors {
+     Legacy(LearningIterationEvidenceClientV1),
+     SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),
++    SharedLocalEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),
+     Evaluated {
+         trainer: OriginalCellQ24TrainingCommandClientV1,
+         evaluator: OriginalCellEvaluationCommandClientV1,
+@@ -100,6 +101,41 @@
+                         OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner, source),
+                     ),
+                 }
++            }
++            OriginalPredecessors::SharedLocalEvaluated(shared) => {
++                let context = self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
++                        "original local evaluated Selector profile",
++                    ),
++                )?;
++                crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(
++                    shared, context,
++                )?;
++                let (trainer, evaluator) =
++                    crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared);
++                let source =
++                    crate::circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionLocalSourcesV1 {
++                        original: OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {
++                            snapshot: &self.context.training,
++                            live: &self.live,
++                            trainer,
++                            evaluator,
++                        },
++                        shared,
++                    };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_local_selection(
++                            owner, source,
++                        ),
++                    ),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_local_selection(
++                            owner, source,
++                        ),
++                    ),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
+             }
+             OriginalPredecessors::SharedEvaluated(shared) => {
+                 let context = self.context.evaluated.as_ref().ok_or(
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs
+index fbc73f0dc7140625e56b6e5b409e9e5469a247ea..febf5988c22bc807659eb9c2af28339e9f6fc328 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs
+@@ -12,6 +12,7 @@
+ #[path = "circuit_evaluated_selection_remote.rs"]
+ mod remote;
+ pub use remote::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
++pub(crate) use remote::OriginalCircuitEvaluatedSelectionLocalSourcesV1;
+ 
+ pub struct OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
+     pub context: OriginalCircuitEvaluatedRetentionContextV1,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs
+index 4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee..ea06a53813e39239c8911d4ed12e17d5b87af592 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs
+@@ -73,3 +73,85 @@
+         self.completed_evaluated_selection(completed)
+     }
+ }
++
++/// Concrete local source: delegate the unchanged original read protocol and
++/// additionally bind every preparation to the same Version-owned T/E pair.
++pub(crate) struct OriginalCircuitEvaluatedSelectionLocalSourcesV1<'a> {
++    pub(crate) original: OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'a>,
++    pub(crate) shared: &'a crate::OriginalCircuitPublishedEvidenceReadbackV1,
++}
++
++impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_> {
++    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
++        SelectionSources::snapshot(&self.original)
++    }
++
++    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
++        None
++    }
++
++    fn evaluated_owners(
++        &self,
++    ) -> Option<(
++        &OriginalCellQ24TrainingCommandClientV1,
++        &OriginalCellEvaluationCommandClientV1,
++    )> {
++        SelectionSources::evaluated_owners(&self.original)
++    }
++
++    fn location(&self) -> ObservationLocation {
++        ObservationLocation::EvaluatedOwner
++    }
++
++    fn require_profile(&self, profile: &Profile) -> Result<(), Error> {
++        SelectionSources::require_profile(&self.original, profile)?;
++        let Profile::Evaluated(context) = profile else {
++            return Err(OwnerError::Binding("original local evaluated Selector profile").into());
++        };
++        OriginalCircuitLearningReadClientV1::require_original_local_evaluated_selection(
++            self.original.live, context,
++        )?;
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            self.original.live, self.shared,
++        )?;
++        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(
++            self.shared, context,
++        )?;
++        let (trainer, evaluator) =
++            crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(self.shared);
++        if !std::ptr::eq(trainer, self.original.trainer)
++            || !std::ptr::eq(evaluator, self.original.evaluator)
++        {
++            return Err(OwnerError::Binding("same original local Selector T/E sources").into());
++        }
++        Ok(())
++    }
++
++    async fn observe(
++        &self,
++        config: &OriginalCircuitSelectionReceiptConfigV1,
++    ) -> Result<LearningIterationObservationV1, Error> {
++        SelectionSources::observe(&self.original, config).await
++    }
++}
++
++impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
++    pub(crate) async fn attest_original_evaluated_local_selection(
++        &mut self,
++        source: OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>,
++    ) -> Result<OriginalCircuitEvaluatedSelectionReceiptV1, Error> {
++        let completed = match self.command_origin {
++            CommandOrigin::FreshCreate => self.attest_source(source).await?,
++            CommandOrigin::Recovered => self.readback_source(source).await?,
++        };
++        self.completed_evaluated_selection(completed)
++    }
++
++    pub(crate) async fn readback_evaluated_local_selection(
++        &mut self,
++        source: OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>,
++    ) -> Result<OriginalCircuitEvaluatedSelectionReceiptV1, Error> {
++        let completed = self.readback_source(source).await?;
++        self.completed_evaluated_selection(completed)
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs b/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
+index b22291b1c2c51d8037d6345bf71e00dee402d9da..a922fc0f2e710aa98969fe575615d5f29ce40cc0 100644
+--- a/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
+@@ -101,7 +101,11 @@
+             return Err(Error::Unavailable);
+         }
+         OriginalCircuitSelectionLocalReadbackV1::require_original_selection(self, &value)?;
+-        *self.original.slot.try_lock().map_err(|_| Error::Unavailable)? = Some(slot);
++        let mut restore = self.original.slot.try_lock().map_err(|_| Error::Unavailable)?;
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        *restore = Some(slot);
+         Ok(value)
+     }
+ 
+@@ -165,7 +169,7 @@
+         }
+         let started = Instant::now();
+         let predecessors = match &self.predecessors {
+-            OriginalPredecessors::SharedEvaluated(shared) => shared.clone(),
++            OriginalPredecessors::SharedLocalEvaluated(shared) => shared.clone(),
+             _ => return Err(Error::Binding("original shared local Selector predecessors")),
+         };
+         let context = self.context.evaluated.as_ref().ok_or(
+@@ -177,6 +181,10 @@
+                 context,
+             )
+             .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            &self.live,
++            &predecessors,
++        ).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+         let end = started.checked_add(lifetime).ok_or(Error::Unavailable)?.min(original_end);
+         let deadline = started.checked_add(timeout).ok_or(Error::Unavailable)?.min(end);
+         if Instant::now() >= deadline {
+@@ -203,7 +211,7 @@
+             return Err(Error::Unavailable);
+         }
+         let owner: Arc<dyn OriginalSelectionOwner> = owner;
+-        Ok(OriginalCircuitSelectionLocalReadbackV1 {
++        let value = OriginalCircuitSelectionLocalReadbackV1 {
+             original: Arc::new(Original {
+                 owner,
+                 expected,
+@@ -215,6 +223,38 @@
+                 timeout,
+                 end,
+             }),
+-        })
++        };
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        Ok(value)
++    }
++}
++
++impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W> {
++    pub(crate) fn from_original_evaluated_local_shared_receipt_owner(
++        owner: crate::OriginalCircuitSelectionReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<Self, Error> {
++        let context =
++            crate::OriginalCircuitSelectionReceiptOwnerV1::original_evaluated_command_context(
++                &owner,
++            ).ok_or(Error::Binding("original local evaluated Selector custody"))?;
++        OriginalCircuitLearningReadClientV1::require_original_local_evaluated_selection(
++            &live, context,
++        ).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            &live, &shared,
++        ).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let mut command =
++            OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
++                owner, live, shared.clone(),
++            )?;
++        // The original factory consumed the original custody and authenticated
++        // the complete context. This only selects the stricter local source
++        // protocol with the same already-sealed Arc pair.
++        command.predecessors = OriginalPredecessors::SharedLocalEvaluated(shared);
++        Ok(command)
+     }
+ }
+diff --git a/codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs b/codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs
+index 82dcc4191411c653b8a4f9c09ce879d918fc3601..d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9 100644
+--- a/codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs
+@@ -69,6 +69,7 @@
+ pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
+ pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptV1;
+ pub use evaluated::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
++pub(crate) use evaluated::OriginalCircuitEvaluatedSelectionLocalSourcesV1;
+ use evaluated::Profile;
+ 
+ /// One original TrainingNoUpdate cut. The complete original Generator signature

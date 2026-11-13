@@ -1,0 +1,100 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
+@@ -47,6 +47,46 @@
+ 
+     pub(crate) fn original_timeout(&self) -> Duration {
+         self.timeout
++    }
++
++    pub(crate) fn require_original_shared_readbacks(
++        &self,
++        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<(), Error> {
++        self.version.require_lifetime()?;
++        if Instant::now() >= self.end
++            || self.version.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++            || self.version.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        let state = self.version.state.try_lock().map_err(|_| Error::Busy)?;
++        let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++        let evaluated = cut.evaluated.as_ref().ok_or(Error::ReadbackRequired)?;
++        let held = state.shared_evaluated.as_ref().ok_or(Error::ReadbackRequired)?;
++        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(
++            held, evaluated,
++        )?;
++        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(
++            shared, evaluated,
++        )?;
++        let (held_trainer, held_evaluator) =
++            crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(held);
++        let (given_trainer, given_evaluator) =
++            crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared);
++        if !std::ptr::eq(held_trainer, given_trainer)
++            || !std::ptr::eq(held_evaluator, given_evaluator)
++        {
++            return Err(Error::Binding("same Version local T/E readback owners"));
++        }
++        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        self.version.require_lifetime()?;
++        if Instant::now() >= self.end
++            || self.version.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        Ok(())
+     }
+ 
+     pub(crate) fn respond(
+@@ -140,8 +180,12 @@
+         if Instant::now() >= admission_end {
+             return Err(Error::Unavailable);
+         }
+-        OriginalCircuitPublishedLocalReadV1::from_original_version(bound)
+-            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++        let local = OriginalCircuitPublishedLocalReadV1::from_original_version(bound)
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        if Instant::now() >= admission_end {
++            return Err(Error::Unavailable);
++        }
++        Ok(local)
+     }
+ 
+     fn bind_original_evaluated_local_read(
+--- a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -205,8 +205,12 @@
+         if let Some(read) = &current {
+             slot.retained = Some(read.clone());
+         }
+-        self.require_original_window()?;
+-        *self.original.slot.try_lock().map_err(|_| Error::Unavailable)? = Some(slot);
++        let mut destination = self.original.slot.try_lock().map_err(|_| Error::Unavailable)?;
++        self.require_original_window()?;
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        *destination = Some(slot);
+         Ok(current)
+     }
+ }
+@@ -250,6 +254,18 @@
+         })
+     }
+ 
++    pub(crate) fn require_original_local_shared_readbacks(
++        &self,
++        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<(), Error> {
++        let local = self.local.as_ref()
++            .ok_or(Error::Binding("local Version capability required"))?;
++        local.require_original_window()?;
++        local.original.original.require_original_shared_readbacks(shared)
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        local.require_original_window()
++    }
++
+     pub(crate) fn require_original_local_evaluated_selection(
+         &self,
+         expected: &OriginalCircuitEvaluatedRetentionContextV1,

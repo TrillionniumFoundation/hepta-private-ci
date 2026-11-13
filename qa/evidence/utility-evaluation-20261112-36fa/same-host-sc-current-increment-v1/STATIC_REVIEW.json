@@ -1,0 +1,115 @@
+{
+  "format": "hepta-same-host-sc-current-static-review-v1",
+  "qualification": false,
+  "packet": {
+    "bytes": 170745,
+    "sha256": "b8815061c953199e01d34344054eb63e28b270e842f15b3b50dd73fddb2e7017",
+    "git_blob": "484808c24b01b4c2c91b4698b2f31af304821f4e"
+  },
+  "source_count": 8,
+  "total_combined_production_paths": 18,
+  "notes": [
+    "Original 87c packet and all its blobs remain immutable.",
+    "Final S deadline check is inside the acquired restore try_lock, after full signature authentication and before Some(slot).",
+    "Export constructs the capability, checks the same admission deadline again, and drops the value/permit on expiry.",
+    "All new Version identity checks call the actual strict local API from 1f9; no summary or new client is used.",
+    "The S private local marker selects a concrete local source wrapper; original SharedEvaluated/Legacy/Evaluated branches retain their bodies.",
+    "The S wrapper delegates original observations/evaluated owners, adds strict Version local purpose and actual T/E pointer identity on each prepare.",
+    "C local source still verifies S=C identity as well as V=C, so the new explicit path binds V=S=C."
+  ],
+  "checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 4966,
+        "sha256": "bbee41be22ee71b4ecb08cfe4d790b77b069381604fb6975789a9c255729e258",
+        "git_blob": "408a068ce11174a962d5878cb706b7233b628514"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 4745,
+        "sha256": "30ac4ed80bcd6f0209e8204ba59cab4e981701187db7d0ae5248dc1e46b9f5da",
+        "git_blob": "2a3c444f6e2d3816ecc49c22162b5a42b0c2431d"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 3817,
+        "sha256": "bf51dc2737fe1bd4a3d3e3bbad29f6f0dc45dc8281c538ea8bc83262d1531391",
+        "git_blob": "1db1cb54cbeb0601f5d63121e7ecc8cb11bd546a"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 9065,
+        "sha256": "1aa3d1697f825e3249641e8fa4ad7470a7f19ff873904725859ce87668b096fe",
+        "git_blob": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 14921,
+        "sha256": "5752fddbf72e587c1080ba83c78a8ca8eacf8d9bab1bfbc77f036ff7faf52e1b",
+        "git_blob": "febf5988c22bc807659eb9c2af28339e9f6fc328"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 6120,
+        "sha256": "b142643a3ebc694f11e6501134c1ce104f70721d110efcd0ed47abdbdd28a5ec",
+        "git_blob": "ea06a53813e39239c8911d4ed12e17d5b87af592"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 10849,
+        "sha256": "45d5852584e26f66a9ca776670e6aa7069e039b43dac04cb608a6b3df69a9a9f",
+        "git_blob": "a922fc0f2e710aa98969fe575615d5f29ce40cc0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "before_pin_verified": true,
+      "after_pin_verified": true,
+      "after": {
+        "bytes": 29901,
+        "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a",
+        "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9"
+      }
+    }
+  ],
+  "complete_original_remote_prefix_preserved": true,
+  "execution": {
+    "rustfmt": false,
+    "compiler": false,
+    "tests": false,
+    "H": false,
+    "source_activation": false
+  },
+  "still_pending": [
+    "Root combination including Version Local backend and Linux exports",
+    "Mechanism test source and actual execution",
+    "Original complete caller/protection and native qualification"
+  ]
+}

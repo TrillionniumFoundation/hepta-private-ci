@@ -1,0 +1,19 @@
+{
+  "format": "hepta-root-exact-material-successor-approval-v1",
+  "approved_at_utc": "2026-11-13T04:10:36.498885+00:00",
+  "status": "APPROVED_ONCE_MATERIAL_ONLY",
+  "executor": "/root/native_ci_audit",
+  "request": {
+    "bytes": 39070,
+    "sha256": "941c5ccdd88acf94189b17d3f7752f2d39232fb55d59494258abf4f63cc57b5d",
+    "git_blob": "ae07ed6b65c3d6a89713fa3610b924a25d1f6a6d"
+  },
+  "review": {
+    "bytes": 4505,
+    "sha256": "b272ada3215c222fa6fbbdb3d4f9af3c05543681f47ec5df99acfd26bb85185e",
+    "git_blob": "1d3cf9de35a3d295e70110e51d1fccb9ad7fbf1e"
+  },
+  "idempotency_key": "hepta-utility-36fa-v8-single-archive-restore-v2",
+  "scope": "One exact second create-only material attempt, justified by a new quiet observation after the known first terminal refusal before downloads/writes. Re-run all unchanged realtime preconditions. If uncertain, reconcile only this same request/key. No third key or automatic retry, native main, source/ref/index/environment change, timeout increase or foreign-process action. Preserve original failures and all outcomes.",
+  "qualification": false
+}

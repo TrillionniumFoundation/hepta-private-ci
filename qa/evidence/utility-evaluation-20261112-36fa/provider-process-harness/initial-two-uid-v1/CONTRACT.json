@@ -1,0 +1,57 @@
+{
+  "H_calls": 0,
+  "child_API": [
+    "ChildControl::from_inherited_control(expected_uid: u32) -> anyhow::Result<Self>",
+    "send(&self, &[u8]) -> anyhow::Result<()>",
+    "recv(&self) -> anyhow::Result<Vec<u8>>"
+  ],
+  "compiled": false,
+  "connect_scope": "Real Unix socket plus actual SO_PEERCRED UID/GID/PID and pidfd/start lifetime of this designated child; original protocol handshake remains a separate caller obligation.",
+  "control_scope": "Only fixture metadata/addresses; never fabricated protocol response, caller authorization, typed Arc or claimed execution result.",
+  "executed": false,
+  "finish_scope": "SIGTERM delivery is not normal completion; finish requires real normal exit0 and EOF for both raw captures without errors/overflow. Own-child kill/reap is failure cleanup only and bounded.",
+  "format": "hepta-actual-dedicated-process-pair-test-harness-contract-v1",
+  "formatted": false,
+  "limits": {
+    "control_datagram_bytes": 65536,
+    "observations_seconds": 5,
+    "original_parent_test_budget_changed": false,
+    "owned_child_cleanup_seconds": 5,
+    "stderr_retained_prefix_limit": 1048576,
+    "stdout_retained_prefix_limit": 1048576
+  },
+  "new_test_methods": 0,
+  "ownership": "Only new independent helper source; original frozen idle sources unmodified. No listener/service/fixture/protocol implementation is supplied here.",
+  "parent_API": [
+    "PeerProcess::start(child_fqn: &'static str, uid: u32) -> anyhow::Result<Self>",
+    "pub(super) peer: AgentdRootAuthorityPeer",
+    "uid(&self) -> u32",
+    "pidfd(&self) -> anyhow::Result<OwnedFd>",
+    "send_control(&mut self, &[u8]) -> anyhow::Result<()>",
+    "recv_control(&mut self) -> anyhow::Result<Vec<u8>>",
+    "connect_original(&mut self, &Path) -> anyhow::Result<UnixStream>",
+    "request_sigterm(&mut self) -> anyhow::Result<()>",
+    "finish(self) -> anyhow::Result<PeerOutput>"
+  ],
+  "proposed_mount": "process_pair under the existing Linux Root test module; exact final mount/FQNs owned by Root/ordinary",
+  "ready_scope": "Automatic credential/startup acknowledgement only; never service readiness, role completion, a signature, a receipt, protocol handshake or typed authority.",
+  "root_inventory_change": null,
+  "source": {
+    "bytes": 27626,
+    "git_blob": "c269e4c7adfefb3853ea67ca46197af049dd4cbc",
+    "sha256": "a46e34b8b62092f09a0a658e19e62940243ce76a12f03fd151e910f5bb9de46c"
+  },
+  "start_scope": "Actual setpriv exec of same existing test ELF, exact FQN --ignored, UID/GID60001 or60002, clear groups/capabilities, env_clear, two inherited original FDs; no shell.",
+  "status": "FROZEN_FOR_STATIC_PEER_REVIEW_ONLY",
+  "target_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_pair_tests.rs",
+  "uids": {
+    "other_owners": 60002,
+    "parent": 0,
+    "trainer_model": 60001
+  },
+  "unverified": [
+    "No rustc/Cargo/rustfmt or native execution yet.",
+    "Final module visibility and child FQNs must be integrated with actual Root test parents.",
+    "Actual credential, runtime signal, full handshake, Rust type and original test-budget behavior require real future gates."
+  ]
+}

@@ -1,0 +1,14 @@
+--- 318597/authority_host_learning_resident_provider_process_pair_tests.rs
++++ capped-cleanup/authority_host_learning_resident_provider_process_pair_tests.rs
+@@ -224,8 +224,9 @@
+ 
+     fn cleanup_end(&self) -> Instant {
+         // Early construction failure/Drop also closes startup for the group.
+-        let _ = self.join_end();
+-        *self.cleanup_end.get_or_init(|| Instant::now() + CLEANUP_WINDOW)
++        let now = Instant::now();
++        let join_end = self.join_end();
++        *self.cleanup_end.get_or_init(|| now.min(join_end) + CLEANUP_WINDOW)
+     }
+ }
+ 

@@ -1,0 +1,169 @@
+{
+  "format": "hepta-native-independent-static-peer-review-v1",
+  "identity": "hepta-36fa-same-host-sc-version-seams-peer-v2",
+  "reviewed_at_utc": "2026-11-13 04:51:47 UTC",
+  "status": "STATIC_SEAMS_CLOSED_NO_NEW_CONCRETE_BLOCKER_WITHIN_REVIEWED_SCOPE",
+  "qualification": false,
+  "previous_review": {
+    "git_blob": "cd329c0f87fe1562aa6a112d430c267d4e088691",
+    "status": "TWO_CONCRETE_SEAMS_REPORTED_SUCCESSOR_PENDING",
+    "preserved": true
+  },
+  "activity": {
+    "git_source_reads": true,
+    "pure_v8_hash_and_patch_checks": true,
+    "h_calls": false,
+    "source_writes": false,
+    "driver_main": false,
+    "rustfmt": false,
+    "compile": false,
+    "tests": false,
+    "ref_writes": false
+  },
+  "exact_inputs": {
+    "sc_base_packet": {
+      "git_blob": "87c6707e499b5a85016198192c2bc3c7ae997e6b",
+      "bytes": 403258,
+      "sha256": "727f71c0816ed445532fea96bcdf850e679a5d600a3238a411ae40469a27610b"
+    },
+    "sc_successor_packet": {
+      "bytes": 170745,
+      "sha256": "b8815061c953199e01d34344054eb63e28b270e842f15b3b50dd73fddb2e7017",
+      "git_blob": "484808c24b01b4c2c91b4698b2f31af304821f4e"
+    },
+    "sc_successor_patch": {
+      "bytes": 14906,
+      "sha256": "1ff361e8e2b5e98a84dc12f41f9e5c427f43b4f8019a206e2066bfc589310edb",
+      "git_blob": "2e119e2520ac4e8bd556edd18a1d486dda182588"
+    },
+    "sc_successor_manifest": {
+      "bytes": 7480,
+      "sha256": "54881d2c43ce4a89fefb5d374a9e270bc50bf174acdb9b65f9dc1d782979dabf",
+      "git_blob": "31d6ac675c749bc21e3a8f34c1bc5f3bbd9f290e"
+    },
+    "version_production_packet": {
+      "bytes": 395117,
+      "sha256": "6f6f5b9fb17979895a1af667dd7ad3bb00e480ae50f3f08b333a55169b34135f",
+      "git_blob": "3de167eff0444e7dd8f0f32ade0444c1a8ff5925"
+    },
+    "version_identity_deadline_packet": {
+      "bytes": 46848,
+      "sha256": "703abde2378a8e2742307ca4da192971448cb2f53e058ca203f9826727ec1593",
+      "git_blob": "1f9af98ea25445d7ff732cbbd313399883165fb1"
+    },
+    "version_purpose_enum_packet": {
+      "bytes": 100436,
+      "sha256": "9d848270893463301324b74758b2ac757b7e00e3d307bb8254ecb9f156e92b86",
+      "git_blob": "39f9709423e09a445b9221dbdd3767bc9778d6c2"
+    },
+    "sc_private_trait_doc_packet": {
+      "bytes": 23426,
+      "sha256": "e0d14d57dcb4b6ac88fd03d3e58d1639ba92e60bfe40fafddd088c8e73ca6a45",
+      "git_blob": "31e260dde49f709ac5aac093304ee572a2621d3b"
+    }
+  },
+  "byte_and_provenance_checks": [
+    "The complete actual Git GET of every listed packet was checked as UTF-8 bytes against its canonical Git blob identity. Supplied SHA256/length values were recomputed.",
+    "All before and after bodies in the S/C 8-file packet and Version 14+2+4-file packets have exact bytes/SHA256/Git identities. The 8-file unified patch was fully applied to its embedded before bodies and produced every after body byte-for-byte.",
+    "Four S/C successor preimages are exactly the corresponding after bodies in old packet 87c. The other four preimage bodies were independently fetched by their exact Git blob IDs and compared in full; no assembled-tree identity is inferred.",
+    "Version 3de -> 1f9 -> 39f chains are exact for all changed paths. Both strict-shared helper bodies are byte-identical through the purpose-enum successor.",
+    "Removing only the S private SharedLocalEvaluated enum variant and local match arm exactly restores the prior service file. Every old remote source byte is an unchanged prefix of the new concrete-local wrapper file.",
+    "The three-line private-trait doc successor 31e260 has an exact a922 preimage. Removing precisely the three documentation lines restores a922; final core 1a00 was fetched in full.",
+    "Final Version core bodies 7af751 and 11275 were fetched independently and are byte-equal to the layered packets."
+  ],
+  "review_scope": {
+    "semantic_full_read": [
+      "S/C 8-file actual patch, all newly introduced/modified execution paths, full S cap, full C local sources/factory, full S concrete-local source and service branch",
+      "Version final circuit_retained_version_local_read.rs and circuit_learning_local_read.rs, both complete",
+      "Version identity/deadline and purpose-enum changes, all exact edit hunks",
+      "S SelectionSources prepare call and original custody dispatch; Version original NextUse actual-response/cut checks and local readiness alias bridge"
+    ],
+    "broader_dependency_limit": "The 14-file Version production packet was fully byte-verified. Semantic inspection focused on the two complete local modules and their concrete dependency/dispatch bridges; this is not a claim of whole-project type checking or exhaustive review of every unchanged source.",
+    "inherited_first_layer_review": "Full old S/C 14-file static review remains cd329c and its byte proof 186f34f51a5a62ccd6b2a769f0deba5beb8b1d13."
+  },
+  "closed_findings": [
+    {
+      "id": "POST_AUTHENTICATION_DEADLINE",
+      "finding": "The original S cap could cross the original deadline while authenticating the complete S and then restore its slot; export also lacked the final post-construction deadline check.",
+      "verified_correction": [
+        "S read_original_selection retains the initial post-await deadline test, fully authenticates the exact opaque S, acquires the restore try_lock, checks the same precomputed deadline again, and only then stores Some(slot). Expiry or failed lock leaves the shared slot absent.",
+        "S open_original_evaluated_local_readback retains its original start/timeout/end and permit. After actual readback and capability construction it tests the same admission deadline before returning; expiry drops the constructed capability and original permit.",
+        "Version read_original now acquires the destination try_lock, rechecks its full window and same deadline, then restores its slot. Version open also checks its original admission_end after conversion into the sealed local capability.",
+        "No timeout, absolute lifetime, 128-request bound or original four-permit semaphore limit increased."
+      ],
+      "disposition": "Closed in the frozen static implementation; runtime boundary behavior remains unexecuted."
+    },
+    {
+      "id": "SAME_ACTUAL_VERSION_SELECTOR_OBSERVER_CLIENTS",
+      "finding": "Context/window equality and S=C ptr equality alone did not establish that the Version actually held the same T/E Arc pair.",
+      "verified_correction": [
+        "ReadClient::require_original_local_shared_readbacks rejects a remote client, checks the local window, invokes the private Version binding check, and checks the local window again.",
+        "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks requires original lifetime, EvaluatedNoUpdate and actual Published state, holds the same Version state try_lock, obtains its actual cut and state.shared_evaluated, validates complete held and supplied contexts, and compares both actual original Client references with std::ptr::eq.",
+        "The Version helper retains complete original cut/window checks and final lifetime/Published checks. It exposes no owner, FD, mutable Client, new connection or caller-supplied validation callback.",
+        "New S and C local factories invoke this exact strict helper. S local export invokes it before actual readback. Every S concrete LocalSources::require_profile and C LocalSources::require_profile invokes it during original prepare.",
+        "S additionally checks that its concrete source's T/E references equal its shared bundle. C retains the S capability's original same-pair check, closing V=S=C for these actual local branches.",
+        "These identity checks do not substitute for live owner I/O: the original Source read_current path and before/after actual Version/C observations remain the response authority."
+      ],
+      "disposition": "Closed for the reviewed concrete local entry paths; final integration and tests remain pending."
+    }
+  ],
+  "preserved_behavior": [
+    "S now uses a distinct private SharedLocalEvaluated variant. The old Legacy, by-value Evaluated and SharedEvaluated remote branches retain their exact prior bytes and public contracts; strict local checks were not silently imposed on old remote paths.",
+    "The new S LocalSources wraps the same original remote observation implementation, delegates the original actual protocol, and adds concrete identity checks at prepare. It accepts no public arbitrary callback.",
+    "S and C local attestation dispatch keep FreshCreate -> original attest_source and Recovered -> original readback_source; no Fresh authority is reconstructed from recovered custody.",
+    "The original command owner's execution_requested/readback-only state remains derived from the consumed original receipt owner. The local S factory delegates the original shared factory and only selects its stricter private local variant afterward.",
+    "Version binding requires actual Published. Selection binding preserves the original predecessor bind and recovery-versus-current read path, full publication check and before/after equality. Each actual response keeps the original current checks; no old successful observation is accepted as a future live read.",
+    "Version local readback and readiness aliases share the same Arc, original permit, terminal slot, request counter and absolute end. The readiness adapter clones the same sealed local capability after original Material/D/S checks rather than constructing a second counter.",
+    "S and Version reads take their shared slot before fallible work. Error, timeout or cancellation cannot return the slot through a detached worker. Already-dispatched blocking work may finish; delivery stays Unknown. No cancellation is relabeled as proof that owner work never ran.",
+    "Export/bind cancellation can leave already-dispatched read-only work finishing and dropping its result/permit. It does not restore Fresh/Execute; this is distinct from an already-issued read capability's permanent absent-slot semantics.",
+    "Original T/E clients are still the same sealed Arc objects, preserving their original channel, nonce, aggregate 128-request counters and deadlines. Local capability counters are additional limits and do not replenish the T/E clients.",
+    "No new queue or retry loop was introduced. Busy/Unavailable from try_lock or the original client slot still rejects. Same-host typed references do not replace real socket peer identity across processes.",
+    "The purpose-enum successor changes internal bool/Option positional APIs to fixed enums with equivalent Readback/CompletionReadiness and Selection/NextUse mappings. The strict identity helpers remain byte-identical.",
+    "The doc-only successor preserves behavior and documents the private adapter restriction."
+  ],
+  "source_gate_and_tests_remaining": [
+    "The reviewed 8+2+4 and doc increments introduce no executed test result. Dedicated S/C and Version mechanism tests are still separate author work; test packets must be frozen and reviewed with the final overlay.",
+    "Final registration must cover new public Version open/read-client factories, S local export/read method, S/C local adapters, private strict-shared checks and concrete Source prepare paths. Full protected-body and CALLERS/QA mappings must use actual final formatted bytes.",
+    "Mechanism coverage should demonstrate rejection of same-context but different actual T/E pairs, remote-versus-local purpose mismatch, current/publication and recovery refusal windows, and post-auth/post-conversion deadline expiry without slot restoration.",
+    "Shared cancellation/alias/request-budget/permit behavior and actual full Fresh/Root/C-daemon assembly require the original scoped runtime gates; this review does not claim their success.",
+    "Layered packets are not themselves a frozen final source tree. Root's exact merge, original formatting/postimage review, original source gates and native qualification remain necessary."
+  ],
+  "execution_boundary": {
+    "latest_authorized_h_observer": "1a1d3349a12-392-aa",
+    "latest_observation_utc": "2026-11-13T04:40:03.759521Z",
+    "matching_processes": 4,
+    "no_third_material_restore_authorized": true,
+    "no_native_main_authorized": true,
+    "this_report_is_execution_approval": false
+  },
+  "composed_preparation_identity": {
+    "root_map": {
+      "bytes": 46438,
+      "sha256": "d506e3fde0cd262d0a3736e45cded2e98d6837053b52e0f9891dfa540e78e23f",
+      "git_blob": "f4066cf562953650ae7a10129c9a90d496630fca"
+    },
+    "root_availability_record": {
+      "bytes": 24777,
+      "sha256": "f274303ba4b5a22312af556ef6361ae65f137e2e0b653013818fb063f0fe869f",
+      "git_blob": "c57b9d32efacf6b5552ef8110d13217c106ee425"
+    },
+    "compared_packet_effective_paths": 30,
+    "root_rust_files": 76,
+    "root_availability_rows": 78,
+    "merged_lib": {
+      "bytes": 71893,
+      "git_blob": "9c77c4265aef5301d3e2f8a8c414847d0e718396",
+      "sha256": "d0c43440859518c93592252411141dbec6579663530566a3d77663baab8677d8",
+      "actual_get_equal_exact_two_guarded_insertions": true,
+      "base": "e4b140b7f9272313df6d243ff38caab4e68b97d8"
+    },
+    "scope": "Compare reviewed packet effective after identities to root metadata; actual merged lib full GET and exact two insertions. Does not claim new local file reads or repeat all 78 source GETs.",
+    "unexecuted_exclusions": [
+      "New Version and S/C mechanism tests",
+      "Initial Root admission of actual A evidence",
+      "Three-UID harness mounts and full Fresh/daemon/Root integration",
+      "Complete registration/CALLERS/source gates",
+      "Original native gates"
+    ]
+  }
+}

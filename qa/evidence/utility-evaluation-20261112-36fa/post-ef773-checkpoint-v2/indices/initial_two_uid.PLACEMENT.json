@@ -1,0 +1,68 @@
+{
+  "format": "hepta-historical-preparation-placement-v1",
+  "status": "HISTORICAL_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "files": [
+    {
+      "path": "provider-process-harness/initial-two-uid-v1/authority_host_learning_resident_provider_process_pair_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "c269e4c7adfefb3853ea67ca46197af049dd4cbc",
+      "bytes": 27626,
+      "sha256": "a46e34b8b62092f09a0a658e19e62940243ce76a12f03fd151e910f5bb9de46c",
+      "full_readback_equal": true
+    },
+    {
+      "path": "provider-process-harness/initial-two-uid-v1/draft-01.original.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "0c93cd9c8d99014e7ae6abe2cae2aad35c7b1bc4",
+      "bytes": 26868,
+      "sha256": "c6ef3c76635fdae04bd600d20b98963ff2d65efebdcd7c189a579cbdbeaf9ffa",
+      "full_readback_equal": true
+    },
+    {
+      "path": "provider-process-harness/initial-two-uid-v1/FROM_DRAFT_01.diff",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "20e1b522aca428b31e353a99ae74e28b4412399b",
+      "bytes": 6106,
+      "sha256": "222eb032d936266193e90fd5a92868297cb4b3ad206585ffd4d8468b0c57a892",
+      "full_readback_equal": true
+    },
+    {
+      "path": "provider-process-harness/initial-two-uid-v1/CONTRACT.json",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "8c80f6feb13e8c1b39843afa09dc81b7737b4115",
+      "bytes": 3142,
+      "sha256": "23b13ce112536c6eb735c9ad8643bb0dd3540bfc81770c97eb306c83fc538281",
+      "full_readback_equal": true
+    },
+    {
+      "path": "provider-process-harness/initial-two-uid-v1/AUTHOR_STATIC_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "cda2de3117f0f7d69653d4e9fe92a8f730497a96",
+      "bytes": 1774,
+      "sha256": "61d5bd507ff2ea5d7d8601bf7ccb17ff369765de5a7779a480f856a25b79f666",
+      "full_readback_equal": true
+    },
+    {
+      "path": "provider-process-harness/initial-two-uid-v1/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "1b944ea82892ec88e1f6030693007330a581adb7",
+      "bytes": 1288,
+      "sha256": "546eba83990f4eba6e583fd6b55d32fb76a88a228b3e00e4d569b1873e9d35ba",
+      "full_readback_equal": true
+    }
+  ],
+  "scope": "Original six-file two-UID harness preparation. Source c269 is preserved unchanged. Fixed-stack and three-UID/cleanup-cap increments are separate successor objects, not retroactive edits or actual execution.",
+  "superseded_by": {
+    "fixed_stack_source": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66",
+    "three_uid_source": "318597fb680c4094e042c10ca368aa407f9942ca",
+    "cleanup_capped_source": "4386c406afa55625f24bc96a3940b63e5d020804"
+  },
+  "host_calls": 0,
+  "tests_executed": 0
+}

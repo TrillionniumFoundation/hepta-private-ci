@@ -1,0 +1,14 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs b/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
+index a922fc0f2e710aa98969fe575615d5f29ce40cc0..1a00dc794e3cd7e33fccbb63f1f08276c5361ddf 100644
+--- a/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
+@@ -18,6 +18,9 @@
+ use crate::OriginalCircuitLearningReadClientV1;
+ use crate::OriginalCircuitSelectionReceiptErrorV1;
+ 
++/// Private type erasure for the same concrete original Selector command owner.
++/// Only this module implements the adapter; no external implementation or
++/// caller-supplied callback is accepted as an original predecessor capability.
+ trait OriginalSelectionOwner: Send + Sync {
+     fn read_original_receipt(&self) -> Result<OriginalCircuitEvaluatedSelectionReceiptV1, Error>;
+ }

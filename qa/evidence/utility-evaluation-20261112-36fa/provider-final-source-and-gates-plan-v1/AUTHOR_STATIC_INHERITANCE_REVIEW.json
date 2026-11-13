@@ -1,0 +1,55 @@
+{
+  "format": "hepta-provider-plan-author-static-inheritance-review-v1",
+  "status": "STATIC_ONLY_NOT_EXECUTION_APPROVAL",
+  "plan": {
+    "git_blob": "c4ce673d12252cef490651f67be0c997135c2d09",
+    "bytes": 36168,
+    "sha256": "7469d063fd47a29fbbca27948dcddab189462af69ca6b2c4d23582dc59c6fb37"
+  },
+  "original_plan": {
+    "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+    "bytes": 32246,
+    "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+  },
+  "original_runtime_projection_cfg": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+  "phase_projection_fields": [
+    "id",
+    "cwd",
+    "command",
+    "command_payload",
+    "runner",
+    "timeout_seconds",
+    "minimum_tests",
+    "threads",
+    "outer_driver_budget_seconds",
+    "driver_invocation",
+    "filter_tokens_exact",
+    "required_existing_case",
+    "condition",
+    "stop_rule"
+  ],
+  "phase_projection_sha256": "28cef1f52f2b3d0977e0adb4c1385c126b2ecef205b8576d34ba56470e229e27",
+  "checks": {
+    "phase_catalog_exact": true,
+    "phase_count": 14,
+    "runtime_nine_fields_exact": true,
+    "fixed_target": true,
+    "minimum_free_unchanged": true,
+    "create_target_false": true,
+    "source_before_native": true,
+    "source_outer_7200": true,
+    "native_outer_45000": true,
+    "future_source_and_runtime_proofs_null": true,
+    "all_candidate_execution_fields_null": true,
+    "root_main_permission_false": true,
+    "third_material_attempt_false": true
+  },
+  "limits": [
+    "Author mechanical equality check only; no independent peer approval or code execution.",
+    "Original 33/163/15188 values remain historical. A complete future overlay may add files and tests.",
+    "Whole-source/no-refs/raw-Git requirements are not substituted by candidate predictions.",
+    "The current provider process graph and registration are deliberately not marked closed.",
+    "Cloud unavailable; all inputs came from complete immutable Git GETs. No shell/H execution or new source materialization."
+  ],
+  "host_calls": 0
+}

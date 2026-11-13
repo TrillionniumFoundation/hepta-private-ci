@@ -1,0 +1,296 @@
+{
+  "format": "hepta-sc-peer-full-byte-and-patch-review-v1",
+  "packet": {
+    "bytes": 403258,
+    "sha256": "727f71c0816ed445532fea96bcdf850e679a5d600a3238a411ae40469a27610b",
+    "git_blob": "87c6707e499b5a85016198192c2bc3c7ae997e6b"
+  },
+  "patch": {
+    "bytes": 38905,
+    "sha256": "4e0fd2f101ff5f43257f2f4783d6e824e1e8d81908649c36d1dabad36f68d50a",
+    "git_blob": "99b360a486418b55b1665b0f930968f884ca6967"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 8578,
+        "sha256": "e3244af38d6fc15e068eb99f27207dff4e2bfcc96ff468793de54af1a3b2e063",
+        "git_blob": "bb104facd29f0939e8b8a4f013cced395116a4bf"
+      },
+      "after": {
+        "bytes": 9035,
+        "sha256": "c08b4199d31c58303d44e7b8a2bfc37e4dfba18406150a7ebba63dbda3c9c8df",
+        "git_blob": "86a5fbec4ce07b9b6193b0181e979bbf33467541"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 4776,
+        "sha256": "41907864465f6b76c2cc679a3ad60054412779f61230cb9a22e61d86026e1100",
+        "git_blob": "272a18f9f2d0fce4ea66e5ee1f71e7a5c2cea2b5"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 4599,
+        "sha256": "01eb259e7a92e5ee86125b8761551bdcef49b3b07db4d66f13a04dd1a539e0fe",
+        "git_blob": "c3787949bd2d49bc7e070cc9b8109d2050ea8ae5"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 12252,
+        "sha256": "3794c33456d7b9bd80c7ed959a4097995c9a7198a9ba426a46cb1431dc567673",
+        "git_blob": "8c034c0c4ca948983fb4471e485fa7bf55fe4172"
+      },
+      "after": {
+        "bytes": 12401,
+        "sha256": "4dfd606597e1a7e4fed5a9d51773a945c6dc3655944247ea654660079dc12cab",
+        "git_blob": "f6560fe4b5989a6961c9064628441775c15baeed"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 4639,
+        "sha256": "4901232b59227c4297a359c2da6e1ed4d5897c46b08da05c8ca841f80855424d",
+        "git_blob": "36c099ad2ae3b72deae633729a46be0b4fb766cd"
+      },
+      "after": {
+        "bytes": 4659,
+        "sha256": "405174c6cf29894569e260b2535d3ea03bf3dac5de13cd4f1804f703c9a09b27",
+        "git_blob": "272a6aba53c515af0b5ec5c5d8d046ccc40dbe2f"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 2828,
+        "sha256": "b7a7be8a813efc89084b52e41d573141af2fa481f6ec58e28be1a8f386d29c3c",
+        "git_blob": "a7afe2d22caf518d07473b0197f4fa5d755baba3"
+      },
+      "after": {
+        "bytes": 3147,
+        "sha256": "862c5b9bdd71019fbc510b51b1cee7119810b6a9fa60c3b2e3b85f9590f6eead",
+        "git_blob": "1756083c7bd47e34d5bb2d8f7178a2271ff1e121"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 2437,
+        "sha256": "b531f8bfd5f06232472175fffff980391e2f871186ceb793a05a16d0119bd6da",
+        "git_blob": "1180fb9dd9700346f2a94e0a097e84660423a83b"
+      },
+      "after": {
+        "bytes": 3619,
+        "sha256": "66a616dce6912a919971ff1f2cd2dc11193f3e7667936d983d9f8f5e863f76f9",
+        "git_blob": "5414b82ca69fbd4d5aad4499da1eadfcab0c00e0"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 10352,
+        "sha256": "2b2d8e3a22de44017294f0fd9861c4025edf5bcf6f9cc36f021c27fad41220b8",
+        "git_blob": "322ceb9355e6d75d98e4f2219eeef8146dfc2b0e"
+      },
+      "after": {
+        "bytes": 10468,
+        "sha256": "9beee92e4ffce2a3d27386fb002a79130fee42e6693986ed0c8c9503f3afce77",
+        "git_blob": "b5131bf54f28396737fe407a4aa3b925636f241b"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 24286,
+        "sha256": "cd63c4caf31b917f6ed92bad012b04f337fac9b61939c25c3799306812d14cb4",
+        "git_blob": "d2512ef649afa6e5a723de54ecf5f579b82c150c"
+      },
+      "after": {
+        "bytes": 26099,
+        "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06",
+        "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 9707,
+        "sha256": "7f5a2bbefb566c0757884e6bedcc27c3f61768b8a49417fce849bfa26e658a0e",
+        "git_blob": "da8be0e6b165f39f5a5c1555a5eb86883014200d"
+      },
+      "after": {
+        "bytes": 9850,
+        "sha256": "5c4d2cc85158b4a076a8987c677b9c6419c2cceb5d14850d2b17441b50fa351b",
+        "git_blob": "01f598a8d6747dc2c7a4438bdcd1860471c5a8eb"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 19420,
+        "sha256": "f71f684576cb404f2a6ab4ad9537b8b128788e3e54f5bee626b499212dd0229d",
+        "git_blob": "14334773c7db9d4d911da4ed7643271c8f6b1d70"
+      },
+      "after": {
+        "bytes": 19478,
+        "sha256": "8ce8a88dee4313fd0070731a28319c49e0239cd135a87b383bb357d3a0f0ee06",
+        "git_blob": "ece090eaaeed68f44fcca3e74bbcdcd1bc90857d"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 8918,
+        "sha256": "8b5a5b3d3fbdd1d5491d7093afdd8e262dc6bbb6862f2e8349da988672200704",
+        "git_blob": "b22291b1c2c51d8037d6345bf71e00dee402d9da"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 14022,
+        "sha256": "47231d32f69c0a70f7daed27cc23db35e562ce46bbe02063ad8db652af20e3aa",
+        "git_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17"
+      },
+      "after": {
+        "bytes": 14090,
+        "sha256": "60fa9f9bf92736a7ea4de72b6d4b78893f8486be43b5d835ed191c7648138705",
+        "git_blob": "566dbd6971d2fd11434fbf6408c95c9abeb143af"
+      },
+      "all_content_hashes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 71682,
+        "sha256": "d0ee5faa628ca4c5d6f945025e29cfc20f60d11c47bc547d3c3979bd5d0b5084",
+        "git_blob": "e4b140b7f9272313df6d243ff38caab4e68b97d8"
+      },
+      "after": {
+        "bytes": 71795,
+        "sha256": "df90ca7e43c3a33adc8d3012c9bbadd740001ef56edf536d1b55a25976d58514",
+        "git_blob": "1296cc4e3265f31c2f30f95f589b8d59e1210a52"
+      },
+      "all_content_hashes_equal": true
+    }
+  ],
+  "patch_application": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "hunks": 7,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "hunks": 2,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "hunks": 3,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "hunks": 6,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "hunks": 1,
+      "all_after_bytes_equal": true
+    }
+  ],
+  "counts": {
+    "paths": 14,
+    "new_files": 3,
+    "modified_files": 11
+  },
+  "existing_s_actual_read_extraction": {
+    "normalized_body_equal": true,
+    "only_receiver_adaptation": "Arc<Self>::as_ref() -> &Self",
+    "all_guard_order_and_authentication_lines_equal": true
+  },
+  "scope": "Full UTF-8 bytes/SHA256/canonical Git blob identities and exact unified patch application only; changed semantic path review is separate. No Cargo/rustfmt/native execution."
+}

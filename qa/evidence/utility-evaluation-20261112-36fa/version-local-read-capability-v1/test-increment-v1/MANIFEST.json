@@ -1,0 +1,71 @@
+{
+  "format": "hepta-source-increment-v1",
+  "identity": "version-purpose-fixed-local-read-mechanism-tests-v1",
+  "status": "PREPARATION_HOLD_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "dependencies": {
+    "production": "3de167eff0444e7dd8f0f32ade0444c1a8ff5925",
+    "identity_and_deadline": "1f9af98ea25445d7ff732cbbd313399883165fb1",
+    "purpose_enum": "39f9709423e09a445b9221dbdd3767bc9778d6c2",
+    "same_original_next_use_fixture": "662c2d268b76df26ce1bed0b375e67043f4f91d6",
+    "root_integrated_production_map": "f4066cf562953650ae7a10129c9a90d496630fca"
+  },
+  "source_packet": {
+    "bytes": 93578,
+    "sha256": "22d21ca36f843f4a05ec6f28009b2ae56b51f4535e1ef07fb93d77d573c03bfd",
+    "git_blob": "00c44402b24c92e344f1bd29a5e578fdfadaf940"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 10945,
+        "sha256": "574cb770ed27a1271ba6718746fcd3136856770f020b07dd5d973c77b302d35e",
+        "git_blob": "11275f0c1daae3dfa60c40319d3a21c5e55ac2ad"
+      },
+      "after": {
+        "bytes": 11662,
+        "sha256": "2d27854f0b83ff0d58d08392745a57310e90e2ce7ded0668bbf9a39e0180416c",
+        "git_blob": "66f7d1d508de7c15b8fcd5be279ef29cfd62618f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 5093,
+        "sha256": "3ab9aa693eedb68ab1cb47cde01405d56ee4c651eb34e201045b2fbcb3c0e357",
+        "git_blob": "aa8ba42344c14662d4f2fdf1fbc37ff7d1b454b9"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 23509,
+        "sha256": "3e2c5291240bfbf71f7bd255db88c30168bf8ec58e3ef4da655053bb01f5da38",
+        "git_blob": "24cb8874c78b64dca4174cd54aacd6a97e0723af"
+      },
+      "after": {
+        "bytes": 23735,
+        "sha256": "0180458874b25d1d7be5e0d7b3ebe8ba4bef8b5e4dc3ac92f1fb5b5a191ee533",
+        "git_blob": "07abfc03d0a7a77261cde6cc9a13ff40439bf218"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 13660,
+        "sha256": "4eb855bbf4fde795bf79f0fdd7f4e0a18a6815abb6e87f81483415e8e3a48a72",
+        "git_blob": "1bf74c7399da89dca3649c9065e774b56bf1553d"
+      }
+    }
+  ],
+  "formatted": false,
+  "compiled": false,
+  "tests_executed": false
+}

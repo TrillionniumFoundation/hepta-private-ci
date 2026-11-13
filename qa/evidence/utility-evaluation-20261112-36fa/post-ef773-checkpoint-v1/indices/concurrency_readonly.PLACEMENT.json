@@ -1,0 +1,54 @@
+{
+  "format": "hepta-current-concurrency-observation-placement-v1",
+  "qualification": false,
+  "job": "1a1d3179f2a-392-83",
+  "normal": "succeeded0",
+  "scope": "Single actual sample 2026-11-13T04:08:24.385963Z..04:08:24.443956Z; both original guard arrays empty. No material restore/native dispatched. Later live preflight remains required.",
+  "controls": {
+    "request": "64b679be4a1b927e7767dbc260b80a30e77398ad",
+    "script": "45a3a8ff39967288f6449f25e3a9276edcaaf081",
+    "approval": "5b4a35fa60a71d75f20f85b15d2bd37acbd7fa38"
+  },
+  "files": [
+    {
+      "path": "runtime-v8-single-archive-restore-v1/current-concurrency-observer/DISPATCH_INTENT.json",
+      "local_path": "/tmp/hepta-36fa-native-concurrency-readonly-v1/DISPATCH_INTENT.json",
+      "bytes": 310,
+      "sha256": "30b9b30f89afe8a7985c8cbac8976c538e68aa6646f2cefb724aca0388c9dfdf",
+      "git_blob": "d573ccb41f6656b5f8500ec2d9524fe1d1e5440e",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "path": "runtime-v8-single-archive-restore-v1/current-concurrency-observer/ADMISSION.original.json",
+      "local_path": "/tmp/hepta-36fa-native-concurrency-readonly-v1/ADMISSION.original.json",
+      "bytes": 3059,
+      "sha256": "3198fad2c30db457b1caab1318173bef3652cefba1161e37ea8749c96e1782eb",
+      "git_blob": "121d0f0001a1b90094b72bae615c7695ecbd8290",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "path": "runtime-v8-single-archive-restore-v1/current-concurrency-observer/STATUS_01.original.json",
+      "local_path": "/tmp/hepta-36fa-native-concurrency-readonly-v1/STATUS_01.original.json",
+      "bytes": 949,
+      "sha256": "a02e570fe2d6afd56b0cad7ac8bbc058f1e9161ef50c745ac34e1c0fd15a12bc",
+      "git_blob": "b6ca454e783915107c11e56cf10b0268b16d9793",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "path": "runtime-v8-single-archive-restore-v1/current-concurrency-observer/STDOUT_READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-native-concurrency-readonly-v1/STDOUT_READ_01.original.json",
+      "bytes": 2043,
+      "sha256": "de6a8dd993d141d4e9ef018814d08586f72537aae83cfc8240596a6c04d4c836",
+      "git_blob": "4291cae68115b385d614e0a8c5fd52bb3d68b972",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "path": "runtime-v8-single-archive-restore-v1/current-concurrency-observer/OBSERVATION.original.json",
+      "local_path": "/tmp/hepta-36fa-native-concurrency-readonly-v1/OBSERVATION.original.json",
+      "bytes": 485,
+      "sha256": "16d8e917b1c67917bf17862f05f8e5471507dfeed99e795beddd75f644364766",
+      "git_blob": "ec83fc9c6e1fd0fd16012afda54bca3c013ba996",
+      "actual_create_full_get_equal": true
+    }
+  ]
+}

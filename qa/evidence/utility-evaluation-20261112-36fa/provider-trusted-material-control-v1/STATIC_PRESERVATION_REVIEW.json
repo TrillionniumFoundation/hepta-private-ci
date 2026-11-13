@@ -1,0 +1,21 @@
+{
+  "format": "hepta-trusted-material-control-author-static-v1",
+  "status": "STATIC_ONLY",
+  "exact_preservation": {
+    "original_fixture_trust_and_root_activation_body_inverse_equal": true,
+    "original_single_ledger_creation_body_inverse_equal": true,
+    "original_unstarted_material_body_inverse_equal": true,
+    "all_other_original_material_helper_bytes_equal": true
+  },
+  "no_source_activation": true,
+  "no_formatter": true,
+  "no_compiler": true,
+  "no_tests": true,
+  "no_H": true,
+  "one_new_method": "fresh_original_material_control_preserves_complete_inputs_and_rejects_substitution",
+  "limitations": [
+    "The control decoder requires pre-held typed Material plus full host-owned trust; it does not itself solve first cross-process provider admission.",
+    "Native dual-UID harness is not called by this one codec test. No public role/ten-owner/daemon/Root success is claimed.",
+    "No test or original current-source gate was executed."
+  ]
+}

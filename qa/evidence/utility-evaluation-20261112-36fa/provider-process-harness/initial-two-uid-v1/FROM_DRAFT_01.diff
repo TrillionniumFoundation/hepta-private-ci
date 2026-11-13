@@ -1,0 +1,121 @@
+--- draft-01.original.rs
++++ authority_host_learning_resident_provider_process_pair_tests.rs
+@@ -97,6 +97,11 @@
+     Ok(())
+ }
+ 
++fn within_window(end: Instant) -> anyhow::Result<()> {
++    anyhow::ensure!(Instant::now() < end, "bounded fixture observation expired");
++    Ok(())
++}
++
+ fn receive_datagram(control: &UnixDatagram) -> io::Result<Vec<u8>> {
+     let mut payload = vec![0_u8; CONTROL_LIMIT + 1];
+     // SAFETY: recv writes at most payload.len() bytes to this initialized buffer.
+@@ -128,18 +133,29 @@
+     Ok(observed)
+ }
+ 
+-fn drain_pipe<R: Read>(pipe: &mut Option<R>, bytes: &mut Vec<u8>, overflow: &mut bool) -> io::Result<()> {
++fn drain_pipe<R: Read + AsRawFd>(
++    pipe: &mut Option<R>, bytes: &mut Vec<u8>, complete: &mut bool, overflow: &mut bool,
++) -> io::Result<()> {
++    // Drop may run before start() has configured both pipes. Never perform a
++    // potentially blocking read on that partial-construction failure path.
++    if let Some(reader) = pipe.as_ref() {
++        if let Err(error) = set_nonblocking(reader.as_raw_fd()) {
++            pipe.take();
++            return Err(error);
++        }
++    }
+     let mut buffer = [0_u8; 8192];
+     // Bound each drain pass even if a failing child writes continuously.
+     for _ in 0..16 {
+         let Some(reader) = pipe.as_mut() else { return Ok(()); };
+         match reader.read(&mut buffer) {
+-            Ok(0) => { pipe.take(); return Ok(()); }
++            Ok(0) => { *complete = true; pipe.take(); return Ok(()); }
+             Ok(count) => {
+                 let retained = count.min(CAPTURE_LIMIT.saturating_sub(bytes.len()));
+                 bytes.extend_from_slice(&buffer[..retained]);
+                 if retained != count {
+                     *overflow = true;
++                    pipe.take();
+                     return Err(io::Error::other("fixture child output exceeds retained 1 MiB prefix"));
+                 }
+             }
+@@ -262,10 +278,10 @@
+     }
+ 
+     fn drain_output(&mut self) -> anyhow::Result<()> {
+-        let out = drain_pipe(&mut self.stdout, &mut self.output.stdout, &mut self.output.stdout_overflow);
+-        let err = drain_pipe(&mut self.stderr, &mut self.output.stderr, &mut self.output.stderr_overflow);
+-        self.output.stdout_complete = self.stdout.is_none() && !self.output.stdout_overflow;
+-        self.output.stderr_complete = self.stderr.is_none() && !self.output.stderr_overflow;
++        let out = drain_pipe(&mut self.stdout, &mut self.output.stdout,
++            &mut self.output.stdout_complete, &mut self.output.stdout_overflow);
++        let err = drain_pipe(&mut self.stderr, &mut self.output.stderr,
++            &mut self.output.stderr_complete, &mut self.output.stderr_overflow);
+         let mut failed = false;
+         for (name, result) in [("stdout", out), ("stderr", err)] {
+             if let Err(error) = result { self.output.errors.push(format!("{name}: {error}")); failed = true; }
+@@ -294,6 +310,7 @@
+         anyhow::ensure!(payload.len() <= CONTROL_LIMIT, "fixture metadata at most 64 KiB");
+         let end = Instant::now() + IO_WINDOW;
+         loop {
++            within_window(end)?;
+             self.drain_output()?;
+             anyhow::ensure!(!self.observe_exit()?, "actual child exited before control send");
+             let control = self.control.as_ref().ok_or_else(|| anyhow::anyhow!("original control channel"))?;
+@@ -309,6 +326,7 @@
+     pub(super) fn recv_control(&mut self) -> anyhow::Result<Vec<u8>> {
+         let end = Instant::now() + IO_WINDOW;
+         loop {
++            within_window(end)?;
+             self.drain_output()?;
+             let control = self.control.as_ref().ok_or_else(|| anyhow::anyhow!("original control channel"))?;
+             match receive_datagram(control) {
+@@ -347,6 +365,7 @@
+             anyhow::ensure!(error.raw_os_error() == Some(libc::EINPROGRESS), "original connect failed: {error}");
+             let end = Instant::now() + IO_WINDOW;
+             loop {
++                within_window(end)?;
+                 self.drain_output()?;
+                 self.ensure_live()?;
+                 let mut descriptor = [libc::pollfd { fd: stream.as_raw_fd(), events: libc::POLLOUT, revents: 0 }];
+@@ -385,6 +404,7 @@
+ 
+     fn collect_until(&mut self, end: Instant) -> anyhow::Result<()> {
+         loop {
++            within_window(end)?;
+             self.drain_output()?;
+             if self.observe_exit()? && self.stdout.is_none() && self.stderr.is_none() { return Ok(()); }
+             self.wait_activity(0, end)?;
+@@ -441,8 +461,9 @@
+     fn drop(&mut self) {
+         if !self.finished && self.child.is_some() {
+             self.kill_owned_and_collect();
+-            // The enclosing original test recorder retains these exact byte
+-            // arrays even on an early Result error or unwinding parent panic.
++            // Emit the retained raw byte arrays to the original test's stderr
++            // on early errors/panics; the enclosing recorder keeps its own
++            // unchanged output limit and reports any truncation separately.
+             eprintln!("RESIDENT_PAIR_UNFINISHED pid={} uid={} retained={:?}", self.peer.pid, self.uid, self.output);
+         }
+     }
+@@ -496,6 +517,7 @@
+         anyhow::ensure!(payload.len() <= CONTROL_LIMIT, "fixture metadata at most 64 KiB");
+         let end = Instant::now() + IO_WINDOW;
+         loop {
++            within_window(end)?;
+             match self.control.send(payload) {
+                 Ok(count) => { anyhow::ensure!(count == payload.len(), "complete metadata datagram"); return Ok(()); }
+                 Err(error) if matches!(error.kind(), io::ErrorKind::WouldBlock | io::ErrorKind::Interrupted) => {}
+@@ -508,6 +530,7 @@
+     pub(super) fn recv(&self) -> anyhow::Result<Vec<u8>> {
+         let end = Instant::now() + IO_WINDOW;
+         loop {
++            within_window(end)?;
+             match receive_datagram(&self.control) {
+                 Ok(payload) => return Ok(payload),
+                 Err(error) if matches!(error.kind(), io::ErrorKind::WouldBlock | io::ErrorKind::Interrupted) => {}

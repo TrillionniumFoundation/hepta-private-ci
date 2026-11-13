@@ -1,0 +1,4475 @@
+{
+  "format": "hepta-exact-small-batch-evidence-publication-v1",
+  "evidence_parent": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+  "previous_leaf": "02f98a58fbed34eb796b38c75b048fac3d518b2f",
+  "final_leaf": "8f248caecd1aefaae9527743d5ac3c0c83121c63",
+  "final_files": 4368,
+  "changed_or_added": 731,
+  "new_paths": 730,
+  "only_replaced_path": "README.md",
+  "old_non_readme_unchanged": 3637,
+  "final_filemap": {
+    "git_blob": "e48cf378d56099cc01d932ead2ca3705ae5da7cc",
+    "bytes": 524656,
+    "sha256": "cb0ea8d29858e6d02054afde53ebb51e9563be184b19e4b936f39c614004cf6c"
+  },
+  "directory_trees_including_leaf": 605,
+  "batches": [
+    {
+      "number": 1,
+      "base_tree_sha": "02f98a58fbed34eb796b38c75b048fac3d518b2f",
+      "expected_tree_sha": "361b936f7296c34a94762c847f96716ea0721005",
+      "elements": [
+        {
+          "path": "README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8940156bdfaf8a3bfc7c56c22ef3ea68e488361"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/ACTUAL_BOOTSTRAP.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "702e32c7a53a3b19dc9925cad54eaff676aadb47"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/ACTUAL_PROCESS_INPUT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "163e69e0e1002f70dc6d8e71ff3354ff95607647"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/ACTUAL_STDIN.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "21b6bacc578526fce331faa9ebd38ea3bb43b41f"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/ADMISSION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c43b0f4240939af6f0d39a016edc87077794c607"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/CONNECTION_OBSERVATIONS_ADDENDUM_02.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "07bd16f7f1867e7650bfe86feeed55c490e39e1d"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/CONNECTION_OBSERVATIONS_PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "52a8425c11e9a7cdf4f3f83371deb8057448b77e"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/DISPATCH_INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9b8f31e9b2e41ec87e036f3c1b92306bb05a27ac"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/EXACT_LAUNCH_MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3807f3d3ecfe630383b79045ca52a8df39fbaf99"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/FROM_ORIGINAL_BOOTSTRAP.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6fd8f0bd82f6b3e34657d590bc7bf8a91c08b21f"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/HOST_HEALTH_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c43b0f4240939af6f0d39a016edc87077794c607"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/HOST_HEALTH_02.INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1c61d5d84cf5e1deb56b8d55b01e7fd503fafe9a"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/HOST_HEALTH_02.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c43b0f4240939af6f0d39a016edc87077794c607"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/ROOT_EXACT_MATERIALIZATION_LAUNCH_APPROVAL.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b83401f565882785233c2ac34f273ae3cfa0b0ac"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/root_verify_exact_launch.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ff9537e5340178480714e72bb0c202b4b73d589"
+        },
+        {
+          "path": "cc57-isolated-materialization-launch-v1/seal_exact_launch.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d3cc9bfe6d17d41337681d37a65f2944993ced47"
+        },
+        {
+          "path": "cc57-isolated-materialization-root-review-v1/ACTUAL_SMALL_AUDIT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "88c3753aaac1758ea69b46df0e7753afbef2dd3d"
+        },
+        {
+          "path": "cc57-isolated-materialization-root-review-v1/ACTUAL_SMALL_AUDIT.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1917a114c1019b21dbab39fa952882ae7119d779"
+        },
+        {
+          "path": "cc57-isolated-materialization-root-review-v1/INITIAL_LOCAL_AUDIT_ASSERTION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "504696132d6a81cda67b486bbdc9f6f793fb9bf2"
+        },
+        {
+          "path": "cc57-isolated-materialization-root-review-v1/INPUT_SERIALIZATION_INSPECTION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d53adabe6deb9c7520bf92f0d08f46ff0848e4c9"
+        },
+        {
+          "path": "cc57-isolated-materialization-root-review-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b"
+        },
+        {
+          "path": "cc57-isolated-materialization-root-review-v1/review_materialization_records.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4f013e1b0e193b00675791847a99404fe063f7f8"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/ARTIFACTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3d14f683cc874b6b64f13c7c156b28b2fd448c90"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/ARTIFACTS_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "536dd5663d7c6293b97d1ae3de36cc579cd25741"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/COMMANDS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fff5a51a4b273df14526c1059695a115b080f1f9"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/COMMANDS_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d13c6582c7631715e1ba9c5cad3718863262b63b"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/COMPLETE_STDOUT.log",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5a337d1aa0fef29261084a1d71c227fdffdb00ae"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/FROZEN_MATERIALIZATION_CAPTURE_MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4c952dd849cd20393df97be97bb6ff43ed660ef5"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/HOST_HEALTH_03.INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "332787bb8b056308115ddd3eb9c21fdf82988d79"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/HOST_HEALTH_03.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7778f1c777f1f096f27232108a96b2b9a1bab6c0"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_IDENTITIES.before.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b4abc96b3543f87bbf724f8ff2918f4ea5ea7137"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_IDENTITIES.final.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "909a05695b1cd6b4bd47face0dca2d17c5ae3f7b"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_IDENTITIES.final.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "31de5e158a5733084cd1a22bd674190e7b12fbf5"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1b9b4e8918ecd6caeb80c9c7190803bdd0a79dfc"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/MUTATION_INTENTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bbd4478cbb872d18344b37b7251bc9c83df56521"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/MUTATION_READ_01_FAILURE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ee720552601b4fd39acb31c5a6b5128f3dce17cd"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/MUTATION_READ_02.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "caccb2f870947655efc438540f395b2effd23ca4"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3615ba45eff7e0d58895e3e33d12b66540fc043e"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/RECONCILIATION_01.INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "74b4f2d44188bcf0dd5176f4763d04610ae2983b"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/RECONCILIATION_01_ADMISSION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "14efff035016840b2ca8f6b25a8edc9153ba50a5"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/RESULT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "40833805111c98773ba1d046df09285357531396"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/RESULT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "37f2b5b0987200c9adb4e89c57b8d2774cea254e"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/SOURCE_COORDINATION_EX.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d445e863f1991150a99b980fc00e9ad3d7f701b3"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ac5fa0eb7a2c9ed5b1b97a26c7e9e2c94e72ff1f"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/STATUS_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1ff6eaf5e68de8e07d8382b3012ee15259b8d8bf"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/STATUS_02.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1ff6eaf5e68de8e07d8382b3012ee15259b8d8bf"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/STATUS_03.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c507335b611474857eff53b738071a7a3f27dc99"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/STDOUT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08e9a0d025690997533b9aee672bbc9367b2a25c"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/STDOUT_READ_02.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bf214e0099770a9fea45a42e4d940bb3ffc60b06"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/STDOUT_READ_03.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f1cdc8aae85a4ae45571e012bf7809c0bf6b8e0b"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/before.old-git.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55126141bab78f0bc84209561f2edebc3595de69"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/before.old-git.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d989ac8d4b4a296bfeada4c82ee02a9021bc9a17"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/final.git-metadata.json.gz.part-001.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a8eb3a9131ba9cdd69b81e92a2c933d09f7f2f42"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/final.git-metadata.json.gz.part-001.b64.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b652f7fcce128c87e4c8b0dc60da4e5625495f8"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/final.new-index-check.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "68483fcb30a969650f36e7b51f9f5e8538e9d05e"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/final.new-index-check.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08c12e85a4037f0c1ddb4af1655b3cba88fa605b"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/final.old-git.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55126141bab78f0bc84209561f2edebc3595de69"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/final.old-git.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5a0ccb8220b706656ec53fc9d5459c1332afe330"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/ENCODED_PARTS_DERIVATION.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e26842a2dfd3b6611d0a78cc85b171d44b9b67f9"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_FULL_READBACK_MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1b23bb92763b60e07a594807f974e9e5b82725b9"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0000000.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7969f946e1b5a7ee0a7efdcdd2022c1123147488"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0065536.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e836bb54ad2c2d395ac800c06207d4e6e12dc33"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0131072.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ad8126fdccfc2a90d1c8860e404646e34f6d5e0e"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0196608.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ea9474465cb4e797fb76d0da25e3260d7d5b92e0"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0262144.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4f3825f08c588e61b02f1c5ab52485a2d167cb67"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0327680.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c7d8b8b7bbdec0e1022a2d43fe457474d921b46c"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0393216.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9d0ff3f7afb22ff07cad29862dc2fe76703563b7"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0458752.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87f353c6dddd6ce60449d998f05c7daa1774dbeb"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0524288.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0de4b3455d5792aaaa760a64ed79526058733ab2"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0589824.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "aba745c6b5be6f692f975d33ff4c2e995442a432"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0655360.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5000f156581a589aa8424f3c78138b27eb1f574a"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0720896.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a61557aa4813d942cb29a9897337e074719c0a3f"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/final.new-index.raw.gz.part-001.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ef8c60b773705c379f9e14b21607f5b10d33021c"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/final.new-index.raw.gz.part-002.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "289e68d88cfaf6b96f6a745595d6c92a40f81480"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/final.new-index.raw.gz.part-003.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c0ad9ab853f3b19dbbbb6b8da6b00935e92b7433"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/initial.git-metadata.json.gz.part-001.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a8eb3a9131ba9cdd69b81e92a2c933d09f7f2f42"
+        },
+        {
+          "path": "cc57-isolated-materialization-v1/reconciliation-01/initial.git-metadata.json.gz.part-001.b64.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d11eb484b34bae92927cd46290b3392a379da58"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/APPROVED_CONFIG_V4.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "692d2b825dcbb38eb95e91c0fb5f67afa39d0518"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/BODY.py.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "86978f11570e3c92fc9b091275027c7c860aaada"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/FROM_INITIAL.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b799c2ec13f6538fc7507c2713cf57db9116f54"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "base_tree_sha": "361b936f7296c34a94762c847f96716ea0721005",
+      "expected_tree_sha": "f7bb87fb8efcf8b55272131b51593ad23f404f55",
+      "elements": [
+        {
+          "path": "cc57-isolated-materializer-v1/FROM_V2.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f98b06b72a785e9874bb7a774f9be6602e8ad321"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/FROM_V3.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29121707f029ae46c87d8cccb39fe2558012d501"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/MATERIALIZATION_PACKET.HOLD.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "06503652a2895120daf8b66e42b3a01cefeaf4fb"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/PACKET_STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3af0783cbbbe994a754323394cb1d67cab22a001"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/PLAN.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b82767d17da123ca960be7d6ceb4e249a7f75a9"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/STATIC_CHECK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8a130c3960184ca2068aca607547428cf7da79d0"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/WAITING_CONFIG.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7bea85ab6351841093d7589026df9eea5b4ca605"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/WAITING_CONFIG_V4.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "debd826c23f33e02c99373499ab10dc04138e9c0"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/driver-v2.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91230976d7136683d292a81a56013764917b60f2"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/driver-v3.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4334798c4ac36faac2c99feec789667ddd5bf914"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/driver-v4.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "972ec74449b113a95b4ec098e562a565f23aa82f"
+        },
+        {
+          "path": "cc57-isolated-materializer-v1/driver.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8bbdb73beb9156a70943c71067bb37efab056317"
+        },
+        {
+          "path": "cc57-isolated-native-root-exact-approval-v1/APPROVAL.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3622556e48163010c65c754ccd1e5bbf31f21319"
+        },
+        {
+          "path": "cc57-isolated-native-root-exact-approval-v1/PEER_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a16ce8129abc47699246774acb5bb3e7275c2956"
+        },
+        {
+          "path": "cc57-isolated-native-root-exact-approval-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b22bb40cd49c58b084798fc7e63a66b1b1230257"
+        },
+        {
+          "path": "cc57-isolated-native-root-exact-approval-v1/peer_review.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e2e79fe7d7a16c23bb2b351b038b7899a1110387"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/ADMISSION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "700571e24121d629040c4b00075549b4020cc2c9"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/COMPLETE_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1f996ddb309c32b9a25129fb5534ebd7f7f2f146"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/DISPATCH_INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "640340ba349d528d625a2824beab06f69f7fb533"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1f2e9c3c685158ccb816d5871ebd05055e309345"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/OBJECT_AVAILABILITY.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2063cdf273dc9c848b373b152ed455ee1e0d6f14"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/OBJECT_AVAILABILITY.draft-with-index-transport.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5e24293deda3cd534268e0cb4130fe8fc5ff6cc1"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/PLAN.HOLD.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0f83ffa6c8aeb23ccaa26f56ce271822ba55b680"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/PLAN.draft-with-index-transport.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "abffee44e4f9e5b4d911219bb1ca075b5edbeb5b"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/REMOVE_INDEX_BODY_TRANSPORT.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b400e7ac07d0696fb8cdabef03fa257359c8b660"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/REQUEST.HOLD.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "04c4ce7cec0528da1492934a6d859b77798f6a03"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/ROOT_EXACT_READONLY_OBJECT_APPROVAL.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2a0daf85f4e4c0cdf2639181bee56b047bf25546"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/STATIC_CHECK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "27464d8f26d1785c960a0a972fff0f7c285afe52"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/STATUS_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "432eeed53c480af77bd3b79fef43d3f96f1ca22c"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/STDOUT.complete.log",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "365a11bbfc183a05d76076da08301ce227847191"
+        },
+        {
+          "path": "cc57-isolated-recovery-plan-v1/STDOUT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fc3646fa82b17c0e900d2df2abb57eefa1e96e60"
+        },
+        {
+          "path": "cc57-isolated-recovery-root-review-v1/ROOT_ACTUAL_AVAILABILITY_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7d8a96cfce3531592c634e8de7d661b5cd44c668"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/08ffc5c603a4c950cca285ed2b1e479508d8b5ed.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1175df4766b3eb49d7028a16bc78799f8033f742"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/08ffc5c603a4c950cca285ed2b1e479508d8b5ed.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/1ed63abe84267b320cbfb0123a70aac5507f4595.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c2dd623ec6840b5d04b7b9d5c903fa4d937ac9f3"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/1ed63abe84267b320cbfb0123a70aac5507f4595.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/49dafa1c915ba8d2876424f2293791943d5501ea.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9b091f1c490f1d86989a1829eb887c5342d08bde"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/49dafa1c915ba8d2876424f2293791943d5501ea.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "49dafa1c915ba8d2876424f2293791943d5501ea"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/6ba79e6c75deb87067ced02e824eaf7faf79346d.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f95b1973d7920bc4e48d2f27644139f4142a1b24"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/6ba79e6c75deb87067ced02e824eaf7faf79346d.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6ba79e6c75deb87067ced02e824eaf7faf79346d"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/846c97953250109d99cfc17dfdf85ec552b051d2.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ab7474d2b66915e7adafa05d97a839fa862a1fe8"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/846c97953250109d99cfc17dfdf85ec552b051d2.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "846c97953250109d99cfc17dfdf85ec552b051d2"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/9430313a818b48a4bda92ef0f1c2e0f43fddcd53.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e430719a539ba2ca380429ff84ea4177f7d75340"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/9430313a818b48a4bda92ef0f1c2e0f43fddcd53.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9430313a818b48a4bda92ef0f1c2e0f43fddcd53"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/968cfc7e67bac7ac9bf3fa64e312338f893cc6b1.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b8ee9ed369222f6fe5c00590878ffe4393c0ceec"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/968cfc7e67bac7ac9bf3fa64e312338f893cc6b1.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "968cfc7e67bac7ac9bf3fa64e312338f893cc6b1"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/9d0dcc585102de339b583802ec35e0074549eb1f.source.SDK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "35d60b8f52b5f0fd8085dbf4f0ec864755422664"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/9d0dcc585102de339b583802ec35e0074549eb1f.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9d0dcc585102de339b583802ec35e0074549eb1f"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7ad9a637c44d2abffa27e2f3aa97e205a808ddd9"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/a215a76cf407ace9715bca39c20497014e7dd4dc.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b9817e4af6babfc45b43020045f311b800aab2a"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/a215a76cf407ace9715bca39c20497014e7dd4dc.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/bb2db6ebc4312a301ee39d2793fde16289d046d8.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6c3c662906d6217ead39601c826e21d23a74aabb"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/bb2db6ebc4312a301ee39d2793fde16289d046d8.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/c9434b3a4afb31f80e323d543936386a2fa738de.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e87d26b1e975637f90c0e9f579ece2092acf40cb"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/c9434b3a4afb31f80e323d543936386a2fa738de.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c9434b3a4afb31f80e323d543936386a2fa738de"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/d8d8bbff320d48d870d179a7fd01dbb37494502c.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9b4112e57fe13b470c629843e51396937be5b14f"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/d8d8bbff320d48d870d179a7fd01dbb37494502c.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8d8bbff320d48d870d179a7fd01dbb37494502c"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/d9d87932b2db8150e4bdcf663e2de32b7d100f9f.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ba35c60ca74784e126f648eb85fc178c05d19e03"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/d9d87932b2db8150e4bdcf663e2de32b7d100f9f.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d9d87932b2db8150e4bdcf663e2de32b7d100f9f"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/db4ef68416f17a3ec67e2260b80f14d01da4c196.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ea5c68e26e40fbe2150a5fe8e17d05fc8ca97a3d"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/db4ef68416f17a3ec67e2260b80f14d01da4c196.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db4ef68416f17a3ec67e2260b80f14d01da4c196"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/f5b702a55b44c081c6d8f5556da3a2152a33eec3.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0560e3597640e3a7f1d464bf0b65b67351559797"
+        },
+        {
+          "path": "cc57-native-history-scope-review-v1/f5b702a55b44c081c6d8f5556da3a2152a33eec3.original.source.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f5b702a55b44c081c6d8f5556da3a2152a33eec3"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/COMMIT_CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "957e53da7d35dceb7aa6285e34aefd24149a87f4"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/COMMIT_READ.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e935a0aeb99ef281eaec9d307d32243e09e63d09"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/COMMIT_REQUEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5c80c42965a4868aee6e0fa43358185d6d04441c"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/METADATA_ROWS.complete.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b3f5dd023be9a6e79c1cacfbec73e545723015a1"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PR.PROPOSED_3638.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b8fd702e9f2d25970cb6918d789af2a78cb60da"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PREPARE.FULL_READBACK.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ebb6f1bd4de56c5d7e5ab8e9a6cc2d6f9753701"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PR_AFTER.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a82f68d386e54f0c864d04e914361c0dac990cd3"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PR_BEFORE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c0f597bd6700cf622524b75f69d57a6b874def71"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PR_READBACK_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "125c74079f41fd404d1349f80d301ff43c4367ab"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PR_UPDATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d290467e73aaa883f7f2f544b0cb767966616348"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PUBLISHED_3638_ANCHORS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2c4a663d6acb3f64d87c0b67fe8f2883830ec5a7"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PUBLISH_PLAN.json.part-001.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fa39d207ffde409a8e74249a7c071695414b8967"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/PUBLISH_PLAN.json.transport-manifest.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3a2e35c7afe2ae760d1016f7a13d78fef58ec138"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/README.FULL_READBACK.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9bf37414b10943446ace3864253610b70b9ff353"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/README.PUBLISH.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "beaa457aad524b8f16bc71bc7c2029a65c327b99"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/README.TEMPLATE.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1614d82a615242205487986e55840f1cfddf8dfb"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/REF_AFTER.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c5c72cab73a7498b06d0660de5406f80cce59f90"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "base_tree_sha": "f7bb87fb8efcf8b55272131b51593ad23f404f55",
+      "expected_tree_sha": "aa3658cd6b95a6bf2dafd6261a769f0685a8c6cb",
+      "elements": [
+        {
+          "path": "checkpoint3638-actual-publication-v2/REF_BEFORE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fc3b111c92073f54245484d72f251d439fe78d8f"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/REF_UPDATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bc792cbeafd69869c1bb177d2380534078196a99"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/REF_UPDATE_REQUEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8476def0a50c7678112ad0f34c61b3aeff91f1df"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/ROOT_COMMIT_READBACK_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f108a237de7ee80cee9d56badbc5a1c53981350b"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/ROOT_COMPLETE_TREE_READBACK_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cac12f092bc9465c0c7f0d9344cba92678c46803"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/WORDING_CORRECTION.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "469441e1a9645be1f7ba626b4b46678662bce629"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/leaf.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "45477e3bc899440faa352a2f479e05597e0c529c"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/leaf.READ.response.json.part-001.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b942d234ea51b6868c740e9406d86cbe8a8468af"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/leaf.READ.response.json.part-002.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6ada2cdaad3cd21ba76b4a1fb413258eb8aab12a"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/leaf.READ.response.json.transport-manifest.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7d1cdd91d6fccc6fe443d462169ba349ebd23dec"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/parent-evidence.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4f8774c5c8d3525b9fabeb494ea25f0f1c3a4c22"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/parent-evidence.READ.response.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3d47961559872381a296142321bbf3d34bd21c54"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/parent-qa.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7f1a4af7c8e16aa3d9c62366805cc571bd465660"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/parent-qa.READ.response.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "42f484bf24c78ae45e848861a2badc0b29c433ea"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/parent-root.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "33eed7562a61eb40b3a526121f2007c0c68f4e3c"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/parent-root.READ.response.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4fa6cfc9d10413cd73d04cd95e9bba3e213e5a6"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/prepare_checkpoint.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ccc2921cbc01207f997c99c117a1adf2c357a898"
+        },
+        {
+          "path": "checkpoint3638-actual-publication-v2/verify_actual_trees.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "53c3ec93b057289ec5a735b36253dba11986bc4f"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/METADATA_ROWS.complete.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b3f5dd023be9a6e79c1cacfbec73e545723015a1"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/METADATA_ROWS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "82de078ee3e1167a6c9260e785b048354ce5a800"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/METADATA_ROWS.normalized.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ae1b4a24d13c9f53d2f5ff21c017e5c0caf4ba4b"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/PREPARE.FULL_READBACK.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "764348ecb4da742fa17564b507ef0c4d1e350dba"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/PR_BEFORE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c8d1a83d7efa0410fc136a7ec0aa46333fca8aec"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/PUBLISH_PLAN.json.part-001.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a0b70b741a79b79f24d344d54ce875f188577baf"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/PUBLISH_PLAN.json.transport-manifest.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "77ca435dbded19d7b664d87a437b838245eb581a"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/README.FULL_READBACK.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "817e362e384116660329f07922948c3cf9e22f34"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/README.PUBLISH.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "850cf228fbeac9cd7ef05d6df19ddef16508bd40"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/README.TEMPLATE.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c15929ab5edeebbbdac63c0cdde92f949be3471c"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/REF_BEFORE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fc3b111c92073f54245484d72f251d439fe78d8f"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/ROOT_COMPLETE_TREE_READBACK_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9e37222a486d62686ad310dc81a9cfd779af8c5a"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/SOURCE_REF_BEFORE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6185e638b59888ef17931b29e280a6182d4ad8bc"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-independent-review-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "11d69385e9d83c33d1bd2094e9ef3e43c5a4c7dc"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/FULL_FILEMAP.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a18e6489707efdabe4539bcb16bb3b3c1e1dc5c5"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/INCREMENTAL_FILEMAP.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b159694708bc13362dc47defe9be0c32ac659e0"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/LOCAL_READBACK_SAVE_FIRST_ERROR.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f21db5756afba5a731c981686d1a1aa93cce537c"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b5f86b071918faec7c91b055c1c81e5aba2f439d"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/PENDING_GIT_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3b8968d759ef34ef0f16d2621a1d2efea88de3bc"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/SELECTED_ROWS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "804c2357e3834dbae7aecb22d2fcbf26a0d1856d"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/VERIFIED_INCREMENTAL_ENTRIES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "331fb2a27f1229f7950c9f2943381eca104d9d9e"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/post3454-preparation/frozen-handoff/finalize_verified_increment.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "74dd1333625eaff25cc5e998e40ea36e04e8f712"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/qualification/hepta-utility-36fa-20261112/post3454-independent-review-v1/BYTE_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "24d3daf29b0ae0eb4bb99e31cad328aaf90dc7c4"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/qualification/hepta-utility-36fa-20261112/post3454-independent-review-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e948144cb85c7070df260b166c1d7042245a7294"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/frozen/qualification/hepta-utility-36fa-20261112/post3454-independent-review-v1/review_frozen.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "294f9573d00dae49c3b54171e991a2873b2bcd17"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/leaf.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dac18acd0e947ca4bbff67be839b851d6e0481f1"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/leaf.READ.response.json.part-001.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e6609cd38e209ccf9656d40c3e051e9055c90e36"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/leaf.READ.response.json.part-002.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0f0eb94360b3634f08e2a4215ab1a0d9e895794b"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/leaf.READ.response.json.transport-manifest.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b3c98bc0bb1d430a06e70415930016ffbb494eed"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/parent-evidence.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0ddb07317b5d30134f7a644a4f0ef5ca368c6c7f"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/parent-evidence.READ.response.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8cd7ce78abbc40a22731aeffa54ac10986c832f"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/parent-qa.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5fd117afee5c3700fa394d0ac83751b8924a677d"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/parent-qa.READ.response.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "14a6bf0837f2853b2148c0c8c0a0e6399dffdf90"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/parent-root.CREATE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a6bb84cbb3aac3adeea49d902817e366a70fc60d"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/parent-root.READ.response.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6f8ac073061aadd591661d83568c5a3193fe2af0"
+        },
+        {
+          "path": "checkpoint3638-unpublished-wording-preparation-v1/prepare_checkpoint.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2e2ce0388da87e126736fcc4fe81ce5030101c59"
+        },
+        {
+          "path": "checkpoints/README_3638FILES_BEFORE_ISOLATED_MATERIALIZATION_AND_NATIVE_REVIEW.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "beaa457aad524b8f16bc71bc7c2029a65c327b99"
+        },
+        {
+          "path": "combined-provider-preparation-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "62dfbf6fc25fcd825be4ce199d02edb396977785"
+        },
+        {
+          "path": "combined-provider-preparation-v1/SOURCE_PACKET.part-01.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4688e3a53d8fc3557a620fa86f05515a61f25a24"
+        },
+        {
+          "path": "combined-provider-preparation-v1/SOURCE_PACKET.part-02.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d4ce2c8ec7332152c0e2480a7a67bd8b5191cd3a"
+        },
+        {
+          "path": "combined-provider-preparation-v1/SOURCE_PACKET.part-03.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f781503f561e9aff732d01e3f4e2b2b0bd1bc4fd"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bbb07205be86814e6a7bab3aed6f516b7905f69e"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "41ad5a933ad6a169b62ae216bde159e56800ed3c"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1005fffcd1b2c335ed44b6e4ffdc39956262d114"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "64d25ff8801f69b61de0a2433282786a82b3f15a"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "76aaefe1917059fd4004ac938357ce4aed8d8320"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cff7b7ad3bcd8085fb64b662665b631c77f89004"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "94cdad47f9564d1521a7216c8d8d62c422202b85"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "113feddc8a4c543f7c4df15bd6450028851c5dea"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8c73e1d0fc2a4a489031edf42723a29af1cde6e1"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b0e4049f4f9c128ab29a5c12b0892d3a4c5bf0b9"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17596f02e662ab982dce5c918e03c19a8a30a953"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "98198c3d2ba177ab554d3028ea1270fbe7713bb1"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "36c099ad2ae3b72deae633729a46be0b4fb766cd"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5e6221196cb26ce6120040f5b7cd6df5b4f94f1a"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1180fb9dd9700346f2a94e0a097e84660423a83b"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "034ac9101813dd657e83ee1c377818a0c10ca435"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6c3438d982449daf16e5ed3aec829f3b616a3ff3"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "base_tree_sha": "aa3658cd6b95a6bf2dafd6261a769f0685a8c6cb",
+      "expected_tree_sha": "992532e7a2912acbfc6de0b3af672364a4fb6a2d",
+      "elements": [
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6adad16221dd2ab2526fdb14a0242d833fb0b55a"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9815d57b9141661d93a876b17f358efefab43454"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9528b169dd57d71dd30d087d8732eeaec90c6d02"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6b7eb85645b952b7f08d1fa66557cd25ee425a2b"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c949e2a64657bc2ec209253d149b09256f49b42e"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ce1c4983afdcc251e4472068ccf0e4941809d499"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d96f9c9b7767c071106370beb5dfc7ad8b4fba83"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4b140b7f9272313df6d243ff38caab4e68b97d8"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7a57575bccb0de9d139a070e30bc26fcb8daf8d"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e7b2e5e89ab0911193ca41d054f0633ba132767"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5484a4ba24e3be451eeaa30470cebc0410300ced"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1dc042509e0590efc135c1cf89acdb7cfbf331c0"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "955040ae66c1682ead7b7b8dda5379993eb59eb5"
+        },
+        {
+          "path": "combined-provider-preparation-v1/after/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f8262c22499ce6982098ebe50d652b20b4acc1de"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3275b6d0de952fab371578336cba1e04215d1ee7"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e16820f8bab3027ab74490f942a34c7ee5470739"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c534c5aef813fe1e43eba0cc5e3978721e82167"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3546571b4cb448383c76b7ff11bf14a19104e86f"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "80e37d6b6f41081cc661850ea29b9ff61a5787ef"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "034c2df36cbbbfe13e4378437ae7c4e311650dc8"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2893d2cc97faef0f3352406b89f7ec190b8e629d"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fed5077853544aad6a725f2967ba782715555a1f"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c2e4d61d3b676c1d01d4f4efff39dbd45cff09f1"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "95e6dc6fb97dadbafdcc9e13897221da6ddccb36"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "542e4e532443ac2082bd0b8fa7649fcdb25deca9"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "127e9731d146a8a30b2f6cfa8b563f97afe694a8"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2fefd967723c342e51784b0b0aafbadff4fbfb6"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e6f841ab40dbfe35f5763b726f391830a76c9b44"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d84937fc81f0a7b41c997c97b29cd06ff9cf03e4"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a0f3c847a49c3d5a2ae4df704ed1f751b9e287f9"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b46baf3d8280114c937799f0430942ec3863afa8"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "086a50cd688da7e06d4e290dabd56d68ff975e86"
+        },
+        {
+          "path": "combined-provider-preparation-v1/before/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4"
+        },
+        {
+          "path": "combined-provider-preparation-v1/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b2bcef0d546b63d15be5dede70bc5250a098b287"
+        },
+        {
+          "path": "combined-provider-preparation-v2/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08e8369e6c5adc6f6ae1ead0d44b7e932564448e"
+        },
+        {
+          "path": "combined-provider-preparation-v2/SOURCE_PACKET.part-01.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b17a01ac41bb3e15aa5d9f6c718c63d5de1b6430"
+        },
+        {
+          "path": "combined-provider-preparation-v2/SOURCE_PACKET.part-02.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ab3fcd0376abbbdfbc97a9457a6149ec64269976"
+        },
+        {
+          "path": "combined-provider-preparation-v2/SOURCE_PACKET.part-03.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "768d542e9be0feb87019f658c235af4796eedd01"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bbb07205be86814e6a7bab3aed6f516b7905f69e"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "41ad5a933ad6a169b62ae216bde159e56800ed3c"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1005fffcd1b2c335ed44b6e4ffdc39956262d114"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "64d25ff8801f69b61de0a2433282786a82b3f15a"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "76aaefe1917059fd4004ac938357ce4aed8d8320"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cff7b7ad3bcd8085fb64b662665b631c77f89004"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "94cdad47f9564d1521a7216c8d8d62c422202b85"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "113feddc8a4c543f7c4df15bd6450028851c5dea"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "89e1116136ff39c0a4478d69675cfb5c645e9aec"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b0e4049f4f9c128ab29a5c12b0892d3a4c5bf0b9"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fab5600f505aa7c8c039aa0990ec38ca01d15c83"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_observation_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4322de280617f3cec445b4b5211cc8659e18816"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "265e80b2763cbf4f2a530e2e1400f364ee1b1711"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "98198c3d2ba177ab554d3028ea1270fbe7713bb1"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "36c099ad2ae3b72deae633729a46be0b4fb766cd"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5e6221196cb26ce6120040f5b7cd6df5b4f94f1a"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1180fb9dd9700346f2a94e0a097e84660423a83b"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c00498c5f8c2ac1301d1dbb32e630c9efb01867a"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a47922b80b3bd9ae0d1168efefdcfbde3f3a98b5"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c473012597dcc29b4f13a3353b27ddc12e42f523"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "30769dda72e5fe509bed1e1c8ce251f79f1861d2"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "034ac9101813dd657e83ee1c377818a0c10ca435"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6c3438d982449daf16e5ed3aec829f3b616a3ff3"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6adad16221dd2ab2526fdb14a0242d833fb0b55a"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9815d57b9141661d93a876b17f358efefab43454"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9528b169dd57d71dd30d087d8732eeaec90c6d02"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6b7eb85645b952b7f08d1fa66557cd25ee425a2b"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c949e2a64657bc2ec209253d149b09256f49b42e"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91dd820a4069b8faaab1274f5b3918b144e3b2e9"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "705311ff2c468d6cfdd131a656a49e3b48b04290"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d96f9c9b7767c071106370beb5dfc7ad8b4fba83"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4b140b7f9272313df6d243ff38caab4e68b97d8"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "base_tree_sha": "992532e7a2912acbfc6de0b3af672364a4fb6a2d",
+      "expected_tree_sha": "6c741672d525ea85409aeb2a517e3ea6f274e88a",
+      "elements": [
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7a57575bccb0de9d139a070e30bc26fcb8daf8d"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e7b2e5e89ab0911193ca41d054f0633ba132767"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5484a4ba24e3be451eeaa30470cebc0410300ced"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1dc042509e0590efc135c1cf89acdb7cfbf331c0"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "955040ae66c1682ead7b7b8dda5379993eb59eb5"
+        },
+        {
+          "path": "combined-provider-preparation-v2/after/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f8262c22499ce6982098ebe50d652b20b4acc1de"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3275b6d0de952fab371578336cba1e04215d1ee7"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e16820f8bab3027ab74490f942a34c7ee5470739"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c534c5aef813fe1e43eba0cc5e3978721e82167"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3546571b4cb448383c76b7ff11bf14a19104e86f"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "80e37d6b6f41081cc661850ea29b9ff61a5787ef"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "034c2df36cbbbfe13e4378437ae7c4e311650dc8"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2893d2cc97faef0f3352406b89f7ec190b8e629d"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fed5077853544aad6a725f2967ba782715555a1f"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c2e4d61d3b676c1d01d4f4efff39dbd45cff09f1"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "95e6dc6fb97dadbafdcc9e13897221da6ddccb36"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dff1d4f81b87a258218c83de075de9bce884364d"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "639f3d799c69a54c4583ee24ce87956ec149a07f"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "542e4e532443ac2082bd0b8fa7649fcdb25deca9"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "127e9731d146a8a30b2f6cfa8b563f97afe694a8"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2fefd967723c342e51784b0b0aafbadff4fbfb6"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e6f841ab40dbfe35f5763b726f391830a76c9b44"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d84937fc81f0a7b41c997c97b29cd06ff9cf03e4"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a0f3c847a49c3d5a2ae4df704ed1f751b9e287f9"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b46baf3d8280114c937799f0430942ec3863afa8"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "086a50cd688da7e06d4e290dabd56d68ff975e86"
+        },
+        {
+          "path": "combined-provider-preparation-v2/before/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4"
+        },
+        {
+          "path": "combined-provider-preparation-v2/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ab8bb96539fcc1becaa7f93b4d1ed1f2ddcb7c0f"
+        },
+        {
+          "path": "evaluation-completed-preparation-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3ae1dfe065d98869ec6409e9fc742d2929f42004"
+        },
+        {
+          "path": "fresh-c-original-chain-review-v1/REFERENCES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7a12f241e9bbdb2a8429eef1ac475f87f91b6de7"
+        },
+        {
+          "path": "fresh-c-original-chain-review-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "13b0e243009e42e3dd6cc4612e3d4f2077a67d33"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/API_CONTRACT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6979146f9886858108aeadd3fd282d5332978a92"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c26ace66b7ff5659173eef98a56895902298c0a4"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/METADATA_GITHUB.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4c1e29239243d4712cecc83694aa1d7e47acf9c2"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c892e5dd45568cc3bdef06a5a3b64d3828ee6b77"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08b7c441d6ab2d553e1f126886d47405ddba22f1"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/SOURCE_GITHUB.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "65a3f93a22f6c437864729594e20dcb60c2a78c9"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4a2aabfb2cca405e57aa26994ebe97cdcd6e6b94"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2dbc7a3069cb663f1955cb8af067a0c14cba7f32"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "be13a9c6cb8efb1242d2459e3d4800d06a225fcc"
+        },
+        {
+          "path": "fresh-provider-material-rebuilt-v1/source/circuit_resident_candidate_provider_material_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "79b8c78c0c8eb09bb1cae1e43df554cf15a8ae66"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7ee9788cae7bec23bb4690faefa1922fa453e7d5"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "70402de1b3a1e9ccf9cfd2ac1db35b1dffcbb57d"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "23906f521d55c171123c03a8b0e27da431c618cc"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "708794b60a4f306f4b075d3168c1b9568897d900"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/after/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b1179b7fda45ba5ac0340147e2e103dc795dc1a3"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "150d529814964c9121debe523a2202a1dd6439e7"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a1f5cfd587e3472b2f9f4b2417dd6b151dd92d6e"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "76bdebdd1c72bc7d0e504ce76affaccbd97203c3"
+        },
+        {
+          "path": "fresh-provider-stage-increment-v1/before/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/INPUT_PINS.initial.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db48a085712841640407ac1eed2c9089f7ed3eed"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/MANIFEST.initial.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1bf7c15d7b8a41802cb51072b1b475d8dc2c5a1b"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "689c9db4bfca60f13a178c3ff0dcc174240fed84"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "079fe23e8daed6f944dadf3f24984c47cd594a2f"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efd89d6e8741ded9d0ce50a3ee0a1f9543559530"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87f8a236f178e17a60235c26351feed0a0779cef"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8d5b1eeea4e63ae04bb77c91abc996a34cdeccfa"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/STATIC_PRESERVATION_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1be564c0a6a80d7ade1f28f4732f3a5f271669b4"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "aec983844a859a7d292f2ab53fd3756d2a42a222"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "113feddc8a4c543f7c4df15bd6450028851c5dea"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b0e4049f4f9c128ab29a5c12b0892d3a4c5bf0b9"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fa08441db86ad7918a79b86e7b25d6fb0c3dd855"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "66314778d0dff6ff760361e624f89180024f087d"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9815d57b9141661d93a876b17f358efefab43454"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9528b169dd57d71dd30d087d8732eeaec90c6d02"
+        },
+        {
+          "path": "fresh-training-b-fixture-proposal-v1/review_preservation.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e5bd975da8e87f22cde9cd04d6ac9e1dfb84f0e5"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/EXACT_REPLACEMENTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4a4d0f48eeb4b83fd3ba7b75bc71b2d9ebba264d"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "762801966a49c03056f368c6a50ee365c80216f2"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4058278f81dda176cb55aa8b6d5f649f9e83fa3"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6d53caf20c1b872806bcdde6003e112bc45b9fdf"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b7c1fd26ab52400f5105bcc227f0950a2b785900"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cff7b7ad3bcd8085fb64b662665b631c77f89004"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6c3438d982449daf16e5ed3aec829f3b616a3ff3"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "base_tree_sha": "6c741672d525ea85409aeb2a517e3ea6f274e88a",
+      "expected_tree_sha": "5336dd2139653a3f4a4b8a3ef5e5348245c08c99",
+      "elements": [
+        {
+          "path": "fresh-training-b-shared-increment-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6adad16221dd2ab2526fdb14a0242d833fb0b55a"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3284b902f9f77f760c0246d34c6bec7c82581fe6"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fa08441db86ad7918a79b86e7b25d6fb0c3dd855"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/before/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "66314778d0dff6ff760361e624f89180024f087d"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/prepare_increment.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ef8d7229043915404114426cf7138c5f8fdbb7f"
+        },
+        {
+          "path": "fresh-training-b-shared-increment-v1/shared_ports_append.rs.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1d26840337dca0d44308828bab7ab2cec3abd981"
+        },
+        {
+          "path": "isolated-materializer-peer-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d4d96c669caf536d000fd552ad988a3ea62239f2"
+        },
+        {
+          "path": "isolated-materializer-peer-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "27817d854b232280025ab3195fa383b6c1985e61"
+        },
+        {
+          "path": "isolated-materializer-peer-v1/STATIC_BYTE_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1c9861e4d8526b4f0f270eef7c3220f950024c5e"
+        },
+        {
+          "path": "isolated-materializer-peer-v1/review_static.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b89d5ab5dcab7326a25499824d07a613b800634"
+        },
+        {
+          "path": "isolated-native-admission-peer-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1a6a6459e2c8ec1d290e3539e9d50f4c381d2543"
+        },
+        {
+          "path": "isolated-native-admission-peer-v1/STATIC_BYTE_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3432dcbf2e5bcb856e41b6fe7987c1d1229687ac"
+        },
+        {
+          "path": "isolated-native-admission-peer-v1/review_static.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bc2886a1af8872999ab4ebd879d5724c5cc37e1f"
+        },
+        {
+          "path": "isolated-native-admission-v1/FROM_A8BE.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "04543b4ebdfe8886ae0f82bfc38b58d23a61cb58"
+        },
+        {
+          "path": "isolated-native-admission-v1/FROM_V1.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "165bd9826289c95d077bf958328cec3243af6e72"
+        },
+        {
+          "path": "isolated-native-admission-v1/MANIFEST.v2.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4c65d9ae44c31ba30b20390320cfec6b7babebdc"
+        },
+        {
+          "path": "isolated-native-admission-v1/PLAN.HOLD.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f8e0d2daf116330d2f1187eafd7df61aa43f5f1e"
+        },
+        {
+          "path": "isolated-native-admission-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db9a21d36db7ed1dca55bf34b510a388f3aea6b8"
+        },
+        {
+          "path": "isolated-native-admission-v1/VALIDATE_MATERIALIZATION.py.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7317836a0a2ad5c346832dcb46a3132cdd61f118"
+        },
+        {
+          "path": "isolated-native-admission-v1/WAITING_QUALIFICATION_INPUT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d9777cda7e4ec42e9fc053e21241b99b048e955a"
+        },
+        {
+          "path": "isolated-native-admission-v1/WAITING_QUALIFICATION_INPUT_V2.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f25bbbdd146e3b1892b9068c77d9ad3ef37c6665"
+        },
+        {
+          "path": "isolated-native-admission-v1/build_successor.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6ecf4dfc1bdd17ed5145cb0e260e2411e5f3fb9b"
+        },
+        {
+          "path": "isolated-native-admission-v1/qualification-admission.isolated-v2.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "23d412ed67927a6cbfa5f521884e891afc93eb6f"
+        },
+        {
+          "path": "isolated-native-admission-v1/qualification-admission.isolated.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a529365ee8305b9a76fcdbfe3be8b19527d03591"
+        },
+        {
+          "path": "isolated-source-environment-peer-v1/GITHUB_FULL_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "32f887919e393a2aa4ff583db8fd20ad6fafed77"
+        },
+        {
+          "path": "isolated-source-environment-peer-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4e4bd8f3cbf84fe599427ccb9f97c503af8e389f"
+        },
+        {
+          "path": "isolated-source-environment-peer-v1/review_static.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e140f566d781bdc6181337848b2e4031680ff7d6"
+        },
+        {
+          "path": "isolated-source-environment-review-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b691cea7e5b5df5086eb8c71c7dc80045fdfc87e"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/MAIN_ADMISSION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a4ae3ab6b6eac4272348e2d029f6bd8969b984b2"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/MAIN_DISPATCH_INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1bdc443dec535cd3111903207d441ed93919f04d"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b2f5cde318ed5e7db120d429f44d5cefafa16011"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/RECORDS_LISTING.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3df4be4243c48587d908a64dfb94bed2567b2998"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/ROOT_PREFLIGHT_REFUSAL_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f511c4abaff9bf2a6be7aab14bd84d8f9aae02e"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/RUNTIME_GUARD_FAILURE_CONTEXT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "51738995a75140093b741909c8b0b5eb6225eae9"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/FULL_PHYSICAL_COMPARISON.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "54cc9f6894944027a22b0d8f7ea16a2c978a1d74"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/FULL_PHYSICAL_COMPARISON.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "559504d669fa91c90f25b55346b7d69845e9fb7d"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.after.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0b42d258d307696a1e236f326521819e7a969ae6"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.after.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b4f89dd43432322fa1bdfb7864c591beb3faacf7"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.before.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0b42d258d307696a1e236f326521819e7a969ae6"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.before.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7dc7a85ec347559c908d9e75bebaec8246e735c4"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/HISTORICAL_TO_CURRENT_SOURCE_CHAIN.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "31112397afc6a1e3162a7eba3a1be059334d150f"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/HISTORICAL_TO_CURRENT_SOURCE_CHAIN.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "11efb1803faf9fa31b27dc6748b419ba96de4414"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/INPUTS.final.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e486247891d5baa006efb9dd9abd11665d8897f"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/INPUTS.final.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08e62127a59947d8c14baa8b37735d8a333c0a8a"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/READONLY_COMMANDS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f40b5c83d9a92d779e0377226f878c84b1c4bbb5"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/READONLY_COMMANDS.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ede2d6ab9225a3c7fe1ae0469b7823255ad11d9"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/SOURCE_COORDINATION_SH.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e9d97689ac83560184f61e3ccdea2bc7d78b1811"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/SOURCE_COORDINATION_SH.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "09418f2469ebbec0e793a642aff64af7b143d1f9"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/FORMATTER_ENVIRONMENT.before-override.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/FORMATTER_ENVIRONMENT.before-override.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0ea27c1403901d1e8cb94bed3654f7dd9ee42957"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/INPUTS.final.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c1d7b2e09e094575e6d258fcba635800aa9ae3f2"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/INPUTS.final.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1bdcc9abab4e6f203a76e1469f1c03067167b720"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/READONLY_COMMANDS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7480edb52be0ce634497a999abb4af0806f5854e"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/READONLY_COMMANDS.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87b9a4cd2de4ca79f743245be7cffad6021c705f"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_ENVIRONMENT_READY.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b62ac16f554c1f34ee72974637752f5a3b58aec"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_ENVIRONMENT_READY.original.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "48f0d0e17e1b0e85f6d33c08f181aa73b08043df"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_RESULT.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_RESULT.original.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ca68df3a5d92b5c146c896d1d67d33d9c50e6c56"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3705e1ded34c017b57ee9eb13472f67df0da8e20"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_SUPERVISOR.original.json.READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f935d8aee6b1a489805d6a6ead85ee5a26743560"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/APPROVED_QUALIFICATION_INPUT.CANDIDATE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1666e5df58b33f1786287ba94d1d74b79442f8d6"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/EXACT_LAUNCH_MANIFEST.CANDIDATE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6f4cf7430d0850a43376c1c3344dcc62b627cb0d"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/EXPECTED_CANDIDATE_FILES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1722aa001ed6e1cdd5a38211dfdf247d893f4e14"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/FROM_ORIGINAL_NATIVE.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "64278d789ce69da49f0da809189f454e1b3da74c"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/NATIVE_BOOTSTRAP.CANDIDATE.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d60e62a8bb28f40d314c25824fb665ab8ef1ea9c"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/NATIVE_PROCESS_INPUT.CANDIDATE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "127a33fb09629034ade6ce43d82e80e52816df8f"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/NATIVE_STDIN.CANDIDATE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d1ea0624fb40ca429ef4936536fb7cfa12858b97"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/ORIGINAL_NATIVE_BOOTSTRAP.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1e3402a037b259f44213ac6de487e6d91cc6b445"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/STAGING_REPLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fc03badc4da4ec2ea224d4557a1f63b8e189a8c4"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/STATIC_EXEC.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ff46e268c2b61f355f15d08d35718dbf404b7396"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f57b6ff125606e1493c0a718b7c0e4b34c27e904"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/launch/verify_candidate.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "70b5fcdf6f186fabffa7fa4ba9801af5dac40a26"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/native/COMPLETE_STDOUT.log",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dd18ce5ceaf251c5fbd5593c42b21ebe64806d8f"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/native/RESULT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b6a785c0194c2f65054a26e5815042010a22dad8"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/native/RESULT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "51afc6116afac89278249c22ae8111b2592b6382"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/native/STATUS_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cc3fe33203dbd831771d070e496397057095b05a"
+        },
+        {
+          "path": "native-cc57-isolated-v1/attempt-01/native/STDOUT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "28bd62bafd35d8c5c4fc0d4c999c0293d8430f2d"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/ADMISSION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f151f934d59a4aac905559f9ddc6ab299f80d96b"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/DISPATCH_INTENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ab98de145feaf0069744a45caf0542845e02d99e"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/OBSERVATION.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1789babc0eeca7de054f209fc051ed8aa44582a4"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "base_tree_sha": "5336dd2139653a3f4a4b8a3ef5e5348245c08c99",
+      "expected_tree_sha": "012104b848f53f6d690a29e42cc41a031e9e1e39",
+      "elements": [
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20e5392b08b6bc4495b50c0c442949f8d15bb9a6"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/PLAN.HOLD.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1a1fd325aaf08013eec346247a4ea0e39bd6a876"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/REQUEST.HOLD.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "080fc28f1abb02f708b3333cea4787af9a09785e"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/ROOT_APPROVAL.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4e47e9348690070e8084300ea52afb6cad1d58e"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/STATUS_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5be552843672e0780cbc79847c2a118b6be33dfd"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/STDOUT_READ_01.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "89ec3c566eaec663d67e7aa8e7d090d3a7bdc519"
+        },
+        {
+          "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/observe.HOLD.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4be68be7511aa54a94bbacf290db408e4c0e02e3"
+        },
+        {
+          "path": "object-availability-peer-v1/GITHUB_FULL_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fa70e66699be236733fce5ef59af3e7966dae893"
+        },
+        {
+          "path": "object-availability-peer-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d96411eee7a9f36d63ea55f826f367c6adbbabdc"
+        },
+        {
+          "path": "object-availability-peer-v1/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b58ece532d1055eb0db8860280fbb1fc33c17d9"
+        },
+        {
+          "path": "object-availability-peer-v1/review_static.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c703f5169f955cc730f7e8ac683c49b7d56e28e8"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2cb5b1b3c823eeff75f50e940d1f3ccb44f62e00"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2e4eac10539fcfc288bb20f3b27e6bc146b8efb"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "05ad57197119eda1b81ff12f8cc5a080eea2b6a9"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "90f0623289c99ecce60d68d9dad348d27e0bd7fa"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cecbb701a3f72b963c319165965c880147983b2b"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7afe2d22caf518d07473b0197f4fa5d755baba3"
+        },
+        {
+          "path": "original-evaluated-selector-local-readback-v1/after/codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "da8be0e6b165f39f5a5c1555a5eb86883014200d"
+        },
+        {
+          "path": "post3638-preparation/FULL_FILEMAP.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2d40c9782d6592fbf92088e98ba39e1f170131a0"
+        },
+        {
+          "path": "post3638-preparation/INCREMENTAL_FILEMAP.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "027e51d5bc3a87eb9055ee58139a80881b03d4d7"
+        },
+        {
+          "path": "post3638-preparation/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c15c996f6a8e5ff77c03ad5c07703344f1013c1f"
+        },
+        {
+          "path": "post3638-preparation/PENDING_GIT_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "195b4371724e4863c216cdc9937075095fecdac0"
+        },
+        {
+          "path": "post3638-preparation/SELECTED_ROWS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0f93214c6507964dce3fb049bc8f1db4576d45f4"
+        },
+        {
+          "path": "post3638-preparation/SELECTION_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "76bee99174f9e2b15c91c792ac5b5c04799eba6c"
+        },
+        {
+          "path": "post3638-preparation/VERIFIED_INCREMENTAL_ENTRIES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c142533cbf44745d29733d2ed8739b023b0ed03b"
+        },
+        {
+          "path": "post3638-preparation/finalize_verified_increment.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e5b3ec651d2fb5b15dc4596a715d0cbd44fb8493"
+        },
+        {
+          "path": "post3638-preparation/prepare_frozen_increment.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8545c12cdd45da14352cff3f43a8477a186ce3d0"
+        },
+        {
+          "path": "post3824-preparation/SELECTION_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b61e53ae401c5e0ff45f16b63864f0d038ef119"
+        },
+        {
+          "path": "post3824-preparation/prepare_frozen_increment.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8ebbb76c7376448c6a0304a1d7e5b2142d4d0374"
+        },
+        {
+          "path": "provider-registration-preparation-v2/SELECTOR_AND_NEXT_USE_INTEGRATION.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b12b68540d39ad37e617a942f83291106596e72"
+        },
+        {
+          "path": "provider-registration-preparation-v2/recovered-local/OVERLAY_CALL_EDGE_INSPECTION.initial.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6696e55329bdbba414fb9139f3988942bbff742f"
+        },
+        {
+          "path": "provider-registration-preparation-v2/recovered-local/OVERLAY_CALL_EDGE_INSPECTION.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ad1810f7b84bdeb3f5f33dc6643dea4a57cbda7f"
+        },
+        {
+          "path": "provider-registration-preparation-v2/recovered-local/inspect_candidate_call_edges.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0f0a1f6c0f7c048c1f61623779655524994862a3"
+        },
+        {
+          "path": "provider-registration-preparation-v2/recovered-local/prepare_root_test_registration.initial.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eb156b61b6184491d2748a2028da1740ee580605"
+        },
+        {
+          "path": "provider-registration-preparation-v2/recovered-local/prepare_root_test_registration.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "75778c95d9d2ddeba8c371327f01cff975611e19"
+        },
+        {
+          "path": "provider-registration-preparation-v2/root-tests/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d9cfc065f86a1686b4fac669f50b5c60516e90c1"
+        },
+        {
+          "path": "provider-registration-preparation-v2/root-tests/after/.github/workflows/hepta-daemon-learning-native.yml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ad2b485237894af100ad6d90da12f162986d600a"
+        },
+        {
+          "path": "provider-registration-preparation-v2/root-tests/after/qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8223265bdcea271661fd46d448943484a28d5703"
+        },
+        {
+          "path": "provider-registration-preparation-v2/root-tests/before/.github/workflows/hepta-daemon-learning-native.yml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed"
+        },
+        {
+          "path": "provider-registration-preparation-v2/root-tests/before/qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f"
+        },
+        {
+          "path": "provider-registration-preparation-v2/root-tests/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b1a577ecff2002160e18dc8df9a9eea63fd8681c"
+        },
+        {
+          "path": "provider-registration-proposal-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e78050dd86e0d1036e836b09999e906fb4573c0f"
+        },
+        {
+          "path": "provider-registration-static-v1/BOUNDARY_REGISTRATION_PROPOSAL.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7a052e21d3ddec6330d09bc66d66ee585a6edb98"
+        },
+        {
+          "path": "provider-registration-static-v1/INPUTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3940a177ef885e3212494b14160db59dff61f1d8"
+        },
+        {
+          "path": "provider-registration-static-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ba274ef97bac2d48509f500b68b79e0ecfc26808"
+        },
+        {
+          "path": "provider-registration-static-v1/QA_INTEGRATION_OBLIGATIONS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3f4a4759f3aff54589554861c3cee526882dca12"
+        },
+        {
+          "path": "provider-registration-static-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2104d540a47b780aa83edc252c43e6c69fb5bb96"
+        },
+        {
+          "path": "provider-registration-static-v1/ROOT_INVENTORY_PROPOSAL.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "304870b047ab87819fbba150ce92992353dc8e45"
+        },
+        {
+          "path": "provider-registration-static-v1/ROOT_WORKFLOW.candidate.yml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ad2b485237894af100ad6d90da12f162986d600a"
+        },
+        {
+          "path": "provider-registration-static-v1/ROOT_WORKFLOW.diff",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "89308182b0acbf719551f6591b1769252d18b0f4"
+        },
+        {
+          "path": "provider-registration-static-v1/STATIC_BUILD_ATTEMPT_01.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bc707f73f173f06a4a566cfa0a6b2f0c36c80268"
+        },
+        {
+          "path": "provider-registration-static-v1/STATIC_BUILD_ATTEMPT_02.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9d7f3bb8ff15467ae256be28aa4933cdb30f4208"
+        },
+        {
+          "path": "provider-registration-static-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dc28679d715b351897f0e5a1df7223e0fd30e416"
+        },
+        {
+          "path": "provider-registration-static-v1/build_registration.initial-attempt01.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "49d51760c919e79a63fd333e3a2bdf18bd056264"
+        },
+        {
+          "path": "provider-registration-static-v1/build_registration.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eacb0938407e26dbc5a1b955b687c0ba474efe2b"
+        },
+        {
+          "path": "publication-recovery-v1/CHECKPOINT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "97e33d7f66ebec3f00de9ef9a6a76fa90fc7277b"
+        },
+        {
+          "path": "publication-recovery-v1/EXTRA_OBJECTS.initial_nested_hash.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "767e5054b3d6e1bc89356d667b54de0447602ee0"
+        },
+        {
+          "path": "publication-recovery-v1/EXTRA_OBJECTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e32f72962375bc8378438525d9fb8cac2faf312e"
+        },
+        {
+          "path": "publication-recovery-v1/INITIAL_OBJECTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7020537fd3e4f370275881434f08108cbb08ce9b"
+        },
+        {
+          "path": "publication-recovery-v1/LOCAL_BLOB_FETCH_RESULTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0929bc61f4cf1b47767dca89de23a4d8a5c1f8c2"
+        },
+        {
+          "path": "publication-recovery-v1/LOCAL_BLOB_PERSIST_RESULTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1d9c25f3c3c9499d0b82f40a116b883b09ba4cb6"
+        },
+        {
+          "path": "publication-recovery-v1/MAP_3896.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3f3d938d3a69898411c37bba9664c085ed2ac5d5"
+        },
+        {
+          "path": "publication-recovery-v1/RECONSTRUCTION_PROVENANCE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b57b39564c376812ce3526318352b1ed98f6b1c8"
+        },
+        {
+          "path": "publication-recovery-v1/UNPUBLISHED_4287_CHECKPOINT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3112963338db5a55b72312812fe86e231cabdfaf"
+        },
+        {
+          "path": "publication-recovery-v1/UNPUBLISHED_4287_README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "870ac12eb491ccd2c5a3734437a325a70c466ede"
+        },
+        {
+          "path": "publication-recovery-v1/finalize_checkpoint.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d5bfe778f68ef42a532cac6e4168f7430e5aa709"
+        },
+        {
+          "path": "publication-recovery-v1/git_hash_helpers.original.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "62eb2b4b12c76e24b49e9bd7ff89b9af872f1646"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/INPUT_FULL_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db66492613200cd640f01574d3ac086c9cc21121"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/INPUT_IDENTITIES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bc1c961826f70713231ec77ca6647a186328f1d9"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/SOURCE_BASE_TREE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a27a9ae3949b8632bbcdbe59189081b200dc5165"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/assemble_frozen_layers.initial.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c0d686d5d9f4d5d0dc8ec492994d6c48a66bc3f7"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/assemble_frozen_layers.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4879757041559b670469230ea509582c5bdefb38"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/extend_frozen_layers_v2.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "aedcb894ccf9e2fea7a0cc2cf08836395c6f1e52"
+        },
+        {
+          "path": "publication-recovery-v1/local-preparation/new-increment-actual-originals.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cc5b810062f2d9b7324fd13b8654546afabc18d"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/cloud_fail_transcription.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c7312be2993b40d207820a2a2591c10cc9a47f22"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/cloud_return_transcription.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "13510bfb399326b744deef85aef3d3a6ccd93afd"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/diag_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20e5392b08b6bc4495b50c0c442949f8d15bb9a6"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/eval_completed_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3ae1dfe065d98869ec6409e9fc742d2929f42004"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/fresh_c_refs.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7a12f241e9bbdb2a8429eef1ac475f87f91b6de7"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/fresh_c_review.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "13b0e243009e42e3dd6cc4612e3d4f2077a67d33"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "base_tree_sha": "012104b848f53f6d690a29e42cc41a031e9e1e39",
+      "expected_tree_sha": "e1074545f81ea9a351e47696b963430be9dd5671",
+      "elements": [
+        {
+          "path": "publication-recovery-v1/metadata/git_hash_verification.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0afa6da39cc7d2f629205d8da0af5ee52b12fa6e"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/linux_packet.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "812b8308dbec3ee818bcbb7eae41fb60da10e086"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/mat_first_assertion.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "504696132d6a81cda67b486bbdc9f6f793fb9bf2"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/mat_review_script.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4f013e1b0e193b00675791847a99404fe063f7f8"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/mat_serialization.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d53adabe6deb9c7520bf92f0d08f46ff0848e4c9"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/mat_small_audit.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "88c3753aaac1758ea69b46df0e7753afbef2dd3d"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/mat_small_audit_sdk.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1917a114c1019b21dbab39fa952882ae7119d779"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/material_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c892e5dd45568cc3bdef06a5a3b64d3828ee6b77"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/materialization_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3615ba45eff7e0d58895e3e33d12b66540fc043e"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/native_failure_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b2f5cde318ed5e7db120d429f44d5cefafa16011"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/native_order_identity.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "725a1b04266053b3f747fefd5ebd783bf39ab840"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/native_order_review.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3380e627ef26ba34523b6e7fc8c1dd67460234f7"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/native_order_script.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd295b38fb84fd78b39ada23f704e06e92c59170"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/native_peer_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "58ff3821c3a28f049d348e20ac1008aa3f80fead"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/post3824_entries.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "80a042c20f75f7c1ad57846d487d0e3a92075e16"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/post3824_increment.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a3f8c31b3df70ac2eb282cce2a8351ff7b87ebe5"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/post3824_manifest.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5366a9cd8a1337e5d0e8a14a408a20889365653a"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/post3824_selection.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f591ad578c68cc88cf503b47997adbe1ab67db67"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/prior_4287_manifest.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3112963338db5a55b72312812fe86e231cabdfaf"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/prior_4287_readme.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "870ac12eb491ccd2c5a3734437a325a70c466ede"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/production_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7a2a4fc98b41b9d7006f5b40b471df91e84cae95"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/proposal_absence_sdk.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1e94f1a5d6e4565e1dc304c2e2b241100b291eec"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/root_materialization_review.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/root_native_approval.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3622556e48163010c65c754ccd1e5bbf31f21319"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/root_native_failure_review.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f511c4abaff9bf2a6be7aab14bd84d8f9aae02e"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/root_native_peer.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a16ce8129abc47699246774acb5bb3e7275c2956"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/root_native_peer_script.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e2e79fe7d7a16c23bb2b351b038b7899a1110387"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/root_native_review.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b22bb40cd49c58b084798fc7e63a66b1b1230257"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/selector_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2e4eac10539fcfc288bb20f3b27e6bc146b8efb"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/tests_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b952058543e54e7ddd73d27ba79119633a7d1f58"
+        },
+        {
+          "path": "publication-recovery-v1/metadata/transport_placement.original.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fb415feab0056cd58544d93bb8c4f76556fc83e0"
+        },
+        {
+          "path": "publication-recovery-v1/partial_uncommitted_leaf.map.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1551d120f313f2ffbf6f195acdc230cfa8d632ef"
+        },
+        {
+          "path": "publication-recovery-v1/partial_uncommitted_leaf.tree-readback.json.gz.base64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "85f99e3b173a959b76252be8c3052b2ea00f10ce"
+        },
+        {
+          "path": "publication-recovery-v1/partial_uncommitted_leaf.tree-readback.json.transport.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "aab72725160bc1db4a78d0f0525f43059c59bd8b"
+        },
+        {
+          "path": "publication-recovery-v1/published_leaf.map.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ee11f15af9213153c506fe6ea171e23d008d1575"
+        },
+        {
+          "path": "publication-recovery-v1/published_leaf.tree-readback.json.gz.base64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c8fdbd9a16718e85d377b4cad5aaa5a5b90b153a"
+        },
+        {
+          "path": "publication-recovery-v1/published_leaf.tree-readback.json.transport.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f8f0deb85aa1f7a0a9cc1b28c033c748f9f0677c"
+        },
+        {
+          "path": "publication-recovery-v1/reconstruct_checkpoint.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "09155e6cafd1e29fc13c586b0e0273d78221fd76"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/GIT_FULL_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e209dcb8df9a95df1191f68ef93d67c210ac07f9"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5cdbb64b2d3f4a984867327e739dcabad6c48e5b"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f9630bdba9f0267268b25520e117566ecc7d8105"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1005fffcd1b2c335ed44b6e4ffdc39956262d114"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "64d25ff8801f69b61de0a2433282786a82b3f15a"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e16820f8bab3027ab74490f942a34c7ee5470739"
+        },
+        {
+          "path": "root-provider-v2-idle-transport-v1/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ee521cafc9ffb9e6ab31d6a8bbef3ecf5139d450"
+        },
+        {
+          "path": "root-review-corrections-v1/ROOT_REVIEW_CORRECTIONS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2d02593c8b52b5e17734c88431813bcab29b6f8"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/linux-export-increment-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6ed069dc213bb5c24872f0f98da5f21adeab8655"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/linux-export-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "812b8308dbec3ee818bcbb7eae41fb60da10e086"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/linux-export-increment-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a4bf0102dc43c386b4fecea12479ae3f3c2f89cd"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/linux-export-increment-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4875d82be8b8bd9401c770584c1cf286ccb5eef"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/linux-export-increment-v1/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f8c494630d0a88e2169c56d381760b60f91f6afb"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/EXACT_TRANSFORMATIONS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9e99cb6b87b98e96e5eeff79bdd4c726978e23cb"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "23ff230431ca67bd0fa77b5fdb52ff0a4004dc01"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7a2a4fc98b41b9d7006f5b40b471df91e84cae95"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4db63ca758203e03fed6159ace6b94e102e063a4"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "92a1567ac32c886d9d7386fb80915071475528bf"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/STATIC_BYTE_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "85a7fc9a38af52d302e9326af4d58475da4ee754"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "94cdad47f9564d1521a7216c8d8d62c422202b85"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17596f02e662ab982dce5c918e03c19a8a30a953"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "98198c3d2ba177ab554d3028ea1270fbe7713bb1"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "36c099ad2ae3b72deae633729a46be0b4fb766cd"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5e6221196cb26ce6120040f5b7cd6df5b4f94f1a"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1180fb9dd9700346f2a94e0a097e84660423a83b"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "034ac9101813dd657e83ee1c377818a0c10ca435"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6b7eb85645b952b7f08d1fa66557cd25ee425a2b"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c949e2a64657bc2ec209253d149b09256f49b42e"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ce1c4983afdcc251e4472068ccf0e4941809d499"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d96f9c9b7767c071106370beb5dfc7ad8b4fba83"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "10205177c9e4274f58347f5a3719f2a34ed76519"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7a57575bccb0de9d139a070e30bc26fcb8daf8d"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/after/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e7b2e5e89ab0911193ca41d054f0633ba132767"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/review-production-v2/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e2909c8549dd7ccd7ae214e37b94ccb60a29cefe"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e129668bc3d1401f2199bc7ad06a31bdc6b1285d"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b952058543e54e7ddd73d27ba79119633a7d1f58"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "57927b65a341b2bf05dfe05525ed386a526dd608"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2d59d9796aa01805745105bb8f4cd049df2decd1"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "04fb77b4afb11c55ddbee1f0d4a631b4c1cf14ea"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "base_tree_sha": "e1074545f81ea9a351e47696b963430be9dd5671",
+      "expected_tree_sha": "c55924dfdca6654d2d55dfe1a2e163cf1a4bcb89",
+      "elements": [
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/STATIC_PRESERVATION_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8abb2a13ac6f04d131a24fdd0f27997d7dd096e6"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "89e1116136ff39c0a4478d69675cfb5c645e9aec"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fab5600f505aa7c8c039aa0990ec38ca01d15c83"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_observation_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e4322de280617f3cec445b4b5211cc8659e18816"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "265e80b2763cbf4f2a530e2e1400f364ee1b1711"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c00498c5f8c2ac1301d1dbb32e630c9efb01867a"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a47922b80b3bd9ae0d1168efefdcfbde3f3a98b5"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c473012597dcc29b4f13a3353b27ddc12e42f523"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "30769dda72e5fe509bed1e1c8ce251f79f1861d2"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91dd820a4069b8faaab1274f5b3918b144e3b2e9"
+        },
+        {
+          "path": "shared-original-readback-minimal-v2/tests-increment-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "705311ff2c468d6cfdd131a656a49e3b48b04290"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9de5009c6e81193617c4e787e502e85e8a72b428"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/METADATA_GITHUB.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f4bc2de063c5b3e48fed7ee940cfd5826040d62e"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/MOUNT_AND_HOOK_CONTRACT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8b02c40e0dd0027508b01d0a7042c8ccbe76f41"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fb415feab0056cd58544d93bb8c4f76556fc83e0"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/PREIMAGE_ABSENCE.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "10768d5391dea8ec86819e54562f4263a89516c7"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/PRIOR_DRAFT_TO_FINAL_EXACT_REPLACEMENTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1df9cb9822ff4bf31659a7f0c265e887ce013995"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7bc800d5c2532c46f644d835f626f91cb2c6cad3"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/SOURCE_GITHUB.original.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bf0d815bf26acbe08fd9d71cfb7f10687fb9ea8c"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bf5e43e47661e0209b22402580a5d6a0e3c6dc4b"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4822f854b3e1d984f5a5f4ee2976447d202282e5"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a4caa2e39abfffc7b48628dcc690d5c0cf938b70"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/source/cell_q24_training_shared_readback_test_support.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "265e80b2763cbf4f2a530e2e1400f364ee1b1711"
+        },
+        {
+          "path": "shared-original-readback-transport-tests-v1/source/circuit_evaluated_version_shared_readback_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "30769dda72e5fe509bed1e1c8ce251f79f1861d2"
+        },
+        {
+          "path": "shared-readback-implementation-peer-v2/API_AND_TEST_OBLIGATIONS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "470c13f92d8e3f387ed32acc67f016484cecb9e5"
+        },
+        {
+          "path": "shared-readback-implementation-peer-v2/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "58ff3821c3a28f049d348e20ac1008aa3f80fead"
+        },
+        {
+          "path": "shared-readback-implementation-peer-v2/REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "74ae18f40c85e603a13b17a194c7d75d571a0f38"
+        },
+        {
+          "path": "shared-readback-implementation-peer-v2/SOURCE_BYTE_PROOF.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "75095ecef31092fa9878052a275d3e8a529dc470"
+        },
+        {
+          "path": "shared-readback-implementation-peer-v2/hash_bytes.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "153a31341d11f1144fd026bea8829dfc88bacb18"
+        },
+        {
+          "path": "shared-readback-implementation-peer-v2/review_bytes.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e68c5291bd84cce2c5c06f43ada9f8f4a3e5fc96"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f700c2e704cb5f1d7d94174fee89a27e3464e436"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a965a2106c38be86ab0670c7ba090404c3dbc51d"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ffe965122a4ac11bc136e11fe36a30dd15bf6ac5"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bb104facd29f0939e8b8a4f013cced395116a4bf"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4db88aab962628b6c7414718f5e5c68f55e86b11"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d52084d728eee8a62bce68b99780c12624242d7"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4f88e588c805271cf8954305bfe09fdfab777bf4"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "98198c3d2ba177ab554d3028ea1270fbe7713bb1"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/before/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/before/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91dd820a4069b8faaab1274f5b3918b144e3b2e9"
+        },
+        {
+          "path": "shared-readback-typed-ufcs-increment-v1/before/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d96f9c9b7767c071106370beb5dfc7ad8b4fba83"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f4a41ba30709f0899f995d8196d330077583fce5"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5a7e2226495685fb393305d6dcc469af3b28215e"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2be6d801e634dad511cedbfdb1c6dfd6e605fbf9"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "85d28ef8d6dd6f4fd48f5380b68b4e389a7427c1"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3284b902f9f77f760c0246d34c6bec7c82581fe6"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8c73e1d0fc2a4a489031edf42723a29af1cde6e1"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "aec983844a859a7d292f2ab53fd3756d2a42a222"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "80e37d6b6f41081cc661850ea29b9ff61a5787ef"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/bootstrap_append.rs.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c62650d2408e2270328c9c682b67409f519b5e3a"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/command_append.rs.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5789bf8808525762aef9d68a6b85ebde0884a3bf"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/prepare_increment.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1905eebf1c61761d667f98b4d0fec0f098767bba"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/reference/cell_q24_training_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/reference/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "80e37d6b6f41081cc661850ea29b9ff61a5787ef"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/reference/cell_q24_training_command_wire.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a24dbbf280dcfff9c3d52deeaa087ffc8a11bdc8"
+        },
+        {
+          "path": "training-completion-observer-increment-v1/reference/cell_q24_training_model_lane.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9dd91ec0e81aff907a7760cdcee880226945993d"
+        },
+        {
+          "path": "training-public-capacity-review-v1/INPUT_ROWS.initial.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0c27bded2fdb21c49bb452ccfc9c99e2f54e7402"
+        },
+        {
+          "path": "training-public-capacity-review-v1/REVIEW.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d5ce94fcd6654e5124ef7acee94c9369e5a95d0"
+        },
+        {
+          "path": "training-public-capacity-review-v1/SOURCE_REFERENCES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "58ddf9685a327ec294f65edd6e9eb8b7027ed0a3"
+        },
+        {
+          "path": "training-public-capacity-review-v1/review_references.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1fddbc8bf31e657e5aa6c16b93154d8c082956f0"
+        },
+        {
+          "path": "training-shared-helper-rename-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bfc96752df8c76fe59676696b6a1f77cef038aab"
+        },
+        {
+          "path": "training-shared-helper-rename-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "da4b73122f903bcb93630c3afed5b9afe960156d"
+        },
+        {
+          "path": "training-shared-helper-rename-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "98f631981384dbe739e83c9297547172720f2abb"
+        },
+        {
+          "path": "training-shared-helper-rename-v1/after/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "265e80b2763cbf4f2a530e2e1400f364ee1b1711"
+        },
+        {
+          "path": "training-shared-helper-rename-v1/before/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "89e1116136ff39c0a4478d69675cfb5c645e9aec"
+        },
+        {
+          "path": "training-shared-helper-rename-v1/changes.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6b1c05cd3afb5e51fe8ed7aede06a1fb0340d5c0"
+        },
+        {
+          "path": "version-next-use-seam-v1/GITHUB_FULL_READBACK.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9b660a99c09964dd1f41a31558df557f933897f9"
+        },
+        {
+          "path": "version-next-use-seam-v1/GITHUB_ORIGINAL_READBACKS.json.gz.b64",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f88d9744ce08b8afd55fcf3cce0e6b7a8519068e"
+        },
+        {
+          "path": "version-next-use-seam-v1/MANIFEST.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "98aad3ff287a7638ce6c31967eec0b72d2e2d259"
+        },
+        {
+          "path": "version-next-use-seam-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5ae9f90f4e1ba89aa10ec0d6b1a1ec2c36713737"
+        },
+        {
+          "path": "version-next-use-seam-v1/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5e2cbcca9608732c765017b2532972e9d225c7a0"
+        },
+        {
+          "path": "version-next-use-seam-v1/REGISTRATION_PLAN.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "50cb24ae172684dcd634bbc9ba38c20b0729cdde"
+        },
+        {
+          "path": "version-next-use-seam-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee264288c39358a30dbd0a673caadda9bdf6297"
+        },
+        {
+          "path": "version-next-use-seam-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2b331b488fd789421f9731e3637d882bb57d7f0a"
+        },
+        {
+          "path": "version-next-use-seam-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9e5b944a4c6fe60932a17501d1aab82a5781b695"
+        },
+        {
+          "path": "version-next-use-seam-v1/TEST_MOUNT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3a0cbd6067339de7da98c13b3da5bd01087b8cff"
+        },
+        {
+          "path": "version-next-use-seam-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9e1baa33ad0530c8df4fcc8e70fe610c5706818e"
+        },
+        {
+          "path": "version-next-use-seam-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d3f4cae8fa88f76766b0cf5fd273d6ed242b3364"
+        },
+        {
+          "path": "version-next-use-seam-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f72e767ac85f1231a6fb9830a2be34d6d784772"
+        },
+        {
+          "path": "version-next-use-seam-v1/after/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "28cb80fcf7946ae66c4dee89d14248f5c8d83a66"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "base_tree_sha": "c55924dfdca6654d2d55dfe1a2e163cf1a4bcb89",
+      "expected_tree_sha": "8f248caecd1aefaae9527743d5ac3c0c83121c63",
+      "elements": [
+        {
+          "path": "version-next-use-seam-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "95edb69b5833d71553a6a12d583c671623343bcc"
+        },
+        {
+          "path": "version-next-use-seam-v1/after/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cc470ac88e0fd62d7452dc44b38fa83f2edb597b"
+        },
+        {
+          "path": "version-next-use-seam-v1/build_package.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8ec3bbabc6886d045018ab9a1c614ef0c446f16"
+        },
+        {
+          "path": "version-next-use-test-mount-increment-v1/PLACEMENT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4af737ec5979d9eddbf2c7ce1a542f34634e298b"
+        },
+        {
+          "path": "version-next-use-test-mount-increment-v1/SOURCE_DELTA.patch",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "03f704bb832a40b63756a70c5178947a27f3da0a"
+        },
+        {
+          "path": "version-next-use-test-mount-increment-v1/SOURCE_PACKET.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "468a449d78979c8c923009eb87140a2613ae0416"
+        },
+        {
+          "path": "version-next-use-test-mount-increment-v1/STATIC_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1688993e7eaf2c13a8d32a78ce30c775416c6a3a"
+        },
+        {
+          "path": "version-next-use-test-mount-increment-v1/after/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43976a78c4e4f380c9d97559006aed7d5e714cb7"
+        },
+        {
+          "path": "vsc-shared-read-order-review-v1/REVIEW.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cac33992f037381ee4e7f57e815f9662ee74a42c"
+        },
+        {
+          "path": "vsc-shared-read-order-review-v1/SOURCE_REFERENCES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29374f5047c873e3cb37935f1b2cba84348554c7"
+        },
+        {
+          "path": "vsc-shared-read-order-review-v1/review_references.py",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1ee620be8360cbb0ae83c3f5cb2cb7ceca5e80e1"
+        }
+      ]
+    }
+  ]
+}

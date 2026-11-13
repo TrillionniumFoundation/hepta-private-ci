@@ -1,0 +1,83 @@
+{
+  "actual_main_dispatch_count": 1,
+  "actual_process_snapshot": {
+    "active_matching_processes": [
+      {
+        "comm": "just",
+        "pid": 3141165,
+        "uid": 1000
+      },
+      {
+        "comm": "cargo",
+        "pid": 3141222,
+        "uid": 1000
+      },
+      {
+        "comm": "rustc",
+        "pid": 3150359,
+        "uid": 1000
+      }
+    ],
+    "scope": "Same-UID process names only; no environment/argument values or credentials inspected; no processes killed.",
+    "unreadable_matching_processes": []
+  },
+  "archive_publication_started": false,
+  "audits": [
+    {
+      "check": "source",
+      "finished_at": "2026-11-13T03:57:10.528353+00:00",
+      "reason": "complete original before source unavailable",
+      "started_at": "2026-11-13T03:57:10.528322+00:00",
+      "status": "unknown"
+    },
+    {
+      "check": "inputs_environment",
+      "environment_unchanged": true,
+      "finished_at": "2026-11-13T03:57:10.530315+00:00",
+      "input_count": 7,
+      "started_at": "2026-11-13T03:57:10.528358+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "materials",
+      "error": "ValueError: original bindings full identity/stat unchanged",
+      "finished_at": "2026-11-13T03:57:10.558769+00:00",
+      "started_at": "2026-11-13T03:57:10.530326+00:00",
+      "status": "unknown",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 761, in main\n  File \"<string>\", line 686, in audit_materials\n  File \"<string>\", line 127, in check\nValueError: original bindings full identity/stat unchanged\n"
+    }
+  ],
+  "downloads_started": false,
+  "exact_actual_admission_args_equal_approved": true,
+  "followup_authorization": "No restoration retry or native gate allowed by this review.",
+  "format": "hepta-v8-material-attempt-01-original-readback-v1",
+  "job_id": "1a1d30d5606-392-80",
+  "material_secondary_error_scope": "binding_before is None because the initial guard rejected before setting it. Original audit remains Unknown; this is not a finding that the bindings changed.",
+  "normal_terminal": {
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "timed_out": false
+  },
+  "observed_at": "2026-11-13T04:06:36.316131+00:00",
+  "original_failure": "ValueError: original global build/formatter concurrency guard",
+  "qualification": false,
+  "same_byte_retained_input_scope": "ACTUAL_SCRIPT and approved config independently equal actual launch fields; five original INPUT copies are manifest identities consistent with existing archived originals and this run input audit. They were not separately retransmitted from their new record paths.",
+  "separately_read_actual_records": [
+    "BUILD_PROCESS_PREFLIGHT.json",
+    "SOURCE_COORDINATION_SH.json",
+    "MATERIAL_PARENTS.after.json",
+    "BINDINGS.after.json",
+    "COMMANDS.json",
+    "DOWNLOADS.json",
+    "INPUT_IDENTITIES.json",
+    "ARTIFACTS.json",
+    "RESULT.json"
+  ],
+  "snapshot_scope": "Only original sample at this attempt; no current-state or writer/ownership inference.",
+  "source_comparison": "Unknown: original full before inventory not captured. No replacement success claim.",
+  "source_or_native_gate_started": false,
+  "source_writes": false,
+  "status": "KNOWN_PREPARATION_PRECONDITION_FAILURE"
+}

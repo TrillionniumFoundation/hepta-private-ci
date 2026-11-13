@@ -1,0 +1,42 @@
+{
+  "author_fixes_from_first_draft": [
+    "Make each pipe drain independently set O_NONBLOCK, including Drop after partial setup.",
+    "Only actual read EOF marks stream complete; errors/overflow close the pipe with complete=false.",
+    "Overflow retains an explicit prefix and one failure instead of repeated append until timeout.",
+    "Check the absolute observation deadline at loop entry.",
+    "Describe emitted failure bytes without claiming unobserved enclosing recorder completeness."
+  ],
+  "borrowed_mechanisms": [
+    "Original setpriv capability/group/UID drop and exec-via-open-ELF FD pattern.",
+    "Original runtime verify_process_credentials and owner_alive, actual pid/boot/start plus pidfd.",
+    "Original 5-second fixture observation window."
+  ],
+  "format": "hepta-process-pair-draft-static-review-v1",
+  "not_source_tested": true,
+  "original_inputs": [
+    {
+      "git_blob": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8",
+      "path": "authority_host_learning_resident_provider_process_tests.rs"
+    },
+    {
+      "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235",
+      "path": "authority_host_learning_resident_provider_transport_tests.rs"
+    },
+    {
+      "git_blob": "1005fffcd1b2c335ed44b6e4ffdc39956262d114",
+      "path": "authority_host_learning_resident_provider_lifecycle_tests.rs"
+    },
+    {
+      "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+      "path": "authority_host_runtime.rs"
+    }
+  ],
+  "production_changes": false,
+  "protocol_or_authority_substitution": false,
+  "source": {
+    "bytes": 27626,
+    "git_blob": "c269e4c7adfefb3853ea67ca46197af049dd4cbc",
+    "sha256": "a46e34b8b62092f09a0a658e19e62940243ce76a12f03fd151e910f5bb9de46c"
+  },
+  "status": "AUTHOR_STATIC_ONLY_NOT_COMPILE_OR_EXECUTION"
+}

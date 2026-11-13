@@ -1,0 +1,11 @@
+--- driver-v1.HOLD.py
++++ driver-v2.CANDIDATE.py
+@@ -697,7 +697,7 @@
+     _, archive = stable_file(DESTINATION, {'bytes': ASSET['bytes'], 'sha256': ASSET['sha256'], 'git_blob': ARCHIVE_GIT}, 0o600)
+     check(archive == result['archive_actual'], 'restored archive stable through final audit')
+     return {'status': 'verified', 'archive': archive, 'bindings': bindings,
+-            'allowed_parent_metadata_change': str(V8_DIR) + ' directory timestamps/size caused by the one new entry only'}
++            'parent_metadata_comparison_scope': str(V8_DIR) + ' dev/inode/mode/uid/gid/nlink are equal; size/mtime/ctime may differ. No directory enumeration or exclusive cause attribution; any cause beyond this observed operation remains unknown.'}
+ 
+ 
+ def audit_inputs_environment():

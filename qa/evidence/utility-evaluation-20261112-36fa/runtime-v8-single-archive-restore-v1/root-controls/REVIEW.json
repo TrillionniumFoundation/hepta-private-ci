@@ -1,0 +1,247 @@
+{
+  "format": "hepta-root-exact-single-archive-review-v1",
+  "reviewed_at_utc": "2026-11-13T03:53:59.521112+00:00",
+  "status": "EXACT_MATERIAL_ONLY_REQUEST_ACCEPTED",
+  "driver": {
+    "bytes": 37114,
+    "sha256": "4d57502ae268bc7216b6ad2e87b70159a94968c5059177b7593c7aac9989aadf",
+    "git_blob": "aae1063cff9d2b95bac5d1db09c831164b4cd060"
+  },
+  "request": {
+    "bytes": 39070,
+    "sha256": "1adf53833dc2d2d99957d59edcc4f4293d376cd7a17c7b1d30489cfb4d6a3123",
+    "git_blob": "b3eb87deffe130b7b839c305988275ab28386775"
+  },
+  "configuration": {
+    "bytes": 807,
+    "sha256": "f2eca954e4f3c2725c0e614451982fabbbeda42188ee4ca273cee1021eb76c9e",
+    "git_blob": "8c2b0c402ad78d1708ca976cee875b78caaca19f"
+  },
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "configuration_two_field_inverse_exact": true,
+  "script_only_wording_inverse_exact": true,
+  "preserved_original_definitions": [
+    {
+      "name": "IntegrityError",
+      "actual_body": {
+        "bytes": 45,
+        "sha256": "6870197f6bac343cf255e1d2d5f64e877c03306dea4c8c507460a8ac87956f0d",
+        "git_blob": "abe3f0ec82536e5ab630f5f047a5860ff53af5d5"
+      }
+    },
+    {
+      "name": "now",
+      "actual_body": {
+        "bytes": 79,
+        "sha256": "42153326a0ae28acecf1d85fee098e2fcab9ab2303bf51137f0258ca0ed6cade",
+        "git_blob": "7b98802ac65249d614809bac7a6338b5c9a6b8d6"
+      }
+    },
+    {
+      "name": "check",
+      "actual_body": {
+        "bytes": 87,
+        "sha256": "c6adb0d012959550c1269fc18638cf6a0afdec4ad7115fc35cf573e35d62a6c6",
+        "git_blob": "b0fbcfcebc6f2d530108cc4aa8568642513893ff"
+      }
+    },
+    {
+      "name": "sha256",
+      "actual_body": {
+        "bytes": 60,
+        "sha256": "034eb0d98a26f4510cd2074e6b57ea27da0cad53acf119a57fe3ccbff3633010",
+        "git_blob": "569777a5721fbccb9a49fa9ef7ecedee6b22c445"
+      }
+    },
+    {
+      "name": "git_blob",
+      "actual_body": {
+        "bytes": 104,
+        "sha256": "cd869f0b4a34fd3dca913b852c89fefa677efdd78db93fca410efae2846544de",
+        "git_blob": "7522a81f48df898d2e7f9c11b898cbed999d751e"
+      }
+    },
+    {
+      "name": "nodup",
+      "actual_body": {
+        "bytes": 166,
+        "sha256": "a3527394264aad1f966308640ca773d3783af0722b5c695b106fc09ce1ac045e",
+        "git_blob": "ea8a0d0763ff9ec2b2dbd7d6178444f10290dceb"
+      }
+    },
+    {
+      "name": "parse",
+      "actual_body": {
+        "bytes": 84,
+        "sha256": "4bdfedd973d87c74beb5b11fc88d48388e7fc2cd76c7476ed88c1062a3f32be3",
+        "git_blob": "af7cacba8c1ab0af77c4fd6538c1d8bad140554b"
+      }
+    },
+    {
+      "name": "encoded",
+      "actual_body": {
+        "bytes": 149,
+        "sha256": "fb2dd69dd8ac8a0112bc1dd8c6268b9d0657a7da5ac41b798f1ca6baad03a1b9",
+        "git_blob": "a06d219a85bb6644d73a3a0165f5ea80cfc423e4"
+      }
+    },
+    {
+      "name": "real_directory",
+      "actual_body": {
+        "bytes": 693,
+        "sha256": "469bfd173da673715dc3e4bb058f0bebede8729ed9c17843489ff553d16627d9",
+        "git_blob": "c2a96831db8e6b621ba10c0bc26e805f4df61791"
+      }
+    },
+    {
+      "name": "regular_read",
+      "actual_body": {
+        "bytes": 1244,
+        "sha256": "99e288c5a2c136b8fd62fd3b4eaa8ace54e5435947db06829cd33dc945241e2e",
+        "git_blob": "54f96c1349ff0cd515ab97513089c9e1822f3ef9"
+      }
+    },
+    {
+      "name": "pin_bytes",
+      "actual_body": {
+        "bytes": 197,
+        "sha256": "f13d8c63cbf35b17b35e2d2084fdd2508b4b8e9a44c03d5293b5bf3671ed0dc0",
+        "git_blob": "41cca4faf12da9938349ebcad21fd830a28e27da"
+      }
+    },
+    {
+      "name": "read_input",
+      "actual_body": {
+        "bytes": 185,
+        "sha256": "89a0401e80cc6adef526c903490e7ea4f5622763583dc0ad123ed93fcbdcf1dc",
+        "git_blob": "42235152645d0e6cb5af6d195e40f1d7cb4d8c92"
+      }
+    },
+    {
+      "name": "put",
+      "actual_body": {
+        "bytes": 435,
+        "sha256": "90c3884c937cb6ae3ba313a57928b91d3159a4175f98788bcc95762117b84a91",
+        "git_blob": "64c42d6a4bdfed06e37495c2965a856d578937e7"
+      }
+    },
+    {
+      "name": "record",
+      "actual_body": {
+        "bytes": 249,
+        "sha256": "1e443bc71094b7453f07fb91d91b47c3de734c8b15fa75a735eba0550dab6625",
+        "git_blob": "b9dc2313cadf65685f243154c10ffc95488f32a3"
+      }
+    },
+    {
+      "name": "jrecord",
+      "actual_body": {
+        "bytes": 66,
+        "sha256": "09344a19e5cb9d0f01f8132770a25490b8bda7c7a1069443840c7e4f5094666e",
+        "git_blob": "b55dee12e09febf3f4b997d32a410876e09e4000"
+      }
+    },
+    {
+      "name": "gzip_record",
+      "actual_body": {
+        "bytes": 652,
+        "sha256": "e71535ba01876281c8459befcada553746baa354d1e01a703723369ba03520dc",
+        "git_blob": "94de6a9b70e71d1a1555f0f9756122591d271dc0"
+      }
+    },
+    {
+      "name": "event",
+      "actual_body": {
+        "bytes": 354,
+        "sha256": "52ca0e4eb1e78dd105312192219379092fdfa95cb21945abcb4606ca2921379e",
+        "git_blob": "72a0ad1c35f153d8bf3cd7728732ccb62d0cdb80"
+      }
+    },
+    {
+      "name": "remaining",
+      "actual_body": {
+        "bytes": 137,
+        "sha256": "7b05a24cba942949f448a00431d603ec95a7625fc42bb15cd10ec14ee4beeb7b",
+        "git_blob": "caf0a6c3f44107f8ae6f6833e5544074ad7a144b"
+      }
+    },
+    {
+      "name": "alarm",
+      "actual_body": {
+        "bytes": 99,
+        "sha256": "6c5da6d6978e0e090a91572e633d7ebd9749a6b65fce1433256d5565ac800efd",
+        "git_blob": "2511f2c4f16fd192571cad3d25c2c67a24f99875"
+      }
+    },
+    {
+      "name": "file_identity",
+      "actual_body": {
+        "bytes": 1407,
+        "sha256": "bd85590003b18b64bde114f20400e2780e8971ba1e9dfefc59720b8792014301",
+        "git_blob": "ea343a7d90820594e6d648455878fdd8c6cd3655"
+      }
+    },
+    {
+      "name": "safe_url",
+      "actual_body": {
+        "bytes": 379,
+        "sha256": "f2ecf7b154d4efb6509a7c7bff725258403c3c9644fcea47a75be2ac1e77ad4c",
+        "git_blob": "d15f072fe9fd16288b669f1f87e976ee87cb5bad"
+      }
+    },
+    {
+      "name": "FixedRedirects",
+      "actual_body": {
+        "bytes": 544,
+        "sha256": "6e33edae5f1e889d3b563531946c30e3935c6abda82e385016f335e1252970bb",
+        "git_blob": "554d26f264ac819c1d4fd258d614f24cd60df4d8"
+      }
+    },
+    {
+      "name": "download",
+      "actual_body": {
+        "bytes": 3656,
+        "sha256": "6348518bd08f8a95a67853e775314caa53b47b437ac552faad71d7f22f354392",
+        "git_blob": "151e518c899b589ab3844eb80c9e1af4bdf0cae0"
+      }
+    },
+    {
+      "name": "active_build_processes",
+      "actual_body": {
+        "bytes": 1050,
+        "sha256": "737957b1c00104914739ef2ed4dda0dbba079b24f5875cd3809155a4d5087595",
+        "git_blob": "9fbb326b2995fcb24e1def5f51dca683ec5cf059"
+      }
+    }
+  ],
+  "actual_fixed_parent_permissions_match_readonly_observation": true,
+  "operation_seconds": 600,
+  "retention_seconds": 180,
+  "outer_seconds": 900,
+  "per_download_seconds": 120,
+  "source_full_before_after_required": true,
+  "original_guard_preserved": true,
+  "original_archive_exact_bytes": 29366352,
+  "original_archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+  "original_archive_git_blob": "c6941f7873bdfb8ac18577c9844f234e76dc5ed6",
+  "destination_write": "Original missing pathname only, after full spool identity verification, with O_EXCL/O_NOFOLLOW; retain partial failures and never overwrite/retry.",
+  "scope": [
+    "The complete candidate driver was read; static AST/body comparisons only, not executed.",
+    "Exact historical HTTPS downloader/redirect/size/hash/120s checks and V5 process guard are unchanged.",
+    "No source, refs, raw index, existing binding, inherited environment or native test budget is changed.",
+    "The only child commands are closed readonly Git argv with owned-process cleanup.",
+    "Parent metadata is checked only to the expressly stated extent; no exclusive causal attribution.",
+    "No new native qualification or provider execution is authorized."
+  ],
+  "H_calls_by_this_review": 0,
+  "qualification": false,
+  "real_qualified_task_chains": 0
+}

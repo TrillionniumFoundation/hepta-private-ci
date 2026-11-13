@@ -1,0 +1,156 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
+@@ -23,6 +23,17 @@
+ 
+ type OriginalLocalReader =
+     OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++
++#[derive(Clone, Copy)]
++pub(crate) enum OriginalVersionLocalReadOperationV1 {
++    Readback,
++    CompletionReadiness,
++}
++
++enum OriginalVersionLocalReadPurpose {
++    Selection,
++    NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
++}
+ 
+ /// Crate-private transport binding, with no public constructor or owner
+ /// access. The same concrete Version remains responsible for every response.
+@@ -91,7 +102,7 @@
+ 
+     pub(crate) fn respond(
+         &self,
+-        readiness: bool,
++        operation: OriginalVersionLocalReadOperationV1,
+         bytes: &[u8],
+         request_id: u64,
+     ) -> Result<Vec<u8>, Error> {
+@@ -102,16 +113,16 @@
+             Some(selection) => self.version.original_evaluated_next_use_response(
+                 selection,
+                 self.reader.as_ref(),
+-                if readiness {
+-                    &NextUseReadPurpose::CompletionReadiness
+-                } else {
+-                    &NextUseReadPurpose::Readback
++                match operation {
++                    OriginalVersionLocalReadOperationV1::Readback => &NextUseReadPurpose::Readback,
++                    OriginalVersionLocalReadOperationV1::CompletionReadiness =>
++                        &NextUseReadPurpose::CompletionReadiness,
+                 },
+                 bytes,
+                 request_id,
+             )?,
+             None => {
+-                if readiness {
++                if matches!(operation, OriginalVersionLocalReadOperationV1::CompletionReadiness) {
+                     return Err(Error::Binding("local Selection is not completion readiness"));
+                 }
+                 self.version.original_evaluated_local_selection_response(
+@@ -134,7 +145,7 @@
+         timeout: Duration,
+         lifetime: Duration,
+     ) -> Result<OriginalCircuitPublishedLocalReadV1, Error> {
+-        self.open_original_evaluated_local_read(None, timeout, lifetime).await
++        self.open_original_evaluated_local_read(OriginalVersionLocalReadPurpose::Selection, timeout, lifetime).await
+     }
+ 
+     /// A five-cut reader fixed by the original opaque S. Its readback and
+@@ -145,12 +156,12 @@
+         timeout: Duration,
+         lifetime: Duration,
+     ) -> Result<OriginalCircuitPublishedLocalReadV1, Error> {
+-        self.open_original_evaluated_local_read(Some(selection), timeout, lifetime).await
++        self.open_original_evaluated_local_read(OriginalVersionLocalReadPurpose::NextUse(selection), timeout, lifetime).await
+     }
+ 
+     async fn open_original_evaluated_local_read(
+         self: Arc<Self>,
+-        selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++        purpose: OriginalVersionLocalReadPurpose,
+         timeout: Duration,
+         lifetime: Duration,
+     ) -> Result<OriginalCircuitPublishedLocalReadV1, Error> {
+@@ -169,7 +180,7 @@
+             .try_acquire_owned()
+             .map_err(|_| Error::Busy)?;
+         let worker = tokio::task::spawn_blocking(move || {
+-            self.bind_original_evaluated_local_read(selection, timeout, end, permit)
++            self.bind_original_evaluated_local_read(purpose, timeout, end, permit)
+         });
+         let bound = tokio::time::timeout_at(
+             tokio::time::Instant::from_std(admission_end), worker,
+@@ -190,7 +201,7 @@
+ 
+     fn bind_original_evaluated_local_read(
+         self: Arc<Self>,
+-        selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++        purpose: OriginalVersionLocalReadPurpose,
+         timeout: Duration,
+         end: Instant,
+         permit: OwnedSemaphorePermit,
+@@ -202,6 +213,10 @@
+         {
+             return Err(Error::ReadbackRequired);
+         }
++        let selection = match purpose {
++            OriginalVersionLocalReadPurpose::Selection => None,
++            OriginalVersionLocalReadPurpose::NextUse(selection) => Some(selection),
++        };
+         let (reader, context) = match &selection {
+             Some(selection) => {
+                 let reader = self.build_original_evaluated_next_use_reader(selection.clone())?;
+--- a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -9,6 +9,7 @@
+ use codex_hepta_types::Digest32;
+ 
+ use super::super::retained_publication::version::OriginalVersionLocalReadBindingV1;
++use super::super::retained_publication::version::OriginalVersionLocalReadOperationV1 as LocalReadOperation;
+ use super::Error;
+ use super::OriginalCircuitEvaluatedLearningReadContextV1;
+ use super::OriginalCircuitLearningReadClientV1;
+@@ -44,12 +45,6 @@
+             original: Arc::clone(&self.original),
+         }
+     }
+-}
+-
+-#[derive(Clone, Copy)]
+-enum LocalReadOperation {
+-    Readback,
+-    CompletionReadiness,
+ }
+ 
+ impl OriginalCircuitPublishedLocalReadV1 {
+@@ -158,7 +153,7 @@
+         let original = Arc::clone(&self.original);
+         let worker = tokio::task::spawn_blocking(move || {
+             original.original.respond(
+-                matches!(operation, LocalReadOperation::CompletionReadiness),
++                operation,
+                 &bytes,
+                 request_id,
+             )
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+@@ -61,6 +61,7 @@
+ #[path = "circuit_retained_version_local_read.rs"]
+ mod local_read;
+ pub(crate) use local_read::OriginalVersionLocalReadBindingV1;
++pub(crate) use local_read::OriginalVersionLocalReadOperationV1;
+ 
+ #[path = "circuit_retained_version_prepared.rs"]
+ mod prepared_custody;
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+@@ -29,6 +29,7 @@
+ pub use host::OriginalCircuitRetainedVersionHostV1;
+ pub use host::OriginalCircuitRetainedVersionRecoveryV1;
+ pub(crate) use host::OriginalVersionLocalReadBindingV1;
++pub(crate) use host::OriginalVersionLocalReadOperationV1;
+ 
+ #[derive(Debug, thiserror::Error)]
+ pub enum OriginalCircuitRetainedVersionErrorV1 {

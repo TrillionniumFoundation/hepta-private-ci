@@ -1,0 +1,52 @@
+{
+  "compile_runs": 0,
+  "exact_substitutions": 13,
+  "format": "hepta-three-uid-process-harness-static-review-v1",
+  "format_runs": 0,
+  "inverse_substitutions_restore_all_before_bytes": true,
+  "limitations": [
+    "No rustfmt, rustc, Cargo, test or native execution.",
+    "Orchestrator must create exactly one scope immediately before its group of child starts and pass the same reference to all children; integration is still pending.",
+    "Wall time of arbitrary external caller work between operations is not bounded by this helper; existing parent test/protocol deadline remains controlling.",
+    "As in c269, kernel process spawn and synchronous /proc credential observations are unchanged; the shared timer bounds polling/wait loops and is checked around startup.",
+    "Distinct UIDs are a necessary public-channel condition, not a successful handshake or typed trust proof.",
+    "Current same-host Version/Source/S/C live socket edges are unresolved; this harness does not make them admissible."
+  ],
+  "native_calls": 0,
+  "new_test_methods": 0,
+  "original_c269_preserved": true,
+  "prepared_at_utc": "2026-11-13T04:22:55.812991+00:00",
+  "scope_changes": [
+    "Explicit three fixed non-Root UIDs and role labels.",
+    "One explicit shared scope passed to every child start.",
+    "Startup ready wait uses the shared initial deadline.",
+    "First finish establishes one common join deadline; all finish calls reuse it.",
+    "First failed cleanup or Drop establishes one common kill/reap deadline; all child cleanup uses it.",
+    "The scope rejects child start once join/cleanup has begun."
+  ],
+  "source_after": {
+    "bytes": 29874,
+    "git_blob": "318597fb680c4094e042c10ca368aa407f9942ca",
+    "sha256": "9d65825a713eba937e39b5df60cb06accae8e0880b37e9376a5527b7d9f949be"
+  },
+  "source_before": {
+    "bytes": 27672,
+    "git_blob": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66",
+    "sha256": "688f9b27ecd5917990845ff17b57195789bb9c340fd9dd79ca07af6318b13cbf"
+  },
+  "stack_increment_separate": {
+    "bytes": 27672,
+    "explicit_stack_bytes": 8388608,
+    "git_blob": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66"
+  },
+  "status": "FROZEN_FOR_PEER_REVIEW_ONLY",
+  "tests_executed": 0,
+  "unchanged": [
+    "Original credential drop, exact executable FD/FQN, env_clear, and fixed 8 MiB stack.",
+    "Original process identity/pidfd and actual SO_PEERCRED comparisons.",
+    "No transferred Client/authority/Arc, no synthesized role response or receipt.",
+    "Per-control operation 5-second observation bounds and 64 KiB datagram limit.",
+    "1 MiB per-stream retained output prefix and real normal-zero/EOF requirement.",
+    "Original same-UID/PID production refusals, per-host connection/request limits and protocol deadlines."
+  ]
+}

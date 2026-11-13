@@ -1,0 +1,20 @@
+--- e4b140/lib.rs
++++ combined/lib.rs
+@@ -469,6 +469,8 @@
+ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandErrorV1;
+ #[cfg(target_os = "linux")]
+ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandOwnerV1;
++#[cfg(target_os = "linux")]
++pub use learning_iteration_evidence_client::OriginalCircuitSelectionLocalReadbackV1;
+ #[cfg(target_os = "linux")]
+ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandReceiptV1;
+ #[cfg(target_os = "linux")]
+@@ -891,6 +893,8 @@
+ pub use circuit_feature_current::OriginalCircuitLearningReadOwnerV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
++#[cfg(target_os = "linux")]
++pub use circuit_feature_current::OriginalCircuitPublishedLocalReadV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;
+ #[cfg(target_os = "linux")]

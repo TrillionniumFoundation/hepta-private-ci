@@ -1,0 +1,38 @@
+{
+  "format": "hepta-root-independent-three-uid-cleanup-cap-review-v1",
+  "status": "STATIC_SOURCE_REVIEW_ONLY",
+  "before": {
+    "git_blob": "318597fb680c4094e042c10ca368aa407f9942ca",
+    "bytes": 29874,
+    "sha256": "9d65825a713eba937e39b5df60cb06accae8e0880b37e9376a5527b7d9f949be"
+  },
+  "after": {
+    "git_blob": "4386c406afa55625f24bc96a3940b63e5d020804",
+    "bytes": 29918,
+    "sha256": "f0a5a94de0646c3bac1d60761c62bf3aabbafaf2bfe565b64213f0ee0d1c8a2b"
+  },
+  "provided_exact_change_record": "e84b20a8708b26f34f0af9ab31418b55f6f000da",
+  "independent_checks": {
+    "all_complete_source_hashes_match": true,
+    "one_unique_exact_replacement": true,
+    "whole_after_equals_replacement": true,
+    "inverse_restores_all_before_bytes": true
+  },
+  "finding": "Only ProcessDeadlines::cleanup_end changes. Capturing now and fixing min(now, shared join end) plus the original cleanup window prevents a delayed first failure from extending observation beyond the shared join-end plus that original window. The OnceLock preserves the first cleanup deadline across all children.",
+  "preserved": [
+    "Original three non-Root UIDs and credential/SO_PEERCRED checks",
+    "Original RUST_MIN_STACK=8388608",
+    "Original 5-second startup/join and cleanup constants",
+    "Original output caps and normal exit requirements",
+    "Only owned child kill/reap; signal delivery is not terminal completion",
+    "No production channel guard, lifetime, quota or permission changes"
+  ],
+  "limitations": [
+    "No Rust formatter, compiler, tests or H execution occurred.",
+    "This bounds the helper's waits, not arbitrary caller work between helper methods.",
+    "Missing terminal after the bounded cleanup remains Unknown; the source does not prove physical process exit at its deadline.",
+    "Previous source and all recovery history remain preserved."
+  ],
+  "host_calls": 0,
+  "source_ref_changed": false
+}

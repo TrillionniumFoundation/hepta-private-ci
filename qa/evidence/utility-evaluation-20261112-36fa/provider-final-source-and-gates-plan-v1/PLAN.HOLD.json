@@ -1,0 +1,824 @@
+{
+  "format": "hepta-provider-final-source-materialization-and-original-gates-hold-v1",
+  "status": "HOLD_UNCLOSED_SOURCE_GRAPH_AND_MATERIALS",
+  "purpose": "Offline preparation template for a future complete reviewed provider source. This is not a dispatch request, approved configuration, materialization proof or qualification result.",
+  "root_execution_approved": false,
+  "native_execution_authorized": false,
+  "host_requests_prepared": 0,
+  "host_requests_sent": 0,
+  "test_executions": 0,
+  "frozen_original_contract": {
+    "plan": {
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "bytes": 32246,
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native_driver": {
+      "bytes": 14986,
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    "source_gates_driver": {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    "native_wrapper_git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae1",
+    "isolated_admission_git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+    "maintenance_guard_git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "recorder_git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "junit_collector_git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+    "qualification_config_historical_only": {
+      "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+      "bytes": 11785,
+      "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f"
+    },
+    "controls_are_references_not_replayed_historical_inputs": true,
+    "materialization_object_scope": "Complete explicitly approved snapshots and authentic listed parent anchors; never claim complete ancestry from snapshot closure, never use fake shallow/grafts/replace refs."
+  },
+  "historical_cc57": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "parents": [
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "complete_physical_inventory": {
+      "file_count": 15188,
+      "bytes": 5611184,
+      "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+      "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537"
+    },
+    "native_compact_inventory": {
+      "bytes": 3530181,
+      "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+      "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53"
+    },
+    "source_gate_execution": {
+      "job_id": "1a1d23c92f3-2564-1cb4",
+      "handoff_result_git_blob": "d52e6d9a85fed924ea3b29fad1d22347d5732a34",
+      "run_result_git_blob": "0f5f9a8332255d4c7341b58207725254e4c34c76",
+      "supervisor_git_blob": "851a18c3063d40c1208b198d02bc875b052a83d7",
+      "root_full_review_git_blob": "baf33b5a6d80be56f09be5b5af86054ae53bac2b",
+      "scope": "Historical exact cc57 source only; do not transfer this PASS to any provider overlay."
+    },
+    "isolated_materialization_review_git_blob": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b",
+    "last_native_attempt": {
+      "job_id": "1a1d2e908ac-392-5a",
+      "result_git_blob": "b6a785c0194c2f65054a26e5815042010a22dad8",
+      "supervisor_git_blob": "cc3fe33203dbd831771d070e496397057095b05a",
+      "classification": "Known precondition failure: RUSTY_V8_ARCHIVE existing file required; zero behavioral tests. Keep original missing-before comparison Unknown."
+    },
+    "old_scene_preserved": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "isolated_cc57_scene_preserved": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+    "no_existing_source_index_or_refs_changed_by_this_plan": true
+  },
+  "live_readiness_not_established": {
+    "last_archive_readonly_observation": {
+      "job_id": "1a1d2f968fe-392-69",
+      "placement_git_blob": "20e5392b08b6bc4495b50c0c442949f8d15bb9a6",
+      "archive_status_at_that_observation": "ENOENT",
+      "binding_status_at_that_observation": "Exact original bytes observed"
+    },
+    "material_attempts": [
+      {
+        "job_id": "1a1d30d5606-392-80",
+        "placement_git_blob": "c0621bc1d15ded41feeb67eab9c1049bed85e153",
+        "result_git_blob": "4d3a1a0cba0924ab07357fc01d9015c31cf03197",
+        "status": "Known original global concurrency-guard refusal, no download/publication/native tests"
+      },
+      {
+        "job_id": "1a1d31ac7a1-392-86",
+        "placement_git_blob": "88a48d237834ff6dca6d28e2458727ab0eb47140",
+        "result_git_blob": "455d7c608b3e3224ffe54951859c18de4c77e467",
+        "status": "Known original global concurrency-guard refusal, no download/publication/native tests"
+      }
+    ],
+    "subsequent_archive_presence": null,
+    "subsequent_global_concurrency": null,
+    "third_material_attempt_authorized": false,
+    "native_retry_authorized": false,
+    "tool_transport": "Cloud environment unavailable at preparation; plan assembled from full immutable Git reads. No new host observation.",
+    "guard_policy": "Preserve original live same-UID build/formatter guard. Historical quiet samples and failed samples cannot grant current admission. Do not kill or alter unrelated jobs."
+  },
+  "pending_source": {
+    "baseline_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "final_overlay_manifest": null,
+    "full_pre_and_postimage_packet": null,
+    "final_changed_path_count": null,
+    "rust_path_count": null,
+    "final_source_tree": null,
+    "final_source_commit": null,
+    "final_source_parents": null,
+    "final_leaf_count": null,
+    "source_graph_review": null,
+    "original_owner_custody_review": null,
+    "protocol_failure_and_cancellation_review": null,
+    "final_callers_manifest": null,
+    "protected_body_literal_manifest": null,
+    "final_allowlist": null,
+    "complete_qa_attack_manifest": null,
+    "final_root_workflow_inventory": null,
+    "final_root_parent_names": null,
+    "exact_final_root_expression": null,
+    "actual_formatted_preimages_and_postimages": null,
+    "actual_final_format_result": null,
+    "actual_final_format_supervisor": null,
+    "actual_clean_materialization_result": null,
+    "actual_clean_materialization_supervisor": null,
+    "actual_new_raw_git_state": null,
+    "actual_complete_physical_inventory": null,
+    "actual_native_compact_inventory": null,
+    "actual_new_source_pass_result": null,
+    "actual_new_source_full_run_result": null,
+    "actual_new_source_supervisor": null,
+    "actual_new_native_result": null,
+    "actual_new_native_supervisor": null,
+    "scope_note": "No floating Rust count or preparation tree is treated as the final complete overlay. Additions/deletions and final leaf count must derive from the final complete reviewed tree, not from historical 15188."
+  },
+  "required_source_graph_closure": {
+    "placement": {
+      "root": 0,
+      "host_60001": [
+        "A",
+        "Material",
+        "Version",
+        "S",
+        "C"
+      ],
+      "host_60002": [
+        "Trainer",
+        "Model"
+      ],
+      "host_60003": [
+        "independent B/retention",
+        "E"
+      ]
+    },
+    "observed_runtime_placement": null,
+    "original_same_uid_and_same_pid_refusals_preserved": true,
+    "unresolved_at_plan_freeze": [
+      "Final same-host Version/Source readonly interface consumed by S/C",
+      "Final same-owner S readonly predecessor consumed by C",
+      "Complete Fresh process orchestration using actual role-owned channels and retained same C request",
+      "Complete review/registration of the final combined source rather than separate mechanism tests"
+    ],
+    "no_arc_client_or_authority_fd_cross_process": true,
+    "no_control_metadata_as_protocol_or_role_success": true,
+    "fixed_stack_bytes": 8388608,
+    "prepared_harness": {
+      "original_git_blob": "c269e4c7adfefb3853ea67ca46197af049dd4cbc",
+      "fixed_stack_git_blob": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66",
+      "three_uid_candidate_git_blob": "318597fb680c4094e042c10ca368aa407f9942ca",
+      "placement_git_blob": "c6a773d1d3925148c5bf846d8d491f1148a76cef",
+      "peer_review_complete": null,
+      "executed": false
+    },
+    "same_host_shared_readback_constraints": [
+      "Only the same actual Published/current source may supply a sealed readonly handle.",
+      "Fresh, Recovered, Installed and incomplete/current-loss failure windows remain explicit.",
+      "Attenuation permanently consumes Execute; never restores Fresh or recreates a channel.",
+      "Retain actual original nonce, request counter, 128 request limit, host connection limit and absolute deadline.",
+      "Retain original slot.take/None concurrency and cancellation uncertainty; no new queue or retry.",
+      "Old by-value and remote constructors remain intact; opaque readonly exports expose no raw Client/FD/Deref Execute/rebind or new signature."
+    ]
+  },
+  "preparation_sequence": [
+    {
+      "step": 1,
+      "name": "Freeze the complete reviewed source packet",
+      "requires": [
+        "All production/helper/test increments combined against cc57 with full before/after bytes/modes/SHA256/Git identities.",
+        "All old guards/assertions/source protections retained or explicitly reviewed exact changes.",
+        "Full graph, Fresh flow, same-source/C identity and failure/cancellation constraints reviewed.",
+        "Final CALLERS, protection and QA changes accounted for; future Root parent set determined from exact source."
+      ],
+      "actual_proof": null
+    },
+    {
+      "step": 2,
+      "name": "Prepare a new independent source directory",
+      "requires": [
+        "Exact source/object packet and a separate create-only materialization driver/config/request reviewed by Root.",
+        "Fresh absent destination; no modification of either preserved old scene.",
+        "Complete explicit object closure verified from real bodies, fresh standalone object store, no inherited refs/index flags/alternates/shallow/grafts.",
+        "Preserve expected original file modes/symlinks and use normal index stat entries.",
+        "Re-read all copied original bytes against their complete approved snapshot; only reviewed afterimages may differ.",
+        "Record normal terminal, actual complete physical/native inventories, raw Git/inputs and bounded source/donor audit."
+      ],
+      "budgets": {
+        "action_seconds": 600,
+        "retention_seconds": 180,
+        "outer_seconds": 900
+      },
+      "actual_proof": null
+    },
+    {
+      "step": 3,
+      "name": "Verify current original tools/materials and run approved scoped maintenance",
+      "requires": [
+        "Actual required archive/bindings/tool files, external UV/ruff environment, disk space and unchanged original live concurrency guard pass.",
+        "Historical runtime proof stays attached to its historical source path; separate current guard binds the actual fresh repo.",
+        "Original affected-package scope fixed from complete final source and AGENTS; no invented subset or extra tests.",
+        "Use original execute_logged fix and format entry points and retain actual source changes on failure."
+      ],
+      "budgets": {
+        "preflight_seconds": 600,
+        "fix_seconds": 7200,
+        "format_seconds": 900,
+        "records_seconds": 300,
+        "outer_seconds": 9300
+      },
+      "actual_argv_and_package_scope": null,
+      "actual_proof": null
+    },
+    {
+      "step": 4,
+      "name": "Bind source protection and QA to actual formatted bytes",
+      "requires": [
+        "Use the real source coordination lock: writers EX, actual read capture/extractor SH; no retroactive claim about unprotected history.",
+        "Complete final Rust/source inventory plus all actual protected bodies/literals and non-Rust preimages.",
+        "Integrate the full reviewed CALLERS/allowlist/QA/Root workflow inventory without dropping prior obligations or newly required attacks.",
+        "Any small offline diagnostics remain separate from real source/native qualification."
+      ],
+      "actual_proof": null
+    },
+    {
+      "step": 5,
+      "name": "Run one final original format after the last code integration",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "c0f78493f815780f68b9bf5e390a21314d79311f"
+      ],
+      "budgets": {
+        "preflight_and_apply_seconds": 600,
+        "format_seconds": 900,
+        "records_seconds": 300,
+        "outer_seconds": 2100
+      },
+      "requires": [
+        "Exact final non-Rust pre/post packet and final driver/launcher reviewed before execution.",
+        "No repeated fix or additional Cargo tests in this format step.",
+        "Retain actual raw formatter result/postimages and complete source/Git/inputs audit.",
+        "If any protected Rust/script bytes change, stop freeze and reconcile to those actual bytes; do not claim stale fences or silently repeat."
+      ],
+      "actual_proof": null
+    },
+    {
+      "step": 6,
+      "name": "Freeze authentic canonical source without replacing working bytes",
+      "requires": [
+        "Root creates the exact actual final tree/commit and authentic object packet after actual format success and review.",
+        "Under original EX/live guards verify every physical leaf exactly equals that canonical tree.",
+        "Import only verified exact objects, update index with normal stat, verify write-tree and detached HEAD CAS; preserve complete before/after raw Git audit.",
+        "No reset/checkout that overwrites source; preserve failure/partial state, no rollback.",
+        "Actual normal terminal and three complete source/Git/input audits before qualification."
+      ],
+      "budgets": {
+        "action_seconds": 600,
+        "retention_seconds": 180,
+        "outer_seconds": 900
+      },
+      "actual_proof": null
+    },
+    {
+      "step": 7,
+      "name": "Execute the complete final source-gates wrapper",
+      "requires": [
+        "Separate exact new request and current actual final canonical/input/env proofs approved.",
+        "Original 5118 independent shared/no-hardlinks clone, exact detach, readonly freeze and full inventories.",
+        "Run original source-closure600, self-test300, verify4800 with original per-gate stop rules; preserve all raw results and any failures.",
+        "Finish this complete wrapper and collect its own normal terminal, raw gate logs, clone/source/Git/input audits before native."
+      ],
+      "outer_seconds": 7200,
+      "actual_proof": null
+    },
+    {
+      "step": 8,
+      "name": "Execute original native qualification on the final source",
+      "requires": [
+        "Root separately reviews complete actual final source PASS evidence and exact native launch.",
+        "Use original native wrapper/b92/recorder/stack/filters/limits, preserving all fourteen phase contracts.",
+        "Evaluate complete unfiltered final eval lib and the four regressions; derive counts from fresh JUnit.",
+        "Then original focused b92, then all b92 ordinary five-crate full libraries followed by exact registered Root ignored parents.",
+        "Actual helper verification, source identity, fresh JUnit, cleanup and complete raw evidence are mandatory; no borrowed PASS or replaced failures."
+      ],
+      "outer_seconds": 45000,
+      "actual_proof": null
+    }
+  ],
+  "phase_catalog_is_not_execution_order": true,
+  "original_phase_catalog_projection": [
+    {
+      "id": "eval-lib",
+      "cwd": "${FINAL_REPO}/codex-rs",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--test-threads",
+        "2"
+      ],
+      "runner": "original scripts/hepta_ci_exec.py run",
+      "timeout_seconds": 3600,
+      "minimum_tests": 1,
+      "threads": 2,
+      "stop_rule": "Failure, missing/stale JUnit, wrong inventory or source change stops later native suites."
+    },
+    {
+      "id": "native-toolchain",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']];[subprocess.run(c,check=True) for c in commands]"
+      ],
+      "timeout_seconds": 120,
+      "minimum_tests": 0
+    },
+    {
+      "id": "helper-build",
+      "cwd": "${FINAL_REPO}",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers"
+      ],
+      "timeout_seconds": 3600,
+      "minimum_tests": 0,
+      "stop_rule": "Any incomplete helper or source mismatch stops tests."
+    },
+    {
+      "id": "helper-verify-before",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers",
+        "--verify-only"
+      ],
+      "timeout_seconds": 120,
+      "minimum_tests": 0
+    },
+    {
+      "id": "focused",
+      "cwd": "${FINAL_REPO}",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "-E",
+        "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "runner": "original CLI hepta_ci_exec.py --timeout-seconds 7200 --minimum-tests 1 --output ${RECORDS}/focused.json -- <command>",
+      "timeout_seconds": 7200,
+      "threads": 2,
+      "outer_driver_budget_seconds": 12000,
+      "driver_invocation": [
+        "python3",
+        "${PINNED_B92_DRIVER}",
+        "--repo",
+        "${FINAL_REPO}",
+        "--records",
+        "${FRESH_FOCUSED_RECORDS}",
+        "--source",
+        "${FINAL_HEAD}",
+        "--suite",
+        "focused"
+      ],
+      "filter_tokens_exact": [
+        "cell_q24_dataset::tests::",
+        "circuit_experience_intake::tests::",
+        "original_execution_owner_",
+        "neuron_cell_evaluation::tests::learning::",
+        "holdout_current_completed_execution_readback_requires_physical_original",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+      ],
+      "required_existing_case": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+      "stop_rule": "Nextest retains --no-fail-fast inside the selected suite. Any suite/collection/source failure stops the later all driver; no retries."
+    },
+    {
+      "id": "ordinary",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron",
+        "--lib",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "timeout_seconds": 7200,
+      "threads": 2,
+      "stop_rule": "Failure or missing coverage prevents Root setup/tests."
+    },
+    {
+      "id": "root-setup",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "root",
+      "command_payload": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "-E",
+        "${EXACT_FINAL_WORKFLOW_PARENT_EXPRESSION}",
+        "--test-threads",
+        "1",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "timeout_seconds": 7200,
+      "threads": 1,
+      "stop_rule": "Original collector must retain fresh JUnit and sorted non-skipped names must equal exact parents; default ignored skips never count. Cleanup and source audit remain mandatory on failure."
+    },
+    {
+      "id": "all-native-driver",
+      "outer_driver_budget_seconds": 21000,
+      "driver_invocation": [
+        "python3",
+        "${PINNED_B92_DRIVER}",
+        "--repo",
+        "${FINAL_REPO}",
+        "--records",
+        "${FRESH_ALL_RECORDS}",
+        "--source",
+        "${FINAL_HEAD}",
+        "--suite",
+        "all",
+        "--root-parent",
+        "${FRESH_DIRECT_RUN_CHILD}"
+      ]
+    },
+    {
+      "id": "helper-verify-after",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers",
+        "--verify-only"
+      ],
+      "timeout_seconds": 120,
+      "minimum_tests": 0,
+      "condition": "Original normal success path only; if an earlier stage failed this is not run, not implicitly passed."
+    },
+    {
+      "id": "root-cleanup",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "source-closure",
+      "command": [
+        "python3",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "${SOURCE_RECORDS}/source-closure/source-closure.json",
+        "--",
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "timeout_seconds": 600,
+      "minimum_tests": 1,
+      "stop_rule": "Known failure stays failed. In original 5118 independent caller self-test may still run if source unchanged; it does not cancel or turn closure failure into pass."
+    },
+    {
+      "id": "caller-self-test",
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "runner": "original execute_logged",
+      "timeout_seconds": 300,
+      "minimum_tests": 0,
+      "stop_rule": "Any nonzero returncode/timed_out/output_limit_exceeded prevents full verify."
+    },
+    {
+      "id": "caller-verify",
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "runner": "original execute_logged",
+      "timeout_seconds": 4800,
+      "minimum_tests": 0
+    }
+  ],
+  "phase_catalog_projection_sha256": "28cef1f52f2b3d0977e0adb4c1385c126b2ecef205b8576d34ba56470e229e27",
+  "scheduling": {
+    "complete_source_wrapper_before_any_native": true,
+    "source_gate_order": [
+      "source-closure600",
+      "independent self-test300 if source unchanged",
+      "verify4800 only after self-test passed"
+    ],
+    "native_order": [
+      "eval-lib",
+      "focused b92 driver",
+      "all b92 driver: ordinary then Root"
+    ],
+    "source_outer_seconds": 7200,
+    "native_outer_seconds": 45000,
+    "no_auto_retry_or_new_key": true,
+    "unknown_admission": "Reconcile only the same exact original request/key; preserve all transport observations; never infer absent effects."
+  },
+  "test_inventory_contract": {
+    "eval_full_library": true,
+    "required_four_eval_names": [
+      "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+      "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+      "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+      "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+    ],
+    "historical_eval_163_is_not_target_filter_ceiling_or_required_count": true,
+    "original_focused_filter_tokens": [
+      "cell_q24_dataset::tests::",
+      "circuit_experience_intake::tests::",
+      "original_execution_owner_",
+      "neuron_cell_evaluation::tests::learning::",
+      "holdout_current_completed_execution_readback_requires_physical_original",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+    ],
+    "original_ordinary_scope": "All library tests in the exact five existing workflow packages; not the full Rust workspace.",
+    "original_root_names_reference": {
+      "plan_git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "selector": "phases[id=root].prepared_parent_names",
+      "historical_count": 33,
+      "policy": "Retain all existing parents and add the exact required reviewed new ignored parents; derive final names from final workflow/source. Do not force the final count back to 33."
+    },
+    "exec_children_are_only_started_by_parent_and_not_extra_independent_root_cases": true,
+    "stack_bytes": 8388608,
+    "nextest_profile": "local",
+    "preserve_all_original_nextest_overrides": true,
+    "duration_note": "Original default test behavior and existing durable-ledger/capacity 180/600-second overrides remain unchanged; do not describe all ordinary cases as uniformly 60 seconds.",
+    "full_fresh_and_ten_owner_success_requires_actual_original_receipts": true
+  },
+  "runtime_guard": {
+    "original_nine_field_projection": {
+      "create_target_if_absent": false,
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_HOME": "/home/qian-qi/.cargo",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TARGET_DIR": "/data/hepta-utility-36fa-final-native-target-v1",
+        "PATH": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin:/home/qian-qi/hepta-learn-037c-tools/nextest-0.9.103-e999c122:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "RUFF_CACHE_DIR": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/ruff-cache",
+        "RUSTUP_HOME": "/home/qian-qi/.rustup",
+        "RUSTUP_TOOLCHAIN": "1.96.0",
+        "RUSTY_V8_ARCHIVE": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "UV_CACHE_DIR": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/uv-cache",
+        "UV_OFFLINE": "true",
+        "UV_PROJECT_ENVIRONMENT": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment",
+        "UV_PYTHON_DOWNLOADS": "never"
+      },
+      "formatter_tool_files": {
+        "python": {
+          "bytes": 8020928,
+          "mode": 493,
+          "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/python",
+          "resolved": "/usr/bin/python3.12",
+          "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+        },
+        "ruff": {
+          "bytes": 27849024,
+          "mode": 457,
+          "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/ruff",
+          "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/ruff",
+          "sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97"
+        }
+      },
+      "inherited_source_environment": {
+        "CODEX_REPO_ROOT": null,
+        "PYTHONPATH": null
+      },
+      "minimum_target_free_bytes": 34359738368,
+      "runtime_restoration": {
+        "environment": {
+          "bytes": 21724,
+          "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+          "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+        },
+        "environment_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+        "job_id": "1a1d0fcb212-2564-1bf4",
+        "result": {
+          "bytes": 21366,
+          "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+          "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+        },
+        "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json",
+        "supervisor": {
+          "bytes": 954,
+          "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+          "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+        },
+        "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json"
+      },
+      "tool_files": {
+        "cargo": {
+          "bytes": 21139856,
+          "mode": 493,
+          "path": "/home/qian-qi/.cargo/bin/cargo",
+          "resolved": "/home/qian-qi/.cargo/bin/rustup",
+          "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+        },
+        "git": {
+          "bytes": 4066232,
+          "mode": 493,
+          "path": "/usr/bin/git",
+          "resolved": "/usr/bin/git",
+          "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201"
+        },
+        "just": {
+          "bytes": 5347728,
+          "mode": 509,
+          "path": "/home/qian-qi/.cargo/bin/just",
+          "resolved": "/home/qian-qi/.cargo/bin/just",
+          "sha256": "b73359690704c2aaa0cdfb5b262e6fbf819a8be8cdea2d87565dd441dc7b3f8d"
+        },
+        "python3": {
+          "bytes": 8020928,
+          "mode": 493,
+          "path": "/usr/bin/python3",
+          "resolved": "/usr/bin/python3.12",
+          "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+        },
+        "rustup": {
+          "bytes": 21139856,
+          "mode": 493,
+          "path": "/home/qian-qi/.cargo/bin/rustup",
+          "resolved": "/home/qian-qi/.cargo/bin/rustup",
+          "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+        },
+        "uv": {
+          "bytes": 59258456,
+          "mode": 448,
+          "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+          "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+          "sha256": "fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438"
+        }
+      },
+      "tool_identity_projection": [
+        "path",
+        "resolved",
+        "bytes",
+        "sha256",
+        "mode"
+      ],
+      "v8_files": {
+        "RUSTY_V8_ARCHIVE": {
+          "bytes": 29366352,
+          "mode": 384,
+          "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+          "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+          "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+        },
+        "RUSTY_V8_SRC_BINDING_PATH": {
+          "bytes": 39884,
+          "mode": 384,
+          "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+          "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+          "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+        }
+      }
+    },
+    "projection_origin_git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+    "target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "create_target_if_absent": false,
+    "minimum_free_bytes": 34359738368,
+    "new_live_observation": null,
+    "source_binding_policy": "Keep unmodified V5 historical guard validation of original runtime-restoration SEED/source_repo. A separate current guard must bind the new actual repo/full inventory/raw Git/no refs/materialization. Never rewrite historical proofs or compare new raw index with old copied index stat.",
+    "inherited_source_environment_policy": "Reobserve CODEX_REPO_ROOT/PYTHONPATH safely. Historical null values are evidence only; native wrapper explicitly binds the approved current repo and scripts path.",
+    "missing_material_policy": "No third restore or native retry is authorized by this plan. A future exact material action, if needed, requires separate concrete review; no fallback version/path or budget."
+  },
+  "candidate_execution_bindings": {
+    "new_native_repo": null,
+    "new_source_clone": null,
+    "new_control_directory": null,
+    "new_records_directory": null,
+    "new_root_parent": null,
+    "source_request": null,
+    "source_idempotency_key": null,
+    "native_request": null,
+    "native_idempotency_key": null,
+    "current_coordination_lock_identity": null,
+    "actual_material_readiness": null,
+    "actual_live_environment": null,
+    "actual_tool_files": null,
+    "frozen_config": null,
+    "exact_launch_review": null,
+    "source_job_id": null,
+    "native_job_id": null,
+    "all_required_actual_fields_must_be_set_from_original_observations": true
+  },
+  "evidence_contract": {
+    "originals": [
+      "Exact frozen source/control/input packets and actual launch request bytes",
+      "Actual admission and normal supervisor, including transport failures/reconciliation",
+      "All original command argv/env projection, start/end, complete raw stdout/stderr and original receipts",
+      "Fresh JUnit, parsed coverage and non-skipped exact names",
+      "Before/after complete physical inventory and native compact inventory as separate scopes",
+      "Independent clone freeze/actual inventory, source raw Git/no-refs/input equality",
+      "All actual maintenance and final-format source pre/postimages, including failures/partial mutation",
+      "Real tool/material identities and original bounded helper/Root cleanup records"
+    ],
+    "never_reclassify": "Preserve every old FAILED/Unknown window and its exact scope. Precondition failure with zero behavioral tests is not a behavioral test result; a transport error is not a test timeout. Material success alone is not qualification.",
+    "exact_reconstruction": "A deterministic reconstruction may reduce transfer only if raw size/SHA256/Git plus required compressed/part identities match actual original observation; identify it as reconstruction, not a second native read.",
+    "publication": "Root alone manages canonical source refs/PR and evidence checkpoint publication. This template moves no refs and authorizes no execution."
+  },
+  "blockers_to_execution": [
+    "Final combined production/Fresh process graph not frozen",
+    "Final Root parent inventory and CALLERS/protection/QA packet not frozen",
+    "No actual formatted complete provider source/canonical materialization",
+    "Current required archive availability and live concurrency not established",
+    "No exact new source-gate request or complete new-source PASS",
+    "No Root exact native approval for this future source"
+  ],
+  "no_source_mutations": true,
+  "no_host_calls": true,
+  "not_a_qualification_result": true
+}

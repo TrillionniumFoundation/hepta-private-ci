@@ -1,0 +1,35 @@
+{
+  "format": "hepta-full-tree-independent-verification-v1",
+  "source_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "evidence_parent": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+  "final_root": "1fa90c1bde17c69ba68594a967e4b879afcc61d0",
+  "final_leaf": "8f248caecd1aefaae9527743d5ac3c0c83121c63",
+  "files": 4368,
+  "directory_trees_including_leaf": 605,
+  "all_paths_modes_and_blobs_equal": true,
+  "all_605_directory_merkle_hashes_equal": true,
+  "ancestor_updates": [
+    {
+      "name": "evidence",
+      "previous": "7c16555df9cc1f9987e02b49105e73559bb3caf5",
+      "sha": "1c02eb7a06eb63efe3f1810dc1465cf8815f9980",
+      "only_replaced_entry": "utility-evaluation-20261112-36fa",
+      "actual_full_read_equal": true
+    },
+    {
+      "name": "qa",
+      "previous": "0f194409657dcc28ce18f3b4c54f4cfbe284349c",
+      "sha": "e7dc1541162465e92ff6c989d64e4b1f5a31b054",
+      "only_replaced_entry": "evidence",
+      "actual_full_read_equal": true
+    },
+    {
+      "name": "root",
+      "previous": "016b1d22e42141612b4453516688d206fac0c673",
+      "sha": "1fa90c1bde17c69ba68594a967e4b879afcc61d0",
+      "only_replaced_entry": "qa",
+      "actual_full_read_equal": true
+    }
+  ],
+  "refs_changed": false
+}

@@ -1,0 +1,839 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs
+@@ -0,0 +1,79 @@
++//! Bind completion readiness to the same sealed local C capability.
++//! The original Material/D/S checks remain mandatory. This creates no
++//! connection, permit, request counter or new lifetime.
++
++use std::sync::Mutex;
++
++use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
++
++use super::super::OriginalCircuitEvaluatedLearningReadContextV1;
++use super::super::OriginalCircuitLearningReadClientV1;
++use super::super::profile::ReadProfile;
++use super::Error;
++use super::OriginalCircuitCompletionReadinessClientV1;
++use super::now;
++use super::original;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++
++impl OriginalCircuitCompletionReadinessClientV1 {
++    pub(crate) fn bind_original_evaluated_local_read(
++        client: &OriginalCircuitLearningReadClientV1,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<Self, Error> {
++        OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(
++            client, selection,
++        )?;
++        let (scope, verifier, _) = selection.original_context().receipt_configuration();
++        if scope != material.scope
++            || verifier.trust_digest() != material.verifier.trust_digest()
++            || verifier.scope_digest() != material.verifier.scope_digest()
++            || verifier.objective_digest() != material.verifier.objective_digest()
++        {
++            return Err(Error::Binding("same original evaluated Material readiness context"));
++        }
++        let context = ReadProfile::Evaluated(
++            OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(
++                selection.clone(),
++            )?,
++        );
++        let started_at = now()?;
++        let binding = context.binding(started_at)?;
++        if context.mode()? != original::Mode::NextUse {
++            return Err(Error::Binding("local readiness requires original Selection"));
++        }
++        let initial = LearningIterationCoordinatorV1::new(
++            context.prefix().request.clone(),
++            context.prefix().owners.clone(),
++        )?;
++        let mut original_dataset = context.prefix().clone();
++        original_dataset.head_digest = original_dataset.receipts[2].predecessor;
++        original_dataset.receipts.truncate(2);
++        if initial.snapshot() != &material.initial || &original_dataset != dataset.snapshot() {
++            return Err(Error::Binding("same initial and original Dataset before readiness"));
++        }
++        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
++            dataset, material,
++        )
++        .map_err(|_| Error::Binding("same original Material readiness context"))?;
++        if fresh < started_at || context.binding(fresh)? != binding {
++            return Err(Error::Binding("original readiness binding and clock"));
++        }
++        OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(
++            client, selection,
++        )?;
++        let local = client.local.as_ref()
++            .ok_or(Error::Binding("same local NextUse readiness capability"))?
++            .clone();
++        Ok(Self {
++            context,
++            binding,
++            channel: Mutex::new(None),
++            retained: Mutex::new(None),
++            local: Some(local),
++        })
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
+@@ -27,6 +27,7 @@
+         binding,
+         channel,
+         retained,
++        local,
+     } = original;
+     Ok((
+         OriginalCircuitCompletionReadinessClientV1 {
+@@ -34,6 +35,7 @@
+             binding,
+             channel,
+             retained,
++            local,
+         },
+         server,
+     ))
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs
+@@ -20,6 +20,7 @@
+         binding,
+         channel,
+         retained,
++        local,
+     } = original;
+     Ok((
+         OriginalCircuitCompletionReadinessClientV1 {
+@@ -27,6 +28,7 @@
+             binding,
+             channel,
+             retained,
++            local,
+         },
+         server,
+     ))
+--- a/codex-rs/hepta-agentd/src/circuit_feature_current.rs
++++ b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+@@ -56,6 +56,7 @@
+ pub use learning_read::OriginalCircuitLearningReadErrorV1;
+ pub use learning_read::OriginalCircuitLearningReadOwnerV1;
+ pub use learning_read::OriginalCircuitLearningReadbackV1;
++pub use learning_read::OriginalCircuitPublishedLocalReadV1;
+ #[cfg(test)]
+ pub(crate) use learning_read::fixture as original_learning_read_fixture;
+ pub use owner::PublishedCircuitCellOwnerV1;
+--- a/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs
+@@ -14,6 +14,7 @@
+ use super::OriginalCircuitEvaluatedLearningReadContextV1;
+ use super::OriginalCircuitLearningReadContextV1 as Context;
+ use super::OriginalCircuitLearningReadbackV1 as Readback;
++use super::OriginalCircuitPublishedLocalReadV1;
+ use super::now;
+ use super::profile::ReadProfile;
+ use super::wire as original;
+@@ -124,6 +125,7 @@
+     binding: Digest32,
+     channel: Mutex<Option<Channel>>,
+     retained: Mutex<Option<Readback>>,
++    local: Option<OriginalCircuitPublishedLocalReadV1>,
+ }
+ 
+ impl OriginalCircuitCompletionReadinessClientV1 {
+@@ -211,12 +213,16 @@
+                 next_request_id: 1,
+             })),
+             retained: Mutex::new(None),
++            local: None,
+         })
+     }
+ 
+     /// Each poll reads the original task host. Only an authenticated NotReady
+     /// reply retains the connection; every uncertain/invalid exchange consumes it.
+     pub(crate) async fn read_current(&self) -> Result<Option<Readback>, Error> {
++        if let Some(local) = &self.local {
++            return OriginalCircuitPublishedLocalReadV1::read_completion_readiness(local).await;
++        }
+         let mut channel = self
+             .channel
+             .try_lock()
+@@ -278,3 +284,6 @@
+ #[cfg(test)]
+ #[path = "circuit_evaluated_completion_readiness_support_tests.rs"]
+ pub(crate) mod evaluated_fixture;
++
++#[path = "circuit_completion_readiness_local.rs"]
++mod local;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -0,0 +1,270 @@
++//! The private local backend of the original purpose-fixed read client.
++//! It retains one concrete Version binding. There is no local peer/socket
++//! substitute, callback, receipt deserializer or owner getter.
++
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::time::Instant;
++
++use codex_hepta_types::Digest32;
++
++use super::super::retained_publication::version::OriginalVersionLocalReadBindingV1;
++use super::Error;
++use super::OriginalCircuitEvaluatedLearningReadContextV1;
++use super::OriginalCircuitLearningReadClientV1;
++use super::OriginalCircuitLearningReadbackV1 as Readback;
++use super::now;
++use super::profile::ReadProfile;
++use super::readiness;
++use super::wire;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++
++struct OriginalLocalReadSlot {
++    next_request_id: u64,
++    retained: Option<Readback>,
++}
++
++struct OriginalLocalReadState {
++    original: OriginalVersionLocalReadBindingV1,
++    context: ReadProfile,
++    binding: Digest32,
++    slot: Mutex<Option<OriginalLocalReadSlot>>,
++}
++
++/// A sealed same-host capability created by an actual published Version.
++/// Cloning retains the same permit, absolute end, counter and terminal slot.
++pub struct OriginalCircuitPublishedLocalReadV1 {
++    original: Arc<OriginalLocalReadState>,
++}
++
++impl Clone for OriginalCircuitPublishedLocalReadV1 {
++    fn clone(&self) -> Self {
++        Self {
++            original: Arc::clone(&self.original),
++        }
++    }
++}
++
++#[derive(Clone, Copy)]
++enum LocalReadOperation {
++    Readback,
++    CompletionReadiness,
++}
++
++impl OriginalCircuitPublishedLocalReadV1 {
++    pub(crate) fn from_original_version(
++        original: OriginalVersionLocalReadBindingV1,
++    ) -> Result<Self, Error> {
++        if Instant::now() >= original.original_end() {
++            return Err(Error::Unavailable);
++        }
++        let context = ReadProfile::Evaluated(original.original_context());
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            original: Arc::new(OriginalLocalReadState {
++                original,
++                context,
++                binding,
++                slot: Mutex::new(Some(OriginalLocalReadSlot {
++                    next_request_id: 1,
++                    retained: None,
++                })),
++            }),
++        })
++    }
++
++    fn require_original_selection(
++        &self,
++        expected: &OriginalCircuitEvaluatedRetentionContextV1,
++    ) -> Result<Instant, Error> {
++        self.require_original_window()?;
++        let ReadProfile::Evaluated(context) = &self.original.context else {
++            return Err(Error::Binding("local evaluated Selection profile"));
++        };
++        context.require_original_selection(expected)?;
++        Ok(self.original.original.original_end())
++    }
++
++    fn require_original_next_use(
++        &self,
++        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<Instant, Error> {
++        self.require_original_window()?;
++        let ReadProfile::Evaluated(context) = &self.original.context else {
++            return Err(Error::Binding("local evaluated NextUse profile"));
++        };
++        context.require_original_next_use(expected)?;
++        Ok(self.original.original.original_end())
++    }
++
++    fn require_original_window(&self) -> Result<(), Error> {
++        if Instant::now() >= self.original.original.original_end()
++            || self.original.context.binding(now()?)? != self.original.binding
++        {
++            return Err(Error::Unavailable);
++        }
++        Ok(())
++    }
++
++    pub(crate) async fn read_current(&self) -> Result<Readback, Error> {
++        self.read_original(LocalReadOperation::Readback)
++            .await?
++            .ok_or(Error::Binding("original local readback is not pending"))
++    }
++
++    pub(crate) async fn read_completion_readiness(&self) -> Result<Option<Readback>, Error> {
++        if self.original.context.mode()? != wire::Mode::NextUse {
++            return Err(Error::Binding("local readiness requires original NextUse"));
++        }
++        self.read_original(LocalReadOperation::CompletionReadiness).await
++    }
++
++    async fn read_original(
++        &self,
++        operation: LocalReadOperation,
++    ) -> Result<Option<Readback>, Error> {
++        // Taking the one slot precedes all fallible work. Only this awaiting
++        // call can return it. Cancellation, error or timeout leaves it empty;
++        // a detached blocking response can never repair or replenish it.
++        let mut slot = self.original.slot.try_lock()
++            .map_err(|_| Error::Unavailable)?
++            .take()
++            .ok_or(Error::Unavailable)?;
++        self.require_original_window()?;
++        if !(1..=128).contains(&slot.next_request_id) {
++            return Err(Error::Unavailable);
++        }
++        let started_at = now()?;
++        let started = Instant::now();
++        let deadline = started
++            .checked_add(self.original.original.original_timeout())
++            .ok_or(Error::Unavailable)?
++            .min(self.original.original.original_end());
++        if started >= deadline {
++            return Err(Error::Unavailable);
++        }
++        let request_id = slot.next_request_id;
++        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
++        let request = self.original.context.request(self.original.binding, request_id)?;
++        let bytes = match operation {
++            LocalReadOperation::Readback => serde_json::to_vec(&request)?,
++            LocalReadOperation::CompletionReadiness => serde_json::to_vec(
++                &readiness::Request::from_profile(
++                    &self.original.context, self.original.binding, request_id,
++                )?,
++            )?,
++        };
++        let original = Arc::clone(&self.original);
++        let worker = tokio::task::spawn_blocking(move || {
++            original.original.respond(
++                matches!(operation, LocalReadOperation::CompletionReadiness),
++                &bytes,
++                request_id,
++            )
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++        });
++        let response = tokio::time::timeout_at(
++            tokio::time::Instant::from_std(deadline), worker,
++        )
++        .await
++        .map_err(|_| Error::Unavailable)?
++        .map_err(|_| Error::Unavailable)??;
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        let current = match operation {
++            LocalReadOperation::Readback => {
++                let response: wire::Response = serde_json::from_slice(&response)?;
++                response.require_request(&request)?;
++                Some(self.original.context.decode(response.read)?)
++            }
++            LocalReadOperation::CompletionReadiness => {
++                let response: readiness::Response = serde_json::from_slice(&response)?;
++                response.request.require_profile(
++                    &self.original.context, self.original.binding, request_id,
++                )?;
++                match response.result {
++                    readiness::Readiness::NotReady => None,
++                    readiness::Readiness::Ready { read } => {
++                        Some(self.original.context.decode(read)?)
++                    }
++                }
++            }
++        };
++        let fresh = now()?;
++        if fresh < started_at
++            || self.original.context.binding(fresh)? != self.original.binding
++            || Instant::now() >= deadline
++        {
++            return Err(Error::Binding("original local read window after owner I/O"));
++        }
++        if slot.retained.as_ref().is_some_and(|prior| current.as_ref() != Some(prior)) {
++            return Err(Error::Binding("original local read cannot change or become pending"));
++        }
++        if let Some(read) = &current {
++            slot.retained = Some(read.clone());
++        }
++        self.require_original_window()?;
++        *self.original.slot.try_lock().map_err(|_| Error::Unavailable)? = Some(slot);
++        Ok(current)
++    }
++}
++
++impl OriginalCircuitLearningReadClientV1 {
++    pub fn from_original_evaluated_local_selection(
++        local: OriginalCircuitPublishedLocalReadV1,
++        context: OriginalCircuitEvaluatedRetentionContextV1,
++    ) -> Result<Self, Error> {
++        local.require_original_selection(&context)?;
++        let context =
++            OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(context)?;
++        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))
++    }
++
++    pub fn from_original_evaluated_local_next_use(
++        local: OriginalCircuitPublishedLocalReadV1,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<Self, Error> {
++        local.require_original_next_use(&selection)?;
++        let context =
++            OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection)?;
++        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))
++    }
++
++    fn from_original_local_profile(
++        local: OriginalCircuitPublishedLocalReadV1,
++        context: ReadProfile,
++    ) -> Result<Self, Error> {
++        let binding = context.binding(now()?)?;
++        if binding != local.original.binding {
++            return Err(Error::Binding("same original local read binding"));
++        }
++        local.require_original_window()?;
++        Ok(Self {
++            context,
++            binding,
++            channel: Mutex::new(None),
++            retained: Mutex::new(None),
++            local: Some(local),
++        })
++    }
++
++    pub(crate) fn require_original_local_evaluated_selection(
++        &self,
++        expected: &OriginalCircuitEvaluatedRetentionContextV1,
++    ) -> Result<Instant, Error> {
++        self.require_original_evaluated_selection(expected)?;
++        self.local.as_ref().ok_or(Error::Binding("local Selection capability required"))?
++            .require_original_selection(expected)
++    }
++
++    pub(crate) fn require_original_local_evaluated_next_use(
++        &self,
++        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<Instant, Error> {
++        self.require_original_evaluated_next_use(expected)?;
++        self.local.as_ref().ok_or(Error::Binding("local NextUse capability required"))?
++            .require_original_next_use(expected)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs
+@@ -33,6 +33,10 @@
+ #[path = "circuit_learning_read_profile.rs"]
+ mod profile;
+ use profile::ReadProfile;
++
++#[path = "circuit_learning_local_read.rs"]
++mod local;
++pub use local::OriginalCircuitPublishedLocalReadV1;
+ 
+ #[path = "circuit_learning_completion_readiness.rs"]
+ mod readiness;
+@@ -109,6 +113,7 @@
+     binding: Digest32,
+     channel: Mutex<Option<Channel>>,
+     retained: Mutex<Option<OriginalCircuitLearningReadbackV1>>,
++    local: Option<OriginalCircuitPublishedLocalReadV1>,
+ }
+ 
+ impl OriginalCircuitLearningReadClientV1 {
+@@ -164,12 +169,16 @@
+                 next_request_id: 1,
+             })),
+             retained: Mutex::new(None),
++            local: None,
+         })
+     }
+ 
+     /// Each invocation performs original owner I/O. Failed or cancelled reads
+     /// consume this connection. A historical successful read cannot satisfy it.
+     pub async fn read_current(&self) -> Result<OriginalCircuitLearningReadbackV1, Error> {
++        if let Some(local) = &self.local {
++            return OriginalCircuitPublishedLocalReadV1::read_current(local).await;
++        }
+         let mut channel = self
+             .channel
+             .try_lock()
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
+@@ -160,6 +160,24 @@
+             }
+         }
+         Err(Error::Unavailable)
++    }
++
++    /// One Selection response for the concrete local Version lane. The
++    /// Version brackets this actual original read with its full current checks.
++    pub(crate) fn original_evaluated_selection_response(
++        &self,
++        expected: &crate::OriginalCircuitEvaluatedRetentionContextV1,
++        bytes: &[u8],
++        request_id: u64,
++    ) -> Result<Vec<u8>, Error> {
++        let ReadProfile::Evaluated(context) = &self.context else {
++            return Err(Error::Binding("local evaluated Selection-only read purpose"));
++        };
++        if self.context.mode()? != wire::Mode::Selection {
++            return Err(Error::Binding("local evaluated Selection-only read purpose"));
++        }
++        context.require_original_selection(expected)?;
++        self.response(bytes, request_id)
+     }
+ 
+     /// One readonly response for the original Version's five-cut C reader.
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs
+@@ -106,6 +106,7 @@
+                 next_request_id: 1,
+             })),
+             retained: Mutex::new(None),
++            local: None,
+         },
+         channel(server)?,
+     ))
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+@@ -58,6 +58,9 @@
+ 
+ #[path = "circuit_retained_version_next_use_readback.rs"]
+ mod next_use_readback;
++#[path = "circuit_retained_version_local_read.rs"]
++mod local_read;
++pub(crate) use local_read::OriginalVersionLocalReadBindingV1;
+ 
+ #[path = "circuit_retained_version_prepared.rs"]
+ mod prepared_custody;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
+@@ -0,0 +1,256 @@
++//! Fixed-purpose local reads of the original published Version.
++//! The binding is constructed only here from the same retained owners. It
++//! holds one original Version permit; readiness does not open another lane.
++
++use std::sync::Arc;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use tokio::sync::OwnedSemaphorePermit;
++
++use super::super::super::context::PublicationAccess;
++use super::super::Error;
++use super::super::RetainedVersionOriginV1;
++use super::super::RetainedVersionPurposeV1;
++use super::next_use_readback::NextUseReadPurpose;
++use super::OriginalCircuitRetainedVersionHostV1;
++use super::RetainedVersionFinalUseOutcomeV1;
++use crate::OriginalCircuitEvaluatedLearningReadContextV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++use crate::OriginalCircuitLearningReadOwnerV1;
++use crate::OriginalCircuitPublishedLocalReadV1;
++
++type OriginalLocalReader =
++    OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++
++/// Crate-private transport binding, with no public constructor or owner
++/// access. The same concrete Version remains responsible for every response.
++pub(crate) struct OriginalVersionLocalReadBindingV1 {
++    version: Arc<OriginalCircuitRetainedVersionHostV1>,
++    reader: Arc<OriginalLocalReader>,
++    selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++    context: OriginalCircuitEvaluatedLearningReadContextV1,
++    _permit: OwnedSemaphorePermit,
++    timeout: Duration,
++    end: Instant,
++}
++
++impl OriginalVersionLocalReadBindingV1 {
++    pub(crate) fn original_context(&self) -> OriginalCircuitEvaluatedLearningReadContextV1 {
++        self.context.clone()
++    }
++
++    pub(crate) fn original_end(&self) -> Instant {
++        self.end
++    }
++
++    pub(crate) fn original_timeout(&self) -> Duration {
++        self.timeout
++    }
++
++    pub(crate) fn respond(
++        &self,
++        readiness: bool,
++        bytes: &[u8],
++        request_id: u64,
++    ) -> Result<Vec<u8>, Error> {
++        if Instant::now() >= self.end || !(1..=128).contains(&request_id) {
++            return Err(Error::Unavailable);
++        }
++        let response = match &self.selection {
++            Some(selection) => self.version.original_evaluated_next_use_response(
++                selection,
++                self.reader.as_ref(),
++                if readiness {
++                    &NextUseReadPurpose::CompletionReadiness
++                } else {
++                    &NextUseReadPurpose::Readback
++                },
++                bytes,
++                request_id,
++            )?,
++            None => {
++                if readiness {
++                    return Err(Error::Binding("local Selection is not completion readiness"));
++                }
++                self.version.original_evaluated_local_selection_response(
++                    self.reader.as_ref(), bytes, request_id,
++                )?
++            }
++        };
++        if Instant::now() >= self.end {
++            return Err(Error::Unavailable);
++        }
++        Ok(response)
++    }
++}
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    /// A four-cut local Selection reader. It can only read the same actual
++    /// publication; it cannot publish, start C, or issue an S receipt.
++    pub async fn open_original_evaluated_selection_local_read(
++        self: Arc<Self>,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<OriginalCircuitPublishedLocalReadV1, Error> {
++        self.open_original_evaluated_local_read(None, timeout, lifetime).await
++    }
++
++    /// A five-cut reader fixed by the original opaque S. Its readback and
++    /// readiness aliases share this one permit, request budget and deadline.
++    pub async fn open_original_evaluated_next_use_local_read(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<OriginalCircuitPublishedLocalReadV1, Error> {
++        self.open_original_evaluated_local_read(Some(selection), timeout, lifetime).await
++    }
++
++    async fn open_original_evaluated_local_read(
++        self: Arc<Self>,
++        selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<OriginalCircuitPublishedLocalReadV1, Error> {
++        if timeout.is_zero()
++            || timeout > Duration::from_millis(500)
++            || lifetime.is_zero()
++            || lifetime > Duration::from_secs(300)
++        {
++            return Err(Error::Binding("bounded original local Version read"));
++        }
++        let started = Instant::now();
++        let end = started.checked_add(lifetime).ok_or(Error::Clock)?.min(self.end);
++        let admission_end = started.checked_add(timeout).ok_or(Error::Clock)?.min(end);
++        self.require_lifetime()?;
++        let permit = Arc::clone(&self.connections)
++            .try_acquire_owned()
++            .map_err(|_| Error::Busy)?;
++        let worker = tokio::task::spawn_blocking(move || {
++            self.bind_original_evaluated_local_read(selection, timeout, end, permit)
++        });
++        let bound = tokio::time::timeout_at(
++            tokio::time::Instant::from_std(admission_end), worker,
++        )
++        .await
++        .map_err(|_| Error::Unavailable)?
++        .map_err(|_| Error::CommitUncertain)??;
++        if Instant::now() >= admission_end {
++            return Err(Error::Unavailable);
++        }
++        OriginalCircuitPublishedLocalReadV1::from_original_version(bound)
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++    }
++
++    fn bind_original_evaluated_local_read(
++        self: Arc<Self>,
++        selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++        timeout: Duration,
++        end: Instant,
++        permit: OwnedSemaphorePermit,
++    ) -> Result<OriginalVersionLocalReadBindingV1, Error> {
++        self.require_lifetime()?;
++        if Instant::now() >= end
++            || self.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++            || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        let (reader, context) = match &selection {
++            Some(selection) => {
++                let reader = self.build_original_evaluated_next_use_reader(selection.clone())?;
++                let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(
++                    selection.clone(),
++                )
++                .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++                (Arc::new(reader), context)
++            }
++            None => {
++                let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
++                if let Err(error) = self.bind_original_predecessor(&mut state) {
++                    if self.origin == RetainedVersionOriginV1::Recovered {
++                        state.selection_reader = None;
++                    }
++                    return Err(error);
++                }
++                let before = if self.origin == RetainedVersionOriginV1::Recovered {
++                    self.read_original_recovery(&mut state)?
++                } else {
++                    self.read_original(&state)?
++                };
++                if before.publication().is_none() {
++                    return Err(Error::ReadbackRequired);
++                }
++                let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++                let evaluated = cut.evaluated.as_ref().ok_or(Error::ReadbackRequired)?;
++                let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(
++                    evaluated.clone_for_original_receipt(),
++                )
++                .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++                let reader = Arc::clone(
++                    state.selection_reader.as_ref().ok_or(Error::ReadbackRequired)?,
++                );
++                let after = self.read_original(&state)?;
++                if before != after || after.publication().is_none() {
++                    return Err(Error::CommitUncertain);
++                }
++                cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++                (reader, context)
++            }
++        };
++        self.require_lifetime()?;
++        if Instant::now() >= end
++            || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        Ok(OriginalVersionLocalReadBindingV1 {
++            version: self,
++            reader,
++            selection,
++            context,
++            _permit: permit,
++            timeout,
++            end,
++        })
++    }
++
++    fn original_evaluated_local_selection_response(
++        &self,
++        reader: &OriginalLocalReader,
++        bytes: &[u8],
++        request_id: u64,
++    ) -> Result<Vec<u8>, Error> {
++        self.require_lifetime()?;
++        if self.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++            || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++        let before = self.read_original(&state)?;
++        if before.publication().is_none() {
++            return Err(Error::ReadbackRequired);
++        }
++        let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++        let evaluated = cut.evaluated.as_ref().ok_or(Error::ReadbackRequired)?;
++        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        let response =
++            OriginalCircuitLearningReadOwnerV1::original_evaluated_selection_response(
++                reader, evaluated, bytes, request_id,
++            )
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        let after = self.read_original(&state)?;
++        if before != after || after.publication().is_none() {
++            return Err(Error::CommitUncertain);
++        }
++        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        self.require_lifetime()?;
++        if self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published {
++            return Err(Error::ReadbackRequired);
++        }
++        Ok(response)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs
+@@ -29,7 +29,7 @@
+ type OriginalNextUseReader =
+     OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+ 
+-enum NextUseReadPurpose {
++pub(super) enum NextUseReadPurpose {
+     Readback,
+     CompletionReadiness,
+     #[cfg(test)]
+@@ -190,7 +190,7 @@
+         Err(Error::Unavailable)
+     }
+ 
+-    fn original_evaluated_next_use_response(
++    pub(super) fn original_evaluated_next_use_response(
+         &self,
+         selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
+         reader: &OriginalNextUseReader,
+@@ -259,7 +259,7 @@
+         Ok(original)
+     }
+ 
+-    fn build_original_evaluated_next_use_reader(
++    pub(super) fn build_original_evaluated_next_use_reader(
+         &self,
+         selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+     ) -> Result<OriginalNextUseReader, Error> {
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+@@ -28,6 +28,7 @@
+ pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
+ pub use host::OriginalCircuitRetainedVersionHostV1;
+ pub use host::OriginalCircuitRetainedVersionRecoveryV1;
++pub(crate) use host::OriginalVersionLocalReadBindingV1;
+ 
+ #[derive(Debug, thiserror::Error)]
+ pub enum OriginalCircuitRetainedVersionErrorV1 {
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -891,6 +891,8 @@
+ pub use circuit_feature_current::OriginalCircuitLearningReadOwnerV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
++#[cfg(target_os = "linux")]
++pub use circuit_feature_current::OriginalCircuitPublishedLocalReadV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;
+ #[cfg(target_os = "linux")]

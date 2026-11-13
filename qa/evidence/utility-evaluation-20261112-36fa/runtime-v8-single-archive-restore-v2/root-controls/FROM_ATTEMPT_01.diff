@@ -1,0 +1,20 @@
+--- attempt-01/driver.py
++++ attempt-02/driver.py
+@@ -27,7 +27,7 @@
+ import urllib.parse
+ import urllib.request
+ 
+-CONTROL = Path('/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v1')
++CONTROL = Path('/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v2')
+ OUT = CONTROL / 'run'
+ DEPOT = OUT / 'verified-download-spool'
+ REPO = Path('/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1')
+@@ -60,7 +60,7 @@
+ }
+ LOCK = Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock')
+ LOCK_PIN = {'device': 2050, 'inode': 50139448, 'uid': 1000, 'mode': 384, 'nlink': 1}
+-RUN_KEY = 'hepta-utility-36fa-v8-single-archive-restore-v1'
++RUN_KEY = 'hepta-utility-36fa-v8-single-archive-restore-v2'
+ OPERATION_SECONDS = 600
+ FINAL_SECONDS = 180
+ LOG_LIMIT = 8 * 1024 * 1024

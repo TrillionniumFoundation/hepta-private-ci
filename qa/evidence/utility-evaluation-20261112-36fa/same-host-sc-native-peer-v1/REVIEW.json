@@ -1,0 +1,106 @@
+{
+  "format": "hepta-same-host-sc-native-peer-review-v1",
+  "status": "TWO_CONCRETE_SEAMS_REPORTED_SUCCESSOR_PENDING",
+  "source_packet": {
+    "bytes": 403258,
+    "sha256": "727f71c0816ed445532fea96bcdf850e679a5d600a3238a411ae40469a27610b",
+    "git_blob": "87c6707e499b5a85016198192c2bc3c7ae997e6b"
+  },
+  "patch": {
+    "bytes": 38905,
+    "sha256": "4e0fd2f101ff5f43257f2f4783d6e824e1e8d81908649c36d1dabad36f68d50a",
+    "git_blob": "99b360a486418b55b1665b0f930968f884ca6967"
+  },
+  "design_git_blob": "c660fb56a98b30dc405d473f40b54f18486b1598",
+  "exact_scope": "All fourteen supplied pre/post bodies and complete patch were read and independently hashed; changed code and critical original C owner flow were reviewed. Four core blobs were independently fetched. This is not a Rust typecheck or an independent scan of every unchanged repository file.",
+  "dependencies": "Preimages include previously prepared overlays listed by the packet; they are not all claimed to be direct cc57 tree blobs. The complete combined Version/S/C source and registration remain to be frozen.",
+  "byte_results": {
+    "new_files": 3,
+    "modified_files": 11,
+    "paths": 14,
+    "each_body_bytes_sha256_git_match": true,
+    "patch_applies_to_each_before_exactly": true,
+    "extracted_s_actual_read_body_identical_after_receiver_adaptation": true
+  },
+  "findings": [
+    {
+      "id": "SC-DEADLINE-POST-AUTH",
+      "classification": "Concrete deadline seam; author and Root acknowledged",
+      "source_git_blob": "b22291b1c2c51d8037d6345bf71e00dee402d9da",
+      "location": "read_original_selection() after timeout_at await, and final open_original_evaluated_local_readback() construction",
+      "actual": "The existing deadline check precedes two full original_receipt_predecessors authentications. That synchronous work may cross the same operation deadline before the slot is restored. Export checks before the final conversion/allocation rather than immediately before returning the completed capability.",
+      "required_narrow_correction": "After acquiring the nonblocking restore mutex, check the original deadline immediately before Some(slot); refusal must drop the taken slot without restoration. For export, construct the capability, recheck that same original deadline immediately before Ok, and drop the newly built capability/permit on refusal. Keep the existing early checks and all 500ms/300s/128/permit limits.",
+      "successor_reviewed": false
+    },
+    {
+      "id": "SC-VERSION-SAME-CLIENTS",
+      "classification": "Concrete cross-capability identity seam; author and Root acknowledged",
+      "location": "Local Version live capability versus S/C shared T/E bundle",
+      "actual": "S-to-C bundle identity is correctly checked with ptr::eq for both actual original clients. This alone does not bind those clients to the Version-owned live capability when that API compares only full context/end.",
+      "required_narrow_correction": "Add and consume the agreed crate-private ReadClient::require_original_local_shared_readbacks(&self,&PublishedEvidenceReadback)->Result<(),ReadError>. Its private Version binding must check actual Published state, complete context/cut/lifetime and original T/E pointer identity; no getter, new clients or caller callback. Both new factories, S export and C source profile validation must call the identity guard as applicable. Preserve the existing S=C pointer checks.",
+      "successor_reviewed": false
+    }
+  ],
+  "correct_properties_observed": [
+    {
+      "area": "Sealed authority boundary",
+      "finding": "S cap fields and owner trait are private. The only implementation delegates to the same original S command owner. Public cap exposes readonly read/clone, not raw owner/FD, callback, Execute, reconnect, rebind or signer."
+    },
+    {
+      "area": "Actual completed/recovered custody",
+      "finding": "Export performs the original S readback and unchanged full wire authentication. The extracted helper preserves evaluated-profile check, context authentication, actual owner try_lock, wire Readback, all full receipt authentication and final context check. It cannot turn a missing/uncompleted S into a receipt or use Execute. The old direct readback method remains available with its original permit ownership."
+    },
+    {
+      "area": "Full S equality",
+      "finding": "Local profile requires complete snapshot, receipt, attestation and original binding equality, then revalidates both original receipt predecessor proofs. The C factory and every new C source profile additionally compare the exact S expected opaque cut and S/C T/E pointer identity."
+    },
+    {
+      "area": "Cancellation",
+      "finding": "slot.take occurs before any dispatch. The owned slot and its permit move into blocking work; cancellation/timeout/error does not restore them. Already started owner I/O may continue to its actual completion; delivery is Unknown and aliases see None. Export cancellation similarly may leave construction work running but no returned cap or fresh execution authority. These two cancellation paths are not mislabeled as identical."
+    },
+    {
+      "area": "Capacity and queue behavior",
+      "finding": "S cap reserves exactly one of the original S owner's four semaphore permits, retains it through the taken slot/blocking operation, and shares that same slot/counter/end through Arc clones. No queue is added; try_lock/try_acquire refuse contention. The exported read counter permits ids1..128, then the next take refuses. The initial authenticated construction read is real additional predecessor work and must remain in future aggregate consumption accounting; underlying shared T/E retains its original counters."
+    },
+    {
+      "area": "Absolute lifetime",
+      "finding": "S lifetime is capped by the original Version local end and original 300-second maximum, and each local read uses min(start+unchanged <=500ms timeout,end). The reported post-auth correction is still necessary before claiming that implementation closed."
+    },
+    {
+      "area": "Original C journal/protocol",
+      "finding": "New local C sources reuse the existing prepare/attest/readback/finish pipeline and existing FreshCreate versus Recovered branch. Recovered selects readback, and original execution_requested derives from the unchanged custody brand. No alternate signature journal, fresh claim, retention artifact or completed C is introduced."
+    },
+    {
+      "area": "C predecessor order",
+      "finding": "Original T/E ownership reads complete before the local S predecessor is read. The original completion protocol authenticates the original evidence, rereads current source, checks the physical journal and preserves completion_fenced. The Local source remains EvaluatedOwner and uses read_current, not a supplied observation."
+    },
+    {
+      "area": "Remote/by-value compatibility",
+      "finding": "Remote public factory parameter types remain unchanged. A private Remote/Local selector enum wraps the old remote clients; each original remote branch extracts Remote and otherwise refuses. Original same-UID/PID channel helper is not changed by these fourteen files."
+    },
+    {
+      "area": "Linux export",
+      "finding": "The new lib export has its own #[cfg(target_os = \"linux\")], and the following existing export retains its separate original guard. No repeated prior cfg-attachment mistake was found."
+    }
+  ],
+  "required_followup_before_complete_source": {
+    "source_revision": "Review the exact independent successor addressing both seams; do not overwrite/reclassify87c.",
+    "version_implementation": "Actual private Version capability implementation and complete merged public API/type closure must be supplied and reviewed.",
+    "mechanisms": [
+      "Fresh/uncompleted S export refusal; actual published and recovered readonly paths",
+      "Wrong complete S signature/context and wrong same-value but different T/E clients",
+      "Version/S/C actual same original shared clients; loss/current change after prior success",
+      "Alias contention, in-flight cancellation, expired final-auth window, request128/129 and original permit saturation",
+      "Actual C completion/readback uses the same original C owner and source; late predecessor loss remains failure"
+    ],
+    "source_registration": "Register all new public factories/read methods, private owner guards and source branches in the final CALLERS/protected/QA graph after actual formatting. Preserve all old source obligations and exact Root parent registrations.",
+    "execution": "Original complete source and native gates remain mandatory under original time/stack/filter/capacity budgets. No full Fresh/C/Root runtime success is established by this production packet or static review."
+  },
+  "no_additional_specific_blocker_found_in_other_reviewed_changes": true,
+  "no_overall_pass_claim": true,
+  "formatted": false,
+  "compiled": false,
+  "tests_executed": 0,
+  "host_calls": 0,
+  "source_writes": 0
+}

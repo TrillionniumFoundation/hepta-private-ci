@@ -1,0 +1,531 @@
+--- a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -31,6 +31,8 @@
+     context: ReadProfile,
+     binding: Digest32,
+     slot: Mutex<Option<OriginalLocalReadSlot>>,
++    #[cfg(test)]
++    probe: Mutex<Option<Arc<fixture::OriginalLocalReadProbeState>>>,
+ }
+ 
+ /// A sealed same-host capability created by an actual published Version.
+@@ -65,6 +67,8 @@
+                     next_request_id: 1,
+                     retained: None,
+                 })),
++                #[cfg(test)]
++                probe: Mutex::new(None),
+             }),
+         })
+     }
+@@ -151,13 +155,26 @@
+             )?,
+         };
+         let original = Arc::clone(&self.original);
++        #[cfg(test)]
++        let terminal = original.fixture_original_read_submitted()?;
+         let worker = tokio::task::spawn_blocking(move || {
+-            original.original.respond(
++            #[cfg(test)]
++            if let Some(terminal) = &terminal {
++                terminal.mark_original_started();
++            }
++            let response = original.original.respond(
+                 operation,
+                 &bytes,
+                 request_id,
+             )
+-            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));
++            #[cfg(test)]
++            if response.is_ok() {
++                if let Some(terminal) = &terminal {
++                    terminal.pause_after_original_response(deadline)?;
++                }
++            }
++            response
+         });
+         let response = tokio::time::timeout_at(
+             tokio::time::Instant::from_std(deadline), worker,
+@@ -279,3 +296,7 @@
+             .require_original_next_use(expected)
+     }
+ }
++
++#[cfg(test)]
++#[path = "circuit_learning_local_read_support_tests.rs"]
++mod fixture;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs
+@@ -0,0 +1,154 @@
++//! Test-only observation of an actual local owner response.
++//! The gate cannot supply or change a response, counter, permit or deadline.
++//! Release/Drop only stops the pause; callers still await the original worker
++//! terminal observation and the original fixture peer joins.
++
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++use std::sync::Condvar;
++
++use super::*;
++
++pub(super) struct OriginalLocalReadProbeState {
++    submitted: AtomicBool,
++    started: AtomicBool,
++    response_observed: AtomicBool,
++    terminal: AtomicBool,
++    released: Mutex<bool>,
++    changed: Condvar,
++    response_notify: tokio::sync::Notify,
++    terminal_notify: tokio::sync::Notify,
++}
++
++pub(crate) struct OriginalLocalReadProbe {
++    state: Arc<OriginalLocalReadProbeState>,
++}
++
++pub(super) struct OriginalLocalReadTerminal {
++    state: Arc<OriginalLocalReadProbeState>,
++}
++
++impl OriginalLocalReadTerminal {
++    pub(super) fn mark_original_started(&self) {
++        self.state.started.store(true, Ordering::Release);
++    }
++
++    pub(super) fn pause_after_original_response(&self, deadline: Instant) -> Result<(), Error> {
++        self.state.response_observed.store(true, Ordering::Release);
++        self.state.response_notify.notify_one();
++        let mut released = self.state.released.lock().map_err(|_| Error::Unavailable)?;
++        while !*released {
++            let remaining = deadline.checked_duration_since(Instant::now())
++                .ok_or(Error::Unavailable)?;
++            let (current, _) = self.state.changed.wait_timeout(released, remaining)
++                .map_err(|_| Error::Unavailable)?;
++            released = current;
++        }
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        Ok(())
++    }
++}
++
++impl Drop for OriginalLocalReadTerminal {
++    fn drop(&mut self) {
++        self.state.terminal.store(true, Ordering::Release);
++        self.state.terminal_notify.notify_one();
++    }
++}
++
++impl OriginalLocalReadProbe {
++    pub(crate) async fn wait_after_original_response(&self) {
++        loop {
++            let notified = self.state.response_notify.notified();
++            if self.state.response_observed.load(Ordering::Acquire) {
++                return;
++            }
++            notified.await;
++        }
++    }
++
++    pub(crate) async fn wait_original_terminal(&self) {
++        loop {
++            let notified = self.state.terminal_notify.notified();
++            if self.state.terminal.load(Ordering::Acquire) {
++                return;
++            }
++            notified.await;
++        }
++    }
++
++    pub(crate) fn original_submitted(&self) -> bool {
++        self.state.submitted.load(Ordering::Acquire)
++    }
++
++    pub(crate) fn original_started(&self) -> bool {
++        self.state.started.load(Ordering::Acquire)
++    }
++
++    pub(crate) fn original_response_observed(&self) -> bool {
++        self.state.response_observed.load(Ordering::Acquire)
++    }
++
++    pub(crate) fn release(&self) {
++        if let Ok(mut released) = self.state.released.lock() {
++            *released = true;
++            self.state.changed.notify_all();
++        }
++    }
++}
++
++impl Drop for OriginalLocalReadProbe {
++    fn drop(&mut self) {
++        self.release();
++    }
++}
++
++impl OriginalLocalReadState {
++    pub(super) fn fixture_original_read_submitted(
++        &self,
++    ) -> Result<Option<OriginalLocalReadTerminal>, Error> {
++        let probe = self.probe.try_lock().map_err(|_| Error::Unavailable)?.clone();
++        Ok(probe.map(|state| {
++            state.submitted.store(true, Ordering::Release);
++            OriginalLocalReadTerminal { state }
++        }))
++    }
++}
++
++impl OriginalCircuitPublishedLocalReadV1 {
++    pub(crate) fn fixture_pause_after_original_response(
++        &self,
++    ) -> Result<OriginalLocalReadProbe, Error> {
++        let slot = self.original.slot.try_lock().map_err(|_| Error::Unavailable)?;
++        if slot.as_ref().map(|slot| slot.next_request_id) != Some(1) {
++            return Err(Error::Binding("install probe before the first actual local read"));
++        }
++        let mut probe = self.original.probe.try_lock().map_err(|_| Error::Unavailable)?;
++        if probe.is_some() {
++            return Err(Error::Unavailable);
++        }
++        let state = Arc::new(OriginalLocalReadProbeState {
++            submitted: AtomicBool::new(false),
++            started: AtomicBool::new(false),
++            response_observed: AtomicBool::new(false),
++            terminal: AtomicBool::new(false),
++            released: Mutex::new(false),
++            changed: Condvar::new(),
++            response_notify: tokio::sync::Notify::new(),
++            terminal_notify: tokio::sync::Notify::new(),
++        });
++        *probe = Some(Arc::clone(&state));
++        Ok(OriginalLocalReadProbe { state })
++    }
++
++    pub(crate) fn fixture_next_request_id(&self) -> Result<Option<u64>, Error> {
++        Ok(self.original.slot.try_lock().map_err(|_| Error::Unavailable)?
++            .as_ref().map(|slot| slot.next_request_id))
++    }
++
++    pub(crate) fn fixture_shares_budget(&self, other: &Self) -> bool {
++        Arc::ptr_eq(&self.original, &other.original)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+@@ -29,6 +29,7 @@
+     fixture: Option<Box<PublicationFixture>>,
+     task: Option<support::Session>,
+     held: Option<HeldPredecessors>,
++    dataset_receipt: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+     peers: Option<HeldPeers>,
+     version: Option<Arc<Version>>,
+     shared: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
+@@ -46,7 +47,7 @@
+     async fn ready() -> anyhow::Result<Self> {
+         let fixture = Box::new(Box::pin(PublicationFixture::ready()).await?);
+         let mut case = Self {
+-            fixture: Some(fixture), task: None, held: None, peers: None,
++            fixture: Some(fixture), task: None, held: None, dataset_receipt: None, peers: None,
+             version: None, shared: None, selector_home: None, selector: None,
+             selector_host: None, selector_server: None,
+             selection: None, readiness: None, live: None, servers: Vec::new(),
+@@ -61,6 +62,7 @@
+     async fn initialize(&mut self) -> anyhow::Result<()> {
+         let (held, peers) = Box::pin(held_predecessors(self.fixture()?)).await?;
+         let dataset = held.dataset_receipt.clone();
++        self.dataset_receipt = Some(dataset.clone());
+         self.held = Some(held);
+         self.peers = Some(peers);
+         let (task, recovery) = Box::pin(publish_for_recovery(
+@@ -457,3 +459,6 @@
+ async fn version_owned_next_use_rechecks_actual_b_after_channel_admission() -> anyhow::Result<()> {
+     Box::pin(b_withdrawal_after_admission_case(false)).await
+ }
++
++#[path = "circuit_evaluated_version_local_readback_tests.rs"]
++mod local_read;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
+@@ -0,0 +1,280 @@
++//! Actual cold Version local-capability mechanisms.
++//! These use the original T/B/S/C fixture and real original responses. They
++//! are not a Fresh Root or cross-UID ordinary-task qualification.
++
++use super::*;
++use crate::OriginalCircuitPublishedLocalReadV1;
++use crate::OriginalCircuitLearningReadbackV1;
++
++type ReadTask = tokio::task::JoinHandle<
++    Result<Option<OriginalCircuitLearningReadbackV1>, ReadError>,
++>;
++
++fn require_equal<T: PartialEq + std::fmt::Debug>(actual: T, expected: T) -> anyhow::Result<()> {
++    anyhow::ensure!(actual == expected,
++        "actual original value {actual:?} differs from expected {expected:?}");
++    Ok(())
++}
++
++async fn original_local_c(
++    case: &NextUseCase,
++    lifetime: Duration,
++) -> anyhow::Result<(
++    OriginalCircuitPublishedLocalReadV1,
++    OriginalCircuitLearningReadClientV1,
++    OriginalCircuitCompletionReadinessClientV1,
++)> {
++    let local = Version::open_original_evaluated_next_use_local_read(
++        case.host()?, case.selection()?, Duration::from_millis(500), lifetime,
++    ).await?;
++    let live = OriginalCircuitLearningReadClientV1::from_original_evaluated_local_next_use(
++        local.clone(), case.selection()?,
++    )?;
++    OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++        &live, case.shared.as_ref().context("same Version original T/E")?,
++    )?;
++    let readiness = OriginalCircuitCompletionReadinessClientV1::bind_original_evaluated_local_read(
++        &live,
++        &case.fixture()?.host.original.command_config,
++        case.dataset_receipt.as_ref().context("actual original D receipt")?,
++        &case.selection()?,
++    )?;
++    Ok((local, live, readiness))
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_readiness_and_current_reuse_one_actual_request_sequence() -> anyhow::Result<()> {
++    let case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        let (local, live, readiness) = original_local_c(&case, Duration::from_secs(300)).await?;
++        let alias = local.clone();
++        anyhow::ensure!(local.fixture_shares_budget(&alias), "clone retains the actual same Arc");
++        require_equal(local.fixture_next_request_id()?, Some(1))?;
++        let before = case.original_bytes()?;
++        require_equal(readiness.read_current().await?, None)?;
++        require_equal(alias.fixture_next_request_id()?, Some(2))?;
++        require_equal(case.original_bytes()?, before)?;
++        let publication = execute(case.task()?, 1).await?;
++        let actual = read_receipt(case.task()?, &case.fixture()?.definition, &publication)?;
++        anyhow::ensure!(actual.bundle_digest == case.fixture()?.bundle.digest()?,
++            "actual C used the original retained baseline");
++        let completed_bytes = case.original_bytes()?;
++        let read = live.read_current().await?;
++        require_equal(local.fixture_next_request_id()?, Some(3))?;
++        require_equal(readiness.read_current().await?, Some(read))?;
++        require_equal(alias.fixture_next_request_id()?, Some(4))?;
++        require_equal(case.original_bytes()?, completed_bytes)?;
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_readiness_borrows_the_fourth_lane_without_a_fifth_permit() -> anyhow::Result<()> {
++    let case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        // The original S fixture already holds one actual Version channel.
++        // Three concrete local exports occupy the remaining original permits.
++        let selection = Version::open_original_evaluated_selection_local_read(
++            case.host()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        let (next_use, live, readiness) = original_local_c(&case, Duration::from_secs(300)).await?;
++        let extra_selection = Version::open_original_evaluated_selection_local_read(
++            case.host()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        let alias = next_use.clone();
++        anyhow::ensure!(alias.fixture_shares_budget(&next_use), "same local lane");
++        let refused = Version::open_original_evaluated_selection_local_read(
++            case.host()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await;
++        anyhow::ensure!(matches!(refused, Err(VersionError::Busy)),
++            "the original four-permit limit is still enforced");
++        require_equal(readiness.read_current().await?, None)?;
++        require_equal(next_use.fixture_next_request_id()?, Some(2))?;
++        drop((selection, extra_selection, live, readiness, alias, next_use));
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_read_capabilities_reject_cross_purpose_conversions() -> anyhow::Result<()> {
++    let case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        let selection = Version::open_original_evaluated_selection_local_read(
++            case.host()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        let next_use = Version::open_original_evaluated_next_use_local_read(
++            case.host()?, case.selection()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        anyhow::ensure!(OriginalCircuitLearningReadClientV1::from_original_evaluated_local_selection(
++            next_use.clone(), case.fixture()?.readback_context()?,
++        ).is_err(), "a five-cut capability cannot become a four-cut capability");
++        anyhow::ensure!(OriginalCircuitLearningReadClientV1::from_original_evaluated_local_next_use(
++            selection.clone(), case.selection()?,
++        ).is_err(), "a four-cut capability cannot become readiness or NextUse");
++        require_equal(selection.fixture_next_request_id()?, Some(1))?;
++        require_equal(next_use.fixture_next_request_id()?, Some(1))?;
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_readiness_rechecks_actual_b_and_fences_all_aliases() -> anyhow::Result<()> {
++    let mut case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        let (local, live, readiness) = original_local_c(&case, Duration::from_secs(300)).await?;
++        require_equal(readiness.read_current().await?, None)?;
++        case.fixture.as_deref_mut().context("same original B")?.host.retention_b.withdraw_target()?;
++        let before = case.original_bytes()?;
++        let revision = case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision;
++        anyhow::ensure!(readiness.read_current().await.is_err(),
++            "later actual B withdrawal invalidates an already admitted local capability");
++        anyhow::ensure!(matches!(live.read_current().await, Err(ReadError::Unavailable)),
++            "the readback alias cannot repair the shared terminal slot");
++        require_equal(local.fixture_next_request_id()?, None)?;
++        require_equal(case.original_bytes()?, before)?;
++        require_equal(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision, revision)?;
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[derive(Clone, Copy)]
++enum PausedLocalReadCase {
++    CompetingAlias,
++    CancelAwaiter,
++    CrossFixedEnd,
++}
++
++async fn paused_local_read_case(mode: PausedLocalReadCase) -> anyhow::Result<()> {
++    let case = Box::pin(NextUseCase::ready()).await?;
++    let setup = original_local_c(&case, match mode {
++        PausedLocalReadCase::CrossFixedEnd => Duration::from_millis(500),
++        PausedLocalReadCase::CompetingAlias | PausedLocalReadCase::CancelAwaiter =>
++            Duration::from_secs(300),
++    }).await;
++    let (local, live, readiness) = match setup {
++        Ok(value) => value,
++        Err(error) => return finish_case(Err(error), case).await,
++    };
++    let probe = match local.fixture_pause_after_original_response() {
++        Ok(value) => value,
++        Err(error) => {
++            drop((local, live, readiness));
++            return finish_case(Err(error.into()), case).await;
++        }
++    };
++    let inputs: anyhow::Result<_> = (|| {
++        Ok((
++            case.original_bytes()?,
++            OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(
++                &live, &case.selection()?,
++            )?,
++        ))
++    })();
++    let (before, fixed_end) = match inputs {
++        Ok(value) => value,
++        Err(error) => {
++            drop((probe, local, live, readiness));
++            return finish_case(Err(error), case).await;
++        }
++    };
++    let mut task: Option<ReadTask> = Some(tokio::spawn(async move {
++        readiness.read_current().await
++    }));
++    let mut consumed_join = false;
++    let result: anyhow::Result<()> = async {
++        let current = task.as_mut().context("one actual local read awaiter")?;
++        tokio::select! {
++            completed = current => {
++                consumed_join = true;
++                anyhow::bail!("actual read ended before the original-response gate: {completed:?}");
++            }
++            _ = probe.wait_after_original_response() => {}
++        }
++        anyhow::ensure!(probe.original_started(), "the original worker actually started");
++        anyhow::ensure!(probe.original_response_observed(),
++            "the pause occurs after the concrete original owner produced its response");
++        require_equal(local.fixture_next_request_id()?, None)?;
++        anyhow::ensure!(matches!(live.read_current().await, Err(ReadError::Unavailable)),
++            "a competing alias sees the same occupied slot without issuing owner I/O");
++        match mode {
++            PausedLocalReadCase::CompetingAlias => {
++                probe.release();
++                let original = task.take().context("original awaited read")?.await??;
++                require_equal(original, None)?;
++                probe.wait_original_terminal().await;
++                require_equal(local.fixture_next_request_id()?, Some(2))?;
++            }
++            PausedLocalReadCase::CancelAwaiter => {
++                task.as_ref().context("same original awaiter")?.abort();
++                let stopped = task.take().context("same cancelled awaiter")?.await;
++                anyhow::ensure!(matches!(stopped, Err(ref error) if error.is_cancelled()),
++                    "the awaiting future actually terminated by cancellation");
++                probe.release();
++                probe.wait_original_terminal().await;
++                require_equal(local.fixture_next_request_id()?, None)?;
++                anyhow::ensure!(matches!(live.read_current().await, Err(ReadError::Unavailable)),
++                    "late actual work cannot restore the cancelled shared slot");
++            }
++            PausedLocalReadCase::CrossFixedEnd => {
++                // No extra sleep or larger budget: retain the actual response
++                // until this capability's already-fixed deadline ends the wait.
++                let stopped = task.take().context("same deadline-bound awaiter")?.await?;
++                anyhow::ensure!(stopped.is_err(), "no success may cross the fixed local end");
++                anyhow::ensure!(std::time::Instant::now() >= fixed_end,
++                    "the original fixed local deadline actually elapsed");
++                probe.release();
++                probe.wait_original_terminal().await;
++                require_equal(local.fixture_next_request_id()?, None)?;
++                anyhow::ensure!(matches!(live.read_current().await, Err(ReadError::Unavailable)),
++                    "the expired operation cannot replenish the shared slot");
++            }
++        }
++        require_equal(case.original_bytes()?, before)?;
++        require_equal(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision, 0)?;
++        Ok(())
++    }.await;
++    // Also close and observe the original operation if any assertion failed.
++    // No serving lane is detached merely to turn cleanup into a pass.
++    probe.release();
++    let mut cleanup_error = None;
++    if let Some(task) = task.take() {
++        if !consumed_join {
++            task.abort();
++            match task.await {
++                Ok(_) => {}
++                Err(error) if error.is_cancelled() => {}
++                Err(error) => cleanup_error = Some(anyhow::anyhow!("local read join: {error}")),
++            }
++        }
++    }
++    if probe.original_submitted() {
++        probe.wait_original_terminal().await;
++    }
++    drop((probe, local, live));
++    let result = match (result, cleanup_error) {
++        (Ok(()), None) => Ok(()),
++        (Err(error), None) => Err(error),
++        (Ok(()), Some(error)) => Err(error),
++        (Err(error), Some(cleanup)) => Err(error.context(format!("actual local cleanup: {cleanup:#}"))),
++    };
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_alias_contention_preserves_the_original_pending_response() -> anyhow::Result<()> {
++    Box::pin(paused_local_read_case(PausedLocalReadCase::CompetingAlias)).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_cancelled_read_never_restores_any_alias() -> anyhow::Result<()> {
++    Box::pin(paused_local_read_case(PausedLocalReadCase::CancelAwaiter)).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_original_response_crossing_fixed_end_is_not_delivered() -> anyhow::Result<()> {
++    Box::pin(paused_local_read_case(PausedLocalReadCase::CrossFixedEnd)).await
++}

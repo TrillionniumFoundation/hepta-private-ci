@@ -1,0 +1,54 @@
+{
+  "format": "hepta-three-uid-frozen-source-exact-recovery-v1",
+  "status": "EXACT_FROZEN_SOURCE_DURABLE_FULL_READBACK",
+  "original_source": {
+    "bytes": 29874,
+    "sha256": "9d65825a713eba937e39b5df60cb06accae8e0880b37e9376a5527b7d9f949be",
+    "git_blob": "318597fb680c4094e042c10ca368aa407f9942ca"
+  },
+  "base": {
+    "git_blob": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66"
+  },
+  "replacements_git_blob": "6a461032c30fb2bc723e2ba9118a731435ad7f6f",
+  "substitutions": 13,
+  "first_unsuccessful_after_get_original_git_blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+  "method": "Complete GET of base + exact frozen unique string substitutions; independent SHA256 equals original recorded identity; actual Git create returned exact original computed Git SHA; complete GET equals all reconstructed bytes.",
+  "scope": "No new source version; no runtime or qualification claim. Source text only was reconstructed, not lost SDKs from the first interrupted upload chain.",
+  "lost_initial_upload_call": "Initial Promise result was rejected; its exact failure stage and unsaved original tool envelope are unavailable. Do not invent them.",
+  "records": [
+    {
+      "name": "source.CREATE.after_exact_recovery.original.json",
+      "git_blob": "ce7f89806defa7fe6bd3d1f04646dd057a2af4ac",
+      "bytes": 195,
+      "full_readback_equal": true
+    },
+    {
+      "name": "source.GET.after_exact_recovery.original.json",
+      "git_blob": "f9d10d5ea9d8c512f7ab14c1689203335e3db663",
+      "bytes": 30803,
+      "full_readback_equal": true
+    },
+    {
+      "name": "before75e.GET.for_exact_recovery.original.json",
+      "git_blob": "fc1facfbaa693f2a35dd93632a1d5c1729f39c47",
+      "bytes": 28542,
+      "full_readback_equal": true
+    },
+    {
+      "name": "EXACT_REPLACEMENTS.GET.for_exact_recovery.original.json",
+      "git_blob": "0743f10c687283192e652ab5110ec3e664c3922d",
+      "bytes": 5938,
+      "full_readback_equal": true
+    },
+    {
+      "name": "CLOUD_TRANSPORT_OBSERVATION.json",
+      "git_blob": "2f9d5be7a4846b59a0026ab533dc6134bb89f8bc",
+      "bytes": 615,
+      "full_readback_equal": true
+    }
+  ],
+  "native_calls": 0,
+  "formatted": false,
+  "compiled": false,
+  "test_runs": 0
+}

@@ -1,0 +1,159 @@
+--- 75e2748/authority_host_learning_resident_provider_process_pair_tests.rs
++++ three-uid/authority_host_learning_resident_provider_process_pair_tests.rs
+@@ -20,6 +20,8 @@
+ use std::process::Command;
+ use std::process::ExitStatus;
+ use std::process::Stdio;
++use std::sync::Arc;
++use std::sync::OnceLock;
+ use std::sync::atomic::AtomicBool;
+ use std::sync::atomic::Ordering;
+ use std::time::Duration;
+@@ -27,8 +29,12 @@
+ 
+ use crate::AgentdRootAuthorityPeer;
+ 
+-pub(super) const TRAINER_MODEL_UID: u32 = 60001;
+-pub(super) const OTHER_OWNER_UID: u32 = 60002;
++// Root stays UID 0. These three hosts are distinct from each other and Root.
++// The first host owns A/Material/Version/S/C; its internal typed readbacks still
++// require separately reviewed same-host APIs, not same-UID socket exceptions.
++pub(super) const SOURCE_VERSION_SELECTOR_C_UID: u32 = 60001;
++pub(super) const TRAINER_MODEL_UID: u32 = 60002;
++pub(super) const BELIEF_EVALUATION_UID: u32 = 60003;
+ const IO_WINDOW: Duration = Duration::from_secs(5);
+ const CLEANUP_WINDOW: Duration = Duration::from_secs(5);
+ const CONTROL_LIMIT: usize = 64 * 1024;
+@@ -41,7 +47,7 @@
+ static CHILD_CONTROL_TAKEN: AtomicBool = AtomicBool::new(false);
+ 
+ fn allowed_uid(uid: u32) -> anyhow::Result<()> {
+-    anyhow::ensure!(matches!(uid, TRAINER_MODEL_UID | OTHER_OWNER_UID), "exact two dedicated fixture UIDs");
++    anyhow::ensure!(matches!(uid, SOURCE_VERSION_SELECTOR_C_UID | TRAINER_MODEL_UID | BELIEF_EVALUATION_UID), "exact three dedicated fixture UIDs");
+     Ok(())
+ }
+ 
+@@ -181,9 +187,52 @@
+     pub(super) errors: Vec<String>,
+ }
+ 
++/// One parent fixture creates this immediately before its first child. Every
++/// child in that fixture must borrow this same scope. The deadlines are shared
++/// and never reset per child: startup 5s; normal join 5s; failure cleanup 5s.
++/// These are observation bounds, not protocol deadlines or permission grants.
++pub(super) struct PeerProcessScope {
++    deadlines: Arc<ProcessDeadlines>,
++}
++
++struct ProcessDeadlines {
++    startup_end: Instant,
++    join_end: OnceLock<Instant>,
++    cleanup_end: OnceLock<Instant>,
++}
++
++impl PeerProcessScope {
++    pub(super) fn new() -> Self {
++        Self { deadlines: Arc::new(ProcessDeadlines {
++            startup_end: Instant::now() + IO_WINDOW,
++            join_end: OnceLock::new(),
++            cleanup_end: OnceLock::new(),
++        }) }
++    }
++}
++
++impl ProcessDeadlines {
++    fn before_start(&self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.join_end.get().is_none() && self.cleanup_end.get().is_none(),
++            "no new child after shared fixture cleanup begins");
++        within_window(self.startup_end)
++    }
++
++    fn join_end(&self) -> Instant {
++        *self.join_end.get_or_init(|| Instant::now() + IO_WINDOW)
++    }
++
++    fn cleanup_end(&self) -> Instant {
++        // Early construction failure/Drop also closes startup for the group.
++        let _ = self.join_end();
++        *self.cleanup_end.get_or_init(|| Instant::now() + CLEANUP_WINDOW)
++    }
++}
++
+ /// One actual non-Root exec child, never a fabricated owner or a transferred
+ /// in-process Arc. Owners and their original handshakes are supplied elsewhere.
+ pub(super) struct PeerProcess {
++    deadlines: Arc<ProcessDeadlines>,
+     child: Option<Child>,
+     control: Option<UnixDatagram>,
+     stdout: Option<ChildStdout>,
+@@ -197,7 +246,8 @@
+ }
+ 
+ impl PeerProcess {
+-    pub(super) fn start(child_fqn: &'static str, uid: u32) -> anyhow::Result<Self> {
++    pub(super) fn start(child_fqn: &'static str, uid: u32, scope: &PeerProcessScope) -> anyhow::Result<Self> {
++        scope.deadlines.before_start()?;
+         allowed_uid(uid)?;
+         anyhow::ensure!(!child_fqn.is_empty() && child_fqn.contains("::")
+             && child_fqn.bytes().all(|c| c.is_ascii_alphanumeric() || c == b'_' || c == b':'),
+@@ -232,6 +282,7 @@
+                 Ok(())
+             });
+         }
++        scope.deadlines.before_start()?;
+         let child = command.spawn()?;
+         let pid = child.id();
+         drop(inherited_control);
+@@ -239,6 +290,7 @@
+         // Immediately own the child under Drop, before any fallible /proc/fd
+         // observation. The temporary empty identity is never returned to callers.
+         let mut observed = Self {
++            deadlines: Arc::clone(&scope.deadlines),
+             child: Some(child), control: Some(control), stdout: None, stderr: None, owner: None,
+             uid, credentials_ready: false, finished: false, output: PeerOutput::default(),
+             peer: AgentdRootAuthorityPeer { pid, boot_id: String::new(), process_start_ticks: 0 },
+@@ -250,11 +302,12 @@
+         set_nonblocking(observed.stderr.as_ref().ok_or_else(|| anyhow::anyhow!("original stderr pipe"))?.as_raw_fd())?;
+         observed.peer = observed_process(pid)?;
+         observed.owner = Some(pin(pid)?);
+-        let actual_ready = observed.recv_control()?;
++        let actual_ready = observed.recv_control_until(scope.deadlines.startup_end)?;
+         anyhow::ensure!(actual_ready == ready_message(uid, pid), "actual child credential readiness, not a role result");
+         crate::authority_host_runtime::verify_process_credentials(pid, uid, uid)?;
+         observed.credentials_ready = true;
+         observed.ensure_live()?;
++        within_window(scope.deadlines.startup_end)?;
+         Ok(observed)
+     }
+ 
+@@ -325,7 +378,10 @@
+     }
+ 
+     pub(super) fn recv_control(&mut self) -> anyhow::Result<Vec<u8>> {
+-        let end = Instant::now() + IO_WINDOW;
++        self.recv_control_until(Instant::now() + IO_WINDOW)
++    }
++
++    fn recv_control_until(&mut self, end: Instant) -> anyhow::Result<Vec<u8>> {
+         loop {
+             within_window(end)?;
+             self.drain_output()?;
+@@ -420,7 +476,7 @@
+                 if let Err(error) = child.kill() { self.output.errors.push(format!("owned child kill: {error}")); }
+             }
+         }
+-        let end = Instant::now() + CLEANUP_WINDOW;
++        let end = self.deadlines.cleanup_end();
+         loop {
+             // Even output overflow must not prevent reaping our own child.
+             let _ = self.drain_output();
+@@ -442,7 +498,8 @@
+ 
+     pub(super) fn finish(mut self) -> anyhow::Result<PeerOutput> {
+         self.control.take();
+-        let joined = self.collect_until(Instant::now() + IO_WINDOW);
++        let end = self.deadlines.join_end();
++        let joined = self.collect_until(end);
+         if let Err(error) = joined {
+             self.output.errors.push(format!("original child join: {error}"));
+             self.kill_owned_and_collect();

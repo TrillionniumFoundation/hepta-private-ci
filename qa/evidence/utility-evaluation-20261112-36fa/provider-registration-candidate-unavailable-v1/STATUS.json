@@ -1,0 +1,63 @@
+{
+  "format": "hepta-registration-static-draft-persistence-status-v1",
+  "status": "RECORDED_LOCAL_PREPARATION_NOT_DURABLY_SAVED_SOURCE",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "base_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "local_directory": "/tmp/hepta-36fa-provider-registration-protection-candidate-v1",
+  "environment_state": "unavailable; no repeated shell attempts; no claim that local files were lost",
+  "recorded_prior_static_observations": {
+    "source_overlay_paths": 53,
+    "product_overlay_paths": 25,
+    "original_ignored_paths": 28,
+    "boundaries_before": 569,
+    "boundaries_candidate": 591,
+    "existing_boundary_caller_appends": 9,
+    "new_boundaries": 22,
+    "protected_before": 422,
+    "protected_candidate": 430,
+    "existing_protected_changed": 17,
+    "existing_protected_unchanged": 405,
+    "new_protected": 8,
+    "original_qa_files": 63,
+    "original_test_method_definitions": 590,
+    "unchanged_original_test_method_definitions": 587,
+    "explicitly_migrated_original_test_methods": 3,
+    "deleted_original_methods": 0,
+    "new_qa_methods_prepared": 13,
+    "new_qa_attack_specs_prepared": 204,
+    "actual_marker_occurrences_located": 227,
+    "full_function_scopes": 46,
+    "root_type_and_impl_scopes": 31,
+    "module_mounts": 8,
+    "candidate_nonrust_paths": 17
+  },
+  "scope": {
+    "old_forbidden_extra_guards_authority_and_ignore": "recorded preserved by prior local static preparation; final candidate raw bytes not yet durably recoverable",
+    "original_scanners": "unchanged",
+    "full_6619_scan_executed": false,
+    "qa_methods_executed": false,
+    "rustfmt_executed": false,
+    "rust_compiled": false,
+    "mechanism_tests_executed": false,
+    "authority_granted": false,
+    "qualification_pass_claimed": false
+  },
+  "durable_source_dependency": {
+    "packet": "662c2d268b76df26ce1bed0b375e67043f4f91d6",
+    "manifest": "96ec7026bf00b15a0c8e2ba9ded76bbde694de9e",
+    "review": "07c08a42d808b773dd84747dabc3d6166256c54e",
+    "placement": "baca0d1a7680ba8c9d4912ea9379f00044543c7f"
+  },
+  "not_durably_saved": [
+    "complete candidate CALLERS.toml bytes",
+    "complete 17-file registration/QA source packet",
+    "registration preparation scripts and full local static reports"
+  ],
+  "pending_checks": [
+    "strict root const-span extraction for role array",
+    "final CALLERS SHA256 allowlist append after last impl guard addition",
+    "actual full source scanner and source-closure gate after integration/format"
+  ],
+  "recovery_policy": "An explicitly new Git-backed reconstructed view will be created from durable original inputs. It will not be described as exact recovery of these unavailable unsaved candidate bytes.",
+  "new_version_local_capability": "separate future increment; not part of this recorded 591/430 view"
+}

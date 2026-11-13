@@ -1,0 +1,10 @@
+--- c269/authority_host_learning_resident_provider_process_pair_tests.rs
++++ fixed-stack/authority_host_learning_resident_provider_process_pair_tests.rs
+@@ -214,6 +214,7 @@
+             .arg(format!("/proc/self/fd/{}", executable.as_raw_fd()))
+             .args(["--exact", child_fqn, "--ignored", "--nocapture", "--test-threads=1"])
+             .env_clear().env("PATH", "/usr/bin:/bin")
++            .env("RUST_MIN_STACK", "8388608")
+             .env(CONTROL_ENV, inherited_control.as_raw_fd().to_string())
+             .env(EXECUTABLE_ENV, executable.as_raw_fd().to_string())
+             .env(UID_ENV, uid.to_string()).env(PARENT_ENV, std::process::id().to_string())

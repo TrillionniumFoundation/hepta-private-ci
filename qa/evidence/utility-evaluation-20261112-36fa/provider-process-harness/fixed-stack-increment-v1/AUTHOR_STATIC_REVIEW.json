@@ -1,0 +1,25 @@
+{
+  "after": {
+    "bytes": 27672,
+    "git_blob": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66",
+    "sha256": "688f9b27ecd5917990845ff17b57195789bb9c340fd9dd79ca07af6318b13cbf"
+  },
+  "before": {
+    "bytes": 27626,
+    "git_blob": "c269e4c7adfefb3853ea67ca46197af049dd4cbc",
+    "sha256": "a46e34b8b62092f09a0a658e19e62940243ce76a12f03fd151e910f5bb9de46c"
+  },
+  "compiled": false,
+  "exact_change": "One explicit env setting after env_clear: RUST_MIN_STACK=8388608. No parent arbitrary value inherited.",
+  "format": "hepta-process-pair-fixed-original-stack-increment-v1",
+  "formatted": false,
+  "historical_c269_preserved": true,
+  "inverse_bytes_equal": true,
+  "native_calls": 0,
+  "new_three_uid_increment_included": false,
+  "original_uid_contract_unchanged": true,
+  "prepared_at_utc": "2026-11-13T04:20:29.884450+00:00",
+  "scope": "Only same existing test ELF subprocess stack initialization; no increase above original native 8 MiB contract, no test or production request/time budget changes.",
+  "status": "FROZEN_FOR_STATIC_REVIEW_ONLY",
+  "tests_executed": 0
+}

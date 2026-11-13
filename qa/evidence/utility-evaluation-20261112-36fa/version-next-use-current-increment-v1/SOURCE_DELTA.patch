@@ -1,0 +1,396 @@
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs
+@@ -1,29 +1,25 @@
+-//! A test observation around the actual C readiness response. It preserves
+-//! every original byte and waits only inside the original 500 ms exchange
+-//! envelope so the production post-handler absolute deadline must reject it.
++//! Observe only after the Version handler produced the actual C response.
++//! Yielding narrows the test deadline within the original 500 ms envelope;
++//! no response, owner, clock value or successful freshness result is supplied.
+ 
+ use super::*;
+ use std::sync::Arc;
+ use std::sync::atomic::AtomicBool;
+ use std::sync::atomic::Ordering;
++use std::time::Instant;
+ 
+ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S> {
+-    pub(crate) fn fixture_evaluated_next_use_deadline_channel(
++    pub(crate) fn fixture_observe_original_next_use_response(
+         &self,
+-        channel: &mut HostAuthorityPeerChannel,
+         end: Instant,
+         cross_end_after_original_read: bool,
+         response_observed: Arc<AtomicBool>,
+-    ) -> Result<u64, Error> {
+-        self.serve_original_evaluated_next_use_profile(channel, end, |owner, bytes, request_id| {
+-            let original = owner.readiness_response(bytes, request_id)?;
+-            response_observed.store(true, Ordering::Release);
+-            if cross_end_after_original_read {
+-                while Instant::now() < end {
+-                    std::thread::yield_now();
+-                }
++    ) {
++        response_observed.store(true, Ordering::Release);
++        if cross_end_after_original_read {
++            while Instant::now() < end {
++                std::thread::yield_now();
+             }
+-            Ok(original)
+-        })
++        }
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs
+@@ -48,15 +48,18 @@
+         tokio::task::spawn_blocking(move || {
+             let _permit = permit;
+             channel.check_peer_lifetime()?;
+-            let reader = self.build_original_evaluated_next_use_reader(selection)?;
++            let reader = self.build_original_evaluated_next_use_reader(selection.clone())?;
+             let end = if already_expired {
+                 Instant::now()
+             } else {
+                 Instant::now().checked_add(Duration::from_millis(250)).ok_or(Error::Clock)?
+             }.min(self.end);
+-            reader.fixture_evaluated_next_use_deadline_channel(
+-                &mut channel, end, !already_expired, response_observed,
+-            ).map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++            self.serve_original_evaluated_next_use_loop(
++                &selection, &reader, &mut channel,
++                &NextUseReadPurpose::CompletionReadinessDeadlineProbe {
++                    end, cross_end_after_original_read: !already_expired, response_observed,
++                },
++            )
+         }).await.map_err(|_| Error::CommitUncertain)?
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+@@ -398,3 +398,62 @@
+ async fn version_owned_next_use_rejects_original_response_crossing_absolute_end() -> anyhow::Result<()> {
+     Box::pin(deadline_case(false)).await
+ }
++
++async fn b_withdrawal_after_admission_case(readiness: bool) -> anyhow::Result<()> {
++    let mut case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        if readiness {
++            case.start_readiness()?;
++            anyhow::ensure!(case.readiness.as_ref().context("original readiness lane")?
++                .read_current().await?.is_none(), "actual first response admits pending C");
++        } else {
++            let publication = execute(case.task()?, 1).await?;
++            let actual = read_receipt(case.task()?, &case.fixture()?.definition, &publication)?;
++            anyhow::ensure!(actual.bundle_digest == case.fixture()?.bundle.digest()?,
++                "the original C completed with the retained baseline");
++            case.start_readback()?;
++            let first = case.live.as_ref().context("original next-use lane")?
++                .read_current().await?;
++            anyhow::ensure!(matches!(first.observation(),
++                LearningIterationObservationV1::RetainedModelNextUse { .. }),
++                "actual completed response proves this channel was already admitted");
++        }
++        let revision = case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision;
++        case.fixture.as_deref_mut().context("original B owner")?.host.retention_b.withdraw_target()?;
++        let before = case.original_bytes()?;
++        let (refused, fenced) = if readiness {
++            let client = case.readiness.as_ref().context("same admitted readiness lane")?;
++            (client.read_current().await.map(|_| ()), client.read_current().await.map(|_| ()))
++        } else {
++            let client = case.live.as_ref().context("same admitted next-use lane")?;
++            (client.read_current().await.map(|_| ()), client.read_current().await.map(|_| ()))
++        };
++        drop(case.readiness.take());
++        drop(case.live.take());
++        let served = case.servers.pop().context("same original serving lane")?.await?;
++        anyhow::ensure!(refused.is_err(), "later B withdrawal cannot reuse a successful admission");
++        anyhow::ensure!(matches!(fenced, Err(ReadError::Unavailable)),
++            "the rejected original channel remains consumed without retry");
++        anyhow::ensure!(matches!(served,
++            Err(VersionError::Publication(crate::OriginalCircuitRetainedPublicationErrorV1::Evaluation(
++                crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
++            )))
++        ), "the concrete Version preserves the actual original B/E current-read failure");
++        anyhow::ensure!(case.original_bytes()? == before,
++            "failed later reads cannot rewrite evidence or repair B");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == revision,
++            "readonly failure neither starts C nor dispatches it again");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_readiness_rechecks_actual_b_after_channel_admission() -> anyhow::Result<()> {
++    Box::pin(b_withdrawal_after_admission_case(true)).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_rechecks_actual_b_after_channel_admission() -> anyhow::Result<()> {
++    Box::pin(b_withdrawal_after_admission_case(false)).await
++}
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
+@@ -4,7 +4,6 @@
+ use std::os::fd::OwnedFd;
+ use std::os::unix::net::UnixStream;
+ use std::time::Duration;
+-use std::time::Instant;
+ 
+ use codex_hepta_contracts::HostAuthorityPeerChannel;
+ use codex_hepta_contracts::HostIssuerTransportError;
+@@ -163,63 +162,36 @@
+         Err(Error::Unavailable)
+     }
+ 
+-    /// The same prebound original channel, attenuated to the evaluated S cut.
+-    /// Version supplies its existing absolute end; a late original result is
+-    /// rejected even if this channel's relative transport lifetime is later.
+-    pub(crate) fn serve_original_evaluated_next_use_channel(
+-        &self,
+-        channel: &mut HostAuthorityPeerChannel,
+-        end: Instant,
+-    ) -> Result<u64, Error> {
+-        self.serve_original_evaluated_next_use_profile(channel, end, Self::response)
+-    }
+-
+-    /// A separate completion-readiness purpose using the same actual C owners.
+-    /// This neither starts C nor turns Missing/Pending into completed evidence.
+-    pub(crate) fn serve_original_evaluated_next_use_readiness_channel(
+-        &self,
+-        channel: &mut HostAuthorityPeerChannel,
+-        end: Instant,
+-    ) -> Result<u64, Error> {
+-        self.serve_original_evaluated_next_use_profile(channel, end, Self::readiness_response)
+-    }
+-
+-    fn serve_original_evaluated_next_use_profile(
+-        &self,
+-        channel: &mut HostAuthorityPeerChannel,
+-        end: Instant,
+-        mut response: impl FnMut(&Self, &[u8], u64) -> Result<Vec<u8>, Error>,
+-    ) -> Result<u64, Error> {
++    /// One readonly response for the original Version's five-cut C reader.
++    /// The concrete Version serving lane brackets this with its actual full
++    /// predecessor/publication observations under the same Version state lock.
++    pub(crate) fn original_evaluated_next_use_response(
++        &self,
++        bytes: &[u8],
++        request_id: u64,
++    ) -> Result<Vec<u8>, Error> {
++        self.require_original_evaluated_next_use_profile()?;
++        self.response(bytes, request_id)
++    }
++
++    /// The distinct readiness response still performs only the original C
++    /// observation. Missing/Pending neither executes C nor authorizes work.
++    pub(crate) fn original_evaluated_next_use_readiness_response(
++        &self,
++        bytes: &[u8],
++        request_id: u64,
++    ) -> Result<Vec<u8>, Error> {
++        self.require_original_evaluated_next_use_profile()?;
++        self.readiness_response(bytes, request_id)
++    }
++
++    fn require_original_evaluated_next_use_profile(&self) -> Result<(), Error> {
+         if !matches!(&self.context, ReadProfile::Evaluated(_))
+             || self.context.mode()? != wire::Mode::NextUse
+         {
+             return Err(Error::Binding("evaluated Version NextUse-only read purpose"));
+         }
+-        for request_id in 1..=128 {
+-            let mut failure = None;
+-            let exchanged = channel.exchange(|bytes| {
+-                let original = (|| {
+-                    if Instant::now() >= end {
+-                        return Err(Error::Unavailable);
+-                    }
+-                    let bytes = response(self, bytes, request_id)?;
+-                    if Instant::now() >= end {
+-                        return Err(Error::Unavailable);
+-                    }
+-                    Ok(bytes)
+-                })();
+-                original.map_err(|error| {
+-                    failure = Some(error);
+-                    HostIssuerTransportError::InvalidRequest
+-                })
+-            });
+-            match exchanged {
+-                Ok(true) => {}
+-                Ok(false) => return Ok(request_id - 1),
+-                Err(error) => return Err(failure.unwrap_or(Error::Transport(error))),
+-            }
+-        }
+-        Err(Error::Unavailable)
++        Ok(())
+     }
+ 
+     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs
+@@ -9,6 +9,7 @@
+ use std::time::Instant;
+ 
+ use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_contracts::HostIssuerTransportError;
+ use codex_hepta_neuron::FileAnchorWitnessStore;
+ use tokio::sync::OwnedSemaphorePermit;
+ 
+@@ -31,6 +32,12 @@
+ enum NextUseReadPurpose {
+     Readback,
+     CompletionReadiness,
++    #[cfg(test)]
++    CompletionReadinessDeadlineProbe {
++        end: Instant,
++        cross_end_after_original_read: bool,
++        response_observed: Arc<std::sync::atomic::AtomicBool>,
++    },
+ }
+ 
+ impl OriginalCircuitRetainedVersionHostV1 {
+@@ -131,26 +138,125 @@
+         tokio::task::spawn_blocking(move || {
+             let _permit = permit;
+             channel.check_peer_lifetime()?;
+-            let reader = self.build_original_evaluated_next_use_reader(selection)?;
++            let reader = self.build_original_evaluated_next_use_reader(selection.clone())?;
+             self.require_lifetime()?;
+             channel.check_peer_lifetime()?;
+-            // No Version mutex or T/E channel is held across the C serving
+-            // loop. Each original response still rereads the same C owners.
+-            // The sealed T/E clients stay in Version for later actual reads.
+-            match purpose {
+-                NextUseReadPurpose::Readback =>
+-                    OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_channel(
+-                        &reader, &mut channel, self.end,
+-                    ),
+-                NextUseReadPurpose::CompletionReadiness =>
+-                    OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_readiness_channel(
+-                        &reader, &mut channel, self.end,
+-                    ),
+-            }
+-            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++            self.serve_original_evaluated_next_use_loop(
++                &selection, &reader, &mut channel, &purpose,
++            )
+         })
+         .await
+         .map_err(|_| Error::CommitUncertain)?
++    }
++
++    fn serve_original_evaluated_next_use_loop(
++        &self,
++        selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
++        reader: &OriginalNextUseReader,
++        channel: &mut HostAuthorityPeerChannel,
++        purpose: &NextUseReadPurpose,
++    ) -> Result<u64, Error> {
++        let end = match purpose {
++            #[cfg(test)]
++            NextUseReadPurpose::CompletionReadinessDeadlineProbe { end, .. } => (*end).min(self.end),
++            _ => self.end,
++        };
++        for request_id in 1..=128 {
++            let mut failure = None;
++            let exchanged = channel.exchange(|bytes| {
++                let original = (|| {
++                    if Instant::now() >= end {
++                        return Err(Error::Unavailable);
++                    }
++                    let bytes = self.original_evaluated_next_use_response(
++                        selection, reader, purpose, bytes, request_id,
++                    )?;
++                    if Instant::now() >= end {
++                        return Err(Error::Unavailable);
++                    }
++                    Ok(bytes)
++                })();
++                original.map_err(|error| {
++                    failure = Some(error);
++                    HostIssuerTransportError::InvalidRequest
++                })
++            });
++            match exchanged {
++                Ok(true) => {}
++                Ok(false) => return Ok(request_id - 1),
++                Err(error) => return Err(failure.unwrap_or(Error::Transport(error))),
++            }
++        }
++        Err(Error::Unavailable)
++    }
++
++    fn original_evaluated_next_use_response(
++        &self,
++        selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
++        reader: &OriginalNextUseReader,
++        purpose: &NextUseReadPurpose,
++        bytes: &[u8],
++        request_id: u64,
++    ) -> Result<Vec<u8>, Error> {
++        self.require_lifetime()?;
++        if self.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++            || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        // This concrete owner retains the same T/E clients and same C. The
++        // lock spans both full live reads and the actual C response. No
++        // caller-supplied checker, cached freshness token or retry is used.
++        let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++        let before = self.read_original(&state)?;
++        if before.publication().is_none() {
++            return Err(Error::ReadbackRequired);
++        }
++        let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++        let evaluated = cut.evaluated.as_ref().ok_or(Error::ReadbackRequired)?;
++        let original_context = selection.original_context();
++        if original_context.snapshot() != evaluated.snapshot()
++            || original_context.receipt_context_binding() != evaluated.receipt_context_binding()
++        {
++            return Err(Error::Binding("same original Version T/E and Selection cut"));
++        }
++        selection.original_receipt_predecessors(super::super::now()?)
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        let original = match purpose {
++            NextUseReadPurpose::Readback =>
++                OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_response(
++                    reader, bytes, request_id,
++                ),
++            NextUseReadPurpose::CompletionReadiness =>
++                OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_readiness_response(
++                    reader, bytes, request_id,
++                ),
++            #[cfg(test)]
++            NextUseReadPurpose::CompletionReadinessDeadlineProbe { .. } =>
++                OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_readiness_response(
++                    reader, bytes, request_id,
++                ),
++        }.map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        #[cfg(test)]
++        if let NextUseReadPurpose::CompletionReadinessDeadlineProbe {
++            end, cross_end_after_original_read, response_observed,
++        } = purpose {
++            reader.fixture_observe_original_next_use_response(
++                (*end).min(self.end), *cross_end_after_original_read, Arc::clone(response_observed),
++            );
++        }
++        let after = self.read_original(&state)?;
++        if before != after || after.publication().is_none() {
++            return Err(Error::CommitUncertain);
++        }
++        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        selection.original_receipt_predecessors(super::super::now()?)
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        self.require_lifetime()?;
++        if self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published {
++            return Err(Error::ReadbackRequired);
++        }
++        Ok(original)
+     }
+ 
+     fn build_original_evaluated_next_use_reader(

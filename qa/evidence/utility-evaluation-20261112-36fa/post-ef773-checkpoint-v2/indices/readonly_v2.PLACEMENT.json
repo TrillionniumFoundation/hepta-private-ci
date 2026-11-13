@@ -1,0 +1,76 @@
+{
+  "format": "hepta-readonly-runtime-observation-placement-v1",
+  "status": "COMPLETE_OBSERVATION_ONLY",
+  "job_id": "1a1d3349a12-392-aa",
+  "files": [
+    {
+      "path": "native-concurrency-readonly-v2/DISPATCH_INTENT.json",
+      "git_blob": "97f12dbb022cf743c2f29b37305f4241256add2b",
+      "bytes": 864,
+      "sha256": "a658d91b4bcab9344090e0cba048f245176de65a8a57eb8543c38678c77f65dd",
+      "mode": "100644",
+      "type": "blob",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-concurrency-readonly-v2/ADMISSION.original.json",
+      "git_blob": "182dcfe19c95f5400b66043e2468f6cac13aa52f",
+      "bytes": 3059,
+      "sha256": "22daad68070b2da6141ca83ba524e7c3948d27dec83fea924a2c8e5e18d8577c",
+      "mode": "100644",
+      "type": "blob",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-concurrency-readonly-v2/STATUS_01.original.json",
+      "git_blob": "49cc7f382884efc88594297a4da5ac78b634b556",
+      "bytes": 949,
+      "sha256": "49669ca78c5c842db6afc21a208f9bbcd019ba22c8bfa300a6625c55d83087c4",
+      "mode": "100644",
+      "type": "blob",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-concurrency-readonly-v2/STDOUT_READ_01.original.json",
+      "git_blob": "3dbc67358c277337f066cddf15174f2951084310",
+      "bytes": 2751,
+      "sha256": "59e9f0a0ad9e630f36b472cf41e19b71f2def2c5ab5096d4d6eddbc400c9f3cf",
+      "mode": "100644",
+      "type": "blob",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-concurrency-readonly-v2/OBSERVATION.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 689,
+      "sha256": "efe7b283d308bf0398501f339857738987d9e561aef66932265581f214d2efee",
+      "git_blob": "78cade39cb07a30885f621b7efc9593e0c393055",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-concurrency-readonly-v2/AUTHOR_READBACK_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2175,
+      "sha256": "b1de5f78b626be3b1d17d56fb22149bb38c516c5e748cacc8cee91e80d8b49a1",
+      "git_blob": "886a7f2eb90d1975c10ca619dea9e343a295ddd8",
+      "full_readback_equal": true
+    }
+  ],
+  "controls": [
+    {
+      "path": "REQUEST.json",
+      "git_blob": "48d99cb0c7407d6a95e5440068c87e75326e6b8d"
+    },
+    {
+      "path": "SCRIPT.py",
+      "git_blob": "45a3a8ff39967288f6449f25e3a9276edcaaf081"
+    },
+    {
+      "path": "ROOT_APPROVAL.json",
+      "git_blob": "223fd4cef1952a4efa81b333dc2cef6e411a2d97"
+    }
+  ],
+  "scope": "One bounded original same-UID process-name observation only. No third restore/native request, no writes/signals or source changes; prior failures remain unchanged."
+}

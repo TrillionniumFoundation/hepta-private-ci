@@ -1,0 +1,1268 @@
+--- original-b1d214-driver.py
++++ single-archive-driver.HOLD.py
+@@ -1,140 +1,125 @@
+ #!/usr/bin/env python3
+-"""Restore pinned runtime materials in a new external depot; never run maintenance.
+-
+-Every download, environment installation and original frozen/offline check is
+-preparation evidence only. A failed/unknown operation is never a qualification.
+-The initial offline-sync/find-links idea remains an unexecuted proposal: this
+-control creates an external venv, installs the sole exact locked requirement
+-from its verified wheelhouse, then requires the original frozen offline check.
++"""One create-only restoration of the original missing V8 archive; never run gates.
++
++The original runtime downloader and its HTTPS, size, hash, redirect and timeout
++checks are retained byte-for-byte. Its DEPOT is a new evidence spool. Only a
++fully verified payload may then populate the still-absent original archive.
+ """
+ from __future__ import annotations
+ 
+ import base64
+-import contextlib
+ import datetime
+ import fcntl
+ import gzip
+ import hashlib
+ import json
+ import os
+-from pathlib import Path, PurePosixPath
+-import platform
+-import re
+-import shutil
++import pathlib
++from pathlib import Path
+ import signal
+ import stat
+ import subprocess
+ import sys
+-import tarfile
+ import time
+ import traceback
+ import types
+ import urllib.error
+ import urllib.parse
+ import urllib.request
+-import zipfile
+-
+-REPO = Path('/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1')
+-CONTROL = Path('/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1')
+-OUT = CONTROL / 'run-v2'
+-CONFIG = CONTROL / 'APPROVED_CONFIG_V2.json'
+-DEPOT = Path('/data/hepta-utility-36fa-runtime-materials-86dd-v1')
+-TARGET = Path('/data/hepta-utility-36fa-final-native-target-v1')
+-HEAD = '86dd56a930277e0d1aef3e475e35c2b5d60b43b7'
+-TREE = '383ab85c39ef9d848252ef5c25922d13d9fae6c6'
+-PARENTS = ['c0f78493f815780f68b9bf5e390a21314d79311f',
+-           'a96d1b821d10ed3d9e99dd06c5141f9f242ae318']
+-SOURCE_PIN = {'bytes': 5611182,
+-              'sha256': 'bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711',
+-              'git_blob': 'e7efbbc915cf80db9f873a2b5f9bf162daf4308c'}
+-INVENTORY_PIN = {'bytes': 22946,
+-                 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2',
+-                 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}
+-EXECUTE_PIN = {'bytes': 12863,
+-               'sha256': '9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1',
+-               'git_blob': 'c9434b3a4afb31f80e323d543936386a2fa738de'}
+-INPUTS = {
+-    'DEPENDENCY_PLAN.original.json': {
+-        'bytes': 17795,
+-        'sha256': '22b85535cbb1d079c8dd698d8827122b439c964672fce7d182726783a0fb2ec6',
+-        'git_blob': '8936bfb0e0dbab9e471a158f1161567273798360'},
+-    'MATERIALIZATION_RESULT.original.json': {
+-        'bytes': 69974,
+-        'sha256': 'b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58',
+-        'git_blob': '456f749e7558e18df99172d9c9273cda890b8feb'},
+-    'MATERIALIZATION_SUPERVISOR.original.json': {
+-        'bytes': 913,
+-        'sha256': '83a16687e3b108f49c598cb6be9aead68a2a95991c92df49a836889422bab2b2',
+-        'git_blob': '3e60d21bec849a19efb5d818b43152bfc72486fe'},
+-    'MAINTENANCE_STARTED.original.json': {
+-        'bytes': 1154,
+-        'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1',
+-        'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223'},
+-    'inventory-driver.original.py': INVENTORY_PIN,
++
++CONTROL = Path('/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v1')
++OUT = CONTROL / 'run'
++DEPOT = OUT / 'verified-download-spool'
++REPO = Path('/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1')
++OLD_DEPOT = Path('/data/hepta-utility-36fa-runtime-materials-86dd-v1')
++V8_DIR = OLD_DEPOT / 'v8-150.4.0-gnu-sandbox'
++ARCHIVE_NAME = 'librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz'
++DESTINATION = V8_DIR / ARCHIVE_NAME
++BINDINGS = V8_DIR / 'src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs'
++ASSET = {
++    'role': 'v8-sandbox-archive', 'filename': ARCHIVE_NAME,
++    'url': 'https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/' + ARCHIVE_NAME,
++    'bytes': 29366352,
++    'sha256': 'a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583',
+ }
++ARCHIVE_GIT = 'c6941f7873bdfb8ac18577c9844f234e76dc5ed6'
++BINDING_PIN = {'bytes': 39884,
++    'sha256': '7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506',
++    'git_blob': '818270d5815fe0cce4bbf7f8f0b783291f93127e'}
++SOURCE_PIN = {'bytes': 5611184,
++    'sha256': '13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9',
++    'git_blob': '7f94788b70546a8b8030dfd2b9182a7d9287c537'}
++HEAD = 'cc57c7198db6293ccca562253c42fffbe2a04633'
++TREE = 'b7b357c07b5539769a068c6b9b009629f5612d1e'
++EXPECTED_GIT = {
++    'config_bytes': 123, 'config_sha256': '5e224c2f489801ee7d2f46cf5c4e40261ea686332bac1588d05a5f463c59f84f',
++    'head': HEAD, 'head_raw_sha256': 'c5cda15b2712092074c1870ef8056b4b4fa3b838684353c9f17def139b4b8f5b',
++    'index_bytes': 2072488, 'index_sha256': '95547dcfed1945bb06b5400468ec228037cff5374b674ca033a7f66468b34193',
++    'refs_bytes': 0, 'refs_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
++    'tree': TREE,
++}
++LOCK = Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock')
++LOCK_PIN = {'device': 2050, 'inode': 50139448, 'uid': 1000, 'mode': 384, 'nlink': 1}
++RUN_KEY = 'hepta-utility-36fa-v8-single-archive-restore-v1'
+ OPERATION_SECONDS = 600
+ FINAL_SECONDS = 180
+ LOG_LIMIT = 8 * 1024 * 1024
+ GIT = '/usr/bin/git'
+-PYTHON = '/usr/bin/python3'
+-BOOTSTRAP = 'external_venv_locked_requirement_then_frozen_check'
+-RUN_KEY = 'hepta-utility-36fa-runtime-materials-restore-86dd-v2'
+-FOREIGN_BUILD = {
+-    'uid': 1000,
+-    'job': '1a1d0e549d0-2564-1bdc',
+-    'cgroup': '0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1d0e549d0-2564-1bdc.service\n',
+-    'cwd_root': '/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1/codex-rs',
+-    'executables': {
+-        'cargo': '/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo',
+-        'rustc': '/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc',
+-    },
+-    'original_probe_blob': '1920bec71be7ce926a7ed85e864a914e1f4ab0ea',
+-    'original_failed_result_blob': '88be32de12e28d39b685a7812bff9e217d4a192a',
+-    'scope': 'Only this exact foreign build may coexist with external material preparation; maintenance/test concurrency policy is unchanged.',
+-}
+-SAFE_SOURCE_ENV = ('CODEX_REPO_ROOT', 'PYTHONPATH')
+-UV_KEYS = ('UV_PROJECT_ENVIRONMENT', 'UV_CACHE_DIR', 'UV_OFFLINE',
+-           'RUFF_CACHE_DIR', 'UV_PYTHON_DOWNLOADS')
+-NETWORK_ENV_KEYS = ('http_proxy', 'https_proxy', 'all_proxy', 'no_proxy',
+-                    'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY',
+-                    'SSL_CERT_FILE', 'SSL_CERT_DIR', 'REQUESTS_CA_BUNDLE',
+-                    'CURL_CA_BUNDLE', 'NODE_EXTRA_CA_CERTS')
++INVENTORY_PATH = Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py')
++INVENTORY_PIN = {'bytes': 22946,
++    'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2',
++    'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}
++NATIVE_CONTROL = Path('/home/qian-qi/hepta-utility-36fa-evidence/final-native-cc57-isolated-v1')
++HISTORY = Path('/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2')
++INPUTS = (
++    (NATIVE_CONTROL / 'APPROVED_QUALIFICATION_INPUT.json', {'bytes': 11785,
++        'sha256': 'ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f',
++        'git_blob': '1666e5df58b33f1786287ba94d1d74b79442f8d6'}),
++    (NATIVE_CONTROL / 'native-records/RESULT.json', {'bytes': 1003,
++        'sha256': '3ff0675a3fb0dca9c6107b4982c1cb26f34007f5a3d4f62c46cd1a660428a50d',
++        'git_blob': 'b6a785c0194c2f65054a26e5815042010a22dad8'}),
++    (HISTORY / 'RESULT.json', {'bytes': 21366,
++        'sha256': '272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90',
++        'git_blob': '7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09'}),
++    (HISTORY / 'ENVIRONMENT_READY.json', {'bytes': 21724,
++        'sha256': 'd37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172',
++        'git_blob': '8b62ac16f554c1f34ee72974637752f5a3b58aec'}),
++    (INVENTORY_PATH, INVENTORY_PIN),
++)
+ ALLOWED_DOWNLOAD_HOSTS = frozenset(('github.com', 'release-assets.githubusercontent.com',
+                                    'objects.githubusercontent.com', 'files.pythonhosted.org'))
+-ASSET_ROLES = ('uv-archive-checksum-text', 'uv-executable-archive', 'ruff-locked-wheel',
+-               'v8-pair-checksum-text', 'v8-sandbox-archive', 'v8-sandbox-bindings')
+ artifacts = []
+ commands = []
+ downloads = []
++restored = {}
+ input_pins = {}
+-inventory_module = execute_module = None
+-before_inventory = before_git = None
+-network_before = None
+ deadline = None
+-cfg = plan = None
+-effective_environment = None
+-restored = {}
+-result = {'format': 'hepta-runtime-materials-restoration-result-v2',
+-          'status': 'HOLD', 'source_repo': str(REPO), 'source_commit': HEAD,
+-          'source_tree': TREE, 'parents': PARENTS, 'depot': str(DEPOT),
+-          'cargo_target': str(TARGET), 'source_unchanged': None,
+-          'source_comparison': 'unknown_not_observed', 'depot_created': False,
+-          'downloads_started': False, 'bootstrap_started': False,
+-          'maintenance_started': False, 'cargo_build_started': False,
+-          'test_commands_dispatched': 0, 'qualification': False,
+-          'source_ref_updates': False, 'automatic_retry': False,
+-          'original_offline_sync_find_links_proposal_executed': False,
+-          'bootstrap_strategy': BOOTSTRAP, 'run_key': RUN_KEY,
+-          'prior_failed_run_preserved': str(CONTROL / 'run'),
+-          'preparation_only_foreign_build_policy': FOREIGN_BUILD}
++before_inventory = before_git = binding_before = parents_before = None
++inventory_module = None
++environment_before = None
++result = {
++    'format': 'hepta-v8-single-archive-restoration-result-v1', 'status': 'HOLD',
++    'qualification': False, 'source_repo': str(REPO), 'source_commit': HEAD, 'source_tree': TREE,
++    'source_writes': False, 'environment_changes': False, 'native_main_started': False,
++    'cargo_or_test_commands': [], 'automatic_retry': False, 'dependency_installation': False,
++    'original_native_failure': 'b6a785c0194c2f65054a26e5815042010a22dad8',
++    'readonly_observation': '1789babc0eeca7de054f209fc051ed8aa44582a4',
++    'destination': str(DESTINATION), 'destination_created': False,
++    'publication_intent_recorded': False, 'source_unchanged': None,
++    'run_key': RUN_KEY,
++    'budget': {'operation_seconds': 600, 'retention_seconds': 180, 'outer_seconds': 900,
++               'native_qualification_budgets_changed': False},
++}
+ 
+ 
+ class IntegrityError(RuntimeError):
+     pass
+ 
+ 
++
+ def now():
+     return datetime.datetime.now(datetime.timezone.utc).isoformat()
++
+ 
+ 
+ def check(condition, message):
+@@ -142,12 +127,15 @@
+         raise ValueError(message)
+ 
+ 
++
+ def sha256(raw):
+     return hashlib.sha256(raw).hexdigest()
+ 
+ 
++
+ def git_blob(raw):
+     return hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
++
+ 
+ 
+ def nodup(pairs):
+@@ -158,13 +146,16 @@
+     return value
+ 
+ 
++
+ def parse(raw):
+     return json.loads(raw.decode('utf-8'), object_pairs_hook=nodup)
++
+ 
+ 
+ def encoded(value):
+     return (json.dumps(value, sort_keys=True, ensure_ascii=False,
+                        separators=(',', ':')) + '\n').encode()
++
+ 
+ 
+ def real_directory(path, owned=False):
+@@ -181,6 +172,7 @@
+         check(info.st_uid == os.getuid(), 'not current-user-owned directory: ' + str(path))
+     return {'path': str(path), 'device': info.st_dev, 'inode': info.st_ino,
+             'uid': info.st_uid, 'mode': stat.S_IMODE(info.st_mode)}
++
+ 
+ 
+ def regular_read(path, maximum=40000000, owned=False):
+@@ -213,10 +205,12 @@
+         os.close(fd)
+ 
+ 
++
+ def pin_bytes(raw, pin, label):
+     check(len(raw) == pin['bytes'] and sha256(raw) == pin['sha256']
+           and git_blob(raw) == pin['git_blob'], 'exact input identity: ' + label)
+     return raw
++
+ 
+ 
+ def read_input(path, pin):
+@@ -224,6 +218,7 @@
+     pin_bytes(raw, pin, str(path))
+     input_pins[str(path)] = dict(pin)
+     return raw
++
+ 
+ 
+ def put(path, raw, mode=0o600):
+@@ -238,6 +233,7 @@
+           'create-only readback mismatch: ' + str(path))
+ 
+ 
++
+ def record(name, raw):
+     check(Path(name).name == name, 'one-level record name')
+     put(OUT / name, raw)
+@@ -246,8 +242,10 @@
+     return value
+ 
+ 
++
+ def jrecord(name, value):
+     return record(name, encoded(value))
++
+ 
+ 
+ def gzip_record(name, raw):
+@@ -264,6 +262,7 @@
+     return entry
+ 
+ 
++
+ def event(kind, **fields):
+     raw = encoded({'event': kind, 'at': now(), **fields})
+     fd = os.open(OUT / 'EVENTS.jsonl', os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+@@ -274,115 +273,17 @@
+     print(raw.decode(), end='', flush=True)
+ 
+ 
++
+ def remaining():
+     value = deadline - time.monotonic()
+     check(value > 0, 'preparation operation deadline reached')
+     return value
+ 
+ 
++
+ def alarm(signum, frame):
+     raise TimeoutError('separate preparation/evidence deadline reached')
+ 
+-
+-def source_git_state():
+-    real_directory(REPO / '.git', owned=True)
+-    for relative in ('objects/info/alternates', 'shallow', 'info/grafts'):
+-        check(not os.path.lexists(REPO / '.git' / relative), 'unexpected Git lookup/history override: ' + relative)
+-    values = {}
+-    for name in ('HEAD', 'index', 'config'):
+-        raw = regular_read(REPO / '.git' / name, owned=True)
+-        values[name] = {'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)}
+-        if name == 'HEAD':
+-            check(raw == (HEAD + '\n').encode(), 'actual detached preparation HEAD')
+-    refs = subprocess.run([GIT, '--no-optional-locks', '-C', str(REPO), 'for-each-ref',
+-                           '--format=%(refname) %(objectname)'], stdout=subprocess.PIPE,
+-                          stderr=subprocess.PIPE, timeout=30, check=False)
+-    check(refs.returncode == 0 and refs.stdout == b'', 'no source refs or Git command failure')
+-    values['refs'] = {'bytes': len(refs.stdout), 'sha256': sha256(refs.stdout)}
+-    return values
+-
+-
+-def load_module(path, pin, name):
+-    raw = read_input(path, pin)
+-    module = types.ModuleType(name)
+-    module.__file__ = str(path)
+-    exec(compile(raw, str(path), 'exec'), module.__dict__)
+-    return module
+-
+-
+-def active_processes():
+-    observed, allowed, blocking, unknown = [], [], [], []
+-    names = ('cargo', 'cargo-clippy', 'clippy-driver', 'rustc', 'rustfmt', 'just', 'uv', 'ruff')
+-    stable_fields = ('comm', 'startticks', 'uids', 'cwd', 'exe', 'cgroup')
+-
+-    def snapshot(entry):
+-        raw = (entry / 'stat').read_text()
+-        end = raw.rfind(')')
+-        fields = raw[end + 2:].split()
+-        status = (entry / 'status').read_text().splitlines()
+-        uids = [int(x) for x in next(line for line in status if line.startswith('Uid:')).split()[1:]]
+-        check(uids == [FOREIGN_BUILD['uid']] * 4, 'matching PID UID changed or is not the configured operator')
+-        return {'comm': raw[raw.find('(') + 1:end], 'state': fields[0],
+-                'ppid': int(fields[1]), 'startticks': int(fields[19]), 'uids': uids,
+-                'cwd': os.readlink(entry / 'cwd'), 'exe': os.readlink(entry / 'exe'),
+-                'cgroup': (entry / 'cgroup').read_text()}
+-
+-    for entry in Path('/proc').iterdir():
+-        if not entry.name.isdecimal():
+-            continue
+-        row = None
+-        try:
+-            name = (entry / 'comm').read_text().strip()
+-            if name not in names:
+-                continue
+-            row = {'pid': int(entry.name), 'initial_comm': name, 'observed_at': now()}
+-            status = (entry / 'status').read_text().splitlines()
+-            uid = int(next(line for line in status if line.startswith('Uid:')).split()[1])
+-            if uid != os.getuid():
+-                row.update(classification='outside_current_uid_scope', current_uid=uid)
+-                observed.append(row)
+-                continue
+-            first, last = snapshot(entry), snapshot(entry)
+-            row.update(before=first, after=last)
+-            stable = name == first['comm'] and all(first[key] == last[key] for key in stable_fields)
+-            row['identity_metadata_stable'] = stable
+-            if not stable:
+-                row.update(classification='unknown', reason='PID identity or scope metadata changed during observation')
+-                observed.append(row)
+-                unknown.append(row)
+-                continue
+-            cwd = Path(first['cwd'])
+-            own_path = any(cwd == root or cwd.is_relative_to(root) for root in (REPO, DEPOT, TARGET))
+-            exact_foreign = (
+-                first['comm'] in FOREIGN_BUILD['executables']
+-                and first['exe'] == FOREIGN_BUILD['executables'].get(first['comm'])
+-                and first['cgroup'] == FOREIGN_BUILD['cgroup']
+-                and cwd.is_absolute() and not first['cwd'].endswith(' (deleted)')
+-                and cwd.is_relative_to(Path(FOREIGN_BUILD['cwd_root']))
+-                and not own_path
+-            )
+-            if exact_foreign:
+-                row.update(classification='allowed_exact_foreign_build',
+-                           reason='Exact observed job, stable UID/startticks/comm/exe/cwd/cgroup; material preparation only')
+-                allowed.append(row)
+-            else:
+-                row.update(classification='blocking',
+-                           reason='Named same-user process is not the exact admitted foreign build',
+-                           touches_own_cwd_scope=own_path)
+-                blocking.append(row)
+-            observed.append(row)
+-        except (OSError, StopIteration, ValueError, IndexError) as error:
+-            if row is None and isinstance(error, FileNotFoundError):
+-                # No matching process was identified before this /proc entry vanished.
+-                continue
+-            row = row or {'pid': int(entry.name), 'observed_at': now()}
+-            row.update(classification='unknown', error_type=type(error).__name__,
+-                       error=str(error), errno=getattr(error, 'errno', None))
+-            observed.append(row)
+-            unknown.append(row)
+-    return {'observed': observed, 'allowed_exact_foreign_build': allowed,
+-            'blocking': blocking, 'unknown': unknown, 'fixed_foreign_build_policy': FOREIGN_BUILD,
+-            'scope': 'Same-user named-process identities only. No args/env, signals, foreign-task waits, or maintenance/test policy changes.'}
+ 
+ 
+ def file_identity(path, allow_symlink=False):
+@@ -414,209 +315,6 @@
+         os.close(fd)
+ 
+ 
+-def run_command(name, argv, seconds):
+-    row = {'name': name, 'argv': list(argv), 'cwd': str(REPO), 'started_at': now(),
+-           'requested_timeout_seconds': seconds, 'purpose': 'runtime material preparation; no test gate',
+-           'original_command_terminal': 'unknown_not_observed'}
+-    commands.append(row)
+-    allowed = min(float(seconds), remaining())
+-    row['effective_timeout_seconds'] = allowed
+-    event('preparation_command_started', name=name, argv=argv, timeout_seconds=allowed)
+-    # The unchanged helper owns this command group's deadline and cleanup.
+-    # Do not interrupt its kill/wait/final log retention with a competing alarm.
+-    signal.setitimer(signal.ITIMER_REAL, 0)
+-    try:
+-        with (OUT / (name + '.forwarded.log')).open('x', encoding='utf-8') as output:
+-            with contextlib.redirect_stdout(output):
+-                execution = execute_module.execute_logged(argv, OUT / (name + '.log'),
+-                                                          timeout_seconds=allowed, maximum_bytes=LOG_LIMIT)
+-            output.flush()
+-            os.fsync(output.fileno())
+-        row.update(execution)
+-        row['original_command_terminal'] = 'observed'
+-    except BaseException as error:
+-        row.update(error_type=type(error).__name__, error=str(error))
+-        raise
+-    finally:
+-        try:
+-            row['finished_at'] = now()
+-            for suffix in ('.log', '.forwarded.log'):
+-                path = OUT / (name + suffix)
+-                if path.exists():
+-                    raw = regular_read(path, LOG_LIMIT * 4 + 1024, owned=True)
+-                    artifacts.append({'name': path.name, 'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)})
+-            jrecord(name + '.json', row)
+-        finally:
+-            signal.setitimer(signal.ITIMER_REAL, max(0.0, deadline - time.monotonic()))
+-    check(execution['returncode'] == 0 and execution['timed_out'] is False
+-          and execution['output_limit_exceeded'] is False, name + ' failed; original command record retained')
+-    remaining()
+-    return regular_read(OUT / (name + '.log'), LOG_LIMIT, owned=True)
+-
+-
+-def validate_materialization(raw_result, raw_supervisor):
+-    observed = parse(raw_result)
+-    outer = parse(raw_supervisor)
+-    check(outer.get('isError') is False and len(outer.get('content', [])) == 1
+-          and outer['content'][0].get('type') == 'text', 'actual supervisor response shape')
+-    terminal = parse(outer['content'][0]['text'].encode())
+-    check(terminal.get('job_id') == '1a1d0c6996e-2564-1bc8'
+-          and terminal.get('state') == 'succeeded' and terminal.get('exit_code') == 0
+-          and terminal.get('timed_out') is False and terminal.get('cancelled') is False
+-          and terminal.get('automatic_retry') is False
+-          and terminal.get('output_complete') is True and terminal.get('output_durable') is True
+-          and terminal.get('terminal_publication_confirmed') is True
+-          and not any(terminal.get('log_truncated', {}).values()), 'actual complete materialization supervisor')
+-    check(observed.get('status') == 'MATERIALIZED_FOR_MAINTENANCE_ONLY'
+-          and observed.get('target_repo') == str(REPO) and observed.get('source_commit') == HEAD
+-          and observed.get('source_tree') == TREE and observed.get('parents') == PARENTS,
+-          'actual materialization source identity')
+-    check(observed.get('materialized') == {'head': HEAD, 'tree': TREE, 'index_equals_tree': True,
+-          'physical_bytes_equal': True, 'detached': True, 'maintenance_or_tests_started': False,
+-          'qualification': False}, 'actual complete materialization')
+-    for key in ('source_repo_unmodified', 'source_object_lookup_unchanged', 'inputs_unchanged'):
+-        check(observed.get(key) is True, 'materialization prerequisite ' + key)
+-    for key in ('maintenance_started', 'cargo_or_tests_started', 'qualification', 'remote_ref_updates'):
+-        check(observed.get(key) is False, 'materialization scope ' + key)
+-    check({row['check']: row['status'] for row in observed['final_audits']} == {
+-          'close_owned_helpers': 'verified', 'original_source': 'verified',
+-          'original_source_object_lookup': 'verified', 'new_destination': 'verified',
+-          'original_inputs': 'verified'}, 'complete materialization final audits')
+-    inv = observed['destination_inventory']
+-    check(all(inv.get(k) == v for k, v in SOURCE_PIN.items())
+-          and inv.get('tracked_entries') == inv.get('filesystem_entries') == 15188,
+-          'actual complete materialized baseline')
+-    result['materialization_job'] = terminal['job_id']
+-
+-
+-def preflight():
+-    global cfg, plan, inventory_module, execute_module, before_inventory, before_git
+-    global network_before, effective_environment
+-    raw_cfg = regular_read(CONFIG, 1000000, owned=True)
+-    cfg = parse(raw_cfg)
+-    check(cfg.get('format') == 'hepta-runtime-materials-restoration-approval-v2'
+-          and cfg.get('status') == 'ROOT_APPROVED_TO_EXECUTE'
+-          and cfg.get('root_execution_approved') is True, 'HOLD: exact Root approval required')
+-    own = regular_read(__file__, 200000, owned=True)
+-    check(cfg.get('driver_sha256') == sha256(own) and cfg.get('driver_git_blob') == git_blob(own),
+-          'exact approved driver identity')
+-    check(cfg.get('source_repo') == str(REPO) and cfg.get('source_commit') == HEAD
+-          and cfg.get('source_tree') == TREE and cfg.get('source_inventory') == SOURCE_PIN,
+-          'exact source and complete physical baseline approval')
+-    check(cfg.get('depot') == str(DEPOT) and cfg.get('cargo_target') == str(TARGET)
+-          and cfg.get('create_new_depot') is True and cfg.get('require_target_absent') is True,
+-          'only approved external directories, both initially absent')
+-    check(cfg.get('unique_idempotency_key') == RUN_KEY
+-          and cfg.get('preparation_only_foreign_build_policy') == FOREIGN_BUILD,
+-          'exact single foreign-job preparation isolation approval')
+-    check(cfg.get('operation_seconds') == OPERATION_SECONDS and cfg.get('final_seconds') == FINAL_SECONDS
+-          and cfg.get('outer_seconds') == 900 and cfg.get('bootstrap_strategy') == BOOTSTRAP,
+-          'reviewed preparation scope and budgets')
+-    check(cfg.get('maintenance_authorized') is False and cfg.get('tests_authorized') is False
+-          and cfg.get('remote_ref_updates_authorized') is False, 'preparation only')
+-    for path, raw in ((Path(__file__), own), (CONFIG, raw_cfg)):
+-        input_pins[str(path)] = {'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)}
+-    record('ACTUAL_DRIVER.py', own)
+-    record('APPROVED_CONFIG.original.json', raw_cfg)
+-    original = {name: read_input(CONTROL / name, pin) for name, pin in INPUTS.items()}
+-    plan = parse(original['DEPENDENCY_PLAN.original.json'])
+-    check(plan['source']['commit'] == HEAD and plan['source']['tree'] == TREE,
+-          'exact reviewed source dependency plan')
+-    check(len(plan['artifacts']) == 6 and {x['role'] for x in plan['artifacts']} == set(ASSET_ROLES),
+-          'six reviewed material roles')
+-    validate_materialization(original['MATERIALIZATION_RESULT.original.json'],
+-                             original['MATERIALIZATION_SUPERVISOR.original.json'])
+-    inventory_module = load_module(CONTROL / 'inventory-driver.original.py', INVENTORY_PIN,
+-                                   'hepta_restoration_original_inventory')
+-    execute_module = load_module(REPO / 'scripts/hepta_ci_exec.py', EXECUTE_PIN,
+-                                 'hepta_restoration_original_execute')
+-    # All unlisted process environment, including proxy/CA policy, is inherited.
+-    network_before = {key: os.environ.get(key) for key in NETWORK_ENV_KEYS}
+-    jrecord('INHERITED_SAFE_ENVIRONMENT.json', {
+-        'source_environment': {key: os.environ.get(key) for key in SAFE_SOURCE_ENV},
+-        'formatter_environment': {key: os.environ.get(key) for key in UV_KEYS},
+-        'network_environment_presence': {key: value is not None for key, value in network_before.items()},
+-        'network_values_recorded': False})
+-    unexpected = sorted(key for key in os.environ if (key.startswith('UV_') or key.startswith('RUFF_'))
+-                        and key not in UV_KEYS)
+-    check(not unexpected, 'unreviewed formatter environment names: ' + repr(unexpected))
+-    check(not any(os.environ.get(key) for key in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_COMMON_DIR',
+-          'GIT_INDEX_FILE', 'GIT_OBJECT_DIRECTORY', 'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+-          'GIT_SHALLOW_FILE', 'GIT_REPLACE_REF_BASE')), 'no inherited Git identity overrides')
+-    seed = parse(original['MAINTENANCE_STARTED.original.json'])['environment']
+-    effective_environment = dict(seed)
+-    effective_environment.update({
+-        'PATH': str(DEPOT / 'bin') + ':' + seed['PATH'],
+-        'CARGO_TARGET_DIR': str(TARGET),
+-        'RUSTY_V8_ARCHIVE': str(DEPOT / 'v8-150.4.0-gnu-sandbox' /
+-                              'librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz'),
+-        'RUSTY_V8_SRC_BINDING_PATH': str(DEPOT / 'v8-150.4.0-gnu-sandbox' /
+-                                       'src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs'),
+-        'UV_PROJECT_ENVIRONMENT': str(DEPOT / 'scripts-project-environment'),
+-        'UV_CACHE_DIR': str(DEPOT / 'uv-cache'), 'RUFF_CACHE_DIR': str(DEPOT / 'ruff-cache'),
+-        'UV_OFFLINE': 'true', 'UV_PYTHON_DOWNLOADS': 'never'})
+-    check(cfg.get('environment') == effective_environment, 'frozen complete explicit runtime environment')
+-    os.environ.update(effective_environment)
+-    before_git = source_git_state()
+-    jrecord('SOURCE_GIT_STATE.before.json', before_git)
+-    before_inventory = inventory_module.inventory(REPO)
+-    gzip_record('SOURCE.before.inventory.json.gz', before_inventory)
+-    pin_bytes(before_inventory, SOURCE_PIN, 'current complete 15188-file source')
+-    inventory_module.require_inventory(before_inventory, {'source_sha': HEAD, 'source_tree': TREE})
+-    value = parse(before_inventory)
+-    check(len(value['files']) == value['tracked_entries'] == value['filesystem_entries'] == 15188,
+-          'exact all-source file counts')
+-    for pin in plan['source']['pins']:
+-        read_input(REPO / pin['path'], {'bytes': pin['bytes'], 'sha256': pin['sha256'],
+-                                       'git_blob': pin['git_blob_sha']})
+-    process = active_processes()
+-    jrecord('PROCESS_PREFLIGHT.json', process)
+-    check(not process['blocking'] and not process['unknown'],
+-          'blocking/unknown named build or formatter outside exact foreign preparation allowance')
+-    result['process_preparation_observation'] = process
+-    check(platform.system() == 'Linux' and platform.machine() == 'x86_64'
+-          and platform.libc_ver()[0] == 'glibc', 'exact GNU x86_64 platform')
+-    check(sys.version_info >= (3, 10) and Path(sys.executable).resolve() == Path(PYTHON).resolve(),
+-          'existing explicit system Python >=3.10; no interpreter download')
+-    python = file_identity(PYTHON, allow_symlink=True)
+-    jrecord('PYTHON_AND_PLATFORM.json', {'python': python, 'version': sys.version,
+-            'platform': platform.platform(), 'libc': platform.libc_ver()})
+-    installed_tools = {}
+-    for name in ('git', 'just', 'python3', 'rustup', 'cargo'):
+-        path = shutil.which(name)
+-        check(path is not None, 'required existing tool unavailable on the original PATH: ' + name)
+-        installed_tools[name] = file_identity(path, allow_symlink=True)
+-        restored['tool_' + name] = installed_tools[name]
+-    jrecord('EXISTING_TOOL_FILES.json', installed_tools)
+-    real_directory(DEPOT.parent)
+-    check(os.access(DEPOT.parent, os.W_OK | os.X_OK), 'writable/searchable actual depot parent')
+-    check(not os.path.lexists(DEPOT), 'new depot already exists; reconcile instead of overwrite/replay')
+-    real_directory(TARGET.parent)
+-    check(os.access(TARGET.parent, os.W_OK | os.X_OK), 'writable/searchable actual target parent')
+-    check(not os.path.lexists(TARGET), 'dedicated Cargo target must still be absent before this new preparation')
+-    jrecord('EXTERNAL_ABSENCE_PREFLIGHT.json', {'at': now(), 'depot': str(DEPOT),
+-            'target': str(TARGET), 'depot_absent': True, 'target_absent': True,
+-            'existing_directories_reused': False})
+-    disk = shutil.disk_usage(DEPOT.parent)
+-    check(disk.free >= 6 * 1024**3, 'at least 6 GiB actual external free space required')
+-    jrecord('DISK_PREFLIGHT.json', {'parent': real_directory(DEPOT.parent),
+-            'total': disk.total, 'used': disk.used, 'free': disk.free,
+-            'minimum_free_bytes': 6 * 1024**3})
+-    os.mkdir(DEPOT, 0o700)
+-    result['depot_created'] = True
+-    for name in ('bin', 'downloads', 'wheelhouse', 'v8-150.4.0-gnu-sandbox', 'uv-cache', 'ruff-cache'):
+-        os.mkdir(DEPOT / name, 0o700)
+-    os.mkdir(TARGET, 0o700)
+-    target_created = True
+-    target = real_directory(TARGET, owned=True)
+-    check(os.access(TARGET, os.R_OK | os.W_OK | os.X_OK), 'accessible dedicated target directory')
+-    result['cargo_target_created'] = target_created
+-    jrecord('EXTERNAL_DIRECTORIES_CREATED.json', {'depot': real_directory(DEPOT, owned=True),
+-            'target': target, 'target_created': target_created, 'removed_or_replaced': []})
+-    restored['python'] = python
+-    event('restoration_preflight_complete', source_commit=HEAD, physical_files=15188,
+-          depot=str(DEPOT), cargo_target_created=target_created)
+-
+ 
+ def safe_url(url):
+     value = urllib.parse.urlsplit(url)
+@@ -626,6 +324,7 @@
+     return urllib.parse.urlunsplit((value.scheme, value.hostname, value.path, '', ''))
+ 
+ 
++
+ class FixedRedirects(urllib.request.HTTPRedirectHandler):
+     def __init__(self, row):
+         super().__init__()
+@@ -636,6 +335,7 @@
+         self.row['redirects'].append({'status': code, 'destination_without_query': safe_url(target)})
+         check(len(self.row['redirects']) <= 5, 'download redirect ceiling')
+         return super().redirect_request(request, fp, code, message, headers, target)
++
+ 
+ 
+ def download(asset):
+@@ -703,251 +403,392 @@
+         jrecord('download-%02d.json' % len(downloads), row)
+ 
+ 
+-def checksum_lines(path, expected):
+-    raw = regular_read(path, 4096, owned=True)
+-    lines = raw.decode('ascii').splitlines()
+-    parsed = {}
+-    for line in lines:
+-        match = re.fullmatch(r'([0-9a-f]{64}) [ *](\S+)', line)
+-        check(match is not None, 'canonical checksum text line')
+-        name = match[2]
+-        check(name not in parsed and Path(name).name == name, 'unique checksum basename')
+-        parsed[name] = match[1]
+-    check(parsed == expected, 'exact checksum set; no substituted profile/architecture')
+-    jrecord(path.name + '.parsed.json', {'path': str(path), 'entries': parsed, 'bytes': len(raw), 'sha256': sha256(raw)})
+-
+-
+-def extract_uv(archive):
+-    entries = []
+-    uv_member = None
+-    with tarfile.open(archive, mode='r:gz') as stream:
+-        total = 0
+-        for member in stream:
+-            check(len(entries) < 256, 'UV archive member ceiling')
+-            name = PurePosixPath(member.name)
+-            check(not name.is_absolute() and all(piece not in ('', '.', '..') for piece in name.parts),
+-                  'safe UV archive member path')
+-            check(member.isdir() or member.isfile(), 'UV archive contains a link or special entry')
+-            total += member.size
+-            check(total <= 256 * 1024**2, 'UV uncompressed archive ceiling')
+-            entries.append({'name': member.name, 'bytes': member.size, 'kind': 'directory' if member.isdir() else 'file',
+-                            'mode': member.mode})
+-            if name.name == 'uv':
+-                check(uv_member is None and member.isfile() and member.size <= 128 * 1024**2,
+-                      'unique bounded regular UV executable')
+-                uv_member = member
+-        check(uv_member is not None, 'UV executable missing in exact official archive')
+-        source = stream.extractfile(uv_member)
+-        check(source is not None, 'UV archive readable executable')
+-        with source:
+-            raw = source.read(uv_member.size + 1)
+-        check(len(raw) == uv_member.size and raw.startswith(b'\x7fELF'), 'complete actual UV ELF')
+-    target = DEPOT / 'bin' / 'uv'
+-    put(target, raw, 0o700)
+-    identity = file_identity(target)
+-    jrecord('UV_ARCHIVE_INDEX.json', {'archive': str(archive), 'entries': entries,
+-            'extraction_scope': 'only unique regular uv executable; no links/directories extracted', 'uv': identity})
+-    restored['uv'] = identity
+-    output = run_command('uv-version', [str(target), '--version'], 30)
+-    check(re.fullmatch(rb'uv 0\.11\.3(?: \([^\r\n]*\))?\r?\n', output) is not None,
+-          'actual pinned UV version 0.11.3')
+-    return target
+-
+-
+-def verify_wheel(wheel):
+-    with zipfile.ZipFile(wheel) as stream:
+-        names = stream.namelist()
+-        check(len(names) == len(set(names)) and len(names) <= 256, 'bounded unique Ruff wheel entries')
+-        for name in names:
+-            relative = PurePosixPath(name)
+-            check(not relative.is_absolute() and all(x not in ('', '.', '..') for x in relative.parts),
+-                  'safe Ruff wheel member')
+-        metadata = 'ruff-0.15.13.dist-info/METADATA'
+-        check(metadata in names and stream.getinfo(metadata).file_size <= 1000000, 'exact Ruff wheel metadata')
+-        raw = stream.read(metadata)
+-        text = raw.decode('utf-8')
+-        check(re.search(r'^Name: ruff$', text, re.M) and re.search(r'^Version: 0\.15\.13$', text, re.M),
+-              'actual Ruff wheel name/version')
+-        check(not re.search(r'^Requires-Dist:', text, re.M), 'sole locked Ruff wheel has no further runtime dependencies')
+-    record('RUFF_WHEEL_METADATA.original.txt', raw)
+-
+-
+-def bootstrap(uv, wheelhouse):
+-    venv = DEPOT / 'scripts-project-environment'
+-    check(not os.path.lexists(venv), 'fresh external project environment only')
+-    result['bootstrap_started'] = True
+-    run_command('uv-external-venv', [str(uv), 'venv', '--python', PYTHON, str(venv)], 120)
+-    real_directory(venv, owned=True)
+-    # A named locked requirement from the single verified flat-index wheel is
+-    # deliberate. Do not install a direct-URL requirement that changes provenance.
+-    run_command('uv-locked-ruff-install', [str(uv), 'pip', 'install', '--offline', '--no-index',
+-                '--find-links', str(wheelhouse), '--python', str(venv / 'bin/python'),
+-                'ruff==0.15.13'], 120)
+-    run_command('uv-frozen-offline-check', [str(uv), 'sync', '--frozen', '--project', 'scripts',
+-                '--offline', '--check'], 120)
+-    output = run_command('original-uv-run-ruff-version', [str(uv), 'run', '--frozen', '--project',
+-                          'scripts', 'ruff', '--version'], 120)
+-    check(output.strip() == b'ruff 0.15.13', 'actual original UV-run Ruff version')
+-    # Recheck after original uv run; do not infer the environment remained ready.
+-    run_command('uv-frozen-offline-final-check', [str(uv), 'sync', '--frozen', '--project',
+-                'scripts', '--offline', '--check'], 120)
+-    restored['venv_python'] = file_identity(venv / 'bin/python', allow_symlink=True)
+-    restored['ruff'] = file_identity(venv / 'bin/ruff', allow_symlink=True)
+-    check(restored['venv_python']['sha256'] == restored['python']['sha256'],
+-          'external environment uses the verified existing Python')
+-    check(restored['ruff']['resolved'].startswith(str(venv) + '/'), 'actual Ruff executable belongs to external venv')
+-    result['actual_frozen_offline_check_completed'] = True
+-
+-
+-def restore_materials():
+-    by_role = {row['role']: row for row in plan['artifacts']}
+-    paths = {}
+-    for role in ASSET_ROLES:
+-        paths[role] = download(by_role[role])
+-        if role == 'uv-archive-checksum-text':
+-            item = by_role['uv-executable-archive']
+-            checksum_lines(paths[role], {item['filename']: item['sha256']})
+-        elif role == 'v8-pair-checksum-text':
+-            checksum_lines(paths[role], {by_role[key]['filename']: by_role[key]['sha256']
+-                           for key in ('v8-sandbox-archive', 'v8-sandbox-bindings')})
+-    uv = extract_uv(paths['uv-executable-archive'])
+-    restored['tool_uv'] = file_identity(uv)
+-    verify_wheel(paths['ruff-locked-wheel'])
+-    bootstrap(uv, DEPOT / 'wheelhouse')
+-    result['materials_and_environment_prepared'] = True
+-
+-
+-def verify_materials_final():
+-    for role, pin in restored.items():
+-        current = file_identity(pin['path'], allow_symlink=role in ('python', 'venv_python', 'ruff') or role.startswith('tool_'))
+-        check(current == pin, 'restored tool/material changed before final admission: ' + role)
+-    for path in (DEPOT / 'uv-cache', DEPOT / 'ruff-cache', DEPOT / 'scripts-project-environment', TARGET):
++
++def active_build_processes():
++    active=[];unreadable=[]
++    for item in pathlib.Path("/proc").iterdir():
++        if not item.name.isdecimal():continue
++        try:
++            name=(item/"comm").read_text().strip()
++            if name not in ("cargo","cargo-clippy","clippy-driver","rustc","rustfmt","just","uv","ruff"):
++                continue
++            status=(item/"status").read_text()
++            uid_line=next(x for x in status.splitlines() if x.startswith("Uid:"))
++            uid=int(uid_line.split()[1])
++            if uid!=os.getuid():continue
++            active.append({"pid":int(item.name),"comm":name,"uid":uid})
++        except FileNotFoundError:
++            continue
++        except (OSError,StopIteration,ValueError) as error:
++            unreadable.append({"pid":int(item.name),"error":type(error).__name__})
++    return {"active_matching_processes":active,"unreadable_matching_processes":unreadable,
++            "scope":"Same-UID process names only; no environment/argument values or credentials inspected; no processes killed."}
++
++
++
++
++def complete_identity(raw):
++    return {'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)}
++
++
++def stat_identity(value):
++    return {key: getattr(value, key) for key in (
++        'st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink',
++        'st_size', 'st_mtime_ns', 'st_ctime_ns')}
++
++
++def arm():
++    signal.setitimer(signal.ITIMER_REAL, remaining())
++
++
++def stable_file(path, pin=None, mode=None):
++    path = Path(path)
++    before = path.lstat()
++    raw = regular_read(path, 40000000, owned=True)
++    after = path.lstat()
++    check(stat_identity(before) == stat_identity(after), 'stable complete regular read: ' + str(path))
++    check(stat.S_ISREG(after.st_mode) and after.st_nlink == 1 and after.st_uid == 1000,
++          'owned single-link regular file: ' + str(path))
++    if mode is not None:
++        check(stat.S_IMODE(after.st_mode) == mode, 'exact existing permissions: ' + str(path))
++    if pin is not None:
++        pin_bytes(raw, pin, str(path))
++    return raw, {'path': str(path), 'identity': complete_identity(raw), 'stat': stat_identity(after)}
++
++
++def parent_observations():
++    rows = []
++    for path, expected_mode in ((Path('/data'), 0o755), (OLD_DEPOT, 0o700), (V8_DIR, 0o700)):
+         real_directory(path, owned=True)
+-    check({key: os.environ.get(key) for key in NETWORK_ENV_KEYS} == network_before,
+-          'proxy/CA policy changed in the preparation process')
+-    check(all(os.environ.get(key) == value for key, value in effective_environment.items()),
+-          'explicit final runtime environment changed')
+-    final = {'format': 'hepta-runtime-materials-environment-v1', 'source_commit': HEAD,
+-             'source_tree': TREE, 'depot': str(DEPOT), 'explicit_environment': effective_environment,
+-             'inherited_source_environment': {key: os.environ.get(key) for key in SAFE_SOURCE_ENV},
+-             'proxy_ca_values_preserved': True, 'proxy_ca_values_recorded': False,
+-             'tool_and_material_files': restored, 'downloads': downloads,
+-             'frozen_offline_project_check_completed': result.get('actual_frozen_offline_check_completed') is True,
+-             'no_maintenance_or_test_qualification': True}
+-    result['environment_record'] = jrecord('ENVIRONMENT_READY.json', final)
+-    return {'status': 'verified', 'material_and_tool_count': len(restored)}
++        value = path.lstat()
++        check(stat.S_IMODE(value.st_mode) == expected_mode and value.st_gid == 1000,
++              'existing fixed parent permissions/owner')
++        rows.append({'path': str(path), 'stat': stat_identity(value)})
++    return rows
++
++
++def require_same_parent_identity(before, after, allow_archive_publication):
++    check(len(before) == len(after) == 3, 'three fixed parents')
++    for old, new in zip(before, after):
++        check(old['path'] == new['path'], 'same fixed parent path')
++        fields = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink')
++        check(all(old['stat'][k] == new['stat'][k] for k in fields), 'fixed parent identity/permissions changed')
++        if old['path'] != str(V8_DIR) or not allow_archive_publication:
++            check(old == new, 'unrelated fixed parent metadata changed')
++
++
++def require_absent_archive():
++    try:
++        value = DESTINATION.lstat()
++    except FileNotFoundError:
++        return {'path': str(DESTINATION), 'exists': False, 'observed_at': now()}
++    raise IntegrityError('archive name exists; never replace, truncate, chmod or delete it: ' + repr(stat_identity(value)))
++
++
++def check_build_processes(name):
++    value = active_build_processes()
++    jrecord(name, value)
++    check(not value['active_matching_processes'] and not value['unreadable_matching_processes'],
++          'original global build/formatter concurrency guard')
++
++
++def git_output(arguments):
++    allowed = (
++        ('ls-files', '--stage', '-z'), ('rev-parse', 'HEAD'), ('rev-parse', 'HEAD^{tree}'),
++        ('status', '--porcelain=v1', '--untracked-files=all'),
++        ('for-each-ref', '--format=%(refname) %(objectname)'),
++    )
++    check(tuple(arguments) in allowed, 'closed readonly Git argv set')
++    argv = [GIT, '--no-optional-locks', '-c', 'diff.autoRefreshIndex=false', '-C', str(REPO), *arguments]
++    seconds = min(30.0, remaining())
++    row = {'argv': argv, 'started_at': now(), 'requested_seconds': 30,
++           'effective_seconds': seconds, 'mutation': False, 'original_command_terminal': 'unknown_not_observed'}
++    commands.append(row)
++    process = None
++    output = error_output = b''
++    signal.setitimer(signal.ITIMER_REAL, 0)
++    try:
++        process = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
++        row['owned_pid'] = process.pid
++        try:
++            output, error_output = process.communicate(timeout=seconds)
++            row.update(original_command_terminal='observed', returncode=process.returncode, timed_out=False)
++        except subprocess.TimeoutExpired as error:
++            output = error.output or b''
++            error_output = error.stderr or b''
++            row['timed_out'] = True
++            raise
++        check(len(output) + len(error_output) <= LOG_LIMIT, 'bounded readonly Git output')
++        check(process.returncode == 0, 'readonly Git returned nonzero')
++        return output
++    except BaseException as error:
++        row.update(error=type(error).__name__ + ': ' + str(error))
++        raise
++    finally:
++        if process is not None and process.poll() is None:
++            try:
++                os.killpg(process.pid, signal.SIGKILL)
++            except ProcessLookupError:
++                pass
++            try:
++                output, error_output = process.communicate(timeout=5)
++                row.update(original_command_terminal='observed', returncode=process.returncode,
++                           cleanup='owned Git process group killed and reaped')
++            except BaseException as error:
++                row['cleanup_error'] = type(error).__name__ + ': ' + str(error)
++        elif process is not None and row['original_command_terminal'] != 'observed':
++            try:
++                output, error_output = process.communicate(timeout=5)
++                row.update(original_command_terminal='observed', returncode=process.returncode)
++            except BaseException as error:
++                row['cleanup_error'] = type(error).__name__ + ': ' + str(error)
++        if process is not None:
++            for stream in (process.stdout, process.stderr):
++                if stream is not None:
++                    stream.close()
++        row.update(finished_at=now(), stdout=complete_identity(output), stderr=complete_identity(error_output))
++        number = len(commands)
++        gzip_record('git-%02d.stdout.gz' % number, output)
++        record('git-%02d.stderr' % number, error_output)
++        jrecord('git-%02d.json' % number, row)
++        arm()
++
++
++def inventory_check_output(argv):
++    check(isinstance(argv, list) and argv[:3] == ['git', '-C', str(REPO)],
++          'original inventory only this exact source')
++    return git_output(argv[3:])
++
++
++def source_git_state():
++    real_directory(REPO / '.git', owned=True)
++    for relative in ('objects/info/alternates', 'shallow', 'info/grafts', 'packed-refs'):
++        check(not os.path.lexists(REPO / '.git' / relative), 'no Git lookup/ref override: ' + relative)
++    raw_head, _ = stable_file(REPO / '.git/HEAD')
++    raw_index, _ = stable_file(REPO / '.git/index')
++    raw_config, _ = stable_file(REPO / '.git/config')
++    check(raw_head == (HEAD + '\n').encode(), 'same detached actual source')
++    refs = git_output(['for-each-ref', '--format=%(refname) %(objectname)'])
++    tree = git_output(['rev-parse', 'HEAD^{tree}']).decode().strip()
++    observed = {'head': HEAD, 'tree': tree, 'head_raw_sha256': sha256(raw_head),
++        'index_bytes': len(raw_index), 'index_sha256': sha256(raw_index),
++        'config_bytes': len(raw_config), 'config_sha256': sha256(raw_config),
++        'refs_bytes': len(refs), 'refs_sha256': sha256(refs)}
++    check(observed == EXPECTED_GIT, 'same actual native admission raw Git baseline')
++    return observed
++
++
++def capture_source(label):
++    raw = inventory_module.inventory(REPO)
++    pin_bytes(raw, SOURCE_PIN, 'actual complete 15188 source ' + label)
++    inventory_module.require_inventory(raw, {'source_sha': HEAD, 'source_tree': TREE})
++    value = parse(raw)
++    check(value['tracked_entries'] == value['filesystem_entries'] == 15188, 'complete source count')
++    artifact = gzip_record('SOURCE.' + label + '.inventory.json.gz', raw)
++    state = source_git_state()
++    jrecord('SOURCE.' + label + '.git-state.json', state)
++    return raw, state, artifact
++
++
++def preflight():
++    global inventory_module, before_inventory, before_git, binding_before, parents_before, environment_before
++    check(os.getuid() == os.geteuid() == 1000, 'original operator UID')
++    environment_before = dict(os.environ)
++    original_values = []
++    for number, (path, pin) in enumerate(INPUTS):
++        raw = read_input(path, pin)
++        record('INPUT.%02d.original' % number, raw)
++        original_values.append(parse(raw) if path.suffix == '.json' else raw)
++    cfg, failed, history, ready, inventory_raw = original_values
++    check(cfg['repo'] == str(REPO) and cfg['source'] == HEAD and cfg['tree'] == TREE,
++          'exact failed native configuration source')
++    check(failed['status'] == 'failed' and failed['behavioral_tests_started'] is False
++          and failed['stages'] == [] and failed['error'] == 'ValueError: RUSTY_V8_ARCHIVE actual existing file required',
++          'original zero-behavior precondition failure')
++    archive = ready['tool_and_material_files']['v8-sandbox-archive']
++    original_download = next(x for x in history['downloads'] if x['role'] == 'v8-sandbox-archive')
++    check(original_download['requested_url'] == ASSET['url'] and original_download['complete_verified'] is True,
++          'exact historically successful original source URL')
++    check(archive == original_download['actual'] == original_download['retained_file'], 'same historical archive observation')
++    check(archive['path'] == archive['resolved'] == str(DESTINATION)
++          and archive['bytes'] == ASSET['bytes'] and archive['sha256'] == ASSET['sha256']
++          and archive['git_blob'] == ARCHIVE_GIT and archive['mode'] == 0o600, 'same original archive identity')
++    check(cfg['runtime_guard']['environment']['RUSTY_V8_ARCHIVE'] == str(DESTINATION)
++          and cfg['runtime_guard']['environment']['RUSTY_V8_SRC_BINDING_PATH'] == str(BINDINGS),
++          'no path/environment substitution')
++    git_pin = ready['tool_and_material_files']['tool_git']
++    git_raw = regular_read(GIT, 5000000)
++    check(len(git_raw) == git_pin['bytes'] and sha256(git_raw) == git_pin['sha256']
++          and git_blob(git_raw) == git_pin['git_blob'], 'actual original Git executable')
++    inventory_module = types.ModuleType('original_5118_inventory_only')
++    inventory_module.__file__ = str(INVENTORY_PATH)
++    exec(compile(inventory_raw, str(INVENTORY_PATH), 'exec'), inventory_module.__dict__)
++    inventory_module.subprocess = types.SimpleNamespace(check_output=inventory_check_output)
++    # Original function bytes/serializer remain unchanged; only its fixed read-only
++    # Git launcher receives the explicit deadline and no-optional-locks adapter.
++    check_build_processes('BUILD_PROCESS_PREFLIGHT.json')
++    parents_before = parent_observations()
++    jrecord('MATERIAL_PARENTS.before.json', parents_before)
++    jrecord('ARCHIVE.absent.before.json', require_absent_archive())
++    _, binding_before = stable_file(BINDINGS, BINDING_PIN, 0o600)
++    jrecord('BINDINGS.before.json', binding_before)
++    before_inventory, before_git, _ = capture_source('before')
++
++
++def restore_one():
++    # The unchanged downloader can write only its new private evidence spool.
++    os.mkdir(DEPOT, 0o700)
++    os.mkdir(DEPOT / 'v8-150.4.0-gnu-sandbox', 0o700)
++    spooled = download(ASSET)
++    arm()
++    payload, complete = stable_file(spooled, {'bytes': ASSET['bytes'],
++        'sha256': ASSET['sha256'], 'git_blob': ARCHIVE_GIT}, 0o600)
++    jrecord('VERIFIED_SPOOL.json', complete)
++    check_build_processes('BUILD_PROCESS_BEFORE_PUBLICATION.json')
++    require_same_parent_identity(parents_before, parent_observations(), False)
++    _, observed_binding = stable_file(BINDINGS, BINDING_PIN, 0o600)
++    check(observed_binding == binding_before, 'original bindings unchanged before publication')
++    absence = require_absent_archive()
++    jrecord('ARCHIVE_PUBLICATION_INTENT.json', {'at': now(), 'source_spool': complete,
++        'destination': str(DESTINATION), 'required_absence': absence,
++        'operation': 'O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW; no replace/delete/rollback', 'mode': 0o600})
++    result['publication_intent_recorded'] = True
++    put(DESTINATION, payload, 0o600)
++    actual, observation = stable_file(DESTINATION, complete['identity'], 0o600)
++    check(actual == payload, 'complete archive destination equals verified original payload')
++    directory_fd = os.open(V8_DIR, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++    try:
++        os.fsync(directory_fd)
++    finally:
++        os.close(directory_fd)
++    result['destination_created'] = True
++    result['archive_actual'] = observation
++    jrecord('ARCHIVE_READBACK.json', observation)
+ 
+ 
+ def audit_source():
+-    if inventory_module is None:
+-        return {'status': 'not_observed', 'reason': 'original inventory module not admitted', 'source_unchanged': None}
+-    after = inventory_module.inventory(REPO)
+-    gzip_record('SOURCE.after.inventory.json.gz', after)
+-    after_git = source_git_state()
+-    jrecord('SOURCE_GIT_STATE.after.json', after_git)
+-    if before_inventory is None or before_git is None:
+-        result['source_comparison'] = 'unknown_before_unavailable'
+-        return {'status': 'not_observed', 'source_unchanged': None,
+-                'actual_after_sha256': sha256(after), 'reason': 'complete before comparison unavailable'}
+-    result['source_unchanged'] = after == before_inventory and after_git == before_git
+-    result['source_comparison'] = 'same' if result['source_unchanged'] else 'different'
+-    if not result['source_unchanged']:
+-        raise IntegrityError('actual complete source or HEAD/index/config/refs changed')
+-    pin_bytes(after, SOURCE_PIN, 'final complete 15188-file prepared source')
+-    inventory_module.require_inventory(after, {'source_sha': HEAD, 'source_tree': TREE})
+-    return {'status': 'verified', 'source_unchanged': True, 'inventory': SOURCE_PIN,
+-            'git_comparison_scope': 'HEAD/index/config/refs; no complete historical fsck claim'}
+-
+-
+-def audit_inputs():
++    if inventory_module is None or before_inventory is None or before_git is None:
++        return {'status': 'unknown', 'reason': 'complete original before source unavailable'}
++    raw, state, artifact = capture_source('after')
++    check(raw == before_inventory and state == before_git, 'full source and raw Git unchanged')
++    result['source_unchanged'] = True
++    return {'status': 'verified', 'inventory': SOURCE_PIN, 'artifact': artifact,
++            'raw_git': state, 'scope': 'complete physical source and HEAD/index/config/refs/declared indirection; not whole object-store metadata'}
++
++
++def audit_materials():
++    after_parents = parent_observations()
++    jrecord('MATERIAL_PARENTS.after.json', after_parents)
++    if parents_before is not None:
++        require_same_parent_identity(parents_before, after_parents, result['publication_intent_recorded'])
++    _, bindings = stable_file(BINDINGS, BINDING_PIN, 0o600)
++    jrecord('BINDINGS.after.json', bindings)
++    check(binding_before is not None and bindings == binding_before, 'original bindings full identity/stat unchanged')
++    if not result['destination_created']:
++        observation = {'exists': os.path.lexists(DESTINATION)}
++        if observation['exists']:
++            try:
++                raw, observed = stable_file(DESTINATION)
++                observation.update(observed)
++            except BaseException as error:
++                observation['error'] = type(error).__name__ + ': ' + str(error)
++        jrecord('ARCHIVE.partial-or-absent.json', observation)
++        return {'status': 'unknown', 'reason': 'exact archive publication did not complete', 'actual': observation}
++    _, archive = stable_file(DESTINATION, {'bytes': ASSET['bytes'], 'sha256': ASSET['sha256'], 'git_blob': ARCHIVE_GIT}, 0o600)
++    check(archive == result['archive_actual'], 'restored archive stable through final audit')
++    return {'status': 'verified', 'archive': archive, 'bindings': bindings,
++            'allowed_parent_metadata_change': str(V8_DIR) + ' directory timestamps/size caused by the one new entry only'}
++
++
++def audit_inputs_environment():
+     for path, pin in input_pins.items():
+-        pin_bytes(regular_read(path, max(pin['bytes'], 40000000), owned=True), pin, path)
+-    return {'status': 'verified', 'count': len(input_pins)}
+-
+-
+-def finish():
+-    result['finished_at'] = now()
+-    event('runtime_restoration_terminal', status=result['status'], source_unchanged=result['source_unchanged'],
+-          qualification=False, out=str(OUT))
+-    jrecord('COMMANDS.json', commands)
+-    jrecord('DOWNLOADS.json', downloads)
+-    jrecord('INPUT_IDENTITIES.json', input_pins)
+-    if (OUT / 'EVENTS.jsonl').exists():
+-        raw = regular_read(OUT / 'EVENTS.jsonl', LOG_LIMIT, owned=True)
+-        artifacts.append({'name': 'EVENTS.jsonl', 'bytes': len(raw), 'sha256': sha256(raw), 'git_blob': git_blob(raw)})
+-    result['commands'] = commands
+-    result['downloads'] = downloads
+-    result['budget_scope'] = {'operation_seconds': OPERATION_SECONDS, 'final_evidence_seconds': FINAL_SECONDS,
+-                              'outer_seconds': 900, 'original_maintenance_or_test_budgets_changed': False}
+-    jrecord('ARTIFACTS.json', {'files': artifacts, 'terminal_report': 'RESULT.json', 'terminal_self_hash_included': False})
+-    jrecord('RESULT.json', result)
++        pin_bytes(regular_read(path, max(40000000, pin['bytes']), owned=True), pin, path)
++    check(environment_before is not None and dict(os.environ) == environment_before,
++          'all inherited environment values preserved; values not recorded')
++    return {'status': 'verified', 'input_count': len(input_pins), 'environment_unchanged': True}
+ 
+ 
+ def main():
+     global deadline
+-    result['started_at'] = now()
+-    real_directory(REPO, owned=True)
+-    real_directory(CONTROL, owned=True)
+-    check(not os.path.lexists(OUT), 'existing restoration output: reconcile, never automatically retry')
++    config_raw = sys.stdin.buffer.read(8193)
++    check(len(config_raw) <= 8192, 'bounded exact configuration')
++    cfg = parse(config_raw)
++    expected = {'format': 'hepta-v8-single-archive-restoration-approval-v1',
++        'status': 'ROOT_APPROVED_EXACT_EXECUTION', 'root_execution_approved': True,
++        'run_key': RUN_KEY, 'control': str(CONTROL), 'destination': str(DESTINATION),
++        'source_commit': HEAD, 'source_tree': TREE, 'operation_seconds': 600,
++        'final_seconds': 180, 'outer_seconds': 900,
++        'prior_native_failure_blob': 'b6a785c0194c2f65054a26e5815042010a22dad8',
++        'readonly_observation_blob': '1789babc0eeca7de054f209fc051ed8aa44582a4'}
++    check(cfg == expected, 'exact separate Root-approved material-only configuration')
++    real_directory(CONTROL.parent, owned=True)
++    check(not os.path.lexists(CONTROL), 'new operation only: reconcile existing job, never rerun')
++    os.mkdir(CONTROL, 0o700)
+     os.mkdir(OUT, 0o700)
+-    lock = (OUT / 'EXCLUSIVE_RESTORATION.lock').open('x')
+-    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+-    os.chdir(REPO)
+-    os.environ['GIT_OPTIONAL_LOCKS'] = '0'
+-    os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+-    sys.dont_write_bytecode = True
++    actual_script = sys.orig_argv[sys.orig_argv.index('-c') + 1].encode()
++    record('ACTUAL_SCRIPT.py', actual_script)
++    record('APPROVED_CONFIG.original.json', config_raw)
++    input_pins[str(OUT / 'ACTUAL_SCRIPT.py')] = complete_identity(actual_script)
++    input_pins[str(OUT / 'APPROVED_CONFIG.original.json')] = complete_identity(config_raw)
+     signal.signal(signal.SIGALRM, alarm)
+     deadline = time.monotonic() + OPERATION_SECONDS
+-    signal.alarm(OPERATION_SECONDS)
++    arm()
++    lock_fd = None
++    result['started_at'] = now()
+     try:
+-        event('runtime_restoration_preconditions_started')
++        real_directory(LOCK.parent, owned=True)
++        lock_fd = os.open(LOCK, os.O_RDONLY | os.O_NOFOLLOW)
++        lock_stat = os.fstat(lock_fd)
++        actual_lock = {'device': lock_stat.st_dev, 'inode': lock_stat.st_ino, 'uid': lock_stat.st_uid,
++                      'mode': stat.S_IMODE(lock_stat.st_mode), 'nlink': lock_stat.st_nlink}
++        check(stat.S_ISREG(lock_stat.st_mode) and actual_lock == LOCK_PIN, 'same cooperative source coordination lock')
++        fcntl.flock(lock_fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
++        jrecord('SOURCE_COORDINATION_SH.json', {'at': now(), 'path': str(LOCK), **actual_lock,
++            'scope': 'Cooperative source writers only; all complete before/after checks still required.'})
+         preflight()
+-        restore_materials()
+-        result['status'] = 'MATERIALS_READY_FOR_MAINTENANCE_REVIEW'
++        restore_one()
++        result['status'] = 'ARCHIVE_RESTORED_FOR_REVIEW_ONLY'
+     except BaseException as error:
+-        result.update(status='FAILED_PREPARATION', error=repr(error), traceback=traceback.format_exc())
++        result.update(status='FAILED_MATERIAL_PREPARATION', error=type(error).__name__ + ': ' + str(error), traceback=traceback.format_exc())
+     finally:
+-        signal.alarm(0)
+-        final_deadline = time.monotonic() + FINAL_SECONDS
++        signal.setitimer(signal.ITIMER_REAL, 0)
++        deadline = time.monotonic() + FINAL_SECONDS
+         audits = []
+-        actions = [('source', audit_source), ('inputs', audit_inputs)]
+-        if result.get('materials_and_environment_prepared'):
+-            actions.append(('materials_environment', verify_materials_final))
+-        for name, action in actions:
++        for name, action in (('source', audit_source), ('inputs_environment', audit_inputs_environment), ('materials', audit_materials)):
+             entry = {'check': name, 'started_at': now()}
+             try:
+-                available = int(final_deadline - time.monotonic())
+-                check(available > 0, 'final evidence budget exhausted')
+-                signal.alarm(available)
++                arm()
+                 entry.update(action())
+             except BaseException as error:
+-                entry.update(status='failed_integrity' if isinstance(error, IntegrityError) else 'unknown',
+-                             error=repr(error), traceback=traceback.format_exc())
++                entry.update(status='unknown', error=type(error).__name__ + ': ' + str(error), traceback=traceback.format_exc())
+             finally:
+-                signal.alarm(0)
++                signal.setitimer(signal.ITIMER_REAL, 0)
+             entry['finished_at'] = now()
+             audits.append(entry)
+         result['final_audits'] = audits
+-        if result['status'] == 'MATERIALS_READY_FOR_MAINTENANCE_REVIEW' and (
+-                len(audits) != 3 or any(row['status'] != 'verified' for row in audits)):
+-            result['status'] = 'UNKNOWN'
+-        if any(row['status'] == 'failed_integrity' for row in audits):
+-            result['status'] = 'FAILED_INTEGRITY'
++        if result['status'] == 'ARCHIVE_RESTORED_FOR_REVIEW_ONLY' and any(row['status'] != 'verified' for row in audits):
++            result['status'] = 'UNKNOWN_MATERIAL_PREPARATION'
+         try:
+-            finish()
++            arm()
++            jrecord('COMMANDS.json', commands)
++            jrecord('DOWNLOADS.json', downloads)
++            jrecord('INPUT_IDENTITIES.json', input_pins)
++            result['finished_at'] = now()
++            result['downloads'] = downloads
++            result['commands'] = commands
++            jrecord('ARTIFACTS.json', {'files': artifacts, 'terminal_report': 'RESULT.json'})
++            jrecord('RESULT.json', result)
++            print(encoded({'status': result['status'], 'result': str(OUT / 'RESULT.json'),
++                'qualification': False, 'source_unchanged': result['source_unchanged']}).decode(), end='', flush=True)
+         except BaseException as error:
+-            result['status'] = 'UNKNOWN'
+-            print(json.dumps({'event': 'runtime_restoration_retention_error', 'status': 'UNKNOWN',
+-                              'error': repr(error), 'out': str(OUT), 'qualification': False}), flush=True)
+-        lock.close()
+-    return 0 if result['status'] == 'MATERIALS_READY_FOR_MAINTENANCE_REVIEW' else 1
++            result['status'] = 'UNKNOWN_MATERIAL_PREPARATION'
++            print(encoded({'status': result['status'], 'retention_error': repr(error)}).decode(), end='', flush=True)
++        finally:
++            signal.setitimer(signal.ITIMER_REAL, 0)
++            if lock_fd is not None:
++                os.close(lock_fd)
++    return 0 if result['status'] == 'ARCHIVE_RESTORED_FOR_REVIEW_ONLY' else 1
+ 
+ 
+ if __name__ == '__main__':
+-    try:
+-        code = main()
+-    except BaseException as error:
+-        print(json.dumps({'event': 'runtime_restoration_admission_error', 'status': 'UNKNOWN',
+-                          'error': repr(error), 'automatic_retry': False, 'qualification': False}), flush=True)
+-        code = 1
+-    sys.exit(code)
++    raise SystemExit(main())

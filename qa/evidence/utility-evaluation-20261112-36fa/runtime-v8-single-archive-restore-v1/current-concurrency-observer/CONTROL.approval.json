@@ -1,0 +1,30 @@
+{
+  "format": "hepta-root-exact-readonly-guard-approval-v1",
+  "status": "APPROVED_ONCE_READONLY",
+  "created_at_utc": "2026-11-13T04:07:06.364051+00:00",
+  "script": {
+    "bytes": 1592,
+    "sha256": "cfa2459c1d6f4282cb28e9033fecf6884abfbc79bae1da7090aa21a11b92f9a2",
+    "git_blob": "45a3a8ff39967288f6449f25e3a9276edcaaf081"
+  },
+  "request": {
+    "bytes": 1916,
+    "sha256": "42bf822e963f8733f5a43cfa05ef6f23b844f436ee9617a484e3bff83c928665",
+    "git_blob": "64b679be4a1b927e7767dbc260b80a30e77398ad"
+  },
+  "original_function_source": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+  "original_function_byte_equal": true,
+  "key": "hepta-utility-36fa-post-material-concurrency-readonly-v1",
+  "timeout_seconds": 15,
+  "request_fields": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "timeout_seconds",
+    "idempotency_key"
+  ],
+  "executor": "/root/native_ci_audit",
+  "scope": "One read of original same-UID build/formatter process-name guard. No subprocess, process environment/argument read, signal, filesystem mutation, download, restore, test, native dispatch, or retry. Prior observations are not relabeled current. If admission is uncertain, reconcile only this exact request/key.",
+  "qualification": false
+}

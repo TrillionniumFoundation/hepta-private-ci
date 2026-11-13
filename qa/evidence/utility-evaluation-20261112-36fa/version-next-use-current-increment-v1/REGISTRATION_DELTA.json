@@ -1,0 +1,27 @@
+{
+  "status": "proposal_after_exact_increment_not_formatted",
+  "rename_pending_boundaries": [
+    {
+      "id": "learning_original_evaluated_next_use_retained_channel",
+      "symbol_before": "OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_channel",
+      "symbol_after": "OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_response"
+    },
+    {
+      "id": "learning_original_evaluated_next_use_readiness_retained_channel",
+      "symbol_before": "OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_readiness_channel",
+      "symbol_after": "OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_readiness_response"
+    }
+  ],
+  "preserve_callers": [
+    "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+  ],
+  "new_or_replaced_protected_scopes": [
+    "Version::serve_original_evaluated_next_use_loop",
+    "Version::original_evaluated_next_use_response",
+    "ReadOwner::original_evaluated_next_use_response",
+    "ReadOwner::original_evaluated_next_use_readiness_response",
+    "ReadOwner::require_original_evaluated_next_use_profile",
+    "NextUseReadPurpose"
+  ],
+  "test_parent_mount": "existing next_use_readback_tests child already includes both added tests; no new mount or ignored rule"
+}

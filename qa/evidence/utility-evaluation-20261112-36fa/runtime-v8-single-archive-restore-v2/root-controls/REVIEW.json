@@ -1,0 +1,150 @@
+{
+  "format": "hepta-exact-second-material-attempt-review-v1",
+  "reviewed_at_utc": "2026-11-13T04:10:36.498885+00:00",
+  "status": "EXACT_CREATE_ONLY_SUCCESSOR_ACCEPTED",
+  "prior_approval": "c1e817303dd96488b30115da5bcc1c6ec6844177",
+  "prior_full_root_review": "9b2032af6e0068e0d77164e01d71ca4910d9957b",
+  "prior_job": "1a1d30d5606-392-80",
+  "prior_actual_result": {
+    "bytes": 2379,
+    "sha256": "9b3a82d29b5662c6e57cf742acd830224e8b34a512ef263f730c0353c0dad210",
+    "git_blob": "4d3a1a0cba0924ab07357fc01d9015c31cf03197"
+  },
+  "prior_actual_normal": {
+    "bytes": 946,
+    "sha256": "d8f0325bb668d9565ef303dc82397eb6c6bf2323bbb582fdc1a6d0209e904d74",
+    "git_blob": "1c80e7e77dd1f2a15f3cf135b0c2596dcc6d67fa"
+  },
+  "prior_downloads_and_command_children": 0,
+  "prior_archive_publication_started": false,
+  "new_readonly_job": "1a1d3179f2a-392-83",
+  "new_actual_observation": {
+    "bytes": 485,
+    "sha256": "16d8e917b1c67917bf17862f05f8e5471507dfeed99e795beddd75f644364766",
+    "git_blob": "ec83fc9c6e1fd0fd16012afda54bca3c013ba996"
+  },
+  "new_actual_normal": {
+    "bytes": 949,
+    "sha256": "a02e570fe2d6afd56b0cad7ac8bbc058f1e9161ef50c745ac34e1c0fd15a12bc",
+    "git_blob": "b6ca454e783915107c11e56cf10b0268b16d9793"
+  },
+  "quiet_sample_finished_at": "2026-11-13T04:08:24.443956+00:00",
+  "quiet_sample_only_not_lease": true,
+  "driver": {
+    "bytes": 37114,
+    "sha256": "06da631f72998b77ba60f8e45018196dd852b37bfee2a14e617d2a8828be10b2",
+    "git_blob": "4005596c9aa7202e27f3d19e3ea87f4ba13bf8b6"
+  },
+  "configuration": {
+    "bytes": 807,
+    "sha256": "8ecf1a201c139032bbafb2e584e31060fa13f369e73eca4176eed5e9fe590b1f",
+    "git_blob": "4ef3dcd51bf4bfe15e5ea02bc570c5c03c1115e1"
+  },
+  "request": {
+    "bytes": 39070,
+    "sha256": "941c5ccdd88acf94189b17d3f7752f2d39232fb55d59494258abf4f63cc57b5d",
+    "git_blob": "ae07ed6b65c3d6a89713fa3610b924a25d1f6a6d"
+  },
+  "driver_only_changes": [
+    "fresh CONTROL path suffix v1 -> v2",
+    "fresh RUN_KEY suffix v1 -> v2"
+  ],
+  "full_driver_inverse_byte_equal": true,
+  "configuration_only_changes": [
+    "control",
+    "run_key"
+  ],
+  "request_only_changes": [
+    "args exact revised driver",
+    "stdin exact revised config",
+    "idempotency_key"
+  ],
+  "all_functions_and_runtime_checks_unchanged": true,
+  "realtime_original_global_guard_still_required": true,
+  "operation_seconds": 600,
+  "retention_seconds": 180,
+  "outer_seconds": 900,
+  "download_seconds": 120,
+  "no_env_override": true,
+  "original_fixed_destination_and_material_identity_unchanged": true,
+  "original_control_and_failed_job_untouched": true,
+  "qualification": false,
+  "native_main_approved": false,
+  "dispatch_occurred": false,
+  "authoritative_terminal_checks": {
+    "prior": {
+      "at_unix_ms": 1794542230663,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1d30d5606-392-80",
+      "launch_nonce": "0b44fd94c615be6e756d0123391cd2cf",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 185,
+          "stored": 185
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "quiet": {
+      "at_unix_ms": 1794542904596,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1d3179f2a-392-83",
+      "launch_nonce": "7da41c9455690405784330aae088e394",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 485,
+          "stored": 485
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  }
+}

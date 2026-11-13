@@ -1,0 +1,114 @@
+{
+  "format": "hepta-version-local-read-author-static-review-v1",
+  "status": "PREPARATION_ONLY_NOT_FORMATTED_NOT_COMPILED_NOT_TESTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "production_integration_cutoff": "f4066cf562953650ae7a10129c9a90d496630fca",
+  "packet_order": [
+    {
+      "name": "production",
+      "git_blob": "3de167eff0444e7dd8f0f32ade0444c1a8ff5925",
+      "paths": 14
+    },
+    {
+      "name": "same_original_identity_and_deadline",
+      "git_blob": "1f9af98ea25445d7ff732cbbd313399883165fb1",
+      "paths": 2
+    },
+    {
+      "name": "fixed_purpose_operation_enums",
+      "git_blob": "39f9709423e09a445b9221dbdd3767bc9778d6c2",
+      "paths": 4
+    },
+    {
+      "name": "seven_mechanism_tests",
+      "git_blob": "00c44402b24c92e344f1bd29a5e578fdfadaf940",
+      "paths": 4
+    }
+  ],
+  "integration_notes": [
+    "The first three packets are already included in Root's 76-Rust-file production map. The test packet is a separate unintegrated preparation until Root applies it.",
+    "Root separately combined this layer's Linux public export with the S local capability export; applying this packet's lib.rs over Root's combined lib.rs would be incorrect.",
+    "The local final-after directory is this writer's 17-path layered view, not the entire repository or Root's full combined overlay."
+  ],
+  "boundaries": [
+    {
+      "property": "fixed original owner and purpose",
+      "evidence": "The sealed capability contains the concrete private Version binding, full evaluated context and same retained owners. Its only production constructor is crate-private and called by the two fixed public Version export methods; no caller-supplied checker, token, owner getter, FD or fabricated peer is introduced."
+    },
+    {
+      "property": "Version equals S equals C original clients",
+      "evidence": "The 1f9 helper holds the same Version state try_lock, checks Published, evaluated cut/current pins and complete contexts, and compares both actual T/E original client addresses with the retained Version pair. Ordinary's separate 484808 layer calls it from S/C factories, S export and local profile preparation."
+    },
+    {
+      "property": "full current before and after actual owner work",
+      "evidence": "The Version binding reuses the 662c NextUse path, with exact original read_current/cut checks around the actual C/readiness response. Selection has its own fixed four-cut path. Signatures alone are not substituted for current owner state."
+    },
+    {
+      "property": "shared four-permit capacity",
+      "evidence": "Each exported local binding retains one original OwnedSemaphorePermit. Clones, read-client conversions and C readiness retain the same Arc. Readiness does not acquire a fifth permit. No original connection limit is increased."
+    },
+    {
+      "property": "original terminal slot and request ceiling",
+      "evidence": "The same mutex slot is taken before fallible request work; only the original successful awaiting call restores it. Clones share the same request id and retained readback. The original 1..=128 condition remains, with no queue, retry, reset or replenishment."
+    },
+    {
+      "property": "fixed deadlines",
+      "evidence": "The per-read deadline is min(original timeout, absolute capability end); the Version cap end never exceeds its original end. After context verification and obtaining the restore lock, the deadline is checked again before restoring/returning. Export checks admission_end again after constructing the sealed binding."
+    },
+    {
+      "property": "cancellation and late blocking work",
+      "evidence": "Dropping or aborting the awaiter cannot undo an already started original read. The shared slot remains absent and the blocking work retains its binding/permit until terminal. No assertion of instantaneous worker cancellation, remote rollback or idle closure at the exact cutoff is made."
+    },
+    {
+      "property": "legacy and remote preservation",
+      "evidence": "Original remote constructors retain local=None and the original remote exchange path. The new branch only accepts the sealed concrete Local variant; no old ignore, authority or transport policy is relaxed."
+    }
+  ],
+  "tests": {
+    "packet": "00c44402b24c92e344f1bd29a5e578fdfadaf940",
+    "original_parent_tests": 8,
+    "original_parent_exact_inverse": true,
+    "new_methods": [
+      "local_readiness_and_current_reuse_one_actual_request_sequence",
+      "local_readiness_borrows_the_fourth_lane_without_a_fifth_permit",
+      "local_read_capabilities_reject_cross_purpose_conversions",
+      "local_readiness_rechecks_actual_b_and_fences_all_aliases",
+      "local_alias_contention_preserves_the_original_pending_response",
+      "local_cancelled_read_never_restores_any_alias",
+      "local_original_response_crossing_fixed_end_is_not_delivered"
+    ],
+    "fixture": "Actual original cold Version/T/B/S/C PublicationFixture and same-process channels",
+    "gate": "Only observes and pauses an actual original response after the concrete owner returned it; cannot supply or change response bytes, request id, permit, receipt or deadline.",
+    "cleanup": "submitted and started are distinguished. A terminal guard is owned by the submitted blocking closure; cleanup awaits terminal whenever submitted, releases pauses, then invokes original fixture close/join. Twenty-three whole-value comparisons return Result errors to preserve that cleanup path.",
+    "deadline_test": "Uses a 500 ms original lifetime/timeout, without an additional sleep or increased budget, and asserts the actual fixed end elapsed before accepting rejection.",
+    "not_covered": [
+      "No Rust compiler, formatter, native test or complete source/caller gate has run on these candidates.",
+      "The original cold fixture is not a Fresh Root or public cross-UID ordinary task chain.",
+      "The local 128th/129th boundary is not runtime-covered by these seven cases; full original T/E/B reads may exhaust the old B responder budget first, which is deliberately not increased.",
+      "The same-context but different-real-T/E-Arc negative fixture is assigned to Ordinary's separate S/C tests; this package does not claim that test.",
+      "A possible old B64 fixture exhaustion during the intended normal C case remains an execution question, not an assumed pass."
+    ]
+  },
+  "byte_review": {
+    "actual_script": "0cb39d915dc8123b52a0a2aad0b046afefb5784f",
+    "actual_result": "a2b2c6acd52666178f0834d8b30584c1a324e088",
+    "performed": "Python-only complete byte hashes, chained preimages, 76-map test preimages, exact parent/cfg-test inverse, counts and source-shape checks.",
+    "not_performed": "Rust AST/type checking, compiling, formatting, Cargo/native execution, QA test methods or full caller/source verification."
+  },
+  "independent_production_peer": {
+    "reviewer": "native_ci_audit",
+    "review": "7b6eaca9ac24fbb70e64d56768689f58ed8ce119",
+    "placement": "0d5559c1e82f231167154e86042ca29d942f5ef0",
+    "scope": "Production 3de/1f9/39f against Ordinary 484808; static only, not test execution."
+  },
+  "preparation_errors_preserved": [
+    "An earlier local apply_patch attempted Delete and Add of the same path in one patch and was rejected before changing that file. The already created Git blob was retained, and an exact Update patch then succeeded.",
+    "Earlier recovered text files had one extra final LF from patch construction; exact original-byte checks caught and corrected it before the recorded static package review. Source packets and original Git objects were not changed."
+  ],
+  "authorization": {
+    "native_main": false,
+    "source_or_evidence_ref_update": false,
+    "active_source_write": false
+  }
+}

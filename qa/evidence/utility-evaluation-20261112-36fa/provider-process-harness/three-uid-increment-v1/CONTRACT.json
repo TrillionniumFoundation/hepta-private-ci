@@ -1,0 +1,161 @@
+{
+  "actual_execution": false,
+  "actual_source_frozen_for_qualification": false,
+  "credential_design": {
+    "child_to_child_socket": "Each connecting child must itself open the real stream and use the original constructor/peer validation. Parent-created stream FDs cannot be relabeled as a different child peer.",
+    "control": "Inherited Root-created socketpair carries bounded fixture metadata only. Its SO_PEERCRED is verified as Root creator, never misused as child identity or role authority.",
+    "parent_socket": "connect_original() opens a real socket and requires SO_PEERCRED UID/GID/PID exactly equal to that designated live child. Original role handshake remains separate.",
+    "parent_spawn": "Root launches the same ELF by read-only inherited descriptor, exact ignored FQN, setpriv --reuid/--regid for one of the fixed UIDs, no groups/capabilities and no_new_privs.",
+    "startup_ready": "Parent validates actual child /proc credentials, boot/start identity and live pidfd. READY proves credential/startup completion only.",
+    "typed_authority": "No typed Client/FD/Arc authority, fabricated handshake/signature/receipt or role success travels through the control metadata channel."
+  },
+  "finish_semantics": "Signal delivery is not completion. Each finish still requires an actually observed normal exit0 and complete stdout/stderr without overflow/errors. Missing terminal stays unknown; failure cleanup may kill/reap only its own child.",
+  "format": "hepta-three-uid-process-harness-contract-v1",
+  "graph_review_git_blob": "4748298fadf0061f5e8134107ca2d49dbf1da048",
+  "planned_cross_uid_original_channels": [
+    {
+      "evidence": "actual Material input to original Trainer; original T control/readback returns on the owned channel",
+      "owners": [
+        "A/Material",
+        "Trainer"
+      ],
+      "uids": [
+        60001,
+        60002
+      ]
+    },
+    {
+      "evidence": "original Trainer readonly evidence used by B/E; original E/Trainer relation uses the same fixed peers",
+      "owners": [
+        "Trainer",
+        "B/E"
+      ],
+      "uids": [
+        60002,
+        60003
+      ]
+    },
+    {
+      "evidence": "original Trainer command + sealed readonly transition after actual publication",
+      "owners": [
+        "Version",
+        "Trainer"
+      ],
+      "uids": [
+        60001,
+        60002
+      ]
+    },
+    {
+      "evidence": "original E command + sealed readonly transition after actual publication",
+      "owners": [
+        "Version",
+        "E"
+      ],
+      "uids": [
+        60001,
+        60003
+      ]
+    },
+    {
+      "evidence": "original Root capability/role adapter and actual per-role receipts required",
+      "owners": [
+        "resident Root",
+        "each original role endpoint"
+      ],
+      "uids": [
+        0,
+        "actual designated child UID"
+      ]
+    }
+  ],
+  "registration": {
+    "child_fqns": null,
+    "child_test_count_as_independent_root_cases": false,
+    "module_mount": null,
+    "parent_root_test_inventory": null
+  },
+  "remaining_api": [
+    "uid()",
+    "pidfd()",
+    "send_control(&mut self, &[u8])",
+    "recv_control(&mut self)",
+    "connect_original(&mut self, &Path)",
+    "request_sigterm(&mut self)",
+    "finish(self)",
+    "ChildControl::from_inherited_control(expected_uid)",
+    "ChildControl::send/recv"
+  ],
+  "role_hosts": [
+    {
+      "constant": "SOURCE_VERSION_SELECTOR_C_UID",
+      "roles": [
+        "A",
+        "Material",
+        "Version",
+        "S",
+        "C"
+      ],
+      "uid": 60001
+    },
+    {
+      "constant": "TRAINER_MODEL_UID",
+      "roles": [
+        "Trainer",
+        "Model"
+      ],
+      "uid": 60002
+    },
+    {
+      "constant": "BELIEF_EVALUATION_UID",
+      "roles": [
+        "independent B/retention",
+        "E"
+      ],
+      "uid": 60003
+    }
+  ],
+  "root_main_permission": false,
+  "root_uid": 0,
+  "same_host_edges_not_closed": [
+    {
+      "owners": [
+        "S/C",
+        "Version/Source"
+      ],
+      "state": "Existing public socket constructors reject same UID/PID; sealed same-host readonly API is a separate pending production review.",
+      "uid": 60001
+    },
+    {
+      "owners": [
+        "C",
+        "S"
+      ],
+      "state": "Original S evidence requires a reviewed same-owner readonly interface; no supplied receipt or test adapter may count as public-path success.",
+      "uid": 60001
+    }
+  ],
+  "shared_scope": {
+    "constructor": "PeerProcessScope::new()",
+    "failure_cleanup_anchor": "First actual kill/reap cleanup or Drop; all peers use this same absolute deadline.",
+    "failure_cleanup_seconds": 5,
+    "join_anchor": "First finish or early cleanup; all finish calls use this same absolute deadline.",
+    "join_seconds": 5,
+    "lifetime": "All children in one parent fixture use the same scope; it remains within the Root parent process.",
+    "max_original_join_plus_failure_window_seconds": 10,
+    "no_new_child_after_cleanup_begins": true,
+    "no_reset_per_child": true,
+    "notes": "The original single-child join5 + exceptional-cleanup5 allowances are shared once by the full group; they are not multiplied by three. No new test/protocol queue or limit.",
+    "parent_test_deadline_unchanged": true,
+    "start": "PeerProcess::start(child_fqn: &'static str, uid: u32, scope: &PeerProcessScope)",
+    "startup_anchor": "Scope creation; all readiness waits and post-credential checks use this same absolute deadline.",
+    "startup_seconds": 5
+  },
+  "source": {
+    "bytes": 29874,
+    "git_blob": "318597fb680c4094e042c10ca368aa407f9942ca",
+    "sha256": "9d65825a713eba937e39b5df60cb06accae8e0880b37e9376a5527b7d9f949be"
+  },
+  "status": "HOLD_FOR_INTEGRATION_AND_ACTUAL_ORIGINAL_GATES",
+  "target_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_pair_tests.rs"
+}

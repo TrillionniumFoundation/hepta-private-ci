@@ -1,0 +1,19 @@
+{
+  "format": "hepta-provider-fixed-stack-peer-v1",
+  "before": {
+    "bytes": 27626,
+    "git_blob": "c269e4c7adfefb3853ea67ca46197af049dd4cbc"
+  },
+  "after": {
+    "bytes": 27672,
+    "git_blob": "75e2748ea9b4c0ab53d7c31caec63cd57a12ac66",
+    "sha256": "688f9b27ecd5917990845ff17b57195789bb9c340fd9dd79ca07af6318b13cbf"
+  },
+  "exact_single_insert": "            .env(\"RUST_MIN_STACK\", \"8388608\")\n",
+  "delete_insert_whole_original_byte_equal": true,
+  "read_arbitrary_parent_stack": false,
+  "source_role_limits_or_protocol_changed": false,
+  "configured_original_bytes": 8388608,
+  "runtime_stack_observed": false,
+  "fmt_compile_test_H": false
+}

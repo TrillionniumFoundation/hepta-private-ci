@@ -1,0 +1,47 @@
+{
+  "format": "hepta-private-original-selector-trait-doc-manifest-v1",
+  "qualification": false,
+  "base_packet": "484808c24b01b4c2c91b4698b2f31af304821f4e",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 10849,
+        "sha256": "45d5852584e26f66a9ca776670e6aa7069e039b43dac04cb608a6b3df69a9a9f",
+        "git_blob": "a922fc0f2e710aa98969fe575615d5f29ce40cc0"
+      },
+      "after": {
+        "bytes": 11084,
+        "sha256": "8aa7ffa35fd70d4a77349e0e3d5114351233536e3679de23902c8d4764d7ce55",
+        "git_blob": "1a00dc794e3cd7e33fccbb63f1f08276c5361ddf"
+      }
+    }
+  ],
+  "entries": [
+    {
+      "path": "SOURCE_PACKET.json",
+      "bytes": 23426,
+      "sha256": "e0d14d57dcb4b6ac88fd03d3e58d1639ba92e60bfe40fafddd088c8e73ca6a45",
+      "git_blob": "31e260dde49f709ac5aac093304ee572a2621d3b"
+    },
+    {
+      "path": "SOURCE_DELTA.patch",
+      "bytes": 889,
+      "sha256": "6f69071d7ebe9239b3f41552e004a86e95fb127c1352970cb7271817d30d6a46",
+      "git_blob": "a45ae9cfdd2d63dcbc6c25f97b36a13588267db5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "bytes": 11084,
+      "sha256": "8aa7ffa35fd70d4a77349e0e3d5114351233536e3679de23902c8d4764d7ce55",
+      "git_blob": "1a00dc794e3cd7e33fccbb63f1f08276c5361ddf"
+    }
+  ],
+  "exact_inverse": "Remove only the three inserted documentation lines; all other source bytes equal a922fc0f2e710aa98969fe575615d5f29ce40cc0.",
+  "execution": {
+    "fmt": false,
+    "compile": false,
+    "tests": false
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "format": "hepta-original-guard-readonly-v2-readback-v1",
+  "status": "COMPLETE_READONLY_OBSERVATION_WITH_ACTIVE_MATCHES",
+  "job_id": "1a1d3349a12-392-aa",
+  "request_git_blob": "48d99cb0c7407d6a95e5440068c87e75326e6b8d",
+  "approval_git_blob": "223fd4cef1952a4efa81b333dc2cef6e411a2d97",
+  "created_unix_ms": 1794544802322,
+  "actual_observation_start": "2026-11-13T04:40:03.701532+00:00",
+  "actual_observation_end": "2026-11-13T04:40:03.759521+00:00",
+  "terminal_at_unix_ms": 1794544803791,
+  "normal_exit_code": 0,
+  "actual_guard_observation": {
+    "active_matching_processes": [
+      {
+        "comm": "just",
+        "pid": 3260552,
+        "uid": 1000
+      },
+      {
+        "comm": "cargo-clippy",
+        "pid": 3260562,
+        "uid": 1000
+      },
+      {
+        "comm": "cargo",
+        "pid": 3260579,
+        "uid": 1000
+      },
+      {
+        "comm": "clippy-driver",
+        "pid": 3267235,
+        "uid": 1000
+      }
+    ],
+    "scope": "Same-UID process names only; no environment/argument values or credentials inspected; no processes killed.",
+    "unreadable_matching_processes": []
+  },
+  "raw_stdout": {
+    "path": "OBSERVATION.original.json",
+    "mode": "100644",
+    "type": "blob",
+    "bytes": 689,
+    "sha256": "efe7b283d308bf0398501f339857738987d9e561aef66932265581f214d2efee",
+    "git_blob": "78cade39cb07a30885f621b7efc9593e0c393055",
+    "full_readback_equal": true
+  },
+  "validation": [
+    "Actual admission exact argv/key/executable/cwd/host and empty env_keys; reused=false, launch.ok=true.",
+    "Authoritative normal0/no timeout/cancel/retry; complete/durable/confirmed terminal.",
+    "Raw stdout bytes_hex decoded exactly equals text, offset0 through689 with EOF; no truncation and stderr empty."
+  ],
+  "scope": [
+    "This observation is not a gate, material recovery, environment/source audit or qualification.",
+    "Names/UIDs are the original guard sample only; no command-line, environment or task-attribution inference.",
+    "Nonempty sample is not a statement about later process state. No additional host action is authorized."
+  ],
+  "host_dispatch_count": 1,
+  "material_or_native_dispatch_count": 0
+}

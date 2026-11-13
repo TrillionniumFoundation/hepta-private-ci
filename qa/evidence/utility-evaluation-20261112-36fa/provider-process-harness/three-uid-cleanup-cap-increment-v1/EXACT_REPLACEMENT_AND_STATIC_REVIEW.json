@@ -1,0 +1,41 @@
+{
+  "format": "hepta-three-uid-cleanup-deadline-cap-review-v1",
+  "status": "STATIC_PREPARATION_ONLY",
+  "before": {
+    "git_blob": "318597fb680c4094e042c10ca368aa407f9942ca",
+    "bytes": 29874,
+    "sha256": "9d65825a713eba937e39b5df60cb06accae8e0880b37e9376a5527b7d9f949be"
+  },
+  "after": {
+    "git_blob": "4386c406afa55625f24bc96a3940b63e5d020804",
+    "bytes": 29918,
+    "sha256": "f0a5a94de0646c3bac1d60761c62bf3aabbafaf2bfe565b64213f0ee0d1c8a2b"
+  },
+  "exact_old": "        let _ = self.join_end();\n        *self.cleanup_end.get_or_init(|| Instant::now() + CLEANUP_WINDOW)",
+  "exact_after": "        let now = Instant::now();\n        let join_end = self.join_end();\n        *self.cleanup_end.get_or_init(|| now.min(join_end) + CLEANUP_WINDOW)",
+  "inverse_restores_all_original_bytes": true,
+  "function_changed_only": "ProcessDeadlines::cleanup_end",
+  "reason": "First failure arriving after delayed caller work must not receive a fresh later cleanup allowance beyond the already shared join deadline.",
+  "deadline_semantics": {
+    "startup": "Scope construction + original 5s, unchanged",
+    "join": "First join/early cleanup + original 5s, unchanged",
+    "cleanup": "min(first failure now, shared join end) + original 5s, then immutable",
+    "early_drop": "No more than original 5s failure cleanup from first Drop",
+    "late_first_failure": "Maximum remaining observation deadline is original shared join-end+5; an already elapsed deadline remains elapsed",
+    "per_child_reset": false
+  },
+  "unchanged": [
+    "Three allowed UIDs/credential and SO_PEERCRED checks",
+    "Explicit RUST_MIN_STACK=8388608",
+    "Original 5-second IO and cleanup constants",
+    "Normal exit0 and full raw output requirements",
+    "Signal delivery is not completion; missing terminal stays unknown",
+    "No production budgets/guards/queues/counters/limits changed"
+  ],
+  "limitations": [
+    "Static source review only, no Rust format/typecheck/test/native execution.",
+    "Parent test/protocol deadline remains responsible for caller work outside harness methods.",
+    "Original318597 plus its historical review/recovery remains immutable."
+  ],
+  "host_calls": 0
+}

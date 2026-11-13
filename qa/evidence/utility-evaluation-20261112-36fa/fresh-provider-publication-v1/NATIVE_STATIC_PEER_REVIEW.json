@@ -1,0 +1,127 @@
+{
+  "H_calls": 0,
+  "changes_made": [],
+  "compiled": false,
+  "findings": [
+    {
+      "evidence": "install_same_original_c takes original.a exactly once, compares retirement.source to source_a, drains using that same cell/source/identity, calls original stop/join, retains original A home, and passes the actual completion plus original source/identity into the same Version inputs. It does not call PositiveFixture/PublicationFixture::ready or create a replacement A.",
+      "topic": "Same A"
+    },
+    {
+      "evidence": "Version inputs reopen the original current, authorities, retained selection, predecessor and new named C target. The explicit UID0 test issuer signs the actual prepared binding using the same fixture authority. The reply compares the full protocol JSON binding and the test requires one additional used nonce. This is an explicit same-process fixture issuer, not public deployment evidence.",
+      "topic": "Original FinalUse"
+    },
+    {
+      "evidence": "The already-held original.c is consumed once; its source is compared to source_c. Only the three complete model identity fields are set and the full original request is re-signed by the established test key. A clone is kept before the original task-input factory discards its request field. dispatch_original_c_once takes that Option before constructing/awaiting AgentdClient, so an error or cancellation does not restore delivery certainty.",
+      "topic": "Same C request"
+    },
+    {
+      "evidence": "The old construction-time RuntimeFixture state and registry are explicitly dropped while C files/home and identity remain owned. The helpers preserve a Version host but contain no call to run_original_c. The only new test intentionally leaves C NotReady; the eventual daemon driver must really call the original run_original_c and observe its own readiness/terminal.",
+      "topic": "Fresh C daemon state"
+    },
+    {
+      "evidence": "S is executed through the original command client, its opaque same-host read is matched to the actual complete selected snapshot/receipt/attestation, and its initial read must fail without mutation. Observer construction requires an actual completed-C read, opens a separate original Source/Cell read purpose, compares it to that observed completion, and uses the same shared T/E and original S evidence read. No fabricated completed receipt is inserted.",
+      "topic": "S/Observer"
+    },
+    {
+      "evidence": "Completion client closes before its server joins; completion host then drops its S evidence client; S client/server/host close before Version serving tasks join; shared/Version owners drop before original T/E/Material peers. A/C temporary homes survive dependent owner closure. The future caller must stop/join an actual C daemon and release external Version clones first; this contract is not runtime-proven by this packet.",
+      "topic": "Cleanup"
+    }
+  ],
+  "format": "hepta-fresh-publication-narrow-independent-review-v1",
+  "formatted": false,
+  "frozen_inputs": [
+    {
+      "bytes": 33109,
+      "git_blob": "715b1550edd4e56119b2a5110c43a2d676af2683",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/SOURCE_PACKET.json",
+      "sha256": "e183761af4d336a34196cb35f672f9bdb013444c3734617b5e1d3b61e0e5ffb3"
+    },
+    {
+      "bytes": 2388,
+      "git_blob": "1fa0bf9381c6bcdd38bc3fdd016f2c01f542cd24",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/MANIFEST.json",
+      "sha256": "a0f4eb5d537da5a1f7995926764636660a3cb81cf7d0ff6dd385f6d8a36751a6"
+    },
+    {
+      "bytes": 514,
+      "git_blob": "f39258c305395bb2bcd57ba880990cbe625854a6",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/REGISTRATION.json",
+      "sha256": "78c232b644dc4c03c1abcd8581fe9f720f30a4d1be7e0a98f732038b77f8a3a4"
+    },
+    {
+      "bytes": 2636,
+      "git_blob": "8274487720539a5e0e584ee62c2927f8ebcd9a2e",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/README.md",
+      "sha256": "21842a0f442510b2f46facc18f2ba13514182de2a97abf99de8a3309e838fe1b"
+    },
+    {
+      "bytes": 25922,
+      "git_blob": "d2a8eefd05f1671373a952f86eeee0cda141d6fc",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "sha256": "645714be52a028b04c2d7e7492e9c6b00edc19b3c1327e3ea9248964450d8122"
+    },
+    {
+      "bytes": 3330,
+      "git_blob": "eb38fc48ea8e03b6fa4130aad01b813b3bcc54fc",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "sha256": "34c0047d5331dff32e0f1100db70b2788c0424c043f77d09a9b6859de3a47675"
+    },
+    {
+      "bytes": 702,
+      "git_blob": "2a3ff005169f441a73efc8c86c0f33b877ee7829",
+      "path": "/tmp/hepta-36fa-fresh-provider-publication-increment-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "sha256": "3ffbd178b11b9d8eeae99ba0d51c3cbaaa85d8064b7b5fbd52b6e1fb89fc83e0"
+    },
+    {
+      "bytes": 3389,
+      "git_blob": "f7d91db074584423b57ff6f8e2cc057f89791341",
+      "path": "/tmp/hepta-36fa-fresh-provider-orchestration-v1/references/circuit_retained_version_task_support_tests.rs",
+      "sha256": "89afaf9e896aae2af6b64be50b1cbd4c2b82275c03eefd40181f9b442b484b56"
+    },
+    {
+      "bytes": 15839,
+      "git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "path": "/tmp/hepta-36fa-fresh-provider-orchestration-v1/references/circuit_q24_task_test_support.rs",
+      "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714"
+    },
+    {
+      "bytes": 38454,
+      "git_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+      "path": "/tmp/hepta-36fa-fresh-provider-orchestration-v1/references/runtime_tests.rs",
+      "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3"
+    },
+    {
+      "bytes": 14549,
+      "git_blob": "150d529814964c9121debe523a2202a1dd6439e7",
+      "path": "/tmp/hepta-36fa-fresh-provider-stage-increment-v1/review-stage-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "sha256": "eb19e2eea9b327dc8817245a574bc94f1520799dace71e88820b283709ae4912"
+    },
+    {
+      "bytes": 16553,
+      "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224",
+      "path": "/tmp/hepta-36fa-provider-combined-preparation-v1/assembled-v2/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0"
+    }
+  ],
+  "limitations": [
+    {
+      "detail": "One proposed UID0 ignored parent exercises Fresh Material/T/B/E→Version/S plus real NotReady. The C dispatch/readiness/attestation helpers and full two-UID/Root composition are not executed or implemented as a complete parent here. Root inventory registration remains required.",
+      "topic": "Coverage"
+    },
+    {
+      "detail": "original_bytes checks only its explicit path list plus prior fixture lists. Do not generalize the all-original-evidence assertion wording into every file or an entire physical source inventory. The relevant A Source paths remain in the earlier material list even after A is taken.",
+      "topic": "Byte conservation scope"
+    },
+    {
+      "detail": "dispatch_original_c_once has a documented caller precondition that the real daemon has started; the future driver must prove it and retain original timeouts. The helper itself neither starts nor proves that daemon. No future success is inferred.",
+      "topic": "Future readiness and lifetime"
+    }
+  ],
+  "packet_git": "715b1550edd4e56119b2a5110c43a2d676af2683",
+  "qualification": false,
+  "reviewed_at": "2026-11-13T04:13:27.029133+00:00",
+  "scope": "Exact frozen packet715b three-file test-only increment; same-A retirement/FinalUse, same-C signed request custody, source-state distinction and normal cleanup order. Not a full Rust typecheck or complete dual-UID/Root driver review.",
+  "status": "NO_CONCRETE_STATIC_BLOCKER_IN_EXAMINED_DATA_FLOW",
+  "test_execution": false
+}

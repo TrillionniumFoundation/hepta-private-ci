@@ -1,0 +1,142 @@
+{
+  "format": "hepta-next-use-current-increment-static-review-v1",
+  "at_utc": "2026-11-13T04:12:02.925696+00:00",
+  "verdict": "STATIC_SOURCE_REVIEW_ONLY_RUNTIME_UNVERIFIED",
+  "source_packet": {
+    "bytes": 104393,
+    "sha256": "7e1921111ef9e0dc83db31a57b42723d8e255114360ce915ea2f0d9a005b987e",
+    "git_blob": "662c2d268b76df26ce1bed0b375e67043f4f91d6"
+  },
+  "finding": {
+    "prior_packet": "2b331b488fd789421f9731e3637d882bb57d7f0a",
+    "scope": "source-reachable ordering gap; not an executed counterexample",
+    "old_behavior": "Full live T/E/Version admission followed by a C-only channel loop; the old B-withdrawal test withdrew B before admission.",
+    "old_report_correction": "An opaque S/full signature is not proof of current T/B after channel admission. The prior per-response wording did not establish this property."
+  },
+  "same_state_lock": "concrete Version try_lock spans full live before read, actual C response/readiness, full live after read, equal publication and final cut/S freshness; unavailable on contention without queue",
+  "actual_current_scope": "original D/T/E, Artifact/CURRENT and held C through unchanged read_original; same shared original T/E clients, no additional channel",
+  "selection_scope": "same opaque S/T/E context and complete S signatures before/after; original C response also checks actual stored selection. No claim of a separate live Selector journal read inside Version; original C Sources retain their own live S owner check.",
+  "public_api": "both public Version entrypoints unchanged; only new crate-private response adapters replace the previous new crate-private channel loops",
+  "deadlines": "original absolute Version end before/after each actual handler; unchanged original channel 500ms, lifetime <=300s, four Version permits and 128 request limit",
+  "request_budget_scope": "More actual predecessor reads use their unchanged shared 128-request budgets; this does not guarantee 128 successful C responses if an original predecessor budget expires first.",
+  "legacy_preservation": {
+    "original_read_service_inverse_full_bytes": true,
+    "Contracts_changed": false,
+    "old_selection_and_legacy_serving_changed": false
+  },
+  "test_observation": "cfg(test)-only purpose variant narrows the end and observes an actual generated C readiness response, then yields within the existing 250ms/500ms probe envelope. No checker/receipt/clock injection.",
+  "existing_six_test_bodies_unchanged": true,
+  "new_methods": [
+    "version_owned_readiness_rechecks_actual_b_after_channel_admission",
+    "version_owned_next_use_rechecks_actual_b_after_channel_admission"
+  ],
+  "new_test_scope": "Actual same-process cold Version/held original T/B/C fixtures; positive first original response, then real B withdrawal, second request refused, next request unavailable, original server Evaluation CommitUncertain, unchanged journal bytes and C revision. Not Fresh/public-cross-UID or real utility.",
+  "function_comparison": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs",
+      "unchanged_function_bodies": [],
+      "changed_function_bodies": [],
+      "removed_functions": [
+        "fixture_evaluated_next_use_deadline_channel"
+      ],
+      "added_functions": [
+        "fixture_observe_original_next_use_response"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "unchanged_function_bodies": [
+        "fixture_require_original_evaluated_next_use",
+        "fixture_serve_original_evaluated_next_use"
+      ],
+      "changed_function_bodies": [
+        "fixture_evaluated_next_use_deadline_probe"
+      ],
+      "removed_functions": [],
+      "added_functions": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "unchanged_function_bodies": [
+        "context",
+        "deadline_case",
+        "finish",
+        "finish_case",
+        "fixture",
+        "host",
+        "initialize",
+        "original_bytes",
+        "ready",
+        "selection",
+        "start_readback",
+        "start_readiness",
+        "task",
+        "version_owned_next_use_reads_same_c_after_real_completion",
+        "version_owned_next_use_rechecks_actual_b_after_shared_export",
+        "version_owned_next_use_refuses_four_cut_selection_requests",
+        "version_owned_next_use_rejects_already_elapsed_absolute_end",
+        "version_owned_next_use_rejects_another_actual_original_s_cut",
+        "version_owned_next_use_rejects_original_response_crossing_absolute_end"
+      ],
+      "changed_function_bodies": [],
+      "removed_functions": [],
+      "added_functions": [
+        "b_withdrawal_after_admission_case",
+        "version_owned_next_use_rechecks_actual_b_after_channel_admission",
+        "version_owned_readiness_rechecks_actual_b_after_channel_admission"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "unchanged_function_bodies": [
+        "from_original_owners",
+        "from_original_profile",
+        "read_original",
+        "require_original_selection",
+        "require_task_input_current",
+        "response",
+        "serve_channel",
+        "serve_original_evaluated_retained_channel",
+        "serve_original_retained_channel",
+        "serve_readback"
+      ],
+      "changed_function_bodies": [],
+      "removed_functions": [
+        "serve_original_evaluated_next_use_channel",
+        "serve_original_evaluated_next_use_profile",
+        "serve_original_evaluated_next_use_readiness_channel"
+      ],
+      "added_functions": [
+        "original_evaluated_next_use_readiness_response",
+        "original_evaluated_next_use_response",
+        "require_original_evaluated_next_use_profile"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "unchanged_function_bodies": [
+        "build_original_evaluated_next_use_reader",
+        "serve_original_evaluated_completion_readiness",
+        "serve_original_evaluated_next_use",
+        "serve_original_evaluated_next_use_readback"
+      ],
+      "changed_function_bodies": [
+        "serve_original_evaluated_next_use_channel"
+      ],
+      "removed_functions": [],
+      "added_functions": [
+        "original_evaluated_next_use_response",
+        "serve_original_evaluated_next_use_loop"
+      ]
+    }
+  ],
+  "executed": {
+    "Rust_compile": false,
+    "rustfmt": false,
+    "tests": false,
+    "full_source_collector": false,
+    "H": false,
+    "active_source_change": false,
+    "refs": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "format": "hepta-immutable-static-review-placement-v1",
+  "evidence_prefix": "same-host-sc-version-independent-review-v2",
+  "scope": "Frozen static review and mechanical byte proofs only. No H/native/format/compile/tests/source/ref writes. Prior cd329c remains unchanged; two reported seams are closed only within actual reviewed successor bytes.",
+  "files": [
+    {
+      "path": "REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 13638,
+      "sha256": "15136993b6f34022f3b33847cd54fb7d53dc37fd80352f01c8eef185f3a77827",
+      "git_blob": "7b6eaca9ac24fbb70e64d56768689f58ed8ce119",
+      "full_readback_equal": true
+    },
+    {
+      "path": "FULL_BYTE_AND_CHAIN_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 33525,
+      "sha256": "53f5f8f02617218bf631e91b9832922ae72433c0873e878a2b70c0d2334f8b11",
+      "git_blob": "1747e9f32dbe576f67beb0e0f6aa30914b9c3535",
+      "full_readback_equal": true
+    },
+    {
+      "path": "VERSION_INCREMENT_EXACT_EDITS.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 11147,
+      "sha256": "44fbddea483a41331b2b98a5166e2696d85ca04a79ffa7741d086e1f0805bbe9",
+      "git_blob": "c5ad62a4c5fe753b7052093b54bf26f0a10549c4",
+      "full_readback_equal": true
+    }
+  ],
+  "previous_placement": "48fdc17a8839fccda7a5871d6359a64c5498704c"
+}

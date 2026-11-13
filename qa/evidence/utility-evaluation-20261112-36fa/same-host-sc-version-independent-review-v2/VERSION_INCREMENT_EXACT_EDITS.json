@@ -1,0 +1,307 @@
+{
+  "format": "hepta-independent-line-edit-extraction-v1",
+  "method": "LCS over exact original lines; no source modifications",
+  "edits": [
+    {
+      "packet": "version_identity_packet_obj",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "hunks": [
+        {
+          "old_start": 52,
+          "new_start": 52,
+          "removed": [],
+          "added": [
+            "    pub(crate) fn require_original_shared_readbacks(",
+            "        &self,",
+            "        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,",
+            "    ) -> Result<(), Error> {",
+            "        self.version.require_lifetime()?;",
+            "        if Instant::now() >= self.end",
+            "            || self.version.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate",
+            "            || self.version.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published",
+            "        {",
+            "            return Err(Error::ReadbackRequired);",
+            "        }",
+            "        let state = self.version.state.try_lock().map_err(|_| Error::Busy)?;",
+            "        let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;",
+            "        let evaluated = cut.evaluated.as_ref().ok_or(Error::ReadbackRequired)?;",
+            "        let held = state.shared_evaluated.as_ref().ok_or(Error::ReadbackRequired)?;",
+            "        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(",
+            "            held, evaluated,",
+            "        )?;",
+            "        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(",
+            "            shared, evaluated,",
+            "        )?;",
+            "        let (held_trainer, held_evaluator) =",
+            "            crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(held);",
+            "        let (given_trainer, given_evaluator) =",
+            "            crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared);",
+            "        if !std::ptr::eq(held_trainer, given_trainer)",
+            "            || !std::ptr::eq(held_evaluator, given_evaluator)",
+            "        {",
+            "            return Err(Error::Binding(\"same Version local T/E readback owners\"));",
+            "        }",
+            "        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;",
+            "        self.version.require_lifetime()?;",
+            "        if Instant::now() >= self.end",
+            "            || self.version.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published",
+            "        {",
+            "            return Err(Error::ReadbackRequired);",
+            "        }",
+            "        Ok(())",
+            "    }",
+            ""
+          ]
+        },
+        {
+          "old_start": 143,
+          "new_start": 183,
+          "removed": [
+            "        OriginalCircuitPublishedLocalReadV1::from_original_version(bound)",
+            "            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))"
+          ],
+          "added": [
+            "        let local = OriginalCircuitPublishedLocalReadV1::from_original_version(bound)",
+            "            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;",
+            "        if Instant::now() >= admission_end {",
+            "            return Err(Error::Unavailable);",
+            "        }",
+            "        Ok(local)"
+          ]
+        }
+      ]
+    },
+    {
+      "packet": "version_identity_packet_obj",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "hunks": [
+        {
+          "old_start": 208,
+          "new_start": 208,
+          "removed": [],
+          "added": [
+            "        let mut destination = self.original.slot.try_lock().map_err(|_| Error::Unavailable)?;"
+          ]
+        },
+        {
+          "old_start": 209,
+          "new_start": 210,
+          "removed": [
+            "        *self.original.slot.try_lock().map_err(|_| Error::Unavailable)? = Some(slot);"
+          ],
+          "added": [
+            "        if Instant::now() >= deadline {",
+            "            return Err(Error::Unavailable);",
+            "        }",
+            "        *destination = Some(slot);"
+          ]
+        },
+        {
+          "old_start": 253,
+          "new_start": 257,
+          "removed": [],
+          "added": [
+            "    pub(crate) fn require_original_local_shared_readbacks(",
+            "        &self,",
+            "        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,",
+            "    ) -> Result<(), Error> {",
+            "        let local = self.local.as_ref()",
+            "            .ok_or(Error::Binding(\"local Version capability required\"))?;",
+            "        local.require_original_window()?;",
+            "        local.original.original.require_original_shared_readbacks(shared)",
+            "            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;",
+            "        local.require_original_window()",
+            "    }",
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "packet": "version_purpose_packet_obj",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "hunks": [
+        {
+          "old_start": 27,
+          "new_start": 27,
+          "removed": [],
+          "added": [
+            "#[derive(Clone, Copy)]",
+            "pub(crate) enum OriginalVersionLocalReadOperationV1 {",
+            "    Readback,",
+            "    CompletionReadiness,",
+            "}",
+            "",
+            "enum OriginalVersionLocalReadPurpose {",
+            "    Selection,",
+            "    NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),",
+            "}",
+            ""
+          ]
+        },
+        {
+          "old_start": 94,
+          "new_start": 105,
+          "removed": [
+            "        readiness: bool,"
+          ],
+          "added": [
+            "        operation: OriginalVersionLocalReadOperationV1,"
+          ]
+        },
+        {
+          "old_start": 105,
+          "new_start": 116,
+          "removed": [
+            "                if readiness {",
+            "                    &NextUseReadPurpose::CompletionReadiness",
+            "                } else {",
+            "                    &NextUseReadPurpose::Readback"
+          ],
+          "added": [
+            "                match operation {",
+            "                    OriginalVersionLocalReadOperationV1::Readback => &NextUseReadPurpose::Readback,",
+            "                    OriginalVersionLocalReadOperationV1::CompletionReadiness =>",
+            "                        &NextUseReadPurpose::CompletionReadiness,"
+          ]
+        },
+        {
+          "old_start": 114,
+          "new_start": 125,
+          "removed": [
+            "                if readiness {"
+          ],
+          "added": [
+            "                if matches!(operation, OriginalVersionLocalReadOperationV1::CompletionReadiness) {"
+          ]
+        },
+        {
+          "old_start": 137,
+          "new_start": 148,
+          "removed": [
+            "        self.open_original_evaluated_local_read(None, timeout, lifetime).await"
+          ],
+          "added": [
+            "        self.open_original_evaluated_local_read(OriginalVersionLocalReadPurpose::Selection, timeout, lifetime).await"
+          ]
+        },
+        {
+          "old_start": 148,
+          "new_start": 159,
+          "removed": [
+            "        self.open_original_evaluated_local_read(Some(selection), timeout, lifetime).await"
+          ],
+          "added": [
+            "        self.open_original_evaluated_local_read(OriginalVersionLocalReadPurpose::NextUse(selection), timeout, lifetime).await"
+          ]
+        },
+        {
+          "old_start": 153,
+          "new_start": 164,
+          "removed": [
+            "        selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,"
+          ],
+          "added": [
+            "        purpose: OriginalVersionLocalReadPurpose,"
+          ]
+        },
+        {
+          "old_start": 172,
+          "new_start": 183,
+          "removed": [
+            "            self.bind_original_evaluated_local_read(selection, timeout, end, permit)"
+          ],
+          "added": [
+            "            self.bind_original_evaluated_local_read(purpose, timeout, end, permit)"
+          ]
+        },
+        {
+          "old_start": 193,
+          "new_start": 204,
+          "removed": [
+            "        selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,"
+          ],
+          "added": [
+            "        purpose: OriginalVersionLocalReadPurpose,"
+          ]
+        },
+        {
+          "old_start": 205,
+          "new_start": 216,
+          "removed": [],
+          "added": [
+            "        let selection = match purpose {",
+            "            OriginalVersionLocalReadPurpose::Selection => None,",
+            "            OriginalVersionLocalReadPurpose::NextUse(selection) => Some(selection),",
+            "        };"
+          ]
+        }
+      ]
+    },
+    {
+      "packet": "version_purpose_packet_obj",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "hunks": [
+        {
+          "old_start": 12,
+          "new_start": 12,
+          "removed": [],
+          "added": [
+            "use super::super::retained_publication::version::OriginalVersionLocalReadOperationV1 as LocalReadOperation;"
+          ]
+        },
+        {
+          "old_start": 49,
+          "new_start": 50,
+          "removed": [
+            "#[derive(Clone, Copy)]",
+            "enum LocalReadOperation {",
+            "    Readback,",
+            "    CompletionReadiness,",
+            "}",
+            ""
+          ],
+          "added": []
+        },
+        {
+          "old_start": 161,
+          "new_start": 156,
+          "removed": [
+            "                matches!(operation, LocalReadOperation::CompletionReadiness),"
+          ],
+          "added": [
+            "                operation,"
+          ]
+        }
+      ]
+    },
+    {
+      "packet": "version_purpose_packet_obj",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "hunks": [
+        {
+          "old_start": 64,
+          "new_start": 64,
+          "removed": [],
+          "added": [
+            "pub(crate) use local_read::OriginalVersionLocalReadOperationV1;"
+          ]
+        }
+      ]
+    },
+    {
+      "packet": "version_purpose_packet_obj",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "hunks": [
+        {
+          "old_start": 32,
+          "new_start": 32,
+          "removed": [],
+          "added": [
+            "pub(crate) use host::OriginalVersionLocalReadOperationV1;"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "format": "hepta-reviewed-source-overlay-v1",
+  "identity": "version-local-read-identity-deadline-increment-v1",
+  "status": "PREPARATION_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "dependencies": {
+    "production_packet": "3de167eff0444e7dd8f0f32ade0444c1a8ff5925"
+  },
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_packet": {
+    "bytes": 46848,
+    "sha256": "703abde2378a8e2742307ca4da192971448cb2f53e058ca203f9826727ec1593",
+    "git_blob": "1f9af98ea25445d7ff732cbbd313399883165fb1"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 10450,
+        "sha256": "13491f0c1abd1b65f37d02a181d38e49fa2d1b02f7255c7e0f08f120ef445f56",
+        "git_blob": "b742271d68a2822efa66c0903d7132808d3a01af"
+      },
+      "after": {
+        "bytes": 12482,
+        "sha256": "82de6bf7059ff9af781848e22fdb11849eba3b094c75ca42fa64e0bc1bbaf248",
+        "git_blob": "89272797b702faeb3cd6f4d833e68cf6054647f8"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 10301,
+        "sha256": "dc0f55127b5ba66508ea4d08d6fe4d6bca03197dd77503a9c080bfc16929d674",
+        "git_blob": "24cdecc2bbe1b1919146fb6efc27362e2f6eff2c"
+      },
+      "after": {
+        "bytes": 10979,
+        "sha256": "c7fce8fb161925d8f1384fdeff4f6bdbba47d61e7cac598cc2a5fa5bfcc76183",
+        "git_blob": "8b7ee4facde5bd1e4a7359f6b8be6e8b08b9d045"
+      }
+    }
+  ],
+  "formatted": false,
+  "compiled": false,
+  "tests_executed": false
+}
