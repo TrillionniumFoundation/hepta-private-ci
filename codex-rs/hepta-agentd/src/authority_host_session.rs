@@ -18,6 +18,11 @@ mod material;
 #[path = "authority_host_learning_session.rs"]
 mod learning;
 
+#[path = "authority_host_session_generation.rs"]
+mod generation;
+pub use generation::PreparedRootHostInitialGenerationV1;
+pub use generation::RootHostInitialTaskInstallationErrorV1;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.

@@ -57,6 +57,12 @@ mod notes_successor;
 #[path = "authority_host_learning_resident.rs"]
 pub(crate) mod resident;
 
+#[path = "authority_host_generation.rs"]
+mod generation;
+pub(crate) use generation::OriginalHostInitialOperation;
+pub use generation::RootHostInitialGenerationInputsV1;
+pub use generation::RootHostInitialGenerationRecoveryV1;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {

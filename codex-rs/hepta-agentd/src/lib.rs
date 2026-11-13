@@ -149,6 +149,10 @@ pub use authority_host_runtime::HostIssuerLeaseRenewalPlan;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedRootHostInitialGenerationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootHostInitialTaskInstallationErrorV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::commit_host_issuer_lease_renewal;
@@ -180,6 +184,10 @@ pub use authority_host_service::HostAuthorityLearningRegistrationV1;
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootHostInitialGenerationInputsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootHostInitialGenerationRecoveryV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::resident::AgentdRootResidentLearningClientV3;
 #[cfg(target_os = "linux")]

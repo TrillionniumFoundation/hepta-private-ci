@@ -122,6 +122,12 @@ jobs:
               "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
               "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
               "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error",
+              "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_publication_enters_original_task_factory_and_drain",
+              "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_same_issuer_revoked_grant",
+              "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_stale_original_consumer_head",
+              "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_another_complete_intent",
+              "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_existing_state_reopens_after_old_session_is_dropped",
+              "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_request_reads_the_exact_binding_without_preparing",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
                       "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval",

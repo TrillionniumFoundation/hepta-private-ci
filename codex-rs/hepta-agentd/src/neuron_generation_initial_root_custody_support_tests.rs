@@ -327,3 +327,6 @@ mod tests;
 
 #[path = "neuron_generation_initial_root_cold_tests.rs"]
 mod cold_tests;
+
+#[path = "authority_host_generation_support_tests.rs"]
+mod host_generation;

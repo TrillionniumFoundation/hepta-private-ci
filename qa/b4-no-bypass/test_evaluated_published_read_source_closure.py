@@ -684,7 +684,7 @@ ORDINARY_MODULE_MOUNTS = [{'parent': 'codex-rs/hepta-agentd/src/cell_q24_candida
   'module_name': 'prepared_custody',
   'path_literal': '"circuit_retained_version_prepared.rs"'}]
 
-ORDINARY_COMPLETE_BOUNDARY_SHA256 = 'fbd2bad9dcaf4cc327d48442c42a0bdd05e856a20054340591e71b8d07239a7a'
+ORDINARY_COMPLETE_BOUNDARY_SHA256 = '5f357f92112725cd9c232d5067208b9f32c6a528f532de725e03d99ed8d67e48'
 
 ORDINARY_NEW_BOUNDARIES = [{'id': 'learning_original_candidate_retained_stage_route',
   'symbol': 'OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage',
@@ -1174,7 +1174,7 @@ class EvaluatedOrdinaryRetainedClosureTests(unittest.TestCase):
     def test_new_typed_edges_and_old_boundary_inventory_are_exact(self):
         boundaries = PROOF._boundary_rows(self.manifest)
         PROOF._verify_privileged_inventory(self.manifest, boundaries)
-        self.assertEqual(len(boundaries), 633)
+        self.assertEqual(len(boundaries), 650)
         self.assertEqual(PROOF._string_tuple(self.manifest, "source_roots"), ("codex-rs",))
         self.assertEqual(PROOF._string_tuple(self.manifest, "ignored_path_fragments"),
                          ("/tests/", "/examples/", "_tests.rs"))

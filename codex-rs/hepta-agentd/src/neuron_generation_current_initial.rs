@@ -28,6 +28,17 @@ use crate::AgentdError;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
 impl NeuronGenerationCurrentOwnerV1 {
+    /// Compare the exact original initial intent before any protected write.
+    /// This returns only binding data, not a prepared owner or permission.
+    pub(crate) fn original_initial_publication_binding(
+        operation_id: String,
+        target: CellGenerationOwnerBindingV1,
+        selected: &AgentdSelectedGenerationV1,
+    ) -> Result<codex_hepta_contracts::FinalUseBinding, AgentdError> {
+        let (_, prepared) = initial_head_and_prepared(operation_id, target, selected)?;
+        Ok(prepared.final_use_binding().clone())
+    }
+
     /// Create one initial operation using actual root custody. Existing state
     /// is never overwritten or treated as an empty namespace on recovery.
     pub fn prepare_initial(

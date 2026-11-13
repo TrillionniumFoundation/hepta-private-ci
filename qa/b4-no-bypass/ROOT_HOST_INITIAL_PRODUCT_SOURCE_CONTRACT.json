@@ -1,0 +1,552 @@
+{
+  "authority": "NONE: source checks and mechanisms do not grant material, task or publication permission",
+  "baseline": {
+    "head": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "status": "",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "format": "hepta-root-host-initial-product-source-contract-v1",
+  "mechanism_scope": [
+    "protected original Root and same original lease/issuer",
+    "explicit engineering Artifact and signed AuthBus fixtures",
+    "actual nonRoot peer identity only",
+    "same-process existing Current reopen, not process-cold daemon recovery"
+  ],
+  "new_boundary_rows": [
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_initial_publication_binding("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "id": "root_host_initial_neuron_generation_current_owner_v1_original_initial_publication_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_request.rs"
+      ],
+      "receiver_type": "NeuronGenerationCurrentOwnerV1",
+      "symbol": "NeuronGenerationCurrentOwnerV1::original_initial_publication_binding"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn bind_original_initial_operation<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_host_authority_service_bind_original_initial_operation",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "receiver_type": "HostAuthorityService",
+      "symbol": "HostAuthorityService::bind_original_initial_operation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn recover_original_initial_operation<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_host_authority_service_recover_original_initial_operation",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "receiver_type": "HostAuthorityService",
+      "symbol": "HostAuthorityService::recover_original_initial_operation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_initial_request<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation_request.rs",
+      "id": "root_host_initial_host_authority_service_read_original_initial_request",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "receiver_type": "HostAuthorityService",
+      "symbol": "HostAuthorityService::read_original_initial_request"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn publish<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_original_host_initial_operation_publish",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "receiver_type": "OriginalHostInitialOperation",
+      "symbol": "OriginalHostInitialOperation::publish"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_original_host_initial_operation_read_original",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "receiver_type": "OriginalHostInitialOperation",
+      "symbol": "OriginalHostInitialOperation::read_original"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn recover<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_original_host_initial_operation_recover",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "receiver_type": "OriginalHostInitialOperation",
+      "symbol": "OriginalHostInitialOperation::recover"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn require_observed("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "id": "root_host_initial_original_host_initial_operation_require_observed",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "receiver_type": "OriginalHostInitialOperation",
+      "symbol": "OriginalHostInitialOperation::require_observed"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn bind_original_initial_generation<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "id": "root_host_initial_prepared_host_authority_session_bind_original_initial_generation",
+      "product_callers": [],
+      "receiver_type": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::bind_original_initial_generation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn recover_original_initial_generation<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "id": "root_host_initial_prepared_host_authority_session_recover_original_initial_generation",
+      "product_callers": [],
+      "receiver_type": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::recover_original_initial_generation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_initial_generation_request<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "id": "root_host_initial_prepared_host_authority_session_original_initial_generation_request",
+      "product_callers": [],
+      "receiver_type": "PreparedHostAuthoritySession",
+      "symbol": "PreparedHostAuthoritySession::original_initial_generation_request"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn publish_original_generation("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_publish_original_generation",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::publish_original_generation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_generation("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_read_original_generation",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::read_original_generation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn recover_original_generation("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_recover_original_generation",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::recover_original_generation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn into_original_q24_task<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_into_original_q24_task",
+      "product_callers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1",
+      "symbol": "PreparedRootHostInitialGenerationV1::into_original_q24_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn generation_error("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "id": "root_host_initial_root_host_initial_task_installation_error_v1_generation_error",
+      "product_callers": [],
+      "receiver_type": "RootHostInitialTaskInstallationErrorV1",
+      "symbol": "RootHostInitialTaskInstallationErrorV1::generation_error"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_generation_after_installation_failure("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "id": "root_host_initial_root_host_initial_task_installation_error_v1_read_original_generation_after_installation_failure",
+      "product_callers": [],
+      "receiver_type": "RootHostInitialTaskInstallationErrorV1",
+      "symbol": "RootHostInitialTaskInstallationErrorV1::read_original_generation_after_installation_failure"
+    }
+  ],
+  "old_boundary_additions": [
+    {
+      "after": {
+        "call_pattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)verify_original_signed_grant\\s*\\(",
+        "caller_markers": [
+          "verify_original_signed_grant"
+        ],
+        "definition_markers": [
+          "pub(crate) fn verify_original_signed_grant(",
+          ".verify_strict(&bytes, &signature)",
+          "sequence > state.sequence"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+        "id": "root_live_admin_signed_artifact_verify",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+        ],
+        "symbol": "DeploymentFinalUseIssuer::verify_original_signed_grant"
+      },
+      "before": {
+        "call_pattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)verify_original_signed_grant\\s*\\(",
+        "caller_markers": [
+          "verify_original_signed_grant"
+        ],
+        "definition_markers": [
+          "pub(crate) fn verify_original_signed_grant(",
+          ".verify_strict(&bytes, &signature)",
+          "sequence > state.sequence"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+        "id": "root_live_admin_signed_artifact_verify",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs"
+        ],
+        "symbol": "DeploymentFinalUseIssuer::verify_original_signed_grant"
+      },
+      "index": 125
+    },
+    {
+      "after": {
+        "call_pattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)observe_original_signed_grant\\s*\\(",
+        "caller_markers": [
+          "observe_original_signed_grant"
+        ],
+        "definition_markers": [
+          "VerificationPurpose::RetainedObservation"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+        "id": "root_live_admin_retained_artifact_observe",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+        ],
+        "symbol": "DeploymentFinalUseIssuer::observe_original_signed_grant"
+      },
+      "before": {
+        "call_pattern": "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)observe_original_signed_grant\\s*\\(",
+        "caller_markers": [
+          "observe_original_signed_grant"
+        ],
+        "definition_markers": [
+          "VerificationPurpose::RetainedObservation"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+        "id": "root_live_admin_retained_artifact_observe",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs"
+        ],
+        "symbol": "DeploymentFinalUseIssuer::observe_original_signed_grant"
+      },
+      "index": 134
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn from_original_prepared("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_from_original_prepared",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::from_original_prepared"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn from_original_prepared("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_from_original_prepared",
+        "product_callers": [],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::from_original_prepared"
+      },
+      "index": 621
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+        "product_callers": [],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+      },
+      "index": 624
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn publish("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_publish",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::publish"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn publish("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_publish",
+        "product_callers": [],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::publish"
+      },
+      "index": 625
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn into_q24_task<"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_into_q24_task",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::into_q24_task"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn into_q24_task<"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_into_q24_task",
+        "product_callers": [],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::into_q24_task"
+      },
+      "index": 627
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn recover_from_original_current("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_from_original_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+        ],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::recover_from_original_current"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn recover_from_original_current("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+        "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_from_original_current",
+        "product_callers": [],
+        "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+        "symbol": "OriginalRootInitialGenerationCustodyV1::recover_from_original_current"
+      },
+      "index": 628
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+        "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn read_original_operation("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+        "product_callers": [],
+        "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+        "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+      },
+      "index": 629
+    },
+    {
+      "after": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn original_error("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_initial_installation_error_v1_original_error",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+        ],
+        "receiver_type": "OriginalRootInitialInstallationErrorV1",
+        "symbol": "OriginalRootInitialInstallationErrorV1::original_error"
+      },
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "fn original_error("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "id": "root_initial_custody_original_root_initial_installation_error_v1_original_error",
+        "product_callers": [],
+        "receiver_type": "OriginalRootInitialInstallationErrorV1",
+        "symbol": "OriginalRootInitialInstallationErrorV1::original_error"
+      },
+      "index": 631
+    }
+  ],
+  "original_protected_prefix_count": 442,
+  "original_protected_prefix_sha256": "d5f8b123be861788300635fa72998fc101ddd3dff0a2590cff1540301232c0fa",
+  "pending": [
+    "full unchanged typed collector",
+    "original QA and mutation execution",
+    "actual formatting and exact guard refresh",
+    "Root ignored mechanisms",
+    "ordinary cross-process product integration"
+  ],
+  "production_files": {
+    "codex-rs/hepta-agentd/src/authority_host_generation.rs": {
+      "bytes": 15263,
+      "git_blob": "8ca53769c20627fd9e204c0a0a5b4e77771bebac",
+      "sha256": "3fe84b8d8f29e5e4554ab69f4b81b6a91884a03732020223b32b12c9070e3a72"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_generation_request.rs": {
+      "bytes": 3448,
+      "git_blob": "0ba3ec80ea9c4cd04acf157bb3a894d21d29b96b",
+      "sha256": "47bde0c769254a9d1e61d8093d4111fb235ca3adf772e919b340bd15d5b60acd"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs": {
+      "bytes": 20116,
+      "git_blob": "035be6b6128a6a9f8861e1ba7c6ac95b45f71b4d",
+      "sha256": "15748f1c212d7f967b960133cb0c0e84586666893b38ac1601dab2f931d07cf2"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_service.rs": {
+      "bytes": 23062,
+      "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff",
+      "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_session.rs": {
+      "bytes": 17780,
+      "git_blob": "d1a06f714d3805636bb52ea00096a567ade99348",
+      "sha256": "26c1430f5241d4a717190bd2a7bd7400723605b5bda1eea7c9306c9dc6b7724e"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_session_generation.rs": {
+      "bytes": 8419,
+      "git_blob": "1254c569aed6554782d21ff23653d95e7f7f3835",
+      "sha256": "d65a1f5e67802dfc0a2f523c305dd78b9868eaa1c81271eedb4da98f113a1d5b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs": {
+      "bytes": 5610,
+      "git_blob": "70003ef39ef45c372077d09d2416a1c289848ebc",
+      "sha256": "882dff00964b095cd34568a360bf387a3fa8ed4be4e591820505feca03598d72"
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "bytes": 72778,
+      "git_blob": "ab0c56c89de7a895bf0211b78fc19fdb42299387",
+      "sha256": "7b80ff46fff73939eee289a89492184e27ba4154b6a92448af6cc6843038d166"
+    },
+    "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs": {
+      "bytes": 11650,
+      "git_blob": "b08cbd6409a08be631d40d923801b98708600db5",
+      "sha256": "e029827da3eb19eba7f97ddeba0e81c1070e60b5e7cc262bb5277d07fd800b4d"
+    }
+  },
+  "root_parents": [
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_publication_enters_original_task_factory_and_drain",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_same_issuer_revoked_grant",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_stale_original_consumer_head",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_another_complete_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_existing_state_reopens_after_old_session_is_dropped",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_request_reads_the_exact_binding_without_preparing"
+  ]
+}

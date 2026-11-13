@@ -4,6 +4,8 @@ These source mutations protect authority and ordering. They are not evidence
 that any original deployment granted resident work or that an A/B/C run passed.
 """
 import ast
+import hashlib
+import json
 import importlib.util
 from pathlib import Path
 import re
@@ -126,6 +128,7 @@ ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
     "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
 ]
+ROOT_HOST_GENERATION_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_publication_enters_original_task_factory_and_drain', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_same_issuer_revoked_grant', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_stale_original_consumer_head', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_another_complete_intent', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_existing_state_reopens_after_old_session_is_dropped', 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_request_reads_the_exact_binding_without_preparing']
 ROOT_CUSTODY_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current',
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback',
  'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell',
@@ -407,7 +410,8 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         self.assertTrue(set(ROOT_CASES).issubset(parents))
         self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))
         self.assertTrue(set(ROOT_CUSTODY_CASES).issubset(parents))
-        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES) + len(ROOT_CUSTODY_CASES))
+        self.assertTrue(set(ROOT_HOST_GENERATION_CASES).issubset(parents))
+        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES) + len(ROOT_CUSTODY_CASES) + len(ROOT_HOST_GENERATION_CASES))
         roots = (ROOT / (AGENT + "authority_host_learning_resident_root_tests.rs")).read_text()
         evaluation = (ROOT / (AGENT + "authority_host_learning_resident_evaluation_tests.rs")).read_text()
         self.assertIn(
@@ -488,6 +492,38 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             'if after != before:', "daemon-learning-caller-proof",
         ):
             self.assertIn(marker, workflow)
+
+    def test_root_host_initial_product_exact_source_and_original_guards(self):
+        raw = (ROOT / "qa/b4-no-bypass/ROOT_HOST_INITIAL_PRODUCT_SOURCE_CONTRACT.json").read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), "459bebbd0b0f7bdb6057e30fed598a133ea7b4ce39507bd221e6766190e5c8ca")
+        contract = json.loads(raw)
+        current = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        self.assertEqual(len(current["boundary"]), 650)
+        self.assertEqual(len(current["protected_file"]), 451)
+        protected = json.dumps(current["protected_file"][:442], sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(protected).hexdigest(), contract["original_protected_prefix_sha256"])
+        self.assertEqual(current["boundary"][-17:], contract["new_boundary_rows"])
+        for change in contract["old_boundary_additions"]:
+            self.assertEqual(current["boundary"][change["index"]], change["after"])
+        for path, expected in contract["production_files"].items():
+            with self.subTest(original_host_source=path):
+                source = (ROOT / path).read_bytes()
+                actual = {"bytes": len(source), "sha256": hashlib.sha256(source).hexdigest(),
+                          "git_blob": hashlib.sha1(b"blob " + str(len(source)).encode() + b"\0" + source).hexdigest()}
+                self.assertEqual(actual, expected)
+
+    def test_root_host_initial_product_parents_keep_the_original_privileged_lane(self):
+        support = (ROOT / (AGENT + "neuron_generation_initial_root_custody_support_tests.rs")).read_text()
+        host = (ROOT / (AGENT + "authority_host_generation_support_tests.rs")).read_text()
+        cases = (ROOT / (AGENT + "authority_host_generation_tests.rs")).read_text()
+        self.assertIn('#[path = "authority_host_generation_support_tests.rs"]\nmod host_generation;', support)
+        self.assertIn('#[path = "authority_host_generation_tests.rs"]\nmod tests;', host)
+        self.assertEqual(len(ROOT_HOST_GENERATION_CASES), len(set(ROOT_HOST_GENERATION_CASES)))
+        self.assertTrue(set(ROOT_HOST_GENERATION_CASES).isdisjoint(ROOT_CASES + ROOT_ISSUER_CASES + ROOT_CUSTODY_CASES))
+        for parent in ROOT_HOST_GENERATION_CASES:
+            self.assertIn("async fn " + parent.rsplit("::", 1)[-1] + "(", cases)
+        self.assertEqual(cases.count('#[ignore = "requires original Root host bind and actual signed owner fixtures"]'), len(ROOT_HOST_GENERATION_CASES))
+
 
 if __name__ == "__main__":
     unittest.main()
