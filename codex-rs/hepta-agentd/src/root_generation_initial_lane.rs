@@ -18,6 +18,21 @@ use super::initial_failure;
 use super::uncertain;
 use crate::AgentdError;
 
+/// Keep a bounded synchronous Initial scope on its original thread while
+/// permitting independent tasks on the ordinary multi-thread runtime to run.
+/// Callers compute the absolute end before this handoff. The closed production
+/// callers do not run inside a LocalSet; standalone/current-thread uses retain
+/// their original direct execution. No authority, deadline or guard is moved.
+pub(super) fn run_original_blocking<R>(action: impl FnOnce() -> R) -> R {
+    if tokio::runtime::Handle::try_current()
+        .is_ok_and(|handle| handle.runtime_flavor() == tokio::runtime::RuntimeFlavor::MultiThread)
+    {
+        tokio::task::block_in_place(action)
+    } else {
+        action()
+    }
+}
+
 struct AdmissionDomain {
     waiting: &'static str,
     locking: &'static str,
@@ -257,3 +272,7 @@ mod tests;
 #[cfg(test)]
 #[path = "root_generation_initial_artifact_admission_tests.rs"]
 mod artifact_tests;
+
+#[cfg(test)]
+#[path = "root_generation_initial_blocking_tests.rs"]
+mod blocking_tests;

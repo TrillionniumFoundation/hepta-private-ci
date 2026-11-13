@@ -197,113 +197,116 @@ impl RootGenerationInitialClient {
 
     fn exchange(&self, command: Command) -> Result<Option<CurrentHead>, AgentdError> {
         let end = self.original_frame_end()?;
-        if self.fenced.load(Ordering::Acquire) {
-            initial_failure("already_fenced", None, format_args!("class=Fenced"));
-            return Err(uncertain());
-        }
-        if let Err(error) = self.connection.require_original_publication_session() {
-            self.fence();
-            initial_failure(
-                "session_before",
-                None,
-                format_args!("class={}", initial_error_class(&error)),
-            );
-            return Err(uncertain());
-        }
-        let mut held = self.acquire_original_lane(end)?;
-        let mut lane = held.data.take().ok_or_else(uncertain).inspect_err(|_| {
-            initial_failure("lane_absent", None, format_args!("class=Absent"));
-        })?;
-        let request_id = lane.sequence;
-        lane.sequence = request_id
-            .checked_add(1)
-            .ok_or_else(uncertain)
-            .inspect_err(|_| {
-                initial_failure("sequence", Some(request_id), format_args!("class=Overflow"));
+        self::lane::run_original_blocking(|| {
+            if self.fenced.load(Ordering::Acquire) {
+                initial_failure("already_fenced", None, format_args!("class=Fenced"));
+                return Err(uncertain());
+            }
+            if let Err(error) = self.connection.require_original_publication_session() {
+                self.fence();
+                initial_failure(
+                    "session_before",
+                    None,
+                    format_args!("class={}", initial_error_class(&error)),
+                );
+                return Err(uncertain());
+            }
+            let mut held = self.acquire_original_lane(end)?;
+            let mut lane = held.data.take().ok_or_else(uncertain).inspect_err(|_| {
+                initial_failure("lane_absent", None, format_args!("class=Absent"));
             })?;
-        let request = Request {
-            schema: 1,
-            purpose: PURPOSE.into(),
-            request_id,
-            profile: self.profile.binding.clone(),
-            command,
-        };
-        let raw = crate::root_generation_current_client::OriginalPublicationStream::exchange_until(
-            &mut lane.stream,
-            &serde_json::to_vec(&request)
+            let request_id = lane.sequence;
+            lane.sequence = request_id
+                .checked_add(1)
+                .ok_or_else(uncertain)
+                .inspect_err(|_| {
+                    initial_failure("sequence", Some(request_id), format_args!("class=Overflow"));
+                })?;
+            let request = Request {
+                schema: 1,
+                purpose: PURPOSE.into(),
+                request_id,
+                profile: self.profile.binding.clone(),
+                command,
+            };
+            let raw =
+                crate::root_generation_current_client::OriginalPublicationStream::exchange_until(
+                    &mut lane.stream,
+                    &serde_json::to_vec(&request)
+                        .inspect_err(|error| {
+                            initial_failure(
+                                "encode_request",
+                                Some(request_id),
+                                format_args!("class={:?}", error.classify()),
+                            );
+                        })
+                        .map_err(|_| uncertain())?,
+                    held.end,
+                )
                 .inspect_err(|error| {
+                    // This stream's errors contain only fixed framing phases,
+                    // kernel I/O classes, lengths and poll/deadline fields.
                     initial_failure(
-                        "encode_request",
+                        "frame_exchange",
                         Some(request_id),
-                        format_args!("class={:?}", error.classify()),
+                        format_args!(
+                            "io_kind={:?}; os_error={:?}; detail={error}",
+                            error.kind(),
+                            error.raw_os_error()
+                        ),
                     );
                 })
-                .map_err(|_| uncertain())?,
-            held.end,
-        )
-        .inspect_err(|error| {
-            // This stream's errors contain only fixed framing phases,
-            // kernel I/O classes, lengths and poll/deadline fields.
-            initial_failure(
-                "frame_exchange",
-                Some(request_id),
-                format_args!(
-                    "io_kind={:?}; os_error={:?}; detail={error}",
-                    error.kind(),
-                    error.raw_os_error()
-                ),
-            );
-        })
-        .map_err(|_| uncertain())?;
-        let response: Response = serde_json::from_slice(&raw)
-            .inspect_err(|error| {
-                // Do not log serde's Display: it can contain a peer's value.
+                .map_err(|_| uncertain())?;
+            let response: Response = serde_json::from_slice(&raw)
+                .inspect_err(|error| {
+                    // Do not log serde's Display: it can contain a peer's value.
+                    initial_failure(
+                        "decode_reply",
+                        Some(request_id),
+                        format_args!(
+                            "class={:?}; line={}; column={}",
+                            error.classify(),
+                            error.line(),
+                            error.column()
+                        ),
+                    );
+                })
+                .map_err(|_| uncertain())?;
+            if response.schema != 1
+                || response.purpose != PURPOSE
+                || response.request_id != request_id
+                || response.profile != self.profile
+                || response.mode != self.mode
+                || self.fenced.load(Ordering::Acquire)
+            {
                 initial_failure(
-                    "decode_reply",
+                    "reply_binding_or_fence",
                     Some(request_id),
-                    format_args!(
-                        "class={:?}; line={}; column={}",
-                        error.classify(),
-                        error.line(),
-                        error.column()
-                    ),
+                    format_args!("class=Mismatch"),
                 );
-            })
-            .map_err(|_| uncertain())?;
-        if response.schema != 1
-            || response.purpose != PURPOSE
-            || response.request_id != request_id
-            || response.profile != self.profile
-            || response.mode != self.mode
-            || self.fenced.load(Ordering::Acquire)
-        {
-            initial_failure(
-                "reply_binding_or_fence",
-                Some(request_id),
-                format_args!("class=Mismatch"),
-            );
-            return Err(uncertain());
-        }
-        validate_head(&self.profile, response.head.as_ref()).inspect_err(|error| {
-            initial_failure(
-                "validate_head",
-                Some(request_id),
-                format_args!("class={}", initial_error_class(error)),
-            );
-        })?;
-        if let Err(error) = self.connection.require_original_publication_session() {
-            self.fenced.store(true, Ordering::Release);
-            initial_failure(
-                "session_after",
-                Some(request_id),
-                format_args!("class={}", initial_error_class(&error)),
-            );
-            return Err(uncertain());
-        }
-        held.require_open()?;
-        *held.data = Some(lane);
-        held.release()?;
-        Ok(response.head)
+                return Err(uncertain());
+            }
+            validate_head(&self.profile, response.head.as_ref()).inspect_err(|error| {
+                initial_failure(
+                    "validate_head",
+                    Some(request_id),
+                    format_args!("class={}", initial_error_class(error)),
+                );
+            })?;
+            if let Err(error) = self.connection.require_original_publication_session() {
+                self.fenced.store(true, Ordering::Release);
+                initial_failure(
+                    "session_after",
+                    Some(request_id),
+                    format_args!("class={}", initial_error_class(&error)),
+                );
+                return Err(uncertain());
+            }
+            held.require_open()?;
+            *held.data = Some(lane);
+            held.release()?;
+            Ok(response.head)
+        })
     }
 }
 

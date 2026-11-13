@@ -99,26 +99,28 @@ impl OriginalInitialArtifactOwnerV1 {
     ) -> Result<R, AgentdError> {
         let client = self.original.upgrade().ok_or_else(uncertain)?;
         let end = RootGenerationInitialClient::original_frame_end(&client)?;
-        if client.fenced.load(Ordering::Acquire) {
-            return Err(uncertain());
-        }
-        if let Err(error) =
-            crate::RootGenerationPublicationConnectionV1::require_original_publication_session(
-                &client.connection,
+        super::lane::run_original_blocking(|| {
+            if client.fenced.load(Ordering::Acquire) {
+                return Err(uncertain());
+            }
+            if let Err(error) =
+                crate::RootGenerationPublicationConnectionV1::require_original_publication_session(
+                    &client.connection,
+                )
+            {
+                client.fence();
+                return Err(error);
+            }
+            // This is a separate admission token, never the client's wire token.
+            super::lane::InitialLaneAdmission::with_original_action(
+                &self.admission,
+                &self.reader,
+                &client.fenced,
+                end,
+                |reader| reader.require_original_client(&client),
+                action,
             )
-        {
-            client.fence();
-            return Err(error);
-        }
-        // This is a separate admission token, never the client's wire token.
-        super::lane::InitialLaneAdmission::with_original_action(
-            &self.admission,
-            &self.reader,
-            &client.fenced,
-            end,
-            |reader| reader.require_original_client(&client),
-            action,
-        )
+        })
     }
 }
 
