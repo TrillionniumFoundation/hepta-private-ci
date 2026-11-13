@@ -25,6 +25,8 @@ mod cold_recipient_data;
 mod cold_record;
 #[path = "ordinary_q24_cold_successor_data_tests.rs"]
 mod cold_successor_data;
+#[path = "ordinary_q24_process_completion_tests.rs"]
+mod completion;
 #[path = "ordinary_q24_process_deployment_tests.rs"]
 mod deployment;
 #[path = "ordinary_q24_evidence_custody_tests.rs"]
@@ -93,7 +95,7 @@ pub(crate) struct RetainedOriginalAPhase {
     daemon: ExitedOriginalProcess,
     root: ExitedOriginalProcess,
     observer: ExitedOriginalProcess,
-    admission: crate::ObjectiveRunAdmission,
+    completion: completion::OriginalACompletionEvidence,
     outcome: observer::ObservedOriginalOutcome,
     source_pin: Digest32,
 }
@@ -140,23 +142,9 @@ pub(crate) fn run_original_a(
         running.plan.objective.request.clone(),
         tokio::time::Instant::from_std(running.end),
     ))?;
-    let crate::client::ObjectiveStartReplyV1::Completed(crate::ObjectiveStartOutcome::Admitted {
-        receipt: admission,
-    }) = reply
-    else {
-        anyhow::bail!(
-            "ordinary original Objective returned conflict or uncertain ACK; no inferred execution"
-        );
-    };
-    anyhow::ensure!(
-        admission.run_id == inputs::RUN
-            && admission.objective_digest.parse::<Digest32>()? == running.plan.objective.objective
-            && admission.disposition == "circuit_succeeded"
-            && !admission.idempotent
-            && !admission.publication_digest.parse::<Digest32>()?.is_zero()
-            && !admission.chain_digest.parse::<Digest32>()?.is_zero(),
-        "actual original ordinary Circuit admission/result required"
-    );
+    let completion = runtime.block_on(completion::read_original_completion(
+        &running, &client, reply,
+    ))?;
     running.require_live()?;
     let result_path = running
         .plan
@@ -207,6 +195,7 @@ pub(crate) fn run_original_a(
         runtime.block_on(client.original_q24_task_observation())?,
         outcome.observed
     );
+    pretty_assertions::assert_eq!(completion.completed.observation, outcome.observed);
     running.require_live()?;
     running.daemon.request_original_shutdown()?;
     let launch::RunningOrdinaryA {
@@ -235,7 +224,7 @@ pub(crate) fn run_original_a(
         daemon,
         root,
         observer: observer_exit,
-        admission,
+        completion,
         outcome,
         source_pin,
     })
@@ -282,7 +271,7 @@ impl RetainedOriginalAPhase {
         root::write_json(
             &self.plan.protected.path().join("actual-a-phase.json"),
             &json!({
-                "phase":"ordinary_original_a_only", "admission":self.admission,
+                "phase":"ordinary_original_a_only", "original_objective":self.completion,
                 "independent_observer":self.outcome,"root_source_pin":self.source_pin.to_string(),
                 "original_daemon":process(&self.daemon),"original_root":process(&self.root),
                 "original_observer":process(&self.observer),"business_files":self.business_files()
