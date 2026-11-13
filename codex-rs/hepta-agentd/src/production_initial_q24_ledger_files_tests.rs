@@ -20,6 +20,7 @@ fn original(root: &Path, name: &str, bytes: &[u8]) -> std::io::Result<(PathBuf, 
 #[test]
 fn initial_q24_ledger_files_detect_original_entry_replacement() -> anyhow::Result<()> {
     let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let (path, file) = original(directory.path(), "ledger", b"retained original")?;
     let parent = OriginalParent::open_original(&path, &file)?;
     parent.require_original()?;
@@ -52,6 +53,7 @@ fn initial_q24_ledger_files_reject_replaced_or_symlinked_directory() -> anyhow::
 #[test]
 fn initial_q24_ledger_files_reject_shared_custody_without_repair() -> anyhow::Result<()> {
     let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let (path, file) = original(directory.path(), "ledger", b"original bytes")?;
     let parent = OriginalParent::open_original(&path, &file)?;
     file.set_permissions(std::fs::Permissions::from_mode(0o640))?;

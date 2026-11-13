@@ -47,6 +47,13 @@ use crate::RunPhase;
 mod completed_history;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    let (temp, registry, state) = fixture_before_app_server_ready()?;
+    state.mark_app_server_ready()?;
+    Ok((temp, registry, state))
+}
+
+fn fixture_before_app_server_ready()
+-> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]
@@ -87,7 +94,6 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         AgentLifecycle::Running,
     )?;
     state.refresh_generation()?;
-    state.mark_app_server_ready()?;
     Ok((temp, registry, state))
 }
 
