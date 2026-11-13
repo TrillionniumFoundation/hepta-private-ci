@@ -1,0 +1,77 @@
+{
+  "time": "2026-11-07T12:33:59.497669+00:00",
+  "reason": "reduce final current regression tmpfs peak after parent released its own caches; tests/profile unchanged",
+  "files": [
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_hepta_agentd-6d48368c50fc4932.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_hepta_agentd-6d48368c50fc4932.rlib",
+      "bytes": 117335898,
+      "sha256": "ae358f8799af578ef7a46154ba2827c171db0eb54fb75ddd41ffafd3647a3325"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_app_server-90b63da5657e7f65.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_app_server-90b63da5657e7f65.rlib",
+      "bytes": 82428666,
+      "sha256": "9e304324a0347468b0b6aa01a6c97125ad8d7ba42b9b6befc5e8a381ec6ca633"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_hepta_memory-d9d552966ff85695.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_hepta_memory-d9d552966ff85695.rlib",
+      "bytes": 35336498,
+      "sha256": "05c7a3831f37c3c32e7f978fb40c10a419cb0704a71584981cb5db13fdab424e"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_app_server_transport-86aa9474fd0d6d70.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_app_server_transport-86aa9474fd0d6d70.rlib",
+      "bytes": 31366684,
+      "sha256": "abe576a5900ad2515c18dce28ecc6d7a5dca02c1f7f6f6b18ff1379606d8eddb"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_hepta_supervisor-1e6cf073d4e15c9c.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_hepta_supervisor-1e6cf073d4e15c9c.rlib",
+      "bytes": 26797834,
+      "sha256": "dab730188c98d0d9386fdc9246cea2b28522e02986ac5837ea06f18cbe43a7a1"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_hepta_automation-21138628aa8a0276.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_hepta_automation-21138628aa8a0276.rlib",
+      "bytes": 12680928,
+      "sha256": "5646a1afe7434020a893294fea38097f111447f79fc2a534f2eaa903cbb12e16"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_analytics-3c87c0d331d9e8c3.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_analytics-3c87c0d331d9e8c3.rlib",
+      "bytes": 12594796,
+      "sha256": "695152ab6073645e497a717763eafe16ee64780ac355b3bebbc7337e2423cc69"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_skills_extension-8ad292e52b56e1e0.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_skills_extension-8ad292e52b56e1e0.rlib",
+      "bytes": 12514884,
+      "sha256": "dee7679343c2d1d51e78c6bef4a48bfd7b1d548638603cfe06f460ff29491878"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_sdk_signin-7d4117d8c5c5c33c.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_sdk_signin-7d4117d8c5c5c33c.rlib",
+      "bytes": 11487712,
+      "sha256": "48e179cee73eaafec2cbf0d2e436c2efbb4f9b3420a42a90931fd576161bda8d"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_external_agent_migration-18af6b23bb063b86.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_external_agent_migration-18af6b23bb063b86.rlib",
+      "bytes": 7303224,
+      "sha256": "84da56b31308238a02ff8855dc2a1d2d43cee323ce9a75af5bea21c46ae16f95"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/liblinux_raw_sys-7a14c0972e8eae8e.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/liblinux_raw_sys-7a14c0972e8eae8e.rlib",
+      "bytes": 1354308,
+      "sha256": "8fb2df11aacf349e4a229800173b07305fdf3ceb926f238107aee87942c50957"
+    }
+  ],
+  "total_bytes": 351201432,
+  "after_free": {
+    "/workspace": 149995520,
+    "/dev/shm": 1573756928
+  }
+}

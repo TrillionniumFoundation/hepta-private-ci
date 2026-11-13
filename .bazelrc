@@ -34,6 +34,9 @@ common:macos --test_env=PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr
 common:windows --test_env=SYSTEMROOT
 common:windows --test_env=COMSPEC
 common:windows --test_env=WINDIR
+# PowerShell appends .CPL during startup. Without the inherited PATHEXT,
+# native .exe hooks are treated as documents and lose their standard streams.
+common:windows --test_env=PATHEXT
 # Rust's libtest harness runs test bodies on std-spawned threads. The default
 # 2 MiB stack can be too small for large async test futures on Windows CI; see
 # https://github.com/openai/codex/pull/19067 for the motivating failure.
@@ -178,6 +181,10 @@ common:ci-windows --test_env=CODEX_BAZEL_TEST_SKIP_FILTERS=suite::code_mode::cod
 common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
+
+# Tests requiring system OpenSSH run in a dedicated native TestRunner
+# invocation in bazel.yml. Keep compilation remote on every host; rule-wide
+# no-remote-exec tags would also move cross-host Rustc/Clippy actions locally.
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel

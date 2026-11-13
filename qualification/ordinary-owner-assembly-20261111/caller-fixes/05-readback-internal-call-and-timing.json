@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "kind": "original_b_training_readback_caller_diagnostic_fixes",
+  "base": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "integration_policy": "Apply exact operations to the current parent integration. CALLERS full postimage is a reference for fixed715 only; preserve the parent's other metadata fixes. No checker, inventory, source-root, ignore, authority, budget or original owner changes.",
+  "preceding_full_diagnostic_reported_by_independent_agent": {
+    "source": "19894714403a97fcd58ca8c592e75761de95687c",
+    "tree": "8c64ab5145f279cafec363130d2a917075800e56",
+    "records": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-all-boundary-diagnostic-v1/records/result.json",
+    "bytes": 182100,
+    "sha256": "8007a25bf9dea4424378ae6af8c524aa0c33dd0f3b7a0f7dbd7519f058a336ce",
+    "boundaries": 491,
+    "failures": 11,
+    "diagnostics": [
+      {
+        "index": 394,
+        "error": "q24_training_original_readback_construct: caller set mismatch; missing=['codex-rs/hepta-agentd/src/cell_q24_training_readback.rs'], unexpected=[]"
+      },
+      {
+        "index": 400,
+        "error": "evaluation_original_trainer_borrow: codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs: unresolved possible OriginalCellEvaluationTrainerV1::borrow receiver"
+      }
+    ],
+    "raw_full_diagnostic_not_refetched_by_this_slice": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      "preimage": "a76fdef2a8cb61571fa7339c5c18962bc02cc5f2",
+      "preimage_sha256": "a27ff420d7c48dce8ebeb7e23a39df951658b389a0b68657c88a96b7e26599cd",
+      "sha256": "b17d9f83680c2fc8cd024cabc76a9bb515456ad8c6838878260742495924e8fd",
+      "bytes": 7837,
+      "operations": [
+        {
+          "old": "            timing: self.timing.borrow(),",
+          "new": "            timing: OriginalCellQ24EvaluationTimingV1::borrow(&self.timing),",
+          "expected_count": 1
+        }
+      ],
+      "postimage": "55f64838bd24a54be6bb71cd029833ecb8eb1412"
+    },
+    {
+      "path": "CALLERS.toml",
+      "preimage": "7296ffa44d8bd9e8ba02a835c48dcdfa14a6641d",
+      "preimage_sha256": "ba1764bd3215a8a755474483bdba643fe1e7776b0b21f6451a0b4c1a2703e471",
+      "sha256": "8c5093d914d3f7dc6e42c1c0d63fa1487bee4b0c3d213e7ef4ca9e0c96d0aa51",
+      "bytes": 648714,
+      "operations": [
+        {
+          "old": "[[boundary]]\nid = \"q24_training_original_readback_construct\"\nsymbol = \"OriginalCellQ24TrainingReadbackV1::from_original_stage\"\nreceiver_type = \"OriginalCellQ24TrainingReadbackV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_readback.rs\"\ndefinition_markers = [\"fn from_original_stage(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_training_readback.rs\"]\ncaller_markers = []\n\n",
+          "new": "[[boundary]]\nid = \"q24_training_original_readback_construct\"\nsymbol = \"OriginalCellQ24TrainingReadbackV1::from_original_stage\"\nreceiver_type = \"OriginalCellQ24TrainingReadbackV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_training_readback.rs\"\ndefinition_markers = [\"fn from_original_stage(\"]\nproduct_callers = []\ncaller_markers = []\n\n",
+          "expected_count": 1
+        },
+        {
+          "old": "  { function = \"fn original_training_readback(\", sequence = [\"self.inner.require_snapshot(&snapshot)?\",\".in_lane(\",\"OriginalCellQ24TrainingReadbackV1::from_original_stage(\",\"Arc::clone(&inner.prepared)\",\"Arc::clone(&inner.training)\",\"Arc::clone(&inner.cancelled)\"] },",
+          "new": "  { function = \"fn original_training_readback(\", sequence = [\"self.inner.require_snapshot(&snapshot)?\",\".in_lane(\",\"OriginalCellQ24TrainingReadbackV1::from_original_stage(\",\"Arc::clone(&inner.prepared)\",\"Arc::clone(&inner.training)\",\"inner.dataset_cut.clone(),\",\"snapshot,\",\"Arc::clone(&inner.cancelled)\"] },",
+          "expected_count": 1
+        }
+      ],
+      "postimage": "a3cbfc388e0d9532369e7f96a73ac5f4fabc8e3a"
+    }
+  ],
+  "unchanged_original_source": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs",
+    "blob": "529122147cb20cc97a986e5bf24331b223e5f517"
+  },
+  "semantic_changes": {
+    "constructor_external_callers": "Remove only the definition file from the external product caller set, because the unchanged verifier explicitly skips that file. The constructor remains private and the actual same-file aggregate export remains present.",
+    "internal_guard": {
+      "old_sequence": [
+        "self.inner.require_snapshot(&snapshot)?",
+        ".in_lane(",
+        "OriginalCellQ24TrainingReadbackV1::from_original_stage(",
+        "Arc::clone(&inner.prepared)",
+        "Arc::clone(&inner.training)",
+        "Arc::clone(&inner.cancelled)"
+      ],
+      "new_sequence": [
+        "self.inner.require_snapshot(&snapshot)?",
+        ".in_lane(",
+        "OriginalCellQ24TrainingReadbackV1::from_original_stage(",
+        "Arc::clone(&inner.prepared)",
+        "Arc::clone(&inner.training)",
+        "inner.dataset_cut.clone(),",
+        "snapshot,",
+        "Arc::clone(&inner.cancelled)"
+      ],
+      "all_old_markers_preserved_in_order": true,
+      "added": [
+        "inner.dataset_cut.clone(),",
+        "snapshot,"
+      ]
+    },
+    "receiver": "Disambiguate only the non-authority OriginalCellQ24EvaluationTimingV1::borrow(&self.timing). All three actual OriginalCellEvaluationTrainerV1 borrows are unchanged and still recognized.",
+    "qa_needles": "No matching QA needle for the changed timing spelling or constructor boundary in the fixed715 QA files; no QA change."
+  },
+  "partial_diagnostic": {
+    "kind": "two_source_original_receiver_replay_only",
+    "local_directory": "/workspace/scratch/af52a6167a5b/b-readback-diagnostic-715a",
+    "command": "python3 diagnose.py",
+    "checker_blobs": [
+      "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    ],
+    "inputs": [
+      "a76fdef2a8cb61571fa7339c5c18962bc02cc5f2",
+      "4320bc7df86d940d9c70bd746c8b3b8f2a8da2cc"
+    ],
+    "result": "Original error reproduced at self.timing; the single Timing UFCS postimage matches the real Trainer boundary with no unresolved receiver.",
+    "files": [
+      {
+        "name": "RESULT.json",
+        "bytes": 2082,
+        "sha256": "5f17a236cab1504ef5f0f78a68a052cb9441b47e92cef5737f84140b3dd80c9d",
+        "git_blob": "2b4dab92b96196365a70ffe0a411f63d421e4186"
+      },
+      {
+        "name": "CHECKER_PINS.json",
+        "bytes": 537,
+        "sha256": "9405c210eb1d0b454a339d8b29df3edae3c925498fd187a868f9df1b5d0b4a3b",
+        "git_blob": "50a30b5be1ec016de39c36ef531dba48cfb52825"
+      },
+      {
+        "name": "diagnose.py",
+        "bytes": 2555,
+        "sha256": "2797c2cdee89c7d2ae91fb52e4b4b5d4157e1ea6964731f6dcc7495b6808922b",
+        "git_blob": "0c5c3db3e698949d992bc8c4e195342f307ee855"
+      },
+      {
+        "name": "input.json",
+        "bytes": 12375,
+        "sha256": "50869662ddb2b707015e0dfb03cffa88141acde7bf72b6dbbe9b7395a45e04f1",
+        "git_blob": "c1667ec39b3fda6b0a9efb34a4ba3d7c68c6b2a7"
+      }
+    ],
+    "actual_exit_code": 0,
+    "source_index_count": 2,
+    "full_index": false,
+    "official_verify": false
+  },
+  "validation": {
+    "unique_replacements_checked": true,
+    "postimages_read_back_equal": true,
+    "checker_copies_exact_git_blobs": true,
+    "all_old_internal_protection_markers_preserved": true,
+    "protected_file_rows_added": 0,
+    "boundaries_added": 0,
+    "source_or_test_registry_weakened": false,
+    "native_executed": false,
+    "qa_executed": false,
+    "full_caller_verify_executed": false,
+    "ref_updated": false,
+    "qualification_pass": false
+  }
+}

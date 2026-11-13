@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.cell-causal.exact-format.v1",
+  "tool_sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+  "version": "ruff 0.15.13",
+  "config": "target-version = \"py310\"\nline-length = 88\n",
+  "input_archive_sha256": "3aa4861ff454e2b6e6c58b0ebee26e7b7e2eb670eea5034d9bcd55c413b3b404",
+  "files": [
+    {
+      "path": "scripts/ndu_real_runtime/_causal_checks.py",
+      "before_sha256": "2cfa3ae8c81932ba1db71340d66e89245af9cbd77a84d59e00cb045b88d3c610",
+      "after_sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_ace.py",
+      "before_sha256": "46ee8156523f6bacea8b90194b94301bb17f5280da6a300cec2c6c6d14ac50f6",
+      "after_sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_analysis.py",
+      "before_sha256": "a75fe6ee95fe5d9794b7af2a8bc14c80c6b33ca2a217c041d5b85533b7e8a1f4",
+      "after_sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_b.py",
+      "before_sha256": "daee3c060d67c6f636a8eebc9f34fbf8de3f997a5a1e9bf88d7ee65509bc11ce",
+      "after_sha256": "6f270394edd7f474810fbbefcf3638cca43d03ddc2476ec81a17879e26dd8f6a",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_b_contract.py",
+      "before_sha256": "794395eb9fead765ff355945dcaf907d0929cd9cb1dfdbc688ef03490404dd19",
+      "after_sha256": "953e946c9d0c020c5aa1ceb9e1d41e7030f91729260f01e81895b76cdc6d290c",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_composition.py",
+      "before_sha256": "b58a31f68863542ab44adf1c75ff9dc13baca16dda122406a3523ee2993da948",
+      "after_sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_improver.py",
+      "before_sha256": "9f179303c25e126a61229fb700ba21e667357353cc84de031c379ef0140a963a",
+      "after_sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_protocol.py",
+      "before_sha256": "73a57e4fbcea28a92c883f24019662cad07b91d1e5dd7e159eec5536d45020e6",
+      "after_sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_topology.py",
+      "before_sha256": "a6b2a0248bdb61fcf7f2b6e73a2491dd1c0df1c109620eee844af3b162a5da10",
+      "after_sha256": "43bfaa9357871dcf3c79ad823e6ec4922244ade43adec767eea275817d0ce092",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/fit_loop.py",
+      "before_sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5",
+      "after_sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/matrix.py",
+      "before_sha256": "cbc5f72e2489b7055db1cfa7975fe7ba4ae146220c06361904f78d12d07fdee9",
+      "after_sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/pipeline.py",
+      "before_sha256": "a6d734965e43705ff12d624c1e8d5d5b790647388721753b394f7b8ca70b7128",
+      "after_sha256": "a22dc843b9c48b35a65f07e0d72a48b9ec7d6185e74657696b63f7609ef9ce6a",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_causal_ace.py",
+      "before_sha256": "ae2d34063ac447cb8d137cdcd1d2cec724e662c91532d83c97e043168ca7f434",
+      "after_sha256": "bceb09f315d3abc17bad953a8eb030565952231538381699b544c10bbdaf18aa",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_causal_b.py",
+      "before_sha256": "175d1775005204c55dd8c31206d67b8828a7c1dded9799cfbd72456eb613d6b5",
+      "after_sha256": "a00183fc84227ad95deca13826a331ddcd72c3c003dfdef53248ed260c420b83",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_causal_protocol.py",
+      "before_sha256": "844dcf21670274fe3f9df72f748a493de32ed2d8892da4c0b8e8e788e31f8f6e",
+      "after_sha256": "e485fff645f69215ed680241cf50cc10f8a911dbb2dbc41b961b71c41b640b32",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_causal_topology.py",
+      "before_sha256": "41583adc6ae77dde85788c42cce25fe1d8e5819531f1795acf9f992c3b81354b",
+      "after_sha256": "82d2a2f4b6296ae82a620ada644d13ae1956a5991354bbd888e48791dd064cdf",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/training.py",
+      "before_sha256": "051f4c9a84c5429cd710882b71c83e763cd5c243da8160531bfd3c4fa6c91115",
+      "after_sha256": "3231186d09da00f2d78dbb3f25590085055ccd81cff578bfe934e52085469ffe",
+      "ast_equal": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/training_grid.py",
+      "before_sha256": "67a112f760bf2f0f7d105a0c852dbde4f6aba508dbef3a7b6b9abcec26bc6d47",
+      "after_sha256": "57ef934ed6950e5270471c3a79e33396038f0dca844b29222a4ff339875ea960",
+      "ast_equal": true
+    }
+  ],
+  "status": "PASS",
+  "behavioral_test_claim": false,
+  "output_archive_sha256": "90a782fb8b911b53d62e3e05473e46b47d7643e4fd5333d7c791822a5829e6a2",
+  "output_archive_bytes": 76040
+}

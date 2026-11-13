@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/bin/bash",
+    "-c",
+    "source /workspace/scratch/ff41dfc0f7bf/tooling/env.sh\njust bazel-lock-update"
+  ],
+  "source_head": "eb27c990353e80458b342aaa7efdd1b6310a5428",
+  "dirty": " M codex-rs/Cargo.lock\n M codex-rs/hepta-learning-ledger/Cargo.toml\n M codex-rs/hepta-learning-ledger/src/lib.rs\n M codex-rs/hepta-learning-ledger/src/run_start.rs\n?? codex-rs/hepta-learning-ledger/src/run_start_read_only.rs\n",
+  "exit_code": 127,
+  "elapsed_seconds": 0.48290395736694336,
+  "log": "/workspace/scratch/ff41dfc0f7bf/run-start-reader-audit/bazel-lock-update-first.log",
+  "native": "not run"
+}

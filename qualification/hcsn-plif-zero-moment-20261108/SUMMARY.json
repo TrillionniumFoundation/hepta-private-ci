@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.plif.zero-moment-qualification.v1",
+  "scientific_admission": "HOLD",
+  "training_adequacy_established": false,
+  "model_changed": false,
+  "training_configuration_changed": false,
+  "new_training_runs": 0,
+  "backward_calls": 0,
+  "optimizer_steps": 0,
+  "confirmation_access": false,
+  "diagnostic_forward_calls": 90,
+  "diagnostic_forward_events": 11520,
+  "forward_wall_seconds": 4.996439801994711,
+  "measured_cpu_seconds": null,
+  "energy_joules": null,
+  "measurement_limit": "Only diagnostic wall time is retained; no complete physical cost comparison.",
+  "original_training": {
+    "seed": 101,
+    "main_updates": 12,
+    "diagnostic_updates_restored_before_main": 16,
+    "main_windows": 12,
+    "main_events": 1536,
+    "main_labels": [
+      0,
+      3,
+      4,
+      6
+    ],
+    "logged_spikes": 1089,
+    "neuron_events": 125952,
+    "logged_spike_fraction": 0.008646150914634146
+  },
+  "parameter_evidence": {
+    "trainable_real_scalars": 9770,
+    "positive_retained_second_moment_scalars": 6236,
+    "zero_moment_decay_only_scalars": 3534,
+    "paired_zero_output_columns": 38,
+    "recurrent_scalars": 3116,
+    "head_scalars": 418,
+    "decay_match_bitwise": true,
+    "static_capacity_or_scalar_identifiability_established": false
+  },
+  "frozen_replay_zero_moment_channels_that_fire": {
+    "initial_original_12": 3,
+    "initial_remaining_33": 11,
+    "initial_all_45": 12,
+    "final_original_12": 7,
+    "final_remaining_33": 15,
+    "final_all_45": 15,
+    "either_endpoint_all_45": 19,
+    "remaining_endpoint_unobserved": 19,
+    "scope": "New forward replay at fixed initial/final states; not the original per-update neuron trace."
+  },
+  "history_inference": {
+    "direct_per_neuron_training_trace_available": false,
+    "absent_class_head_gradient_sign_supports_silence": true,
+    "minimum_final_second_moment_if_a_spike_occurs_under_retained_bounds": 1.9926502540436617e-26,
+    "source": "MECHANISM.json and INTERPRETATION_NOTES.json inside the archive",
+    "structural_disconnection_claimed": false
+  },
+  "data_coverage": {
+    "prepared_ABC_events": 5760,
+    "prepared_ABC_classes": [
+      0,
+      3,
+      4,
+      5,
+      6
+    ],
+    "prepared_class_5_events": 5,
+    "full_ABC_frontend_events": 89216,
+    "full_ABC_classes": 11,
+    "prepared_D_events": 1920,
+    "prepared_D_classes": [
+      0,
+      3,
+      6
+    ]
+  },
+  "identities": {
+    "original_model_source_sha256": "bb05d12c3919c1af9b4262dee8d02c7015a40c7b1bab9f173d4b36eb83478683",
+    "published_formatted_model_sha256": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+    "published_model_training_rerun": false,
+    "initial_checkpoint_sha256": "7f99800ac506b327d7fbba5a73d0d084f79ae72683865458b471569339062d4a",
+    "final_checkpoint_sha256": "859d52a763db5eaa8cacd2391312547400f2636f8a93c0a8ac2f1437a3030a39",
+    "data_manifest_sha256": "6adb305a8bbb7fb8438821125bb6324eeaf6243cf88b45c5482c0018c358685d",
+    "raw_forward_result_sha256": "dc45b9f3616f4f80c10f742999684c63df90f849470c4e8ba1be67d593df0256",
+    "executed_diagnostic_script_sha256": "69ad51addbff60a858b620f594fae3d5a9a4819e415287ce6f38fd51eca51011"
+  },
+  "native_jobs": {
+    "forward": {
+      "host": "desktop",
+      "job_id": "1a1bc49b8d9-138b0-16e",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true,
+      "terminal_publication_confirmed": true
+    },
+    "postprocess": {
+      "host": "desktop",
+      "job_id": "1a1bc4f0e17-138b0-192",
+      "exit_code": 0,
+      "output_durable": true,
+      "output_complete": true,
+      "terminal_publication_confirmed": true
+    }
+  },
+  "archive": {
+    "path": "readonly-evidence.zip",
+    "bytes": 126859,
+    "sha256": "87f57ad2d58977d5c9847a0d5419586a285b0ac68b5955ba926b2aaea73931da",
+    "members": 17,
+    "manifest_bound_members": 16,
+    "member_hashes_verified": true
+  },
+  "diagnosis": "Data/state-dependent hard-spike gating of output columns in an incomplete pilot. No causal model implementation bug identified.",
+  "smallest_next_step": "Keep HOLD; for a separately budgeted adequacy run, use existing all-development preparation, declared common exposure/stop rules and class/per-neuron activity diagnostics. No new run or gate is added here.",
+  "inspection_snapshot_commit": "dd03c0cbe08cc4dd01726ac8df5b165bc019b163",
+  "publication_base_commit": "bc75ed8ac158900449419052d9b8f6fcbe4912da"
+}

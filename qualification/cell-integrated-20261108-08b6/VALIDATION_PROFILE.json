@@ -1,0 +1,36 @@
+{
+  "allow_skips": false,
+  "dependencies": {
+    "Pillow": "12.0.0",
+    "numpy": "1.26.4",
+    "torch": "2.9.1+cpu"
+  },
+  "joint_learning_configuration": null,
+  "native_budget": {
+    "cpu_quota_percent": 100,
+    "memory_max_bytes": 4294967296,
+    "outer_timeout_seconds": 600
+  },
+  "production_qualification": false,
+  "python_major_minor": "3.12",
+  "required_tests": 74,
+  "schema": "hepta.integration-validation-profile.v1",
+  "scientific_qualification": false,
+  "scope": "engineering tests and archive integrity; not a joint learning runtime configuration",
+  "source_policy": "clean complete committed tree, observed before and after tests; unchanged during archive verification",
+  "test_modules": [
+    "test_hepta_cell_joint_config",
+    "ndu_real_runtime.test_state_codec",
+    "ndu_real_runtime.test_subprocess_supervisor",
+    "ndu_real_runtime.test_training_job_result",
+    "test_hepta_source_archive",
+    "hepta_pred1.test_diagnose_training"
+  ],
+  "test_timeout_seconds": 360,
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1"
+  }
+}

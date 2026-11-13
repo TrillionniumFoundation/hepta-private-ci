@@ -12,16 +12,8 @@ use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_uds::UnixStream;
-use tokio::io::AsyncBufReadExt;
-use tokio::io::AsyncReadExt;
-use tokio::io::AsyncWriteExt;
-use tokio::io::BufReader;
-use tokio::time::timeout;
 
-use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
-use crate::AGENTD_OVERLOAD_RETRY_AFTER_MS;
 use crate::AgentContextAttachment;
 use crate::AgentRunCancellation;
 use crate::AgentRunPhase;
@@ -31,19 +23,27 @@ use crate::AgentdCapabilitySet;
 use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
-use crate::AgentdResponse;
 use crate::AuthBusObjectiveIngress;
 use crate::AutomationEffectReconcileSnapshot;
 use crate::AutomationEffectSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
-use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
+
+#[path = "client_control.rs"]
+mod control;
+#[cfg(target_os = "linux")]
+#[path = "client_q24_completed_history.rs"]
+mod q24_completed_history;
+#[cfg(target_os = "linux")]
+#[path = "client_q24_outcome.rs"]
+mod q24_outcome;
+pub(crate) use control::ObjectiveStartReplyV1;
 
 pub struct AgentdClient {
     socket_path: PathBuf,
@@ -87,6 +87,30 @@ impl AgentdClient {
                 capabilities.validate().map_err(AgentdError::Protocol)?;
                 Ok(capabilities)
             }
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Operate the explicitly configured generation owner over its existing
+    /// private socket. An uncertain response must be retried with the exact
+    /// original request or inspected by its retained request digest.
+    pub async fn generation(
+        &self,
+        request: codex_hepta_agent_protocol::GenerationControlRequestV1,
+    ) -> Result<codex_hepta_agent_protocol::GenerationControlResponseV1, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::Generation {
+                    request: Box::new(request),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::Generation(response) => Ok(response),
             payload => unexpected(payload),
         }
     }
@@ -137,23 +161,29 @@ impl AgentdClient {
         &self,
         request: AuthBusObjectiveIngress,
     ) -> Result<ObjectiveStartOutcome, AgentdError> {
+        match self.objective_start_once(request).await? {
+            control::ObjectiveStartReplyV1::Completed(outcome) => Ok(outcome),
+            control::ObjectiveStartReplyV1::AcknowledgementLost(error) => Err(error),
+        }
+    }
+
+    /// Read one exact request's historical publication. This never retries the
+    /// request and cannot prove non-admission or an external-effect outcome.
+    pub async fn objective_admission(
+        &self,
+        query: crate::ObjectiveAdmissionQuery,
+    ) -> Result<crate::ObjectiveAdmissionOutcome, AgentdError> {
         match self
-            .send(AgentdRequest::objective_start(
-                self.request_id(),
-                self.spawn_generation,
-                request,
-            ))
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::ObjectiveAdmission { query },
+            })
             .await?
             .payload
         {
-            AgentdPayload::ObjectiveRun(receipt) => Ok(ObjectiveStartOutcome::Admitted { receipt }),
-            AgentdPayload::ObjectiveConflict {
-                run_id,
-                conflict_digest,
-            } => Ok(ObjectiveStartOutcome::Conflict {
-                run_id,
-                conflict_digest,
-            }),
+            AgentdPayload::ObjectiveAdmission { outcome } => Ok(outcome),
             payload => unexpected(payload),
         }
     }
@@ -242,6 +272,32 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::AuthBusTextStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Typed absence is observation only. The original daemon verifies its
+    /// independent replay checkpoint; absence never authorizes a new send.
+    pub async fn authbus_text_lookup(
+        &self,
+        delivery_id: String,
+    ) -> Result<Option<crate::AuthBusTextStatus>, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::AuthBusTextLookup {
+                    delivery_id: delivery_id.clone(),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusTextLookup {
+                delivery_id: observed,
+                status,
+            } if observed == delivery_id => Ok(status),
             payload => unexpected(payload),
         }
     }
@@ -713,51 +769,6 @@ impl AgentdClient {
             AgentdPayload::MemoryFederationStatus { capability } => Ok(capability),
             payload => unexpected(payload),
         }
-    }
-
-    async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
-        let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
-        let (reader, mut writer) = tokio::io::split(stream);
-        let mut bytes = serde_json::to_vec(&request)?;
-        bytes.push(b'\n');
-        if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-            return Err(AgentdError::Protocol(
-                "agentd request exceeded frame bound".to_string(),
-            ));
-        }
-        timeout(self.timeout, writer.write_all(&bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
-        let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
-        let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
-        if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
-        {
-            return Err(AgentdError::Protocol(
-                "agentd returned an invalid bounded response frame".to_string(),
-            ));
-        }
-        if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
-            return Err(AgentdError::Overloaded {
-                retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
-            });
-        }
-        let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
-        if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
-            || response.request_id != expected_request_id
-            || response.agent_id != self.expected_agent_id
-            || response.spawn_generation != self.spawn_generation
-        {
-            return Err(AgentdError::Protocol(
-                "agentd response identity does not match request".to_string(),
-            ));
-        }
-        Ok(response)
     }
 
     fn request_id(&self) -> u64 {

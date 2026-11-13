@@ -271,6 +271,7 @@ pub(crate) struct CognitiveExtension {
 }
 
 impl CognitiveExtension {
+    #[cfg(test)]
     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
         Self::new_with_mutation(runtime, None, false)
     }

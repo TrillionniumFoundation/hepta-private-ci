@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.starlark.blake3-compatibility.v1",
+  "crate": "starlark",
+  "version": "0.14.2",
+  "original_registry_checksum": "9062e866918dc4c9701c98ac99f7f4fa9e4b3b4edce306e147393bc75458c4fc",
+  "official_source_commit": "d6ee1aed27d4ad3dac96a7ee015fedcaae2d9bab",
+  "upstream_vcs": {
+    "git": {
+      "sha1": "0c8d107ab963362ba47ee3ab9e0173bc39bd101d"
+    },
+    "path_in_vcs": "starlark"
+  },
+  "license": {
+    "url": "https://api.github.com/repos/facebook/starlark-rust/contents/LICENSE?ref=0c8d107ab963362ba47ee3ab9e0173bc39bd101d",
+    "git_blob": "b09cd7856d58590578ee1a4f3ad45d1310a97f87",
+    "sha256": "50e6751797c50dedd75ef1b8a0d9e42f5f8472e9fbce91f34718e9f97b0c780a"
+  },
+  "original_workspace_manifest_sha256": "4a561162c9078f454fce6d584b7ceefbcbda7870348239d4b5810d922c5ad145",
+  "upstream_compatible_constraint_source": "https://github.com/facebook/starlark-rust/blob/4395d80da451d94f60fe29f0d4dd38ee585ff062/Cargo.toml",
+  "upstream_compatible_constraint_sha256": "889a350b596b8ebf63abb88b9a3937a1364498543cc7da24d97cac803cd65010",
+  "upstream_compatible_constraint": "1.8",
+  "selected_exact_blake3": "1.8.7",
+  "original_features_retained": [
+    "default",
+    "rayon",
+    "std",
+    "traits-preview"
+  ],
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "da0a213bcc2d3e26994aef3a952f5dc6bb044771341ba88de90f42134f8b1901",
+      "after_sha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "9537cffa190efd99bf83bb410488d7527997e3e96c95c1bd441648e8637b6b89",
+      "after_sha256": "b2f5e64daa9ebdd7839ee0f9983bc17c693b327ec672309347e200197f78e225"
+    }
+  ],
+  "minimal_patch_sha256": "bb6b6e249b038baa82e07b7cb71559401df9a39614963c4776b771d020385bbb",
+  "all_other_archive_files_unchanged": true,
+  "bazel_build_reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b36bd44b00d8130d821c15e172e34542c9470d7c/codex-rs/third_party/starlark-0.14.2/BUILD.bazel"
+}

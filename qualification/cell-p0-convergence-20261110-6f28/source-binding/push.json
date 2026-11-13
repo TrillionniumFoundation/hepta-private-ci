@@ -1,0 +1,46 @@
+{
+  "after": {
+    "commit": "c98dfd02b2537e590e95f91d7e65d204e9bdea53",
+    "dirty": false,
+    "parents": [],
+    "tree": "547ed5781f40362c5a269366feb53fa1b2832662"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "c98dfd02b2537e590e95f91d7e65d204e9bdea53",
+    "dirty": false,
+    "parents": [],
+    "tree": "547ed5781f40362c5a269366feb53fa1b2832662"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 0.1110210140000163,
+  "exit_code": 0,
+  "finished_at": "2026-11-10T13:05:13.540220+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 193,
+  "log_file": "push.json.e8e530c3dce54742b268ed5fe86bdfe9.log",
+  "log_sha256": "b1194311f48854257ea1513f9c0ad6fb3aa45221819b7c7e2e1e71b264a0fa3d",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 1,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "c98dfd02b2537e590e95f91d7e65d204e9bdea53",
+  "started_at": "2026-11-10T13:05:13.427988+00:00",
+  "status": "passed",
+  "tested_sha": "c98dfd02b2537e590e95f91d7e65d204e9bdea53",
+  "timed_out": false,
+  "working_directory": "/tmp/cell-source-binding-0_bkl89_/repo"
+}

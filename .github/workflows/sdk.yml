@@ -23,13 +23,23 @@ jobs:
 
           # Run inside a glibc Linux image so dependency resolution exercises
           # the pinned manylinux runtime wheel that users install.
+          # Run inside a glibc Linux image so dependency resolution exercises
+          # the pinned manylinux runtime wheel that users install. The tests
+          # also exercise the real zstd CLI, so pin it in this ephemeral image.
+          docker build --tag codex-python-sdk-test --file - /tmp <<'DOCKERFILE'
+          FROM python:3.12-slim
+          RUN apt-get update \
+              && apt-get install -y --no-install-recommends zstd \
+              && rm -rf /var/lib/apt/lists/*
+          DOCKERFILE
+
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e HOME=/tmp/codex-python-sdk-home \
             -e UV_LINK_MODE=copy \
             -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             -w "${GITHUB_WORKSPACE}/sdk/python" \
-            python:3.12-slim \
+            codex-python-sdk-test \
             sh -euxc '
               python -m venv /tmp/uv
               /tmp/uv/bin/python -m pip install uv==0.11.3

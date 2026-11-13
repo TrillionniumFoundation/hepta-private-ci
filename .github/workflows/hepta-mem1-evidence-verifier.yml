@@ -1,0 +1,69 @@
+name: Hepta MEM-1 evidence verifier
+
+on:
+  push:
+    branches: [fix/mem1-cost-recovery-evidence-20261108-c2de]
+  pull_request:
+    paths:
+      - scripts/memory_cell_mem1/**
+      - .github/workflows/hepta-mem1-evidence-verifier.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mem1-evidence-verifier-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-verifier:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Record and verify the actual source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem1-evidence-verifier"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source.txt"
+          git status --porcelain > "$records/source-status.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Verify the reference evidence tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 27 \
+            --output "$RUNNER_TEMP/mem1-evidence-verifier/normal.json" \
+            -- python3 -B -m unittest discover -s scripts/memory_cell_mem1 \
+            -p 'test_*.py' -v
+      - name: Verify optimized Python preserves the evidence checks
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 27 \
+            --output "$RUNNER_TEMP/mem1-evidence-verifier/optimized.json" \
+            -- python3 -B -O -m unittest discover -s scripts/memory_cell_mem1 \
+            -p 'test_*.py' -v
+      - name: Retain exact-source receipts and test logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem1-evidence-verifier-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem1-evidence-verifier
+          if-no-files-found: error
+          retention-days: 14

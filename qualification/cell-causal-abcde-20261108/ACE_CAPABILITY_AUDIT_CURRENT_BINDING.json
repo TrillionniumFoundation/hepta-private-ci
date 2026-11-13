@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.cell-causal.ace-capability-current-binding.v1",
+  "observed_utc": "2026-11-08T09:34:10.579067+00:00",
+  "prior_audit": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/ACE_CAPABILITY_AUDIT.json",
+    "sha256": "7b841d320a8a590c2f92e155f2b88b7f91ed63583cc55326d551ec9458013111",
+    "bytes": 18301
+  },
+  "prior_audit_preserved": true,
+  "baseline_parent_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "current_source_files": [
+    {
+      "path": "scripts/ndu_real_runtime/_causal_checks.py",
+      "bytes": 1644,
+      "sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d",
+      "git_blob_sha1": "40fd99815b6d5fa6bb0693e91e1cd45b4ab8f995"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_ace.py",
+      "bytes": 8400,
+      "sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65",
+      "git_blob_sha1": "d9ed004cc968170f6f12ee583411866aa0ff08a0"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_composition.py",
+      "bytes": 15465,
+      "sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a",
+      "git_blob_sha1": "365d92b50332aab9d56a0cad0cd3b589dc6009de"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_improver.py",
+      "bytes": 23492,
+      "sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0",
+      "git_blob_sha1": "4a40adb5ee53d6e8614579de4bdd7acab11f5ac7"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_protocol.py",
+      "bytes": 10162,
+      "sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2",
+      "git_blob_sha1": "e845140f751d3d143b426b5ff385dae5db1dd7ca"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_analysis.py",
+      "bytes": 9284,
+      "sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e",
+      "git_blob_sha1": "15e75f4cb3b2c57d6ddf4e97c9af557c7b65632e"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_b.py",
+      "bytes": 14618,
+      "sha256": "6f270394edd7f474810fbbefcf3638cca43d03ddc2476ec81a17879e26dd8f6a",
+      "git_blob_sha1": "db052032b55c0226f4b170a3ebbbb5ad8f7416cd"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_b_contract.py",
+      "bytes": 8128,
+      "sha256": "953e946c9d0c020c5aa1ceb9e1d41e7030f91729260f01e81895b76cdc6d290c",
+      "git_blob_sha1": "01d928ad5ad55455eaa740972c2ad815f1e428ca"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/training_grid.py",
+      "bytes": 13262,
+      "sha256": "57ef934ed6950e5270471c3a79e33396038f0dca844b29222a4ff339875ea960",
+      "git_blob_sha1": "9071bf33ea0b12bda23a260be1c4f16accd5020e"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/training.py",
+      "bytes": 36667,
+      "sha256": "3231186d09da00f2d78dbb3f25590085055ccd81cff578bfe934e52085469ffe",
+      "git_blob_sha1": "8408d8c038e10e272893c2a434811797d2a18e5e"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/fit_loop.py",
+      "bytes": 12969,
+      "sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5",
+      "git_blob_sha1": "f980a001392fb9ce07d482991ccf907453a08f33"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/matrix.py",
+      "bytes": 25671,
+      "sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10",
+      "git_blob_sha1": "167d62442a8b92f3f31c086ea7bf121f1f895fa2"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/pipeline.py",
+      "bytes": 15985,
+      "sha256": "a22dc843b9c48b35a65f07e0d72a48b9ec7d6185e74657696b63f7609ef9ce6a",
+      "git_blob_sha1": "362400b41be8620832e3bd17b4ea42fd35dcb8a0"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/study.py",
+      "bytes": 17478,
+      "sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0",
+      "git_blob_sha1": "9b006bdedcdb9df68724fb281131ee93bec2e8da"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/neural.py",
+      "bytes": 10671,
+      "sha256": "816cf398cb8fa76e13bec7f699a1bf56324788de99c400c9c0a96d2a9484b6f4",
+      "git_blob_sha1": "50c0c34d1da91ad0c27f2dfd1b703ac289692e06"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/actor.py",
+      "bytes": 17418,
+      "sha256": "14a368da5cfb218c99ec4eb390aee2c2a386ebac45c362b3f483f8995fad999b",
+      "git_blob_sha1": "412001e04d9e021fca34a50c8e7c4d2510f21166"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/trajectory.py",
+      "bytes": 6000,
+      "sha256": "700a66b30d24dbe39d75c2cd1293cd0ae2719526695a3fa71e725eb56670320e",
+      "git_blob_sha1": "5fdccbfa12b8efa4918d0007ca56092576447cb5"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/recursive_objective.py",
+      "bytes": 7204,
+      "sha256": "c811ddff6f4bb31aeae28a47b23265fb7b0255a8a1cc7250a5ff591e96f946f9",
+      "git_blob_sha1": "d2a8d66d8ded7f55d09aad82830a78a9ac2237a1"
+    }
+  ],
+  "changed_source_files": [],
+  "current_source_files_sha256": "43f3c57c4ab95125e00f445c179e839b49fb1cf61e850558ce9df9fe7dc9a1ab",
+  "analysis_helper": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analyze_b.py",
+    "sha256": "064a6dac7152b04c71bc7cc46e7f39d4771aa08525f62fd578033233405ab3ac",
+    "bytes": 26626
+  },
+  "scope": "Append exact current source byte bindings after the unified formatting pass; no candidate edits and no source/receipt/owner authority is granted. Changed hashes alone do not prove semantic equivalence. The prior audit remains intact.",
+  "new_real_a_c_e_evidence_supplied": false,
+  "capability_conclusions": "A architecture implementations, C original full-bundle next-use/recovery, and E real paired improver/evaluator evidence remain unestablished in this local audit.",
+  "scientific_efficacy_qualified": false,
+  "adoption_authorized": false
+}

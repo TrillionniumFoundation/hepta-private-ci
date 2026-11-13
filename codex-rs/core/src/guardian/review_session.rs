@@ -1184,6 +1184,12 @@ async fn run_review_on_session(
             }),
         TurnInputMode::StartIfIdle,
     );
+    let submission = async {
+        if let Some(completion) = review_session.session.pending_admission_fence_completion() {
+            completion.await;
+        }
+        submission.await
+    };
     let submit_result = run_before_review_deadline(
         deadline,
         params.external_cancel.as_ref(),
@@ -1468,8 +1474,10 @@ async fn run_before_review_deadline<T>(
     future: impl Future<Output = T>,
 ) -> Result<T, GuardianReviewSessionOutcome> {
     tokio::select! {
+        // A delayed poll can observe the timeout and the work as ready together.
+        // Honor the deadline and cancellation before accepting that result.
+        biased;
         _ = tokio::time::sleep_until(deadline) => Err(GuardianReviewSessionOutcome::TimedOut),
-        result = future => Ok(result),
         _ = async {
             if let Some(cancel_token) = external_cancel {
                 cancel_token.cancelled().await;
@@ -1477,6 +1485,7 @@ async fn run_before_review_deadline<T>(
                 std::future::pending::<()>().await;
             }
         } => Err(GuardianReviewSessionOutcome::Aborted),
+        result = future => Ok(result),
     }
 }
 
@@ -2045,6 +2054,46 @@ mod tests {
             outcome,
             Err(GuardianReviewSessionOutcome::TimedOut)
         ));
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_before_review_deadline_rejects_ready_result_after_deadline() {
+        let mut polled = false;
+        let outcome = run_before_review_deadline(
+            tokio::time::Instant::now() - Duration::from_secs(1),
+            /*external_cancel*/ None,
+            async {
+                polled = true;
+            },
+        )
+        .await;
+
+        assert!(matches!(
+            outcome,
+            Err(GuardianReviewSessionOutcome::TimedOut)
+        ));
+        assert!(!polled, "expired review work must not be polled");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_before_review_deadline_aborts_before_polling_ready_result() {
+        let cancel_token = CancellationToken::new();
+        cancel_token.cancel();
+        let mut polled = false;
+        let outcome = run_before_review_deadline(
+            tokio::time::Instant::now() + Duration::from_secs(60),
+            Some(&cancel_token),
+            async {
+                polled = true;
+            },
+        )
+        .await;
+
+        assert!(matches!(
+            outcome,
+            Err(GuardianReviewSessionOutcome::Aborted)
+        ));
+        assert!(!polled, "cancelled review work must not be polled");
     }
 
     #[tokio::test(flavor = "current_thread")]

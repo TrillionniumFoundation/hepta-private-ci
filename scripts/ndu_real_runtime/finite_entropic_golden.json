@@ -1,0 +1,101 @@
+{
+  "certainty_equivalent": [
+    {
+      "expected": 0.6500000000000001,
+      "probabilities": [
+        0.25,
+        0.75
+      ],
+      "risk": 0.0,
+      "values": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "expected": 0.6413538411690514,
+      "probabilities": [
+        0.25,
+        0.75
+      ],
+      "risk": 0.25,
+      "values": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "expected": -0.6546642522888925,
+      "probabilities": [
+        0.5,
+        0.5
+      ],
+      "risk": 2.0,
+      "values": [
+        -1.0,
+        2.0
+      ]
+    },
+    {
+      "expected": 0.4,
+      "probabilities": [
+        0.0,
+        1.0
+      ],
+      "risk": 0.25,
+      "values": [
+        -1000000.0,
+        0.4
+      ]
+    }
+  ],
+  "default_control": {
+    "discount_per_second": 1.0,
+    "horizon": 3,
+    "latency_weight": 0.01,
+    "max_forecasts": 96,
+    "max_sequences": 24,
+    "memory_mode": "reset",
+    "particles": 4,
+    "risk": 0.25
+  },
+  "duration_branch": {
+    "continuations": [
+      0.7,
+      0.9
+    ],
+    "discount_per_second": 0.97,
+    "durations_seconds": [
+      2.0,
+      5.0
+    ],
+    "edges": [
+      0.6386299999999999,
+      0.7228606231299999
+    ],
+    "expected": 0.6889552346151726,
+    "latency_weight": 0.01,
+    "probabilities": [
+      0.4,
+      0.6
+    ],
+    "risk": 0.25
+  },
+  "schema": "hepta.ndu.finite-entropic.golden.v1",
+  "utility_profile": {
+    "cost_scope": "observed_latency; all_runtime_stages_retained; energy_and_money_unknown",
+    "discount_per_second": 1.0,
+    "edge": "-latency_weight*duration_seconds+discount_per_second**duration_seconds*continuation",
+    "id": "hepta.ndu.finite-entropic.v1",
+    "latency_weight": 0.01,
+    "noise": "empirical_diagonal_gaussian; fixed_step_action_seed; no_dt_scaling",
+    "policy_improvement": "exact_sum_pi_times_frozen_action_Q; not_environment_REINFORCE",
+    "risk": 0.25,
+    "terminal": "independently_observed_delivery_rubric; critic_is_prediction_only",
+    "terminal_range": [
+      0.0,
+      1.0
+    ],
+    "time_unit": "second"
+  }
+}

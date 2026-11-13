@@ -1,0 +1,13 @@
+import hashlib,json,os,pathlib,subprocess,time
+root=pathlib.Path("/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud")
+prefix=pathlib.Path("/workspace/scratch/ff41dfc0f7bf/local-validation/source-refusal-format-check")
+before={"sha":subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip(),"tree":subprocess.check_output(["git","rev-parse","HEAD^{tree}"],cwd=root,text=True).strip(),"status":subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True)}
+command=["just","fmt","--base","106f5e41f2ff8421c5aad10eeb746d453ed00563","--check"]
+env=os.environ.copy();env["PATH"]="/workspace/scratch/ff41dfc0f7bf/tooling/rustfmt/bin:"+env["PATH"];env["PYTHONDONTWRITEBYTECODE"]="1"
+started=time.time()
+with prefix.with_suffix(".log").open("xb") as log: result=subprocess.run(command,cwd=root/"codex-rs",env=env,stdout=log,stderr=subprocess.STDOUT)
+after={"sha":subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip(),"tree":subprocess.check_output(["git","rev-parse","HEAD^{tree}"],cwd=root,text=True).strip(),"status":subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True)}
+record={"command":command,"cwd":"codex-rs","before":before,"after":after,"exit_code":result.returncode,"started_unix":started,"ended_unix":time.time(),"unchanged":before==after,"native_executed":False}
+prefix.with_suffix(".json").write_text(json.dumps(record,indent=2)+"\n")
+print(json.dumps(record,indent=2))
+

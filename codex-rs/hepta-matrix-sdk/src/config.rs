@@ -57,6 +57,8 @@ impl MatrixSdkPaths {
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
+        // This label is the existing durable store identity. Upgrades reopen it
+        // to retain encrypted keys and sessions instead of creating fresh stores.
         let root = layout.matrix_root().join("matrix-sdk-0.18");
         let state = root.join("state");
         let cache = root.join("cache");

@@ -1,0 +1,604 @@
+//! Explicit original descriptors and bounded operation inputs for one launch.
+
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::ffi::OsString;
+use std::fs::File;
+use std::io::Read;
+use std::io::Seek;
+use std::os::fd::FromRawFd;
+use std::os::fd::OwnedFd;
+use std::os::unix::net::UnixDatagram;
+use std::time::Duration;
+use std::time::Instant;
+
+use crate::AgentdError;
+use crate::calculator_deadline::Deadline;
+
+#[path = "production_initial_q24_cli.rs"]
+mod initial_q24;
+#[path = "production_post_a_q24_cli.rs"]
+mod post_a_q24;
+
+const FLAGS: [&str; 26] = [
+    "--root-production-profile",
+    "--q24-initial-deployment-fd",
+    "--q24-post-a-deployment-fd",
+    "--root-production-handoff-fd",
+    "--root-learning-handoff-fd",
+    "--root-q24-model-handoff-fd",
+    "--root-independent-b-evaluation-handoff-fd",
+    "--root-generation-publication-handoff-fd",
+    "--root-generation-initial-handoff-fd",
+    "--root-historical-task-read-handoff-fd",
+    "--root-production-uid",
+    "--root-production-gid",
+    "--root-production-control-fd",
+    "--root-production-app-server-fd",
+    "--android-runtime-server",
+    "--android-runtime-environment",
+    "--android-original-payload-fd",
+    "--android-original-deadline-ns",
+    "--notes-production-handoff-fd",
+    "--root-production-lifetime-ms",
+    "--notes-literal-deployment-fd",
+    "--notes-literal-ui-fd",
+    "--notes-session-pidfd",
+    "--desktop-production-handoff-fd",
+    "--desktop-thread-deployment-fd",
+    "--desktop-session-pidfd",
+];
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum Profile {
+    Android,
+    Notes,
+    Desktop,
+    InitialQ24,
+    PostAQ24,
+}
+
+pub(super) struct LaunchInputs {
+    pub(super) handoff: UnixDatagram,
+    pub(super) learning_handoff: Option<UnixDatagram>,
+    pub(super) q24_model_handoff: Option<UnixDatagram>,
+    pub(super) independent_b_handoff: Option<UnixDatagram>,
+    pub(super) publication_handoff: Option<UnixDatagram>,
+    pub(super) initial_handoff: Option<UnixDatagram>,
+    pub(super) historical_handoff: Option<UnixDatagram>,
+    pub(super) uid: u32,
+    pub(super) gid: u32,
+    pub(super) control: OwnedFd,
+    pub(super) app_server: OwnedFd,
+    pub(super) primary: PrimaryInputs,
+    pub(super) bootstrap_deadline: Instant,
+    pub(super) notes: Option<UnixDatagram>,
+    pub(super) notes_ui: Option<NotesUiInputs>,
+    pub(super) lifetime: Duration,
+}
+
+pub(super) enum PrimaryInputs {
+    PostAQ24 {
+        deployment: Option<File>,
+    },
+    InitialQ24 {
+        deployment: Option<File>,
+    },
+    Android {
+        server: String,
+        environment: String,
+        payload: File,
+        deadline: Instant,
+    },
+    Notes,
+    Desktop {
+        handoff: UnixDatagram,
+        deployment: File,
+        session_pidfd: OwnedFd,
+        deadline: Deadline,
+    },
+}
+
+pub(super) struct NotesUiInputs {
+    pub(super) deployment: File,
+    pub(super) listener: OwnedFd,
+    pub(super) session_pidfd: OwnedFd,
+}
+
+/// Ordinary daemon arguments remain byte-for-byte intact. Partial production
+/// selections fail before taking any descriptor or dropping credentials.
+pub(super) fn parse(
+    arguments: Vec<OsString>,
+) -> Result<(Option<LaunchInputs>, Vec<OsString>), AgentdError> {
+    let mut selected = BTreeMap::new();
+    let mut ordinary = Vec::new();
+    let mut arguments = arguments.into_iter();
+    while let Some(flag) = arguments.next() {
+        let value = arguments
+            .next()
+            .ok_or_else(|| invalid("Agentd arguments require a value"))?;
+        match flag.to_str().filter(|flag| FLAGS.contains(flag)) {
+            Some(name) => {
+                if selected.insert(name.to_string(), value).is_some() {
+                    return Err(invalid("duplicate original production launch flag"));
+                }
+            }
+            None => ordinary.extend([flag, value]),
+        }
+    }
+    if selected.is_empty() {
+        return Ok((None, ordinary));
+    }
+    let profile = selected
+        .remove("--root-production-profile")
+        .unwrap_or_else(|| OsString::from("android"));
+    let profile = match profile.to_str() {
+        Some("android") => Profile::Android,
+        Some("notes") => Profile::Notes,
+        Some("desktop") => Profile::Desktop,
+        Some("q24-initial") => Profile::InitialQ24,
+        Some("q24-post-a") => Profile::PostAQ24,
+        _ => {
+            return Err(invalid(
+                "original production profile must be android, notes, desktop, q24-initial or q24-post-a",
+            ));
+        }
+    };
+    let mut take = |name: &str| {
+        selected
+            .remove(name)
+            .ok_or_else(|| invalid(format!("missing {name} for original production launch")))
+    };
+    let handoff = descriptor_number(take("--root-production-handoff-fd")?)?;
+    let uid = number(take("--root-production-uid")?, "original owner UID")?;
+    let gid = number(take("--root-production-gid")?, "original owner GID")?;
+    if matches!(uid, 0 | u32::MAX) || matches!(gid, 0 | u32::MAX) {
+        return Err(invalid(
+            "original production launch requires a dedicated non-Root owner",
+        ));
+    }
+    let control = descriptor_number(take("--root-production-control-fd")?)?;
+    let app_server = descriptor_number(take("--root-production-app-server-fd")?)?;
+    let android = if profile == Profile::Android {
+        let server = identifier(take("--android-runtime-server")?)?;
+        let environment = identifier(take("--android-runtime-environment")?)?;
+        let payload = descriptor_number(take("--android-original-payload-fd")?)?;
+        let end = number::<u64>(
+            take("--android-original-deadline-ns")?,
+            "original monotonic deadline",
+        )?;
+        Some((server, environment, payload, original_deadline(end)?))
+    } else {
+        None
+    };
+    let learning_handoff = selected
+        .remove("--root-learning-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let q24_model_handoff = selected
+        .remove("--root-q24-model-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if q24_model_handoff.is_some() && learning_handoff.is_none() {
+        return Err(invalid(
+            "original Q24 Model factory requires its learning handoff",
+        ));
+    }
+    let independent_b_handoff = selected
+        .remove("--root-independent-b-evaluation-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if independent_b_handoff.is_some() && profile != Profile::PostAQ24 {
+        return Err(invalid(
+            "independent B requires the explicit original post-A profile",
+        ));
+    }
+    let publication_handoff = selected
+        .remove("--root-generation-publication-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if publication_handoff.is_some() && learning_handoff.is_none() {
+        return Err(invalid(
+            "original publication requires its learning handoff",
+        ));
+    }
+    let initial_handoff = selected
+        .remove("--root-generation-initial-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if initial_handoff.is_some() && publication_handoff.is_some() {
+        return Err(invalid(
+            "initial and learned publication require separate original Root sessions",
+        ));
+    }
+    let historical_handoff = selected
+        .remove("--root-historical-task-read-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes = selected
+        .remove("--notes-production-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_deployment = selected
+        .remove("--notes-literal-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_listener = selected
+        .remove("--notes-literal-ui-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_session = selected
+        .remove("--notes-session-pidfd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_ui = match (notes_deployment, notes_listener, notes_session) {
+        (None, None, None) => None,
+        (Some(deployment), Some(listener), Some(session)) if notes.is_some() => {
+            Some((deployment, listener, session))
+        }
+        _ => {
+            return Err(invalid(
+                "original Notes UI requires all three descriptors and the application handoff",
+            ));
+        }
+    };
+    if profile == Profile::Notes && (notes.is_none() || notes_ui.is_none()) {
+        return Err(invalid(
+            "original Notes profile requires its real application and UI capabilities",
+        ));
+    }
+    let desktop_handoff = selected
+        .remove("--desktop-production-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let desktop_deployment = selected
+        .remove("--desktop-thread-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let desktop_session = selected
+        .remove("--desktop-session-pidfd")
+        .map(descriptor_number)
+        .transpose()?;
+    let desktop = match (desktop_handoff, desktop_deployment, desktop_session) {
+        (None, None, None) if profile != Profile::Desktop => None,
+        (Some(handoff), Some(deployment), Some(session)) if profile == Profile::Desktop => {
+            Some((handoff, deployment, session))
+        }
+        _ => {
+            return Err(invalid(
+                "the explicit Desktop profile requires its three dedicated descriptors",
+            ));
+        }
+    };
+    if profile == Profile::Desktop && (notes.is_some() || notes_ui.is_some()) {
+        return Err(invalid(
+            "Desktop and legacy Notes inputs cannot be combined",
+        ));
+    }
+    let initial_deployment = selected
+        .remove("--q24-initial-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let post_a_deployment = selected
+        .remove("--q24-post-a-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    initial_q24::validate(
+        profile,
+        &ordinary,
+        initial_deployment,
+        initial_handoff,
+        &[
+            post_a_deployment,
+            historical_handoff,
+            learning_handoff,
+            q24_model_handoff,
+            publication_handoff,
+            independent_b_handoff,
+            notes,
+            notes_deployment,
+            notes_listener,
+            notes_session,
+            desktop_handoff,
+            desktop_deployment,
+            desktop_session,
+        ],
+    )?;
+    post_a_q24::validate(
+        profile,
+        &ordinary,
+        post_a_deployment,
+        &[
+            historical_handoff,
+            learning_handoff,
+            q24_model_handoff,
+            publication_handoff,
+            independent_b_handoff,
+        ],
+        &[
+            initial_deployment,
+            initial_handoff,
+            notes,
+            notes_deployment,
+            notes_listener,
+            notes_session,
+            desktop_handoff,
+            desktop_deployment,
+            desktop_session,
+        ],
+    )?;
+    let lifetime = selected
+        .remove("--root-production-lifetime-ms")
+        .map(|value| number::<u64>(value, "original Root lifetime"))
+        .transpose()?
+        .unwrap_or(300_000);
+    if lifetime == 0 || lifetime > 300_000 {
+        return Err(invalid("original Root lifetime exceeds its bound"));
+    }
+    if !selected.is_empty() {
+        return Err(invalid(
+            "original profile contains incompatible production inputs",
+        ));
+    }
+    let payload = android.as_ref().map(|(_, _, payload, _)| *payload);
+    let numbers = [
+        Some(handoff),
+        learning_handoff,
+        q24_model_handoff,
+        publication_handoff,
+        independent_b_handoff,
+        initial_handoff,
+        historical_handoff,
+        initial_deployment,
+        post_a_deployment,
+        Some(control),
+        Some(app_server),
+        payload,
+        notes,
+        notes_deployment,
+        notes_listener,
+        notes_session,
+        desktop_handoff,
+        desktop_deployment,
+        desktop_session,
+    ]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<_>>();
+    if numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len() {
+        return Err(invalid("original production descriptors must be distinct"));
+    }
+    // Notes and Desktop have no Android effect expiry to borrow or renew. Startup uses
+    // the existing handoff's fixed 30-second bound; each later Notes action has
+    // its own original protected source/sender deadline.
+    let bootstrap_deadline = android
+        .as_ref()
+        .map(|(_, _, _, deadline)| *deadline)
+        .unwrap_or_else(|| Instant::now() + Duration::from_secs(30));
+    // Carry this new profile's one suspend-aware startup budget through the
+    // late Root handoff and both original application offers; never renew it
+    // when the sealed deployment becomes readable.
+    let desktop_deadline = (profile == Profile::Desktop)
+        .then(|| Deadline::after(Duration::from_secs(30)))
+        .transpose()?;
+    // All numeric and pairing checks precede ownership transfer. CLOEXEC keeps
+    // inherited authority out of unrelated App Server helper re-executions.
+    let handoff = UnixDatagram::from(take_descriptor(handoff)?);
+    let learning_handoff = learning_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let q24_model_handoff = q24_model_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let independent_b_handoff = independent_b_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let publication_handoff = publication_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let initial_handoff = initial_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let historical_handoff = historical_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let control = take_descriptor(control)?;
+    let app_server = take_descriptor(app_server)?;
+    let primary = match profile {
+        Profile::PostAQ24 => PrimaryInputs::PostAQ24 {
+            deployment: Some(take_readonly_file(
+                post_a_deployment
+                    .ok_or_else(|| invalid("validated post-A deployment is absent"))?,
+            )?),
+        },
+        Profile::InitialQ24 => PrimaryInputs::InitialQ24 {
+            deployment: Some(take_readonly_file(
+                initial_deployment
+                    .ok_or_else(|| invalid("validated Initial Q24 deployment is absent"))?,
+            )?),
+        },
+        Profile::Android => {
+            let (server, environment, payload, deadline) =
+                android.ok_or_else(|| invalid("validated Android inputs are absent"))?;
+            PrimaryInputs::Android {
+                server,
+                environment,
+                payload: take_readonly_file(payload)?,
+                deadline,
+            }
+        }
+        Profile::Notes => PrimaryInputs::Notes,
+        Profile::Desktop => {
+            let (handoff, deployment, session) =
+                desktop.ok_or_else(|| invalid("validated Desktop inputs are absent"))?;
+            PrimaryInputs::Desktop {
+                handoff: UnixDatagram::from(take_descriptor(handoff)?),
+                deployment: take_readonly_file(deployment)?,
+                session_pidfd: take_descriptor(session)?,
+                deadline: desktop_deadline
+                    .ok_or_else(|| invalid("original Desktop startup deadline is absent"))?,
+            }
+        }
+    };
+    let notes = notes
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let notes_ui = notes_ui
+        .map(|(deployment, listener, session)| {
+            Ok::<_, AgentdError>(NotesUiInputs {
+                deployment: take_readonly_file(deployment)?,
+                listener: take_descriptor(listener)?,
+                session_pidfd: take_descriptor(session)?,
+            })
+        })
+        .transpose()?;
+    Ok((
+        Some(LaunchInputs {
+            handoff,
+            learning_handoff,
+            q24_model_handoff,
+            publication_handoff,
+            independent_b_handoff,
+            initial_handoff,
+            historical_handoff,
+            uid,
+            gid,
+            control,
+            app_server,
+            primary,
+            bootstrap_deadline,
+            notes,
+            notes_ui,
+            lifetime: Duration::from_millis(lifetime),
+        }),
+        ordinary,
+    ))
+}
+
+fn descriptor_number(value: OsString) -> Result<i32, AgentdError> {
+    let value = number::<i32>(value, "original descriptor")?;
+    if value < 3 {
+        return Err(invalid("standard streams are not production capabilities"));
+    }
+    Ok(value)
+}
+
+fn number<T: std::str::FromStr>(value: OsString, label: &str) -> Result<T, AgentdError> {
+    value
+        .to_str()
+        .and_then(|value| value.parse().ok())
+        .ok_or_else(|| invalid(format!("invalid {label}")))
+}
+
+fn identifier(value: OsString) -> Result<String, AgentdError> {
+    let value = value
+        .into_string()
+        .map_err(|_| invalid("MCP selection must be UTF-8"))?;
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._-".contains(&byte))
+    {
+        return Err(invalid(
+            "MCP selection must name an existing server and environment",
+        ));
+    }
+    Ok(value)
+}
+
+fn take_descriptor(number: i32) -> Result<OwnedFd, AgentdError> {
+    // SAFETY: F_GETFD/F_SETFD inspect and tighten the validated inherited FD.
+    // The trusted launcher transfers its ownership exactly once through CLI;
+    // duplicates and standard streams were rejected before this function.
+    let flags = unsafe { libc::fcntl(number, libc::F_GETFD) };
+    if flags < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    // SAFETY: the same validated inherited descriptor remains live; setting
+    // CLOEXEC only narrows its inheritance and does not take ownership.
+    if unsafe { libc::fcntl(number, libc::F_SETFD, flags | libc::FD_CLOEXEC) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    // SAFETY: the trusted launcher transferred this descriptor to this entry;
+    // all duplicate numbers were rejected before any ownership was taken.
+    Ok(unsafe { OwnedFd::from_raw_fd(number) })
+}
+
+fn take_readonly_file(number: i32) -> Result<File, AgentdError> {
+    // The late Notes producer may still be filling this memfd while the child
+    // waits for Root. A dup of its writable open-file description is not an
+    // acceptable consumer capability, even if it will later acquire seals.
+    // SAFETY: F_GETFL observes only the still-unclaimed inherited descriptor.
+    let flags = unsafe { libc::fcntl(number, libc::F_GETFL) };
+    if flags < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    if flags & libc::O_ACCMODE != libc::O_RDONLY {
+        return Err(invalid(
+            "original payload/deployment requires an independently opened read-only descriptor",
+        ));
+    }
+    Ok(File::from(take_descriptor(number)?))
+}
+
+fn original_deadline(end: u64) -> Result<Instant, AgentdError> {
+    // Sample Instant first, so conversion may shorten but cannot renew the
+    // original launcher's absolute CLOCK_MONOTONIC deadline.
+    let local = Instant::now();
+    let mut clock = libc::timespec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
+    // SAFETY: clock_gettime initializes one correctly sized stack timespec.
+    if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut clock) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let now = u64::try_from(clock.tv_sec)
+        .ok()
+        .and_then(|seconds| seconds.checked_mul(1_000_000_000))
+        .and_then(|seconds| {
+            u64::try_from(clock.tv_nsec)
+                .ok()
+                .and_then(|ns| seconds.checked_add(ns))
+        })
+        .ok_or_else(|| invalid("original monotonic clock is unavailable"))?;
+    let remaining = end
+        .checked_sub(now)
+        .filter(|value| *value > 0 && *value <= 30_000_000_000)
+        .ok_or_else(|| invalid("original Android deadline expired or exceeds 30 seconds"))?;
+    Ok(local + Duration::from_nanos(remaining))
+}
+
+pub(super) fn read_payload(mut file: File) -> Result<String, AgentdError> {
+    let size = file.metadata()?.len();
+    if size == 0 || size > 16 * 1024 {
+        return Err(invalid("original Android payload exceeds its bound"));
+    }
+    crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;
+    file.rewind()?;
+    let mut bytes = Vec::with_capacity(size as usize);
+    file.take(size + 1).read_to_end(&mut bytes)?;
+    if bytes.len() as u64 != size {
+        return Err(invalid("original Android payload changed while reading"));
+    }
+    let payload =
+        String::from_utf8(bytes).map_err(|_| invalid("original Android payload is not UTF-8"))?;
+    codex_hepta_memory::AndroidSetTextV1::from_json(&payload).map_err(AgentdError::Invalid)?;
+    Ok(payload)
+}
+
+fn invalid(message: impl Into<String>) -> AgentdError {
+    AgentdError::Invalid(message.into())
+}
+
+#[cfg(test)]
+#[path = "production_launcher_inputs_tests.rs"]
+mod tests;

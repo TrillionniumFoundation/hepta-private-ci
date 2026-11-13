@@ -1,0 +1,32 @@
+{
+  "command": [
+    "python3",
+    "../scripts/hepta_workspace.py"
+  ],
+  "cwd": "/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs",
+  "source_head": "066cb16c47b0e4dbc561d56fe7746dea98a479d8",
+  "source_tree": "e41ef532cdf0ca05952ef42170e7628d19b1c16d",
+  "changed_inputs_before": {
+    "codex-rs/hepta-agentd/src/neuron_generation_expected_context_tests.rs": "aac0f43f7afb02651e9c27602ebba3b9af7b807638cf58794bd9ca99689bda36",
+    "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs": "6372e1c57dc99cca07c1090518477ebe29ea9aaf148f5abb3a2ff2a6842d1d2a",
+    "codex-rs/hepta-neuron/src/cell_generation_context.rs": "a210daee68c7fa2edff3f4a782631ac700add2f4f9c306e5adc18d8ad77475e8",
+    "codex-rs/hepta-neuron/src/cell_generation_journal.rs": "da011fe6632dcde0b5ee9cdb3f5ce7a29d9fc6a39c832736bfd9082ebe3be820",
+    "codex-rs/hepta-neuron/src/cell_joint_process.rs": "523593ac1543b09025aa896244d502cba525d22db5a035dedd4454d224eed7c6",
+    "codex-rs/hepta-neuron/src/cell_v13_process.rs": "657b012419f730c10c88da0f964502bab4d69f5997926593665c50b1ca6befd9",
+    "codex-rs/hepta-neuron/src/lib.rs": "f89e62a589373019e4c0ccc54c57ef257f44e7cf3f50845d40e42bc3f7b28298"
+  },
+  "started_at": "2026-11-07T12:43:21.252683+00:00",
+  "environment": {
+    "CARGO_HOME": "/workspace/scratch/62902f6722b7/cargo-next",
+    "CARGO_TARGET_DIR": "/workspace/scratch/62902f6722b7/hepta-target",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": null,
+    "LIBCLANG_PATH": "/workspace/scratch/62902f6722b7/native-dependencies/libclang-python/clang/native",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-I/workspace/scratch/62902f6722b7/native-dependencies/clang-headers/usr/lib/llvm-18/lib/clang/18/include",
+    "OPENSSL_INCLUDE_DIR": "/usr/include",
+    "OPENSSL_LIB_DIR": "/usr/lib/x86_64-linux-gnu",
+    "CMAKE": "/workspace/scratch/62902f6722b7/native-dependencies/cmake-python/cmake/data/bin/cmake"
+  },
+  "helper_environment": {}
+}

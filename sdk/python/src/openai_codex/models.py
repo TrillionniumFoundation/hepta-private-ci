@@ -3,8 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TypeAlias
 
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictBool
 
+from .generated.process_observation import (
+    ProcessExitedNotification,
+    ProcessIndeterminateNotification,
+    ProcessOutputDeltaNotification,
+)
 from .generated.v2_all import (
     AccountLoginCompletedNotification,
     AccountRateLimitsUpdatedNotification,
@@ -66,6 +71,9 @@ NotificationPayload: TypeAlias = (
     | McpServerOauthLoginCompletedNotification
     | McpToolCallProgressNotification
     | PlanDeltaNotification
+    | ProcessExitedNotification
+    | ProcessIndeterminateNotification
+    | ProcessOutputDeltaNotification
     | RawResponseItemCompletedNotification
     | ReasoningSummaryPartAddedNotification
     | ReasoningSummaryTextDeltaNotification
@@ -101,3 +109,4 @@ class InitializeResponse(BaseModel):
     userAgent: str | None = None
     platformFamily: str | None = None
     platformOs: str | None = None
+    processIndeterminate: StrictBool = False

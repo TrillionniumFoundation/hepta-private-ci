@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "base_commit": "2125da36a0e49a19b725c28bb150900f20caac7b",
+  "operations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "old": "#[path = \"production_launcher_inputs.rs\"]\nmod inputs;\n",
+      "new": "#[path = \"production_launcher_inputs.rs\"]\nmod inputs;\n\n#[path = \"production_launcher_late_writer.rs\"]\nmod late_writer;\n"
+    }
+  ],
+  "semantics": "Apply exact unique old block replacement to the current integrated launcher. Preserve all existing modules, source and native formatting outside that block; the full launcher postimage is fixed-base reference only."
+}

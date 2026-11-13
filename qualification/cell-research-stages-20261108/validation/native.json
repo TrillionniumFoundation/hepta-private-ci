@@ -1,0 +1,113 @@
+{
+  "after": {
+    "scripts/hepta_cell_research_gate.py": "53ed166346b155945b8feed310d858c51fff2ad95547bbfed6c700b8804afc6e",
+    "scripts/test_hepta_cell_research_gate.py": "dd06d3807721872c0a0f4628bd5f12616d8794fc28a61ad54f749db33a1a4ae1"
+  },
+  "ast_equal": {
+    "scripts/hepta_cell_research_gate.py": true,
+    "scripts/test_hepta_cell_research_gate.py": true
+  },
+  "before": {
+    "scripts/hepta_cell_joint_config.py": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12",
+    "scripts/hepta_cell_research_gate.py": "6f88505b63555dcd6e31309b534ee2d156436479fd80b37a742a1b12745ad8bc",
+    "scripts/pyproject.toml": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+    "scripts/test_hepta_cell_research_gate.py": "6044dfcac81a85a1e352ff1e15cb0a31c9f030ea177a43c669908eb5a98e59f2"
+  },
+  "checks": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_cell_research_gate.py",
+        "-v"
+      ],
+      "name": "native-tests",
+      "returncode": 0,
+      "stderr": "test_campaign_budget_cannot_be_spent_again_for_each_arm (test_hepta_cell_research_gate.ResearchGateTests.test_campaign_budget_cannot_be_spent_again_for_each_arm) ... ok\ntest_descriptive_success_never_authenticates_science_or_owner (test_hepta_cell_research_gate.ResearchGateTests.test_descriptive_success_never_authenticates_science_or_owner) ... ok\ntest_empty_evidence_is_not_vacuously_ready (test_hepta_cell_research_gate.ResearchGateTests.test_empty_evidence_is_not_vacuously_ready) ... ok\ntest_fit_aliases_and_extra_episodes_cannot_create_training_repeats (test_hepta_cell_research_gate.ResearchGateTests.test_fit_aliases_and_extra_episodes_cannot_create_training_repeats) ... ok\ntest_fixture_scope_and_pending_failed_attempts_cannot_disappear (test_hepta_cell_research_gate.ResearchGateTests.test_fixture_scope_and_pending_failed_attempts_cannot_disappear) ... ok\ntest_improver_comparison_requires_bound_common_start_and_lineage (test_hepta_cell_research_gate.ResearchGateTests.test_improver_comparison_requires_bound_common_start_and_lineage) ... ok\ntest_later_stage_evidence_cannot_skip_missing_predecessors (test_hepta_cell_research_gate.ResearchGateTests.test_later_stage_evidence_cannot_skip_missing_predecessors) ... ok\ntest_missing_nonfinite_boolean_and_invalid_thresholds_reject (test_hepta_cell_research_gate.ResearchGateTests.test_missing_nonfinite_boolean_and_invalid_thresholds_reject) ... ok\ntest_missing_or_tampered_bound_bytes_reject (test_hepta_cell_research_gate.ResearchGateTests.test_missing_or_tampered_bound_bytes_reject) ... ok\ntest_old_stage_schema_and_self_authenticated_fields_reject (test_hepta_cell_research_gate.ResearchGateTests.test_old_stage_schema_and_self_authenticated_fields_reject) ... ok\ntest_one_bad_fit_cannot_hide_in_pooled_successful_episodes (test_hepta_cell_research_gate.ResearchGateTests.test_one_bad_fit_cannot_hide_in_pooled_successful_episodes) ... ok\ntest_registry_cannot_omit_duplicate_or_invent_an_attempt (test_hepta_cell_research_gate.ResearchGateTests.test_registry_cannot_omit_duplicate_or_invent_an_attempt) ... ok\ntest_same_tree_new_commit_cannot_reuse_original_source_evidence (test_hepta_cell_research_gate.ResearchGateTests.test_same_tree_new_commit_cannot_reuse_original_source_evidence) ... ok\ntest_unknown_or_missing_cost_is_not_zero (test_hepta_cell_research_gate.ResearchGateTests.test_unknown_or_missing_cost_is_not_zero) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.477s\n\nOK\n",
+      "stdout": "",
+      "wall_seconds": 0.5287706040544435
+    },
+    {
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "check",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "scripts/hepta_cell_research_gate.py",
+        "scripts/test_hepta_cell_research_gate.py"
+      ],
+      "name": "lint-before",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n",
+      "wall_seconds": 0.006069511000532657
+    },
+    {
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "scripts/hepta_cell_research_gate.py",
+        "scripts/test_hepta_cell_research_gate.py"
+      ],
+      "name": "format",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "2 files reformatted\n",
+      "wall_seconds": 0.006021321984007955
+    },
+    {
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "--check",
+        "scripts/hepta_cell_research_gate.py",
+        "scripts/test_hepta_cell_research_gate.py"
+      ],
+      "name": "format-check",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "2 files already formatted\n",
+      "wall_seconds": 0.005959836998954415
+    },
+    {
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "check",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "scripts/hepta_cell_research_gate.py",
+        "scripts/test_hepta_cell_research_gate.py"
+      ],
+      "name": "lint-after",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n",
+      "wall_seconds": 0.005134178034495562
+    }
+  ],
+  "full_repository_execution": false,
+  "host": "rog",
+  "package_sha256": "ed6fdfdf509d91634bf19e7e0855d20e0556170a9c3c23af360d62a3c1516061",
+  "parent_commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "production_qualification": false,
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "schema": "hepta.cell-research-stage-native-validation.v1",
+  "source_kind": "exact-file-projection",
+  "success": true,
+  "tests_after_format_rerun": false,
+  "tests_ran": 14
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.cell-contract-locked-format.v1",
+  "root": "/tmp/cell-rsi-contract-v2-858e-locked-format-r1",
+  "host": "rog",
+  "binary": "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+  "binary_sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+  "version": "ruff 0.15.13",
+  "payload_sha256": "f36867cf093050532adfa236596fcd08fee13a65b10f957ab80eb60474d8d684",
+  "source_before": {
+    "scripts/hepta_cell_joint_config.py": "789d25338b198d592999eaffc8f1f6ac69350cd2aff481b121fedd38ceec843d",
+    "scripts/pyproject.toml": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+    "scripts/test_hepta_cell_joint_config.py": "896c49e334ea315ec88697d881d0c9530cda55223015e6dac76fe6aa31f1545d"
+  },
+  "source_after": {
+    "scripts/hepta_cell_joint_config.py": "6ee9ea0ca1536522e22453f0b763ff79238eb45ad615efdcc372260845ffb52c",
+    "scripts/pyproject.toml": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+    "scripts/test_hepta_cell_joint_config.py": "88b7fdcfca0e6e820f4a82bdc0c6ef91b826cf86833c1864b9d99fe2047f918a"
+  },
+  "ast_equal": {
+    "scripts/hepta_cell_joint_config.py": true,
+    "scripts/test_hepta_cell_joint_config.py": true
+  },
+  "checks": [
+    {
+      "name": "format-check-before",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "--check",
+        "scripts/hepta_cell_joint_config.py",
+        "scripts/test_hepta_cell_joint_config.py"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "wall_seconds": 0.007589635031763464,
+      "stdout": "Would reformat: scripts/hepta_cell_joint_config.py\nWould reformat: scripts/test_hepta_cell_joint_config.py\n2 files would be reformatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "format",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "scripts/hepta_cell_joint_config.py",
+        "scripts/test_hepta_cell_joint_config.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "wall_seconds": 0.005751897988375276,
+      "stdout": "2 files reformatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "format-check-after",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "--check",
+        "scripts/hepta_cell_joint_config.py",
+        "scripts/test_hepta_cell_joint_config.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "wall_seconds": 0.005603871017228812,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "observed_at_utc": "2026-11-08T09:06:37.665943+00:00",
+  "behavioral_tests_rerun": false,
+  "production_qualification": false,
+  "success": true
+}

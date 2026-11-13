@@ -132,6 +132,12 @@ jobs:
           just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
+      - name: Exercise frozen learning scope and protected checkpoint recovery
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        run: |
+          just test --locked --lib -p codex-hepta-learning-artifacts -p codex-hepta-agentd \
+            -E 'test(learning_iteration)' --test-threads=1 --no-tests fail --retries 0
       - name: Exercise actual optional retirement and durable destination recovery
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

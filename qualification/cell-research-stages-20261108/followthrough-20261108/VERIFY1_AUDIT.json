@@ -1,0 +1,656 @@
+{
+  "arm_results": {
+    "bases_two": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 18,
+      "completed": 12,
+      "declared_optional_cost_units": 3.6,
+      "deferred": 0,
+      "distinct_initial_scores": [
+        0.15315611348655814
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    },
+    "constant_prior": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 18,
+      "completed": 12,
+      "declared_optional_cost_units": 3.6,
+      "deferred": 0,
+      "distinct_initial_scores": [
+        0.6428571428571429
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    },
+    "fixed_check": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 12,
+      "completed": 12,
+      "declared_optional_cost_units": 2.4000000000000004,
+      "deferred": 12,
+      "distinct_initial_scores": [
+        0.6428571428571429
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    },
+    "intervention/cost_high": {
+      "accepted": 2,
+      "accepted_errors": 0,
+      "checks": 0,
+      "completed": 6,
+      "declared_optional_cost_units": 0,
+      "deferred": 6,
+      "distinct_initial_scores": [],
+      "interrupted": 0,
+      "observed_final_value_errors": 4,
+      "planned": 6,
+      "unknown_labels": 0
+    },
+    "intervention/cost_low": {
+      "accepted": 2,
+      "accepted_errors": 0,
+      "checks": 6,
+      "completed": 6,
+      "declared_optional_cost_units": 0.6000000000000001,
+      "deferred": 0,
+      "distinct_initial_scores": [],
+      "interrupted": 3,
+      "observed_final_value_errors": 4,
+      "planned": 6,
+      "unknown_labels": 0
+    },
+    "intervention/risk_high": {
+      "accepted": 2,
+      "accepted_errors": 0,
+      "checks": 6,
+      "completed": 6,
+      "declared_optional_cost_units": 2.4000000000000004,
+      "deferred": 0,
+      "distinct_initial_scores": [],
+      "interrupted": 3,
+      "observed_final_value_errors": 4,
+      "planned": 6,
+      "unknown_labels": 0
+    },
+    "intervention/risk_low": {
+      "accepted": 2,
+      "accepted_errors": 0,
+      "checks": 0,
+      "completed": 6,
+      "declared_optional_cost_units": 0,
+      "deferred": 6,
+      "distinct_initial_scores": [],
+      "interrupted": 0,
+      "observed_final_value_errors": 4,
+      "planned": 6,
+      "unknown_labels": 0
+    },
+    "readout_heads_two": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 18,
+      "completed": 12,
+      "declared_optional_cost_units": 3.6,
+      "deferred": 0,
+      "distinct_initial_scores": [
+        0.7392463639982285
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    },
+    "repeat_two": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 16,
+      "completed": 12,
+      "declared_optional_cost_units": 3.2,
+      "deferred": 2,
+      "distinct_initial_scores": [
+        0.025178841700601855
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    },
+    "roles_two": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 18,
+      "completed": 12,
+      "declared_optional_cost_units": 3.6,
+      "deferred": 0,
+      "distinct_initial_scores": [
+        0.0721908818613597
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    },
+    "single": {
+      "accepted": 4,
+      "accepted_errors": 0,
+      "checks": 16,
+      "completed": 12,
+      "declared_optional_cost_units": 3.2,
+      "deferred": 2,
+      "distinct_initial_scores": [
+        0.025178841700601855
+      ],
+      "interrupted": 8,
+      "observed_final_value_errors": 8,
+      "planned": 12,
+      "unknown_labels": 0
+    }
+  },
+  "audit_method": "Independent standard-library arithmetic, scope/operation joins and read-only SQLite queries; pilot source was read but not imported or executed.",
+  "checks": [
+    {
+      "check": "all_exported_original_bytes",
+      "details": {
+        "members": 177
+      },
+      "passed": true
+    },
+    {
+      "check": "archive_and_inventory_bindings",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "terminal_binding",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "stdout_equals_original_result",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "runtime_protocol_diff_only_asset_binding",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "frozen_source_protocol_hashes",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "tested_source_capsule_and_plan_bindings",
+      "details": {
+        "python_files": 14,
+        "source_files": 15
+      },
+      "passed": true
+    },
+    {
+      "check": "frozen_phase1_dependencies",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "asset_manifest_binding",
+      "details": {
+        "bound_original_sha256": "cd66fdf58653d1cf5ee52f4b596debc75fececb0684eeb3ec8f4085d28fde8fc",
+        "byte_identity_equated": false,
+        "journal_serialized_copy_sha256": "a5a17af96c0b92d62c51f78798404c5682aae77f23718cbd961ba58ab15d7d22",
+        "parsed_content_equal": true
+      },
+      "passed": true
+    },
+    {
+      "check": "model_binding:qwen",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "model_binding:smol",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "operation_roster_complete",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "operation_statuses_completed",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "independently_recomputed_forward_token_counters",
+      "details": {
+        "counters": {
+          "assessments": 597,
+          "forward_passes": 652,
+          "input_tokens": 88151
+        },
+        "mismatched_operations": []
+      },
+      "passed": true
+    },
+    {
+      "check": "model_score_likelihood_recomputation",
+      "details": {
+        "mismatches": [],
+        "scores": 428
+      },
+      "passed": true
+    },
+    {
+      "check": "model_prompt_and_public_view_bindings",
+      "details": {
+        "mismatches": []
+      },
+      "passed": true
+    },
+    {
+      "check": "split_case_and_group_identifiers_disjoint",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "training_rows_are_complete_and_train_only",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "three_real_train_only_readout_parameter_bindings",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "observed_training_calibration_confirmation_order",
+      "details": {
+        "no_after_confirmation_training_operations": true,
+        "readout_training_operations": 1
+      },
+      "passed": true
+    },
+    {
+      "check": "all_aggregated_scores_bind_original_member_operations",
+      "details": {
+        "assessments": 408,
+        "errors": []
+      },
+      "passed": true
+    },
+    {
+      "check": "calibration_brier_reports_recomputed_from_disjoint_rows",
+      "details": {
+        "errors": [],
+        "observations": 168,
+        "reports": 14
+      },
+      "passed": true
+    },
+    {
+      "check": "108_planned_trajectories_have_unique_started_and_completed_rows",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "24_uninterrupted_panels_complete",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "132_original_sqlite_states_independently_match_labels_and_acceptance",
+      "details": {
+        "databases": 132,
+        "errors": []
+      },
+      "passed": true
+    },
+    {
+      "check": "risk_event_and_online_decision_bindings",
+      "details": {
+        "errors": []
+      },
+      "passed": true
+    },
+    {
+      "check": "host_property_receipts_are_distinct_from_risk_event",
+      "details": {
+        "errors": []
+      },
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:bases_two",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:constant_prior",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:fixed_check",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:intervention/cost_high",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:intervention/cost_low",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:intervention/risk_high",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:intervention/risk_low",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:readout_heads_two",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:repeat_two",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:roles_two",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "original_arm_summary_recomputed:single",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "six_actual_matched_risk_cost_interventions",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "all_primary_arms_accept_positive_controls_and_reject_wrong_values",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "operation_cost_totals_recomputed",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "no_failed_or_unresolved_pilot_attempt_hidden",
+      "details": null,
+      "passed": true
+    },
+    {
+      "check": "all_raw_member_hashes_stable_after_readonly_audit",
+      "details": null,
+      "passed": true
+    }
+  ],
+  "cost": {
+    "accumulated_preparation_wall_seconds": 5807.030543,
+    "components_are_additive_elapsed_time": false,
+    "controller_cpu_seconds": 4.635582,
+    "full_physical_cost_qualified": false,
+    "matched_actual_budget_qualified": false,
+    "network_wire_bytes": null,
+    "observed_application_download_payload_bytes": 2246266895,
+    "operation_costs_by_kind": {
+      "asset_verification": {
+        "cpu_ns": 697201000,
+        "failed": 0,
+        "operations": 1,
+        "wall_ns": 697705459
+      },
+      "frozen_dependency_loading": {
+        "cpu_ns": 6317000,
+        "failed": 0,
+        "operations": 1,
+        "wall_ns": 11775583
+      },
+      "host_effect": {
+        "cpu_ns": 249773000,
+        "failed": 0,
+        "operations": 354,
+        "wall_ns": 356313272
+      },
+      "host_initialize": {
+        "cpu_ns": 219538000,
+        "failed": 0,
+        "operations": 132,
+        "wall_ns": 334942287
+      },
+      "host_reconcile_without_replay": {
+        "cpu_ns": 9677000,
+        "failed": 0,
+        "operations": 28,
+        "wall_ns": 11131369
+      },
+      "independent_outcome_label": {
+        "cpu_ns": 14736000,
+        "failed": 0,
+        "operations": 132,
+        "wall_ns": 14793458
+      },
+      "mandatory_host_check": {
+        "cpu_ns": 13416000,
+        "failed": 0,
+        "operations": 50,
+        "wall_ns": 15979705
+      },
+      "model_features": {
+        "cpu_ns": 471901000,
+        "failed": 0,
+        "operations": 169,
+        "wall_ns": 5444624459
+      },
+      "model_load": {
+        "cpu_ns": 529265000,
+        "failed": 0,
+        "operations": 2,
+        "wall_ns": 386004916
+      },
+      "model_score": {
+        "cpu_ns": 1387860000,
+        "failed": 0,
+        "operations": 428,
+        "wall_ns": 18228573671
+      },
+      "optional_host_check": {
+        "cpu_ns": 19027000,
+        "failed": 0,
+        "operations": 128,
+        "wall_ns": 19026337
+      },
+      "readout_training": {
+        "cpu_ns": 91005000,
+        "failed": 0,
+        "operations": 1,
+        "wall_ns": 175356541
+      },
+      "score_aggregation": {
+        "cpu_ns": 19091000,
+        "failed": 0,
+        "operations": 408,
+        "wall_ns": 25781041
+      },
+      "trained_readout": {
+        "cpu_ns": 100325000,
+        "failed": 0,
+        "operations": 132,
+        "wall_ns": 100322501
+      }
+    },
+    "overall_execution_wall_seconds": 27.356104459,
+    "physical_energy_joules": null,
+    "preparation_wall_scope": "first native model preparation start through final Mac revalidation, including failures and orchestration gaps",
+    "provider_cost": null,
+    "retained_prior_preparation_terminal_states": [
+      "cancelled",
+      "timed_out"
+    ]
+  },
+  "counts": {
+    "aggregated_assessments": 408,
+    "backend_assessments": 597,
+    "completed_trajectories": 108,
+    "input_tokens": 88151,
+    "intervention_trajectories": 24,
+    "model_feature_operations": 169,
+    "model_forwards": 652,
+    "model_score_operations": 428,
+    "operation_failures": 0,
+    "operation_started_records": 1966,
+    "operation_terminal_records": 1966,
+    "planned_trajectories": 108,
+    "policy_decisions": 156,
+    "primary_trajectories": 84,
+    "property_receipts": 178,
+    "risk_predictions": 156,
+    "sqlite_databases": 132,
+    "trained_readouts": 3,
+    "trajectory_failures": 0,
+    "uninterrupted_panels": 24
+  },
+  "engineering_audit_status": "PASS",
+  "model_calls_during_audit": 0,
+  "models": [
+    {
+      "base_identity_sha256": "7234d3f1648ebe03aa1208ab9ce18108f8e6769487973ac2bce27a06c9637a64",
+      "key": "qwen",
+      "reason": "Pretrained weights remain on the original host; this audit checks retained native asset receipts.",
+      "repository": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "weights_rehashed_in_this_audit": false,
+      "weights_sha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b"
+    },
+    {
+      "base_identity_sha256": "7f43a3efc5a9ad4e1e2d834d2a5ddcbb78d86ddcd8b1c6660bac3b39620b4283",
+      "key": "smol",
+      "reason": "Pretrained weights remain on the original host; this audit checks retained native asset receipts.",
+      "repository": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "weights_rehashed_in_this_audit": false,
+      "weights_sha256": "e6bffe7435d7ddc10fd3b9a9efd429dafbacb1cb17015fb5562664e7532bf86e"
+    }
+  ],
+  "observed_at_utc": "2026-11-08T13:23:54.275506+00:00",
+  "production_authority": "NONE",
+  "publication_state": "The model candidate is native-executed and exported; no claim that it exists in observed PR 5351 head 6eb0f8d717cfd1234bbbe385d5d5fb99bde5c521.",
+  "published_model_source_commit": null,
+  "remaining_limits": [
+    "Original native receipts bind asset identities, but pretrained weights are not present in this archive for this reviewer to rehash.",
+    "All models see only ACK booleans and tick; initial inputs are identical and most injected errors are observationally indistinguishable.",
+    "Uncalibrated YES/NO likelihood scores and frozen-feature readouts do not establish a calibrated probability or independent-voter gain.",
+    "Each primary arm accepted 4 of 12 trajectories with 0 accepted errors because mandatory host readback retains effect authority; selector superiority is unestablished.",
+    "Separate split/group names reuse synthetic templates and do not establish independent natural tasks or external evaluator authentication.",
+    "Two primary voter invocations are an opportunity cap; actual token, forward, training and wall costs are unequal.",
+    "Preparation cancellation and timeout are retained; energy, wire bytes, provider cost and complete historical construction cost are unknown.",
+    "The scientific S1 same-budget net-terminal-benefit and old-capability-retention gate remains unqualified."
+  ],
+  "runtime_dependencies": {
+    "mlx": "0.31.1",
+    "mlx-lm": "0.31.2",
+    "numpy": "2.4.2",
+    "safetensors": "0.7.0",
+    "tokenizers": "0.22.2",
+    "transformers": "5.5.4"
+  },
+  "runtime_device": {
+    "default_device": "Device(gpu, 0)",
+    "info": {
+      "architecture": "applegpu_g17g",
+      "device_name": "Apple M5",
+      "max_buffer_length": 20100448256,
+      "max_recommended_working_set_size": 26800603136,
+      "memory_size": 34359738368,
+      "resource_limit": 499000
+    },
+    "metal_available": true
+  },
+  "schema": "hepta.verify1.independent-export-audit.v1",
+  "scientific_admission": "HOLD",
+  "scope_and_splits": {
+    "administrative_split_identifiers_disjoint": true,
+    "base_weights_updated": false,
+    "cases_per_split": {
+      "calibration": 12,
+      "confirmation": 12,
+      "train": 12
+    },
+    "diagnostic_only_readout_seed": 43,
+    "independent_natural_tasks_established": false,
+    "lora": false,
+    "population_reliability_or_trajectory_coverage_established": false,
+    "primary_readout_seeds": [
+      17,
+      29
+    ],
+    "public_observation_templates_shared_across_splits": true,
+    "readout_seeds": [
+      17,
+      29,
+      43
+    ],
+    "source_groups_per_split": {
+      "calibration": [
+        "calibration/synthetic-template/0",
+        "calibration/synthetic-template/1"
+      ],
+      "confirmation": [
+        "confirmation/synthetic-template/0",
+        "confirmation/synthetic-template/1"
+      ],
+      "train": [
+        "train/synthetic-template/0",
+        "train/synthetic-template/1"
+      ]
+    },
+    "task_kind": "Controlled synthetic SQLite two-field tasks with genuine local model forwards",
+    "training_features": 36
+  },
+  "source": {
+    "archive_sha256": "567746d6842545e264617fa62a772aed3e5ed48547fde86c5d9562b52e065796",
+    "asset_manifest_sha256": "cd66fdf58653d1cf5ee52f4b596debc75fececb0684eeb3ec8f4085d28fde8fc",
+    "frozen_phase1_sha256": {
+      "contracts": "60a38923c46e3df3ad4ec357cbe0287062986e84aa8123267b5ef2954062730d",
+      "metrics": "3e0a9a996ad62a0feae24a9905c7885352917b195146564b04ac6b15771b302d",
+      "runtime": "af8b6cf4ed31cb6024c536771f056c5a3481902e011990ab70d43b8e961079a4"
+    },
+    "native_job_id": "1a1bb3d51b5-13c47-15f",
+    "native_run": "/Users/qianqi/work/verification-cell-verify1-20261108-771b/model-pilot/run-v2",
+    "protocol_snapshot_sha256": "3cc0d85a1bedbcf0985be2cf7893455711a09e87695da93188da524c55852bf8",
+    "source_capsule_sha256": "a3f87c341f5b0acbd58af4719eda440bed7e6ffd762634601c8732bd81eafed3",
+    "source_manifest_sha256": "ad3ebffe2c6cf39f4c9158901a2b626d1d20c5c206498f0642a8cf50aea9f02d",
+    "tested_source_files": 15
+  },
+  "training_runs_during_audit": 0
+}

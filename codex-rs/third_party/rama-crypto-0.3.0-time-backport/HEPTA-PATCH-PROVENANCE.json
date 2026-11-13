@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.rama-crypto.time-compatibility.v1",
+  "crate": "rama-crypto",
+  "version": "0.3.0",
+  "original_registry_checksum": "bdbb5a0371fe925e240d925ed5feecfc7ba5ef6843c66f66420ec6b77aa37bae",
+  "official_source_commit": "035bbd0551b6c58a304a32947f202dd89576782a",
+  "upstream_vcs": {
+    "git": {
+      "sha1": "1e094e455b9fa29d7ad4bc5d597139934cb73978"
+    },
+    "path_in_vcs": "rama-crypto"
+  },
+  "licenses": {
+    "LICENSE-APACHE": {
+      "sha256": "95bd3988beee069fa2848f648dab43cc6e0b2add2ad6bcb17360caf749802bcc",
+      "git_blob": "a7e77cb28d386ec6eddeaabf441f91473ddefa1e"
+    },
+    "LICENSE-MIT": {
+      "sha256": "1fa7e078de3f9165a1c6742359307711e91652f035dc37a32376ca0023483e63",
+      "git_blob": "03623e632769ca6fe6ab6413fcabafd2c5f92eaf"
+    }
+  },
+  "original_workspace_manifest_git_blob": "368a30e203b95692ffe59d8d962a3a73afd21925",
+  "original_workspace_time_comment": "# TEMPORARY: see https://github.com/time-rs/time/issues/783.\ntime = \"=0.3.47\"",
+  "upstream_fix": "https://github.com/plabayo/rama/commit/4ba2015fce25609d1cf54722059f330fdfafc62c",
+  "upstream_fix_review": "https://github.com/plabayo/rama/pull/1220",
+  "upstream_regression": "https://github.com/time-rs/time/issues/783",
+  "patch_delta": "Use exact 0.3.55 where upstream unpinned to ^0.3.55; retain all Rama 0.3.0 Rust/API/features",
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "ce6dce0e52814c4194168ad690b01086997ccf9d69c40828b70e04288a2fe6fc",
+      "after_sha256": "54065e1196e32ef7889af6467b500372cf7ddc055d1071a9d9d49961b0000551"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "7fad26d991fd99dd21474755c97784f6a4c3c2996d50eeca8ee306ba15ac67ce",
+      "after_sha256": "ab0dd2143055af9a63df8c63bfa0f1dd2b530d58c54de4135be8d368d6968151"
+    }
+  ],
+  "minimal_patch_sha256": "44856e8c8ff7020412cc6b197661901c46f78433316d6a204a1dc769c2244bcc",
+  "all_other_archive_files_unchanged": true
+}

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "started_at_utc": "2026-10-19T01:08:37.819144+00:00",
+  "finished_at_utc": "2026-10-19T01:08:49.880280+00:00",
+  "base_commit": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+  "working_head": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+  "working_diff_sha256": "521242704209c9664b5833e616c49cfaf915e43475afed84f7f80127f7f67798",
+  "status": "passed",
+  "commands": [
+    {
+      "name": "python-tests",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.test_hepta_ci_exec",
+        "scripts.test_hepta_ci_exec_deadline",
+        "scripts.test_hepta_ci_exec_output",
+        "scripts.test_hepta_agentd_ci.TerminalGateTests",
+        "scripts.tests.test_hepta_ci_scope"
+      ],
+      "started_at_utc": "2026-10-19T01:08:37.921235+00:00",
+      "finished_at_utc": "2026-10-19T01:08:49.867522+00:00",
+      "exit_code": 0,
+      "log": "python-tests.log",
+      "log_bytes": 11451,
+      "log_sha256": "3eb98c93ef57321f451d1d385c12093f638cffdea2fd659b856570aba7f06498"
+    },
+    {
+      "name": "actionlint-version",
+      "argv": [
+        "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/tools/bin/actionlint",
+        "-version"
+      ],
+      "started_at_utc": "2026-10-19T01:08:49.867924+00:00",
+      "finished_at_utc": "2026-10-19T01:08:49.871345+00:00",
+      "exit_code": 0,
+      "log": "actionlint-version.log",
+      "log_bytes": 95,
+      "log_sha256": "9d34cdaec053c6005199c08f2bac628bd8c087303faa26fd8ab58c3e22216ff5"
+    },
+    {
+      "name": "actionlint",
+      "argv": [
+        "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/tools/bin/actionlint",
+        "-no-color",
+        "-oneline",
+        ".github/workflows/blocking-ci.yml"
+      ],
+      "started_at_utc": "2026-10-19T01:08:49.871378+00:00",
+      "finished_at_utc": "2026-10-19T01:08:49.880007+00:00",
+      "exit_code": 0,
+      "log": "actionlint.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "python_tests_run": 71,
+  "python_unittest_reported_ok": true,
+  "source_before": {
+    ".github/workflows/blocking-ci.yml": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+    "scripts/hepta_ci_exec.py": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+    "scripts/hepta_ci_dependencies.py": "0c024f20fa38f7fcef869e9228c83e7ef8d249b72c2466b78517f13a0f21d1f8",
+    "scripts/hepta_ci_scope.py": "0624e919517198d5275c33af957ea2e9f141d45bc8b59c9133946cd0aadcc80b",
+    ".github/scripts/check_ci_results.py": "7989503b359fbe3850a8bcc1f9abb00bcd55315e816df22835b6cf1b93f024f4",
+    "scripts/test_hepta_ci_exec.py": "b1d369f4e9698a90724ababe9826aa91daff8fbc93253b038f1c1f957bba7884",
+    "scripts/test_hepta_ci_exec_deadline.py": "c4dcebf983bf3a5075333deeb8515ddb7109927ae47d4ddd3ef36525d2f6cb1f",
+    "scripts/test_hepta_ci_exec_output.py": "b387cad491c8bdbd2bfe3c5433dd28a303b08f08c9ee8c2771f935f86c524646",
+    "scripts/test_hepta_agentd_ci.py": "cd8debdd9330d7e7ec9ed46d5af258f96f67e8eb0d0ea3af540780e5c2e8a33e",
+    "scripts/tests/test_hepta_ci_scope.py": "1c60996b9bf53ed0f7ae567cbf0edcae8494fd2dc8f9a8066369a53a1b369578"
+  },
+  "source_after": {
+    ".github/workflows/blocking-ci.yml": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+    "scripts/hepta_ci_exec.py": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+    "scripts/hepta_ci_dependencies.py": "0c024f20fa38f7fcef869e9228c83e7ef8d249b72c2466b78517f13a0f21d1f8",
+    "scripts/hepta_ci_scope.py": "0624e919517198d5275c33af957ea2e9f141d45bc8b59c9133946cd0aadcc80b",
+    ".github/scripts/check_ci_results.py": "7989503b359fbe3850a8bcc1f9abb00bcd55315e816df22835b6cf1b93f024f4",
+    "scripts/test_hepta_ci_exec.py": "b1d369f4e9698a90724ababe9826aa91daff8fbc93253b038f1c1f957bba7884",
+    "scripts/test_hepta_ci_exec_deadline.py": "c4dcebf983bf3a5075333deeb8515ddb7109927ae47d4ddd3ef36525d2f6cb1f",
+    "scripts/test_hepta_ci_exec_output.py": "b387cad491c8bdbd2bfe3c5433dd28a303b08f08c9ee8c2771f935f86c524646",
+    "scripts/test_hepta_agentd_ci.py": "cd8debdd9330d7e7ec9ed46d5af258f96f67e8eb0d0ea3af540780e5c2e8a33e",
+    "scripts/tests/test_hepta_ci_scope.py": "1c60996b9bf53ed0f7ae567cbf0edcae8494fd2dc8f9a8066369a53a1b369578"
+  },
+  "source_unchanged": true,
+  "static_validation": {
+    "workflow_before_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f",
+    "workflow_after_sha256": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+    "parsed_difference_only_two_approved_fields": true,
+    "workflow_executor_invocations": 1,
+    "child_argv_unchanged_after_removing_explicit_timeout": true,
+    "inner_seconds": 3600,
+    "outer_seconds": 4500,
+    "overhead_budget_seconds": 900,
+    "always_upload_unchanged": true,
+    "required_fanin_unchanged": true,
+    "scope_unchanged_and_workflow_change_selects_full_repo": {
+      "effects": true,
+      "inference": true,
+      "learning": true,
+      "lifecycle": true,
+      "objective": true,
+      "native": true,
+      "derived": true,
+      "full_repo": true
+    },
+    "python_executor_and_selected_tests_equal_base": true,
+    "bash_blocks_parsed": 9
+  },
+  "tool_paths": {
+    "just": "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/tools/bin/just",
+    "actionlint": "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/tools/bin/actionlint"
+  },
+  "optional_tools_available": {
+    "shellcheck": false,
+    "pyflakes": false
+  },
+  "no_native_rust_build_or_gitHub_job_execution": true,
+  "not_a_substitute_for_required_remote_ci": true
+}

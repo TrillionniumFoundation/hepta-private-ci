@@ -65,8 +65,11 @@ impl CognitiveStore {
         let home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(home);
+        // Use the same normalized parent as State's strict retained-path
+        // binding; the historical handle keeps the caller's original path.
+        let sqlite_path = config.home().join(super::super::COGNITIVE_DB_FILENAME);
         let guard = config
-            .bind_existing_recovery_database(&path)
+            .bind_existing_recovery_database(&sqlite_path)
             .map_err(recovery_error)?;
         let pool = config
             .open_cold_image_read_only_pool(&guard)

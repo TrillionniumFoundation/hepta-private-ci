@@ -52,6 +52,28 @@ Every entry in `currentCapabilities` has exactly one stable capability ID in
 
 The verifier rejects missing, duplicate, mismatched or unsupported mappings.
 
+### Product coverage and standalone operations evidence
+
+The current product matrix and its primary evidence map cover exactly 42
+capabilities. Their `kernel.operations` durable owner is the existing
+CognitiveStore implementation in `codex-rs/hepta-memory`, with explicit Agentd
+composition. The bounded reference oracles remain part of that product contract.
+
+`kernel.operations/CAPABILITY_EVIDENCE_V2.json` separately records five
+source-backed capabilities of the standalone `DurableOperationStore` in
+`codex-rs/hepta-operations`. Its own durability, activation, source and test
+anchors are checked independently. Its product coverage contribution is zero
+and its product qualification is not granted. These five entries cannot replace
+a missing primary entry, borrow the integrated owner's state or evidence, or
+increase `capabilityCoverage` to 47. Primary evidence cannot substitute for this
+standalone evidence either. Source receipts bind both maps and report their
+counts separately; neither layer grants native qualification or activation.
+
+The protocol registry contains eight ordered `(module, protocolId)` identities
+across seven modules. Both operations surfaces have distinct protocol IDs,
+owners and scopes. An additional surface is not an additional module, and a
+duplicate identity, missing surface or changed order is rejected.
+
 ## 5. Closure vocabulary
 
 `closed` in this directory means only the named repository-controlled

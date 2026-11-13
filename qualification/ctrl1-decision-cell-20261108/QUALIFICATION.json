@@ -1,0 +1,1288 @@
+{
+  "schema": "hepta.ctrl1.qualification.v1",
+  "status": "COMPLETED_FINITE_ENGINEERING_PILOT_WITH_PASSED_REPLAY",
+  "generated_utc": "2026-11-08T12:19:43.574863+00:00",
+  "scientific_promotion": "HOLD",
+  "production_authority": "none",
+  "contract_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "implementation_parent_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "core_code_commit": "472c825a87220574acc5338afe59558e1ad2038f",
+  "auditor_commit": "368ef32be4388d47f3faddf0ac78806e33d680cd",
+  "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "profile": "hepta.ndu.finite-entropic.v1",
+  "adapter": "hepta.ctrl1.resource-cost.v1",
+  "qualified_runs": [
+    "primary_repeat_2",
+    "cpu_repeat_2"
+  ],
+  "rejected_runs": [
+    {
+      "original_directory": "primary",
+      "status": "INTEGRITY_REJECTED",
+      "expected_rows": 864,
+      "retained_rows": 860,
+      "repaired": false
+    },
+    {
+      "original_directory": "cpu_allowance",
+      "status": "INTEGRITY_REJECTED",
+      "expected_rows": 576,
+      "retained_rows": 460,
+      "expected_events": 144,
+      "retained_events": 116,
+      "inconsistent_final_checkpoints": 4,
+      "parameter_hash_mismatches": 3,
+      "repaired": false
+    }
+  ],
+  "repeat_policy": {
+    "same_plan_bytes": true,
+    "same_source": true,
+    "same_seeds": true,
+    "same_hyperparameters": true,
+    "same_objective_profiles": true,
+    "learned_checkpoint_equality_claim": false,
+    "repeat_is_extra_independent_seed": false,
+    "retention_root_cause": "unresolved"
+  },
+  "validation": {
+    "native_tests_passed": 61,
+    "native_test_seconds": 1.333,
+    "native_actual_just_fmt": "PASS",
+    "native_locked_ruff_0_15_13": "PASS",
+    "primary_replay": {
+      "artifact_manifest_sha256": "cf309d7aa5ed63746037ce7b1423edb1b57c89a87c35161986f7c5422c8a439b",
+      "auditor_sha256": "f052f179fc498d391670c903931cd28224a9c23e2b30db21ce707194906cd7eb",
+      "confirmation_rows_replayed": 864,
+      "confirmation_rows_verified": 864,
+      "development_rows_replayed": 96,
+      "development_rows_verified": 96,
+      "errors": [],
+      "excluded": [
+        "measured wall/CPU timings",
+        "training reproduction",
+        "external task outcomes"
+      ],
+      "expected_confirmation_rows": 864,
+      "expected_development_rows": 96,
+      "expected_sampled_episodes": 13824,
+      "learners_reconstructed": 24,
+      "mismatch_count": 0,
+      "mismatches": [],
+      "originals_verified": {
+        "attempt_identities": 996,
+        "comparisons": 864,
+        "development_originals": 96,
+        "files": 91,
+        "plan_sha256": "b44c4084feea4a6fc1c3b690790c9a15ae2930c4b57fa6155e408fa564eabb7c",
+        "router_training_runs": 12,
+        "sampled_originals": 13824,
+        "scientific_promotion": "HOLD",
+        "source_checked": true,
+        "training_runs": 24,
+        "verified": true
+      },
+      "plan_sha256": "b44c4084feea4a6fc1c3b690790c9a15ae2930c4b57fa6155e408fa564eabb7c",
+      "production_authority": "none",
+      "promotion": "HOLD",
+      "routers_reconstructed": 12,
+      "rows_verified": 864,
+      "sampled_episodes_replayed": 13824,
+      "sampled_episodes_verified": 13824,
+      "schema": "hepta.ctrl1.primary-replay-audit.v1",
+      "scope": "independent replay invocation using frozen code; not external evaluator attestation",
+      "selections_verified": 12,
+      "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+      "status": "PASSED_PRIMARY_REPLAY",
+      "strict_source_inventory_verified": true,
+      "trajectories_requested": true,
+      "verified": true
+    },
+    "cpu_replay": {
+      "attempt_events": 144,
+      "auditor_sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b",
+      "authority": "none",
+      "available": 72,
+      "comparison_rows": 576,
+      "null_rows_verified": 0,
+      "original_execution_root": "/tmp/ctrl1-cpu-repeat-2-s0cbtuks/run",
+      "plan_sha256": "e8c7e801362651d3b84ea1633c6f2757222b25da4bad9983fc35ad60406faa89",
+      "recomputed_rows": 576,
+      "scope": "archive consistency and optional frozen-evaluator replay; not independent execution attestation",
+      "status": "PASS",
+      "termination_counts": {
+        "Completed": 12,
+        "CooperativeCpuBudgetStop": 60
+      },
+      "unavailable": 0,
+      "workers": 72
+    },
+    "cpu_after_publication_structural_audit": {
+      "attempt_events": 144,
+      "auditor_sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b",
+      "authority": "none",
+      "available": 72,
+      "comparison_rows": 576,
+      "null_rows_verified": 0,
+      "original_execution_root": "/tmp/ctrl1-cpu-repeat-2-s0cbtuks/run",
+      "plan_sha256": "e8c7e801362651d3b84ea1633c6f2757222b25da4bad9983fc35ad60406faa89",
+      "recomputed_rows": 0,
+      "scope": "archive consistency and optional frozen-evaluator replay; not independent execution attestation",
+      "status": "PASS",
+      "termination_counts": {
+        "Completed": 12,
+        "CooperativeCpuBudgetStop": 60
+      },
+      "unavailable": 0,
+      "workers": 72
+    },
+    "external_independent_execution_attestation": false,
+    "retrained_during_replay": false,
+    "cpu_or_wall_timings_reproduced": false
+  },
+  "primary_counts": {
+    "attempt_events": 1992,
+    "attempt_phase_status_counts": {
+      "confirmation/Completed": 864,
+      "confirmation/Started": 864,
+      "development/Completed": 96,
+      "development/Started": 96,
+      "router_training/Completed": 12,
+      "router_training/Started": 12,
+      "training/Completed": 24,
+      "training/Started": 24
+    },
+    "comparisons": 864,
+    "comparisons_per_profile_controller": 24,
+    "confirmation_scenarios": 8,
+    "development_decisions": {
+      "Candidate": 9,
+      "NoUpdate": 3
+    },
+    "exact_budget_violations": 0.0,
+    "independent_training_seeds": 3,
+    "profile_seed_runs": 12,
+    "sampled_budget_violations_reported_by_rows": 0,
+    "sampled_episodes_reported_by_rows": 13824,
+    "seeds": [
+      17,
+      23,
+      41
+    ]
+  },
+  "sample_counts": {
+    "declared_budget_violations": 0,
+    "fallback_decisions": 0,
+    "max_decision_expanded_nodes": 72,
+    "max_recorded_duration_seconds": 7,
+    "max_recorded_environment_plus_controller_cost": 10,
+    "recorded_charge_bound_violations": 0,
+    "sampled_cases": 864,
+    "sampled_episodes": 13824
+  },
+  "profiles": [
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.0,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.0,
+      "risk": 0.0
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.02,
+      "risk": 0.0
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.0,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.0,
+      "risk": 0.25
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.02,
+      "risk": 0.25
+    }
+  ],
+  "primary_summary": [
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.07091222319305555,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "policy_gap": 0.2026925511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.06507888985972221,
+      "value": 0.4187685833333333
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.42,
+      "policy_gap": 0.23090200952083323,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.0,
+      "value": 0.39055912499999995
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.2914611345208332,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.32999999999999996,
+      "policy_gap": 0.2914611345208332,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.2714611345208332,
+      "value": 0.32999999999999996
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.6033333333333333,
+      "policy_gap": 0.126897294035625,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.0,
+      "value": 0.4945638404852082
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 2.0,
+      "expanded_nodes": 13.666666666666666,
+      "net_terminal_utility": 0.48277777777777775,
+      "policy_gap": 0.18847906689465618,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.0,
+      "value": 0.432982067626177
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.16138339610972222,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "policy_gap": 0.26651623368749994,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.1111333961097222,
+      "value": 0.3549449008333333
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.16138339610972222,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "policy_gap": 0.26651623368749994,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.1111333961097222,
+      "value": 0.3549449008333333
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.07091222319305555,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "policy_gap": 0.2026925511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.06507888985972221,
+      "value": 0.4187685833333333
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.006160000000000006,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 4.5,
+      "expanded_nodes": 35.0,
+      "net_terminal_utility": 0.41694666666666663,
+      "policy_gap": 0.25615945229446724,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "stop_regret": 0.0,
+      "value": 0.36530168222636594
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.10116416520762593,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.5048611111111111,
+      "policy_gap": 0.2699326824714948,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.10116416520762593,
+      "value": 0.4635316438857034
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.5,
+      "policy_gap": 0.2874903772193076,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.0,
+      "value": 0.44597394913789057
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.3834643263571982,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.35,
+      "policy_gap": 0.3834643263571982,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.3834643263571982,
+      "value": 0.35
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "expanded_nodes": 56.25,
+      "net_terminal_utility": 0.8333333333333334,
+      "policy_gap": 0.03213004621947292,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.0,
+      "value": 0.7013342801377253
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 3.1666666666666665,
+      "expanded_nodes": 30.916666666666668,
+      "net_terminal_utility": 0.7129629629629629,
+      "policy_gap": 0.11886744899621646,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.0,
+      "value": 0.6145968773609818
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.17564339036858329,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "policy_gap": 0.2716569237242612,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.15995409508120495,
+      "value": 0.46180740263293696
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.17564339036858329,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "policy_gap": 0.2716569237242612,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.15995409508120495,
+      "value": 0.46180740263293696
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.10116416520762593,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.5048611111111111,
+      "policy_gap": 0.2699326824714948,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.10116416520762593,
+      "value": 0.4635316438857034
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.00954891005732605,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 5.0,
+      "expanded_nodes": 35.85,
+      "net_terminal_utility": 0.6189333333333333,
+      "policy_gap": 0.20073329587688057,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "stop_regret": 0.001369922433339929,
+      "value": 0.5327310304803177
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.06535113097545966,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "policy_gap": 0.20533426994728476,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.05951779764212632,
+      "value": 0.4011569932440779
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.008622166696531314,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.4229861111111111,
+      "policy_gap": 0.2356909563368899,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.007788833363197981,
+      "value": 0.37080030685447274
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.27649126319136275,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.32999999999999996,
+      "policy_gap": 0.27649126319136275,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.25649126319136273,
+      "value": 0.32999999999999996
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.6033333333333333,
+      "policy_gap": 0.1264481978957409,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.0,
+      "value": 0.48004306529562174
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 2.1666666666666665,
+      "expanded_nodes": 14.833333333333334,
+      "net_terminal_utility": 0.4846759259259259,
+      "policy_gap": 0.1974026201139668,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.0,
+      "value": 0.40908864307739584
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.15193557791735413,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "policy_gap": 0.2638278429776749,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.10168557791735411,
+      "value": 0.3426634202136878
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.15193557791735413,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "policy_gap": 0.2638278429776749,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.10168557791735411,
+      "value": 0.3426634202136878
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.06535113097545966,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "policy_gap": 0.20533426994728476,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.05951779764212632,
+      "value": 0.4011569932440779
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.010897525553526636,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 4.75,
+      "expanded_nodes": 35.425,
+      "net_terminal_utility": 0.42192333333333326,
+      "policy_gap": 0.2574213065557011,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "stop_regret": 0.0003328447571576012,
+      "value": 0.3490699566356616
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.10380906180819735,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.5048611111111111,
+      "policy_gap": 0.26249145540021007,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.10380906180819735,
+      "value": 0.4811296944444444
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.5,
+      "policy_gap": 0.27306202484465447,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.0,
+      "value": 0.47055912499999997
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.3936211498446545,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.35,
+      "policy_gap": 0.3936211498446545,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.3936211498446545,
+      "value": 0.35
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "expanded_nodes": 56.75,
+      "net_terminal_utility": 0.8333333333333334,
+      "policy_gap": 0.027843469359446205,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.0,
+      "value": 0.7157776804852083
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 2.6666666666666665,
+      "expanded_nodes": 23.416666666666668,
+      "net_terminal_utility": 0.6666666666666666,
+      "policy_gap": 0.1441400287056198,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.0,
+      "value": 0.5994811211390347
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.18031641143354343,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "policy_gap": 0.26957624901132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.1693603961097222,
+      "value": 0.4740449008333333
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.18031641143354343,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "expanded_nodes": 52.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "policy_gap": 0.26957624901132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.1693603961097222,
+      "value": 0.4740449008333333
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "expanded_nodes": 0.0,
+      "net_terminal_utility": 0.5,
+      "policy_gap": 0.27306202484465447,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.0,
+      "value": 0.47055912499999997
+    },
+    {
+      "cases": 24,
+      "compute_and_stop_regret": 0.011176130920703993,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 5.0,
+      "expanded_nodes": 35.85,
+      "net_terminal_utility": 0.6189333333333333,
+      "policy_gap": 0.20000937425982313,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "stop_regret": 0.0015914783429333318,
+      "value": 0.5436117755848313
+    }
+  ],
+  "development_selections": [
+    {
+      "baseline_mean_value": 0.47414206249999996,
+      "candidate_mean_value": 0.47204816406249994,
+      "decision": "NoUpdate",
+      "id": "97e2016b00cc-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": -0.0020938984375000053,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_gains": [
+        0.0,
+        -0.008375593750000021,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.47414206249999996,
+      "candidate_mean_value": 0.47204816406249994,
+      "decision": "NoUpdate",
+      "id": "97e2016b00cc-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": -0.0020938984375000053,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_gains": [
+        0.0,
+        -0.008375593750000021,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.47414206249999996,
+      "candidate_mean_value": 0.47204816406249994,
+      "decision": "NoUpdate",
+      "id": "97e2016b00cc-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": -0.0020938984375000053,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_gains": [
+        0.0,
+        -0.008375593750000021,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.39414206249999995,
+      "candidate_mean_value": 0.4079856640624999,
+      "decision": "Candidate",
+      "id": "29d3a0540d92-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.013843601562500002,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "scenario_gains": [
+        0.0,
+        0.05537440625000001,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.39414206249999995,
+      "candidate_mean_value": 0.4079856640624999,
+      "decision": "Candidate",
+      "id": "29d3a0540d92-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.013843601562500002,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "scenario_gains": [
+        0.0,
+        0.05537440625000001,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.39414206249999995,
+      "candidate_mean_value": 0.4079856640624999,
+      "decision": "Candidate",
+      "id": "29d3a0540d92-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.013843601562500002,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "scenario_gains": [
+        0.0,
+        0.05537440625000001,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.44782832817934165,
+      "candidate_mean_value": 0.4522844576417607,
+      "decision": "Candidate",
+      "id": "6c4949f90c48-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.004456129462419023,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "scenario_gains": [
+        0.0,
+        0.01782451784967609,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.44782832817934165,
+      "candidate_mean_value": 0.4522844576417607,
+      "decision": "Candidate",
+      "id": "6c4949f90c48-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.004456129462419023,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "scenario_gains": [
+        0.0,
+        0.01782451784967609,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.44782832817934165,
+      "candidate_mean_value": 0.4522844576417607,
+      "decision": "Candidate",
+      "id": "6c4949f90c48-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.004456129462419023,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "scenario_gains": [
+        0.0,
+        0.01782451784967609,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.3663694854871775,
+      "candidate_mean_value": 0.3871911490730133,
+      "decision": "Candidate",
+      "id": "6d077dda5bd1-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.02082166358583578,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "scenario_gains": [
+        0.0,
+        0.08328665434334312,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.3663694854871775,
+      "candidate_mean_value": 0.3871911490730133,
+      "decision": "Candidate",
+      "id": "6d077dda5bd1-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.02082166358583578,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "scenario_gains": [
+        0.0,
+        0.08328665434334312,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.3663694854871775,
+      "candidate_mean_value": 0.3871911490730133,
+      "decision": "Candidate",
+      "id": "6d077dda5bd1-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.02082166358583578,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "scenario_gains": [
+        0.0,
+        0.08328665434334312,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "cpu_summary": [
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.14828782806352023,
+      "mean_retained_epochs": 87,
+      "mean_value_available_only": 0.5953333217811343,
+      "mean_worker_cpu_seconds": 0.9191946666666666,
+      "method": "actor_critic",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.26913153526132116,
+      "mean_retained_epochs": 208.66666666666666,
+      "mean_value_available_only": 0.47448961458333333,
+      "mean_worker_cpu_seconds": 0.9365373333333332,
+      "method": "distillation",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.08555467040159895,
+      "mean_retained_epochs": 171.66666666666666,
+      "mean_value_available_only": 0.6580664794430555,
+      "mean_worker_cpu_seconds": 1.8315693333333334,
+      "method": "actor_critic",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.26913153526132116,
+      "mean_retained_epochs": 458,
+      "mean_value_available_only": 0.47448961458333333,
+      "mean_worker_cpu_seconds": 1.830137,
+      "method": "distillation",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.06589186964882118,
+      "mean_retained_epochs": 358.6666666666667,
+      "mean_value_available_only": 0.6777292801958333,
+      "mean_worker_cpu_seconds": 3.626564666666667,
+      "method": "actor_critic",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.26913153526132116,
+      "mean_retained_epochs": 512,
+      "mean_value_available_only": 0.47448961458333333,
+      "mean_worker_cpu_seconds": 2.0460726666666664,
+      "method": "distillation",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.1827550511874999,
+      "mean_retained_epochs": 88,
+      "mean_value_available_only": 0.4387060833333333,
+      "mean_worker_cpu_seconds": 0.9300476666666667,
+      "method": "actor_critic",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.21884651993749993,
+      "mean_retained_epochs": 214.33333333333334,
+      "mean_value_available_only": 0.4026146145833333,
+      "mean_worker_cpu_seconds": 0.9444256666666666,
+      "method": "distillation",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.1827550511874999,
+      "mean_retained_epochs": 198.66666666666666,
+      "mean_value_available_only": 0.4387060833333333,
+      "mean_worker_cpu_seconds": 1.8263716666666667,
+      "method": "actor_critic",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.21884651993749993,
+      "mean_retained_epochs": 464.6666666666667,
+      "mean_value_available_only": 0.4026146145833333,
+      "mean_worker_cpu_seconds": 1.8333933333333332,
+      "method": "distillation",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.1827550511874999,
+      "mean_retained_epochs": 347.6666666666667,
+      "mean_value_available_only": 0.4387060833333333,
+      "mean_worker_cpu_seconds": 3.6442693333333334,
+      "method": "actor_critic",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.21884651993749993,
+      "mean_retained_epochs": 512,
+      "mean_value_available_only": 0.4026146145833333,
+      "mean_worker_cpu_seconds": 2.1400509999999997,
+      "method": "distillation",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.11325624840593496,
+      "mean_retained_epochs": 83,
+      "mean_value_available_only": 0.6202080779512632,
+      "mean_worker_cpu_seconds": 0.929971,
+      "method": "actor_critic",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.28047477980071917,
+      "mean_retained_epochs": 215.66666666666666,
+      "mean_value_available_only": 0.45298954655647905,
+      "mean_worker_cpu_seconds": 0.931125,
+      "method": "distillation",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.07602834657537644,
+      "mean_retained_epochs": 173,
+      "mean_value_available_only": 0.6574359797818218,
+      "mean_worker_cpu_seconds": 1.83365,
+      "method": "actor_critic",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.28047477980071917,
+      "mean_retained_epochs": 454.6666666666667,
+      "mean_value_available_only": 0.45298954655647905,
+      "mean_worker_cpu_seconds": 1.8409879999999998,
+      "method": "distillation",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.05392032227093213,
+      "mean_retained_epochs": 339.6666666666667,
+      "mean_value_available_only": 0.679544004086266,
+      "mean_worker_cpu_seconds": 3.6342426666666667,
+      "method": "actor_critic",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.28047477980071917,
+      "mean_retained_epochs": 512,
+      "mean_value_available_only": 0.45298954655647905,
+      "mean_worker_cpu_seconds": 2.066971333333333,
+      "method": "distillation",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.18044650008446805,
+      "mean_retained_epochs": 83,
+      "mean_value_available_only": 0.42604476310689465,
+      "mean_worker_cpu_seconds": 0.9332646666666666,
+      "method": "actor_critic",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 1,
+      "mean_policy_gap_available_only": 0.22525947417630393,
+      "mean_retained_epochs": 214.33333333333334,
+      "mean_value_available_only": 0.3812317890150587,
+      "mean_worker_cpu_seconds": 0.9333596666666666,
+      "method": "distillation",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.18044650008446805,
+      "mean_retained_epochs": 173.33333333333334,
+      "mean_value_available_only": 0.42604476310689465,
+      "mean_worker_cpu_seconds": 1.832705,
+      "method": "actor_critic",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 2,
+      "mean_policy_gap_available_only": 0.22525947417630393,
+      "mean_retained_epochs": 489,
+      "mean_value_available_only": 0.3812317890150587,
+      "mean_worker_cpu_seconds": 1.831192,
+      "method": "distillation",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.18044650008446805,
+      "mean_retained_epochs": 359,
+      "mean_value_available_only": 0.42604476310689465,
+      "mean_worker_cpu_seconds": 3.6370196666666668,
+      "method": "actor_critic",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f"
+    },
+    {
+      "attempts": 3,
+      "available": 3,
+      "cpu_cap_seconds": 4,
+      "mean_policy_gap_available_only": 0.22525947417630393,
+      "mean_retained_epochs": 512,
+      "mean_value_available_only": 0.3812317890150587,
+      "mean_worker_cpu_seconds": 1.9486563333333333,
+      "method": "distillation",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f"
+    }
+  ],
+  "cpu_workers": {
+    "attempts": 72,
+    "available": 72,
+    "unavailable": 0,
+    "comparison_rows": 576,
+    "attempt_events": 144,
+    "termination_counts": {
+      "Completed": 12,
+      "CooperativeCpuBudgetStop": 60
+    },
+    "inclusive_cpu_total_seconds": 134.585339
+  },
+  "cpu_action_nonzero_case_counts": {
+    "actor_critic": {
+      "stop": 72,
+      "execute": 216,
+      "repair": 79
+    },
+    "distillation": {
+      "execute": 252,
+      "stop": 36
+    }
+  },
+  "gates": {
+    "finite_model_and_replay_integrity": "PASS",
+    "joint_mpc_value_gain_over_mean_mpc": "NOT_DEMONSTRATED_96_OF_96_EQUAL",
+    "learned_router_mean_value_gain_over_fixed_hybrid": "NOT_DEMONSTRATED",
+    "distillation_mean_gain_over_ac_under_cpu_allowance": "NOT_DEMONSTRATED_AC_WINS_ALL_12_GROUPS",
+    "complete_learned_action_allocation": "NOT_DEMONSTRATED",
+    "full_physical_cost_equivalence": "HOLD",
+    "independent_external_task_outcomes": "HOLD",
+    "real_document_tool_gui_tasks": "HOLD",
+    "native_owner_adoption": "HOLD",
+    "full_native_stochastic_ndu_or_fbsde": "OUT_OF_SCOPE",
+    "efe_baseline": "NOT_IMPLEMENTED"
+  },
+  "interpretation_limits": [
+    "Four profiles have different objective functions; no pooled NDU improvement claim.",
+    "Only three independent training seeds; episodes and reruns do not enlarge that denominator.",
+    "Oracle is a free-online-computation ideal upper bound; gap includes controller overhead.",
+    "Known joint transition model; mean contrast changes backup only, not learned predictor calibration.",
+    "Confirmation correlation reversal also changes time/cost marginals at priors one-third and two-thirds.",
+    "Variable time changes information and conditional means; not a pure variance ablation.",
+    "Credits are invocation prices, not measured hardware operations or energy.",
+    "Router training target and repeated deployed meta-control differ; no monotonic improvement guarantee.",
+    "Distillation teacher is standalone MPC, not the highest-value hybrid.",
+    "Matched updates or CPU allowance do not establish equal consumed total physical cost.",
+    "Accepted finite replay excludes training reproduction, wall/CPU reproduction and external outcome attestation.",
+    "Root cause of rejected original-retention anomalies remains unresolved."
+  ],
+  "bindings": [
+    {
+      "path": "SOURCE_IMPORT.json",
+      "bytes": 6504,
+      "sha256": "2b7abc0dbde041196b8b78043c845be3513223a31194b44c001bebce8db9bb61"
+    },
+    {
+      "path": "SOURCE_COMMITS.json",
+      "bytes": 686,
+      "sha256": "cdaf6801bf146c2ee0b23be57d6454ff37abb296e338abf6e74fa0d12322db21"
+    },
+    {
+      "path": "primary_repeat_2/PLAN.json",
+      "bytes": 8220,
+      "sha256": "7fb7e51050c04e9c0d99adc92fa56119d1af58fdefb9810a0d272f3dd8ab192c"
+    },
+    {
+      "path": "primary_repeat_2/ARTIFACTS.json",
+      "bytes": 11808,
+      "sha256": "cf309d7aa5ed63746037ce7b1423edb1b57c89a87c35161986f7c5422c8a439b"
+    },
+    {
+      "path": "primary_repeat_2/REPORT.json",
+      "bytes": 35223,
+      "sha256": "613badd00c6d51266e0cbf0b9bdcd8f1a574e79af41840cb1606564778bc6413"
+    },
+    {
+      "path": "cpu_repeat_2/PLAN.json",
+      "bytes": 5605,
+      "sha256": "5748ef5d7a47e1e7f741f200fe56e4fc80e9d17bfc2717388f4dea5ab0c45674"
+    },
+    {
+      "path": "cpu_repeat_2/ARTIFACTS.json",
+      "bytes": 53434,
+      "sha256": "0e43d0a995c860c22344451aa9fbe3b5fc4e52a397ffa8b8b253fb631ac9f3fa"
+    },
+    {
+      "path": "cpu_repeat_2/REPORT.json",
+      "bytes": 8393,
+      "sha256": "8e2946383f7f9d9965a0d9d2a17f5dbdc2f568617f7333e0d5348fd07bcc6b71"
+    },
+    {
+      "path": "AUDIT_PRIMARY_REPEAT_2.json",
+      "bytes": 1599,
+      "sha256": "c6ec3195d5f0ced0e79f6315caf72cbf9026d2e362b1ff29fa22e1c588f8e430"
+    },
+    {
+      "path": "AUDIT_CPU_REPEAT_2.json",
+      "bytes": 603,
+      "sha256": "e49cc5e9da5525493e55b85cd9400749ef3b816e5a6f83882fdf0a4ea1859c5a"
+    },
+    {
+      "path": "AUDIT_CPU_PUBLISHED.json",
+      "bytes": 601,
+      "sha256": "83c08dedb02ef38bf689b715a5b8afd45d801a88f58036f387d0349321abf0f0"
+    },
+    {
+      "path": "audit_primary.py",
+      "bytes": 14668,
+      "sha256": "f052f179fc498d391670c903931cd28224a9c23e2b30db21ce707194906cd7eb"
+    },
+    {
+      "path": "audit_cpu.py",
+      "bytes": 37262,
+      "sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b"
+    },
+    {
+      "path": "primary-analysis.json",
+      "bytes": 106330,
+      "sha256": "774ee95031e6469fbff5b8bd2bc2aef546c0445211f876e391c68815ac48992c"
+    },
+    {
+      "path": "cpu-analysis.json",
+      "bytes": 68787,
+      "sha256": "e737e19d4d8d0d067affac375474a3a316e8a70e31313c0584e8a581964f2f56"
+    },
+    {
+      "path": "VERIFY_PRIMARY_ATTEMPT_1.json",
+      "bytes": 1610,
+      "sha256": "e597677447b8a49544f403d94562df6cecf00493b3cb4997cfcf37e13cb4020d"
+    },
+    {
+      "path": "VERIFY_CPU_ATTEMPT_1.json",
+      "bytes": 2316,
+      "sha256": "8394c6fee9704882b515fa68f74ca17f1a439907d1a5c500c28ceafc638e7b16"
+    },
+    {
+      "path": "PRIMARY_ATTEMPT_1_INTEGRITY_OBSERVATION.json",
+      "bytes": 3290,
+      "sha256": "510cd0d3fd2e1b9def261d0b80ead793cc69151dea919214c9e89d512ac56467"
+    },
+    {
+      "path": "CPU_ATTEMPT_1_IDENTITY_OBSERVATION.json",
+      "bytes": 6288,
+      "sha256": "f0631ed0e8b6827eb888d526a98e5f54c22ff46d20e1440ce5453c880c610ef2"
+    }
+  ],
+  "evidence_manifest": "QUALIFICATION_MANIFEST.json",
+  "readable_report": "README.md"
+}

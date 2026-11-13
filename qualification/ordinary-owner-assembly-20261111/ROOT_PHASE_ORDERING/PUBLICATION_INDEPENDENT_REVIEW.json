@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-not-execution",
+  "reviewer": "hepta_audit",
+  "source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "patch_manifest": "baf9b38f1445dc7d50b73a0c6c825505f60a74a9",
+  "exact_ops": "d7baf02e47e422dfc0f7afd720607a663a432fec",
+  "dependency": {
+    "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+    "final_post_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+    "original_wait_block": "25e9b2eca14461c8980d9cef36735d5bd7ef73c2"
+  },
+  "originals_reviewed": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs",
+      "preimage": {
+        "git_blob": "273c92835a7e946bd1207100a6dcb0981b94c199",
+        "bytes": 29001,
+        "sha256": "f80030d5b7edcf15296484d49fbd3ba3d89e8447e15fcad4fa0d7d21c338b9ef"
+      },
+      "postimage": {
+        "git_blob": "9a4c6a4093dd53e17f7f36096f1f98e7b04ae822",
+        "bytes": 29377,
+        "sha256": "ae68fb5c93d0080359e6784ac8bf339f0af55d819c517ee8ffc67cc56e43fc74"
+      },
+      "operation_count": 1,
+      "forward_exact": true,
+      "reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_tests.rs",
+      "preimage": {
+        "git_blob": "91b9ffd5a5648de1e75765934040e283717b84b1",
+        "bytes": 13766,
+        "sha256": "ca6861af5e6624dd228f578f0fa52b1fec2519ef80b4c4daed637e68b465c2e3"
+      },
+      "postimage": {
+        "git_blob": "9af36ecda3f1a729a225cf27503bdbe921c8ce0d",
+        "bytes": 14099,
+        "sha256": "aa6e2d353689e80585170683926c43d9cae38db1f2adf68b34d5cc6260e70d5a"
+      },
+      "operation_count": 1,
+      "forward_exact": true,
+      "reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "preimage": {
+        "git_blob": "2f1b7f3710b5f7a92708234db40c56547f01d358",
+        "bytes": 9120,
+        "sha256": "58fcc4e022282e7400992a7ff91e3672cf968041207aa0d65ff12550a0939202"
+      },
+      "postimage": {
+        "git_blob": "15137d8b600108733994b9d807b7b716591bc582",
+        "bytes": 8900,
+        "sha256": "cbf412a67a58dabe0226c1e1b9445741be56457908522b11742338789f4ca88b"
+      },
+      "operation_count": 2,
+      "forward_exact": true,
+      "reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+        "bytes": 30620,
+        "sha256": "3327b2ed4daa904799a1746c9b1c7d30f3853fe47e610d89735f2ce277b4f9d1"
+      },
+      "postimage": {
+        "git_blob": "4d302f702181a832329ded730541107bf2ddad92",
+        "bytes": 32457,
+        "sha256": "039906fd235388fa7971bee37dc8e4464c0ccdc218569ae38cae83fcf3f613d6"
+      },
+      "operation_count": 2,
+      "forward_exact": true,
+      "reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+        "bytes": 15607,
+        "sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384"
+      },
+      "postimage": {
+        "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+        "bytes": 16052,
+        "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b"
+      },
+      "operation_count": 1,
+      "forward_exact": true,
+      "reverse_exact": true
+    }
+  ],
+  "findings": [
+    "All five original files were fetched at the exact measured commit, and all five proposed blobs were read in full. Each of seven exact operations was independently applied once and reversed; every advertised size and SHA256 matched the actual retrieved bytes.",
+    "Both issuer getters are in existing test descendants and explicitly cfg(test). HostAuthorityService owns the private Arc<DeploymentFinalUseIssuer>; the getter clones that same Arc. The PreparedHostAuthoritySession getter delegates to its existing service. No second issuer open, new key, grant, consumer, UI authentication or production capability is introduced.",
+    "The old parent revocation before the Revoked phase bootstrap is removed. The new phase captures its same serving issuer before Prepared is consumed, then seals/open the unchanged original five lanes, restores the original learning checkpoint, and completes actual late Recover enrollment before revoking.",
+    "The revocation target is read from actual retained original CURRENT. Its full intent must equal the original fixture intent. The original issuer head must share the published grant epoch and must not yet contain its grant ID. The expected result changes only revision by checked_add(1) and inserts exactly that original published grant ID. Original revoke() must return the exact expected full head.",
+    "The child receives the expected head and awaits the original feed; the helper holds the original serial permit, rejects sticky refresh failure or finished worker, reads both actual original Device/Notes heads, and reads the existing public session.revocations(). Any error or disagreement immediately fails. Only a common valid older same-epoch subset head may wait within the single unchanged TIMEOUT.",
+    "The original verify_retained_use()==Revoked and publication.connect(...).is_err() assertions remain after the feed barrier. No CURRENT connection is accepted first, no new claim/dispatch/publication retry occurs, and the original claims comparison remains. The parent adds the final claims-byte equality.",
+    "The patch does not change the original Publication fixture's post-proof served-result policy. This review does not upgrade its logged deliberate-refusal service result to a clean normal shutdown or to an end-to-end ordinary acceptance.",
+    "No definite source-level type, ownership, private-field visibility or gate-order blocker was found. This is a static review, not successful execution."
+  ],
+  "limitations": {
+    "cargo_executed": false,
+    "native_executed": false,
+    "h_executed": false,
+    "ordinary_complete": 0,
+    "independent_C_accepted": false,
+    "physical_restart_accepted": false,
+    "full_callers_guard_run": false
+  }
+}

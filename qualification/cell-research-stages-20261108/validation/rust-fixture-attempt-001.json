@@ -1,0 +1,168 @@
+{
+  "schema": "hepta.rust-ci-repair-execution.v1",
+  "source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+  "input_sha256": "84d5ff2d48596298907ed5ebd5d7d854df2bd035f86fe970341b8b9c85569d28",
+  "checks": [
+    {
+      "name": "hepta-targeted-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+      "state": "completed",
+      "started_unix": 1794139259.2569995,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/hepta-targeted-tests.log",
+      "exit_code": 100,
+      "wall_seconds": 15.542586101975758,
+      "log": {
+        "bytes": 40306,
+        "sha256": "5366bdbdf3c7880086e7984d47ac67eb6d296af8f5177df8a0897a00bcc2003f",
+        "git_blob": "59ee4b119279b16312f02490dd7509783b7274c7"
+      },
+      "locks_after": {
+        "codex-rs/Cargo.lock": {
+          "bytes": 417315,
+          "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+          "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+        },
+        "MODULE.bazel.lock": {
+          "bytes": 1761877,
+          "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+        }
+      }
+    },
+    {
+      "name": "core-abort-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--test",
+        "all",
+        "abort_tasks::"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+      "state": "completed",
+      "started_unix": 1794139274.9359071,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/core-abort-tests.log",
+      "exit_code": 0,
+      "wall_seconds": 229.2808187319897,
+      "log": {
+        "bytes": 57135,
+        "sha256": "7afea54b19692914e5163abf9eff7914995b6a706d58faf326228996c8065341",
+        "git_blob": "8e4c5d821758fe940eeaa1858b57aff160c8f70b"
+      },
+      "locks_after": {
+        "codex-rs/Cargo.lock": {
+          "bytes": 417315,
+          "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+          "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+        },
+        "MODULE.bazel.lock": {
+          "bytes": 1761877,
+          "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+        }
+      }
+    },
+    {
+      "name": "exec-bwrap-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "--test",
+        "capability_discovery",
+        "--test",
+        "file_system_unix"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+      "state": "completed",
+      "started_unix": 1794139504.232845,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/exec-bwrap-tests.log",
+      "exit_code": 0,
+      "wall_seconds": 85.15154786896892,
+      "log": {
+        "bytes": 44547,
+        "sha256": "03f2eac1a7c41ae7c32114a49d1badda11086a584a1c68f22f4c52a5c214e545",
+        "git_blob": "a48eedb3e7594e3faba7425339e50a2b9b6890df"
+      },
+      "locks_after": {
+        "codex-rs/Cargo.lock": {
+          "bytes": 417315,
+          "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+          "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+        },
+        "MODULE.bazel.lock": {
+          "bytes": 1761877,
+          "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+        }
+      }
+    },
+    {
+      "name": "bazel-lock-update",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+      "state": "completed",
+      "started_unix": 1794139589.3946228,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/bazel-lock-update.log",
+      "exit_code": 0,
+      "wall_seconds": 65.45235362002859,
+      "log": {
+        "bytes": 3706,
+        "sha256": "62b4aa51927f81741e35169ad2788196f860dd2afd4be5cdde121a6852578ca3",
+        "git_blob": "e68033eb596f11e69f7d8712312218102781df43"
+      },
+      "locks_after": {
+        "codex-rs/Cargo.lock": {
+          "bytes": 417315,
+          "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+          "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+        },
+        "MODULE.bazel.lock": {
+          "bytes": 1761877,
+          "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+        }
+      }
+    }
+  ],
+  "state": "completed",
+  "host": "rog",
+  "platform": "x86_64-unknown-linux-gnu",
+  "environment": {
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/cargo-target",
+    "CARGO_BUILD_JOBS": "4"
+  },
+  "windows_execution": false,
+  "musl_rbe_execution": false,
+  "formatted": false,
+  "tests_after_format": false,
+  "success": false,
+  "final_changed_files": [
+    "codex-rs/core/tests/common/test_codex.rs",
+    "codex-rs/core/tests/suite/abort_tasks.rs",
+    "codex-rs/exec-server/Cargo.toml",
+    "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+    "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+  ]
+}

@@ -31,8 +31,18 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Prepare exact comparison trees
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_trees.py --base "$BASE_SHA" --head "$HEAD_SHA"
 
       - name: Select dependency impact
         id: scope
@@ -43,7 +53,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_trees
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
@@ -125,7 +135,11 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 75
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -153,6 +167,33 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Build exact-source subprocess helpers required by native reverse-consumer tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/impact-helper-build.json" -- \
+            python3 scripts/hepta_cell_test_helpers.py \
+              --package codex-cli \
+              --package codex-code-mode-host \
+              --package codex-rmcp-client \
+              --package codex-hepta-infer-worker-host \
+              --output-dir "$RUNNER_TEMP/impact-test-helpers" \
+              --github-env "$GITHUB_ENV"
+
+      - name: Reverify source and immutable helper bytes before consumer tests
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-cli \
+            --package codex-code-mode-host \
+            --package codex-rmcp-client \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/impact-test-helpers" --verify-only
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -160,7 +201,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
         run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
@@ -172,6 +213,9 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/impact-helper-build.json*
+            ${{ runner.temp }}/impact-test-helpers
+            !${{ runner.temp }}/impact-test-helpers/bin/**
           if-no-files-found: error
           retention-days: 14
 

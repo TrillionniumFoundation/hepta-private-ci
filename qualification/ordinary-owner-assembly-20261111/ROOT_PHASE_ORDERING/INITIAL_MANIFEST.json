@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "kind": "initial-root-component-completion-coordination-source-patch",
+  "status": "frozen-static-reviewed-native-pending",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "measured_source": {
+    "commit": "0c896bdf941f4174797ff45378bc7439075c11e4",
+    "tree": "fc41816656e41af926c868e6cc327f88e7ae1001"
+  },
+  "raw_failure": {
+    "junit_blob": "5f720e248dc0952a163bd2c89791a8e9c34fddba",
+    "bytes": 10476,
+    "sha256": "77f49d4eab18ec4b02aa16dd319942d8265b21354cacdef96e8db8557cc35200",
+    "root_roster": 17,
+    "passed": 15,
+    "failed": 2,
+    "initial_failure": "Recover: original Root serving -> Unavailable; child had advanced to RetiredSession handoffs after actual session/worker Drop. No ROOT_INITIAL_FAILURE in this original attempt.",
+    "qualification": "The log establishes an incorrect fixture phase-completion boundary. It does not by itself prove a cache race or justify changing production observation/authority semantics."
+  },
+  "exact_ops": {
+    "git_blob": "633e22ddad42492df155b8bd1215aed6cc556b61",
+    "bytes": 16786,
+    "sha256": "e08dc491281be9f62ed08abc0e88f6328b439264979319f00bdbed3250c4a9a9",
+    "apply": "Apply once to the exact original four preimages. This replaces the old v1 ops; it is not a sequential patch on the old 1b750 tests postimage."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+        "bytes": 19872,
+        "sha256": "539c7677c4bfeb2e97d7257692d3565ff0b7c2a00ace34e6461b0f7b43ae8cf0"
+      },
+      "postimage": {
+        "git_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+        "bytes": 20232,
+        "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      "exact_operation_count": 4,
+      "full_git_readback_equal": true,
+      "purpose": "Only cfg(test) sticky original refresh failure witness; non-test Rust projects exactly to the original bytes."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "33f272ae2035be46d6767b8eba6164fc2b7a5df8",
+        "bytes": 15262,
+        "sha256": "463197ba874c401b172a4c6c60cb4c3168ca70b512c737ea651f2530200b67ad"
+      },
+      "postimage": {
+        "git_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+        "bytes": 20216,
+        "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871"
+      },
+      "exact_operation_count": 1,
+      "full_git_readback_equal": true,
+      "purpose": "Existing test module gains the original serial + actual Drop coordination helper and original feed/barrier wait helper; no new test cases."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+        "bytes": 10567,
+        "sha256": "be4b4f1d765e7c6659978a82f0f1b20ce8a1297caf09249d6661d0ec97eeb33e"
+      },
+      "postimage": {
+        "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+        "bytes": 13042,
+        "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5"
+      },
+      "exact_operation_count": 4,
+      "full_git_readback_equal": true,
+      "purpose": "Explicit per-phase closure and original capability release; actual RetiredSession Drop causality preserved."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+        "bytes": 23511,
+        "sha256": "005c8f5355c1917d065a5c5b929a7f7961448613d9c1405b11392ba7bef136ef"
+      },
+      "postimage": {
+        "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+        "bytes": 24228,
+        "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd"
+      },
+      "exact_operation_count": 3,
+      "full_git_readback_equal": true,
+      "purpose": "Full original control proof, closure acknowledgement and unchanged original served result all precede permission to advance."
+    }
+  ],
+  "superseded": {
+    "ops": "8f5aa09c78bc0f29f6871cfd994d76ceffb39535",
+    "tests_postimage": "1b75073936211dddbc69ba7a18e683b454a7a567",
+    "reason": "Removed the optional implementation-mirroring boolean guard unit test. Helper/latch/wait/phase semantics are unchanged."
+  },
+  "test_only_refresh_witness": {
+    "declaration": "LiveRoot.refresh_failed and its false initializer are cfg(test). RefreshCompletion lives in the existing cfg(test) root_authority_session_tests module.",
+    "ordering": "The witness is declared only after the original serial permit is successfully acquired. An incomplete Err/cancel/panic attempt sets sticky history in witness Drop before the permit is released. Only the existing successful final live.current() completes that attempt. No path clears prior failure.",
+    "production_projection": {
+      "base_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+      "post_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "projection_exact": true,
+      "production_field_additions": 0,
+      "production_calls_added": 0,
+      "production_error_changes": 0
+    },
+    "forbidden_changes_absent": [
+      "No new production field or API",
+      "No new refresh, cache update or sampling",
+      "No retry/renewal/lease extension",
+      "No altered original error, trust, epoch, owner or revocation checks",
+      "No pre-abort or replacement worker",
+      "No blanket acceptance of Unavailable"
+    ]
+  },
+  "original_drop_helper": {
+    "name": "crate::root_authority_session::tests::drop_original_production_after_idle",
+    "input": "Consumes actual AgentdRootProductionInputs; clones only the same private LiveRoot and original worker AbortHandle for observation.",
+    "preconditions": "Within one original TIMEOUT, acquire the original serial permit; reject prior sticky refresh failure, finished worker or any original live.current() error; execute before_drop under the same permit; check failure/worker state again.",
+    "action": "Actually drop the whole original production inputs. Existing session Drop fences the original cache and aborts the original worker. Keep the permit while waiting boundedly for that same worker to finish.",
+    "completion": "AbortHandle is only an original termination witness after the intentional actual Drop, not evidence that a refresh succeeded. Any earlier failure, callback failure, timeout or original authority error remains a test failure.",
+    "no_deadlock_argument": "The entire original refresh, including final read, runs under this semaphore. With the permit held, the worker is idle or awaiting the permit and cannot own in-flight refresh I/O. Its cancellation requires no permit acquisition. The new sticky witness prevents classifying a prior Err/cancellation released just before worker exit as a deliberate shutdown."
+  },
+  "phases": [
+    {
+      "phase": "Publish, normal acknowledgement",
+      "before_closure": "Original nonce/FinalUse/claim/publication/task assertions complete; actual published task is dropped before STABLE.",
+      "protocol": "STABLE -> CHECKED -> original assertions -> DONE -> STOP -> idle+actual Drop+original worker finished -> CLOSED -> PHASE_COMPLETE",
+      "expected_served": "Original served must be Ok."
+    },
+    {
+      "phase": "Recover",
+      "before_closure": "Actual recovered task is validated and dropped, exact original claims and nonce assertions remain.",
+      "protocol": "STABLE -> CHECKED -> original assertions -> DONE -> STOP -> idle+actual Drop+original worker finished -> CLOSED -> PHASE_COMPLETE",
+      "expected_served": "Original served must be Ok."
+    },
+    {
+      "phase": "RetiredSession",
+      "before_closure": "Actual recovered task remains live. Child RETIRE_READY and parent RETIRE precede idle helper. before_drop validates that same task under the original permit, then actual inputs/session Drop occurs. The old task must fail require_bundle afterward; original claims remain unchanged. Drop(task) precedes STABLE and CLOSED.",
+      "protocol": "RETIRE_READY -> RETIRE -> live task succeeds -> actual session Drop -> task refused -> drop(task) -> STABLE -> CHECKED -> DONE -> STOP -> CLOSED -> PHASE_COMPLETE",
+      "expected_served": "Original served must be Ok; the actual Drop negative is preserved."
+    },
+    {
+      "phase": "ReserveExisting / Corrupt / Restored",
+      "before_closure": "All old refusal, nonce and claims assertions remain. Original raw handoff, connection, authorities, selected and target tuple is dropped before STABLE.",
+      "protocol": "STABLE -> CHECKED -> DONE -> STOP -> original raw production Drop -> CLOSED -> PHASE_COMPLETE",
+      "expected_served": "Original served must be Err; no fresh-authority drain helper is required on a legitimately fenced refusal path."
+    },
+    {
+      "phase": "Publish, controlled post-CAS ACK loss",
+      "before_closure": "Original typed-uncertain result is consumed, publication wrapper and target capability are dropped by the existing error path, and old nonce/AlreadyClaimed/claims assertions remain.",
+      "protocol": "STABLE -> CHECKED -> DONE -> STOP -> original raw production Drop -> CLOSED -> PHASE_COMPLETE",
+      "expected_served": "Original served must be Err; no uncertain result is treated as NoUpdate or a fresh retry."
+    }
+  ],
+  "closed_resource_proof": [
+    {
+      "source": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "blob": "69f1c5256c39c3831fa0ade24eb59f35a413ebd7",
+      "proof": "prepare_feature(self, authorities, selected, target) and recover_feature(self, ...) consume all actual original capability inputs. PreparedRootInitialFeatureV1::publish(self, signed) also consumes itself. There is no retained separate Initial client in the child after these calls."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs",
+      "blob": "d0b37d73d5720a1d66c6915827eec0b1bcba42c2",
+      "proof": "The original Initial client moves into the actual Current owner, and actual target files enter the original journal. Those owners travel into the prepared/ready result and finally the task, or are dropped on original error."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "proof": "Consuming Drop of complete inputs releases the original session, cognitive/checkpoint transport, Device/Notes consumers and grant provider. The one-shot connection was already moved into the consumed Initial handoff/client."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "proof": "The helper's remaining LiveRoot clone is read-only and cannot retain the original registered writer File. It waits for the original worker's complete future/custody cleanup before releasing its permit."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+      "proof": "Every branch has explicit actual capability disposal before CLOSED. Retired task remains only through its negative assertion, then is explicitly dropped. Remaining bundle/plan/identity/claims values are data, not purpose clients or original transport owners."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+      "proof": "The registration thread returns after CLOSED, without waiting for PHASE_COMPLETE. The main thread joins it and checks the unchanged served success/refusal branch before sending PHASE_COMPLETE. Child waits with no purpose clients, preventing a child-waits-parent/parent-waits-client-EOF cycle."
+    }
+  ],
+  "shared_wait_helper": {
+    "author": "runtime_access",
+    "original_block": "25e9b2eca14461c8980d9cef36735d5bd7ef73c2",
+    "final_combined_tests_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+    "semantic": "Within the original single 500ms TIMEOUT and original serial permit, reject latch/finished worker, read actual Device and Notes heads and original public session.revocations(), reject any Err or mismatch, and succeed only on exact expected head. Only a common strictly older same-epoch subset head may yield to the existing 100ms feed. No refresh/update/publication retry.",
+    "old_block_not_applied": "52e6545567a6d296274909c4ca7acc854360e38f"
+  },
+  "callers": {
+    "base_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "operations": [],
+    "new_boundaries": 0,
+    "new_product_callers": 0,
+    "reason": "All new runtime observations are cfg(test), all helper consumers are existing test modules. The two original root_authority_session protected rows, original Drop order and original update_revocations boundary/caller list are unchanged.",
+    "full_guard_executed": false
+  },
+  "validation": {
+    "exact_ops_forward_reverse": true,
+    "complete_four_postimages_read_back_from_git": true,
+    "original_check_macros": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "original_check_macros": 30,
+        "post_check_macros": 34,
+        "all_original_check_macros_preserved_in_order": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+        "original_check_macros": 17,
+        "post_check_macros": 20,
+        "all_original_check_macros_preserved_in_order": true
+      }
+    ],
+    "original_parent_roster": 17,
+    "new_tests": 0,
+    "new_ignored_tests": 0,
+    "old_timeout_or_alarm_values_changed": false,
+    "new_control_waits": "Use existing control(LIFETIME) and original child alarm; helper uses original TIMEOUT. No original clock/lease/age ceiling is changed.",
+    "native_executed": false,
+    "cargo_executed": false,
+    "remote_h_called": false,
+    "rustfmt_executed": false,
+    "source_or_ref_modified": false
+  },
+  "reviews": {
+    "independent_initial_review": "4d56e15e60ef83b7dd6fe7b47fe81afc5907f231",
+    "independent_publication_review": "19c9c709d000d0b377c0bdeeb27138f9ab99973e"
+  },
+  "qualification_limits": {
+    "ordinary_complete": 0,
+    "independent_C_accepted": false,
+    "physical_restart_accepted": false,
+    "prior_failed_attempts_preserved": true
+  }
+}

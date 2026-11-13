@@ -1,5 +1,6 @@
 # Paths are matched exactly, relative to the repository root.
 # Keep this list short and limited to intentional large checked-in assets.
+# sha256:<64 lowercase hex digits> PATH permits only those exact blob bytes.
 
 .github/codex-cli-splash.png
 MODULE.bazel.lock
@@ -8,3 +9,147 @@ codex-rs/app-server-protocol/schema/json/codex_app_server_protocol.v2.schemas.js
 codex-rs/tui/tests/fixtures/oss-story.jsonl
 codex-rs/tui_app_server/tests/fixtures/oss-story.jsonl
 codex-rs/tui/src/app.rs
+
+# Historical 2026-10-23 acceptance source inventories (before/after evidence).
+# These exact gzip bytes already exist at 830bc5603856294cba59c8be15e2fc7395c9a501.
+# Preserve their original hashes and failure records; changed bytes regain the size limit.
+sha256:ffe231b36d51e35f4e67d5029ccd999ddbe6b32ab006ea1b65df2545582baa32 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-01-source-after.json.gz
+sha256:ffe231b36d51e35f4e67d5029ccd999ddbe6b32ab006ea1b65df2545582baa32 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-01-source-before.json.gz
+sha256:5addab16c4b5ddf9d75c8b33c9474b3b56b4a99bd69607fa58b7e4ad820e69f9 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-02-source-after.json.gz
+sha256:5addab16c4b5ddf9d75c8b33c9474b3b56b4a99bd69607fa58b7e4ad820e69f9 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-02-source-before.json.gz
+sha256:594ef953a509f41ffc031e1fe3aca87471a66f5343bde6f3f9ee6b1ab501e140 codex-rs/hepta-agentd/acceptance/2026-10-23-consumer-frontier/root-final-use-frontier-qualification-01-source-after.json.gz
+sha256:594ef953a509f41ffc031e1fe3aca87471a66f5343bde6f3f9ee6b1ab501e140 codex-rs/hepta-agentd/acceptance/2026-10-23-consumer-frontier/root-final-use-frontier-qualification-01-source-before.json.gz
+sha256:802dda63e94dba207f7011bb1f90fd27d810060882518068f01bda2daf6460a6 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-finish-01/source-after.json.gz
+sha256:e41de1a9fa172c2f2d4f4476dff85701eec21081279b69972214a6f6f3853b8e codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-finish-01/source-before.json.gz
+sha256:9ccb939616a81a4e9367f82ac5b256e2fd7239e7a5a56184edef50c67c038f72 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-negative-01/source-after.json.gz
+sha256:9ccb939616a81a4e9367f82ac5b256e2fd7239e7a5a56184edef50c67c038f72 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-negative-01/source-before.json.gz
+sha256:eca75ac1914d89d1e545b66937ed61bbb2dbf2ed04d8ca93698c651eeeed19ea codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-01/source-after.json.gz
+sha256:eca75ac1914d89d1e545b66937ed61bbb2dbf2ed04d8ca93698c651eeeed19ea codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-01/source-before.json.gz
+sha256:6de47e244724fc9111fe639aaeaa9e77eab4d329d9562d19937505e06b2812b9 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-02/source-after.json.gz
+sha256:6de47e244724fc9111fe639aaeaa9e77eab4d329d9562d19937505e06b2812b9 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-02/source-before.json.gz
+sha256:5a9f70feefb698354b63689924c4c9a0e593d5328a5053823da1a357fd85c193 codex-rs/hepta-agentd/acceptance/2026-10-23-native-clock-window/native-authority-static-5a2-clock-03-source-after.json.gz
+sha256:5a9f70feefb698354b63689924c4c9a0e593d5328a5053823da1a357fd85c193 codex-rs/hepta-agentd/acceptance/2026-10-23-native-clock-window/native-authority-static-5a2-clock-03-source-before.json.gz
+sha256:a8786ac7b89102cbea5def8d816210ccc7f882464400de30c2824368149ffdf0 codex-rs/hepta-agentd/acceptance/2026-10-23-retired-publisher/root-retired-publisher-qualification-01-source-after.json.gz
+sha256:a8786ac7b89102cbea5def8d816210ccc7f882464400de30c2824368149ffdf0 codex-rs/hepta-agentd/acceptance/2026-10-23-retired-publisher/root-retired-publisher-qualification-01-source-before.json.gz
+sha256:f892d36000cc2616e4d01aef511b32e440271fd9e4cab64b046e78a6a07647b0 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-01/source-after.json.gz
+sha256:f892d36000cc2616e4d01aef511b32e440271fd9e4cab64b046e78a6a07647b0 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-01/source-before.json.gz
+sha256:3b2c0cfddc947039c6d7bfe583d51a6237b3106a8547b17658e15a69cea40ddb codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-02/source-after.json.gz
+sha256:3b2c0cfddc947039c6d7bfe583d51a6237b3106a8547b17658e15a69cea40ddb codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-02/source-before.json.gz
+sha256:eac31f10b8e4427bbad40ca3b8945504a8cd44ed873e2800c8c8dd33991f3926 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-03/source-after.json.gz
+sha256:eac31f10b8e4427bbad40ca3b8945504a8cd44ed873e2800c8c8dd33991f3926 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-03/source-before.json.gz
+sha256:dc55775365c03fccaa144de92d37fecc5759159eb105625a7a8d15d047177093 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/owning-aggregate-03fc-failed/source-after.json.gz
+sha256:dc55775365c03fccaa144de92d37fecc5759159eb105625a7a8d15d047177093 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/owning-aggregate-03fc-failed/source-before.json.gz
+sha256:68c1886c39c629c7a9c9b8d5b51a14cb01321ddfb5dbf67c7ed62190d2fbda8e codex-rs/hepta-agentd/acceptance/2026-10-23-static-authority-v2/native-authority-static-3a50-02-source-after.json.gz
+sha256:68c1886c39c629c7a9c9b8d5b51a14cb01321ddfb5dbf67c7ed62190d2fbda8e codex-rs/hepta-agentd/acceptance/2026-10-23-static-authority-v2/native-authority-static-3a50-02-source-before.json.gz
+sha256:a00ac1029518bd93083cfa04cc577dc296f04206a04effd80207cc585ec75352 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-05/source-after.json.gz
+sha256:a00ac1029518bd93083cfa04cc577dc296f04206a04effd80207cc585ec75352 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-05/source-before.json.gz
+sha256:06fe3960f3866932a9486b58dcd6ba402b4354b3af040795109ebc2bf54030c1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-06/source-after.json.gz
+sha256:06fe3960f3866932a9486b58dcd6ba402b4354b3af040795109ebc2bf54030c1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-06/source-before.json.gz
+sha256:19652e14eb9ede1fdff39a556fdead9e9f4238f348a11993c6c35b4627747ad1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-07/source-after.json.gz
+sha256:19652e14eb9ede1fdff39a556fdead9e9f4238f348a11993c6c35b4627747ad1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-07/source-before.json.gz
+sha256:5b9f5b30b6debeb6513e92974b7ffd9c2e6bfb96a8c2cd0216db10de03ed08ab codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-08/source-after.json.gz
+sha256:5b9f5b30b6debeb6513e92974b7ffd9c2e6bfb96a8c2cd0216db10de03ed08ab codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-08/source-before.json.gz
+sha256:be8b533eab915b2e76a4a2841e2f90e10b7fe33692417171149f3beddd5589ed codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure/source-after.json.gz
+sha256:be8b533eab915b2e76a4a2841e2f90e10b7fe33692417171149f3beddd5589ed codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure/source-before.json.gz
+sha256:7920896a48e39c656916e7c0a06609308a9a0a117ec82fb7f36def5b8156979e codex-rs/hepta-contracts/acceptance/2026-10-23-clock-window/root-clock-window-qualification-01-source-after.json.gz
+sha256:7920896a48e39c656916e7c0a06609308a9a0a117ec82fb7f36def5b8156979e codex-rs/hepta-contracts/acceptance/2026-10-23-clock-window/root-clock-window-qualification-01-source-before.json.gz
+
+# Immutable VERIFY-1 native originals and independent audit, including failed audit attempts.
+# Bind this retained research asset to exact bytes; later replacements regain the limit.
+sha256:ac8863c2893869db846801d825e89863cf168e87782571dd009733b921643de0 qualification/cell-research-stages-20261108/followthrough-20261108/verify1-independent-audit.tar.gz
+
+# Original native/CI failure and repair logs; each exception binds only reviewed bytes.
+sha256:3d4c805e3008b36d147fa750c36b301f20b82ca9f876f943c63ae24fa01fa02c qualification/cell-research-stages-20261108/native-ci-routing-20261108/raw-ci-logs.tar.gz
+
+# Exact retained assets from prediction.
+sha256:08322f8fe581f84e7e6ea31f705c5c8554610930a5f531e15294de14e331219e qualification/pred1/evidence/pred1_evidence.tar.xz
+
+# Source-bound native HCSN development receipts; retained historical bytes.
+sha256:27d4f684ba9df1b9dec5c518377c50f80239d2a3f4998045f88939593fa01bcc qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip
+
+# Frozen native dependency backport evidence.
+sha256:4c5cfe6d68e48fdc6f065ac7bbd2d0ee852a5b896f8d15b997f5fa8189e63c11 qualification/pin-utils-parent-backports-20261108/native-evidence.tar.gz
+
+# Retained original MEM-1 evidence, unchanged from the reviewed source.
+sha256:df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15 qualification/memory-cell-mem1/raw-evidence-v1.tar.xz
+
+# Original native and cross-platform CI evidence.
+sha256:11ba543a46a6150bbd89c2ac5513bea56660c69358ddb348122b4bae57533fe7 qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz
+
+# Frozen Matrix source and native execution evidence.
+sha256:632f65eda3c2d4f4dfcbde5417ac5b6983a2ce87e5958f55228f56e46747b7ab archive/hepta-matrix-crypto-migration-20261108/raw/matrix-minimal-locked-allfeatures.stdout.log.gz
+sha256:9062e866918dc4c9701c98ac99f7f4fa9e4b3b4edce306e147393bc75458c4fc archive/hepta-matrix-crypto-migration-20261108/official-archives/starlark-0.14.2.crate
+sha256:c04d1a1bfc9c79c035fb73f7dce17b36a412eae43674ddba934e3a2eb7ca2d3f archive/hepta-matrix-crypto-migration-20261108/raw/matrix-final-cargo-deny-v2.stderr.log.gz
+sha256:de66c125f18d194e1dca018588c066a6b307859e901c262e10904d3f18d5bfaa archive/hepta-matrix-crypto-migration-20261108/raw/matrix-allfeatures-locked-metadata.json.gz
+sha256:de66c125f18d194e1dca018588c066a6b307859e901c262e10904d3f18d5bfaa archive/hepta-matrix-crypto-migration-20261108/raw/matrix-allfeatures-metadata.json.gz
+sha256:f69fcda55c226e6cbe3c790209e7c41b07cfd0609d7ed9ffa7dddf338d65f87b archive/hepta-matrix-crypto-migration-20261108/raw/old-fixture-test-edge-metadata.log.gz
+
+# Original ordinary-owner native records; exceptions pin only these immutable bytes.
+sha256:bf86fbe86e20c835b0f3243497a5311b2903863cbd6d088a34c6412f5e5d9233 qualification/ordinary-owner-assembly-20261111/native-evidence/9bfdef-original-records.tar.xz
+sha256:938af64804abc935ab8db125dd6054d64f6e6f73626f07fcca4d661daaac6618 qualification/ordinary-owner-assembly-20261111/native-evidence/3c8dabe-and-early-maintenance-original-records.tar.xz
+# Exact privileged caller inventory after reviewed ordinary-owner assembly; future edits require a new digest.
+sha256:c6858918aa19f31b3fb80cfd83015393f897705ebb7bfad29b9edc9415e2e0b2 CALLERS.toml
+sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz
+sha256:aaff3176e000652f54ac97308714aec0e94079ce6b731be5ec45f4622441394a qualification/ordinary-owner-assembly-20261111/native-evidence/v6/original-records.tar.xz
+# Exact B source callback guard migration; no threshold change.
+sha256:945dbe885074fc422c297b6c6124637a4605052ab745710380e98b1350d6a640 CALLERS.toml
+sha256:f37e6cce45f38eaad3f2ee8ea742346810374353261e58bb9f3f30ac3cb8c9e6 CALLERS.toml
+
+sha256:df9784daad895053185dedb076bd540771ae31e36b85bb07d5b670c1191f1566 CALLERS.toml
+sha256:a7f5a6ba361c8931e842999a96be9de49231a258b8ccff47f79293b1559bbb21 CALLERS.toml
+sha256:29b1552cfd701db66b407352a9104ce35cbbbf47966e9be6004a0ae9ef3cafa5 CALLERS.toml
+sha256:7a19b4d63b1c1308a2dc5d26da297dc36c52461a79c7dc8b97db81397cf2a9e7 CALLERS.toml
+sha256:b05e0500754596508ba625726230aa354e479c5799ce1f5bdebe57d07fa5166d CALLERS.toml
+sha256:5b581af388fda30ca89cf0b1165e943da6bce1aa9372d9c93ef63aad15b9408e CALLERS.toml
+sha256:32705618e4e430852310abadc193fee97121cc47c6d889b250b951f683b7304d CALLERS.toml
+sha256:3a79074955337a476f39d740ca99176b8837031265ab7223e8321041dcfb56d8 CALLERS.toml
+sha256:0c7813250fca7b1d7e5ab3ed86c6c660565e6ef401dd611abc7ff89ced6c975d CALLERS.toml
+sha256:d17c2f62207bd0b76488bbfb006608a63fdb16fbe04e54c38eb4e34da2d3475e CALLERS.toml
+sha256:4e4a322c0d96dc0e7bfcd0a7a7917e6f69fdb3cd4c1c86d1c277427af40b9089 CALLERS.toml
+sha256:bcfab066fc4586fd1ce110e5bdb574c29718028e36f01a26fa995e7cae70fb66 CALLERS.toml
+sha256:f8939801ec4ff9bb1a3a1a683a7bee13ae6e3cd60fb54c449cf3b599498cfaf8 CALLERS.toml
+sha256:054b1ce1317105b94a10567849872206d3da109943763f4df7faa6f0b164a891 CALLERS.toml
+sha256:a5d00097f17560ea1335296c62fbb765824053651e800722370d5b775c395260 CALLERS.toml
+sha256:963446b3cc922047baebeef53e144d07ba4c5271f01181828c2d610f6dfb15ed CALLERS.toml
+sha256:272d2d8d08025ca935a00f6a218ca96524bd529591160ee4908172859d1e9b64 CALLERS.toml
+sha256:a5a15049736e247f7e5335e7ad5329002babeac4ddc4a981f5506df9dc715bed CALLERS.toml
+sha256:5412fed89471b009a48dba393058d9edf7b8ef7f283c2b508c4761532d06dcd7 CALLERS.toml
+sha256:381720d3d7e60da6b0fa17420b99c26745165b8ac6664e6df5d29a15f713d1d7 CALLERS.toml
+sha256:000f502eb34001fc8e9091c19cc5ea6af2cebd3cc9e5b40376db8f40ec21a6ce CALLERS.toml
+sha256:ba847e4f15d756dd3f55677548848f9884ec0dfffd15b15f779e76d0cdc1b7bd CALLERS.toml
+sha256:81367b03a11689c63f6415be680bccbfe4aa62c31a977a38c8e0a4e36e51296f CALLERS.toml
+sha256:b4009d50bb4b0b717fba03d753a1fe1b2d5e0f65375a2240282d1ef8a033f1a3 CALLERS.toml
+sha256:783cf006c2efec18a563c8d3b556ab2d8288cce6d3767eb3973ba0422e350dc2 CALLERS.toml
+sha256:ddf43440ea9a83c08cb9a78375997328174d15935384e0dda64399bf36fa3bd7 CALLERS.toml
+sha256:0c72a58eb619f8c0c30d5a5073da0ebf190587307f9aedb4c8e5964e1882083d CALLERS.toml
+sha256:3c3461c442f3caa6af0f089f4d31ff46ec3a765ed082f92a4a887f32e60c8446 CALLERS.toml
+sha256:c7a2e11912fc491856b62e797ca0466bde8ccb7d4a89a2e25e5321012e63ebe4 CALLERS.toml
+sha256:da7a7e3d30765d702f67951dbb080b969a6d3783b331196f603d002285715de7 CALLERS.toml
+sha256:9ccb9b6d8d158d1b3805ca23607e04282610111ca5ec0a0c8b5be71f47da2cda CALLERS.toml
+sha256:44196ae14c10a3c58c91398515450177b25e5718aff9053dee0b0bef4a55565e CALLERS.toml
+sha256:0fdda97e06de72e598742bbb2498e3aa1c85dc3ead79ea9e106349a52c4525e6 CALLERS.toml
+sha256:0c1b67d4efa294a454e74a68fbe22dd980752c3f3c049268130a80a6867831a4 CALLERS.toml
+sha256:9fa58390df52dff3f8a1e70893b3147500afe5b1161b6a6308ea4285fdf09a5c CALLERS.toml
+sha256:3a001b725b57d594f7e5f77011a107217e012182bfac461ebac7ab54cfcd3874 CALLERS.toml
+sha256:42799473b0e74461f63b5ce607e6c14279b068fd04435647162df335298f442d CALLERS.toml
+sha256:c85a57fbf25cd910159b0176370984c5c1b87fff3b87fdfa9e95f30693bedaba CALLERS.toml
+sha256:7e1e33f7db4f8e54772f99d42299ad76e5f6c27d877c974be101081f18872442 CALLERS.toml
+sha256:a86b44cb1dc02e3e0c9b7daefe2f10f3833d466c15881cff91a320f7e8397b0e CALLERS.toml
+sha256:39ca0dc3adbda624c27678c43798d7e0cfe8fd484e8e23a516201a64ac3075f5 CALLERS.toml
+sha256:cad9533c04edc2d480fd352bb5e7f060a7a8bd2ddcc9da94e8d37b1f0286ee78 CALLERS.toml
+sha256:b3fae0115476a913d36994cd24e055286dd76a0b71e2d786c74e1836c143e0db CALLERS.toml
+sha256:60f8b5523f3080eb684dec8539e64e4b34ce023c648f651fd6b92dc551fcbcde CALLERS.toml
+sha256:602b855d8b485acf6564813d6242a0405f423d660f4ccd79c4d86fb7c074605c CALLERS.toml
+sha256:51454c5ebf9b4f4fd17609cf49a068f14794771fecec90eb8b24b0a84b03b6a5 CALLERS.toml
+sha256:577ed75582611628e8fdc963d4e562e38d25a31daf4830e8279b6777e0c4d9bd CALLERS.toml
+sha256:352c2e5f83483fe22f01fec1fc685ba427271a6a6fb832ade686f2c4392365c3 CALLERS.toml
+sha256:c1e60be5ccb31f24a1d1eeb52512779c39a6412c345a96876ad250e8d909fd08 CALLERS.toml
+sha256:159d427550b20fb62d0b75a4871f69853cf364a5f77135fc3a9c518e04ed77c4 CALLERS.toml
+sha256:cc917b93aaa00bfcc4910f120d7cc273f4186a985755715cf6234ff956a63058 CALLERS.toml
+sha256:95ca5f9122f57513d236b9ce37406dadf34b08bd4644874dc54babaa43e82c44 CALLERS.toml
+sha256:722a4a1e1b91c2a19c8a71649152e468807f05666f14c8a8543ce27825ea5a3d CALLERS.toml
+sha256:ba5a35a401e5ec56e3e6d582e0120ebbe877e2ae3470e08e980ca608b551e646 CALLERS.toml
+sha256:716a520a73883bc3f1cc4f5f31575ef5e83a15b36ebfe583c57bf14bca07897a CALLERS.toml
+sha256:9503023f520f473a9b227516cf44f2ccf42d1785ede64eed12d7605c61a0d241 CALLERS.toml
+sha256:936666e7e6d7e97a173b136cce8182863203f33a89aed66e535c9eaf405462ad CALLERS.toml
+sha256:ae01152e87c0e8905631f6440988535acbc3744d82645c3979e09d23aa7d477e CALLERS.toml

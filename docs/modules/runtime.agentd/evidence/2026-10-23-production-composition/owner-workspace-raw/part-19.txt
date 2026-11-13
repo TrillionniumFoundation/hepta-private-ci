@@ -1,0 +1,539 @@
+          "tokio-test",
+          "tokio-util",
+          "toml_datetime",
+          "toml_edit",
+          "toml_parser",
+          "tower",
+          "tower-http",
+          "tower-layer",
+          "tower-service",
+          "tracing",
+          "tracing-attributes",
+          "tracing-core",
+          "tracing-log",
+          "tracing-opentelemetry",
+          "tracing-subscriber",
+          "triomphe",
+          "try-lock",
+          "ts-rs",
+          "ts-rs-macros",
+          "typeid",
+          "typenum",
+          "unicase",
+          "unicode-bom",
+          "unicode-ident",
+          "unicode-normalization",
+          "unicode-segmentation",
+          "unicode-width",
+          "unicode-xid",
+          "untrusted",
+          "url",
+          "urlencoding",
+          "utf8_iter",
+          "utf8parse",
+          "uuid",
+          "vcpkg",
+          "version_check",
+          "walkdir",
+          "want",
+          "webpki-roots",
+          "weezl",
+          "wildcard",
+          "wildmatch",
+          "winnow",
+          "writeable",
+          "x509-parser",
+          "yansi",
+          "yasna",
+          "yoke",
+          "yoke-derive",
+          "zerocopy",
+          "zerofrom",
+          "zerofrom-derive",
+          "zeroize",
+          "zerotrie",
+          "zerovec",
+          "zerovec-derive",
+          "zlib-rs",
+          "zmij",
+          "zstd",
+          "zstd-safe",
+          "zstd-sys",
+          "zune-core",
+          "zune-jpeg"
+        ]
+      }
+    },
+    {
+      "filename": "owner-target-memory-window-cleanup.json",
+      "bytes": 31910,
+      "sha256": "031b714045a9e06159e642de8d16ce4887c98f146dbe96d3da9b3fe71b0bfa68",
+      "receipt": {
+        "recorded_at": "2026-10-23T07:13:57.650258+00:00",
+        "baseline_head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+        "scope": "Only this task private target artifacts for exact packages absent from original memory normal/build/dev closure. Source, workspace, Cargo.lock and cache retained unchanged. Agentd will require recompiling these packages. No owning-package test pass is claimed.",
+        "closure_receipt_sha256": "b3031658dad4daddd50ae0d3ddcd8aca3327e88686c0fff29caf8f488d245067",
+        "active_build_processes": [],
+        "incomplete_app_server_success_fingerprint": false,
+        "files": [
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/aws-smithy-http-client-42dcf1abe21a535a/dep-lib-aws_smithy_http_client",
+            "package": "aws-smithy-http-client",
+            "bytes": 14,
+            "allocated_bytes": 4096,
+            "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab",
+            "inode": 112612,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/aws-smithy-http-client-42dcf1abe21a535a/invoked.timestamp",
+            "package": "aws-smithy-http-client",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 112588,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/aws-smithy-http-client-42dcf1abe21a535a/lib-aws_smithy_http_client",
+            "package": "aws-smithy-http-client",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "e044086ea276b761ce2a45e25341d02c0be3ed14c7d3952a4503dd2d44d49c35",
+            "inode": 112613,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/aws-smithy-http-client-42dcf1abe21a535a/lib-aws_smithy_http_client.json",
+            "package": "aws-smithy-http-client",
+            "bytes": 1647,
+            "allocated_bytes": 4096,
+            "sha256": "f8997da911f8b6889fd82e2a47056c0cde251c65e55b3cc1b7846654fe15cd8e",
+            "inode": 112614,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-app-server-protocol-4b6221a6b097f1fb/invoked.timestamp",
+            "package": "codex-app-server-protocol",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 115400,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-code-mode-093de6bf25175ccb/dep-lib-codex_code_mode",
+            "package": "codex-code-mode",
+            "bytes": 1028,
+            "allocated_bytes": 4096,
+            "sha256": "e24f2222508f5a093a2890b8856fb283afb0a0c0efca451eafbc047cd856c4ec",
+            "inode": 114763,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-code-mode-093de6bf25175ccb/invoked.timestamp",
+            "package": "codex-code-mode",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 114739,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-code-mode-093de6bf25175ccb/lib-codex_code_mode",
+            "package": "codex-code-mode",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "8aa8b37d66ae14a127f1727f5477e39338f0a190eeac3817d4c2a2f5ba6fc847",
+            "inode": 114764,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-code-mode-093de6bf25175ccb/lib-codex_code_mode.json",
+            "package": "codex-code-mode",
+            "bytes": 1439,
+            "allocated_bytes": 4096,
+            "sha256": "8d0e40973a092e553e6cdebc95770994e59bc17fef2df0678d32dbad10ae1cb3",
+            "inode": 114765,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-config-fc8fcd1665cbe5db/dep-lib-codex_config",
+            "package": "codex-config",
+            "bytes": 1480,
+            "allocated_bytes": 4096,
+            "sha256": "6b3c817b50b9cebb66801f03880313a102c6271cc1fba5eff247eb5d29f1d5a1",
+            "inode": 110685,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-config-fc8fcd1665cbe5db/invoked.timestamp",
+            "package": "codex-config",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 110656,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-config-fc8fcd1665cbe5db/lib-codex_config",
+            "package": "codex-config",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "4defb41a3a3a5091d70f1bc614bb83eebbdd349510ca1351a49f9f1a8a7b603c",
+            "inode": 110686,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-config-fc8fcd1665cbe5db/lib-codex_config.json",
+            "package": "codex-config",
+            "bytes": 2627,
+            "allocated_bytes": 4096,
+            "sha256": "07a55eb0fa837c0c0ccb85741166c83f3d8986730c92dccf9efa35c15416cf66",
+            "inode": 110687,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-exec-server-262ba20e9b49a4fa/dep-lib-codex_exec_server",
+            "package": "codex-exec-server",
+            "bytes": 2049,
+            "allocated_bytes": 4096,
+            "sha256": "f82bc91e3bf2e6c3e70feb6b2dbc0112285596f674cc23f4a96eb595b2c50077",
+            "inode": 112756,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-exec-server-262ba20e9b49a4fa/invoked.timestamp",
+            "package": "codex-exec-server",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 112732,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-exec-server-262ba20e9b49a4fa/lib-codex_exec_server",
+            "package": "codex-exec-server",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "c9159eecd178d8915bf9d1580444facf2a491a0ba58a2cd1755feadefb771fd6",
+            "inode": 112757,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-exec-server-262ba20e9b49a4fa/lib-codex_exec_server.json",
+            "package": "codex-exec-server",
+            "bytes": 2694,
+            "allocated_bytes": 4096,
+            "sha256": "09bdc1a9c7020a80723854f450bca8a428382349b8cd2f0fed8024f14ef1a42c",
+            "inode": 112758,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-mcp-71da1ccf46ae130e/dep-lib-codex_mcp",
+            "package": "codex-mcp",
+            "bytes": 883,
+            "allocated_bytes": 4096,
+            "sha256": "f0fb3e893db17e20130436607a7e6184308815b0205f938538ef627319799a61",
+            "inode": 114925,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-mcp-71da1ccf46ae130e/invoked.timestamp",
+            "package": "codex-mcp",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 114901,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-mcp-71da1ccf46ae130e/lib-codex_mcp",
+            "package": "codex-mcp",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "0e99f27eb490633bdf72c5f0a72609603fb363baeea4cccda5da0c27937104ae",
+            "inode": 114926,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-mcp-71da1ccf46ae130e/lib-codex_mcp.json",
+            "package": "codex-mcp",
+            "bytes": 2182,
+            "allocated_bytes": 4096,
+            "sha256": "2deded1a5ecb82c6c0498dfa6aec2c527b6fa18110bbd0316ed7818b6380564a",
+            "inode": 114927,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rmcp-client-66fcd28591c0d99b/dep-lib-codex_rmcp_client",
+            "package": "codex-rmcp-client",
+            "bytes": 887,
+            "allocated_bytes": 4096,
+            "sha256": "723e3b4682863f33df4050be10a0a4f497ad60e54c9f7a2afe7065c581ede42c",
+            "inode": 114817,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rmcp-client-66fcd28591c0d99b/invoked.timestamp",
+            "package": "codex-rmcp-client",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 114793,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rmcp-client-66fcd28591c0d99b/lib-codex_rmcp_client",
+            "package": "codex-rmcp-client",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "5e75e4c4145e26bd27f9585451bb3b26e2da75d9a9cfac7fa901aa2e52487a59",
+            "inode": 114818,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rmcp-client-66fcd28591c0d99b/lib-codex_rmcp_client.json",
+            "package": "codex-rmcp-client",
+            "bytes": 2458,
+            "allocated_bytes": 4096,
+            "sha256": "623868c4aabde96a3959967d4efde4605eea3b58c1433db8d871189e2e85337f",
+            "inode": 114819,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rollout-af5744b86bcba151/dep-lib-codex_rollout",
+            "package": "codex-rollout",
+            "bytes": 446,
+            "allocated_bytes": 4096,
+            "sha256": "d28950e8a33fc8aeeb165dd7ba9d3a76092b93ef5b646029ed59920d68599c94",
+            "inode": 115303,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rollout-af5744b86bcba151/invoked.timestamp",
+            "package": "codex-rollout",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 115279,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rollout-af5744b86bcba151/lib-codex_rollout",
+            "package": "codex-rollout",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "806eb9e46bdca6ec2e97c4b419e8904ff0ea012487603c487230c6902b131d6f",
+            "inode": 115304,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/codex-rollout-af5744b86bcba151/lib-codex_rollout.json",
+            "package": "codex-rollout",
+            "bytes": 1602,
+            "allocated_bytes": 4096,
+            "sha256": "089767e00e744aae855676dbc73c80035fd63d884f72d01988f322d3617e6278",
+            "inode": 115305,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-21fb803ec2f43064/dep-lib-rmcp",
+            "package": "rmcp",
+            "bytes": 14,
+            "allocated_bytes": 4096,
+            "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab",
+            "inode": 114272,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-21fb803ec2f43064/invoked.timestamp",
+            "package": "rmcp",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 114248,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-21fb803ec2f43064/lib-rmcp",
+            "package": "rmcp",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "27fd45018bc595fd9083ea17c46fd4aa7c4af599a789295355d0e711b560c6a7",
+            "inode": 114273,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-21fb803ec2f43064/lib-rmcp.json",
+            "package": "rmcp",
+            "bytes": 3084,
+            "allocated_bytes": 4096,
+            "sha256": "c3a59bf61ac62251ae94a7e7a08a03608c6452ea14c541c3affe016834e14c83",
+            "inode": 114274,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-395b1eceaaf50e66/run-build-script-build-script-build",
+            "package": "rmcp",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "40d93d8b53c866bee679333e601e39013183c76a254673ea5df7da23a78562a1",
+            "inode": 113850,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-395b1eceaaf50e66/run-build-script-build-script-build.json",
+            "package": "rmcp",
+            "bytes": 256,
+            "allocated_bytes": 4096,
+            "sha256": "547fadd260ec634d5e207da4ac5f6a12cc7d9a8e235799c5c2d33f2cac03f6c2",
+            "inode": 113851,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-bcd4c5fa320ec526/build-script-build-script-build",
+            "package": "rmcp",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "8f2faf4fa73937700609fc98684256349237674e579e29b8478936a14a3b46a2",
+            "inode": 113805,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-bcd4c5fa320ec526/build-script-build-script-build.json",
+            "package": "rmcp",
+            "bytes": 1353,
+            "allocated_bytes": 4096,
+            "sha256": "2786ecc1eee58f7cdb09d235b12e3d0462b8cdbf812b5be8bad62627b029115c",
+            "inode": 113806,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-bcd4c5fa320ec526/dep-build-script-build-script-build",
+            "package": "rmcp",
+            "bytes": 14,
+            "allocated_bytes": 4096,
+            "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab",
+            "inode": 113804,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/rmcp-bcd4c5fa320ec526/invoked.timestamp",
+            "package": "rmcp",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 113790,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/zbus-458278f90a845036/dep-lib-zbus",
+            "package": "zbus",
+            "bytes": 14,
+            "allocated_bytes": 4096,
+            "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab",
+            "inode": 110653,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/zbus-458278f90a845036/invoked.timestamp",
+            "package": "zbus",
+            "bytes": 48,
+            "allocated_bytes": 4096,
+            "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+            "inode": 110625,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/zbus-458278f90a845036/lib-zbus",
+            "package": "zbus",
+            "bytes": 16,
+            "allocated_bytes": 4096,
+            "sha256": "b853cedf040ec9da65e298ee76cc1b4661796838f03f312b803c34c058e904a2",
+            "inode": 110654,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/.fingerprint/zbus-458278f90a845036/lib-zbus.json",
+            "package": "zbus",
+            "bytes": 2325,
+            "allocated_bytes": 4096,
+            "sha256": "f418348feef0faa08e25270390f32e965d05da085dc55c09b80da366e5459494",
+            "inode": 110655,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/aws_smithy_http_client-42dcf1abe21a535a.d",
+            "package": "aws-smithy-http-client",
+            "bytes": 23868,
+            "allocated_bytes": 24576,
+            "sha256": "50bfadc34695c43d60a46ef6c828623332b876a5afc3499c3f118bfdea15db34",
+            "inode": 112589,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.00.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 11470008,
+            "allocated_bytes": 11472896,
+            "sha256": "38ddb181351a27ceb8faadcc26aa4d2a10fc9925766a4f89d49552c702e6af3e",
+            "inode": 115404,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.01.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 6479984,
+            "allocated_bytes": 6483968,
+            "sha256": "529ad984392413f201a7b8258941acc874f24c29e1d871edfe16ad66ed0d8729",
+            "inode": 115406,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.02.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 2873792,
+            "allocated_bytes": 2875392,
+            "sha256": "5c6a6418a1d28f9cf01658c660fcd4811c389033c20c69731b5ec88de3dda4fa",
+            "inode": 115408,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.03.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 1946608,
+            "allocated_bytes": 1949696,
+            "sha256": "1675d6358293c2da372ff5fb8fa9b5529a27b1bf30f8df79c3f8cc1e45cf8625",
+            "inode": 115410,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.04.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 2197000,
+            "allocated_bytes": 2199552,
+            "sha256": "f61723c223b19557ea75a549c83aef90a8b8713004b7a8e2030920f29f65bf45",
+            "inode": 115412,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.05.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 2450304,
+            "allocated_bytes": 2453504,
+            "sha256": "38cf07eb92f173e7a2d4d4becd4542959ff3bbbc7862156cdc2c80be0d7c736d",
+            "inode": 115414,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_app_server_protocol-4b6221a6b097f1fb.codex_app_server_protocol.c63db850ebb650ef-cgu.06.rcgu.o",
+            "package": "codex-app-server-protocol",
+            "bytes": 0,
+            "allocated_bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "inode": 115416,
+            "hard_links": 1
+          },
+          {
+            "path": "/dev/shm/organ-3d6a75235bc

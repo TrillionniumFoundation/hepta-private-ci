@@ -56,6 +56,7 @@ pub struct LearningArtifactOwnerService {
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
+    withdrawal_pending: bool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -96,6 +97,10 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        let withdrawal_registry = host.recover_original_withdrawal_frontier(
+            &config.withdrawal_registry,
+            config.storage_binding,
+        )?;
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -106,10 +111,11 @@ impl LearningArtifactOwnerService {
             .map(|checkpoint| checkpoint.operation_id.clone());
         Ok(Self {
             host,
-            withdrawal_registry: config.withdrawal_registry,
+            withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
             recovery_required,
+            withdrawal_pending: false,
         })
     }
 
@@ -125,6 +131,7 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
         Ok(self.host.current_registry_view(now)?)
     }
 
@@ -154,7 +161,14 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
+        self.withdrawal_pending = true;
+        self.host.install_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            &next,
+            self.storage_binding,
+        )?;
         self.withdrawal_registry = next;
+        self.withdrawal_pending = false;
         Ok(())
     }
 
@@ -167,6 +181,7 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {
@@ -190,6 +205,34 @@ impl LearningArtifactOwnerService {
                 Err(error)
             }
         }
+    }
+
+    /// Read only the exact acknowledged immutable publication. This performs
+    /// no resume, registry append, signature, witness update or payload write.
+    pub fn read_original_publication(
+        &self,
+        operation: &StableId,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
+        let retained = self
+            .host
+            .recover_publication(operation)?
+            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+        if retained.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+            return Err(ArtifactOwnerHostError::Indeterminate.into());
+        }
+        receipt_from_checkpoint(&retained.checkpoint)
+    }
+
+    fn require_original_withdrawal(&self) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.withdrawal_pending {
+            return Err(ArtifactOwnerHostError::Indeterminate.into());
+        }
+        self.host.require_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            self.storage_binding,
+        )?;
+        Ok(())
     }
 
     fn publish_inner(
@@ -425,6 +468,10 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(target_os = "linux")]
+    mod original_read_view {
+        include!("owner_read_view_tests.rs");
+    }
     use super::*;
 
     use std::fs;

@@ -51,6 +51,11 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // Darwin's per-user temporary root can exhaust sockaddr_un before the
+        // unchanged fleet/run/<agent>.ctl suffix. Keep the owned fixture short.
+        #[cfg(target_os = "macos")]
+        let temp = tempfile::tempdir_in(Path::new("/tmp").canonicalize()?)?;
+        #[cfg(not(target_os = "macos"))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -130,6 +135,14 @@ impl FleetHarness {
     pub(crate) fn start(&mut self, agent: &AgentFixture) -> Result<()> {
         let binary = agentd_binary()?;
         let command = AgentCommand::new(binary, Vec::new())?;
+        self.start_command(agent, command)
+    }
+
+    pub(crate) fn start_command(
+        &mut self,
+        agent: &AgentFixture,
+        command: AgentCommand,
+    ) -> Result<()> {
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
         self.started = true;

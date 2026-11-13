@@ -1,0 +1,63 @@
+{
+  "after": {
+    "commit": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "dirty": false,
+    "parents": [
+      "8fda6017ec84d59a2e43d16692f37cc112aa2054"
+    ],
+    "tree": "36122b5f44085290133a27e1bba6803b71baa060"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+    "dirty": false,
+    "parents": [
+      "8fda6017ec84d59a2e43d16692f37cc112aa2054"
+    ],
+    "tree": "36122b5f44085290133a27e1bba6803b71baa060"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--run-ignored",
+    "only",
+    "-E",
+    "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd)",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 186.01026774197817,
+  "exit_code": 0,
+  "finished_at": "2026-11-09T15:32:12.759418+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 35357,
+  "log_file": "root.json.f29c34e9a7074a6288392ce25171737a.log",
+  "log_sha256": "22250046c7d8c9453f7935afe671c45a57f2852c7883e4c885ebd79cd7112d5a",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 6,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+  "started_at": "2026-11-09T15:29:06.747858+00:00",
+  "status": "passed",
+  "tested_sha": "baab1f7fe72f77f87dd0f2d73f87631ff5c7627f",
+  "timed_out": false,
+  "working_directory": "/home/qq/hepta-daemon-learning-785b-20261109/source-published"
+}

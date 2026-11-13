@@ -1,0 +1,70 @@
+name: Windows original CI regressions (declared scope only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-windows-current-ci.yml"
+      - ".github/scripts/windows_current_ci.py"
+      - ".github/scripts/test_windows_current_ci.py"
+      - ".github/fixtures/windows-current-ci-scope.json"
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - "codex-rs/state/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-operator-acceptance/**"
+      - "codex-rs/hepta-shadow-qualification/**"
+      - "codex-rs/windows-sandbox-rs/**"
+      - "codex-rs/Cargo.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-current-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  original-regressions:
+    runs-on: windows-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout the exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the pinned native compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Install repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify strict receipt rejection controls
+        shell: pwsh
+        run: |
+          python -m unittest discover -s .github/scripts -p test_windows_current_ci.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run the original process, transport and backend regressions
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
+          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Retain every result with exact source identity
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-windows-current-ci/
+          if-no-files-found: error
+          retention-days: 14

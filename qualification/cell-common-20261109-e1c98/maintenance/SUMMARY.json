@@ -1,0 +1,103 @@
+{
+  "changed_code_files": 22,
+  "commands": [
+    {
+      "attempt": "fix-f070-v1",
+      "cgroup_memory_peak_bytes": 2955411456,
+      "changed_files": 0,
+      "child_cpu_seconds": 188.82701,
+      "child_peak_rss_kib": 2663656,
+      "exit_code": 0,
+      "job_id": "1a1c04a8944-5e21-9b1",
+      "raw_log_sha256": "9d293994a68764e1e529a8b7d780489ec284a6812fcbd2592d8aa521bac4e41b",
+      "source_diff_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_diff_before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 91.06927958712913
+    },
+    {
+      "attempt": "narrow-ci-lint-f070-v1",
+      "cgroup_memory_peak_bytes": 45633536,
+      "changed_files": 6,
+      "child_cpu_seconds": 0.0008259999999999934,
+      "child_peak_rss_kib": 21460,
+      "exit_code": 0,
+      "job_id": "1a1c04d7ee2-5e21-9c2",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_diff_after_sha256": "82a56d5eaf9f1140fa59a8adf6bad5f71de4ca81fe5b5c907954b7e45715d5e2",
+      "source_diff_before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.03900279407389462
+    },
+    {
+      "attempt": "fmt-f070-v1",
+      "cgroup_memory_peak_bytes": 59142144,
+      "changed_files": 22,
+      "child_cpu_seconds": 1.4452129999999999,
+      "child_peak_rss_kib": 42548,
+      "exit_code": 0,
+      "job_id": "1a1c04dfdf2-5e21-9c6",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_diff_after_sha256": "c563731344f58ae74a0c3a903315a7ab64bd5f560145b5808aebfbbc8204a65b",
+      "source_diff_before_sha256": "82a56d5eaf9f1140fa59a8adf6bad5f71de4ca81fe5b5c907954b7e45715d5e2",
+      "wall_seconds": 1.4203523169271648
+    },
+    {
+      "attempt": "strict-clippy-f070-v1",
+      "cgroup_memory_peak_bytes": 2905497600,
+      "changed_files": 22,
+      "child_cpu_seconds": 233.65314199999997,
+      "child_peak_rss_kib": 2696240,
+      "exit_code": 0,
+      "job_id": "1a1c04e929d-5e21-9c8",
+      "raw_log_sha256": "a1ac10e03f94c496ba46ab59f2ae3c724d13b284cbaf9ffcf0b729bcdb93a8f5",
+      "source_diff_after_sha256": "c563731344f58ae74a0c3a903315a7ab64bd5f560145b5808aebfbbc8204a65b",
+      "source_diff_before_sha256": "c563731344f58ae74a0c3a903315a7ab64bd5f560145b5808aebfbbc8204a65b",
+      "wall_seconds": 119.64707324909978
+    }
+  ],
+  "full_ci_pass_claimed": false,
+  "initial_ci_failures": {
+    "actor_recovery_conclusion": "success",
+    "actor_recovery_job": 129153342283,
+    "composition_error": "clippy::duplicate_mod for learning_iteration_checkpoint_test_support.rs",
+    "composition_job": 129153342282,
+    "mechanisms_error": "clippy::type_complexity in outcome_credit_preflight_tests.rs",
+    "mechanisms_job": 129153342070,
+    "run": 42615233826
+  },
+  "local_maintenance_commit": "dde0c36ef2b90af37f5cdafe7dca0c7572585b09",
+  "local_maintenance_tree": "19e7619d7b4df0f1ba645151ffb5844a53ad97d3",
+  "maintenance_patch_bytes": 77255,
+  "maintenance_patch_sha256": "c563731344f58ae74a0c3a903315a7ab64bd5f560145b5808aebfbbc8204a65b",
+  "manual_test_only_lint_patch_review_by": [
+    "root",
+    "p0_design"
+  ],
+  "post_maintenance_tests_run": false,
+  "python_ast_equivalent_to_f070": true,
+  "python_ast_review_by": "root",
+  "python_files": 6,
+  "remaining_dependency_warnings": [
+    {
+      "count": 2,
+      "location": "third_party/i18n-config-0.4.8/src/lib.rs",
+      "modified": false,
+      "package": "i18n-config 0.4.8",
+      "warning": "mismatched_lifetime_syntaxes"
+    }
+  ],
+  "rust_files": 16,
+  "rust_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-automation",
+    "codex-hepta-intelligence",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-neuron",
+    "codex-hepta-prompt-registry"
+  ],
+  "schema": "hepta.common.terminal-maintenance.v1",
+  "scientific_benefit_claimed": false,
+  "status": "SCOPED_FIX_FORMAT_AND_STRICT_LINT_PASS",
+  "tested_runtime_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "tested_runtime_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24"
+}

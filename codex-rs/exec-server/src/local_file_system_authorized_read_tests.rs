@@ -14,7 +14,8 @@ use std::path::Path;
 use tokio::io::AsyncReadExt;
 
 fn read_sandbox(root: &Path) -> io::Result<FileSystemSandboxContext> {
-    let root = AbsolutePathBuf::from_absolute_path(root)?;
+    // Grant the created fixture's physical root, as returned by F_GETPATH.
+    let root = AbsolutePathBuf::from_absolute_path(std::fs::canonicalize(root)?)?;
     let policy = FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
         FileSystemPath::Path {
             path: PathUri::from_abs_path(&root),
@@ -115,6 +116,7 @@ async fn stable_handle_read_applies_deny_glob_to_resolved_target() -> io::Result
     let temp_dir = tempfile::tempdir()?;
     let allowed_dir = temp_dir.path().join("allowed");
     std::fs::create_dir_all(&allowed_dir)?;
+    let allowed_dir = std::fs::canonicalize(allowed_dir)?;
     let denied_file = allowed_dir.join("blocked.secret");
     std::fs::write(&denied_file, b"secret")?;
     let mut sandbox = read_sandbox(&allowed_dir)?;
@@ -286,7 +288,7 @@ async fn stable_handle_read_rejects_hardlink_added_before_reopen() -> io::Result
     std::fs::hard_link(&path, &alias)?;
     let error = super::secure_reopen_matching_identity(stable_path.as_path(), identity)
         .await
-        .expect_err("O_UNIQUE must reject a link added after initial authorization");
+        .expect_err("secure reopen must reject a link added after initial authorization");
     assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
     Ok(())
 }

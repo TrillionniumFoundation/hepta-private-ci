@@ -1,0 +1,1496 @@
+{
+  "schema": "hepta.common.retained-format-hunk-review.v1",
+  "method": "Read-only extraction of original rustfmt Diff in blocks, normalize only runner path separators. Match complete preimages to git show f070 and postimages/addition runs to git show dde; two final-file hunks include one virtual blank EOF context line printed by rustfmt, explicitly recorded. No formatter, build or test execution.",
+  "input_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "maintenance_commit": "dde0c36ef2b90af37f5cdafe7dca0c7572585b09",
+  "logs": [
+    {
+      "path": "blocking-format-129159652068.decoded.txt",
+      "bytes": 238684,
+      "sha256": "641917afefdbcb9907489e8a24e9812636a1c9b313557238832114e9824b16aa",
+      "rust_files": 11,
+      "hunk_count": 72,
+      "preimages_covered": 72,
+      "postimages_covered": 72,
+      "all_addition_runs_covered": true,
+      "virtual_eof_context_hunks": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "line": 293
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "line": 158
+        }
+      ],
+      "normalized_hunk_sequence_sha256": "f182131fcef4c6e79b624c69e9d26eadb2ac6a6ec6fb7475e21eeca7054e30d0",
+      "hunks": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 3,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "830d7cc21103084239913806c14c35aeef5cea4e70e0059f1264059370df7825",
+          "postimage_sha256": "e670cf71c61da4298042a49e26f07bab6b78417cf1ff0c9ae7b591bec0766433"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 28,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "15f68a9500a23f7cb3be50789ef9d970f522f513c9a3c918b4253dd97f86f5d6",
+          "postimage_sha256": "49d47955d0cd46522e8613c1a8f19c3b7d0f4f2b66e13af060428a0f82786bb4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 37,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6c0054547dd3ff438563f8b6e807e2779182ba28f22c097139c1a60787316d59",
+          "postimage_sha256": "8ac64b0130c70c9c848c9d3cde64c406c0c469f7aceb8e6720e5a109bd2db494"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 49,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "47df4f87d4111342fc10ac4a4de517e4502ce31b21a111ff7e38dc5d3e926254",
+          "postimage_sha256": "269efeab18429490f9859f4ff2390113448c7567b74cb8a46fd9f9a4d3cf5d6a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 107,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2692713e09d5cb9db226576806456414ca824350e2833329c65854aaed9578c3",
+          "postimage_sha256": "6b8f2a3ff2683445292efec6bd919835564d79192634853a3bccc8c3bca6fa33"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 143,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "fc364c286ad1f63fd37acfd701a331a049ff49fb6181609ea879b3f42ec2affd",
+          "postimage_sha256": "f7f27135c7a19b30625f824026213a09c449c918cebc55a9122ae6fd211a07c1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 150,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "da583aff80be1cf1e6326a595cd2c536487487fee4aec29cd60a98633a2bbbcf",
+          "postimage_sha256": "ebacaad83a70bc6dfe9298c62dca8a9ede1718fa323c699ddf05fa4a847d8098"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 179,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "aea99d9eda9bb018ddab518b994ba0de6d1a064894ba3a35201886e29ce85f48",
+          "postimage_sha256": "48a0813e8e0ea8596fde0e2b089e8d8e52230c51521f7ffa21a54de2da8f70de"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 186,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "a8cc27746ab0174e9736458274f11104fbf5edf6563df02c951c0bb368436165",
+          "postimage_sha256": "a9aabc174ad4451a3c330700620fea54d84729f7c79871427a1bed0bd6bd58f0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 200,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "059a8c4b78ec63ef2775d286095b18ff8b38ed2ee5807ec572f7cf9bc85e29e7",
+          "postimage_sha256": "9a5692bdb05f0c7f5b0e464cf695eb01ba881e2b9d81465b07df0e7eb9567353"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 110,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "9536b96f1d3461551de8a9f2a87b7a6563c3df21bc22a4aefb734df074386d16",
+          "postimage_sha256": "4d20e4b58627c434abf72efacf9569a309d2dbe4dcf22d47e99bd67953a3a23e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 117,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "aa4f7d21a9fd7aa35010e5d0624505bde0b0d502ab70c056e89b2a956a15b4dd",
+          "postimage_sha256": "30aba38bae1adcc5da75f259aa9064167dd100025bc32628945033ddffe6a81f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 124,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e24e40320523531c710f8007b336d830399f724cb1ba5d391f15c2b1e653a5c5",
+          "postimage_sha256": "e099d9a5f85bf814298ccba7b88bff6cca246f8884d11ef8d07b13334ae690ff"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 129,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "57877487ab7af2898cfc6d2b18d772ef793c46cea04da62f8ffd8e7e6c424b90",
+          "postimage_sha256": "cb7aed5d78821d6d3138fc756fd69a8ed56766f0bacb211023b49bb486fc83d2"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 137,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "3137f5ef177ac420f321c2fe7e86093c4ac34275cd4dc4c105fbb238039774ed",
+          "postimage_sha256": "527fb7ed5ed66f8dbafec2130bf4403190401fa61dd206077347ea378f2c61ae"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 142,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "54ff0b69eb012adb99d0d7aa0ea4370801e913109aa5a28bafc6dfaeaf7bb678",
+          "postimage_sha256": "38b399c891153ce7aa46786ab3000ab7bd171290580e09aade4caf917ed552da"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 9,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "479792d32f5c39676d1f7c86498b42f6e670646c146d3bf9c4f23b449b0e75a7",
+          "postimage_sha256": "4e1a85e05969cf70ef55a66b0046f399f3cffdc658be98c8fb1d9b102290407d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 62,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "093a589f3d39c119925ef66d3df819968e8850398a1dbc8a77e002ccb8db36f9",
+          "postimage_sha256": "dcaa9d41d0c70050014852605cebddc686af7688c994f826d0d7ad431b3f6dd5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 87,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "7a2a3d6541de217144c9f90d68b9b842117dabbe04196a2787a3d870daef8a37",
+          "postimage_sha256": "6249e159d0e0f9d6fb4f67c0cfd977242d2750263838aafe1e252ad20a122a15"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 132,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e40dfcab7a34807e85bfb87f0808ba65f0d9ef4183c7f99d479744598941257e",
+          "postimage_sha256": "3c6bcd72eade6ea0f12259afea314de5161d7c19df2317159e47f21fc1e61015"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 177,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2286de3970a14398e63de0d2e2a3b043b26d6abe518124f51de697cf5bda2a75",
+          "postimage_sha256": "0947eaba4a727ebe0789c5949c808241e248051a174d52fee0bf9c37b6a7cd7a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 285,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "1e3294c07c039dbf8ec119680c02c9a8ed9af1ab98b16b892023d03d86723fd0",
+          "postimage_sha256": "a0175b8d8784d659b2afe93b134d8adb9be7030ff63ad0d33667998951f0dd1f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 306,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "bc50e697052c9dab700d26f06e5fb8cae206487397dd5211234dc4eb94ecb95c",
+          "postimage_sha256": "b9ba5d769d50b4a2a1e16e64716fd745fa775622a3d88c8358e45cfed59947ef"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 130,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "77e50e8be7e7c0aefe18859977401d33a7eb2d217dce85a02ab90918b6590822",
+          "postimage_sha256": "5890b2fc64be92a6d2626589ca99c2db4d5af5e9113d43e07e6490c0a0c60cfa"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 138,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "59c2c413e65c540d8bc2e01a36bc0afcffc191f9adff0c9febd8b7e38e3c7cb7",
+          "postimage_sha256": "21957e1d4376760cba9641d8e72077c0c58fd0551940b0de39d11c8a725d865a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 150,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "ae46c20bf31e66f31a8b72eea8da444f800f59dbefe2d8f599d4acd8af0fb073",
+          "postimage_sha256": "b8121064425397b4e5c462af75494e7df0ba770a122af3d2961b7fff30df5b0e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 157,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "08d7e33dde30fb22db0c7fa0ab553d136900c03acfd2d7662d9fc089ba19c814",
+          "postimage_sha256": "1b7159bfab0a38aca93a9497e8b3f56dded5a10a1f514596d496a3e342390d75"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 193,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "88dd978f6fb45621acd5dcdf51b92487de31d24e29c47c8790d70518e45f459e",
+          "postimage_sha256": "6339355106dadaa7f77aab41b0e60a3c5ccbbaf95732fa384c6552119d42b0ed"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 248,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 3,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "91e16b8b739da2086d153308166895632c4d56db00b6bf071cff025ee17851d0",
+          "postimage_sha256": "8dd09624b99b5634d2517dc5b51f4b36c8ebbaddbee3486aad1e25ad5e4c1b34"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 284,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "4950b8d6172242cd8d23082c25e7cb69476e665819421b2c0d2c87b20fafbcf5",
+          "postimage_sha256": "1daeea51e8deb460e7a9cc7ea9c54197fa5fca6207a5229f1dcd24e92da778c6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 293,
+          "preimage_match_f070": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "postimage_match_dde": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2e6cb413b95d93ada717f7526198743ee2c074e1e67e99ee9c131290e0f840e2",
+          "postimage_sha256": "42394e1c982e2ef3ff5852505c858368f625c93c56175512bfc2fb17a4bf690a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+          "original_header_line": 113,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6fc174f9c783d75c4b7a523b7a24d878fb5aaf4d9fe57985522599043e8b41b6",
+          "postimage_sha256": "22d715d9a48e16be99e5855beeae9a9c33c5742f178789456509d62b3ddeffb1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+          "original_header_line": 120,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "d73a3c8398dee9ec248ec206dfa0226419304933577cf9db890e6d3ed60feac2",
+          "postimage_sha256": "f4af534fd5d05cbcddd7f36e4f6defe01b58b11ce571bae23e1efe5b183b7522"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+          "original_header_line": 127,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2a9df430f53e268872c528ec27b586303492d0a457ab9e628f4f99b8b51612c6",
+          "postimage_sha256": "ec3bb6c5b96b72da42826685086b79e17368d234a0887fc7e6858a0a8bc40899"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+          "original_header_line": 139,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e4220adf1b66b0b0734042812392d2c7008c83ac246dcbfa41919200f661a557",
+          "postimage_sha256": "4e5579507bffe7f23256b7f6575af78bea684d19541e47d6b99dd468135c7061"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 9,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "1909e7bfb03859a6e5ec39975bab7879535c0004f6eb38224a3bfde92ae264fd",
+          "postimage_sha256": "b8362da965b8ea66bac3911b4e505df5c5d7e053fff6ec51e2323249fffc0845"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 16,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "3c990f96e12a6258dc9153021346049366949a04124b376d7408479f411b330b",
+          "postimage_sha256": "62eadd4d1e2c70d4832049abebc2e44903c21c2521b45bff7de0cbec57b3fb95"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 20,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "83b2a3cdd6b1e238edaf362e976ed1e6f0d4ab46957fac8dd4fbbb6b938385f1",
+          "postimage_sha256": "afd541f6040d6b6c0fc1dbeb3614d705000222715c188d7c1698397af552b64c"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 27,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "1042dedb285c35aea2ba132315a720a55a9e453cc1df555da1013333af5355b9",
+          "postimage_sha256": "aa4f17473b59400eae53540adf8b6bb8e153f7f7eff6efa1f3ae697170859e58"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 35,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6d0f165a17d9d563b596d5482bbb6f13b4ad8f2db04b82841f9c0f016637c125",
+          "postimage_sha256": "06417637447a09059fb4d69d002fd43b1fbe284fbf89e314e23f47904edb3d31"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 45,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "aa0fe3177f9971a3f5244cde79da10ce1f57a8acbd3852c12a7d67f54f52e0ac",
+          "postimage_sha256": "e7bd595ec4ab4c88af468071ccdb25998a3d57a9627c9f6481d246299dd70111"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 49,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "07f42f5d36dc88aab4159e2c0007c6c3e643dbb5a81d3b87460ec87af5862473",
+          "postimage_sha256": "0881a52324db65fa0390838988829aac4675d40630e506bdfc3eccf8cd2c15d7"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 54,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c7e4b301b37ef844e2e651b74764b73c9683314e45ac5affaf2ae8021e000400",
+          "postimage_sha256": "dc188dd987354a737971e6340fa16a46cfa41b2a40d1b29996357091f0d2defc"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 61,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "bcd03274787b5410327db95964d3df27730c61be1e06d0e185c95dee8d43c5c7",
+          "postimage_sha256": "33fad0d846c6add932f1586fedea88e541f9dad80db3775c966dff4db762e061"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 65,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "a8afb517de05ea2cdfec6dfa6e0556d1d73c5267d58b420c8a72ad07cd98e4de",
+          "postimage_sha256": "6af33691f46379ccde457c9aa1b8bef3646f9e19518343e6e180caf817b7aa02"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 72,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c4f50195db250b5fbc551e50bcc42e22a3ff57afa539bfd5ef9b29189533585b",
+          "postimage_sha256": "dd14a6acda368443f7f05114614a219f6d3bf382b528fa41c50549c5ffeacaa1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 76,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6fb741ea47f0fd2e544d2362ed57bf6fdd43a7b0db9ab0562a10d861f5526bcd",
+          "postimage_sha256": "bfe0fceb5af021649e86cd74472d391498ff116c3071244793e46e4ea91959ab"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 85,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "60499c959927597fadf575333e9ac5b16a03c59030b6be00d426f5024b5561cc",
+          "postimage_sha256": "499bc31e0d1a0a0642b3177c5c39398fffb44ca4e460424567cddc4b184dc1d6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 95,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "9c32d3e6abdbfbc5cdd8369d32332388d51d8889fb3b3c6a80a40bd028717b37",
+          "postimage_sha256": "5ac2907086703212170071cd387bcdab36c72150a06991e48f1fd2453f3ca0d6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 104,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "17e51ad42c127e097742fbf4f39ad8503b970eb8f85eadff67a8426f98acbc2f",
+          "postimage_sha256": "60188f9c9af41275b93d4a8b329b1dc03aa6a59edf677eccc775a395031bf76d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 117,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c17ab5319c7733968893a938313625f589838e0c7c314ddebba355412b64c7fc",
+          "postimage_sha256": "3d8612a93a786b5745ce43fb4853f0f226441bc9ed68d3c961ee411aa52729e6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 124,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "5b248937a81f89fdb161dc8ec6dd6c619cd8dc474231807744b146504fd52e06",
+          "postimage_sha256": "5d450e3dd1d1e3c114584acc83eba0a30ebb5de490548ef4fb592c39c9bf9537"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 131,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "39de3fce7aaa1b04a9de472c90037d6faf6e1212b804841d3dd651c7c4fe8230",
+          "postimage_sha256": "02e341992ae62f9e873bddb1924aca8f335d327fc17650436dc960f108cb17cc"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 137,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "a05fa7474417e4db368497c54980425cbd199df38609a37675afd46db37ab70b",
+          "postimage_sha256": "270e5ad7b89985700ca00c1d7067738b5b1fdd3567750a8cd14238663309821e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 146,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "d48b28bc04269af46be2dba44bee10544d6fac63742ba0735b6316cbfe171137",
+          "postimage_sha256": "3f49f807bb948c3aa64a07894029bc5f6364aecb27bc4d39fe54d8f31fa77500"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 152,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6c9f37ee2f3c02cb205a983f06682e297cf119229c7f19beb6478df396dcc7a7",
+          "postimage_sha256": "6c3268b413ec2e850ec26959ac75c3b5ad57de25517aec55f7928bf6e10431e6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 158,
+          "preimage_match_f070": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "postimage_match_dde": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "f3ee90cfd481c318d7f0f9dc48bdfb8a05a32df93f2a2853696d360aead02cc7",
+          "postimage_sha256": "fd8735a18a779a9c7c4ddee2720fbbb81915eb52dc0e963475c4316f544d0792"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 76,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 3,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "166acff53b16cc650c5f669733e1febb514ef490b1553fdaf7334c91a28329bd",
+          "postimage_sha256": "d29df364a0a3a90f46a7c52d724f4d47cfd83458befcd4511954b65cb882ab8e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 91,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "085950457de65fef2369a1b6a934c15ec22f43de86b1d0b03db5137a0f7cfe5c",
+          "postimage_sha256": "2c29a2b06af030a51a5748492295ee3af404839a30bb880e4799dcb206bddf90"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 118,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c1f9d580b552fdd4198384b616c2efbaf9b2dd95114cf9a56b959bf6e0b80163",
+          "postimage_sha256": "dfc2640b6a21f74ac202d8f6abad89730e78681ffd2164a0a57614b3de035c54"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 412,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c14e28606a2a983be83ddfc8b0e0ac3e05ad6f1dfb6ca31f841b0bb0dc40389f",
+          "postimage_sha256": "0c758899af98be3e76fe39692df0a1aa7b23e2e7e024f62d5e84af17fa9cbc2a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 958,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "617a14e21731b3810061ce17abca549ecd3560b78aaa4d89dcdc7b2be281c73b",
+          "postimage_sha256": "87079d82cfe303bb7424a91b0de4d2eae4318073da27a35aa2535ad10f987e7f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 1198,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2954655cccbec49e87cae9e3f0a5035977aab3b3d3aeb041a55a96f6bb8f0269",
+          "postimage_sha256": "f2569790c10e6a3b1f10b4ed0c83fdab9ff4d068c7da6677a0ecfa7a9cabe75f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "original_header_line": 7,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c7c9e2e38ee8bf109a5d06f49e5191401d0a9b89f669c5aad8366831a1f67207",
+          "postimage_sha256": "2036137005b8eeb8d72d71c35b18b7b5a13e76230e43fe42b5b20287fc18e81e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "original_header_line": 93,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "88e117244b9f253386c3e285f8811e7f3d69e1e164892329539bfeabcfb3e3d3",
+          "postimage_sha256": "73cb154f60dfe3abba3453b171a98049dda096a7982b3d6b43bdd4315dcb85b8"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "original_header_line": 176,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "82da8c277fb62a8217568a4ca622b6d415d7ddbc319b707aeb5963921263946a",
+          "postimage_sha256": "adb4a74c85ad25be05058fbc2bb0ceef1338b1e86e5e4c94a0b5993dfd1750e1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 219,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "96a35b9f27205b4f2cbd75ac2b96f5693a27ad0c43d18ff05d5912beffad60f3",
+          "postimage_sha256": "02af85277dc456208cb2268610191b517668a55c5535803ca717eeeccb3e1d7f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 226,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e6c067bb7a81efc7ec85962cb0bd00f9842089ebfe3f8495fb3972862580ac54",
+          "postimage_sha256": "d479e83eba7bff4b94e0b5d86c08f4b386e01f28d25f64cbc296cb6a68367c8e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 232,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "edcdfcfd2c5e9bed42ccbf044366d73f8afcc9c3ff376447004e398a583a8fd0",
+          "postimage_sha256": "22764b5f9ff372eb7121177ba3beae2df3fe981e7cc7693d13b19f652c9c5de1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 240,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "cdc3949dda7685693b81dae8cbdcba2c8d2d77dee8172d0f2feec85a11196802",
+          "postimage_sha256": "a77b8a655d59870ffb7b300b4ef1a3543f671fa2464cf8ed5ceac3dcd9b11917"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 245,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "f08fbc5d179601dbc31c8cb8fdfae54601d48620ccd901e43e27177403e785cc",
+          "postimage_sha256": "0452ccadb1ef477bc85475a187ed7849c4b5f9e12ef77dd5aa8bce63676d431a"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "original_header_line": 2541,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2c27a496c3db2ead64634af2fc932701390f0acf7d2892ae04dd83ac5fb00ed6",
+          "postimage_sha256": "fb7e6d3aa2e1e7365dee7783b477b5e5ff221382b043491eb1c4c834e778991f"
+        }
+      ]
+    },
+    {
+      "path": "windows-private-129153808326.decoded.txt",
+      "bytes": 190946,
+      "sha256": "5b7781b9289cc23fab6ff24c6e2daca128a68e29cd7d184f72d3eba524d47c55",
+      "rust_files": 11,
+      "hunk_count": 72,
+      "preimages_covered": 72,
+      "postimages_covered": 72,
+      "all_addition_runs_covered": true,
+      "virtual_eof_context_hunks": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "line": 293
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "line": 158
+        }
+      ],
+      "normalized_hunk_sequence_sha256": "f182131fcef4c6e79b624c69e9d26eadb2ac6a6ec6fb7475e21eeca7054e30d0",
+      "hunks": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 3,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "830d7cc21103084239913806c14c35aeef5cea4e70e0059f1264059370df7825",
+          "postimage_sha256": "e670cf71c61da4298042a49e26f07bab6b78417cf1ff0c9ae7b591bec0766433"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 28,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "15f68a9500a23f7cb3be50789ef9d970f522f513c9a3c918b4253dd97f86f5d6",
+          "postimage_sha256": "49d47955d0cd46522e8613c1a8f19c3b7d0f4f2b66e13af060428a0f82786bb4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 37,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6c0054547dd3ff438563f8b6e807e2779182ba28f22c097139c1a60787316d59",
+          "postimage_sha256": "8ac64b0130c70c9c848c9d3cde64c406c0c469f7aceb8e6720e5a109bd2db494"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 49,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "47df4f87d4111342fc10ac4a4de517e4502ce31b21a111ff7e38dc5d3e926254",
+          "postimage_sha256": "269efeab18429490f9859f4ff2390113448c7567b74cb8a46fd9f9a4d3cf5d6a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 107,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2692713e09d5cb9db226576806456414ca824350e2833329c65854aaed9578c3",
+          "postimage_sha256": "6b8f2a3ff2683445292efec6bd919835564d79192634853a3bccc8c3bca6fa33"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 143,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "fc364c286ad1f63fd37acfd701a331a049ff49fb6181609ea879b3f42ec2affd",
+          "postimage_sha256": "f7f27135c7a19b30625f824026213a09c449c918cebc55a9122ae6fd211a07c1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 150,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "da583aff80be1cf1e6326a595cd2c536487487fee4aec29cd60a98633a2bbbcf",
+          "postimage_sha256": "ebacaad83a70bc6dfe9298c62dca8a9ede1718fa323c699ddf05fa4a847d8098"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 179,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "aea99d9eda9bb018ddab518b994ba0de6d1a064894ba3a35201886e29ce85f48",
+          "postimage_sha256": "48a0813e8e0ea8596fde0e2b089e8d8e52230c51521f7ffa21a54de2da8f70de"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 186,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "a8cc27746ab0174e9736458274f11104fbf5edf6563df02c951c0bb368436165",
+          "postimage_sha256": "a9aabc174ad4451a3c330700620fea54d84729f7c79871427a1bed0bd6bd58f0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "original_header_line": 200,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "059a8c4b78ec63ef2775d286095b18ff8b38ed2ee5807ec572f7cf9bc85e29e7",
+          "postimage_sha256": "9a5692bdb05f0c7f5b0e464cf695eb01ba881e2b9d81465b07df0e7eb9567353"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 110,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "9536b96f1d3461551de8a9f2a87b7a6563c3df21bc22a4aefb734df074386d16",
+          "postimage_sha256": "4d20e4b58627c434abf72efacf9569a309d2dbe4dcf22d47e99bd67953a3a23e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 117,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "aa4f7d21a9fd7aa35010e5d0624505bde0b0d502ab70c056e89b2a956a15b4dd",
+          "postimage_sha256": "30aba38bae1adcc5da75f259aa9064167dd100025bc32628945033ddffe6a81f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 124,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e24e40320523531c710f8007b336d830399f724cb1ba5d391f15c2b1e653a5c5",
+          "postimage_sha256": "e099d9a5f85bf814298ccba7b88bff6cca246f8884d11ef8d07b13334ae690ff"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 129,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "57877487ab7af2898cfc6d2b18d772ef793c46cea04da62f8ffd8e7e6c424b90",
+          "postimage_sha256": "cb7aed5d78821d6d3138fc756fd69a8ed56766f0bacb211023b49bb486fc83d2"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 137,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "3137f5ef177ac420f321c2fe7e86093c4ac34275cd4dc4c105fbb238039774ed",
+          "postimage_sha256": "527fb7ed5ed66f8dbafec2130bf4403190401fa61dd206077347ea378f2c61ae"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+          "original_header_line": 142,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "54ff0b69eb012adb99d0d7aa0ea4370801e913109aa5a28bafc6dfaeaf7bb678",
+          "postimage_sha256": "38b399c891153ce7aa46786ab3000ab7bd171290580e09aade4caf917ed552da"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 9,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "479792d32f5c39676d1f7c86498b42f6e670646c146d3bf9c4f23b449b0e75a7",
+          "postimage_sha256": "4e1a85e05969cf70ef55a66b0046f399f3cffdc658be98c8fb1d9b102290407d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 62,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "093a589f3d39c119925ef66d3df819968e8850398a1dbc8a77e002ccb8db36f9",
+          "postimage_sha256": "dcaa9d41d0c70050014852605cebddc686af7688c994f826d0d7ad431b3f6dd5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 87,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "7a2a3d6541de217144c9f90d68b9b842117dabbe04196a2787a3d870daef8a37",
+          "postimage_sha256": "6249e159d0e0f9d6fb4f67c0cfd977242d2750263838aafe1e252ad20a122a15"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 132,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e40dfcab7a34807e85bfb87f0808ba65f0d9ef4183c7f99d479744598941257e",
+          "postimage_sha256": "3c6bcd72eade6ea0f12259afea314de5161d7c19df2317159e47f21fc1e61015"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 177,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2286de3970a14398e63de0d2e2a3b043b26d6abe518124f51de697cf5bda2a75",
+          "postimage_sha256": "0947eaba4a727ebe0789c5949c808241e248051a174d52fee0bf9c37b6a7cd7a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 285,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "1e3294c07c039dbf8ec119680c02c9a8ed9af1ab98b16b892023d03d86723fd0",
+          "postimage_sha256": "a0175b8d8784d659b2afe93b134d8adb9be7030ff63ad0d33667998951f0dd1f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+          "original_header_line": 306,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "bc50e697052c9dab700d26f06e5fb8cae206487397dd5211234dc4eb94ecb95c",
+          "postimage_sha256": "b9ba5d769d50b4a2a1e16e64716fd745fa775622a3d88c8358e45cfed59947ef"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 130,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "77e50e8be7e7c0aefe18859977401d33a7eb2d217dce85a02ab90918b6590822",
+          "postimage_sha256": "5890b2fc64be92a6d2626589ca99c2db4d5af5e9113d43e07e6490c0a0c60cfa"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 138,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "59c2c413e65c540d8bc2e01a36bc0afcffc191f9adff0c9febd8b7e38e3c7cb7",
+          "postimage_sha256": "21957e1d4376760cba9641d8e72077c0c58fd0551940b0de39d11c8a725d865a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 150,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "ae46c20bf31e66f31a8b72eea8da444f800f59dbefe2d8f599d4acd8af0fb073",
+          "postimage_sha256": "b8121064425397b4e5c462af75494e7df0ba770a122af3d2961b7fff30df5b0e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 157,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "08d7e33dde30fb22db0c7fa0ab553d136900c03acfd2d7662d9fc089ba19c814",
+          "postimage_sha256": "1b7159bfab0a38aca93a9497e8b3f56dded5a10a1f514596d496a3e342390d75"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 193,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "88dd978f6fb45621acd5dcdf51b92487de31d24e29c47c8790d70518e45f459e",
+          "postimage_sha256": "6339355106dadaa7f77aab41b0e60a3c5ccbbaf95732fa384c6552119d42b0ed"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 248,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 3,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "91e16b8b739da2086d153308166895632c4d56db00b6bf071cff025ee17851d0",
+          "postimage_sha256": "8dd09624b99b5634d2517dc5b51f4b36c8ebbaddbee3486aad1e25ad5e4c1b34"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 284,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "4950b8d6172242cd8d23082c25e7cb69476e665819421b2c0d2c87b20fafbcf5",
+          "postimage_sha256": "1daeea51e8deb460e7a9cc7ea9c54197fa5fca6207a5229f1dcd24e92da778c6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+          "original_header_line": 293,
+          "preimage_match_f070": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "postimage_match_dde": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2e6cb413b95d93ada717f7526198743ee2c074e1e67e99ee9c131290e0f840e2",
+          "postimage_sha256": "42394e1c982e2ef3ff5852505c858368f625c93c56175512bfc2fb17a4bf690a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+          "original_header_line": 113,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6fc174f9c783d75c4b7a523b7a24d878fb5aaf4d9fe57985522599043e8b41b6",
+          "postimage_sha256": "22d715d9a48e16be99e5855beeae9a9c33c5742f178789456509d62b3ddeffb1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+          "original_header_line": 120,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "d73a3c8398dee9ec248ec206dfa0226419304933577cf9db890e6d3ed60feac2",
+          "postimage_sha256": "f4af534fd5d05cbcddd7f36e4f6defe01b58b11ce571bae23e1efe5b183b7522"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+          "original_header_line": 127,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2a9df430f53e268872c528ec27b586303492d0a457ab9e628f4f99b8b51612c6",
+          "postimage_sha256": "ec3bb6c5b96b72da42826685086b79e17368d234a0887fc7e6858a0a8bc40899"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+          "original_header_line": 139,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e4220adf1b66b0b0734042812392d2c7008c83ac246dcbfa41919200f661a557",
+          "postimage_sha256": "4e5579507bffe7f23256b7f6575af78bea684d19541e47d6b99dd468135c7061"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 9,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "1909e7bfb03859a6e5ec39975bab7879535c0004f6eb38224a3bfde92ae264fd",
+          "postimage_sha256": "b8362da965b8ea66bac3911b4e505df5c5d7e053fff6ec51e2323249fffc0845"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 16,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "3c990f96e12a6258dc9153021346049366949a04124b376d7408479f411b330b",
+          "postimage_sha256": "62eadd4d1e2c70d4832049abebc2e44903c21c2521b45bff7de0cbec57b3fb95"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 20,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "83b2a3cdd6b1e238edaf362e976ed1e6f0d4ab46957fac8dd4fbbb6b938385f1",
+          "postimage_sha256": "afd541f6040d6b6c0fc1dbeb3614d705000222715c188d7c1698397af552b64c"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 27,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "1042dedb285c35aea2ba132315a720a55a9e453cc1df555da1013333af5355b9",
+          "postimage_sha256": "aa4f17473b59400eae53540adf8b6bb8e153f7f7eff6efa1f3ae697170859e58"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 35,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6d0f165a17d9d563b596d5482bbb6f13b4ad8f2db04b82841f9c0f016637c125",
+          "postimage_sha256": "06417637447a09059fb4d69d002fd43b1fbe284fbf89e314e23f47904edb3d31"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 45,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "aa0fe3177f9971a3f5244cde79da10ce1f57a8acbd3852c12a7d67f54f52e0ac",
+          "postimage_sha256": "e7bd595ec4ab4c88af468071ccdb25998a3d57a9627c9f6481d246299dd70111"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 49,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "07f42f5d36dc88aab4159e2c0007c6c3e643dbb5a81d3b87460ec87af5862473",
+          "postimage_sha256": "0881a52324db65fa0390838988829aac4675d40630e506bdfc3eccf8cd2c15d7"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 54,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c7e4b301b37ef844e2e651b74764b73c9683314e45ac5affaf2ae8021e000400",
+          "postimage_sha256": "dc188dd987354a737971e6340fa16a46cfa41b2a40d1b29996357091f0d2defc"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 61,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "bcd03274787b5410327db95964d3df27730c61be1e06d0e185c95dee8d43c5c7",
+          "postimage_sha256": "33fad0d846c6add932f1586fedea88e541f9dad80db3775c966dff4db762e061"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 65,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "a8afb517de05ea2cdfec6dfa6e0556d1d73c5267d58b420c8a72ad07cd98e4de",
+          "postimage_sha256": "6af33691f46379ccde457c9aa1b8bef3646f9e19518343e6e180caf817b7aa02"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 72,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c4f50195db250b5fbc551e50bcc42e22a3ff57afa539bfd5ef9b29189533585b",
+          "postimage_sha256": "dd14a6acda368443f7f05114614a219f6d3bf382b528fa41c50549c5ffeacaa1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 76,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6fb741ea47f0fd2e544d2362ed57bf6fdd43a7b0db9ab0562a10d861f5526bcd",
+          "postimage_sha256": "bfe0fceb5af021649e86cd74472d391498ff116c3071244793e46e4ea91959ab"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 85,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "60499c959927597fadf575333e9ac5b16a03c59030b6be00d426f5024b5561cc",
+          "postimage_sha256": "499bc31e0d1a0a0642b3177c5c39398fffb44ca4e460424567cddc4b184dc1d6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 95,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "9c32d3e6abdbfbc5cdd8369d32332388d51d8889fb3b3c6a80a40bd028717b37",
+          "postimage_sha256": "5ac2907086703212170071cd387bcdab36c72150a06991e48f1fd2453f3ca0d6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 104,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "17e51ad42c127e097742fbf4f39ad8503b970eb8f85eadff67a8426f98acbc2f",
+          "postimage_sha256": "60188f9c9af41275b93d4a8b329b1dc03aa6a59edf677eccc775a395031bf76d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 117,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c17ab5319c7733968893a938313625f589838e0c7c314ddebba355412b64c7fc",
+          "postimage_sha256": "3d8612a93a786b5745ce43fb4853f0f226441bc9ed68d3c961ee411aa52729e6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 124,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "5b248937a81f89fdb161dc8ec6dd6c619cd8dc474231807744b146504fd52e06",
+          "postimage_sha256": "5d450e3dd1d1e3c114584acc83eba0a30ebb5de490548ef4fb592c39c9bf9537"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 131,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "39de3fce7aaa1b04a9de472c90037d6faf6e1212b804841d3dd651c7c4fe8230",
+          "postimage_sha256": "02e341992ae62f9e873bddb1924aca8f335d327fc17650436dc960f108cb17cc"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 137,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "a05fa7474417e4db368497c54980425cbd199df38609a37675afd46db37ab70b",
+          "postimage_sha256": "270e5ad7b89985700ca00c1d7067738b5b1fdd3567750a8cd14238663309821e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 146,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "d48b28bc04269af46be2dba44bee10544d6fac63742ba0735b6316cbfe171137",
+          "postimage_sha256": "3f49f807bb948c3aa64a07894029bc5f6364aecb27bc4d39fe54d8f31fa77500"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 152,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "6c9f37ee2f3c02cb205a983f06682e297cf119229c7f19beb6478df396dcc7a7",
+          "postimage_sha256": "6c3268b413ec2e850ec26959ac75c3b5ad57de25517aec55f7928bf6e10431e6"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+          "original_header_line": 158,
+          "preimage_match_f070": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "postimage_match_dde": "exact_at_eof_excluding_rustfmt_virtual_blank_context",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "f3ee90cfd481c318d7f0f9dc48bdfb8a05a32df93f2a2853696d360aead02cc7",
+          "postimage_sha256": "fd8735a18a779a9c7c4ddee2720fbbb81915eb52dc0e963475c4316f544d0792"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 76,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 3,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "166acff53b16cc650c5f669733e1febb514ef490b1553fdaf7334c91a28329bd",
+          "postimage_sha256": "d29df364a0a3a90f46a7c52d724f4d47cfd83458befcd4511954b65cb882ab8e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 91,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "085950457de65fef2369a1b6a934c15ec22f43de86b1d0b03db5137a0f7cfe5c",
+          "postimage_sha256": "2c29a2b06af030a51a5748492295ee3af404839a30bb880e4799dcb206bddf90"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 118,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c1f9d580b552fdd4198384b616c2efbaf9b2dd95114cf9a56b959bf6e0b80163",
+          "postimage_sha256": "dfc2640b6a21f74ac202d8f6abad89730e78681ffd2164a0a57614b3de035c54"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 412,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c14e28606a2a983be83ddfc8b0e0ac3e05ad6f1dfb6ca31f841b0bb0dc40389f",
+          "postimage_sha256": "0c758899af98be3e76fe39692df0a1aa7b23e2e7e024f62d5e84af17fa9cbc2a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 958,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "617a14e21731b3810061ce17abca549ecd3560b78aaa4d89dcdc7b2be281c73b",
+          "postimage_sha256": "87079d82cfe303bb7424a91b0de4d2eae4318073da27a35aa2535ad10f987e7f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+          "original_header_line": 1198,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2954655cccbec49e87cae9e3f0a5035977aab3b3d3aeb041a55a96f6bb8f0269",
+          "postimage_sha256": "f2569790c10e6a3b1f10b4ed0c83fdab9ff4d068c7da6677a0ecfa7a9cabe75f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "original_header_line": 7,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "c7c9e2e38ee8bf109a5d06f49e5191401d0a9b89f669c5aad8366831a1f67207",
+          "postimage_sha256": "2036137005b8eeb8d72d71c35b18b7b5a13e76230e43fe42b5b20287fc18e81e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "original_header_line": 93,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "88e117244b9f253386c3e285f8811e7f3d69e1e164892329539bfeabcfb3e3d3",
+          "postimage_sha256": "73cb154f60dfe3abba3453b171a98049dda096a7982b3d6b43bdd4315dcb85b8"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "original_header_line": 176,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 2,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "82da8c277fb62a8217568a4ca622b6d415d7ddbc319b707aeb5963921263946a",
+          "postimage_sha256": "adb4a74c85ad25be05058fbc2bb0ceef1338b1e86e5e4c94a0b5993dfd1750e1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 219,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "96a35b9f27205b4f2cbd75ac2b96f5693a27ad0c43d18ff05d5912beffad60f3",
+          "postimage_sha256": "02af85277dc456208cb2268610191b517668a55c5535803ca717eeeccb3e1d7f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 226,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "e6c067bb7a81efc7ec85962cb0bd00f9842089ebfe3f8495fb3972862580ac54",
+          "postimage_sha256": "d479e83eba7bff4b94e0b5d86c08f4b386e01f28d25f64cbc296cb6a68367c8e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 232,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "edcdfcfd2c5e9bed42ccbf044366d73f8afcc9c3ff376447004e398a583a8fd0",
+          "postimage_sha256": "22764b5f9ff372eb7121177ba3beae2df3fe981e7cc7693d13b19f652c9c5de1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 240,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "cdc3949dda7685693b81dae8cbdcba2c8d2d77dee8172d0f2feec85a11196802",
+          "postimage_sha256": "a77b8a655d59870ffb7b300b4ef1a3543f671fa2464cf8ed5ceac3dcd9b11917"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+          "original_header_line": 245,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "f08fbc5d179601dbc31c8cb8fdfae54601d48620ccd901e43e27177403e785cc",
+          "postimage_sha256": "0452ccadb1ef477bc85475a187ed7849c4b5f9e12ef77dd5aa8bce63676d431a"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "original_header_line": 2541,
+          "preimage_match_f070": "exact_contiguous",
+          "postimage_match_dde": "exact_contiguous",
+          "added_run_count": 1,
+          "all_added_runs_match_dde": true,
+          "preimage_sha256": "2c27a496c3db2ead64634af2fc932701390f0acf7d2892ae04dd83ac5fb00ed6",
+          "postimage_sha256": "fb7e6d3aa2e1e7365dee7783b477b5e5ff221382b043491eb1c4c834e778991f"
+        }
+      ]
+    }
+  ],
+  "linux_windows_same_72_hunks": true,
+  "conclusion": "All 72 rustfmt hunks in each retained log are covered by dde across 11 Rust paths; the two logs contain the identical normalized hunk sequence. This does not claim a rerun or successful remote CI gate."
+}

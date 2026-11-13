@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "-p",
+    "codex-hepta-agentd",
+    "--bin",
+    "hepta-authority-host",
+    "--example",
+    "authority_host_peer_qualification",
+    "--locked"
+  ],
+  "exit": 0,
+  "seconds": 11.594765404006466,
+  "cache_reused": true,
+  "source_before": {
+    "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+    "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+    "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+    "index_flags": [
+      "H"
+    ],
+    "files": 9333,
+    "live_source_sha256": "c832bc3b0c9bdd162903755f2805b44365c17b5728d804b09423ec8e526c36b0"
+  },
+  "toolchain": "1.96.0"
+}

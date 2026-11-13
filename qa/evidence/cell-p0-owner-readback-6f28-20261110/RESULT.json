@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-10T13:05:31.492891+00:00",
+  "base_commit": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+  "execution_scope": "Original workspace, original locked dependencies, uncommitted owner code identified by exact file inventory. Not a projected workspace and not qualification of a later integrated commit.",
+  "native_package": {
+    "name": "codex-hepta-intelligence-eval",
+    "command": "just test -p codex-hepta-intelligence-eval --locked --offline",
+    "passed": 143,
+    "failed": 0,
+    "skipped": 0,
+    "source_files": 180,
+    "source_files_changed_during_run": [],
+    "source_files_changed_after_scoped_fix": [],
+    "log": "native-final-143.log",
+    "source_inventory": "NATIVE_SOURCE_INPUTS.json",
+    "source_inventory_sha256": "73f851dd97a80fd4932f2dd34e995454406d4558ba45942ed70f3c5f91cd20ce",
+    "coverage": [
+      "shared signed-execution context and original completion authentication",
+      "new read-only Missing and Pending refusal paths",
+      "existing completion lost-ACK replay through read-only API",
+      "actual abrupt-process/file-owner recovery using read-only API with synthetic cohorts and test role keys"
+    ]
+  },
+  "intermediate_native": {
+    "passed": 141,
+    "log": "native-intermediate-141.log",
+    "note": "Before two read-only tests and process-recovery routing were added. Counts are not added to the final 143."
+  },
+  "source_closure_tests": {
+    "passed": 6,
+    "failed": 0,
+    "log": "source-closure-tests.log"
+  },
+  "original_full_caller_scan": {
+    "status": "FAILED",
+    "reason": "root_learning_completed_circuit_source: codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs: unresolved possible AgentdState::require_circuit_learning_source receiver",
+    "scope": "Inherited post-claim source_state binding on base abf75d8e20."
+  },
+  "postclaim_receiver_repair": {
+    "status": "SCOPED_RED_GREEN_PASS",
+    "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+    "change": "Explicit Arc<AgentdState> type preserves the original receiver and runtime semantics. The old bytes fail the boundary scan; the typed binding passes.",
+    "evidence": "postclaim-caller-red-green.json",
+    "whole_repository_caller_pass_claimed": false
+  },
+  "maintenance": {
+    "scoped_fix": "just fix -p codex-hepta-intelligence-eval --locked --offline",
+    "exit_code": 0,
+    "source_change_count": 0,
+    "log": "scoped-fix.log",
+    "full_formatting": "Deferred to root after the common candidate integration",
+    "behavior_tests_rerun_after_fix": false
+  },
+  "remaining_native_scope": "Agentd readback tests are authored but have not been compiled/run in this scope. Final combined source requires its own native tests, caller inventory and hosted CI.",
+  "independent_review": "p1_evidence_gate statically reviewed shared plan/journal/fence/evaluator/signature validation and matching return types; no blocker found. This review did not substitute for compilation.",
+  "independent_confirmation_tasks_added": 0,
+  "training_fits_added": 0,
+  "full_p0": "NOT_ESTABLISHED",
+  "production_stage_owner_assembly": false,
+  "production_authority_granted": false,
+  "scientific_admission_granted": false,
+  "changed_code_paths": [
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+    "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_process_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_readback_tests.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+  ]
+}

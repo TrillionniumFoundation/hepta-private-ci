@@ -4048,7 +4048,9 @@ impl Session {
                         Some(serde_json::json!({
                             "threadId": self.thread_id().to_string(),
                         })),
-                        /*meta*/ None,
+                        Some(serde_json::json!({
+                            "threadId": self.thread_id().to_string(),
+                        })),
                         /*requested_timeout*/ None,
                         /*wait_for_server*/ false,
                     )

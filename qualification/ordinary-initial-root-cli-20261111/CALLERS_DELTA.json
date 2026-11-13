@@ -1,0 +1,363 @@
+{
+  "source_base": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "rule": "Preserve every existing boundary and guard; exact immutable amendments plus four actual Initial deployment boundaries. No checker changes.",
+  "inventory_add": [
+    "root_initial_deployment_original_files",
+    "root_initial_deployment_capture",
+    "root_initial_deployment_wait",
+    "root_initial_deployment_original_inputs"
+  ],
+  "edits": [
+    {
+      "kind": "replace_exact",
+      "id": "root_initial_separate_purpose_enable",
+      "count": 1,
+      "before": "[[boundary]]\nid = \"root_initial_separate_purpose_enable\"\nsymbol = \"PreparedHostAuthoritySession::enable_generation_initial\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\"\ndefinition_markers = [\"fn enable_generation_initial(\",\"self.service.with_initial_publication_context(\",\"InitialBootstrap {\",\"AtomicU8::new(PREPARED)\"]\nproduct_callers = []\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)enable_generation_initial\\\\s*\\\\(\"\n\n",
+      "after": "[[boundary]]\nid = \"root_initial_separate_purpose_enable\"\nsymbol = \"PreparedHostAuthoritySession::enable_generation_initial\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\"\ndefinition_markers = [\"fn enable_generation_initial(\",\"self.service.with_initial_publication_context(\",\"InitialBootstrap {\",\"AtomicU8::new(PREPARED)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)enable_generation_initial\\\\s*\\\\(\"\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "root_initial_one_shot_enrollment",
+      "count": 1,
+      "before": "[[boundary]]\nid = \"root_initial_one_shot_enrollment\"\nsymbol = \"RootGenerationInitialEnrollmentCapabilityV1::register\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\"\ndefinition_markers = [\"fn register(\",\"compare_exchange(ACTIVE, CONSUMED\",\"self.sender\",\"recv_timeout(self.lifetime)\"]\nproduct_callers = []\ncaller_markers = []\nreceiver_type = \"RootGenerationInitialEnrollmentCapabilityV1\"\n\n",
+      "after": "[[boundary]]\nid = \"root_initial_one_shot_enrollment\"\nsymbol = \"RootGenerationInitialEnrollmentCapabilityV1::register\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\"\ndefinition_markers = [\"fn register(\",\"compare_exchange(ACTIVE, CONSUMED\",\"self.sender\",\"recv_timeout(self.lifetime)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\"]\ncaller_markers = []\nreceiver_type = \"RootGenerationInitialEnrollmentCapabilityV1\"\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "root_initial_purpose_send",
+      "count": 1,
+      "before": "[[boundary]]\nid = \"root_initial_purpose_send\"\nsymbol = \"send_root_generation_initial_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs\"\ndefinition_markers = [\"fn send_root_generation_initial_handoff(\",\"libc::getuid()\",\"require_root_pin(root_pidfd, std::process::id())?\"]\nproduct_callers = []\ncaller_markers = []\ncall_pattern = \"\\\\bsend_root_generation_initial_handoff\\\\s*\\\\(\"\n\n",
+      "after": "[[boundary]]\nid = \"root_initial_purpose_send\"\nsymbol = \"send_root_generation_initial_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs\"\ndefinition_markers = [\"fn send_root_generation_initial_handoff(\",\"libc::getuid()\",\"require_root_pin(root_pidfd, std::process::id())?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = []\ncall_pattern = \"\\\\bsend_root_generation_initial_handoff\\\\s*\\\\(\"\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "root_artifact_original_reader_open",
+      "count": 1,
+      "before": "[[boundary]]\nid = \"root_artifact_original_reader_open\"\nsymbol = \"LearningArtifactReadViewV1::open_original\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs\"\ndefinition_markers = [\"pub fn open_original(\", \"fs::canonicalize(&root)?\", \"ArtifactOwnerVerifierV1::new(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\",\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs\"]\ncaller_markers = []\nreceiver_type = \"LearningArtifactReadViewV1\"\n\n",
+      "after": "[[boundary]]\nid = \"root_artifact_original_reader_open\"\nsymbol = \"LearningArtifactReadViewV1::open_original\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs\"\ndefinition_markers = [\"pub fn open_original(\", \"fs::canonicalize(&root)?\", \"ArtifactOwnerVerifierV1::new(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\",\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"]\ncaller_markers = []\nreceiver_type = \"LearningArtifactReadViewV1\"\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "root_artifact_original_withdrawal_bind",
+      "count": 1,
+      "before": "[[boundary]]\nid = \"root_artifact_original_withdrawal_bind\"\nsymbol = \"LearningArtifactReadViewV1::with_original_withdrawal_floor\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs\"\ndefinition_markers = [\"pub fn with_original_withdrawal_floor(\", \"require_extension(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\",\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)with_original_withdrawal_floor\\\\s*\\\\(\"\n\n",
+      "after": "[[boundary]]\nid = \"root_artifact_original_withdrawal_bind\"\nsymbol = \"LearningArtifactReadViewV1::with_original_withdrawal_floor\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs\"\ndefinition_markers = [\"pub fn with_original_withdrawal_floor(\", \"require_extension(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\",\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)with_original_withdrawal_floor\\\\s*\\\\(\"\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "root_artifact_original_selection_files",
+      "count": 1,
+      "before": "[[boundary]]\nid = \"root_artifact_original_selection_files\"\nsymbol = \"LearningArtifactReadViewV1::locate_selected_original_files\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs\"\ndefinition_markers = [\"pub fn locate_selected_original_files(\",\"self.read_original_registry(now)?\",\"selector\\n            .verify(\",\"view.registry_snapshot_path(before.receipt())\",\"withdrawals.head_digest() != withdrawals_after.head_digest()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)locate_selected_original_files\\\\s*\\\\(\"\n\n",
+      "after": "[[boundary]]\nid = \"root_artifact_original_selection_files\"\nsymbol = \"LearningArtifactReadViewV1::locate_selected_original_files\"\ndefinition_path = \"codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs\"\ndefinition_markers = [\"pub fn locate_selected_original_files(\",\"self.read_original_registry(now)?\",\"selector\\n            .verify(\",\"view.registry_snapshot_path(before.receipt())\",\"withdrawals.head_digest() != withdrawals_after.head_digest()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs\",\"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)locate_selected_original_files\\\\s*\\\\(\"\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "protected_root_cli",
+      "count": 1,
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"\nrequired = [\"register-learning\",\"--learning-profile\",\"--root-learning-handoff-fd\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"learning_profile.is_some() && root_fd.is_none()\",\"PreparedHostAuthoritySession::open(&config, &registration, owner)?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"send_root_learning_handoff(\",\"prepared.serve_with_ready(ready)\",\"--generation-publication-deployment\",\"--root-generation-publication-handoff-fd\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"capability.with_original_deployment(&path)?\",\"deployment.wait_and_register(stop_ref)\",\"PublicationDeploymentStop\",\"let served = match\",\"drop(stop)\",\"served?\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_order = [[\"let learning_handoff = learning_handoff\\n            .as_deref()\",\"inherited_descriptor(fd, &mut claimed)\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"let ready = ||\",\"send_root_learning_handoff(\",\"prepared.launch_native_with_ready(\",\"prepared.serve_with_text_and_ready(\",\"prepared.serve_with_ready(ready)\"],[\"let publication_handoff = publication_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.enable_generation_publication()?\",\"capability.with_original_deployment(&path)?\",\"send_root_generation_publication_handoff(\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register(stop_ref)\",\"let served = match\",\"prepared.serve_with_ready(ready)\",\"drop(stop)\",\"worker.join()\",\"served?\"],[\"let registered = deployment.wait_and_register(stop_ref)?\",\"let stdout = std::io::stdout()\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"worker.join()\",\"served?\",\"registered?\"]]\n\nrequired_function_order = [{ function = \"fn drop(\", sequence = [\"self.0.store(\",\"std::sync::atomic::Ordering::Release\"] }]\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"\nrequired = [\"register-learning\",\"--learning-profile\",\"--root-learning-handoff-fd\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"learning_profile.is_some() && root_fd.is_none()\",\"PreparedHostAuthoritySession::open(&config, &registration, owner)?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"send_root_learning_handoff(\",\"prepared.serve_with_ready(ready)\",\"--generation-publication-deployment\",\"--root-generation-publication-handoff-fd\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"capability.with_original_deployment(&path)?\",\"deployment.wait_and_register(stop_ref)\",\"PublicationDeploymentStop\",\"let served = match\",\"drop(stop)\",\"served?\",\"--generation-initial-deployment\",\"--root-generation-initial-handoff-fd\",\"initial_deployment.is_some() != initial_handoff.is_some()\",\"initial and learned publication require separate original Root sessions\",\"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(\",\"prepared.enable_generation_initial(files.deployment().clone())\",\"capability.with_original_initial_deployment(files)?\",\"deployment.wait_and_register_initial(stop_ref)?\",\"initial_registered_binding\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_order = [[\"let learning_handoff = learning_handoff\\n            .as_deref()\",\"inherited_descriptor(fd, &mut claimed)\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"let ready = ||\",\"send_root_learning_handoff(\",\"prepared.launch_native_with_ready(\",\"prepared.serve_with_text_and_ready(\",\"prepared.serve_with_ready(ready)\"],[\"publication_deployment.is_some() != publication_handoff.is_some()\",\"let publication_handoff = publication_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.enable_generation_publication()?\",\"capability.with_original_deployment(&path)?\",\"send_root_generation_publication_handoff(\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register(stop_ref)\",\"let served = match\",\"prepared.serve_with_ready(ready)\",\"drop(stop)\",\"worker.join()\",\"served?\"],[\"let registered = deployment.wait_and_register(stop_ref)?\",\"let stdout = std::io::stdout()\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"worker.join()\",\"served?\",\"registered?\"],[\"let initial_handoff = options.remove\",\"if (initial_deployment.is_some() || initial_handoff.is_some())\",\"if initial_deployment.is_some() != initial_handoff.is_some()\",\"if publication_deployment.is_some() != publication_handoff.is_some()\",\"let mut claimed =\",\"let initial_handoff = initial_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(\",\"prepared.enable_generation_initial(files.deployment().clone())\",\"capability.with_original_initial_deployment(files)?\",\"send_root_generation_initial_handoff(\",\"if let Some(session) = initial_ready\",\"std::io::stdout().flush()?\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register_initial(stop_ref)?\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"initial_worker\",\"worker.join()\",\"served?\",\"initial_registered\"]]\n\nrequired_function_order = [{ function = \"fn drop(\", sequence = [\"self.0.store(\",\"std::sync::atomic::Ordering::Release\"] }]\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "protected:codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "count": 1,
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\"\nrequired = [\"self.initial_publication.is_some()\",\"pub struct RootGenerationInitialEnrollmentCapabilityV1\",\"RootGenerationInitialOfferV1\",\"compare_exchange(ACTIVE, CONSUMED\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"from_test_store\",\"LearningIterationSnapshotV1\",\"register_host_learning\",\"FinalUseAuthority::new\"]\nrequired_function_order = [{ function = \"fn register(\", sequence = [\"original_root()?\",\"std::process::id() != self.root_pid\",\"root_start()? != self.process_start_ticks\",\"compare_exchange(ACTIVE, CONSUMED\",\"try_send(Submission\",\"recv_timeout(self.lifetime)\",\"self.phase.load(Ordering::Acquire) != CONSUMED\"] },{ function = \"fn enable_generation_initial(\", sequence = [\"original_root()?\",\"self.initial_publication.is_some()\",\"self.service.with_initial_publication_context(\",\"seal_bytes(\",\"AtomicU8::new(PREPARED)\",\"self.initial_publication = Some(InitialRuntime\"] }]\n\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\"\nrequired = [\"self.initial_publication.is_some()\",\"pub struct RootGenerationInitialEnrollmentCapabilityV1\",\"RootGenerationInitialOfferV1\",\"compare_exchange(ACTIVE, CONSUMED\",\"consumer_uid: u32\",\"consumer_uid: self.config.peer_uid\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"from_test_store\",\"LearningIterationSnapshotV1\",\"register_host_learning\",\"FinalUseAuthority::new\"]\nrequired_function_order = [{ function = \"fn register(\", sequence = [\"original_root()?\",\"std::process::id() != self.root_pid\",\"root_start()? != self.process_start_ticks\",\"compare_exchange(ACTIVE, CONSUMED\",\"try_send(Submission\",\"recv_timeout(self.lifetime)\",\"self.phase.load(Ordering::Acquire) != CONSUMED\"] },{ function = \"fn enable_generation_initial(\", sequence = [\"original_root()?\",\"self.initial_publication.is_some()\",\"self.service.with_initial_publication_context(\",\"seal_bytes(\",\"AtomicU8::new(PREPARED)\",\"self.initial_publication = Some(InitialRuntime\"] }]\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "protected:codex-rs/hepta-agentd/src/authority_host_publication_deployment_files.rs",
+      "count": 1,
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_publication_deployment_files.rs\"\nrequired = [\"file: File\",\"const METADATA_BOUND: u64 = 65_536\",\"libc::O_NOFOLLOW\",\"libc::O_NONBLOCK\",\"libc::O_DIRECTORY\",\"metadata.mode() & 0o7777 != 0o600\",\"metadata.nlink() != 1\",\"file.read_exact_at(\",\"Stamp::from_metadata(&std::fs::symlink_metadata(&self.path)?)\",\"self.parent.require_directory()?\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\",\".write(true)\",\".create(true)\",\".create_new(true)\"]\nrequired_function_order = [{ function = \"fn open_metadata(\", sequence = [\"require_absolute(path)?\",\"DirectoryPin::capture_root(\",\"open_readonly(path)?\",\"metadata.uid() != 0\",\"metadata.mode() & 0o7777 != 0o600\",\"metadata.nlink() != 1\",\"METADATA_BOUND\",\"file.read_exact_at(\",\"held.require_metadata_unchanged()?\"] }, { function = \"fn require_metadata_unchanged(\", sequence = [\"self.parent.require_directory()?\",\"std::fs::symlink_metadata(&self.path)?\",\"Stamp::from_metadata(&self.file.metadata()?)\",\"self.file.read_exact_at(\",\"Digest32::of_bytes(&bytes) != self.digest\",\"Stamp::from_metadata(&self.file.metadata()?)\",\"Stamp::from_metadata(&std::fs::symlink_metadata(&self.path)?)\",\"self.parent.require_directory()?\"] }, { function = \"fn open_original(\", sequence = [\"require_absolute(path)?\",\"DirectoryPin::capture_private(\",\"open_readonly(path)?\",\"metadata.nlink() != 1\",\"held.require_original_file()?\"] }]\n\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_publication_deployment_files.rs\"\nrequired = [\"file: File\",\"const METADATA_BOUND: u64 = 65_536\",\"libc::O_NOFOLLOW\",\"libc::O_NONBLOCK\",\"libc::O_DIRECTORY\",\"metadata.mode() & 0o7777 != 0o600\",\"metadata.nlink() != 1\",\"file.read_exact_at(\",\"Stamp::from_metadata(&std::fs::symlink_metadata(&self.path)?)\",\"self.parent.require_directory()?\",\"pub(in crate::authority_host_runtime::session) struct MetadataFile\",\"pub(in crate::authority_host_runtime::session) struct OriginalFile\",\"pub(in crate::authority_host_runtime::session) struct DirectoryPin\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\",\".write(true)\",\".create(true)\",\".create_new(true)\"]\nrequired_function_order = [{ function = \"fn open_metadata(\", sequence = [\"require_absolute(path)?\",\"DirectoryPin::capture_root(\",\"open_readonly(path)?\",\"metadata.uid() != 0\",\"metadata.mode() & 0o7777 != 0o600\",\"metadata.nlink() != 1\",\"METADATA_BOUND\",\"file.read_exact_at(\",\"held.require_metadata_unchanged()?\"] }, { function = \"fn require_metadata_unchanged(\", sequence = [\"self.parent.require_directory()?\",\"std::fs::symlink_metadata(&self.path)?\",\"Stamp::from_metadata(&self.file.metadata()?)\",\"self.file.read_exact_at(\",\"Digest32::of_bytes(&bytes) != self.digest\",\"Stamp::from_metadata(&self.file.metadata()?)\",\"Stamp::from_metadata(&std::fs::symlink_metadata(&self.path)?)\",\"self.parent.require_directory()?\"] }, { function = \"fn open_original(\", sequence = [\"require_absolute(path)?\",\"DirectoryPin::capture_private(\",\"open_readonly(path)?\",\"metadata.nlink() != 1\",\"held.require_original_file()?\"] }]\n\n"
+    },
+    {
+      "kind": "replace_exact",
+      "id": "protected:codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+      "count": 1,
+      "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs\"\nrequired = [\"#[serde(deny_unknown_fields)]\",\"pub(super) struct DeploymentData\",\"pub(super) struct LateMaterial\",\"pub target: ObserverData\",\"pub selection: SelectionData\",\"required_option\",\"from_original_selection(\",\"data.original_selection()? != *original\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\"]\nrequired_function_order = [{ function = \"fn original_selection(\", sequence = [\"Ok(SignedArtifactSelectionV1\",\"self\\n                .signature\\n                .as_slice()\\n                .try_into()\"] }, { function = \"fn from_original_selection(\", sequence = [\"original.artifact_kind != ArtifactKind::Model\",\"let data = Self\",\"data.original_selection()? != *original\",\"Ok(data)\"] }]\n\n",
+      "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs\"\nrequired = [\"#[serde(deny_unknown_fields)]\",\"pub(super) struct DeploymentData\",\"pub(super) struct LateMaterial\",\"pub target: ObserverData\",\"pub selection: SelectionData\",\"required_option\",\"from_original_selection(\",\"data.original_selection()? != *original\",\"pub(in crate::authority_host_runtime::session) struct ObserverData\",\"pub(in crate::authority_host_runtime::session) struct SelectorTrustData\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\"]\nrequired_function_order = [{ function = \"fn original_selection(\", sequence = [\"Ok(SignedArtifactSelectionV1\",\"self\\n                .signature\\n                .as_slice()\\n                .try_into()\"] }, { function = \"fn from_original_selection(\", sequence = [\"original.artifact_kind != ArtifactKind::Model\",\"let data = Self\",\"data.original_selection()? != *original\",\"Ok(data)\"] }]\n\n"
+    }
+  ],
+  "append": "[[boundary]]\nid = \"root_initial_deployment_original_files\"\nsymbol = \"RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\"\ndefinition_markers = [\"pub fn open_original_initial_deployment(\",\"original_root()?\",\"MetadataFile::open_metadata(path)?\",\"RootAuthorityDirectory::open(\",\"HostGenerationInitialDeploymentV1::new(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)open_original_initial_deployment\\\\s*\\\\(\"\n\n[[boundary]]\nid = \"root_initial_deployment_capture\"\nsymbol = \"RootGenerationInitialEnrollmentCapabilityV1::with_original_initial_deployment\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\"\ndefinition_markers = [\"pub fn with_original_initial_deployment(\",\"std::process::id() != self.root_pid\",\"INITIAL_ATTEMPTS.fetch_update(\",\"purpose: PURPOSE.into()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)with_original_initial_deployment\\\\s*\\\\(\"\n\n[[boundary]]\nid = \"root_initial_deployment_wait\"\nsymbol = \"RootGenerationInitialDeploymentV1::wait_and_register_initial\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\"\ndefinition_markers = [\"pub fn wait_and_register_initial(\",\"self.require_initial_trigger(&trigger)?\",\"let original_inputs: &InitialOriginalFiles\",\"capability.register(inputs)?\",\"map_err(initial_registration_uncertain)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)wait_and_register_initial\\\\s*\\\\(\"\n\n[[boundary]]\nid = \"root_initial_deployment_original_inputs\"\nsymbol = \"InitialOriginalFiles::initial_enrollment_inputs\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"\ndefinition_markers = [\"pub(super) fn initial_enrollment_inputs(\",\"read_dataset_withdrawal_snapshot(\",\"LearningArtifactReadViewV1::open_original(\",\"RootGenerationInitialEnrollmentV1\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)initial_enrollment_inputs\\\\s*\\\\(\"\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\"\nrequired = [\"#[serde(deny_unknown_fields)]\",\"root_boot_id\",\"root_start_ticks\",\"descriptor_digest\",\"purpose: PURPOSE.into()\",\"INITIAL_ATTEMPTS.fetch_update(\",\"self.capability.consumer_uid\",\"RootGenerationInitialEnrollmentCapabilityV1\",\"RootGenerationInitialDeploymentFilesV1\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\",\"from_test_store\",\"impl Clone for RootGenerationInitialDeploymentV1\",\"impl Default for RootGenerationInitialDeploymentV1\",\"impl Clone for RootGenerationInitialDeploymentFilesV1\"]\nrequired_function_order = [{ function = \"fn open_original_initial_deployment(\", sequence = [\"original_root()?\",\"MetadataFile::open_metadata(path)?\",\"serde_json::from_slice(&bytes)\",\"data.schema_version != 1\",\"DirectoryPin::capture_root(\",\"RootAuthorityDirectory::open(\",\"OriginalFile::open_original(\",\"HostGenerationInitialDeploymentV1::new(\",\"files.require_original_initial_files()?\",\"Ok(files)\"] },{ function = \"fn with_original_initial_deployment(\", sequence = [\"original_root()?\",\"std::process::id() != self.root_pid\",\"super::root_start()? != self.process_start_ticks\",\"self.phase.load(Ordering::Acquire)\",\"files.require_original_initial_files()?\",\"INITIAL_ATTEMPTS.fetch_update(\",\"purpose: PURPOSE.into()\",\"descriptor_digest: files.descriptor.digest().to_string()\",\"Ok(RootGenerationInitialDeploymentV1\"] },{ function = \"fn wait_and_register_initial(\", sequence = [\"self.capability.lifetime\",\"self.files.require_original_initial_files()?\",\"self.require_initial_wait(\",\"self.capability.phase.load\",\"ACTIVE => match MetadataFile::open_metadata(\",\"self.require_initial_trigger(&trigger)?\",\"let original_inputs: &InitialOriginalFiles\",\"initial_enrollment_inputs(\",\"self.files.require_original_initial_files()?\",\"trigger_file.require_metadata_unchanged()?\",\"file.require_original_file()?\",\"self.require_initial_wait(\",\"capability.register(inputs)?\",\"self.files.require_original_initial_files().map_err(initial_registration_uncertain)?\",\"trigger_file.require_metadata_unchanged().map_err(initial_registration_uncertain)?\",\"file.require_original_file().map_err(initial_registration_uncertain)?\",\"stopping.load(Ordering::Acquire)\",\"Ok(result)\"] },{ function = \"fn require_initial_trigger(\", sequence = [\"trigger.session != self.session\",\"trigger.session.purpose != PURPOSE\",\"return Err(\"] },{ function = \"fn require_initial_wait(\", sequence = [\"stopping.load(Ordering::Acquire)\",\"Instant::now() >= end\",\"io::ErrorKind::Interrupted\"] }]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs\"\nrequired = [\"#[serde(deny_unknown_fields)]\",\"pub mode: RootGenerationInitialModeV1\",\"pub operation: String\",\"pub target: ObserverData\",\"pub selection: SelectionData\",\"pub issuer_keys: Vec<IssuerKeyData>\",\"pub trigger: PathBuf\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\",\"from_test_store\",\"#[serde(default)]\",\"pub previous\",\"pub learning\",\"pub late_material\"]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\"\nrequired = [\"pub(super) struct InitialOriginalFiles\",\"pub current: Arc<RootAuthorityDirectory>\",\"consumer_uid: u32\",\"let reader: LearningArtifactReadViewV1\",\"mode: data.mode\",\"consumer: data.consumer\",\"issuer_keys: data.issuer_keys.iter()\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"AuthorityPosture::ALLOW_ALL\",\"SigningKey\",\"FinalUseAuthority::\",\"HostAuthorityFrontierStore::initialize\",\"NeuronGenerationCurrentOwnerV1::initialize\",\"from_test_store\",\".write(true)\",\".create(true)\",\".create_new(true)\"]\nrequired_function_order = [{ function = \"fn initial_enrollment_inputs(\", sequence = [\"self.require_initial_files()?\",\"data.owner_trust.original_owner_trust()?\",\"data.selector_trust.original_selector(&trust)?\",\"read_dataset_withdrawal_snapshot(\",\"data.selection.original_selection()?\",\"LearningArtifactReadViewV1::open_original(\",\"with_original_withdrawal_floor(\",\"reader.locate_selected_original_files(\",\"OriginalFile::open_original(&paths.0)?\",\"OriginalFile::open_original(&paths.1)?\",\"reader.locate_selected_original_files(\",\"let inputs = RootGenerationInitialEnrollmentV1\",\"self.require_initial_files()?\",\"Ok((inputs, vec![registry, payload]))\"] }]\n\n",
+  "add_product_callers": [
+    {
+      "id": "root_initial_separate_purpose_enable",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "id": "root_initial_one_shot_enrollment",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+    },
+    {
+      "id": "root_initial_purpose_send",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "id": "root_artifact_original_reader_open",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+    },
+    {
+      "id": "root_artifact_original_withdrawal_bind",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+    },
+    {
+      "id": "root_artifact_original_selection_files",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+    }
+  ],
+  "new_boundaries": [
+    {
+      "id": "root_initial_deployment_original_files",
+      "symbol": "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "definition_markers": [
+        "pub fn open_original_initial_deployment(",
+        "original_root()?",
+        "MetadataFile::open_metadata(path)?",
+        "RootAuthorityDirectory::open(",
+        "HostGenerationInitialDeploymentV1::new("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_original_initial_deployment\\s*\\("
+    },
+    {
+      "id": "root_initial_deployment_capture",
+      "symbol": "RootGenerationInitialEnrollmentCapabilityV1::with_original_initial_deployment",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "definition_markers": [
+        "pub fn with_original_initial_deployment(",
+        "std::process::id() != self.root_pid",
+        "INITIAL_ATTEMPTS.fetch_update(",
+        "purpose: PURPOSE.into()"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_original_initial_deployment\\s*\\("
+    },
+    {
+      "id": "root_initial_deployment_wait",
+      "symbol": "RootGenerationInitialDeploymentV1::wait_and_register_initial",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "definition_markers": [
+        "pub fn wait_and_register_initial(",
+        "self.require_initial_trigger(&trigger)?",
+        "let original_inputs: &InitialOriginalFiles",
+        "capability.register(inputs)?",
+        "map_err(initial_registration_uncertain)"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)wait_and_register_initial\\s*\\("
+    },
+    {
+      "id": "root_initial_deployment_original_inputs",
+      "symbol": "InitialOriginalFiles::initial_enrollment_inputs",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "definition_markers": [
+        "pub(super) fn initial_enrollment_inputs(",
+        "read_dataset_withdrawal_snapshot(",
+        "LearningArtifactReadViewV1::open_original(",
+        "RootGenerationInitialEnrollmentV1"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+      ],
+      "caller_markers": [],
+      "call_pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)initial_enrollment_inputs\\s*\\("
+    }
+  ],
+  "new_protected_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "required": [
+        "#[serde(deny_unknown_fields)]",
+        "root_boot_id",
+        "root_start_ticks",
+        "descriptor_digest",
+        "purpose: PURPOSE.into()",
+        "INITIAL_ATTEMPTS.fetch_update(",
+        "self.capability.consumer_uid",
+        "RootGenerationInitialEnrollmentCapabilityV1",
+        "RootGenerationInitialDeploymentFilesV1"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "FinalUseAuthority::",
+        "HostAuthorityFrontierStore::initialize",
+        "NeuronGenerationCurrentOwnerV1::initialize",
+        "from_test_store",
+        "impl Clone for RootGenerationInitialDeploymentV1",
+        "impl Default for RootGenerationInitialDeploymentV1",
+        "impl Clone for RootGenerationInitialDeploymentFilesV1"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn open_original_initial_deployment(",
+          "sequence": [
+            "original_root()?",
+            "MetadataFile::open_metadata(path)?",
+            "serde_json::from_slice(&bytes)",
+            "data.schema_version != 1",
+            "DirectoryPin::capture_root(",
+            "RootAuthorityDirectory::open(",
+            "OriginalFile::open_original(",
+            "HostGenerationInitialDeploymentV1::new(",
+            "files.require_original_initial_files()?",
+            "Ok(files)"
+          ]
+        },
+        {
+          "function": "fn with_original_initial_deployment(",
+          "sequence": [
+            "original_root()?",
+            "std::process::id() != self.root_pid",
+            "super::root_start()? != self.process_start_ticks",
+            "self.phase.load(Ordering::Acquire)",
+            "files.require_original_initial_files()?",
+            "INITIAL_ATTEMPTS.fetch_update(",
+            "purpose: PURPOSE.into()",
+            "descriptor_digest: files.descriptor.digest().to_string()",
+            "Ok(RootGenerationInitialDeploymentV1"
+          ]
+        },
+        {
+          "function": "fn wait_and_register_initial(",
+          "sequence": [
+            "self.capability.lifetime",
+            "self.files.require_original_initial_files()?",
+            "self.require_initial_wait(",
+            "self.capability.phase.load",
+            "ACTIVE => match MetadataFile::open_metadata(",
+            "self.require_initial_trigger(&trigger)?",
+            "let original_inputs: &InitialOriginalFiles",
+            "initial_enrollment_inputs(",
+            "self.files.require_original_initial_files()?",
+            "trigger_file.require_metadata_unchanged()?",
+            "file.require_original_file()?",
+            "self.require_initial_wait(",
+            "capability.register(inputs)?",
+            "self.files.require_original_initial_files().map_err(initial_registration_uncertain)?",
+            "trigger_file.require_metadata_unchanged().map_err(initial_registration_uncertain)?",
+            "file.require_original_file().map_err(initial_registration_uncertain)?",
+            "stopping.load(Ordering::Acquire)",
+            "Ok(result)"
+          ]
+        },
+        {
+          "function": "fn require_initial_trigger(",
+          "sequence": [
+            "trigger.session != self.session",
+            "trigger.session.purpose != PURPOSE",
+            "return Err("
+          ]
+        },
+        {
+          "function": "fn require_initial_wait(",
+          "sequence": [
+            "stopping.load(Ordering::Acquire)",
+            "Instant::now() >= end",
+            "io::ErrorKind::Interrupted"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs",
+      "required": [
+        "#[serde(deny_unknown_fields)]",
+        "pub mode: RootGenerationInitialModeV1",
+        "pub operation: String",
+        "pub target: ObserverData",
+        "pub selection: SelectionData",
+        "pub issuer_keys: Vec<IssuerKeyData>",
+        "pub trigger: PathBuf"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "FinalUseAuthority::",
+        "HostAuthorityFrontierStore::initialize",
+        "NeuronGenerationCurrentOwnerV1::initialize",
+        "from_test_store",
+        "#[serde(default)]",
+        "pub previous",
+        "pub learning",
+        "pub late_material"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "required": [
+        "pub(super) struct InitialOriginalFiles",
+        "pub current: Arc<RootAuthorityDirectory>",
+        "consumer_uid: u32",
+        "let reader: LearningArtifactReadViewV1",
+        "mode: data.mode",
+        "consumer: data.consumer",
+        "issuer_keys: data.issuer_keys.iter()"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "AuthorityPosture::ALLOW_ALL",
+        "SigningKey",
+        "FinalUseAuthority::",
+        "HostAuthorityFrontierStore::initialize",
+        "NeuronGenerationCurrentOwnerV1::initialize",
+        "from_test_store",
+        ".write(true)",
+        ".create(true)",
+        ".create_new(true)"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn initial_enrollment_inputs(",
+          "sequence": [
+            "self.require_initial_files()?",
+            "data.owner_trust.original_owner_trust()?",
+            "data.selector_trust.original_selector(&trust)?",
+            "read_dataset_withdrawal_snapshot(",
+            "data.selection.original_selection()?",
+            "LearningArtifactReadViewV1::open_original(",
+            "with_original_withdrawal_floor(",
+            "reader.locate_selected_original_files(",
+            "OriginalFile::open_original(&paths.0)?",
+            "OriginalFile::open_original(&paths.1)?",
+            "reader.locate_selected_original_files(",
+            "let inputs = RootGenerationInitialEnrollmentV1",
+            "self.require_initial_files()?",
+            "Ok((inputs, vec![registry, payload]))"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Late pairing is strengthened to precede every FD claim; its former order is moved, not dropped.",
+    "Common helpers remain restricted to authority_host_runtime::session, retaining all original path/FD/owner/link/mode guards.",
+    "The existing Initial cap supplies consumer_uid from the original config only.",
+    "Native formatting may require exact whitespace-only definition-marker updates, never removal of semantic guards."
+  ],
+  "base_git_blob": "54470dc74b5c536f089f92753e1492d269b51d46",
+  "base_sha256": "da4c30e64d81d85112d0ed053b249f1a84d03e376e4eef717c48d58b12fbed85",
+  "postimage": {
+    "git_blob": "df53866a26d88873f1753d396a9e9d8be9a1db81",
+    "sha256": "9335f072ba7317ae926fbefb3c446f9deaadab93fe6d3525bd0e0dce67ab07f1",
+    "bytes": 607118
+  },
+  "postimage_source_rows": 457,
+  "postimage_protected_rows": 335
+}

@@ -201,17 +201,7 @@ impl ReplayWindow {
         }
         self.highest_sequence.insert(replay_key, envelope.sequence);
 
-        let mut bytes = Vec::new();
-        bytes.extend_from_slice(b"hepta.authbus.preverified-replay.v1\0");
-        push_id(&mut bytes, &context.issuer_id);
-        bytes.extend_from_slice(&context.key_epoch.get().to_be_bytes());
-        push_id(&mut bytes, &envelope.message_id);
-        push_id(&mut bytes, &envelope.subject_id);
-        bytes.extend_from_slice(envelope.scope_digest.as_array());
-        bytes.extend_from_slice(envelope.payload_digest.as_array());
-        bytes.extend_from_slice(envelope.signature_digest.as_array());
-        bytes.extend_from_slice(&envelope.sequence.to_be_bytes());
-        bytes.extend_from_slice(&envelope.expires_at_ms.to_be_bytes());
+        let envelope_digest = envelope_digest(&context.issuer_id, context.key_epoch, &envelope);
 
         Ok(VerificationReceipt {
             message_id: envelope.message_id,
@@ -219,10 +209,29 @@ impl ReplayWindow {
             key_epoch: context.key_epoch,
             subject_id: envelope.subject_id,
             sequence: envelope.sequence,
-            envelope_digest: Digest32::of_bytes(&bytes),
+            envelope_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
     }
+}
+
+fn envelope_digest(
+    issuer_id: &StableId,
+    key_epoch: Generation,
+    envelope: &PreverifiedAuthEnvelope,
+) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.authbus.preverified-replay.v1\0");
+    push_id(&mut bytes, issuer_id);
+    bytes.extend_from_slice(&key_epoch.get().to_be_bytes());
+    push_id(&mut bytes, &envelope.message_id);
+    push_id(&mut bytes, &envelope.subject_id);
+    bytes.extend_from_slice(envelope.scope_digest.as_array());
+    bytes.extend_from_slice(envelope.payload_digest.as_array());
+    bytes.extend_from_slice(envelope.signature_digest.as_array());
+    bytes.extend_from_slice(&envelope.sequence.to_be_bytes());
+    bytes.extend_from_slice(&envelope.expires_at_ms.to_be_bytes());
+    Digest32::of_bytes(&bytes)
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {

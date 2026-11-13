@@ -1,0 +1,6 @@
+# The generated library takes CARGO_PKG_VERSION=1.0.1 from this Cargo.toml.
+alias(
+    name = "zbus-secret-service-keyring-store",
+    actual = "@crates//:zbus-secret-service-keyring-store-1.0.1",
+    visibility = ["//visibility:public"],
+)

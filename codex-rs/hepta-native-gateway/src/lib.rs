@@ -7,6 +7,7 @@
 
 use std::env;
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -18,6 +19,19 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
+
+mod http_origin;
+mod http_transport;
+mod owner_status;
+mod ui_bundle;
+
+pub use owner_status::OwnerLeaseDisposition;
+pub use owner_status::OwnerLeaseObservation;
+pub use owner_status::OwnerObservationFuture;
+pub use owner_status::OwnerReadFailure;
+pub use owner_status::OwnerStatusProvider;
+use ui_bundle::UiBundle;
+pub use ui_bundle::UiBundleOptions;
 
 pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
 pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
@@ -52,6 +66,7 @@ const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
 pub struct NativeGatewayOptions {
     pub listen_addr: SocketAddr,
     pub state_root: HeptaStateRoot,
+    pub ui_bundle: Option<UiBundleOptions>,
 }
 
 impl NativeGatewayOptions {
@@ -59,6 +74,8 @@ impl NativeGatewayOptions {
         let mut listen_addr = DEFAULT_LISTEN_ADDR.to_string();
         let mut state_root = default_root;
         let mut positional_listen_seen = false;
+        let mut ui_directory = None;
+        let mut ui_manifest_sha256 = None;
         let mut index = 0;
         while index < raw_args.len() {
             match raw_args[index].as_str() {
@@ -68,6 +85,23 @@ impl NativeGatewayOptions {
                         .get(index)
                         .context("--listen requires HOST:PORT")?
                         .clone();
+                }
+                "--ui-bundle" => {
+                    index += 1;
+                    ui_directory = Some(PathBuf::from(
+                        raw_args
+                            .get(index)
+                            .context("--ui-bundle requires an absolute directory")?,
+                    ));
+                }
+                "--ui-manifest-sha256" => {
+                    index += 1;
+                    ui_manifest_sha256 = Some(
+                        raw_args
+                            .get(index)
+                            .context("--ui-manifest-sha256 requires a digest")?
+                            .clone(),
+                    );
                 }
                 "--state-root" => {
                     index += 1;
@@ -87,9 +121,18 @@ impl NativeGatewayOptions {
             .parse::<SocketAddr>()
             .with_context(|| format!("parse loopback listen address {listen_addr}"))?;
         validate_loopback(listen_addr)?;
+        let ui_bundle = match (ui_directory, ui_manifest_sha256) {
+            (None, None) => None,
+            (Some(directory), Some(manifest_sha256)) => Some(UiBundleOptions {
+                directory,
+                manifest_sha256,
+            }),
+            _ => anyhow::bail!("--ui-bundle and --ui-manifest-sha256 must be supplied together"),
+        };
         Ok(Self {
             listen_addr,
             state_root,
+            ui_bundle,
         })
     }
 }
@@ -134,8 +177,35 @@ pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
 }
 
 pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+    run_native_gateway_with_owner_status(options, OwnerStatusProvider::default()).await
+}
+
+/// Attach only an already-owned, weak, read-only observation provider.
+/// The default CLI never constructs a production owner as a side effect.
+pub async fn run_native_gateway_with_owner_status(
+    options: NativeGatewayOptions,
+    owner_status: OwnerStatusProvider,
+) -> Result<()> {
     validate_closed_effect_environment()?;
-    let runtime = Arc::new(HeptaRuntime::open_existing(options.state_root).await?);
+    let ui = options
+        .ui_bundle
+        .as_ref()
+        .map(UiBundle::load)
+        .transpose()?
+        .map(Arc::new);
+    if let Some(ui) = &ui {
+        eprintln!("Rust UI artifact source identity {}", ui.source_identity);
+    }
+    let runtime = match HeptaRuntime::open_existing(options.state_root).await {
+        Ok(runtime) => Some(Arc::new(runtime)),
+        Err(_) if ui.is_some() => {
+            eprintln!(
+                "Legacy runtime unavailable; serving verified UI with closed read-only status"
+            );
+            None
+        }
+        Err(error) => return Err(error),
+    };
     let listener = TcpListener::bind(options.listen_addr)
         .await
         .with_context(|| format!("bind Hepta gateway at {}", options.listen_addr))?;
@@ -145,6 +215,7 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
     validate_loopback(actual_addr)?;
     eprintln!("hepta live shell listening on http://{actual_addr}");
 
+    let mut connections = http_transport::ConnectionTasks::default();
     loop {
         tokio::select! {
             accepted = listener.accept() => {
@@ -152,15 +223,16 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
                 if !peer.ip().is_loopback() {
                     continue;
                 }
-                let runtime = Arc::clone(&runtime);
-                tokio::spawn(async move {
-                    if let Err(error) = serve_connection(stream, runtime).await {
-                        eprintln!("hepta loopback request failed: {error:#}");
-                    }
+                let runtime = runtime.clone();
+                let ui = ui.clone();
+                let owner_status = owner_status.clone();
+                let _ = connections.try_spawn(async move {
+                    serve_connection(stream, runtime, ui, owner_status).await
                 });
             }
             signal = tokio::signal::ctrl_c() => {
                 signal.context("wait for gateway shutdown signal")?;
+                connections.shutdown().await;
                 return Ok(());
             }
         }
@@ -227,19 +299,92 @@ fn runtime_representation(request: &str) -> RuntimeRepresentation {
     RuntimeRepresentation::Json
 }
 
-async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
+async fn serve_connection(
+    mut stream: TcpStream,
+    runtime: Option<Arc<HeptaRuntime>>,
+    ui: Option<Arc<UiBundle>>,
+    owner_status: OwnerStatusProvider,
+) -> Result<()> {
     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
         .await
         .context("loopback request timed out")??;
-    let response = route_request(&request, &runtime)?;
-    tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
-        .await
-        .context("loopback response timed out")?
-        .context("write loopback response")?;
+    if !http_origin::allowed(&request, stream.local_addr()?) {
+        let rejected = response(
+            "403 Forbidden",
+            "application/json; charset=utf-8",
+            br#"{"error":"loopback Host/Origin boundary rejected request"}"#,
+        );
+        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&rejected))
+            .await
+            .context("rejected response timed out")?
+            .context("write rejected response")?;
+    } else if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
+        http_transport::write_ui_response(&mut stream, &asset.headers, &asset.body).await?;
+    } else {
+        let response = if request_target(&request) == Some(("GET", "/api/hepta/owner-status")) {
+            response(
+                "200 OK",
+                "application/json; charset=utf-8",
+                &owner_status.json().await?,
+            )
+        } else if let Some(runtime) = &runtime {
+            route_request(&request, runtime)?
+        } else {
+            route_unavailable(&request)
+        };
+        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
+            .await
+            .context("loopback response timed out")?
+            .context("write loopback response")?;
+    }
     tokio::time::timeout(RESPONSE_TIMEOUT, stream.shutdown())
         .await
         .context("loopback shutdown timed out")?
         .context("close loopback response")
+}
+
+fn request_target(request: &[u8]) -> Option<(&str, &str)> {
+    let text = std::str::from_utf8(request).ok()?;
+    let mut fields = text.lines().next()?.split_whitespace();
+    let method = fields.next()?;
+    let target = fields.next()?.split('?').next()?;
+    let version = fields.next()?;
+    if fields.next().is_some() || !matches!(version, "HTTP/1.0" | "HTTP/1.1") {
+        return None;
+    }
+    Some((method, target))
+}
+
+fn route_unavailable(request: &[u8]) -> Vec<u8> {
+    let (status, body): (&str, &[u8]) = match request_target(request) {
+        None => ("400 Bad Request", br#"{"error":"bad request"}"#),
+        Some((method, _)) if method != "GET" => (
+            "405 Method Not Allowed",
+            br#"{"error":"live shell is read-only"}"#,
+        ),
+        Some(("GET", "/healthz" | "/api/hepta/runtime")) => (
+            "503 Service Unavailable",
+            br#"{"product":"hepta","status":"unavailable","error":"legacy runtime unavailable"}"#,
+        ),
+        Some(("GET", "/")) => (
+            "503 Service Unavailable",
+            br#"{"error":"verified UI bundle unavailable"}"#,
+        ),
+        Some(_) => ("404 Not Found", br#"{"error":"not found"}"#),
+    };
+    response(status, "application/json; charset=utf-8", body)
+}
+
+fn ui_response(request: &[u8], ui: &UiBundle) -> Option<ui_bundle::UiResponse> {
+    let text = std::str::from_utf8(request).ok()?;
+    let mut fields = text.lines().next()?.split_whitespace();
+    let method = fields.next()?;
+    let target = fields.next()?;
+    let version = fields.next()?;
+    if method != "GET" || !matches!(version, "HTTP/1.0" | "HTTP/1.1") || fields.next().is_some() {
+        return None;
+    }
+    ui.response(target)
 }
 
 async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
@@ -328,9 +473,9 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
             )),
         },
         "/" => Ok(response(
-            "200 OK",
-            "text/html; charset=utf-8",
-            CONTROL_SHELL.as_bytes(),
+            "503 Service Unavailable",
+            "application/json; charset=utf-8",
+            br#"{"error":"Rust UI bundle unavailable; configure the owned build artifact"}"#,
         )),
         _ => Ok(response(
             "404 Not Found",
@@ -350,19 +495,6 @@ fn response(status: &str, content_type: &str, body: &[u8]) -> Vec<u8> {
     response.extend_from_slice(body);
     response
 }
-
-const CONTROL_SHELL: &str = r#"<!doctype html>
-<html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hepta vNext</title>
-<style>body{font:16px system-ui;margin:3rem;max-width:58rem}pre{padding:1rem;background:#111;color:#eee;overflow:auto}</style>
-<h1>Hepta vNext live shell</h1>
-<p>Loopback-only, read-only internal canary surface.</p>
-<pre id="status">loading…</pre>
-<script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
-</html>
-"#;
 
 #[cfg(test)]
 #[path = "organ_request_tests.rs"]
@@ -493,13 +625,19 @@ mod tests {
         let server = tokio::spawn(async move {
             let (stream, peer) = listener.accept().await?;
             assert!(peer.ip().is_loopback());
-            serve_connection(stream, runtime).await
+            serve_connection(
+                stream,
+                Some(runtime),
+                /*ui*/ None,
+                OwnerStatusProvider::default(),
+            )
+            .await
         });
 
         let mut client = TcpStream::connect(address).await?;
         client
             .write_all(
-                b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n",
+                format!("GET /api/hepta/runtime HTTP/1.1\r\nHost: {address}\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n").as_bytes(),
             )
             .await?;
         let mut response = Vec::new();

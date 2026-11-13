@@ -3,6 +3,7 @@
 use super::*;
 use crate::RolloutLine;
 use crate::list::parse_cursor;
+use crate::test_support::private_home;
 use chrono::DateTime;
 use chrono::NaiveDateTime;
 use chrono::Timelike;
@@ -96,7 +97,7 @@ async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> a
 
 #[tokio::test]
 async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
         "test-provider".to_string(),
@@ -130,7 +131,7 @@ async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> 
 
 #[tokio::test]
 async fn try_init_times_out_waiting_for_stuck_startup_backfill() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
         "test-provider".to_string(),
@@ -161,7 +162,7 @@ async fn try_init_times_out_waiting_for_stuck_startup_backfill() -> anyhow::Resu
 
 #[tokio::test]
 async fn reconcile_rollout_preserves_existing_explicit_title() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let thread_id = ThreadId::new();
     let rollout_path =
         write_rollout_with_user_message(home.path(), thread_id, "Hey", ThreadHistoryMode::Legacy)?;
@@ -202,7 +203,7 @@ async fn reconcile_rollout_preserves_existing_explicit_title() -> anyhow::Result
 
 #[tokio::test]
 async fn filesystem_repair_preserves_existing_rollout_path() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let thread_id = ThreadId::new();
     let initial_rollout_path = write_rollout_with_user_message(
         home.path(),
@@ -262,7 +263,7 @@ async fn filesystem_repair_preserves_existing_rollout_path() -> anyhow::Result<(
 
 #[tokio::test]
 async fn reconcile_rollout_preserves_existing_paginated_memory_mode() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let thread_id = ThreadId::new();
     let rollout_path = write_rollout_with_user_message(
         home.path(),

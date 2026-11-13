@@ -1,0 +1,57 @@
+{
+  "source": "d95c8993b5a80d1636aa74f369586e5b75ef420e",
+  "same_blob_at_c84": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+  "job": 130925917223,
+  "hunks": [
+    {
+      "reported_line": 3,
+      "old": "//! completion or FileCAS is created.\n\nuse super::*;\nuse anyhow::Context;\nuse crate::DeploymentGrantPolicy;\nuse crate::HostAuthorityBootstrap;\nuse crate::HostAuthorityConsumerConfig;",
+      "next": "//! completion or FileCAS is created.\n\nuse super::*;\nuse crate::DeploymentGrantPolicy;\nuse crate::HostAuthorityBootstrap;\nuse crate::HostAuthorityConsumerConfig;"
+    },
+    {
+      "reported_line": 11,
+      "old": "use crate::HostAuthoritySocketPaths;\nuse crate::HostAuthorityWriterRegistration;\nuse crate::HostIssuerRecordProfile;\nuse codex_hepta_contracts::authority_lease::AuthorityLease;\nuse codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;\nuse codex_hepta_fleet::AgentLifecycle;",
+      "next": "use crate::HostAuthoritySocketPaths;\nuse crate::HostAuthorityWriterRegistration;\nuse crate::HostIssuerRecordProfile;\nuse anyhow::Context;\nuse codex_hepta_contracts::authority_lease::AuthorityLease;\nuse codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;\nuse codex_hepta_fleet::AgentLifecycle;"
+    },
+    {
+      "reported_line": 105,
+      "old": "            &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;\n        owned_mode(\n            fleet.as_path(), /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;\n        let agent = AgentId::parse(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\")?;\n        registry.register(AgentManifest::new(",
+      "next": "            &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;\n        owned_mode(\n            fleet.as_path(),\n            /*uid*/ 0,\n            /*gid*/ 60001,\n            /*mode*/ 0o710,\n        )?;\n        let agent = AgentId::parse(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\")?;\n        registry.register(AgentManifest::new("
+    },
+    {
+      "reported_line": 430,
+      "old": "        );\n        std::thread::scope(|scope| -> anyhow::Result<()> {\n            let registration = scope.spawn(|| -> anyhow::Result<()> {\n                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY\"))?;\n                // The original child has now opened both real nonce owners.\n                // The production loader invokes the original same-PID cap.\n                let unchanged = support::protected_files(&self.current_path)?;",
+      "next": "        );\n        std::thread::scope(|scope| -> anyhow::Result<()> {\n            let registration = scope.spawn(|| -> anyhow::Result<()> {\n                control(&self.offer, b\"ORIGINAL_INPUTS_READY\").with_context(|| {\n                    format!(\"initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY\")\n                })?;\n                // The original child has now opened both real nonce owners.\n                // The production loader invokes the original same-PID cap.\n                let unchanged = support::protected_files(&self.current_path)?;"
+    },
+    {
+      "reported_line": 452,
+      "old": "                    );\n                    send_data(&self.offer, &false)?;\n                } else {\n                    let registered = outcome\n                        .with_context(|| format!(\"initial parent {phase:?}: registering original deployment\"))?;\n                    anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());\n                    send_data(&self.offer, &true)?;\n                }",
+      "next": "                    );\n                    send_data(&self.offer, &false)?;\n                } else {\n                    let registered = outcome.with_context(|| {\n                        format!(\"initial parent {phase:?}: registering original deployment\")\n                    })?;\n                    anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());\n                    send_data(&self.offer, &true)?;\n                }"
+    },
+    {
+      "reported_line": 460,
+      "old": "                if phase == Phase::RetiredSession {\n                    control(&self.offer, b\"RETIRE_READY\")\n                        .with_context(|| format!(\"initial parent {phase:?}: awaiting RETIRE_READY\"))?;\n                    assert_eq!(self.offer.send(b\"RETIRE\")?, 6);\n                }\n                control(&self.offer, b\"STABLE\")",
+      "next": "                if phase == Phase::RetiredSession {\n                    control(&self.offer, b\"RETIRE_READY\").with_context(|| {\n                        format!(\"initial parent {phase:?}: awaiting RETIRE_READY\")\n                    })?;\n                    assert_eq!(self.offer.send(b\"RETIRE\")?, 6);\n                }\n                control(&self.offer, b\"STABLE\")"
+    },
+    {
+      "reported_line": 481,
+      "old": "            });\n            let served = prepared.serve_with_ready(move || {\n                crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending original production handoff\"))\n                    .map_err(io::Error::other)?;\n                crate::send_root_generation_initial_handoff(\n                    send.try_clone()?,",
+      "next": "            });\n            let served = prepared.serve_with_ready(move || {\n                crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)\n                    .with_context(|| {\n                        format!(\"initial parent {phase:?}: sending original production handoff\")\n                    })\n                    .map_err(io::Error::other)?;\n                crate::send_root_generation_initial_handoff(\n                    send.try_clone()?,"
+    },
+    {
+      "reported_line": 489,
+      "old": "                    &root_pin,\n                    TIMEOUT,\n                )\n                .with_context(|| format!(\"initial parent {phase:?}: sending original initial handoff\"))\n                .map_err(io::Error::other)?;\n                send_data(&send, &plan)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending component plan\"))",
+      "next": "                    &root_pin,\n                    TIMEOUT,\n                )\n                .with_context(|| {\n                    format!(\"initial parent {phase:?}: sending original initial handoff\")\n                })\n                .map_err(io::Error::other)?;\n                send_data(&send, &plan)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending component plan\"))"
+    },
+    {
+      "reported_line": 496,
+      "old": "                    .map_err(io::Error::other)?;\n                send_target_files(&send, target_writer, witness_writer)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending original target descriptors\"))\n                    .map_err(io::Error::other)\n            });\n            let registered = registration",
+      "next": "                    .map_err(io::Error::other)?;\n                send_target_files(&send, target_writer, witness_writer)\n                    .with_context(|| {\n                        format!(\"initial parent {phase:?}: sending original target descriptors\")\n                    })\n                    .map_err(io::Error::other)\n            });\n            let registered = registration"
+    },
+    {
+      "reported_line": 514,
+      "old": "                    \"source refusal or controlled ACK loss closes original lane\"\n                );\n            } else {\n                served.with_context(|| format!(\"initial parent {phase:?}: original Root serving\"))?;\n            }\n            // CLOSED alone is insufficient: all original service threads and\n            // the original success/refusal result above must also be complete.",
+      "next": "                    \"source refusal or controlled ACK loss closes original lane\"\n                );\n            } else {\n                served\n                    .with_context(|| format!(\"initial parent {phase:?}: original Root serving\"))?;\n            }\n            // CLOSED alone is insufficient: all original service threads and\n            // the original success/refusal result above must also be complete."
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.original-source-qa-repair.v1",
+  "status": "static-postimages-created-tests-not-executed",
+  "base_commit": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "base_tree": "1eba30f512a0fcd0463417c5f14537493cd8b104",
+  "source_files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "mode": "100644",
+      "preimage_git_blob": "c12ccfa926a6117563e3bc9fbbfb1d2425701f84",
+      "git_blob": "ee0f5225031f82edf413a7f4bed12f77ff479a7b",
+      "bytes": 15236,
+      "sha256": "6128faf8dfe2857f50a46276e5ff6c41d77c28e073a94351a757e1ab21a86713"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "mode": "100644",
+      "preimage_git_blob": "689dc845d2af7f1b32d88fbaa6f02bdb1cd99d0a",
+      "git_blob": "0153b93c21edc31a44cca9581ddc96773ac0ecb1",
+      "bytes": 18640,
+      "sha256": "c012f74430e0e9c5e05e4717bb4ad590f0acd2f559027137db5eaace69209198"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "mode": "100644",
+      "preimage_git_blob": "cb7dae50f397a58393cdf09a58b4637a8bc827bd",
+      "git_blob": "933545411cbb79d7adefb4c3975873e6d2133935",
+      "bytes": 5156,
+      "sha256": "a93959a0a2d52357d3034ea57be7d568b5a47557af29448057ea3a34d4ea5e4a"
+    }
+  ],
+  "shared_metadata": {
+    "path": "CALLERS.toml",
+    "preimage_git_blob": "54470dc74b5c536f089f92753e1492d269b51d46",
+    "postimage_sha256": "078c6c23580e58a66d05a1321155ad38d64053efc44af35577314b9f8742f6ff",
+    "postimage_bytes": 597852,
+    "apply": {
+      "path": "qualification/ordinary-initial-root-publication-20261111/QA_SOURCE_SEMANTIC_OPS.json",
+      "git_blob": "24e988f3452e6fea848faed125e45f41fcf003a8",
+      "bytes": 10518,
+      "sha256": "5d945d1501b8c6a86930eed666326c8820a2f88a08f8c12710989d21fcf603b6"
+    }
+  },
+  "semantic_ops": {
+    "path": "qualification/ordinary-initial-root-publication-20261111/QA_SOURCE_SEMANTIC_OPS.json",
+    "git_blob": "24e988f3452e6fea848faed125e45f41fcf003a8",
+    "bytes": 10518,
+    "sha256": "5d945d1501b8c6a86930eed666326c8820a2f88a08f8c12710989d21fcf603b6"
+  },
+  "facts": [
+    "B common attest/readback definitions and legacy wrappers are in the same owner file. The unchanged checker skips the definition path while calculating external product callers. The external concrete Evaluation stage remains declared; both same-file wrapper deletion mutants are retained.",
+    "The original external evidence-client trust, peer UID/PID checks, independent B principals/controllers, timing, execution and holdout paths are unchanged.",
+    "Root source selection still explicitly distinguishes HostStageOwners, OriginalObjective and OriginalQ24. Added mutants reject mapping either original kind into HostStageOwners and remove neither the pre-claim nor post-claim source validation.",
+    "Retained-source mutants reject dropping the opaque capability, skipping installation or live read, accepting a different request, using the new daemon outbox, or returning success without the registered historical source check.",
+    "Initial service is the exact fourth private sealed-bytes caller in the integrated 89b3 tree; QA now requires that path explicitly.",
+    "The cfg(test) private Test store is a braced variant retaining the same Arc field, the same two load/CAS test arms, the same test constructor and all four cfg(test) attributes. No production constructor was renamed."
+  ],
+  "validation": {
+    "exact_fragment_replay": {
+      "executed_in_functions_v8": true,
+      "result": "all 13 exact operations reproduce all four postimages",
+      "no_native_claim": true
+    },
+    "python_qa": {
+      "executed": false,
+      "reason": "local exec returned No usable execution environment",
+      "expected_test_methods": {
+        "evaluation": 9,
+        "root_bootstrap": 14,
+        "total": 23
+      },
+      "counts_are_static": true
+    },
+    "native_rust": {
+      "executed": false
+    },
+    "checker_unchanged": {
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f"
+    },
+    "parent_readonly_mask_diagnostic": {
+      "source": "root reported actual v8 readonly original-checker result; no test or native claim by this patch",
+      "preimage_sha256": "92a579fa6d6596a9ff8170dcd1740af8e6674162182a3d82a899a9fb4795c091",
+      "raw_function_count": 1,
+      "masked_function_count": 0,
+      "after_in_memory_braced_variant_masked_count": 1
+    }
+  },
+  "tests": {
+    "methods": {
+      "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py": [
+        "test_four_original_read_edges_have_exact_typed_registered_callers",
+        "test_four_receipt_ports_and_legacy_stage_assembly_remain_closed",
+        "test_exact_training_scope_and_enrolled_key_precede_journal_custody",
+        "test_original_execution_and_sealed_qualification_bind_full_recovered_history",
+        "test_current_original_sources_and_durable_pending_precede_exact_signature",
+        "test_actual_time_full_principals_and_controller_separation_remain_required",
+        "test_original_signature_readback_revalidates_sources_and_witness_before_ack",
+        "test_original_execution_adapter_rejects_writes_and_substituted_namespace",
+        "test_owner_cannot_generate_keys_replace_trust_or_assemble_stage_authority"
+      ],
+      "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py": [
+        "test_inventory_and_exact_product_callers_are_closed",
+        "test_registration_cannot_omit_original_authority_or_postchecks",
+        "test_recovery_is_open_only_and_uses_original_owner",
+        "test_profile_requires_canonical_empty_initial_and_original_writer",
+        "test_handoff_requires_original_root_and_exact_two_rights",
+        "test_client_requires_cross_lane_scope_and_original_current",
+        "test_unassembled_stage_owners_are_refused_before_runtime_side_effects",
+        "test_original_source_scope_requires_registered_membership",
+        "test_original_root_source_join_cannot_be_dropped_or_downgraded",
+        "test_each_original_source_kind_cannot_fall_back_to_host_stage_owners",
+        "test_retained_original_source_cannot_be_dropped_or_use_current_outbox",
+        "test_pending_guard_must_execute_at_top_level",
+        "test_registered_learning_cannot_be_silently_dropped_by_retained_serve",
+        "test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime"
+      ]
+    },
+    "new_method_count": 2,
+    "preserved_existing_method_count": 21,
+    "new_mutant_cases": 10,
+    "updated_obsolete_preclaim_mutant": 1,
+    "preserved_same_file_b_wrapper_mutants": 2
+  },
+  "scope": {
+    "authorityGranted": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_noupdate_rollback_chains": 0,
+    "independent_deployed_consumers": 0,
+    "cold_process_restarts": 0,
+    "ref_or_pr_mutations": false
+  }
+}

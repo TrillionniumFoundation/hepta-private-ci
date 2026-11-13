@@ -1,0 +1,38 @@
+{
+  "scope": "three fixed postimage files against original 198947 full-index field map; partial postimage replay only, not full verifier or current candidate field recomputation",
+  "field_map_sha256": "c04b280e1c5447eac454c39d0d11c5b17447f7c707be131b4c68602cfc787700",
+  "source_field_index_original_rust_count": 6470,
+  "results": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+      "git_blob": "eea8405cdc985a12735b0a2903af12462f530078",
+      "matched": false,
+      "error": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "git_blob": "43aaea6389d54933131fcc82a1ce8cd49626c0ee",
+      "matched": false,
+      "error": null
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "git_blob": "8e7e9d5ecc01abee9c8d01aa2228ccd7cedf7dfd",
+      "matched": false,
+      "error": null
+    }
+  ],
+  "native_executed": false,
+  "original_checker_git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "original_typed_resolver_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "original_field_map_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-receiver-file-diagnostic-v1/records/fields-learning_original_source_create.json",
+  "original_field_map_bytes": 654,
+  "original_field_map_version": "66306:74060219:654:1794441513328444498:1794441513339114856",
+  "full_official_verifier_executed": false,
+  "authorityGranted": false,
+  "related_manifests": [
+    "4b80f5be8633f484013c6bfc7c52a95b317bde13",
+    "eaa3d5747aade5f3ae123e42ad5118c961ba0bd8"
+  ],
+  "omitted_circuit_helper_reason": "Already resolved by the proven cfg(test) marker on its actual inherited test-only start_profile in fc4740b284785c41c846baf55ed041fe981683be; no new OpenOptions patch was applied there."
+}

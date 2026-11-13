@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(authority_lease::)",
+    "--test-threads",
+    "2"
+  ],
+  "exit": 0,
+  "seconds": 17.60973223799374
+}

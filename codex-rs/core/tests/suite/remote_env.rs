@@ -833,10 +833,18 @@ async fn settings_update_does_not_retarget_active_turn_environment() -> Result<(
             },
         })
         .await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    timeout(Duration::from_secs(10), async {
+        let turn_id = wait_for_event_match(&test.codex, |event| match event {
+            EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        if let Some(completion) = test.codex.pending_normal_turn_finish_completion(&turn_id) {
+            completion.await;
+        }
     })
-    .await;
+    .await
+    .context("the completed settings turn must finish within the original event budget")?;
     test.submit_turn("start the next turn").await?;
 
     let request_texts = response_mock
@@ -1038,11 +1046,12 @@ async fn accept_initialized_exec_server(listener: TcpListener) -> WebSocketStrea
 
     let initialize = read_exec_server_json(&mut websocket).await;
     assert_eq!(initialize["method"], "initialize");
+    assert_eq!(initialize["params"]["processExitObservation"], true);
     websocket
         .send(Message::Text(
             json!({
                 "id": initialize["id"],
-                "result": { "sessionId": "test-session" }
+                "result": { "sessionId": "test-session", "processExitObservation": true }
             })
             .to_string()
             .into(),

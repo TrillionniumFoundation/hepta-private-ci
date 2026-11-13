@@ -1,0 +1,106 @@
+{
+  "actual_model_attempts": 1,
+  "all_tasks_and_prior_outcomes_exposed": true,
+  "cost_qualification": "INCOMPLETE_NO_BENEFIT_CLAIM",
+  "evaluation": {
+    "candidate_correct": 1,
+    "disposition": "NoUpdate",
+    "forward_calls": 8,
+    "independent": false,
+    "parent_correct": 3,
+    "rows_per_version": 4
+  },
+  "evidence": {
+    "all_delivered_files": "MANIFEST.json",
+    "all_raw_files": "RAW_FILES.json",
+    "bindings": "INPUT_BINDINGS.json",
+    "costs": "COSTS.json",
+    "detailed_summary": "CURRENT.json",
+    "native_result": "native-result.json",
+    "ordered_full_raw_archive": "RAW_ARCHIVE.json",
+    "scope_review": "SCOPE_REVIEW.json",
+    "terminal_process_receipts": "PROCESS_RECEIPTS.json"
+  },
+  "full_raw_archive": {
+    "bytes": 2722775,
+    "parts": 7,
+    "payload_files": 212,
+    "sha256": "1bb1860b53c32bdcbfe601a4be3240164c1faf7f0aacfb89d5b7455c5da942a1",
+    "tar_members": 213
+  },
+  "independent_confirmation_tasks": 0,
+  "native_qualification": "HOLD_NO_GO",
+  "native_test": {
+    "exit_code": 0,
+    "job_id": "1a1c0435e71-5e21-994",
+    "passed": 1,
+    "retried": false,
+    "seconds": 45.388,
+    "skipped_by_filter": 1555,
+    "timed_out": false
+  },
+  "operation": "learning-common-e1c98-model-no-update-002",
+  "preparation_attempts": 2,
+  "recovery": {
+    "daemon_os_restart": false,
+    "forward_after": 1,
+    "forward_before": 1,
+    "independent_training_invocations_before_after_counter": null,
+    "new_forward_calls": 0,
+    "new_worker_process": true,
+    "optimizer_steps_in_actual_training_receipt": 10,
+    "owner_reopened": true,
+    "recorded_train_actions_in_complete_journal": 1
+  },
+  "schema": "hepta.common.actual-model-no-update-summary.v1",
+  "scientific_status": "HOLD",
+  "scope": {
+    "binding": "1082284f9636576fa69fb2beb4b6299f31ca25b1c8062ee8db152c5489532fca",
+    "component_granularity_validation_passed": true,
+    "ordinary_daemon_p0_complete": false,
+    "parameter_v3_qualified": false,
+    "private_adapter_training_tensor_count": 120,
+    "profile": "Cell scoped V2",
+    "two_tensor_training_scope_qualified": false,
+    "worker_direct_patch_allowlist_count": 2
+  },
+  "selection": {
+    "adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+    "artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+    "candidate_adopted": false,
+    "generation": 1
+  },
+  "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "status": "PASS_RESEARCH_COMPONENT_NO_UPDATE",
+  "task_predictions": {
+    "cold_readback": {
+      "new_forward_calls": 0,
+      "output": "yes"
+    },
+    "next": {
+      "correct": true,
+      "output": "yes"
+    },
+    "source": {
+      "correct": false,
+      "output": "no"
+    }
+  },
+  "training": {
+    "alpha": 8,
+    "candidate_artifact_sha256": "9ed906784ad969209386762f514ba2d209899c7180076d52306c268b7587e64d",
+    "module_count": 60,
+    "object": "private Cell LoRA adapter",
+    "optimizer_steps_from_actual_training_receipt": 10,
+    "rank": 4,
+    "recorded_train_actions": 1,
+    "targets": [
+      "q_proj",
+      "v_proj"
+    ],
+    "tensor_count": 120,
+    "trainable_parameters": 230400,
+    "training_invocations_before_after_counter_available": false
+  }
+}

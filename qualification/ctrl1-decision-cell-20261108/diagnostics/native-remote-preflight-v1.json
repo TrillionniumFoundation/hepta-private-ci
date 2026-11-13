@@ -1,0 +1,59 @@
+{
+  "schema": "ctrl1-native-remote-preflight-v1",
+  "host": "mac",
+  "job_id": "1a1bb16a623-13c47-84",
+  "idempotency_key": "ctrl1-mac-git-ref-and-rate-reset-readonly-20261108-v1",
+  "scope": "Read-only publication preparation, not a scientific trial.",
+  "raw_stdout": "{\"argv\": [\"/usr/bin/git\", \"-c\", \"credential.helper=!/opt/homebrew/bin/gh auth git-credential\", \"ls-remote\", \"--heads\", \"origin\", \"refs/heads/research/ndu-generation-v4-20261108-986c\", \"refs/heads/research/ctrl1-decision-cell-20261108\"], \"timed_out_seconds\": 40}\n{\"argv\": [\"/opt/homebrew/bin/gh\", \"api\", \"rate_limit\", \"--jq\", \".resources.core | {limit,remaining,reset,used}\"], \"returncode\": 0, \"stdout\": \"{\\\"limit\\\":5000,\\\"remaining\\\":5000,\\\"reset\\\":1794143851,\\\"used\\\":0}\", \"stderr\": \"\"}\n{\"checked_utc\": \"2026-11-08T12:17:32.552134+00:00\", \"repository_mutations\": false}\n",
+  "raw_stderr": "",
+  "process_status": {
+    "at_unix_ms": 1794140252573,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bb16a623-13c47-84",
+    "launch_nonce": "b38f10b37d97c09f5bf11a907565f852",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 571,
+        "stored": 571
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "observations": {
+    "git_ls_remote": "Timed out after 40 seconds; no branch state established.",
+    "rate_limit_endpoint": {
+      "returncode": 0,
+      "limit": 5000,
+      "remaining": 5000,
+      "reset": 1794143851,
+      "used": 0
+    },
+    "parent_base_ref": "Parent independently verified via existing GitHub connector; this receipt itself does not verify a remote ref.",
+    "repository_mutations": false,
+    "pushed": false
+  }
+}

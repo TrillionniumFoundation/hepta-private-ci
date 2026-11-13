@@ -1,0 +1,553 @@
+{
+  "active_rust_before": [],
+  "after": {
+    "head": "ead730ae96f97f0507f2319a4f7e58c1dac9d940",
+    "status": "M  codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_initial_fd_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_publication_deployment_tests.rs\nM  codex-rs/hepta-agentd/src/cell_q24_task_ledger_fault_support_tests.rs\nM  codex-rs/hepta-agentd/src/circuit_task_learning.rs\nM  codex-rs/hepta-contracts/src/final_use_store.rs\nM  codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+    "tree": "b840be6f8c6081f773cd9ecc9b9b8389c544a399"
+  },
+  "authorityGranted": false,
+  "before": {
+    "head": "ead730ae96f97f0507f2319a4f7e58c1dac9d940",
+    "status": "",
+    "tree": "b840be6f8c6081f773cd9ecc9b9b8389c544a399"
+  },
+  "candidate_tree": "375adae62644bbcfa5587c0977b5b02ce74a68f7",
+  "earlier_261d_observation": {
+    "admission": "original fixed request reconciled to retained terminal failed records; no behavior qualification",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-261d54-maintenance-v2/records/progress.json",
+    "present": true,
+    "status": "failed"
+  },
+  "failure": "RuntimeError('diagnostic-b4-no-bypass failed')",
+  "invocation_transport": "durable operator PTY for fixed Initial Root CLI assembly; earlier attempts retain separate source-bound results",
+  "maintenance_delta": {
+    "bytes": 6741,
+    "changed_files": 10,
+    "parts": [
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/maintenance-delta-part-000.txt"
+    ],
+    "sha256": "fcbd9b59b116650c8faecedcee7bece902ed7f67f27ba629e211507fda7d04fe"
+  },
+  "native_tests_executed": false,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "original_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "original_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "original_unchanged": true,
+  "packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger"
+  ],
+  "positive_adoption_chains": 0,
+  "preceding_harness_failure": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-caa34b-maintenance-pty-v6/records/progress.json",
+    "reason": "v6 retained the older v4 predecessor digest after selecting v5 progress; source checkout and Cargo had not started",
+    "sha256": "befd4602261b5a0e8c35568efaed4efed0078c4cdd8ae0d492d2922387ae8dde"
+  },
+  "predecessor_failed_attempt": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/progress.json",
+    "sha256": "5a21b76f2b50c5f67fb3a97820ad5a3ef179fa1c16f401e0c850730837b1f927",
+    "status": "failed"
+  },
+  "protected_diagnostic": {
+    "entries": 335,
+    "failures": 2,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/protected-diagnostic.json"
+  },
+  "source_sha": "ead730ae96f97f0507f2319a4f7e58c1dac9d940",
+  "source_tree": "b840be6f8c6081f773cd9ecc9b9b8389c544a399",
+  "status": "failed",
+  "steps": [
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/source"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 113,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/clone-isolated-source.log",
+        "sha256": "93ce3defd829845e1d2a5ff95587aff1ca6e2f60cf3181f9c3a9739df0e79bef"
+      },
+      "name": "clone-isolated-source",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "ead730ae96f97f0507f2319a4f7e58c1dac9d940"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fetch-fixed-source.log",
+        "sha256": "3540a1dc7fdc8734e18d83afce30f4dfbb9228735a536525e682cce41c02c393"
+      },
+      "name": "fetch-fixed-source",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "ead730ae96f97f0507f2319a4f7e58c1dac9d940"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 228,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/checkout-fixed-source.log",
+        "sha256": "55cbc36f2e0f1bd86db7611342fbbc4f2a89e5954d2f8bd8257064b7815b26ac"
+      },
+      "name": "checkout-fixed-source",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "3c8dabe46598599e91b2b8b80081e09069ff9426"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fmt-before.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "fmt-before",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9",
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9",
+        " --> rmcp-client/src/elicitation_client_service.rs:4:18",
+        "  --> rmcp-client/src/elicitation_client_service.rs:55:22",
+        "   --> rmcp-client/src/elicitation_client_service.rs:191:27",
+        " --> rmcp-client/src/logging_client_handler.rs:6:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:27:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:32:36",
+        "  --> rmcp-client/src/logging_client_handler.rs:94:27",
+        "  --> hepta-agentd/src/authority_host_generation_initial_transport.rs:22:1",
+        "  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:24:1",
+        "  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:49:5",
+        "   --> hepta-agentd/src/authority_host_q24_model_profile.rs:93:5",
+        " 93 | /     pub(super) fn new(",
+        " 94 | |         identity: &AgentdIdentity,",
+        " 95 | |         writer_proof: &str,",
+        " 96 | |         initial: &LearningIterationSnapshotV1,",
+        "   --> hepta-agentd/src/cell_q24_task_ledger.rs:97:1",
+        " 97 | /   pub enum OriginalCellQ24TaskLedgerStatusV1 {",
+        " 98 | | /     AwaitingOutcome {",
+        " 99 | | |         decision: LedgerRecord,",
+        "   --> hepta-agentd/src/circuit_feature_current.rs:95:1",
+        " 95 | /  enum Publication {",
+        " 96 | |      Initial(PublishedNeuronGenerationInitialV1),",
+        " 97 | |/     Update {",
+        " 98 | ||         original: PublishedNeuronGenerationUpdateV1,",
+        " 99 | ||         previous: PublishedCircuitFeatureCompletionV1,",
+        "   --> hepta-agentd/src/circuit_task_source_codec.rs:508:36",
+        "  --> hepta-agentd/src/circuit_task_learning.rs:30:1",
+        "  --> hepta-agentd/src/cell_q24_evaluation_stage.rs:32:1",
+        "  --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:47:1",
+        "   --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:159:1",
+        "  --> hepta-agentd/src/neuron_generation_receipt_owner.rs:80:1",
+        "  --> hepta-agentd/src/neuron_cell_evaluation_training_source.rs:21:1",
+        "  --> hepta-agentd/src/neuron_generation_current_store.rs:20:1",
+        "   --> hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs:206:41",
+        "   --> hepta-agentd/src/authority_host_generation_initial_child_tests.rs:146:41",
+        "   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19",
+        "   --> hepta-agentd/src/circuit_q24_task_test_support.rs:317:1"
+      ],
+      "exit": 0,
+      "log": {
+        "bytes": 60101,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fix-codex-hepta-agentd.log",
+        "sha256": "1d4e7cf8d3f06f9211ab03cbca3e81a29409892bf11a180a3239a3ce876e3e6b"
+      },
+      "name": "fix-codex-hepta-agentd",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 446,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fix-codex-hepta-learning-artifacts.log",
+        "sha256": "34ab204196b4ef14c43953eb26d94df4ac3265937445b2ae89f61f0879477e64"
+      },
+      "name": "fix-codex-hepta-learning-artifacts",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 982,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fix-codex-hepta-intelligence-eval.log",
+        "sha256": "9029b8b1bfddee0ec77bb804be9e9d9393dfabc7556d8c97c09f0a0452514fd3"
+      },
+      "name": "fix-codex-hepta-intelligence-eval",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-contracts",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [
+        " --> /home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/source/codex-rs/clippy.toml:4:5",
+        " --> /home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/source/codex-rs/clippy.toml:5:5",
+        " --> /home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/source/codex-rs/clippy.toml:6:5"
+      ],
+      "exit": 0,
+      "log": {
+        "bytes": 1639,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fix-codex-hepta-contracts.log",
+        "sha256": "0a8a4d16a865245bafda5cec5b97cf7db37a4026b5df2296f39417b12c7f75b9"
+      },
+      "name": "fix-codex-hepta-contracts",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-neuron",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 655,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fix-codex-hepta-neuron.log",
+        "sha256": "51fd9dbc18db57956addd7b3d553d9376e1b8cdb1fd6eef78c502c8c7357344d"
+      },
+      "name": "fix-codex-hepta-neuron",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 284,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fix-codex-hepta-learning-ledger.log",
+        "sha256": "eb778387d7b0717c389edc4dcb041e57e9e311c296093b6580d8a6ebf33424dc"
+      },
+      "name": "fix-codex-hepta-learning-ledger",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "3c8dabe46598599e91b2b8b80081e09069ff9426"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/fmt-after.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "fmt-after",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "--bins"
+      ],
+      "diagnostic_lines": [
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9",
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9",
+        " --> rmcp-client/src/elicitation_client_service.rs:4:18",
+        "  --> rmcp-client/src/elicitation_client_service.rs:55:22",
+        "   --> rmcp-client/src/elicitation_client_service.rs:191:27",
+        " --> rmcp-client/src/logging_client_handler.rs:6:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:27:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:32:36",
+        "  --> rmcp-client/src/logging_client_handler.rs:94:27"
+      ],
+      "exit": 0,
+      "log": {
+        "bytes": 40684,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/bins-check.log",
+        "sha256": "d2df98fe1821f5d6f0e4dfba00ca6f0363bf6a58fc1439893fe1c790e8e73873"
+      },
+      "name": "bins-check",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "--lib",
+        "--message-format",
+        "json",
+        "--list-type",
+        "binaries-only"
+      ],
+      "diagnostic_lines": [
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9",
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9",
+        " --> rmcp-client/src/elicitation_client_service.rs:4:18",
+        "  --> rmcp-client/src/elicitation_client_service.rs:55:22",
+        "   --> rmcp-client/src/elicitation_client_service.rs:191:27",
+        " --> rmcp-client/src/logging_client_handler.rs:6:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:27:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:32:36",
+        "  --> rmcp-client/src/logging_client_handler.rs:94:27",
+        "   --> hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs:206:41",
+        "   --> hepta-agentd/src/authority_host_generation_initial_child_tests.rs:146:41",
+        "   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19"
+      ],
+      "exit": 0,
+      "log": {
+        "bytes": 43721,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/compile-test-binaries.log",
+        "sha256": "cb45542b3da9bf869c9da170a13f4733050fc6c968dcbc022c6c07c01b01886f"
+      },
+      "name": "compile-test-binaries",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "diagnostic_lines": [],
+      "exit": 1,
+      "log": {
+        "bytes": 64657,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-ead730-maintenance-pty-v10/records/diagnostic-b4-no-bypass.log",
+        "sha256": "76e36e825edd6c3983e18617c5f37fb8d9c2c82ded3da2903582e5f5d3abbd4b"
+      },
+      "name": "diagnostic-b4-no-bypass",
+      "status": "completed"
+    }
+  ],
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 73, in <module>\n    for name,folder in [('b4-no-bypass','qa/b4-no-bypass'),('fault-matrix','qa/fault-matrix'),('performance','qa/performance'),('vertical-slice','qa/vertical-slice')]:run('diagnostic-'+name,['python3','-B','-m','unittest','discover','-s',folder,'-p','test_*.py','-v'],SOURCE)\n                                                                                                                                                                       ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 26, in run\n    if p.returncode:raise RuntimeError(name+' failed')\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: diagnostic-b4-no-bypass failed\n"
+}

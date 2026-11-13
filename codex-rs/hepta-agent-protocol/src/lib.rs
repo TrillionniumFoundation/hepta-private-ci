@@ -5,6 +5,13 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod generation;
+mod objective_history;
+mod q24_completed_history;
+mod q24_initial_task_progress;
+mod q24_outcome;
+mod q24_task_observation;
+mod q24_terminal_acceptance;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -28,6 +35,38 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use generation::AGENTD_GENERATION_CONTROL_CAPABILITY;
+pub use generation::GenerationControlRequestV1;
+pub use generation::GenerationControlResponseV1;
+pub use generation::GenerationCostSummaryV1;
+pub use generation::GenerationCostTotalV1;
+pub use generation::GenerationDispositionV1;
+pub use generation::GenerationOutputReferenceV1;
+pub use generation::GenerationPendingV1;
+pub use generation::GenerationReceiptV1;
+pub use generation::GenerationStatusV1;
+pub use generation::GenerationStepV1;
+pub use generation::MAX_GENERATION_CONTROL_INPUT_BYTES;
+pub use generation::MAX_GENERATION_OUTPUT_PAGE_BYTES;
+pub use objective_history::ObjectiveAdmissionOutcome;
+pub use objective_history::ObjectiveAdmissionPublication;
+pub use objective_history::ObjectiveAdmissionQuery;
+pub use objective_history::ObjectiveAdmissionUnknownReason;
+pub use objective_history::ObjectiveJournalAnchor;
+pub use objective_history::ObjectivePublicationOutcome;
+pub use q24_completed_history::AGENTD_Q24_COMPLETED_HISTORY_CAPABILITY;
+pub use q24_completed_history::OriginalQ24CompletedHistoryDataV1;
+pub use q24_initial_task_progress::Q24OriginalInitialTaskCompletionV1;
+pub use q24_initial_task_progress::Q24OriginalInitialTaskProgressV1;
+pub use q24_outcome::AGENTD_Q24_ORIGINAL_OUTCOME_CAPABILITY;
+pub use q24_outcome::MAX_Q24_OUTCOME_PREIMAGE_BYTES;
+pub use q24_outcome::Q24OriginalObserverEvidenceV1;
+pub use q24_outcome::Q24OriginalTerminalOutcomeReceiptV1;
+pub use q24_outcome::Q24OriginalTerminalOutcomeRequestV1;
+pub use q24_task_observation::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY;
+pub use q24_task_observation::MAX_Q24_DECISION_PREIMAGE_BYTES;
+pub use q24_task_observation::Q24OriginalTaskObservationV1;
+pub use q24_terminal_acceptance::OriginalQ24TerminalAcceptanceDataV1;
 
 use std::path::PathBuf;
 
@@ -338,7 +377,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -572,6 +611,18 @@ impl AgentdRequest {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
     Capabilities,
+    Generation {
+        request: Box<GenerationControlRequestV1>,
+    },
+    Q24OriginalTerminalOutcome {
+        request: Box<Q24OriginalTerminalOutcomeRequestV1>,
+    },
+    Q24OriginalTaskObservation {},
+    Q24OriginalInitialTaskProgress {
+        request: AuthBusObjectiveIngress,
+    },
+    OriginalQ24CompletedHistory {},
+    OriginalQ24TerminalAcceptance {},
     Health,
     Lifecycle,
     Readiness,
@@ -580,10 +631,16 @@ pub enum AgentdMethod {
     ObjectiveStart {
         request: AuthBusObjectiveIngress,
     },
+    ObjectiveAdmission {
+        query: ObjectiveAdmissionQuery,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
     AuthBusTextStatus {
+        delivery_id: String,
+    },
+    AuthBusTextLookup {
         delivery_id: String,
     },
     KernelEvidenceAppend {
@@ -651,7 +708,7 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -735,12 +792,25 @@ pub struct AgentdResponse {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
+    Generation(GenerationControlResponseV1),
+    Q24OriginalTerminalOutcome(Q24OriginalTerminalOutcomeReceiptV1),
+    Q24OriginalTaskObservation(Q24OriginalTaskObservationV1),
+    Q24OriginalInitialTaskProgress(Q24OriginalInitialTaskProgressV1),
+    OriginalQ24CompletedHistory {
+        data: Option<OriginalQ24CompletedHistoryDataV1>,
+    },
+    OriginalQ24TerminalAcceptance {
+        data: Option<OriginalQ24TerminalAcceptanceDataV1>,
+    },
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     Readiness(ReadinessSnapshot),
     Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     ObjectiveRun(ObjectiveRunAdmission),
+    ObjectiveAdmission {
+        outcome: ObjectiveAdmissionOutcome,
+    },
     ObjectiveConflict {
         run_id: String,
         conflict_digest: String,
@@ -748,6 +818,10 @@ pub enum AgentdPayload {
     CognitiveContext(CognitiveContextSnapshot),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
+    AuthBusTextLookup {
+        delivery_id: String,
+        status: Option<AuthBusTextStatus>,
+    },
     KernelEvidenceResult(KernelEvidenceResult),
     Events(EventBatch),
     RunReceipt(AgentRunReceipt),
@@ -815,7 +889,7 @@ pub struct CognitiveContextItem {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HealthSnapshot {
-    /// True once the App Server initialized while this exact spawn still owns Starting.
+    /// True once the configured execution service initialized while this exact spawn still owns Starting.
     pub promotion_ready: bool,
     /// True only after the supervisor promoted this spawn to Running.
     pub ready: bool,
@@ -1072,7 +1146,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1392,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

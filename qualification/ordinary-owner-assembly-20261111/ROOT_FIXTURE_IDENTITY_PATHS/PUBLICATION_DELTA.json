@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "2d3a240d48aaa733775b134877c43981db50b702",
+  "baseline_tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+        "bytes": 30230,
+        "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225"
+      },
+      "postimage": {
+        "git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+        "bytes": 30620,
+        "sha256": "3327b2ed4daa904799a1746c9b1c7d30f3853fe47e610d89735f2ce277b4f9d1"
+      },
+      "operations": [
+        {
+          "label": "move existing dedicated runtime parent before registered identity paths",
+          "old": "        let runtime_directory = tempfile::Builder::new().prefix(\"hgp-\").tempdir_in(\"/run\")?;\n        owned_mode(\n            runtime_directory.path(),\n            /*uid*/ 0,\n            /*gid*/ 60001,\n            /*mode*/ 0o2710,\n        )?;\n",
+          "new": ""
+        },
+        {
+          "label": "place only ordinary registered paths under original accessible runtime parent",
+          "old": "        let workspace = protected.path().join(\"workspace\");\n        std::fs::create_dir(&workspace)?;\n        let fleet = HeptaFleetRoot::parse(protected.path().join(\"fleet\"))?;\n        let registry = FleetRegistry::initialize(fleet.clone())?;",
+          "new": "        let runtime_directory = tempfile::Builder::new().prefix(\"hgp-\").tempdir_in(\"/run\")?;\n        owned_mode(\n            runtime_directory.path(),\n            /*uid*/ 0,\n            /*gid*/ 60001,\n            /*mode*/ 0o2710,\n        )?;\n        // The original non-Root identity resolves these ordinary paths.\n        // Keep Root authority files in the separate protected 0700 directory.\n        let workspace = runtime_directory.path().join(\"workspace\");\n        std::fs::create_dir(&workspace)?;\n        let fleet_path = runtime_directory.path().join(\"fleet\");\n        let fleet = HeptaFleetRoot::parse(fleet_path.clone())?;\n        let registry = FleetRegistry::initialize(fleet.clone())?;\n        owned_mode(\n            &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;\n        owned_mode(\n            &fleet_path, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;"
+        },
+        {
+          "label": "bind original registration to the same actual ordinary fleet path",
+          "old": "            fleet_root: protected.path().join(\"fleet\"),",
+          "new": "            fleet_root: fleet_path,"
+        }
+      ],
+      "exact_replay": true,
+      "guard_and_timeout_tokens_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+        "bytes": 15383,
+        "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8"
+      },
+      "postimage": {
+        "git_blob": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+        "bytes": 15607,
+        "sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384"
+      },
+      "operations": [
+        {
+          "label": "retain canonical registered identity failure context",
+          "old": "            let identity = original.registered_identity.identity()?;",
+          "new": "            let identity = original.registered_identity.identity()\n                .with_context(|| format!(\"publication {phase:?}: resolve original registered fleet/workspace identity\"))?;"
+        },
+        {
+          "label": "retain learning bundle identity failure context",
+          "old": "            assert_eq!(bundle.registered_identity.identity()?, identity);",
+          "new": "            assert_eq!(bundle.registered_identity.identity()\n                .with_context(|| format!(\"publication {phase:?}: resolve original learning identity\"))?, identity);"
+        }
+      ],
+      "exact_replay": true,
+      "guard_and_timeout_tokens_equal": true
+    }
+  ],
+  "supersedes_git_blob": "b29a8a8c1e16f89e79a581ef17ecd04df3af9ebc"
+}

@@ -1,0 +1,17 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "patchSha256": "09357ab2aab1346352f608104f6b662559ab50ebde9ab8fe2a457070f6dfa600",
+  "files": [
+    {
+      "path": "src/draw_vars.rs",
+      "beforeSha256": "fa44e0b37c00ef33c71ca98607943bd988142b8101ae4aeab99242ef6cf3f900",
+      "afterSha256": "e99349f465aee65f147ff4998bf721892d4927420b2b6f813466d0cd56e003b6"
+    },
+    {
+      "path": "src/draw_list.rs",
+      "beforeSha256": "fb2c0826ec5d819977d726adb9d9e50649499e973f72de95aab07d8b18d54f49",
+      "afterSha256": "7628f98cd7f4e7ea5577254a5cb0bffd8c41780aac4f33cbe849a7cfbc6a754e"
+    }
+  ],
+  "reason": "Move the observed four-byte wasm32 DrawVars tail padding before dyn_instances so as_slice reads the following live shader fields contiguously. Preserve native layout and array capacity; compile-time WASM assertion rejects any remaining tail gap."
+}

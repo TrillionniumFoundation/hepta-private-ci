@@ -1,0 +1,62 @@
+ACT-1 green-r3 independent metrics review
+
+Scope: read-only verification of collected metrics.json, green-r3/tests.log,
+receipt.json and tests.xml; no source changes and no extra tests executed.
+
+VERDICT: Counts and source/log identities agree. Raw log contains exactly 30
+ACT1_METRIC rows, each (baseline, scenario) unique. No repeated or conflicting
+rows. metrics.json matches the log row-for-row by this key; all top-level count
+fields reproduce from the raw rows. Original metrics artifact was not changed.
+
+Matrix: 3 baseline organizations x 10 controlled scenarios = 30 rows.
+Each baseline: 10 rows; actual full-goal success 5; reported success 4;
+UNKNOWN retained 6; false success 0; duplicate effects 0; dispatch contacts 10;
+recovery queries 14, equal to provider lookup contacts.
+Totals: actual full-goal success 15; reported success 12; UNKNOWN 18;
+false success 0; duplicate effects 0; dispatch contacts 30; recovery queries 42.
+Every row has exactly 1 dispatch and at most 2 lookup calls. Query counts do not
+measure all observer reads, wall time, compute, tokens or complete recovery cost.
+
+UNKNOWN interpretation:
+- unknown_with_full_goal_satisfied = 3 (lookup_unavailable);
+- unknown_with_partial_effects = 6 (partial_success and rejected_after_partial_effect);
+- unknown_with_any_effect = 9 (the preceding full + partial categories);
+- unknown_with_zero_effect = 9 (waiting_for_input, cancel_before_commit,
+  exit_zero_without_effect).
+The original field unknown_but_effect_committed=3 means UNKNOWN with the complete
+business goal already satisfied, not UNKNOWN with any committed subeffect.
+Calling only 3 UNKNOWN cases effect-bearing would be misleading.
+
+Positive Failed test: act1_durable_rejection_proves_failure_and_fences_late_effects
+passed as a separate integration test. It verifies a durable rejection tombstone,
+source Failed settlement, preserved key/payload after reopen, no late effects and
+no redispatch. It emits no ACT1_METRIC record and is not in the 30-row denominator.
+The additional input-resume, partial-repair, drift, cancellation-feedback and
+unsupported-target tests likewise must not be folded into matrix counts.
+
+Native gate: nextest log says '150 tests run: 150 passed, 2 skipped'. There are
+150 unique PASS lines and exactly 150 unique JUnit testcase elements, zero failure
+or error elements. The ACT-1 integration suite contributes 9 passed test entry
+points; 30 matrix rows are generated inside two of those entry points and are
+not an additional 30 test entries. Three action-skill unit tests also passed.
+
+The two ignored entries are action_skill_input_worker and action_skill_crash_worker.
+They are helper process entry points marked #[ignore] and launched explicitly by
+parent tests using --ignored --exact. The stdin helper is exercised indirectly;
+the crash helper is intentionally SIGKILLed. They are excluded from the normal
+150-test run and absent from the JUnit testcase list, explaining receipt.junit
+skipped=[] versus the nextest summary's 2 skipped. Do not report 152 passed, or
+say the two skipped entries are untested product behavior.
+
+Interpretation limits: 30/30 conformance assertions is not 30/30 business task
+success. These are three equivalent single-effect control organizations, not
+30 independent samples or evidence of a learned hierarchy advantage. Zero false
+success and duplicate counts are bounded fixture results, not universal safety
+or exactly-once claims. This gate covers codex-hepta-automation --lib --tests,
+not the entire workspace, production activation or current remote CI.
+
+Log SHA-256: 5e4cad774f6a5c14d70384bf5f674d748e15ec8f4b31d5a2f841fd4b085f3305
+JUnit SHA-256: 90ee9c71b5bc9e0a9c0e2e6731f5f2bdf02293bae7c58af1bfeaf4e2999c4ae2
+Native executed tree before/after: 334ccb7bb726033e898a3d698dfe616ae627e75c (identical)
+Base HEAD: 6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5
+Nextest run UUID: 3659d26e-3d8c-4a4e-987d-d9ff4a45d222

@@ -9,6 +9,7 @@ use std::fs::FileTimes;
 use std::io::Write;
 use std::path::Path;
 
+use crate::test_support::private_home;
 use chrono::TimeZone;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -127,7 +128,7 @@ async fn insert_state_db_thread(
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_is_stale() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(302);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -243,7 +244,7 @@ async fn read_thread_item_from_rollout_rejects_unknown_canonical_history_mode() 
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_points_to_another_thread() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(304);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -288,7 +289,7 @@ async fn find_thread_path_falls_back_when_db_path_points_to_another_thread() {
 
 #[tokio::test]
 async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(303);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -324,7 +325,7 @@ async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
 
 #[tokio::test]
 async fn find_thread_path_accepts_existing_state_db_path_without_canonical_filename() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(305);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");

@@ -344,6 +344,7 @@ impl TestAppServer {
         self.initialize_with_capabilities(
             client_info,
             Some(InitializeCapabilities {
+                process_indeterminate: true,
                 experimental_api: true,
                 ..Default::default()
             }),

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "error": "[Errno 2] No such file or directory: '/home/qq/hepta-daemon-learning-785b-20261109/target/nextest/local/junit.xml'",
+  "execution_file": "ordinary.json",
+  "execution_sha256": "0df41052cc374b535908e68f2445c200b449391c807fe60030182cbd40ccf579",
+  "job": null,
+  "kind": "native-junit-collection",
+  "native_path": "/home/qq/hepta-daemon-learning-785b-20261109/target/nextest/local/junit.xml",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "8fda6017ec84d59a2e43d16692f37cc112aa2054",
+  "source_tree": "10f04d44a6f6d246e89981fcabc9f7ff2244fea8",
+  "status": "rejected"
+}

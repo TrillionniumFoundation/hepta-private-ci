@@ -1,0 +1,15 @@
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/destination.rs b/codex-rs/hepta-automation/tests/action_skill_support/destination.rs
+index 6bd8379c..118c955c 100644
+--- a/codex-rs/hepta-automation/tests/action_skill_support/destination.rs
++++ b/codex-rs/hepta-automation/tests/action_skill_support/destination.rs
+@@ -114,8 +114,8 @@ pub async fn open_observation_pool(path: &Path) -> SqlitePool {
+ 
+ fn sqlite_config(path: &Path) -> SqliteConfig {
+     let root = path.parent().expect("destination parent directory");
+-    let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
+-        .expect("absolute destination directory");
++    let sqlite_home =
++        AbsolutePathBuf::try_from(root.to_path_buf()).expect("absolute destination directory");
+     SqliteConfig::from_sqlite_home(sqlite_home)
+ }
+ 

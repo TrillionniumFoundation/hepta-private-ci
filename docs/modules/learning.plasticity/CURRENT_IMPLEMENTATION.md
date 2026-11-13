@@ -67,6 +67,39 @@ override these machine status facts.
 
 <!-- END GENERATED IMPLEMENTATION STATUS -->
 
+## Cell framework source candidate, 2026-11-05
+
+The refactor adds a non-test, explicitly bootstrapped Agentd iteration worker in
+`hepta-agentd/src/learning_iteration*.rs`. It consumes `IterationEnvelopeV1`,
+checks the frozen principal/agent/cell/run scope, verifies complete owner
+observations with the existing pinned learning-evidence verifier, and submits
+qualified proposals through `AgentdLearningPlasticityProducerV1`. Candidate
+selection and next-task use are observations of their existing owners. A next-use
+receipt must identify a different run in the same principal/agent/cell and bind
+the selected bundle, committed state, step and state-cutover receipts.
+
+A separate `terminal_learning_channel_v1` profile now directly calls the real
+ledger dataset-freeze and terminal-value fit owners after current Memory Replay
+permission checks. It returns actual tabular payload and source lineage. Its
+bounded job cache is limited to one owner lifetime; it neither supplies a generic
+model-bundle conversion nor proves cross-restart exactly-once or adoption.
+
+This is an opt-in source composition. It does not supply a generic production
+dataset/trainer/selector adapter, durable iteration checkpoint owner, ordinary
+task completion trigger, or production activation. Mandatory host ports remain
+explicit and must not be replaced by in-memory qualification fixtures. The
+generated status above retains the broader unclosed production-composition gate;
+it is not a native verification receipt for this source addition.
+
+The immutable compatibility bundle and sealed state-cutover plan are in
+`hepta-learning-artifacts/src/cell_bundle.rs`. State preservation, explicit reset
+and migration are distinct operations. Parameter/component lineage and the exact
+principal/agent/cell/run partition are bound to owner readback. Public structural
+lifecycle admission remains held while its physical owner and independent
+observation chain are unqualified. See
+[the candidate qualification boundary](../../../qualification/cell-framework-20261105/README.md).
+
+
 ## Status matrix
 
 | Capability | Status | Native / composed surface |
@@ -268,7 +301,7 @@ target-host telemetry, rollback-domain independence and operator evidence remain
 
 ## Remaining external and composition gates
 
-The named `AgentdLearningPlasticityProducerV1` now drives both `AgentdState::submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` in source, the lifetime E2E enters through that producer for both durable proposal classes, and the Agentd binary can reconstruct its owner from an explicit process bootstrap descriptor. This closes the Agentd-side caller/owner seam, but it does **not** close the upstream product trigger: `IterationEnvelopeV1` and the current `control.engineering` implementation still have no non-test production coordinator that invokes this producer after frozen independent evaluation. The repository now contains a long-lived Agentd plasticity owner that calls the
+The named `AgentdLearningPlasticityProducerV1` now drives both `AgentdState::submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` in source, the lifetime E2E enters through that producer for both durable proposal classes, and the Agentd binary can reconstruct its owner from an explicit process bootstrap descriptor. This closes the Agentd-side caller/owner seam. The new explicit iteration worker can invoke that producer after frozen, authenticated independent evaluation, but the ordinary `control.engineering` task trigger and generic production provider/checkpoint composition remain unclosed. The optional worker does not turn source availability into production execution evidence. The repository now contains a long-lived Agentd plasticity owner that calls the
 parameter/topology host entrypoints, supplies current owner frontiers and retains
 independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete; NDU owns current modulator projections, neuron.runtime owns eligibility checkpoints, broadcast policy binds the low-dimensional mapping, and exact ParameterSignal evidence recomputes the consumed numeric values. These source adapters still require the selected target host to open the corresponding authoritative owner stores. The registry/anchor fault fixtures prove that a retained
 external acknowledgement rejects a rolled-back proposal file, but only a target host

@@ -843,6 +843,7 @@ fn sample_initialize_fact(connection_id: u64) -> AnalyticsFact {
                 version: "1.0.0".to_string(),
             },
             capabilities: Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: false,
                 request_attestation: false,
                 opt_out_notification_methods: None,
@@ -1905,6 +1906,7 @@ async fn initialize_caches_client_and_thread_lifecycle_publishes_once_initialize
                         version: "1.0.0".to_string(),
                     },
                     capabilities: Some(InitializeCapabilities {
+                        process_indeterminate: false,
                         experimental_api: false,
                         request_attestation: false,
                         opt_out_notification_methods: None,
@@ -2306,6 +2308,7 @@ async fn compaction_event_ingests_custom_fact() {
                         version: "1.0.0".to_string(),
                     },
                     capabilities: Some(InitializeCapabilities {
+                        process_indeterminate: false,
                         experimental_api: false,
                         request_attestation: false,
                         opt_out_notification_methods: None,
@@ -2438,6 +2441,7 @@ async fn guardian_review_event_ingests_custom_fact_with_optional_target_item() {
                         version: "1.0.0".to_string(),
                     },
                     capabilities: Some(InitializeCapabilities {
+                        process_indeterminate: false,
                         experimental_api: false,
                         request_attestation: false,
                         opt_out_notification_methods: None,

@@ -1,0 +1,494 @@
+{
+  "schema": "hepta.initial-root-cli.source-line-ops.v1",
+  "base_commit": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "base_tree": "1eba30f512a0fcd0463417c5f14537493cd8b104",
+  "scope": "Exact native-unformatted source postimages; context unique and reconstruction byte-equal; no ref mutation",
+  "additions": 648,
+  "deletions": 42,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs",
+      "status": "new",
+      "mode": "100644",
+      "git_blob": "55f280ba8c25e2cb89e9cf6b93a5f645cf73ebd5",
+      "sha256": "a4e3312527ca224e348da52b320d485b35924458d92729cd2e6899f0ace5fe7b",
+      "bytes": 9868,
+      "additions": 216,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs",
+      "status": "new",
+      "mode": "100644",
+      "git_blob": "9a684c8d5657dd58f235ec8855de30cbfc733471",
+      "sha256": "47bec267ee781899d6ca877a397756825a1a9b65e622917aa0d8bed5f5a0fcf2",
+      "bytes": 1143,
+      "additions": 33,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+      "status": "new",
+      "mode": "100644",
+      "git_blob": "d2cdc1e29fc7c3a3b3e8eae2dbf8f1d1db8f4c09",
+      "sha256": "0e9405b11b51281fae60a542de467a0d2c7d74ad7e784a88b3093ab3c2461dec",
+      "bytes": 4902,
+      "additions": 98,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_files.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "497a956d209f48e73e77c7146df0a6606d09e23f",
+        "sha256": "b59683e36c2ac89379f39e79433662dce11a02dca5a435b0576097da46675ec3",
+        "bytes": 8498
+      },
+      "postimage": {
+        "git_blob": "33a20f299d3ee03621bc691a843e2e31a6da739e",
+        "sha256": "a4e324ce4550ca27907a76c67757856295062f5ed849d10a0af985f9331a46de",
+        "bytes": 9002
+      },
+      "additions": 14,
+      "deletions": 14,
+      "operations": [
+        {
+          "old_start_line": 63,
+          "old": "    }\n}\n\npub(super) struct DirectoryPin {\n    path: PathBuf,\n    identity: Identity,\n    file: File,\n",
+          "new": "    }\n}\n\npub(in crate::authority_host_runtime::session) struct DirectoryPin {\n    path: PathBuf,\n    identity: Identity,\n    file: File,\n"
+        },
+        {
+          "old_start_line": 71,
+          "old": "}\n\nimpl DirectoryPin {\n    pub(super) fn capture_root(path: &Path) -> io::Result<Self> {\n        RootAuthorityDirectory::open(path).map_err(io::Error::other)?;\n        let mut pin = Self::capture_private(path)?;\n        if pin.identity.uid != 0 || pin.identity.mode & 0o077 != 0 {\n",
+          "new": "}\n\nimpl DirectoryPin {\n    pub(in crate::authority_host_runtime::session) fn capture_root(path: &Path) -> io::Result<Self> {\n        RootAuthorityDirectory::open(path).map_err(io::Error::other)?;\n        let mut pin = Self::capture_private(path)?;\n        if pin.identity.uid != 0 || pin.identity.mode & 0o077 != 0 {\n"
+        },
+        {
+          "old_start_line": 83,
+          "old": "        Ok(pin)\n    }\n\n    pub(super) fn capture_private(path: &Path) -> io::Result<Self> {\n        require_absolute(path)?;\n        let metadata = std::fs::symlink_metadata(path)?;\n        if !metadata.is_dir()\n",
+          "new": "        Ok(pin)\n    }\n\n    pub(in crate::authority_host_runtime::session) fn capture_private(path: &Path) -> io::Result<Self> {\n        require_absolute(path)?;\n        let metadata = std::fs::symlink_metadata(path)?;\n        if !metadata.is_dir()\n"
+        },
+        {
+          "old_start_line": 112,
+          "old": "        })\n    }\n\n    pub(super) fn require_directory(&self) -> io::Result<()> {\n        if self.root_owned {\n            RootAuthorityDirectory::open(&self.path).map_err(io::Error::other)?;\n        }\n",
+          "new": "        })\n    }\n\n    pub(in crate::authority_host_runtime::session) fn require_directory(&self) -> io::Result<()> {\n        if self.root_owned {\n            RootAuthorityDirectory::open(&self.path).map_err(io::Error::other)?;\n        }\n"
+        },
+        {
+          "old_start_line": 128,
+          "old": "    }\n}\n\npub(super) struct MetadataFile {\n    path: PathBuf,\n    parent: DirectoryPin,\n    file: File,\n",
+          "new": "    }\n}\n\npub(in crate::authority_host_runtime::session) struct MetadataFile {\n    path: PathBuf,\n    parent: DirectoryPin,\n    file: File,\n"
+        },
+        {
+          "old_start_line": 137,
+          "old": "}\n\nimpl MetadataFile {\n    pub(super) fn open_metadata(path: &Path) -> io::Result<(Self, Vec<u8>)> {\n        require_absolute(path)?;\n        let parent = DirectoryPin::capture_root(parent(path)?)?;\n        let file = open_readonly(path)?;\n",
+          "new": "}\n\nimpl MetadataFile {\n    pub(in crate::authority_host_runtime::session) fn open_metadata(path: &Path) -> io::Result<(Self, Vec<u8>)> {\n        require_absolute(path)?;\n        let parent = DirectoryPin::capture_root(parent(path)?)?;\n        let file = open_readonly(path)?;\n"
+        },
+        {
+          "old_start_line": 167,
+          "old": "        Ok((held, bytes))\n    }\n\n    pub(super) fn digest(&self) -> Digest32 {\n        self.digest\n    }\n\n    pub(super) fn require_metadata_unchanged(&self) -> io::Result<()> {\n        self.parent.require_directory()?;\n        let path = std::fs::symlink_metadata(&self.path)?;\n        if !path.is_file()\n",
+          "new": "        Ok((held, bytes))\n    }\n\n    pub(in crate::authority_host_runtime::session) fn digest(&self) -> Digest32 {\n        self.digest\n    }\n\n    pub(in crate::authority_host_runtime::session) fn require_metadata_unchanged(&self) -> io::Result<()> {\n        self.parent.require_directory()?;\n        let path = std::fs::symlink_metadata(&self.path)?;\n        if !path.is_file()\n"
+        },
+        {
+          "old_start_line": 199,
+          "old": "\n/// Journal bytes may advance normally. Their original descriptor and parent\n/// cannot be replaced; the original owner verifies private custody and the cut.\npub(super) struct OriginalFile {\n    path: PathBuf,\n    parent: DirectoryPin,\n    file: File,\n",
+          "new": "\n/// Journal bytes may advance normally. Their original descriptor and parent\n/// cannot be replaced; the original owner verifies private custody and the cut.\npub(in crate::authority_host_runtime::session) struct OriginalFile {\n    path: PathBuf,\n    parent: DirectoryPin,\n    file: File,\n"
+        },
+        {
+          "old_start_line": 207,
+          "old": "}\n\nimpl OriginalFile {\n    pub(super) fn open_original(path: &Path) -> io::Result<Self> {\n        require_absolute(path)?;\n        let parent = DirectoryPin::capture_private(parent(path)?)?;\n        let file = open_readonly(path)?;\n",
+          "new": "}\n\nimpl OriginalFile {\n    pub(in crate::authority_host_runtime::session) fn open_original(path: &Path) -> io::Result<Self> {\n        require_absolute(path)?;\n        let parent = DirectoryPin::capture_private(parent(path)?)?;\n        let file = open_readonly(path)?;\n"
+        },
+        {
+          "old_start_line": 227,
+          "old": "        Ok(held)\n    }\n\n    pub(super) fn original_descriptor(&self) -> io::Result<File> {\n        self.require_original_file()?;\n        self.file.try_clone()\n    }\n\n    pub(super) fn require_original_file(&self) -> io::Result<()> {\n        self.parent.require_directory()?;\n        let path = std::fs::symlink_metadata(&self.path)?;\n        if !path.is_file()\n",
+          "new": "        Ok(held)\n    }\n\n    pub(in crate::authority_host_runtime::session) fn original_descriptor(&self) -> io::Result<File> {\n        self.require_original_file()?;\n        self.file.try_clone()\n    }\n\n    pub(in crate::authority_host_runtime::session) fn require_original_file(&self) -> io::Result<()> {\n        self.parent.require_directory()?;\n        let path = std::fs::symlink_metadata(&self.path)?;\n        if !path.is_file()\n"
+        },
+        {
+          "old_start_line": 248,
+          "old": "    }\n}\n\npub(super) fn require_absolute(path: &Path) -> io::Result<()> {\n    if !path.is_absolute()\n        || path\n            .components()\n",
+          "new": "    }\n}\n\npub(in crate::authority_host_runtime::session) fn require_absolute(path: &Path) -> io::Result<()> {\n    if !path.is_absolute()\n        || path\n            .components()\n"
+        },
+        {
+          "old_start_line": 260,
+          "old": "    Ok(())\n}\n\npub(super) fn parent(path: &Path) -> io::Result<&Path> {\n    path.parent()\n        .ok_or_else(|| io::Error::other(\"original path parent required\"))\n}\n",
+          "new": "    Ok(())\n}\n\npub(in crate::authority_host_runtime::session) fn parent(path: &Path) -> io::Result<&Path> {\n    path.parent()\n        .ok_or_else(|| io::Error::other(\"original path parent required\"))\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "de0d9afd3faef89dcb04a356991eaa529ce8d3a0",
+        "sha256": "33b40be0b279ccaf238e7df2a53865e1c08a5968a0fca48f66420dddd443778c",
+        "bytes": 14655
+      },
+      "postimage": {
+        "git_blob": "3d7c4d004a06dc60830985e1d4d0c0c7e12fc483",
+        "sha256": "c527504e630f0e45041bd2ee96bbe633831a81958160f08d7f97adcf0cd5c781",
+        "bytes": 15231
+      },
+      "additions": 16,
+      "deletions": 16,
+      "operations": [
+        {
+          "old_start_line": 57,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct ObserverData {\n    pub generation: CellGenerationConfigV2,\n    pub journal_records: u64,\n    pub witness_scope: [u8; 32],\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct ObserverData {\n    pub generation: CellGenerationConfigV2,\n    pub journal_records: u64,\n    pub witness_scope: [u8; 32],\n"
+        },
+        {
+          "old_start_line": 67,
+          "old": "}\n\nimpl ObserverData {\n    pub(super) fn original_observer_config(&self) -> io::Result<CellGenerationObserverConfigV1> {\n        Ok(CellGenerationObserverConfigV1 {\n            generation: self.generation.clone(),\n            journal_records: self.journal_records,\n",
+          "new": "}\n\nimpl ObserverData {\n    pub(in crate::authority_host_runtime::session) fn original_observer_config(&self) -> io::Result<CellGenerationObserverConfigV1> {\n        Ok(CellGenerationObserverConfigV1 {\n            generation: self.generation.clone(),\n            journal_records: self.journal_records,\n"
+        },
+        {
+          "old_start_line": 84,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct SignerData {\n    pub id: String,\n    pub verifying_key: [u8; 32],\n    pub minimum_authority_epoch: u64,\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct SignerData {\n    pub id: String,\n    pub verifying_key: [u8; 32],\n    pub minimum_authority_epoch: u64,\n"
+        },
+        {
+          "old_start_line": 123,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OwnerTrustData {\n    pub registry_id: String,\n    pub withdrawal_scope: [u8; 32],\n    pub minimum_registry_generation: u64,\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct OwnerTrustData {\n    pub registry_id: String,\n    pub withdrawal_scope: [u8; 32],\n    pub minimum_registry_generation: u64,\n"
+        },
+        {
+          "old_start_line": 134,
+          "old": "}\n\nimpl OwnerTrustData {\n    pub(super) fn original_owner_trust(&self) -> io::Result<ArtifactOwnerTrustV1> {\n        Ok(ArtifactOwnerTrustV1 {\n            registry_id: StableId::new(&self.registry_id).map_err(io::Error::other)?,\n            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),\n",
+          "new": "}\n\nimpl OwnerTrustData {\n    pub(in crate::authority_host_runtime::session) fn original_owner_trust(&self) -> io::Result<ArtifactOwnerTrustV1> {\n        Ok(ArtifactOwnerTrustV1 {\n            registry_id: StableId::new(&self.registry_id).map_err(io::Error::other)?,\n            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),\n"
+        },
+        {
+          "old_start_line": 158,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct SelectorTrustData {\n    pub registry_id: String,\n    pub withdrawal_scope: [u8; 32],\n    pub minimum_authority_epoch: u64,\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct SelectorTrustData {\n    pub registry_id: String,\n    pub withdrawal_scope: [u8; 32],\n    pub minimum_authority_epoch: u64,\n"
+        },
+        {
+          "old_start_line": 166,
+          "old": "}\n\nimpl SelectorTrustData {\n    pub(super) fn original_selector(\n        &self,\n        owner: &ArtifactOwnerTrustV1,\n    ) -> io::Result<ArtifactSelectionVerifierV1> {\n",
+          "new": "}\n\nimpl SelectorTrustData {\n    pub(in crate::authority_host_runtime::session) fn original_selector(\n        &self,\n        owner: &ArtifactOwnerTrustV1,\n    ) -> io::Result<ArtifactSelectionVerifierV1> {\n"
+        },
+        {
+          "old_start_line": 189,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct CurrentData {\n    pub withdrawal_scope: [u8; 32],\n    pub binding: [u8; 32],\n    pub registry_id: String,\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct CurrentData {\n    pub withdrawal_scope: [u8; 32],\n    pub binding: [u8; 32],\n    pub registry_id: String,\n"
+        },
+        {
+          "old_start_line": 205,
+          "old": "}\n\nimpl CurrentData {\n    pub(super) fn original_current(&self) -> io::Result<SignedCurrentArtifactHeadV1> {\n        Ok(SignedCurrentArtifactHeadV1 {\n            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),\n            binding: Digest32::from_array(self.binding),\n",
+          "new": "}\n\nimpl CurrentData {\n    pub(in crate::authority_host_runtime::session) fn original_current(&self) -> io::Result<SignedCurrentArtifactHeadV1> {\n        Ok(SignedCurrentArtifactHeadV1 {\n            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),\n            binding: Digest32::from_array(self.binding),\n"
+        },
+        {
+          "old_start_line": 231,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct WithdrawalData {\n    pub binding: [u8; 32],\n    pub scope: [u8; 32],\n    pub head: [u8; 32],\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct WithdrawalData {\n    pub binding: [u8; 32],\n    pub scope: [u8; 32],\n    pub head: [u8; 32],\n"
+        },
+        {
+          "old_start_line": 242,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct IssuerKeyData {\n    pub key_id: String,\n    pub verifying_key: [u8; 32],\n    pub not_before_authority_epoch: u64,\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct IssuerKeyData {\n    pub key_id: String,\n    pub verifying_key: [u8; 32],\n    pub not_before_authority_epoch: u64,\n"
+        },
+        {
+          "old_start_line": 251,
+          "old": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct SelectionData {\n    pub selection_id: String,\n    pub artifact_id: String,\n    pub registry_id: String,\n",
+          "new": "\n#[derive(Clone, Debug, Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(in crate::authority_host_runtime::session) struct SelectionData {\n    pub selection_id: String,\n    pub artifact_id: String,\n    pub registry_id: String,\n"
+        },
+        {
+          "old_start_line": 279,
+          "old": "\n#[derive(Clone, Copy, Debug, Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\npub(super) enum ModelKind {\n    Model,\n}\n\nimpl SelectionData {\n    pub(super) fn original_selection(&self) -> io::Result<SignedArtifactSelectionV1> {\n        Ok(SignedArtifactSelectionV1 {\n            selection_id: StableId::new(&self.selection_id).map_err(io::Error::other)?,\n            artifact_id: StableId::new(&self.artifact_id).map_err(io::Error::other)?,\n",
+          "new": "\n#[derive(Clone, Copy, Debug, Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\npub(in crate::authority_host_runtime::session) enum ModelKind {\n    Model,\n}\n\nimpl SelectionData {\n    pub(in crate::authority_host_runtime::session) fn original_selection(&self) -> io::Result<SignedArtifactSelectionV1> {\n        Ok(SignedArtifactSelectionV1 {\n            selection_id: StableId::new(&self.selection_id).map_err(io::Error::other)?,\n            artifact_id: StableId::new(&self.artifact_id).map_err(io::Error::other)?,\n"
+        },
+        {
+          "old_start_line": 331,
+          "old": "}\n\nimpl ObserverData {\n    pub(super) fn from_original_observer(original: &CellGenerationObserverConfigV1) -> Self {\n        Self {\n            generation: original.generation.clone(),\n            journal_records: original.journal_records,\n",
+          "new": "}\n\nimpl ObserverData {\n    pub(in crate::authority_host_runtime::session) fn from_original_observer(original: &CellGenerationObserverConfigV1) -> Self {\n        Self {\n            generation: original.generation.clone(),\n            journal_records: original.journal_records,\n"
+        },
+        {
+          "old_start_line": 344,
+          "old": "}\n\nimpl SelectionData {\n    pub(super) fn from_original_selection(\n        original: &SignedArtifactSelectionV1,\n    ) -> io::Result<Self> {\n        if original.artifact_kind != ArtifactKind::Model {\n",
+          "new": "}\n\nimpl SelectionData {\n    pub(in crate::authority_host_runtime::session) fn from_original_selection(\n        original: &SignedArtifactSelectionV1,\n    ) -> io::Result<Self> {\n        if original.artifact_kind != ArtifactKind::Model {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "746deee25e13ecad8704880a19825cf599a9e07a",
+        "sha256": "00269487717225f87eef9a12052b1bccd2e6b0d3945d697341347901eeb72145",
+        "bytes": 10852
+      },
+      "postimage": {
+        "git_blob": "6c6e7d64b56e2a6471b26367f3a9d2c73c1f2a67",
+        "sha256": "f082f35321892b7d4a1d3491ad5af7dab759fc9c5f233884dbbe8574ac218629",
+        "bytes": 10946
+      },
+      "additions": 2,
+      "deletions": 2,
+      "operations": [
+        {
+          "old_start_line": 21,
+          "old": "use super::RootGenerationPublicationRegistrationV1;\n\n#[path = \"authority_host_publication_deployment_files.rs\"]\nmod files;\n#[path = \"authority_host_publication_deployment_data.rs\"]\nmod data;\n#[path = \"authority_host_publication_deployment_inputs.rs\"]\nmod inputs;\n\n",
+          "new": "use super::RootGenerationPublicationRegistrationV1;\n\n#[path = \"authority_host_publication_deployment_files.rs\"]\npub(in crate::authority_host_runtime::session) mod files;\n#[path = \"authority_host_publication_deployment_data.rs\"]\npub(in crate::authority_host_runtime::session) mod data;\n#[path = \"authority_host_publication_deployment_inputs.rs\"]\nmod inputs;\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "a9598621c901ce26a8f852baa01048a27a8e0de9",
+        "sha256": "60f043fac0dea5c654e289f450dd7514c8fc81291124599c16298c272d0facd8",
+        "bytes": 9144
+      },
+      "postimage": {
+        "git_blob": "5bf4322f0c3320f30be998191d54cbb9e15ce091",
+        "sha256": "d1f3c508b12d85e8db9e70efc7729066cf32a2f5eccd92b600b0129019796b44",
+        "bytes": 9155
+      },
+      "additions": 1,
+      "deletions": 1,
+      "operations": [
+        {
+          "old_start_line": 20,
+          "old": "pub(super) use runtime::serve_optional;\n\n#[path = \"authority_host_publication_deployment.rs\"]\nmod deployment;\npub use deployment::RootGenerationPublicationDeploymentSessionV1;\npub use deployment::RootGenerationPublicationDeploymentV1;\n\n",
+          "new": "pub(super) use runtime::serve_optional;\n\n#[path = \"authority_host_publication_deployment.rs\"]\npub(super) mod deployment;\npub use deployment::RootGenerationPublicationDeploymentSessionV1;\npub use deployment::RootGenerationPublicationDeploymentV1;\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "ee2236f77bcafd19db32460c381af07aaa97d667",
+        "sha256": "e0a935d4dda3adc8326b1e96cc7a446fae5d65c872256cccca8b63fb6b37109d",
+        "bytes": 7733
+      },
+      "postimage": {
+        "git_blob": "fe22a8557e8f9cfe47956b3c268686ecdb4c4693",
+        "sha256": "4cb8f51a9ec923eb3ec0f2235d3bb4dce56593af746e7e640d92ba7f6f96e51d",
+        "bytes": 8051
+      },
+      "additions": 9,
+      "deletions": 1,
+      "operations": [
+        {
+          "old_start_line": 14,
+          "old": "use crate::authority_host_service::generation_initial::InitialBootstrap;\nuse crate::authority_host_service::generation_initial::SOCKET;\n\n#[path = \"authority_host_generation_initial_runtime.rs\"]\nmod runtime;\npub(super) use runtime::BoundInitial;\n",
+          "new": "use crate::authority_host_service::generation_initial::InitialBootstrap;\nuse crate::authority_host_service::generation_initial::SOCKET;\n\n#[path = \"authority_host_initial_deployment.rs\"]\nmod deployment;\npub use deployment::RootGenerationInitialDeploymentFilesV1;\npub use deployment::RootGenerationInitialDeploymentSessionV1;\npub use deployment::RootGenerationInitialDeploymentV1;\n\n#[path = \"authority_host_generation_initial_runtime.rs\"]\nmod runtime;\npub(super) use runtime::BoundInitial;\n"
+        },
+        {
+          "old_start_line": 55,
+          "old": "    sender: mpsc::SyncSender<Submission>,\n    phase: Arc<AtomicU8>,\n    root_pid: u32,\n    boot_id: String,\n    process_start_ticks: u64,\n    lifetime: Duration,\n",
+          "new": "    sender: mpsc::SyncSender<Submission>,\n    phase: Arc<AtomicU8>,\n    root_pid: u32,\n    consumer_uid: u32,\n    boot_id: String,\n    process_start_ticks: u64,\n    lifetime: Duration,\n"
+        },
+        {
+          "old_start_line": 164,
+          "old": "        });\n        Ok((\n            RootGenerationInitialEnrollmentCapabilityV1 {\n                sender, phase, root_pid: bundle.root.pid, boot_id: bundle.root.boot_id,\n                process_start_ticks: bundle.root.process_start_ticks,\n                lifetime: Duration::from_millis(self.config.lifetime_ms),\n            },\n",
+          "new": "        });\n        Ok((\n            RootGenerationInitialEnrollmentCapabilityV1 {\n                sender, phase, root_pid: bundle.root.pid, consumer_uid: self.config.peer_uid,\n                boot_id: bundle.root.boot_id,\n                process_start_ticks: bundle.root.process_start_ticks,\n                lifetime: Duration::from_millis(self.config.lifetime_ms),\n            },\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "6cdf76ba4702b8107525b24bf0dddb4047704d4d",
+        "sha256": "3bd7dd91ff0fb51d34afa7713b025463ab850a121cb5c1720c546afc8d3dda4a",
+        "bytes": 19805
+      },
+      "postimage": {
+        "git_blob": "2c20de4dbfd743c6b4378b1982229d40e2e6893b",
+        "sha256": "9557728705d1ad13da64ce49afa6bf4580696c7e99a84649da9cf9268c501f59",
+        "bytes": 20006
+      },
+      "additions": 3,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 24,
+          "old": "#[path = \"authority_host_generation_initial_session.rs\"]\nmod generation_initial;\npub use generation_initial::RootGenerationInitialEnrollmentCapabilityV1;\npub use generation_initial::RootGenerationInitialRegistrationV1;\n\n#[path = \"authority_host_generation_publication_session.rs\"]\n",
+          "new": "#[path = \"authority_host_generation_initial_session.rs\"]\nmod generation_initial;\npub use generation_initial::RootGenerationInitialEnrollmentCapabilityV1;\npub use generation_initial::RootGenerationInitialDeploymentFilesV1;\npub use generation_initial::RootGenerationInitialDeploymentSessionV1;\npub use generation_initial::RootGenerationInitialDeploymentV1;\npub use generation_initial::RootGenerationInitialRegistrationV1;\n\n#[path = \"authority_host_generation_publication_session.rs\"]\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "ce91fcfd3d18bbfe3f762b73316d9a0d308e7868",
+        "sha256": "d4d408b56234667ea190a6597a09f8a75bf7fd4d87eb94b9a7ec9f378d20f929",
+        "bytes": 19262
+      },
+      "postimage": {
+        "git_blob": "a569fc3e4e1a767cfe3d493e2eca1f66862d0cfc",
+        "sha256": "8f1a1cb0abf3e8039ef6fee122cb4eeee5df6482efa58ec5a0c538f3d80abb79",
+        "bytes": 19430
+      },
+      "additions": 3,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 42,
+          "old": "mod session;\npub use session::PreparedHostAuthoritySession;\npub use session::RootGenerationInitialEnrollmentCapabilityV1;\npub use session::RootGenerationInitialRegistrationV1;\npub use session::RootGenerationPublicationEnrollmentCapabilityV1;\npub use session::RootGenerationPublicationDeploymentV1;\n",
+          "new": "mod session;\npub use session::PreparedHostAuthoritySession;\npub use session::RootGenerationInitialEnrollmentCapabilityV1;\npub use session::RootGenerationInitialDeploymentFilesV1;\npub use session::RootGenerationInitialDeploymentSessionV1;\npub use session::RootGenerationInitialDeploymentV1;\npub use session::RootGenerationInitialRegistrationV1;\npub use session::RootGenerationPublicationEnrollmentCapabilityV1;\npub use session::RootGenerationPublicationDeploymentV1;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "0de0c27bb73c4a2a83966d72aea252ff0c11857a",
+        "sha256": "9bc9911bb104fffcaffa6769f0560eae2387ac0c204ba88cbe9f96f41aaa12a4",
+        "bytes": 62874
+      },
+      "postimage": {
+        "git_blob": "753ebd1e6d68c5e67e4938de68f20511c27a994e",
+        "sha256": "d87a3ca9ae6bab04faeb589f4394969f4a375610396063ba8eeaad2d2dc57248",
+        "bytes": 63171
+      },
+      "additions": 6,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 1334,
+          "old": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialRegistrationV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::HostGenerationInitialDeploymentV1;\n",
+          "new": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialDeploymentFilesV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialDeploymentSessionV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialDeploymentV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationInitialRegistrationV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::HostGenerationInitialDeploymentV1;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "80ebebbd3fe71cc861d7b05a094afdc3e79c14f8",
+        "sha256": "3171ffcdc1a98581ba8989a4c784334920eed448e06530abb3f357a904238e9c",
+        "bytes": 19695
+      },
+      "postimage": {
+        "git_blob": "d47b37681814154e5f11dce21c0dbe49cec62ea3",
+        "sha256": "3f74f932372d58ec4e6de68c07e31873c3fc5a236b7ae5841425226a68e83a2c",
+        "bytes": 23326
+      },
+      "additions": 68,
+      "deletions": 6,
+      "operations": [
+        {
+          "old_start_line": 154,
+          "old": "            .remove(std::ffi::OsStr::new(\"--generation-publication-deployment\"))\n            .map(PathBuf::from);\n        let publication_handoff = options.remove(std::ffi::OsStr::new(\"--root-generation-publication-handoff-fd\"));\n        let notes_profile = options\n            .remove(std::ffi::OsStr::new(\"--notes-launch-profile\"))\n            .map(PathBuf::from);\n",
+          "new": "            .remove(std::ffi::OsStr::new(\"--generation-publication-deployment\"))\n            .map(PathBuf::from);\n        let publication_handoff = options.remove(std::ffi::OsStr::new(\"--root-generation-publication-handoff-fd\"));\n        let initial_deployment = options\n            .remove(std::ffi::OsStr::new(\"--generation-initial-deployment\"))\n            .map(PathBuf::from);\n        let initial_handoff = options.remove(std::ffi::OsStr::new(\"--root-generation-initial-handoff-fd\"));\n        let notes_profile = options\n            .remove(std::ffi::OsStr::new(\"--notes-launch-profile\"))\n            .map(PathBuf::from);\n"
+        },
+        {
+          "old_start_line": 163,
+          "old": "        if !options.is_empty() || !pidfd_stdin {\n            return Err(\"unknown option or missing pre-held owner pidfd\".into());\n        }\n        // Claim every numeric inherited FD before any clone/open/runtime can\n        // reuse a missing number. One slot owns each FD and closes the original.\n        let mut claimed = std::collections::BTreeSet::new();\n",
+          "new": "        if !options.is_empty() || !pidfd_stdin {\n            return Err(\"unknown option or missing pre-held owner pidfd\".into());\n        }\n        if (initial_deployment.is_some() || initial_handoff.is_some())\n            && (publication_deployment.is_some() || publication_handoff.is_some())\n        {\n            return Err(\"initial and learned publication require separate original Root sessions\".into());\n        }\n        if initial_deployment.is_some() != initial_handoff.is_some()\n            || initial_deployment.is_some() && root_fd.is_none()\n        {\n            return Err(\"initial publication requires its explicit Root deployment, separate purpose handoff and original Root pidfd\".into());\n        }\n        if publication_deployment.is_some() != publication_handoff.is_some()\n            || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n            return Err(\"publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd\".into());\n        }\n        // Claim every numeric inherited FD before any clone/open/runtime can\n        // reuse a missing number. One slot owns each FD and closes the original.\n        let mut claimed = std::collections::BTreeSet::new();\n"
+        },
+        {
+          "old_start_line": 186,
+          "old": "            .as_deref()\n            .map(|fd| inherited_descriptor(fd, &mut claimed))\n            .transpose()?;\n        if publication_deployment.is_some() != publication_handoff.is_some()\n            || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n            return Err(\"publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd\".into());\n        }\n        if model_reservation.is_some() != model_handoff.is_some()\n            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n",
+          "new": "            .as_deref()\n            .map(|fd| inherited_descriptor(fd, &mut claimed))\n            .transpose()?;\n        let initial_handoff = initial_handoff\n            .as_deref()\n            .map(|fd| inherited_descriptor(fd, &mut claimed))\n            .transpose()?;\n        if model_reservation.is_some() != model_handoff.is_some()\n            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n"
+        },
+        {
+          "old_start_line": 257,
+          "old": "            )?;\n            prepared\n        } else {\n            if handoff.is_some() || root_fd.is_some() && learning_handoff.is_none() {\n                return Err(\"open-only serving does not accept fresh handoff inputs\".into());\n            }\n            codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?\n",
+          "new": "            )?;\n            prepared\n        } else {\n            if handoff.is_some()\n                || root_fd.is_some() && learning_handoff.is_none() && initial_handoff.is_none()\n            {\n                return Err(\"open-only serving does not accept fresh handoff inputs\".into());\n            }\n            codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?\n"
+        },
+        {
+          "old_start_line": 279,
+          "old": "            (None, None) => (None, None),\n            _ => return Err(\"publication deployment and inherited offer must be paired\".into()),\n        };\n        let deployment_ready = deployment.as_ref()\n            .map(|deployment| serde_json::to_string(deployment.session()))\n            .transpose()?;\n",
+          "new": "            (None, None) => (None, None),\n            _ => return Err(\"publication deployment and inherited offer must be paired\".into()),\n        };\n        let (initial_deployment, initial_offer) = match (initial_deployment, initial_handoff) {\n            (Some(path), Some(handoff)) => {\n                let files = codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(&path)?;\n                let (capability, offer) = prepared.enable_generation_initial(files.deployment().clone())?;\n                let capability: codex_hepta_agentd::RootGenerationInitialEnrollmentCapabilityV1 = capability;\n                (Some(capability.with_original_initial_deployment(files)?), Some((handoff, offer)))\n            }\n            (None, None) => (None, None),\n            _ => return Err(\"initial deployment and inherited offer must be paired\".into()),\n        };\n        let initial_ready = initial_deployment.as_ref()\n            .map(|deployment| serde_json::to_string(deployment.session()))\n            .transpose()?;\n        let deployment_ready = deployment.as_ref()\n            .map(|deployment| serde_json::to_string(deployment.session()))\n            .transpose()?;\n"
+        },
+        {
+          "old_start_line": 319,
+          "old": "                    std::time::Duration::from_secs(30),\n                ).map_err(std::io::Error::other)?;\n            }\n            if let Some(session) = deployment_ready {\n                println!(\"{{\\\"publication_deployment_session\\\":{session}}}\");\n                std::io::stdout().flush()?;\n",
+          "new": "                    std::time::Duration::from_secs(30),\n                ).map_err(std::io::Error::other)?;\n            }\n            if let (Some((handoff, offer)), Some(root)) = (initial_offer, root_fd.as_ref()) {\n                codex_hepta_agentd::send_root_generation_initial_handoff(\n                    std::os::unix::net::UnixDatagram::from(handoff), offer, root,\n                    std::time::Duration::from_secs(30),\n                ).map_err(std::io::Error::other)?;\n            }\n            if let Some(session) = initial_ready {\n                println!(\"{{\\\"initial_deployment_session\\\":{session}}}\");\n                std::io::stdout().flush()?;\n            }\n            if let Some(session) = deployment_ready {\n                println!(\"{{\\\"publication_deployment_session\\\":{session}}}\");\n                std::io::stdout().flush()?;\n"
+        },
+        {
+          "old_start_line": 345,
+          "old": "                    )))?;\n                Ok::<_, std::io::Error>(registered)\n            }));\n            let served = match (native_profile, text) {\n                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),\n                (None, Some((file, pidfd))) => prepared.serve_with_text_and_ready(file, pidfd, ready),\n",
+          "new": "                    )))?;\n                Ok::<_, std::io::Error>(registered)\n            }));\n            let initial_worker = initial_deployment.map(|deployment| scope.spawn(move || {\n                let deployment: codex_hepta_agentd::RootGenerationInitialDeploymentV1 = deployment;\n                let registered = deployment.wait_and_register_initial(stop_ref)?;\n                let stdout = std::io::stdout();\n                let mut output = stdout.lock();\n                writeln!(output, \"{{\\\"initial_registered_binding\\\":\\\"{}\\\"}}\", registered.binding())\n                    .and_then(|()| output.flush())\n                    .map_err(|error| std::io::Error::other(format!(\n                        \"original Initial registered; acknowledgement output uncertain: {error}\",\n                    )))?;\n                Ok::<_, std::io::Error>(registered)\n            }));\n            let served = match (native_profile, text) {\n                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),\n                (None, Some((file, pidfd))) => prepared.serve_with_text_and_ready(file, pidfd, ready),\n"
+        },
+        {
+          "old_start_line": 356,
+          "old": "                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other(\"Root deployment worker panicked\"))?),\n                None => None,\n            };\n            served?;\n            if let Some(registered) = registered {\n                registered?;\n            }\n",
+          "new": "                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other(\"Root deployment worker panicked\"))?),\n                None => None,\n            };\n            let initial_registered = match initial_worker {\n                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other(\"Root Initial deployment worker panicked\"))?),\n                None => None,\n            };\n            served?;\n            if let Some(registered) = initial_registered {\n                registered?;\n            }\n            if let Some(registered) = registered {\n                registered?;\n            }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_tests.rs",
+      "status": "new",
+      "mode": "100644",
+      "git_blob": "ca5cd35e2081f43fa0d1aaf06b1678fa580f6e27",
+      "sha256": "2c5b3b315784adadb91713dfe47b01e7ffacdbb2d4123b9d583a9fd4390ec78f",
+      "bytes": 8545,
+      "additions": 149,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_artifacts_tests.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "75a37aace82dd32a44cf189e0bfcf1a5c84ba50b",
+        "sha256": "da5b5f92dda9c77fb67c039b8e88ddc33f27189ed411b0772cda9b208e5ed630",
+        "bytes": 16237
+      },
+      "postimage": {
+        "git_blob": "57582d81e56e244eda0bfb10b3a34a02c2dfc4f6",
+        "sha256": "786d927e6a2b0b2b89900933601316edfda36928f31009a23d452a4b74665d2f",
+        "bytes": 16441
+      },
+      "additions": 5,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 327,
+          "old": "}\n\nimpl Transfer {\n    pub(super) fn inputs(&self) -> anyhow::Result<RootArtifactPublicationInputsV1> {\n        let trust = self.owner.original_owner_trust()?;\n        let floor = empty_floor()?;\n",
+          "new": "}\n\nimpl Transfer {\n    /// Actual public trust from this fixture's already signed selection.\n    pub(super) fn selector_description(&self) -> anyhow::Result<Vec<u8>> {\n        Ok(serde_json::to_vec(&self.selector)?)\n    }\n\n    pub(super) fn inputs(&self) -> anyhow::Result<RootArtifactPublicationInputsV1> {\n        let trust = self.owner.original_owner_trust()?;\n        let floor = empty_floor()?;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "status": "modified",
+      "mode": "100644",
+      "preimage": {
+        "git_blob": "0b8120546575e58a9b54bb8b91bd4d293476db76",
+        "sha256": "392fe001f0390824592dfcf9c49564698ccd5163de4c0532990e60b3aca3ac99",
+        "bytes": 17296
+      },
+      "postimage": {
+        "git_blob": "615dbd0c79316bce165b3143bcafa02247284ce5",
+        "sha256": "dfd00b4e5d39f4c84f5c01c9f7c24a5503a6196a565594007cff2b3b2e74b9a1",
+        "bytes": 19087
+      },
+      "additions": 25,
+      "deletions": 2,
+      "operations": [
+        {
+          "old_start_line": 216,
+          "old": "        sealed.read_to_end(&mut raw)?;\n        let bootstrap: HostAuthorityPublicBootstrapV1 = serde_json::from_slice(&raw)?;\n        sealed.rewind()?;\n        let (capability, initial) = prepared.enable_generation_initial(self.deployment.clone())?;\n        let inputs = crate::RootGenerationInitialEnrollmentV1 {\n            mode: if matches!(phase, Phase::Publish | Phase::ReserveExisting) { crate::RootGenerationInitialModeV1::Reserve }\n                else { crate::RootGenerationInitialModeV1::Recover },\n",
+          "new": "        sealed.read_to_end(&mut raw)?;\n        let bootstrap: HostAuthorityPublicBootstrapV1 = serde_json::from_slice(&raw)?;\n        sealed.rewind()?;\n        let inputs = crate::RootGenerationInitialEnrollmentV1 {\n            mode: if matches!(phase, Phase::Publish | Phase::ReserveExisting) { crate::RootGenerationInitialModeV1::Reserve }\n                else { crate::RootGenerationInitialModeV1::Recover },\n"
+        },
+        {
+          "old_start_line": 228,
+          "old": "            artifacts: self.artifacts.inputs()?, consumer: RootPublicationFinalUseConsumerV1::Device,\n            consumer_state_root: self.local.clone(), issuer_keys: vec![FinalUseIssuerTrustKey::from(bootstrap.issuer_key)],\n        };\n        let target_writer = OpenOptions::new().read(true).write(true).open(&self.target_journal)?;\n        let witness_writer = OpenOptions::new().read(true).write(true).open(&self.target_witness)?;\n        let plan = Plan {\n",
+          "new": "            artifacts: self.artifacts.inputs()?, consumer: RootPublicationFinalUseConsumerV1::Device,\n            consumer_state_root: self.local.clone(), issuer_keys: vec![FinalUseIssuerTrustKey::from(bootstrap.issuer_key)],\n        };\n        let deployment_directory = tempfile::Builder::new().prefix(\"initial-deployment-\")\n            .tempdir_in(self._protected.path())?;\n        std::fs::set_permissions(deployment_directory.path(), std::fs::Permissions::from_mode(0o700))?;\n        let files = crate::RootGenerationInitialDeploymentFilesV1::component_initial_files(\n            deployment_directory.path(),\n            &[self.current_path.clone(), self.target_journal.clone(), self.target_witness.clone()],\n            self.deployment.operation.clone(), &self.artifacts.selector_description()?, &inputs,\n        )?;\n        assert_eq!(files.deployment(), &self.deployment);\n        let (capability, initial) = prepared.enable_generation_initial(files.deployment().clone())?;\n        let before_retained = support::protected_files(&self.current_path)?;\n        assert!(prepared.serve_retained().is_err());\n        assert_eq!(support::protected_files(&self.current_path)?, before_retained);\n        let capability: crate::RootGenerationInitialEnrollmentCapabilityV1 = capability;\n        let deployment = capability.with_original_initial_deployment(files)?;\n        let target_writer = OpenOptions::new().read(true).write(true).open(&self.target_journal)?;\n        let witness_writer = OpenOptions::new().read(true).write(true).open(&self.target_witness)?;\n        let plan = Plan {\n"
+        },
+        {
+          "old_start_line": 243,
+          "old": "        std::thread::scope(|scope| -> anyhow::Result<()> {\n            let registration = scope.spawn(|| -> anyhow::Result<()> {\n                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")?;\n                let outcome = capability.register(inputs);\n                if reject {\n                    anyhow::ensure!(outcome.is_err(), \"original bad or sticky fenced target rejected\");\n                    send_data(&self.offer, &false)?;\n",
+          "new": "        std::thread::scope(|scope| -> anyhow::Result<()> {\n            let registration = scope.spawn(|| -> anyhow::Result<()> {\n                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")?;\n                // The original child has now opened both real nonce owners.\n                // The production loader invokes the original same-PID cap.\n                let unchanged = support::protected_files(&self.current_path)?;\n                let claims_before = std::fs::read(self.local.join(\"device/authority.claims\"))?;\n                deployment.component_trigger_initial()?;\n                assert_eq!(support::protected_files(&self.current_path)?, unchanged);\n                assert_eq!(std::fs::read(self.local.join(\"device/authority.claims\"))?, claims_before);\n                let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);\n                let deployment: crate::RootGenerationInitialDeploymentV1 = deployment;\n                let outcome = deployment.wait_and_register_initial(&stopping);\n                if reject {\n                    anyhow::ensure!(outcome.is_err(), \"original bad or sticky fenced target rejected\");\n                    send_data(&self.offer, &false)?;\n"
+        }
+      ]
+    }
+  ]
+}

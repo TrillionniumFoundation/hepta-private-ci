@@ -1,0 +1,597 @@
+//! One host-owned journal for many independently scoped Cell state partitions.
+//! The host supplies an exclusive regular file and an independent durable
+//! AnchorWitnessStore. Frames bind policy receipts and sparse ticks; recovery
+//! recomputes checkpoints without executing a model. No effect rights.
+//! Hosts preserve the monotonic Cell clock epoch across this journal's lifetime.
+
+use std::fs::File;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
+use std::sync::Arc;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
+use crate::AnchorWitnessStore;
+use crate::CellGenerationCurrentV1;
+use crate::CellGenerationOwnerBindingV1;
+use crate::JournalAnchor;
+use crate::cell_journal_codec::MAX_FRAME_BYTES;
+use crate::cell_journal_codec::encode_admission;
+use crate::cell_journal_codec::encode_commit;
+use crate::cell_journal_codec::encode_host_queue_age;
+use crate::cell_journal_codec::encode_reset;
+use crate::cell_journal_codec::validate_admission_model;
+use crate::cell_owner::CellPartitionOwnerV1;
+use crate::cell_types::*;
+use crate::journal_lock::LockedFile;
+
+const MAGIC: &[u8; 8] = b"HPTACJ03";
+const HEADER_BYTES: usize = 40;
+const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
+
+#[path = "cell_journal_readback.rs"]
+mod readback;
+pub use readback::CellOwnerJournalReadbackV1;
+#[path = "cell_journal_image.rs"]
+mod image;
+#[cfg(target_os = "linux")]
+#[path = "cell_journal_observer.rs"]
+mod observer;
+#[cfg(target_os = "linux")]
+pub use observer::CellOriginalJournalFilesV1;
+#[cfg(target_os = "linux")]
+pub use observer::CellOriginalJournalObservationV1;
+#[cfg(target_os = "linux")]
+pub use observer::observe_original_guarded_cell_v1;
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OpenMode {
+    RepairOriginal,
+    ReadOnlyAcknowledged,
+}
+
+/// Frozen admission table: recovery requires the same definitions, source
+/// frontiers and initial writer epochs. Changing this table requires host-owned
+/// lifecycle transfer and journal replacement; this type does not migrate it.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellJournalPartitionV1 {
+    pub scope: CellScopeV1,
+    pub definition: CellDefinitionV1,
+    pub source_frontier: Digest32,
+    pub writer_epoch: u64,
+}
+
+pub struct CellOwnerJournalV1<W: AnchorWitnessStore> {
+    file: LockedFile,
+    witness: W,
+    specs: Vec<CellJournalPartitionV1>,
+    owner: CellPartitionOwnerV1,
+    header: Vec<u8>,
+    head: Option<JournalAnchor>,
+    max_records: usize,
+    length: u64,
+    healthy: bool,
+    current: Option<(
+        Arc<dyn CellGenerationCurrentV1>,
+        CellGenerationOwnerBindingV1,
+    )>,
+    mode: OpenMode,
+}
+
+impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
+    pub fn open(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+    ) -> Result<Self, CellExecutionError> {
+        Self::open_inner(
+            file,
+            witness,
+            specs,
+            max_records,
+            /*current*/ None,
+            OpenMode::RepairOriginal,
+        )
+    }
+
+    /// An original published task guards every read/admission/commit. The
+    /// distinct header binds that exact owner; ordinary open cannot bypass it.
+    pub fn open_guarded(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+        binding: CellGenerationOwnerBindingV1,
+        current: Arc<dyn CellGenerationCurrentV1>,
+    ) -> Result<Self, CellExecutionError> {
+        Self::open_guarded_inner(
+            file,
+            witness,
+            specs,
+            max_records,
+            binding,
+            current,
+            OpenMode::RepairOriginal,
+        )
+    }
+
+    fn open_guarded_inner(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+        binding: CellGenerationOwnerBindingV1,
+        current: Arc<dyn CellGenerationCurrentV1>,
+        mode: OpenMode,
+    ) -> Result<Self, CellExecutionError> {
+        let scope = binding.scope();
+        if specs.len() != 1
+            || specs.iter().any(|spec| {
+                spec.scope.agent_id.as_str() != scope.agent_id
+                    || spec.scope.cell_id.as_str() != scope.cell_id
+                    || spec.scope.run_id.as_str() != scope.run_id
+                    || spec.scope.principal_digest.into_array() != scope.principal_digest
+                    || spec.source_frontier.into_array() != binding.source_frontier()
+                    || spec.writer_epoch != binding.writer_epoch()
+            })
+        {
+            return Err(CellExecutionError::ScopeMismatch);
+        }
+        current
+            .check_current(&binding)
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        Self::open_inner(
+            file,
+            witness,
+            specs,
+            max_records,
+            Some((current, binding)),
+            mode,
+        )
+    }
+
+    fn open_inner(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+        current: Option<(
+            Arc<dyn CellGenerationCurrentV1>,
+            CellGenerationOwnerBindingV1,
+        )>,
+        mode: OpenMode,
+    ) -> Result<Self, CellExecutionError> {
+        if specs.is_empty() || specs.len() > 1024 || !(1..=65_536).contains(&max_records) {
+            return Err(CellExecutionError::CapacityExceeded);
+        }
+        let owner = initial_owner(&specs)?;
+        let mut header = header(&specs)?;
+        if let Some((guard, binding)) = &current {
+            guard
+                .check_current(binding)
+                .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+            let digest = Digest32::of_parts(&[
+                b"hepta.cell.published-feature-journal.v1\0",
+                &header,
+                &binding
+                    .digest()
+                    .map_err(|_| CellExecutionError::ScopeMismatch)?,
+                &(max_records as u64).to_be_bytes(),
+            ]);
+            header = b"HPTACJ04".to_vec();
+            header.extend_from_slice(digest.as_array());
+        }
+        let mut file =
+            LockedFile::acquire(file).map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        if file
+            .metadata()
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?
+            .len()
+            == 0
+        {
+            if mode == OpenMode::ReadOnlyAcknowledged {
+                return Err(CellExecutionError::AcknowledgedHistoryMissing);
+            }
+            if witness
+                .current()
+                .map_err(|_| CellExecutionError::OwnerUnavailable)?
+                .is_some()
+            {
+                return Err(CellExecutionError::AcknowledgedHistoryMissing);
+            }
+            file.seek(SeekFrom::Start(0))
+                .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+            file.write_all(&header)
+                .map_err(|_| CellExecutionError::CommitUncertain)?;
+            file.sync_all()
+                .map_err(|_| CellExecutionError::CommitUncertain)?;
+        }
+        let mut journal = Self {
+            file,
+            witness,
+            specs,
+            owner,
+            header,
+            head: None,
+            max_records,
+            length: 0,
+            healthy: false,
+            current,
+            mode,
+        };
+        journal.recover()?;
+        Ok(journal)
+    }
+
+    /// Read back the original log after an uncertain write. Only an incomplete
+    /// tail is trimmed, after proving all witnessed history still exists. A
+    /// complete lost-ack frame is retained and witnessed before lookup returns
+    /// its exact receipt. No encoding or inference is repeated.
+    pub fn recover(&mut self) -> Result<(), CellExecutionError> {
+        self.healthy = false;
+        self.require_current()?;
+        let expected = self
+            .witness
+            .current()
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        let length = self
+            .file
+            .metadata()
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?
+            .len();
+        if length < HEADER_BYTES as u64 || length > MAX_JOURNAL_BYTES {
+            return Err(CellExecutionError::JournalCorrupt);
+        }
+        self.file
+            .seek(SeekFrom::Start(0))
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        let mut bytes = vec![0; length as usize];
+        self.file
+            .read_exact(&mut bytes)
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        let image::ParsedCellImage {
+            owner,
+            offset,
+            head,
+            witnessed,
+        } = image::parse_original_cell_image(
+            &bytes,
+            &self.header,
+            &self.specs,
+            self.max_records,
+            expected,
+        )?;
+        if !witnessed {
+            return Err(CellExecutionError::AcknowledgedHistoryMissing);
+        }
+        // Validate the independent anchor before any file repair.
+        self.require_current()?;
+        if self.mode == OpenMode::ReadOnlyAcknowledged {
+            // Historical proof cannot acknowledge a tail, repair bytes or
+            // replace a missing original witness. Only the complete ACK cut.
+            if head.is_none() || head != expected || offset != bytes.len() {
+                return Err(CellExecutionError::AcknowledgedHistoryMissing);
+            }
+        } else {
+            if offset < bytes.len() {
+                self.file
+                    .set_len(offset as u64)
+                    .map_err(|_| CellExecutionError::CommitUncertain)?;
+            }
+            self.file
+                .sync_all()
+                .map_err(|_| CellExecutionError::CommitUncertain)?;
+            if let Some(next) = head
+                && expected != Some(next)
+            {
+                self.witness
+                    .compare_and_swap(expected, next)
+                    .map_err(|_| CellExecutionError::CommitUncertain)?;
+            }
+        }
+        self.owner = owner;
+        self.head = head;
+        self.length = offset as u64;
+        self.require_current()?;
+        self.healthy = true;
+        Ok(())
+    }
+
+    /// Persist source invalidation and a new writer fence in the shared journal.
+    /// Temporal state resets explicitly; already prepared commits fail CAS.
+    pub fn reset_at_frontier(
+        &mut self,
+        scope: &CellScopeV1,
+        source_frontier: Digest32,
+        writer_epoch: u64,
+    ) -> Result<(), CellExecutionError> {
+        self.require_healthy()?;
+        // A published task fixes its original frontier and writer epoch. A
+        // successor reset needs its own original CURRENT publication/journal.
+        if self.current.is_some() {
+            return Err(CellExecutionError::ScopeMismatch);
+        }
+        let index = self.partition_index(scope)?;
+        self.owner
+            .check_reset(scope, source_frontier, writer_epoch)?;
+        let payload = encode_reset(index, source_frontier, writer_epoch);
+        self.check_reserved_capacity(payload.len(), self.owner.pending_record_reservations())?;
+        self.persist(payload)?;
+        if let Err(error) = self
+            .owner
+            .reset_at_frontier(scope, source_frontier, writer_epoch)
+        {
+            self.healthy = false;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn partition_index(&self, scope: &CellScopeV1) -> Result<usize, CellExecutionError> {
+        self.specs
+            .iter()
+            .position(|s| &s.scope == scope)
+            .ok_or(CellExecutionError::ScopeMismatch)
+    }
+
+    fn require_healthy(&self) -> Result<(), CellExecutionError> {
+        self.require_current()?;
+        if self.healthy {
+            Ok(())
+        } else {
+            Err(CellExecutionError::CommitUncertain)
+        }
+    }
+
+    fn require_current(&self) -> Result<(), CellExecutionError> {
+        if let Some((current, binding)) = &self.current {
+            current
+                .check_current(binding)
+                .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        }
+        Ok(())
+    }
+
+    fn check_reserved_capacity(
+        &self,
+        payload_bytes: usize,
+        remaining_records: usize,
+    ) -> Result<(), CellExecutionError> {
+        let reserved_records = remaining_records as u64;
+        let sequence = self.head.map_or(0, |a| a.sequence);
+        let reserved_bytes = reserved_records * (MAX_FRAME_BYTES as u64 + 36);
+        if sequence + 1 + reserved_records > self.max_records as u64
+            || self.length + payload_bytes as u64 + 36 + reserved_bytes > MAX_JOURNAL_BYTES
+        {
+            return Err(CellExecutionError::CapacityExceeded);
+        }
+        Ok(())
+    }
+
+    fn persist(&mut self, payload: Vec<u8>) -> Result<(), CellExecutionError> {
+        self.require_healthy()?;
+        if self.mode == OpenMode::ReadOnlyAcknowledged {
+            return Err(CellExecutionError::OwnerUnavailable);
+        }
+        let next = next_anchor(&self.header, self.head, &payload)?;
+        if next.sequence > self.max_records as u64
+            || payload.len() > MAX_FRAME_BYTES
+            || self.length + payload.len() as u64 + 36 > MAX_JOURNAL_BYTES
+        {
+            return Err(CellExecutionError::CapacityExceeded);
+        }
+        let mut frame = Vec::with_capacity(payload.len() + 36);
+        frame.extend_from_slice(&(payload.len() as u32).to_be_bytes());
+        frame.extend_from_slice(&payload);
+        frame.extend_from_slice(next.checkpoint_digest.as_array());
+        self.healthy = false;
+        if self
+            .file
+            .metadata()
+            .map_err(|_| CellExecutionError::CommitUncertain)?
+            .len()
+            != self.length
+        {
+            return Err(CellExecutionError::CommitUncertain);
+        }
+        self.file
+            .seek(SeekFrom::Start(self.length))
+            .map_err(|_| CellExecutionError::CommitUncertain)?;
+        self.file
+            .write_all(&frame)
+            .map_err(|_| CellExecutionError::CommitUncertain)?;
+        self.file
+            .sync_all()
+            .map_err(|_| CellExecutionError::CommitUncertain)?;
+        self.witness
+            .compare_and_swap(self.head, next)
+            .map_err(|_| CellExecutionError::CommitUncertain)?;
+        self.head = Some(next);
+        self.length += frame.len() as u64;
+        // Keep the owner fenced if CURRENT/withdrawal changed across fsync.
+        // The complete frame remains available to original guarded recovery.
+        self.require_current()
+            .map_err(|_| CellExecutionError::CommitUncertain)?;
+        self.healthy = true;
+        Ok(())
+    }
+}
+
+impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
+    fn admit_inference(
+        &mut self,
+        admission: CellInferenceAdmissionV1,
+    ) -> Result<(), CellExecutionError> {
+        self.require_healthy()?;
+        let index = self.partition_index(&admission.snapshot.scope)?;
+        self.owner.check_admission(&admission)?;
+        validate_admission_model(&self.specs[index].definition, &admission.model_request)?;
+        let payload = encode_admission(index, &admission);
+        let reservations = self.owner.pending_record_reservations()
+            + 1
+            + usize::from(admission.host_queue_age_micros.is_none());
+        self.check_reserved_capacity(payload.len(), reservations)?;
+        self.persist(payload)?;
+        if let Err(error) = self.owner.admit_inference(admission) {
+            self.healthy = false;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn pending_inference(
+        &self,
+        scope: &CellScopeV1,
+    ) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError> {
+        self.require_healthy()?;
+        self.owner.pending_inference(scope)
+    }
+
+    fn record_host_queue_age(
+        &mut self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        request_digest: Digest32,
+        host_queue_age_micros: u64,
+    ) -> Result<(), CellExecutionError> {
+        self.require_healthy()?;
+        let index = self.partition_index(scope)?;
+        if self
+            .owner
+            .check_host_queue_age(scope, operation_id, request_digest, host_queue_age_micros)?
+            .is_some()
+        {
+            return Ok(());
+        }
+        let payload =
+            encode_host_queue_age(index, operation_id, request_digest, host_queue_age_micros);
+        self.check_reserved_capacity(payload.len(), self.owner.pending_record_reservations() - 1)?;
+        self.persist(payload)?;
+        if let Err(error) = self.owner.record_host_queue_age(
+            scope,
+            operation_id,
+            request_digest,
+            host_queue_age_micros,
+        ) {
+            self.healthy = false;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn snapshot(&self, scope: &CellScopeV1) -> Result<CellOwnerSnapshotV1, CellExecutionError> {
+        self.require_healthy()?;
+        self.owner.snapshot(scope)
+    }
+
+    fn lookup(
+        &self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        semantic_request_digest: Digest32,
+    ) -> Result<Option<CellDecisionReceiptV1>, CellExecutionError> {
+        self.require_healthy()?;
+        self.owner
+            .lookup(scope, operation_id, semantic_request_digest)
+    }
+
+    fn reconcile(
+        &self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        operation_digest: Digest32,
+    ) -> Result<Option<CellDecisionReceiptV1>, CellExecutionError> {
+        self.require_healthy()?;
+        self.owner.reconcile(scope, operation_id, operation_digest)
+    }
+
+    fn commit(
+        &mut self,
+        proposal: CellStateProposalV1,
+        now_micros: u64,
+    ) -> Result<CellDecisionReceiptV1, CellExecutionError> {
+        self.require_healthy()?;
+        let index = self.partition_index(&proposal.snapshot.scope)?;
+        if let Some(receipt) = self.owner.check_commit(&proposal, now_micros)? {
+            return Ok(receipt);
+        }
+        let proposal = proposal.settle_at(now_micros)?;
+        let payload = encode_commit(index, &proposal, now_micros);
+        self.persist(payload)?;
+        // Exclusive mutable ownership preserves the validated CAS while file
+        // and witness are written; only the target partition is then updated.
+        match self.owner.commit(proposal, now_micros) {
+            Ok(receipt) => Ok(receipt),
+            Err(error) => {
+                self.healthy = false;
+                Err(error)
+            }
+        }
+    }
+}
+
+fn initial_owner(
+    specs: &[CellJournalPartitionV1],
+) -> Result<CellPartitionOwnerV1, CellExecutionError> {
+    let mut owner =
+        CellPartitionOwnerV1::new(specs.len(), /*max_receipts_per_partition*/ 4096)?;
+    for spec in specs {
+        owner.admit(
+            spec.scope.clone(),
+            &spec.definition,
+            spec.source_frontier,
+            spec.writer_epoch,
+        )?;
+    }
+    Ok(owner)
+}
+
+fn header(specs: &[CellJournalPartitionV1]) -> Result<Vec<u8>, CellExecutionError> {
+    let mut table = b"hepta.cell.journal.admission.v1".to_vec();
+    table.extend_from_slice(&(specs.len() as u64).to_be_bytes());
+    for spec in specs {
+        for digest in [
+            spec.scope.digest(),
+            spec.definition.semantic_digest()?,
+            spec.source_frontier,
+        ] {
+            table.extend_from_slice(digest.as_array());
+        }
+        table.extend_from_slice(&spec.writer_epoch.to_be_bytes());
+    }
+    let mut bytes = MAGIC.to_vec();
+    bytes.extend_from_slice(Digest32::of_bytes(&table).as_array());
+    Ok(bytes)
+}
+
+fn next_anchor(
+    header: &[u8],
+    previous: Option<JournalAnchor>,
+    payload: &[u8],
+) -> Result<JournalAnchor, CellExecutionError> {
+    let sequence = previous
+        .map_or(0, |a| a.sequence)
+        .checked_add(1)
+        .ok_or(CellExecutionError::CapacityExceeded)?;
+    let mut bytes = b"hepta.cell.journal.frame.v1".to_vec();
+    bytes.extend_from_slice(
+        previous
+            .map_or_else(|| Digest32::of_bytes(header), |a| a.checkpoint_digest)
+            .as_array(),
+    );
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.extend_from_slice(&(payload.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(payload);
+    Ok(JournalAnchor {
+        sequence,
+        checkpoint_digest: Digest32::of_bytes(&bytes),
+    })
+}
+
+#[cfg(test)]
+#[path = "cell_journal_tests.rs"]
+mod tests;

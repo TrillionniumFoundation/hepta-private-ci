@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.gate-regression-run.v1",
+  "scope": "Actual preserved pre-fix implementation, loaded as the implementation module; no source or artifact verifier mocks",
+  "implementation_sha256": "14e82b1e621a9c40b3308d0615eb7be62e7ca32f25a0329c6b2c087d65ec8ded",
+  "implementation_stable": true,
+  "tests_sha256": "b5f52e26f25165841f9c0d8287823fb20ec4c73c568f29cd3e541579433aae8d",
+  "joint_dependency_sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12",
+  "tests_ran": 3,
+  "failure_records": 5,
+  "error_records": 0,
+  "success": false,
+  "elapsed_seconds": 0.4121305799926631,
+  "selected_tests": [
+    "test_unknown_or_missing_cost_is_not_zero",
+    "test_campaign_budget_cannot_be_spent_again_for_each_arm",
+    "test_improver_comparison_requires_bound_common_start_and_lineage"
+  ],
+  "failures": [
+    {
+      "test": "test_unknown_or_missing_cost_is_not_zero (test_hepta_cell_research_gate.ResearchGateTests.test_unknown_or_missing_cost_is_not_zero) (known_cost=True)",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/304d47497d18/candidate/scripts/test_hepta_cell_research_gate.py\", line 243, in test_unknown_or_missing_cost_is_not_zero\n    with self.assertRaises(ValueError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n"
+    },
+    {
+      "test": "test_unknown_or_missing_cost_is_not_zero (test_hepta_cell_research_gate.ResearchGateTests.test_unknown_or_missing_cost_is_not_zero) (known_cost=-1)",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/304d47497d18/candidate/scripts/test_hepta_cell_research_gate.py\", line 243, in test_unknown_or_missing_cost_is_not_zero\n    with self.assertRaises(ValueError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n"
+    },
+    {
+      "test": "test_unknown_or_missing_cost_is_not_zero (test_hepta_cell_research_gate.ResearchGateTests.test_unknown_or_missing_cost_is_not_zero) (known_cost='unknown-as-text')",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/304d47497d18/candidate/scripts/test_hepta_cell_research_gate.py\", line 243, in test_unknown_or_missing_cost_is_not_zero\n    with self.assertRaises(ValueError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n"
+    },
+    {
+      "test": "test_campaign_budget_cannot_be_spent_again_for_each_arm (test_hepta_cell_research_gate.ResearchGateTests.test_campaign_budget_cannot_be_spent_again_for_each_arm)",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/304d47497d18/candidate/scripts/test_hepta_cell_research_gate.py\", line 253, in test_campaign_budget_cannot_be_spent_again_for_each_arm\n    self.assertFalse(result[\"numerical_screen_ready\"])\nAssertionError: True is not false\n"
+    },
+    {
+      "test": "test_improver_comparison_requires_bound_common_start_and_lineage (test_hepta_cell_research_gate.ResearchGateTests.test_improver_comparison_requires_bound_common_start_and_lineage)",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/304d47497d18/candidate/scripts/test_hepta_cell_research_gate.py\", line 320, in test_improver_comparison_requires_bound_common_start_and_lineage\n    with self.assertRaises(ValueError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n"
+    }
+  ],
+  "errors": []
+}

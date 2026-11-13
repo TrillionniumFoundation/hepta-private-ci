@@ -1,0 +1,68 @@
+{
+  "schema": "ctrl1.native-finalize-source.v2",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.008072749711573124,
+      "stdout": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.0061147501692175865,
+      "stdout": "research/ctrl1-decision-cell-20261108\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.011790958233177662,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.0068831248208880424,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "stages": [],
+  "pushed": false,
+  "old_formatter_group_empty": true,
+  "correction_applied": true,
+  "status": "failed",
+  "error_type": "AssertionError",
+  "error": ""
+}

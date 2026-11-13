@@ -1,0 +1,54 @@
+{
+  "availability": {
+    "local": {
+      "executable": null,
+      "python_module": null
+    },
+    "mac": {
+      "executable": null,
+      "python_module": null
+    },
+    "rog": {
+      "executable": null,
+      "python_module": null
+    }
+  },
+  "base_head": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "codespell_execution": "NOT_RUN_NO_EXISTING_EXECUTABLE_OR_MODULE_LOCAL_MAC_ROG",
+  "existing_ci_cli_options": "--ignore-words .codespellignore --skip ./.git",
+  "installed_dependencies": false,
+  "known_false_positives": [
+    {
+      "file": "context-native-dev-small.log",
+      "line": 571,
+      "text": "   Compiling inout v0.1.4"
+    },
+    {
+      "file": "context-native-dev-small.log",
+      "line": 632,
+      "text": "   Compiling inout v0.2.2"
+    },
+    {
+      "file": "context-native-tests.log",
+      "line": 541,
+      "text": "   Compiling inout v0.1.4"
+    },
+    {
+      "file": "context-native-tests.log",
+      "line": 601,
+      "text": "   Compiling inout v0.2.2"
+    }
+  ],
+  "new": {
+    "bytes": 75,
+    "git_blob": "9e6e911207df68e9adeb40c6899d90f312d64a6a",
+    "sha256": "289244e5151117c4bb6e67db899c94434b83eed5325b5c80457cadecb5bf3ecd"
+  },
+  "old": {
+    "bytes": 69,
+    "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee",
+    "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275"
+  },
+  "only_change": "Append one lowercase inout entry, preserve all original bytes and ordering.",
+  "workflow_rerun": false
+}

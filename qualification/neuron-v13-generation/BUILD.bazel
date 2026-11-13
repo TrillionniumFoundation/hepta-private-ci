@@ -1,0 +1,7 @@
+exports_files(
+    ["proposal_worker.py"],
+    visibility = [
+        "//codex-rs/hepta-agentd:__pkg__",
+        "//codex-rs/hepta-neuron:__pkg__",
+    ],
+)

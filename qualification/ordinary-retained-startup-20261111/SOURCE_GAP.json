@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.original-retained-c-startup-gap.v1",
+  "status": "static-source-audit; proposed repair authorized, not implemented in this report",
+  "source_commit": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "source_tree": "1eba30f512a0fcd0463417c5f14537493cd8b104",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "git_blob": "e8796292598fb5c12f435e15517bfd68014c9963",
+      "sha256": "3e3e0632194386cffd8d4041b3fd3ba63a0a6aab677210a960134d416888374b",
+      "symbol": "run_with_shutdown",
+      "observation": "85–88 requires an installed Circuit profile before retained learning delivery may start."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "git_blob": "5c92616272c96df4d2642b5226cac563e08531b3",
+      "sha256": "83f6543926e9c897a8fcc8b7917d4a4bf98b061249f536bc27eb7f980f8d5ea6",
+      "symbol": "circuit_q24_task_channel_v1",
+      "observation": "requires a real PublishedCircuitFeatureTask before opening original source, Cell and control."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "git_blob": "2c2869dcfa739364ce50ab22c13cd079cedfc0e1",
+      "sha256": "a50914c8572bfbabbf652505b8dc586b30054e9d0e8690c2e9d3e77098209895",
+      "symbol": "with_circuit_task_bootstrap / take_circuit_task_bootstrap",
+      "observation": "finite execution profile is installed before run; incomplete pairs are refused."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "git_blob": "0ef46c3138832f28ec0f1ef4269c5d4c8677798e",
+      "sha256": "bb0f49696a98e6c545fe061a1dabfc6b7093fb8f1bb7e59cc0ce804643b8bab9",
+      "symbol": "execute_circuit_task_record",
+      "observation": "no existing finite later Q24 install slot; (None,None) intentionally denotes the unrelated no-Circuit compatibility path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "git_blob": "813d8f2d9ddc5b075695d88d5b86217d0ef0a444",
+      "sha256": "2b5fc5472f33d252a82a079fe3cc16b2cf918c62844fe65364b0ee2a9e699965",
+      "symbol": "automation_admission_ready",
+      "observation": "requires actual Running/App Server/stores/revocations/ports/open admission, independently of any future C task result."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs",
+      "git_blob": "657f6fe7a1c0ac107cca4a69830de454b04a3932",
+      "sha256": "8b4e01592a92df406321e37069c0858968eb36cfe55398a05eaed5dc635f9443",
+      "symbol": "receive_q24_learning_with_retained_capability / assemble_q24_learning_with_retained_capability",
+      "observation": "original Root and retained source joins exist; they provide no executable C owner."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+      "git_blob": "a8672f720db903e906dde6fb1433f295a5bf96ed",
+      "sha256": "1f9af4c15bcb28d38b92f0e86bd09df9f6e9b5dbfdeec6a3098efa4c9a420e3e",
+      "symbol": "register_original_scope / original_outbox / require_retained_task",
+      "observation": "same original A database, journal and signed facts remain read-only; new consumer identity is separately pinned."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "git_blob": "912d6c81a84ecc50e2294b937eebbf86412e61ef",
+      "sha256": "48b1cd2fbbc38f22b9ebfadc660d2f4071e23d4d3d61a3714959d09f1a0bebd1",
+      "symbol": "new_scoped_v2 / require_binding",
+      "observation": "same frozen request/scope may bind a new actual writer/identity; source trace and frozen scope are not rewritten."
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "git_blob": "cadd646638f8393652b03d70be57b89c55e7da29",
+      "sha256": "f97f064a6b6577f39056057ae48e75f47544dec70d4e477853ea8fff09897718",
+      "symbol": "compare_and_transition / load_agent_for_spawn",
+      "observation": "Supervisor CAS history remains the only legal new spawn source."
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/model.rs",
+      "git_blob": "4e8ab6ced19748d22b543a6dbded5d9942ea463c",
+      "sha256": "64ecaff8ecfc2a60129e300eb24f460160f01636a65fe8d9ace4ea6b5a400d4e",
+      "symbol": "AgentLifecycle::can_transition_to / AgentLifecycleState::successor",
+      "observation": "Running -> Draining -> Stopped -> Starting advances real generation at every transition."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+      "git_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+      "sha256": "53868d4fd06628467a384e21f10445f804b98f90f1db0f9f70f5a82dc0ce4eb8",
+      "symbol": "from_root_writer_handoff",
+      "observation": "new Config consumes the exact original Root0600 descriptor and original live session, not a reopened path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "git_blob": "8558cf718823c599c9c04454e8b93f3a93c08f29",
+      "sha256": "0824cb3f1a120dfde8612a3a2c5386d846394cd4436e7275cddcdb0239eb5bed",
+      "symbol": "OriginalCellQ24RetainedArtifactForRootV1::from_original_result / accept_selection / connect_current",
+      "observation": "real TrainingNoUpdate can retain original selected model using original independent selection and Root route."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_validation.rs",
+      "git_blob": "0ed332f92a93f4304b9aa07f0f39044a13bdc3b2",
+      "sha256": "6c19e678ad3c5b4616fe27a3e53568b2cbf5a1aa7450abbb6259de1c21ffbfcd",
+      "symbol": "Decision::new / require_root_publication / feature_target",
+      "observation": "TrainingNoUpdate is already a legal completed result; C must have different run/input and the exact original scope/model."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_comparison_tests.rs",
+      "git_blob": "6eaf24bf79293a568c90bed62c7943789dc7b757",
+      "sha256": "91f9d362c704b72cf53168d491d46e10a080a712ce2edf1f79fb3dd3aed81089",
+      "symbol": "actual_a_hq2_zero_gradient_retains_parent_with_original_training_no_update",
+      "observation": "existing component test constructs actual A/Outcome/HQ2/SGD NoUpdate and stops before Root publication; no business claim."
+    }
+  ],
+  "finding": {
+    "first_concrete_gap": "A retained-learning delivery cannot start without a CircuitTask profile; its only actual Q24 profile requires a published C task, but this C publication waits for the same learning operation's TrainingNoUpdate. No existing typed once-install Q24 execution slot closes this startup order.",
+    "not_a_gap": [
+      "A's LearningRequest agent ID and frozen scope need not be rewritten when the actual same agent receives a legal new spawn; new Root profile identity/writer and retained consumer binding are independently checked.",
+      "TrainingNoUpdateV2 is already accepted by the retained Artifact/Selection/Root publication path without fabricating B evaluation or Model proposal.",
+      "Initial-published CURRENT can retain its original initial record during the precise update preparation and clears it only at the actual authenticated successor publication. No arbitrary CURRENT rewrite is needed."
+    ],
+    "excluded_shortcuts": [
+      "Do not keep or reopen retired A Cell/GenV2/FinalUse owners as the new C task.",
+      "Do not copy A trace or outbox rows to a C database.",
+      "Do not map an absent C task into compatibility execution, automatic NoUpdate or a fabricated Ready.",
+      "Do not issue a new Root signer/frontier or grant to simulate continuity.",
+      "Do not change the existing B matched-budget/cost refusal."
+    ]
+  },
+  "legitimate_lifecycle": [
+    "Phase A: original Initial purpose, actual five-lane consumers and FinalUse; execute actual signed A; accept separately signed component Observer Outcome; original Ledger/Freeze/HQ2; capture retained source while original A is current; actual durable drain supplies the private predecessor completion.",
+    "Stop/join original daemon and Root service workers, release active A Task/Cell/FinalUse/writer custody. Preserve only original source/journal/ledger/Automation read capabilities and durable source facts.",
+    "Supervisor performs exact Running -> Draining -> Stopped -> Starting CAS transitions and enrolls new original writer authorization. Consume original late writer FD to create new Config for this exact new spawn.",
+    "Enroll the same original prepared request/scope with new actual Root identity/writer; assemble original E/D/Training/local/factory owners and retain registered A source. Current code then reaches the startup ordering gap.",
+    "After the proposed closed waiting service exists, background original learning produces durable real TrainingNoUpdate; accept independent signed original selection; late Root broker reads original checkpoint/journals/Artifact/FinalUse; prepare exact C binding, original issuer grants and consumer enters once, actual CURRENT CAS.",
+    "Deliver only this original Root publication's opaque C ownership into the waiting service; reuse the real Q24 channel/Source/Cell/control path. Execute C through the normal authenticated ObjectiveStart and read original receipt."
+  ],
+  "proposed_slice": {
+    "status": "design, not an existing API",
+    "construction": "Only the actual Root Q24 bootstrap carrying its registered retained source may create a finite pending successor service. Pin same aggregate Arc, frozen scope, current full identity and original Root context.",
+    "installation": "Consume a once-only opaque result of the same original Root publication path. It must supply actual PublishedCircuitFeatureTask plus original complete profile files/model/clock and bind current identity/spawn, exact decision and different run. Internal code reuses circuit_q24_task_channel_v1; no public arbitrary provider/callback constructor.",
+    "pending": "Task build/submit/readback return explicit unavailable until the actual owners are installed. Existing Running/AppServer/AuthBus/automation admission remains mandatory for learning. Pending is not no-Circuit compatibility.",
+    "cancellation": "Drop, cancellation, wrong owner/scope, repeated install and post-effect uncertainty permanently close the slot. No new dispatch, grant or nonce follows ACK loss. Recovery observes only the exact original operation."
+  },
+  "required_original_inputs": [
+    "Actual original Root directory, issuer, signer/revocation state, existing consumer-frontier stores and original peer lifetimes/pidfds.",
+    "Supervisor-owned live Fleet registry transitions and original writer authorization/FD for new spawn.",
+    "Original authenticated A task semantics, true Source/Cell/Automation owners, independent explicitly fixture-only Outcome signatures for component evidence, original Generator/Observer/Evaluator capabilities and file witnesses.",
+    "Original HQ2 Prepared, same E/D/Trainer journals and signatures, local policy and actual Root factory registration, unchanged selected model material.",
+    "Independent Artifact selection/trust, original drained predecessor journal/witness/private completion, fresh C target journal/witness and actual C model/definition/input with approved original signing/clock/window values.",
+    "Separate C ordinary ObjectiveStart authorization and actual normal result readback."
+  ],
+  "scope": {
+    "static_only": true,
+    "native_executed": false,
+    "business_outcomes_invented": false,
+    "authorityGranted": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_noupdate_rollback_chains": 0,
+    "independent_deployed_consumers": 0,
+    "cold_process_restarts": 0,
+    "same_pid_runtime_reopen_is_not_os_process_restart": true
+  }
+}

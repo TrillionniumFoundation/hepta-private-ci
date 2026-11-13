@@ -1,0 +1,243 @@
+{
+  "actual_runs": [
+    {
+      "checkpoint_sha256": "c890ca0ba1f5b5190e33bc93a0947c98a5cbfc4f77ad4f65ac8f428274ab222f",
+      "evaluation_scores": [
+        3,
+        1
+      ],
+      "frozen_sha256": "052ea9fda3ce1eeb668905b6c534711049a7a58730af3508d49f3f8ce73d2169",
+      "native_result_sha256": "1ead3ba108eb7011720a96ee5ceb9ed6dc52ac1f62f439d0441e13e4aae3b22b",
+      "native_test_seconds": "44.440",
+      "operation": "learning-d9fb-native-no-update-v9",
+      "real_new_candidate_adoption": false,
+      "result_sha256": "f2abe39797ca6678e239e59e047d18e58001ac53fbd159b72ba618d2b90f7db7",
+      "source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+      "tree": "c7588a07d20310059d4016559fa550d397b7eb09"
+    },
+    {
+      "checkpoint_sha256": "49687e0ece90dceb6409978616700c0b32ec342631a1941994ae3b7a886a7496",
+      "evaluation_scores": [
+        1,
+        2
+      ],
+      "frozen_sha256": "63d0cb76ec107fddf5e6d889372e2f64d0761059995af7efe92e14452bfeee48",
+      "native_result_sha256": "55420d059ad91f97803936de3c052792dca6a6bef2f01cdaa72d31591e448feb",
+      "native_test_seconds": "51.138",
+      "operation": "learning-d9fb-native-adopt-v1",
+      "real_new_candidate_adoption": true,
+      "result_sha256": "afebb24e21b2e834adb6810f298ead22762735be6acca7a12302f6f7b79ad90e",
+      "source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+      "tree": "c7588a07d20310059d4016559fa550d397b7eb09"
+    }
+  ],
+  "archive_sha256": "e3c169dac89c0330efe52ca8b2581b9d7bff64f368e9749051977370b2591b56",
+  "general_model_quality_qualified": false,
+  "independent_operator_custody": false,
+  "maintenance_attempts": [
+    {
+      "attempt": 1,
+      "original": {
+        "changed_from_tested_source": [],
+        "commands": [
+          {
+            "argv": [
+              "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+              "fix",
+              "-p",
+              "codex-hepta-agentd",
+              "--locked",
+              "--offline"
+            ],
+            "exit_code": 0,
+            "label": "fix",
+            "log_sha256": "1d435ff4b55a125cf2f3fb1458584022b10155bee36a28f51ba2c2b7edb804fe"
+          },
+          {
+            "argv": [
+              "cargo",
+              "clippy",
+              "--tests",
+              "-p",
+              "codex-hepta-agentd",
+              "--locked",
+              "--offline",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "exit_code": 101,
+            "label": "strict-clippy",
+            "log_sha256": "a4e1fbf9ad1bd10735756790f71d367694887bab24595d1b5ed808a26c714661"
+          }
+        ],
+        "end_unix_ns": 1794172756618154271,
+        "error": "AssertionError('strict-clippy failed')",
+        "git_status": "",
+        "result": "FAIL_MAINTENANCE",
+        "schema": "hepta-real-external-adopt-maintenance-v1",
+        "source_relationship_sha256": "702d5e323b9d32535456eee8b117c02c5d42d66e41e805b5ffccaa8218874ba2",
+        "start_unix_ns": 1794172510631892630,
+        "tested_source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+        "tested_tree": "c7588a07d20310059d4016559fa550d397b7eb09",
+        "tests_rerun_after_maintenance": false,
+        "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 16, in <module>\n    assert p.returncode==0,label+\" failed\"\n           ^^^^^^^^^^^^^^^\nAssertionError: strict-clippy failed\n"
+      },
+      "original_path": "/home/qian-qi/work/hepta-learning-external-adopt-edf03ec-maintenance-v1/result.json",
+      "original_sha256": "13435ed43ea4d855812058f3bd7a7f577699e122bdf4d2b27ea543f6be22bb25"
+    },
+    {
+      "attempt": 2,
+      "original": {
+        "changed_from_tested_source": [
+          "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs"
+        ],
+        "commands": [
+          {
+            "argv": [
+              "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+              "fix",
+              "-p",
+              "codex-hepta-agentd",
+              "--locked",
+              "--offline"
+            ],
+            "exit_code": 0,
+            "label": "fix",
+            "log_sha256": "9ee9973d9c3e0bf481e54d02ffc06ade6773db4767e6fb95f96619f66450162c"
+          },
+          {
+            "argv": [
+              "cargo",
+              "clippy",
+              "--tests",
+              "-p",
+              "codex-hepta-agentd",
+              "--locked",
+              "--offline",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "exit_code": 101,
+            "label": "strict-clippy",
+            "log_sha256": "e5da0c42d827c5e13697120ff15f58c2f1258ce41254b86a061238fe1fd7edb9"
+          }
+        ],
+        "end_unix_ns": 1794173482678446405,
+        "error": "AssertionError('strict-clippy failed')",
+        "git_status": " M codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs\n M codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs\n",
+        "result": "FAIL_MAINTENANCE",
+        "schema": "hepta-real-external-adopt-maintenance-v2",
+        "source_relationship_sha256": "72e75dbbdd0f5a47434d45380a4e859a2a4fa3e7d53eede6e5b39c03fbd00b69",
+        "start_unix_ns": 1794173244224660995,
+        "tested_source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+        "tested_tree": "c7588a07d20310059d4016559fa550d397b7eb09",
+        "tests_rerun_after_maintenance": false,
+        "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 28, in <module>\n    assert p.returncode==0,label+\" failed\"\n           ^^^^^^^^^^^^^^^\nAssertionError: strict-clippy failed\n"
+      },
+      "original_path": "/home/qian-qi/work/hepta-learning-external-adopt-edf03ec-maintenance-v2/result.json",
+      "original_sha256": "d32958a33cbaf47164e3473ff80380e8ff6773a2e43c85a7d27b8a06ab3c48f6"
+    },
+    {
+      "attempt": 3,
+      "original": {
+        "changed_from_tested_source": [
+          "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+          "scripts/research/smollm_learning_process_v1.py"
+        ],
+        "commands": [
+          {
+            "argv": [
+              "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+              "fix",
+              "-p",
+              "codex-hepta-agentd",
+              "--locked",
+              "--offline"
+            ],
+            "exit_code": 0,
+            "label": "fix",
+            "log_sha256": "1e741067f787159d4e96f381148915cee60426d0893e9b3eb891d177b9857e72"
+          },
+          {
+            "argv": [
+              "cargo",
+              "clippy",
+              "--tests",
+              "-p",
+              "codex-hepta-agentd",
+              "--locked",
+              "--offline",
+              "--",
+              "-D",
+              "warnings"
+            ],
+            "exit_code": 0,
+            "label": "strict-clippy",
+            "log_sha256": "e29f9718c3d743032bca65c0a348dd60d1a04faef0d79482a0139060c88cf48e"
+          },
+          {
+            "argv": [
+              "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+              "fmt",
+              "--base",
+              "6c4bb7e97dddd4b6935513a2881606e41bb921fd"
+            ],
+            "exit_code": 0,
+            "label": "fmt",
+            "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "end_unix_ns": 1794174014668779265,
+        "git_status": " M codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs\n M codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs\n M scripts/research/smollm_learning_process_v1.py\n",
+        "result": "PASS_MAINTENANCE",
+        "schema": "hepta-real-external-adopt-maintenance-v3",
+        "source_relationship_sha256": "bd4679799e0a08d21a4abb9aae38f1242eeef81298d5fab16909da8315209175",
+        "start_unix_ns": 1794173777756682328,
+        "tested_source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+        "tested_tree": "c7588a07d20310059d4016559fa550d397b7eb09",
+        "tests_rerun_after_maintenance": false
+      },
+      "original_path": "/home/qian-qi/work/hepta-learning-external-adopt-edf03ec-maintenance-v3/result.json",
+      "original_sha256": "f7e891c8cb36b490df57be64b5e934c552d31f44d8daa9923dde29e2a6b1e425"
+    }
+  ],
+  "native_tests_rerun_after_maintenance": false,
+  "original_parameter_v3_qualified": false,
+  "product_ope_qualified": false,
+  "production_activation": false,
+  "public_chain_evidence_commit": "280799323a28aeb6669526564c44699ddceed18c",
+  "public_original_manifest_sha256": "09c7a6079af9497835062815b2a421b385969ad665139f1454cad25bb35be628",
+  "qualification": "HOLD_NO_GO",
+  "schema": "hepta.research.actual-adoption-post-test-maintenance.v1",
+  "source_relationship": {
+    "changed": [
+      {
+        "maintained_sha256": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs",
+        "tested_sha256": "fd3930fa8c492928bdbdcbc279819dad1b96da501f2fbcbd9a1f1f2da28fb2ba"
+      },
+      {
+        "maintained_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+        "tested_sha256": "0cd1d8fc21526f62ed2936a8ac9eafdc2439c85c2ead44c0857beb24e89c6d16"
+      },
+      {
+        "maintained_sha256": "0dbee1ad1a1efeae7b25bf7a46f76804b2b6baf2c628d632a5238519e4ea1cc8",
+        "path": "scripts/research/smollm_learning_process_v1.py",
+        "tested_sha256": "077a9d7712582ef83d7aec1e8f6ca6570a6e9ec7714b334b0d03331826e856cd"
+      }
+    ],
+    "python_ast_equal": true,
+    "schema": "hepta-real-external-adopt-source-relationship-v1",
+    "tested_source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+    "tests_rerun_after_maintenance": false
+  },
+  "source_relationship_original_sha256": "bd4679799e0a08d21a4abb9aae38f1242eeef81298d5fab16909da8315209175",
+  "test_pass_attributed_to_maintenance_bytes": false,
+  "tested_source": "edf03ecb8a814a0f5e86b1d6a752aeac80b1a978",
+  "tested_tree": "c7588a07d20310059d4016559fa550d397b7eb09"
+}

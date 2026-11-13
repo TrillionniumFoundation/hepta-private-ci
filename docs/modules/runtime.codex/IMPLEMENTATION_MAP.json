@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -309,11 +309,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "369db165729574a745833cb651a17faf3fd00a46"
+      "object": "1569d419b5b87880033399e19b1acfbafd54a073"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+      "object": "472679dd4f4a507141879f0c27feb570b764f2cf"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -325,7 +325,7 @@
     },
     {
       "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
-      "object": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1"
+      "object": "7cf967f0670c8d5b5e258e839e7a1f7a85833c00"
     },
     {
       "path": "codex-rs/codex-app-server/BINDING.json",
@@ -333,7 +333,7 @@
     },
     {
       "path": "codex-rs/core/src/codex_thread.rs",
-      "object": "7272a699937ac9f5e474e2f11ee47db3d3725b8c"
+      "object": "41a7645a0303a5225d526208de462a9e07a4a108"
     },
     {
       "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
@@ -345,15 +345,21 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
-      "object": "b25375be9219be18baba2ab4d3488658d0040897"
+      "object": "4cc2637eb2450958d33c585478671979d6a946a6"
     },
     {
       "path": "codex-rs/hepta-codex-adapter",
-      "object": "5643ca35d5a347bd53bf6a5f9bcd0dfbe964d90b"
+      "object": "3c802feb8a582d7f7a8fc36a97a96909f8b6b536"
     },
     {
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "runtime.codex",
+    "previousMapBlob": "a78fc528a83438da44f3dcb77d7c89082efde107",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  }
 }

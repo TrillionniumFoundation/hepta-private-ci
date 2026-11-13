@@ -1,0 +1,467 @@
+//! Faithful public Source/Cell input preimages shared by the actual Root and
+//! ordinary daemon. This encoder creates neither a receipt nor an owner.
+
+use std::path::Path;
+use std::path::PathBuf;
+
+use codex_hepta_automation::CircuitNodeKindV2;
+use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_neuron::CellCandidateKindV1;
+use codex_hepta_neuron::CellDefinitionV1;
+use codex_hepta_types::Digest32;
+use serde_json::Value;
+use serde_json::json;
+
+use crate::AgentdIdentity;
+use crate::CircuitTaskSourceInputV1;
+
+pub(super) struct OriginalAFilePaths {
+    pub(super) source: PathBuf,
+    pub(super) source_witness: PathBuf,
+    pub(super) cell: PathBuf,
+    pub(super) cell_witness: PathBuf,
+    pub(super) ledger: PathBuf,
+    pub(super) ledger_witness: PathBuf,
+    pub(super) signatures: PathBuf,
+    pub(super) signature_witness: PathBuf,
+    pub(super) inference: PathBuf,
+    pub(super) generator_key: PathBuf,
+}
+
+impl OriginalAFilePaths {
+    pub(super) fn new(data: &Path, witness: &Path) -> Self {
+        Self {
+            source: data.join("a-source.journal"),
+            source_witness: witness.join("a-source.witness"),
+            cell: data.join("a-cell.journal"),
+            cell_witness: witness.join("a-cell.witness"),
+            ledger: data.join("a-ledger.journal"),
+            ledger_witness: witness.join("a-ledger.witness"),
+            signatures: data.join("a-signatures.journal"),
+            signature_witness: witness.join("a-signatures.witness"),
+            inference: data.join("a-inference-control"),
+            generator_key: data.join("a-original-generator.key"),
+        }
+    }
+
+    pub(super) fn business_files(&self) -> Vec<PathBuf> {
+        [
+            &self.source,
+            &self.source_witness,
+            &self.cell,
+            &self.cell_witness,
+            &self.ledger,
+            &self.ledger_witness,
+            &self.signatures,
+            &self.signature_witness,
+            &self.inference,
+            &self.generator_key,
+        ]
+        .into_iter()
+        .cloned()
+        .collect()
+    }
+
+    pub(super) fn cell_data(&self, objective: Digest32) -> Value {
+        original_cell_data(&self.cell, &self.cell_witness, objective)
+    }
+
+    pub(super) fn source_data(
+        &self,
+        identity: &AgentdIdentity,
+        definition: &CellDefinitionV1,
+        source: &CircuitTaskSourceInputV1,
+        ledger_deployment: &Path,
+    ) -> anyhow::Result<Value> {
+        source_data_for_original_files(
+            [
+                &self.source,
+                &self.source_witness,
+                &self.cell,
+                &self.cell_witness,
+            ],
+            identity,
+            definition,
+            source,
+            Some(ledger_deployment),
+        )
+    }
+}
+
+pub(super) fn source_data_for_original_files(
+    [source_journal, source_witness, cell, cell_witness]: [&Path; 4],
+    identity: &AgentdIdentity,
+    definition: &CellDefinitionV1,
+    source: &CircuitTaskSourceInputV1,
+    ledger_deployment: Option<&Path>,
+) -> anyhow::Result<Value> {
+    let (mut circuit, mut bindings) = crate::circuit_cell::tests::configuration();
+    let original = bindings
+        .first_mut()
+        .ok_or_else(|| anyhow::anyhow!("original finite route absent"))?;
+    original.cell = definition.clone();
+    // Preserve the actual declared Cell work before hashing or starting either
+    // process. The reused route's 2,000-unit toy-model bound is not this model's
+    // resource envelope; no running deadline or validator is adjusted here.
+    let maximum_work = definition.runtime.resource_envelope.p99_latency_micros;
+    let node = circuit
+        .programs
+        .iter_mut()
+        .find(|program| program.program_id == original.program_id)
+        .and_then(|program| {
+            program
+                .nodes
+                .iter_mut()
+                .find(|node| node.node_id == original.node_id)
+        })
+        .ok_or_else(|| anyhow::anyhow!("original finite computation absent"))?;
+    match &mut node.kind {
+        CircuitNodeKindV2::Compute { max_work } | CircuitNodeKindV2::Decide { max_work } => {
+            *max_work = maximum_work;
+        }
+        _ => anyhow::bail!("original Cell route is not a computation"),
+    }
+    circuit.limits.work_budget = maximum_work
+        .checked_mul(2)
+        .ok_or_else(|| anyhow::anyhow!("original Circuit work budget overflow"))?;
+    // The original observation predates daemon startup. Freeze the Circuit
+    // budget from the Source's declared lease before creating either owner;
+    // neither the observation time nor any running deadline is renewed.
+    circuit.limits.max_elapsed_ms = source.lease_duration_ms;
+    circuit.parameter_bundle_digest =
+        Sha256Digest::parse(definition.bundle_digest.to_string()).map_err(anyhow::Error::msg)?;
+    circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
+    let routes = &bindings[0].routes;
+    let mut cell = original_cell_data(cell, cell_witness, source.objective_digest);
+    cell["maximum_records"] = json!(4);
+    Ok(json!({
+        "schema_version": 1,
+        "purpose": "runtime.circuit.single-q24-source-deployment.v1",
+        "source_journal": source_journal,
+        "source_witness": source_witness,
+        "cell_files": cell,
+        "ledger_deployment": ledger_deployment,
+        "witness_scope": digest("ordinary-original-source"),
+        "witness_objective": source.objective_digest.into_array(),
+        "witness_generation": 1,
+        "witness_records": 128,
+        "fence": {
+            "owner_id": "ordinary-original-circuit-owner",
+            "owner_epoch": 1,
+            "generation": identity.spawn_generation.checked_add(1)
+                .ok_or_else(|| anyhow::anyhow!("original Circuit generation overflow"))?,
+            "fencing_token": "ordinary-original-circuit-fence"
+        },
+        "circuit": circuit,
+        "routes": routes.iter().map(|route| json!({
+            "candidate_id": route.candidate_id.as_str(),
+            "outcome": route.outcome,
+            "selected_edges": route.selected_edges
+        })).collect::<Vec<_>>(),
+        "definition": definition_data(definition),
+        "source": {
+            "cell_id": source.scope.cell_id.as_str(),
+            "run_id": source.scope.run_id.as_str(),
+            "principal_digest": source.scope.principal_digest.into_array(),
+            "source_frontier": source.source_frontier.into_array(),
+            "objective_digest": source.objective_digest.into_array(),
+            "ndu_snapshot_digest": source.ndu_snapshot_digest.into_array(),
+            "monotonic_micros": source.monotonic_micros,
+            "deadline_micros": source.deadline_micros,
+            "observation": source.observation,
+            "candidates": source.candidates.iter().map(|mask| json!({
+                "candidate_id": mask.candidate_id.as_str(), "allowed": mask.allowed
+            })).collect::<Vec<_>>(),
+            "lease_duration_ms": source.lease_duration_ms
+        }
+    }))
+}
+
+fn original_cell_data(cell: &Path, witness: &Path, objective: Digest32) -> Value {
+    json!({
+        "journal": cell,
+        "witness": witness,
+        "witness_scope": digest("ordinary-original-cell"),
+        "witness_objective": objective.into_array(),
+        "witness_generation": 1,
+        "witness_records": 128
+    })
+}
+
+pub(super) fn digest(value: &str) -> [u8; 32] {
+    Digest32::of_bytes(value.as_bytes()).into_array()
+}
+
+fn definition_data(cell: &CellDefinitionV1) -> Value {
+    let r = &cell.runtime;
+    let c = &r.calibration;
+    let e = &r.resource_envelope;
+    let n = &cell.native;
+    let calibration = json!({
+        "calibration_artifact_digest": c.calibration_artifact_digest.into_array(),
+        "ood_artifact_digest": c.ood_artifact_digest.into_array(), "generation": c.generation.get(),
+        "valid_from_sequence": c.valid_from_sequence, "expires_after_sequence": c.expires_after_sequence,
+        "zero_confidence_error_q24": c.zero_confidence_error_q24,
+        "maximum_in_domain_error_q24": c.maximum_in_domain_error_q24,
+        "minimum_confidence_ppm": c.minimum_confidence_ppm, "maximum_ood_ppm": c.maximum_ood_ppm,
+        "minimum_active_ppm": c.minimum_active_ppm, "maximum_active_ppm": c.maximum_active_ppm,
+        "maximum_projection_count": c.maximum_projection_count, "measured_ece_ppm": c.measured_ece_ppm,
+        "maximum_ece_ppm": c.maximum_ece_ppm,
+        "measured_false_acceptance_ppm": c.measured_false_acceptance_ppm,
+        "maximum_false_acceptance_ppm": c.maximum_false_acceptance_ppm
+    });
+    let envelope = json!({
+        "p95_latency_micros": e.p95_latency_micros, "p99_latency_micros": e.p99_latency_micros,
+        "transient_allocation_bytes": e.transient_allocation_bytes,
+        "checkpoint_bytes": e.checkpoint_bytes, "write_amplification_ppm": e.write_amplification_ppm
+    });
+    let runtime = json!({
+        "config_id": r.config_id.as_str(), "generation": r.generation.get(),
+        "model_id": r.model_id.as_str(), "model_manifest_digest": r.model_manifest_digest.into_array(),
+        "encoder_digest": r.encoder_digest.into_array(), "head_digest": r.head_digest.into_array(),
+        "weights_digest": r.weights_digest.into_array(), "tokenizer_digest": r.tokenizer_digest.into_array(),
+        "preprocessor_digest": r.preprocessor_digest.into_array(),
+        "quantization_digest": r.quantization_digest.into_array(),
+        "runtime_digest": r.runtime_digest.into_array(), "device_digest": r.device_digest.into_array(),
+        "normalization_digest": r.normalization_digest.into_array(),
+        "native_config_digest": r.native_config_digest.into_array(),
+        "input_feature_dimension": r.input_feature_dimension, "state_width": r.state_width,
+        "modulator_dimension": r.modulator_dimension,
+        "calibration": calibration, "resource_envelope": envelope
+    });
+    let native = json!({
+        "model_digest": n.model_digest.into_array(), "normalization_digest": n.normalization_digest.into_array(),
+        "generation": n.generation.get(), "width": n.width, "top_k": n.top_k,
+        "temporal_decay_q24": n.temporal_decay_q24, "inhibition_gain_q24": n.inhibition_gain_q24,
+        "inhibition": n.inhibition.iter().map(|edge| json!({
+            "source": edge.source, "target": edge.target, "weight_q24": edge.weight_q24
+        })).collect::<Vec<_>>(),
+        "activity_decay_q24": n.activity_decay_q24, "target_activity_q24": n.target_activity_q24,
+        "threshold_rate_q24": n.threshold_rate_q24, "threshold_min_q24": n.threshold_min_q24,
+        "threshold_max_q24": n.threshold_max_q24, "eligibility_decay_q24": n.eligibility_decay_q24
+    });
+    json!({
+        "cell_id": cell.cell_id.as_str(),
+        "bundle_digest": cell.bundle_digest.into_array(),
+        "state_schema_digest": cell.state_schema_digest.into_array(),
+        "max_input_bytes": cell.max_input_bytes,
+        "max_queue_age_micros": cell.max_queue_age_micros,
+        "max_resident_bytes": cell.max_resident_bytes,
+        "candidates": cell.candidates.iter().map(|candidate| json!({
+            "candidate_id": candidate.candidate_id.as_str(),
+            "activation_index": candidate.activation_index,
+            "kind": match candidate.kind {
+                CellCandidateKindV1::Action => "action",
+                CellCandidateKindV1::Abstain => "abstain",
+                CellCandidateKindV1::SlowPath => "slow_path",
+            }
+        })).collect::<Vec<_>>(),
+        "runtime": runtime, "native": native
+    })
+}
+
+#[test]
+fn ordinary_q24_public_source_preimage_preserves_actual_definition_and_task() -> anyhow::Result<()>
+{
+    let directory = tempfile::tempdir()?;
+    let (_, _, definition) = super::super::material::model(directory.path())?;
+    let source = super::super::material::source("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let paths = OriginalAFilePaths::new(directory.path(), directory.path());
+    let fleet = codex_hepta_paths::HeptaFleetRoot::parse(directory.path().join("fleet"))?;
+    let agent = codex_hepta_contracts::AgentId::parse(source.scope.agent_id.as_str())?;
+    let layout = fleet.layout().agent(&agent);
+    let identity = AgentdIdentity {
+        agent_id: agent,
+        spawn_generation: 1,
+        fleet_root: fleet.as_path().to_path_buf(),
+        workspace: directory.path().into(),
+        resources: codex_hepta_fleet::ResourceBudget::local_default(),
+        home_root: layout.home_root().into(),
+        run_root: layout.run_root().into(),
+        control_socket: layout.agentd_control_socket().into(),
+        app_server_socket: layout.app_server_socket().into(),
+        layout,
+    };
+    let value = paths.source_data(
+        &identity,
+        &definition,
+        &source,
+        &directory.path().join("ledger.json"),
+    )?;
+    let mut decoded =
+        crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
+            &serde_json::to_vec(&value)?,
+            &identity,
+        )?;
+    pretty_assertions::assert_eq!(decoded.definition, definition);
+    pretty_assertions::assert_eq!(decoded.source, source);
+    pretty_assertions::assert_eq!(decoded.source_journal, paths.source);
+    pretty_assertions::assert_eq!(decoded.source_witness, paths.source_witness);
+    decoded.registry()?;
+    decoded.circuit.programs[0].nodes[0].kind = CircuitNodeKindV2::Decide { max_work: 2_000 };
+    assert!(decoded.registry().is_err());
+    Ok(())
+}
+
+// Pure source data and the real Circuit reducer only. These tests do not open a
+// Root session, admit an objective, execute a Cell or manufacture completion.
+fn original_source_lease_reducer_data(
+    lease_duration_ms: u64,
+) -> anyhow::Result<(
+    crate::OriginalSingleQ24SourceConfigurationV1,
+    codex_hepta_automation::CircuitStartV2,
+)> {
+    let directory = tempfile::tempdir()?;
+    let (_, _, definition) = super::super::material::model(directory.path())?;
+    let mut source = super::super::material::source("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    source.lease_duration_ms = lease_duration_ms;
+    source.deadline_micros = source
+        .monotonic_micros
+        .checked_add(
+            lease_duration_ms
+                .checked_mul(1_000)
+                .ok_or_else(|| anyhow::anyhow!("declared Source duration overflow"))?,
+        )
+        .ok_or_else(|| anyhow::anyhow!("declared Source deadline overflow"))?;
+    let original_source = source.clone();
+    let paths = OriginalAFilePaths::new(directory.path(), directory.path());
+    let fleet = codex_hepta_paths::HeptaFleetRoot::parse(directory.path().join("fleet"))?;
+    let agent = codex_hepta_contracts::AgentId::parse(source.scope.agent_id.as_str())?;
+    let layout = fleet.layout().agent(&agent);
+    let identity = AgentdIdentity {
+        agent_id: agent,
+        spawn_generation: 1,
+        fleet_root: fleet.as_path().to_path_buf(),
+        workspace: directory.path().into(),
+        resources: codex_hepta_fleet::ResourceBudget::local_default(),
+        home_root: layout.home_root().into(),
+        run_root: layout.run_root().into(),
+        control_socket: layout.agentd_control_socket().into(),
+        app_server_socket: layout.app_server_socket().into(),
+        layout,
+    };
+    let value = paths.source_data(
+        &identity,
+        &definition,
+        &source,
+        &directory.path().join("ledger.json"),
+    )?;
+    let decoded = crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
+        &serde_json::to_vec(&value)?,
+        &identity,
+    )?;
+    decoded.registry()?;
+    pretty_assertions::assert_eq!(decoded.source, original_source);
+    pretty_assertions::assert_eq!(source, original_source);
+    // Match SourceOwner::request's conversion of the original observation
+    // time. This is fixed test data, not a new admission clock or signed grant.
+    let original_observed_at_unix_micros = 1_000_000_000_u64;
+    let start = codex_hepta_automation::CircuitStartV2 {
+        run_id: decoded.source.scope.run_id.to_string(),
+        scope_digest: crate::circuit_cell_scope_digest_v1(&decoded.source.scope)?,
+        input_digest: Sha256Digest::for_bytes(&decoded.source.observation),
+        created_at_ms: original_observed_at_unix_micros / 1_000,
+        lease_duration_ms: decoded.source.lease_duration_ms,
+    };
+    Ok((decoded, start))
+}
+
+#[test]
+fn ordinary_q24_circuit_dispatches_after_boot_delay_with_original_source_lease()
+-> anyhow::Result<()> {
+    use codex_hepta_automation::CircuitEventV2;
+    use codex_hepta_automation::CircuitRunV2;
+    use codex_hepta_automation::CircuitStopReasonV2;
+
+    for lease in [60_000, 120_000] {
+        let (data, start) = original_source_lease_reducer_data(lease)?;
+        let original_source = data.source.clone();
+        let original_start = serde_json::to_vec(&start)?;
+        let initial = CircuitRunV2::prepare(&data.circuit, &start, &data.fence)?;
+        let after_boot = start
+            .created_at_ms
+            .checked_add(2_000)
+            .ok_or_else(|| anyhow::anyhow!("fixed test time overflow"))?;
+        let (running, dispatches) = initial.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            after_boot,
+        )?;
+        pretty_assertions::assert_eq!(dispatches.len(), 1);
+        pretty_assertions::assert_eq!(dispatches[0].run_id, start.run_id);
+        pretty_assertions::assert_eq!(running.stop_reason(), None);
+        pretty_assertions::assert_eq!(running.outcome(), None);
+        pretty_assertions::assert_eq!(running.unresolved(), 1);
+        pretty_assertions::assert_eq!(
+            serde_json::to_value(&running)?["created_at_ms"],
+            json!(start.created_at_ms)
+        );
+        pretty_assertions::assert_eq!(serde_json::to_vec(&start)?, original_start);
+        pretty_assertions::assert_eq!(data.source, original_source);
+
+        // The inherited one-second route reproduces the pre-dispatch rejection:
+        // the reducer stops before any computation intent can be dispatched.
+        let mut inherited = data.circuit.clone();
+        inherited.limits.max_elapsed_ms = 1_000;
+        let expired = CircuitRunV2::prepare(&inherited, &start, &data.fence)?;
+        let (stopped, dispatches) = expired.reduce(
+            &inherited,
+            &CircuitEventV2::Advance { quantum: 1 },
+            after_boot,
+        )?;
+        pretty_assertions::assert_eq!(stopped.stop_reason(), Some(CircuitStopReasonV2::Deadline));
+        assert!(dispatches.is_empty());
+        pretty_assertions::assert_eq!(stopped.unresolved(), 0);
+    }
+    Ok(())
+}
+
+#[test]
+fn ordinary_q24_circuit_keeps_the_original_source_lease_deadline() -> anyhow::Result<()> {
+    use codex_hepta_automation::CircuitEventV2;
+    use codex_hepta_automation::CircuitRunV2;
+    use codex_hepta_automation::CircuitStopReasonV2;
+
+    for lease in [60_000, 120_000] {
+        let (data, start) = original_source_lease_reducer_data(lease)?;
+        let original_source = data.source.clone();
+        let original_start = serde_json::to_vec(&start)?;
+        let initial = CircuitRunV2::prepare(&data.circuit, &start, &data.fence)?;
+        let deadline = start
+            .created_at_ms
+            .checked_add(lease)
+            .ok_or_else(|| anyhow::anyhow!("original test deadline overflow"))?;
+        let (last_current, dispatches) = initial.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            deadline - 1,
+        )?;
+        pretty_assertions::assert_eq!(dispatches.len(), 1);
+        pretty_assertions::assert_eq!(last_current.stop_reason(), None);
+        let (stopped, dispatches) = initial.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            deadline,
+        )?;
+        pretty_assertions::assert_eq!(stopped.stop_reason(), Some(CircuitStopReasonV2::Deadline));
+        assert!(dispatches.is_empty());
+        pretty_assertions::assert_eq!(stopped.unresolved(), 0);
+        // Expiry cannot erase an already dispatched, unresolved computation.
+        let (inflight, dispatches) = last_current.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            deadline,
+        )?;
+        pretty_assertions::assert_eq!(inflight.stop_reason(), Some(CircuitStopReasonV2::Deadline));
+        assert!(dispatches.is_empty());
+        pretty_assertions::assert_eq!(inflight.unresolved(), 1);
+        pretty_assertions::assert_eq!(inflight.outcome(), None);
+        pretty_assertions::assert_eq!(
+            serde_json::to_value(&inflight)?["created_at_ms"],
+            json!(start.created_at_ms)
+        );
+        pretty_assertions::assert_eq!(serde_json::to_vec(&start)?, original_start);
+        pretty_assertions::assert_eq!(data.source, original_source);
+    }
+    Ok(())
+}

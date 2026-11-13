@@ -1248,16 +1248,16 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
         }]))
         .await?;
     tokio::time::timeout(Duration::from_secs(5), async {
-        let mut turn_complete = false;
+        let mut completed_turn_id = None;
         let mut apps_ready = false;
-        while !turn_complete || !apps_ready {
+        while completed_turn_id.is_none() || !apps_ready {
             let event = test
                 .codex
                 .next_event()
                 .await
                 .expect("event stream should stay open");
             match event.msg {
-                EventMsg::TurnComplete(_) => turn_complete = true,
+                EventMsg::TurnComplete(turn) => completed_turn_id = Some(turn.turn_id),
                 EventMsg::McpStartupUpdate(update)
                     if update.server == CODEX_APPS_MCP_SERVER_NAME
                         && matches!(
@@ -1269,6 +1269,12 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
                 }
                 _ => {}
             }
+        }
+        // TurnComplete can precede this turn's finish-owner cleanup. Keep
+        // observing that exact owner within the same reconnect deadline.
+        let turn_id = completed_turn_id.expect("the recovery-trigger turn completed");
+        if let Some(completion) = test.codex.pending_normal_turn_finish_completion(&turn_id) {
+            completion.await;
         }
     })
     .await

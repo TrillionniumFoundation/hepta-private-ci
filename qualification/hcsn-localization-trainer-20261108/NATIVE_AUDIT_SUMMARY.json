@@ -1,0 +1,108 @@
+{
+  "audit_source_sha256": "4c563781b61563e5ef0f153b0da8b812f79c9210b09b3ba468d0578622cc6372",
+  "confirmation_access": false,
+  "cpu_seconds": 2.157369247,
+  "new_training_runs": 0,
+  "results": [
+    {
+      "arm": "gru",
+      "audit_sha256": "583c96400ed9dbc7442d90f5b0c1ff8b43336feaae92e77473c8e30c0f5242ee",
+      "changed_scalars": 9867,
+      "changed_with_zero_gradient_moment": 0,
+      "diagnostic_updates_completed": 16,
+      "epoch_orders_sha256": "b1015c5b4385698664c9fa5db7c64498961fc22a94420e09e486400db286ad86",
+      "frozen_parameters_unchanged": true,
+      "main_label_ids": [
+        0,
+        3,
+        4,
+        6
+      ],
+      "main_updates_completed": 12,
+      "nonzero_gradient_moment_scalars": 9867,
+      "trainable_real_scalars": 9867,
+      "width": 44
+    },
+    {
+      "arm": "cfc",
+      "audit_sha256": "c14b53530b837d23e89a3535674ddc8ac242175599a4b1669b1e8794230bef3c",
+      "changed_scalars": 9492,
+      "changed_with_zero_gradient_moment": 0,
+      "diagnostic_updates_completed": 16,
+      "epoch_orders_sha256": "b1015c5b4385698664c9fa5db7c64498961fc22a94420e09e486400db286ad86",
+      "frozen_parameters_unchanged": true,
+      "main_label_ids": [
+        0,
+        3,
+        4,
+        6
+      ],
+      "main_updates_completed": 12,
+      "nonzero_gradient_moment_scalars": 9492,
+      "trainable_real_scalars": 9492,
+      "width": 19
+    },
+    {
+      "arm": "snn_plif",
+      "audit_sha256": "46491e90ec3e15a40cfaa6a18d942dc7acba5c75b312274f54fe0c8a39e2045f",
+      "changed_scalars": 9770,
+      "changed_with_zero_gradient_moment": 3534,
+      "diagnostic_updates_completed": 16,
+      "epoch_orders_sha256": "b1015c5b4385698664c9fa5db7c64498961fc22a94420e09e486400db286ad86",
+      "frozen_parameters_unchanged": true,
+      "main_label_ids": [
+        0,
+        3,
+        4,
+        6
+      ],
+      "main_updates_completed": 12,
+      "nonzero_gradient_moment_scalars": 6236,
+      "trainable_real_scalars": 9770,
+      "width": 82
+    },
+    {
+      "arm": "ssm_s4d",
+      "audit_sha256": "8836ae611cf84f004904e71f8b3230718be1fddde56cfbdbc790a72750f87eda",
+      "changed_scalars": 9785,
+      "changed_with_zero_gradient_moment": 0,
+      "diagnostic_updates_completed": 16,
+      "epoch_orders_sha256": "b1015c5b4385698664c9fa5db7c64498961fc22a94420e09e486400db286ad86",
+      "frozen_parameters_unchanged": true,
+      "main_label_ids": [
+        0,
+        3,
+        4,
+        6
+      ],
+      "main_updates_completed": 12,
+      "nonzero_gradient_moment_scalars": 9785,
+      "trainable_real_scalars": 9785,
+      "width": 54
+    },
+    {
+      "arm": "attention",
+      "audit_sha256": "45c9b725616b49b996a328b2456d7590b530790b8259ed6d4bbc7a613bf1c82d",
+      "changed_scalars": 9423,
+      "changed_with_zero_gradient_moment": 0,
+      "diagnostic_updates_completed": 16,
+      "epoch_orders_sha256": "b1015c5b4385698664c9fa5db7c64498961fc22a94420e09e486400db286ad86",
+      "frozen_parameters_unchanged": true,
+      "main_label_ids": [
+        0,
+        3,
+        4,
+        6
+      ],
+      "main_updates_completed": 12,
+      "nonzero_gradient_moment_scalars": 9423,
+      "trainable_real_scalars": 9423,
+      "width": 26
+    }
+  ],
+  "same_training_orders": true,
+  "schema": "hcsn-trainer-native-checkpoint-audit-v1",
+  "scientific_admission": "HOLD",
+  "status": "audited",
+  "wall_seconds": 2.4675007117912173
+}

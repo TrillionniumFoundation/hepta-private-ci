@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.causal-pair-state-regression.v1",
+  "base": "6736d8acaf3f8c69288ce6c59a7d5246ea00448f",
+  "code_commit": "8ade08e83b93e9446f5e320437d4a38f730f9e29",
+  "code_tree": "b155a21c3bacc6619875de60c133e3f5fcae25f0",
+  "issue": "The prior pair validator compared actual initial graphs but accepted different actual initial states.",
+  "change": "Bind the canonical digest of the checked before_state artifact and require equality across both arms.",
+  "validation": {
+    "source_base": "6736d8acaf3f8c69288ce6c59a7d5246ea00448f",
+    "commit": "8ade08e83b93e9446f5e320437d4a38f730f9e29",
+    "tree": "b155a21c3bacc6619875de60c133e3f5fcae25f0",
+    "source": "/home/qian-qi/work/cell-s0s5-20261108-1628/s4-source",
+    "validation": "/home/qian-qi/work/cell-s0s5-20261108-1628/s4-validation",
+    "paths": [
+      "scripts/ndu_real_runtime/causal_topology.py",
+      "scripts/ndu_real_runtime/test_causal_topology.py"
+    ],
+    "numstat": "6\t0\tscripts/ndu_real_runtime/causal_topology.py\n29\t3\tscripts/ndu_real_runtime/test_causal_topology.py\n",
+    "native_red_job": "1a1bc23012e-138b0-60",
+    "native_green_job": "1a1bc2579f3-138b0-7b",
+    "native_tests": {
+      "tests_passed": 7,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "exit_code": 0,
+      "wall_seconds": 0.0595198730006814
+    },
+    "format": {
+      "exit_code": 0,
+      "wall_seconds": 29.30633754498558,
+      "source_changed_by_formatter": true
+    },
+    "files": {
+      "scripts/ndu_real_runtime/causal_topology.py": "65e41055e2d1d5e0681b4c2477c3771af1c7a9737ca081f4b6cf139c4be1a068",
+      "scripts/ndu_real_runtime/test_causal_topology.py": "262f07de58380da9401ad52508e5790f37eb81acde1e72e46d2142ac0b2ae2f5"
+    },
+    "patch_sha256": "5786137e00d2bb68299cfaef3918723810a08920b868b03632ac57817571d5fe",
+    "git_clean": true,
+    "real_D_execution": false,
+    "scientific_acceptance": "HOLD",
+    "uv": {
+      "version": "0.9.10",
+      "release_url": "https://api.github.com/repos/astral-sh/uv/releases/tags/0.9.10",
+      "asset_url": "https://github.com/astral-sh/uv/releases/download/0.9.10/uv-x86_64-unknown-linux-gnu.tar.gz",
+      "checksums_url": "https://github.com/astral-sh/uv/releases/download/0.9.10/uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+      "archive_sha256": "440c4215b171e64061d65d16a23753dd25c29a7f7b1b0446c9e9aed0fa372f27",
+      "release_asset_digest": "sha256:440c4215b171e64061d65d16a23753dd25c29a7f7b1b0446c9e9aed0fa372f27",
+      "binary_path": "/home/qian-qi/work/cell-s0s5-20261108-1628/ci-tools/bin/uv",
+      "binary_sha256": "040491bf5feb28ce7409dfc2f9aa1532aeb569aba70f61bd4d3ddb2386d13350",
+      "version_output": "uv 0.9.10"
+    }
+  },
+  "archive": {
+    "path": "raw-validation.tar.gz",
+    "bytes": 24795,
+    "sha256": "881c22f5b94c0dab199c83790df8eff85d226513ba8a76325ad189977aa1b98d",
+    "members": [
+      {
+        "path": "01-regression-test.patch",
+        "bytes": 2563,
+        "sha256": "dd47c6cf4c953d494d07d6556182fd5bb0987782467ed1a5a2de32fe61e92f9b"
+      },
+      {
+        "path": "FINAL_VALIDATION.json",
+        "bytes": 2117,
+        "sha256": "fc78ecc5b26ece71176e73325003a2a6ba31012f4d2a525830a4f51c7bba4d93"
+      },
+      {
+        "path": "FORMAT_MISSING_UV_RESULT.json",
+        "bytes": 461,
+        "sha256": "d002971c2b03d4e9832f786c3c18d73f742caa05b972692a51bc76e43fcd0c78"
+      },
+      {
+        "path": "FORMAT_RESULT.json",
+        "bytes": 459,
+        "sha256": "c294a1a638435c2793501e3cbf9a83069f803fc2c7388e90700e8306f3f07987"
+      },
+      {
+        "path": "GREEN_RESULT.json",
+        "bytes": 893,
+        "sha256": "97cb3f8e78e1cc774a0e14f9856d3007a4b9fc964b40e687d0817ddadfec7976"
+      },
+      {
+        "path": "ORIGINAL_D_EXECUTION_GUARD.json",
+        "bytes": 869,
+        "sha256": "5687ed29f68988072631e580ad3d72d354030170b54e0e92e550da614e48f6ea"
+      },
+      {
+        "path": "RED_RESULT.json",
+        "bytes": 782,
+        "sha256": "ca4cbc7c2ae4fb87067b197e3061c3bce20519833ea5ea56e97ad49fa8f8e6ad"
+      },
+      {
+        "path": "UV_INSTALL.json",
+        "bytes": 728,
+        "sha256": "140d262617fb1ebb08d867e2b3eaf1d030a57e4197fea2f788d36315c23187bb"
+      },
+      {
+        "path": "commands.jsonl",
+        "bytes": 19618,
+        "sha256": "63d68288f40c77ba58a061533357864d5b6e036bd80f99f3aab8f2ab062fb44e"
+      },
+      {
+        "path": "fmt.missing-uv.stderr.log",
+        "bytes": 312,
+        "sha256": "18b9e1080c5f6bf0f24723a0e61072c80a5416008c8f25f4db332a9bdf824c33"
+      },
+      {
+        "path": "fmt.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "fmt.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "green.stderr.log",
+        "bytes": 1439,
+        "sha256": "dc629850477343b3d16d88b39a63976b7eb0b441b0418095596ff77a89394fec"
+      },
+      {
+        "path": "green.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "original-source/codex-rs/hepta-runtime/src/lib.rs",
+        "bytes": 45789,
+        "sha256": "391587df4adad5165ef68268adc15bd3f33bd494ae45f9db5e6619f67536e025"
+      },
+      {
+        "path": "original-source/codex-rs/hepta-runtime/src/topology_execution.rs",
+        "bytes": 14599,
+        "sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db"
+      },
+      {
+        "path": "original-source/qualification/cell-causal-abcde-20261108/D_CAPABILITY_AUDIT.json",
+        "bytes": 10282,
+        "sha256": "9bf6e771e1de56f889090d9d3f82353318c1157102323551c03f39a6279b7bfc"
+      },
+      {
+        "path": "red.stderr.log",
+        "bytes": 2099,
+        "sha256": "003e3c1fab00cb77c2e0d760e6b44fa82ec4e634bb43b2c12b2ccda0fd3fce53"
+      },
+      {
+        "path": "red.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "s4-pair-state.patch",
+        "bytes": 4068,
+        "sha256": "5786137e00d2bb68299cfaef3918723810a08920b868b03632ac57817571d5fe"
+      }
+    ]
+  },
+  "limits": {
+    "owner_identity": "ephemeral unit-test fixture only",
+    "real_D_execution": false,
+    "new_B_training": false,
+    "E_access": false,
+    "control_admission_guard": "unchanged and closed",
+    "scientific_acceptance": "HOLD",
+    "benefit_proven": false
+  }
+}

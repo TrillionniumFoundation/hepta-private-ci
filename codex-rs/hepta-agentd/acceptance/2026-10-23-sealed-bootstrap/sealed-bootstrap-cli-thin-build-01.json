@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "-p",
+    "codex-hepta-agentd",
+    "--bin",
+    "hepta-authority-host",
+    "--example",
+    "authority_host_peer_qualification",
+    "--locked"
+  ],
+  "exit": 0,
+  "seconds": 13.372147865011357,
+  "source_before": {
+    "head": "2ff4a7ed65fa6cec5df4384a1023ec65c015281e",
+    "tree": "806cbf8ace4b12fcad18c76a62208169f2476c20",
+    "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/authority_host_service_consumers_root.rs\n M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap_seal_tests.rs",
+    "index_flags": [
+      "H"
+    ],
+    "files": 9353,
+    "live_source_sha256": "e0e4e6aa08fc24bbd76414aaf6d78877a4de801a5e70751239ef732181f4c941"
+  },
+  "cache_reused": true,
+  "toolchain": "1.96.0"
+}

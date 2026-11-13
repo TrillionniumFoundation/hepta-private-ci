@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.root-v4-cache-diagnostic-independent-review.v1",
+  "reviewer": "runtime_access",
+  "source": {
+    "commit": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+  },
+  "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+  "before": {
+    "git_blob": "76cfd19e13470a6ced412ef5e7b7a7fa228c53b4",
+    "bytes": 9825,
+    "sha256": "d52c214a953085d8402766620aaf044351f371717f868e4b0f9513bb5eea401e"
+  },
+  "after": {
+    "git_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+    "bytes": 16628,
+    "sha256": "6f5cf48ad4379cc79f132fa5793c0c2ce91c05bc226b21b6c1e642ee2dd1798e"
+  },
+  "exactops_blob": "093a8077b031ea0bf8547f8bf0a527fe7bd3a5ca",
+  "checks": {
+    "full_post_readback": true,
+    "forward_byte_equal": true,
+    "reverse_byte_equal": true,
+    "existing_guards_checked_unchanged": true,
+    "existing_error_and_fence_order_checked_unchanged": true,
+    "no_added_live_owner_or_state_read": true,
+    "no_added_boottime_or_lock": true,
+    "cfg_test_only_output": true,
+    "no_native_or_cargo": true
+  },
+  "counts": {
+    "/boottime_ns\\(\\)/g": {
+      "before": 3,
+      "after": 3
+    },
+    "/\\.try_lock\\(\\)/g": {
+      "before": 1,
+      "after": 1
+    },
+    "/\\.lock\\(\\)/g": {
+      "before": 2,
+      "after": 2
+    },
+    "/\\.fence\\(\\)/g": {
+      "before": 3,
+      "after": 3
+    },
+    "/return Err\\(AgentdRootAuthorityError::Unavailable\\)/g": {
+      "before": 8,
+      "after": 8
+    },
+    "/last_checked_ns = now/g": {
+      "before": 1,
+      "after": 1
+    },
+    "/MAX_AGE_NS/g": {
+      "before": 4,
+      "after": 4
+    }
+  },
+  "scope": "Existing accept/current/project rejections log existing scalar samples and boolean binding comparisons. Additional error inspection labels original missing cache and projection arithmetic failures; no new rejection, admission, retry, refresh, warmup, authority, timeout, nonce or clock operation.",
+  "limitations": [
+    "Failure-path logging can affect test timing after the original rejection; it is diagnostic evidence, not a repair.",
+    "Source-permitted races and shared-fence stalls have not been attributed to V4 by runtime evidence.",
+    "Formatting and the unchanged original checker still require root's new fixed-source maintenance/qualification."
+  ]
+}

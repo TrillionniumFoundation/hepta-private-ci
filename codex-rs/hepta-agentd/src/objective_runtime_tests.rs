@@ -8,6 +8,13 @@ use super::*;
 use crate::AgentRunCoordinator;
 use crate::RuntimeComposition;
 
+#[path = "objective_history_tests.rs"]
+mod history;
+
+#[cfg(unix)]
+#[path = "objective_run_start_publisher_tests.rs"]
+mod original_publisher;
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
@@ -16,7 +23,7 @@ fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
 
-fn record(
+pub(super) fn record(
     run_id: &str,
     sequence: u64,
     disposition: RunStartObjectiveDispositionV1,
@@ -82,6 +89,7 @@ fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     (
         temp,
         ObjectiveHostState {
+            notes_cursor: 0,
             journal,
             highest_sequences,
         },

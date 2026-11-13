@@ -1,0 +1,151 @@
+{
+  "arms": {
+    "hepta_light_persistent": [
+      "hepta",
+      "light",
+      "persistent"
+    ],
+    "hepta_light_reset": [
+      "hepta",
+      "light",
+      "reset"
+    ],
+    "hepta_mpc_persistent": [
+      "hepta",
+      "mpc",
+      "persistent"
+    ],
+    "hepta_mpc_reset": [
+      "hepta",
+      "mpc",
+      "reset"
+    ],
+    "hepta_ndu_persistent": [
+      "hepta",
+      "ndu",
+      "persistent"
+    ],
+    "hepta_ndu_reset": [
+      "hepta",
+      "ndu",
+      "reset"
+    ],
+    "hepta_tuned_fixed_persistent": [
+      "hepta",
+      "tuned_fixed",
+      "persistent"
+    ],
+    "hepta_tuned_fixed_reset": [
+      "hepta",
+      "tuned_fixed",
+      "reset"
+    ],
+    "hepta_voi_persistent": [
+      "hepta",
+      "voi",
+      "persistent"
+    ],
+    "hepta_voi_reset": [
+      "hepta",
+      "voi",
+      "reset"
+    ],
+    "ordinary_light_persistent": [
+      "ordinary",
+      "light",
+      "persistent"
+    ],
+    "ordinary_light_reset": [
+      "ordinary",
+      "light",
+      "reset"
+    ],
+    "ordinary_mpc_persistent": [
+      "ordinary",
+      "mpc",
+      "persistent"
+    ],
+    "ordinary_mpc_reset": [
+      "ordinary",
+      "mpc",
+      "reset"
+    ],
+    "ordinary_ndu_persistent": [
+      "ordinary",
+      "ndu",
+      "persistent"
+    ],
+    "ordinary_ndu_reset": [
+      "ordinary",
+      "ndu",
+      "reset"
+    ],
+    "ordinary_tuned_fixed_persistent": [
+      "ordinary",
+      "tuned_fixed",
+      "persistent"
+    ],
+    "ordinary_tuned_fixed_reset": [
+      "ordinary",
+      "tuned_fixed",
+      "reset"
+    ],
+    "ordinary_voi_persistent": [
+      "ordinary",
+      "voi",
+      "persistent"
+    ],
+    "ordinary_voi_reset": [
+      "ordinary",
+      "voi",
+      "reset"
+    ]
+  },
+  "budgets": {
+    "episode_wall_seconds": 60,
+    "max_workers": 1,
+    "training_job_overhead_seconds": 15,
+    "training_wall_seconds": 900
+  },
+  "controller": {
+    "discount_per_second": 1.0,
+    "horizon": 3,
+    "latency_weight": 0.01,
+    "max_forecasts": 128,
+    "max_sequences": 84,
+    "particles": 2,
+    "risk": 0.25
+  },
+  "estimand": "matched_training",
+  "evidence_scope": "engineering_training_smoke",
+  "fixed_schedule_candidates": [
+    [
+      "WRITE_TEXT",
+      "RENDER_IMAGE"
+    ]
+  ],
+  "memory_modes": [
+    "reset",
+    "persistent"
+  ],
+  "regimes": [
+    "frozen",
+    "joint"
+  ],
+  "study_id": "cell-causal-b-cf0-v2-smoke-20261108",
+  "training": {
+    "batch_size": 32,
+    "content_epochs": 2,
+    "content_learning_rate": 0.003,
+    "fit_epochs": 2,
+    "head_learning_rates": [
+      0.003
+    ],
+    "max_wall_seconds": 45,
+    "observation_policy": "matched_episodes"
+  },
+  "training_seeds": [
+    104729,
+    130363
+  ]
+}

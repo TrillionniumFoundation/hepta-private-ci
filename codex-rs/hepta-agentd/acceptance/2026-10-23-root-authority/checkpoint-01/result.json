@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.root-checkpoint-backend-qualification.v1",
+  "source_head": "792626129aa72d8da4c04da193d8c70fb083151e",
+  "source_tree": "32b46f657867f4e5ea463a661b90bccded0b6517",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.215
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev-small",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-qualification-01/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 733.358
+    },
+    {
+      "stage": "actual-root-tests",
+      "argv": [
+        "sudo",
+        "-n",
+        "/usr/bin/env",
+        "PATH=/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/.cargo/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "RUSTUP_TOOLCHAIN=1.95.0",
+        "RUSTC=/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "CARGO_TARGET_DIR=/data/asterinas-audit-build.8tdrjboi/root-checkpoint-target",
+        "TMPDIR=/data/root-checkpoint-tmp.d6vxuswo",
+        "CARGO_NET_OFFLINE=true",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "CARGO_HOME=/home/qian-qi/.cargo",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/var/lib/hepta-authority-os3-20261023/checkpoint-qualification-efrq0r70",
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import os,sys; os.umask(0o077); os.execv(sys.argv[1],sys.argv[1:])",
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-qualification-01/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-qualification-01/binaries-metadata.json",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(authority_host_checkpoint::tests::root_)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 100,
+      "seconds": 11.342
+    }
+  ],
+  "status": "complete",
+  "passed": false,
+  "production_authority": false,
+  "service_wire_qualified": false,
+  "clock_qualification": "controlled clock; actual protected clock separately qualified",
+  "cache_reused": true,
+  "root_fixture": {
+    "path": "/var/lib/hepta-authority-os3-20261023/checkpoint-qualification-efrq0r70",
+    "uid": 0,
+    "mode": "0o700"
+  },
+  "source_inputs_unchanged": true
+}

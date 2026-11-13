@@ -1,0 +1,28 @@
+{
+  "scope": "local exact-source verification after replacement-executor restore",
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "cwd": "/workspace/scratch/ff41dfc0f7bf/hepta-root-checkout",
+  "before": {
+    "sha": "723a2d763339a55833519417a5f99f4defa9f8e2",
+    "tree": "63b36ed30394d135b481813b1020548d8cf628c5",
+    "tracked_status": ""
+  },
+  "started_utc": "2026-11-12T04:07:56.305372+00:00",
+  "status": "completed",
+  "returncode": 0,
+  "after": {
+    "sha": "723a2d763339a55833519417a5f99f4defa9f8e2",
+    "tree": "63b36ed30394d135b481813b1020548d8cf628c5",
+    "tracked_status": ""
+  },
+  "elapsed_seconds": 2341.2147599030004,
+  "finished_utc": "2026-11-12T04:46:57.520923+00:00",
+  "address_space_limit_bytes": 1073741824,
+  "source_unchanged": true,
+  "log_bytes": 234220,
+  "log_sha256": "2ad85d70cb2f892d2188a959513e5889d732e50885283618f05b0fbc967642a4"
+}

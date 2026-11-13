@@ -88,6 +88,7 @@ where
             },
             capabilities: if experimental_api {
                 Some(InitializeCapabilities {
+                    process_indeterminate: false,
                     experimental_api: true,
                     ..Default::default()
                 })

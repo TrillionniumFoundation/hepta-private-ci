@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.analysis-adapter.mapping-checks.v1",
+  "scope": "Ephemeral mapping fixtures only; no experiment, original outcome, benchmark or efficacy result was generated.",
+  "analysis_helper_sha256": "4c475b35eefe451860569e7f257df0ad6b6746d3017037cd82caead9dd2ce1c2",
+  "checks": [
+    "scored_budget_stop_retains_original_and_resolves_statistically",
+    "missing_derived_utility_uses_recorded_score_and_deployment_wall",
+    "missing_score_remains_unknown",
+    "unbound_evaluator_remains_unknown",
+    "unbound_rubric_remains_unknown",
+    "boolean_score_remains_unknown",
+    "missing_wall_remains_unknown",
+    "boolean_wall_remains_unknown",
+    "negative_wall_remains_unknown",
+    "nonfinite_wall_remains_unknown",
+    "wrong_formula_rejected",
+    "missing_original_binding_rejected"
+  ],
+  "passed": 12,
+  "candidate_modified": false,
+  "behavioral_experiment_claim": false
+}

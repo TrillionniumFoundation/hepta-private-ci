@@ -1,0 +1,201 @@
+{
+  "schema": "hepta.causal-b.reporting-completion.v1",
+  "observed_utc": "2026-11-08T10:21:47.021336+00:00",
+  "original_analysis_job": {
+    "host": "ai395",
+    "job_id": "1a1baa1acfc-12894-1c0d",
+    "idempotency_key": "cell-causal-b-analysis-20261108-cf0-v1",
+    "state": "succeeded",
+    "exit_code": 0,
+    "reused_on_reconciliation": true,
+    "retried_launch": false
+  },
+  "files": [
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_ANALYSIS.json",
+      "bytes": 603081,
+      "sha256": "64886fec9deca29abe5b9cb52b383f8cee5dd073a76bf8d894580d9953bb3f70"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_ANALYSIS.txt",
+      "bytes": 3444,
+      "sha256": "6a7538a6a9942c7e8e330e73b48d36c844f0d11683f0282c53fc8c8be41fb509"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/ANALYSIS_RESULT.json",
+      "bytes": 2173,
+      "sha256": "5e5b635e191229fe2cd3a2a1b9325e01bf460efc078669bfa8714015ee30ff42"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/NATIVE_ANALYSIS_CLOSURE.json",
+      "bytes": 3223,
+      "sha256": "2d29bdf865b56049608eb0a398f234532fc6938c77acf7dec1fbbc2d0d1fb326"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/RECOVERY_MANIFEST.json",
+      "bytes": 1454,
+      "sha256": "3e249cbafc0e84c3c1d521e1a1294017e715b73d97011ddc265af3731b2e1061"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/profile-inputs.json",
+      "bytes": 1930,
+      "sha256": "a55c69bdbcc49358e170db3937ddd3a8bfc611049170270de9fe5c2e84667919"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/profile-execution.json",
+      "bytes": 299,
+      "sha256": "81009cd0f17c6700fd5327404f3d36ae56bf4b8674d41a3fba6be2cd3aacba46"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_PROFILE_SUMMARIES.json",
+      "bytes": 245333,
+      "sha256": "5e23ba3e7b7cc79bc969eaac5bb067dc0547aa4449ac87009310600f9c99d018"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_PROFILE_SUMMARIES.txt",
+      "bytes": 19812,
+      "sha256": "46d9c83f91a02cf3b200ab9b1ae07304faebb718bf65aedfcb1b3ae8b09b25dd"
+    },
+    {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_LOCKED_COMPARATOR_DESCRIPTIONS.json",
+      "bytes": 55611,
+      "sha256": "048d2f4ead2982448f155bd78d83385ca6b29ec9eb5a71c3e75cad85c3da7af1"
+    }
+  ],
+  "profile_helper": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/aggregate_b_profiles.py",
+    "bytes": 11108,
+    "sha256": "88715e29c1976af21bc4a1aaf6e2ae79a0e3800fe86457a68f3317c6b4c9a442"
+  },
+  "profile_format_receipt": {
+    "path": "/workspace/scratch/cf0b0141e32e/profile-format/format-receipt.json",
+    "bytes": 789,
+    "sha256": "2f0d9bb90c52a6b14509fc1903e7bd6ec8e6d16d58c941dc48f568c6ba8608c1"
+  },
+  "original_paired_rows": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/evaluation-build-v2/final-evidence/study/paired-rows.jsonl",
+    "bytes": 3058914,
+    "sha256": "7a553992aa057475887482021f00d9ab5f9cb837215ee29b909ee1c0dcfa1add"
+  },
+  "original_terminal_status_counts": {
+    "Completed": 916,
+    "BudgetStop": 44
+  },
+  "analysis_terminal_status_counts": {
+    "Completed": 960
+  },
+  "budget_stop": {
+    "original": 44,
+    "scored_and_measured": 44,
+    "unresolved": 0,
+    "by_regime": {
+      "frozen": 16,
+      "joint": 28
+    },
+    "by_condition": {
+      "ordinary/mpc/persistent": 10,
+      "hepta/voi/persistent": 2,
+      "hepta/mpc/persistent": 8,
+      "ordinary/voi/persistent": 4,
+      "hepta/ndu/persistent": 8,
+      "ordinary/ndu/persistent": 9,
+      "ordinary/ndu/reset": 2,
+      "hepta/mpc/reset": 1
+    }
+  },
+  "independent_training_replicates": 2,
+  "source_groups": {
+    "development": 2,
+    "retention_validation": 2
+  },
+  "preplanned_contrasts": 33,
+  "complete_contrast_metric_strata": 396,
+  "profile_split_descriptions": 160,
+  "original_locked_comparator_choices_verified": 8,
+  "quality_observations": {
+    "development": {
+      "rows": 800,
+      "zero_scores": 388,
+      "positive_scores": 412,
+      "unweighted_observed_gross_mean": 0.3010983647728443,
+      "explicit_quality_pass_label_available": false,
+      "scope": "Original finite evaluator scores; no binary quality threshold or success label is invented."
+    },
+    "retention_validation": {
+      "rows": 160,
+      "zero_scores": 160,
+      "positive_scores": 0,
+      "unweighted_observed_gross_mean": 0.0,
+      "explicit_quality_pass_label_available": false,
+      "scope": "Original finite evaluator scores; no binary quality threshold or success label is invented."
+    }
+  },
+  "locked_comparator_development": [
+    {
+      "regime": "frozen",
+      "memory_mode": "persistent",
+      "ndu_core": "hepta",
+      "score_difference": 2.534417463201377e-06,
+      "deployment_utility_difference": -0.02744126372453684
+    },
+    {
+      "regime": "frozen",
+      "memory_mode": "persistent",
+      "ndu_core": "ordinary",
+      "score_difference": 2.823303103083319e-06,
+      "deployment_utility_difference": -0.0281398508748969
+    },
+    {
+      "regime": "frozen",
+      "memory_mode": "reset",
+      "ndu_core": "hepta",
+      "score_difference": -0.00018921553034448313,
+      "deployment_utility_difference": -0.01848336155684449
+    },
+    {
+      "regime": "frozen",
+      "memory_mode": "reset",
+      "ndu_core": "ordinary",
+      "score_difference": -0.00018876515603397093,
+      "deployment_utility_difference": -0.019300822606533957
+    },
+    {
+      "regime": "joint",
+      "memory_mode": "persistent",
+      "ndu_core": "hepta",
+      "score_difference": 1.969730094170119e-06,
+      "deployment_utility_difference": -0.025844343662405816
+    },
+    {
+      "regime": "joint",
+      "memory_mode": "persistent",
+      "ndu_core": "ordinary",
+      "score_difference": -2.6191748214082766e-05,
+      "deployment_utility_difference": -0.034672042824214044
+    },
+    {
+      "regime": "joint",
+      "memory_mode": "reset",
+      "ndu_core": "hepta",
+      "score_difference": 0.001698624484906014,
+      "deployment_utility_difference": -0.01596363073409396
+    },
+    {
+      "regime": "joint",
+      "memory_mode": "reset",
+      "ndu_core": "ordinary",
+      "score_difference": 0.0011828284537382106,
+      "deployment_utility_difference": -0.020455747750261793
+    }
+  ],
+  "limits": [
+    "Only two independent training seeds and two development/two retention-validation source groups.",
+    "The initial constructor is paired; memory-specific content pretraining can produce different prefits, so this is not a same-checkpoint deployment-only state ablation.",
+    "Deployment utility deducts measured deployment wall only; complete improvement costs, energy and provider charges are not closed.",
+    "Original execution Completed and a statistically resolved BudgetStop are not quality-pass or adoption labels.",
+    "Per-profile and locked-comparator summaries are descriptive; no added hypothesis test or interval is claimed."
+  ],
+  "candidate_or_original_rows_modified": false,
+  "scientific_acceptance": "HOLD",
+  "adoption_authorized": false
+}

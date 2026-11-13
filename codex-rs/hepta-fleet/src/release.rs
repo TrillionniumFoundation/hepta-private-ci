@@ -293,8 +293,16 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
+            #[cfg(not(target_vendor = "apple"))]
             set_mode(&staging, /*mode*/ 0o555)?;
             std::fs::rename(&staging, &final_root)?;
+            #[cfg(target_vendor = "apple")]
+            {
+                // Darwin requires write access to the directory being renamed.
+                // Catalog resolution rejects this root until it is sealed.
+                set_mode(&final_root, /*mode*/ 0o555)?;
+                sync_directory(&final_root)?;
+            }
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
@@ -893,6 +901,7 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+    crate::registry::preserve_root_reader_mode(&file, path)?;
     file.write_all(&bytes)?;
     file.sync_all()?;
     Ok(())

@@ -6,3 +6,6 @@ codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json t
 codex-rs/hepta-evidence/migrations/*.sql text eol=lf
 codex-rs/hepta-memory/migrations/*.sql text eol=lf
 codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
+# Native acquisition qualification binds these production/patch bytes exactly.
+codex-rs/utils/path-utils/src/private_state_windows_directory.rs text eol=lf
+.github/fixtures/windows-private-state-acquisition/*.patch text eol=lf

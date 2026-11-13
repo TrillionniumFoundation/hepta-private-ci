@@ -1,0 +1,428 @@
+{
+  "whitespace": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "field": "required_function_order",
+      "old": "self.profile.require_context(",
+      "new": "self.profile\n            .require_context(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+      "field": "required_function_order",
+      "old": "self.profile.identity != crate::neuron_generation_process_identity_digest_v1(session.identity())?.to_string()",
+      "new": "self.profile.identity\n                != crate::neuron_generation_process_identity_digest_v1(session.identity())?\n                    .to_string()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "field": "required_function_order",
+      "old": "owners.require_current().await",
+      "new": "owners\n            .require_current()\n            .await",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "field": "required_function_order",
+      "old": "self.original_q24.as_ref()",
+      "new": "self\n            .original_q24\n            .as_ref()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "field": "required_function_order",
+      "old": "self.retained_source.as_ref()",
+      "new": "self\n            .retained_source\n            .as_ref()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "field": "required_function_order",
+      "old": "self.circuit_delivery_registry.as_ref()",
+      "new": "self\n            .circuit_delivery_registry\n            .as_ref()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "field": "required_function_order",
+      "old": "original.register_original_successor(",
+      "new": "original\n            .register_original_successor(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+      "field": "required_function_order",
+      "old": "self.inner.in_lane(",
+      "new": "self.inner\n            .in_lane(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+      "field": "required_function_order",
+      "old": "session.require_current_successor_session()",
+      "new": "session\n                    .require_current_successor_session()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+      "field": "required_function_order",
+      "old": "owners.factory.require_successor_session(&session)",
+      "new": "owners\n                    .factory\n                    .require_successor_session(&session)",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "field": "required_function_order",
+      "old": "self.wait_original_successor_stage(state, coordinator.snapshot(), stage).await?",
+      "new": "self.wait_original_successor_stage(state, coordinator.snapshot(), stage)\n                .await?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "field": "required_function_order",
+      "old": "decision.clone()",
+      "new": "decision\n                .clone()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "self.slot.decision(",
+      "new": "self\n            .slot\n            .decision(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "self.slot.begin_installation()",
+      "new": "self\n            .slot\n            .begin_installation()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "self.sender.take()",
+      "new": "self.sender\n            .take()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "quote.await.map_err",
+      "new": "quote\n            .await\n            .map_err",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "self.slot.require_open()",
+      "new": "self.slot\n            .require_open()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "self.grant.take()",
+      "new": "self.grant\n            .take()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "(&mut self.completed).await",
+      "new": "(&mut self.completed)\n            .await",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "self.close.slot.require_open()",
+      "new": "self.close\n            .slot\n            .require_open()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "field": "required_function_order",
+      "old": "self.handle.require_direct_original_handle()",
+      "new": "self.handle\n            .require_direct_original_handle()",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "self.install_original_successor(",
+      "new": "self\n                .install_original_successor(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "self.prepare_original_worker(",
+      "new": "self\n            .prepare_original_worker(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "self.finish_original_worker(",
+      "new": "self\n            .finish_original_worker(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "self.slot.install_original_owner(",
+      "new": "self\n                    .slot\n                    .install_original_owner(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "self.slot.require_decision(",
+      "new": "self.slot\n            .require_decision(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "original.proof.require_current_successor_publication().await?",
+      "new": "original\n            .proof\n            .require_current_successor_publication()\n            .await?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "original.proof.require_current_successor_publication().await?",
+      "new": "original\n            .proof\n            .require_current_successor_publication()\n            .await?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "field": "required_function_order",
+      "old": "original.proof.require_current_successor_publication().await?",
+      "new": "original\n            .proof\n            .require_current_successor_publication()\n            .await?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "field": "required_function_order",
+      "old": "handoff.prepare_from_original_root(self, predecessor, target, execution).await",
+      "new": "handoff\n            .prepare_from_original_root(self, predecessor, target, execution)\n            .await",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "field": "required_function_order",
+      "old": "context.scope().validate_snapshot(",
+      "new": "context\n            .scope()\n            .validate_snapshot(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "field": "required_function_order",
+      "old": "self.prepare_successor_current(",
+      "new": "self\n            .prepare_successor_current(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "field": "required_function_order",
+      "old": "proof.require_current_successor_publication().await.map_err(crate::circuit_q24_successor::prepared_uncertain)?",
+      "new": "proof\n            .require_current_successor_publication()\n            .await\n            .map_err(crate::circuit_q24_successor::prepared_uncertain)?",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "field": "required_function_order",
+      "old": "owners.with_original_publication(",
+      "new": "owners\n            .with_original_publication(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "field": "required_function_order",
+      "old": "owners.with_original_publication(",
+      "new": "owners\n            .with_original_publication(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "field": "required_function_order",
+      "old": "circuit_q24_task_channel_v1(identity, CircuitQ24TaskProfileV1 {",
+      "new": "circuit_q24_task_channel_v1(\n                identity,\n                CircuitQ24TaskProfileV1 {",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "config.with_original_pending_successor(",
+      "new": "config\n            .with_original_pending_successor(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/production_q24_successor.rs"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+      "field": "required_function_order",
+      "old": "learning.prepare_original_successor_context(",
+      "new": "learning\n            .prepare_original_successor_context(",
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/config_q24_successor.rs"
+      ]
+    }
+  ],
+  "function_scoped": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "function": "fn require_installation_open(",
+      "old": "self.state.lock()",
+      "new": "self\n            .state\n            .lock()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "function": "fn actual_handle(",
+      "old": "state.installed.as_ref()",
+      "new": "state\n            .installed\n            .as_ref()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "function": "fn actual_invocation(",
+      "old": "state.installed.as_ref()",
+      "new": "state\n                .installed\n                .as_ref()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "function": "fn prepare_original_worker(",
+      "old": "self.slot.require_open()",
+      "new": "self.slot\n            .require_open()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "function": "fn prepare_original_worker(",
+      "old": "self.slot.require_open()",
+      "new": "self.slot\n            .require_open()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "function": "fn finish_original_worker(",
+      "old": "self.slot.require_open()",
+      "new": "self.slot\n            .require_open()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "function": "fn finish_original_worker(",
+      "old": "self.slot.require_open()",
+      "new": "self.slot\n            .require_open()",
+      "kind": "function-scoped-whitespace"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "function": "fn finish_original_worker(",
+      "old": "self.slot.require_open()",
+      "new": "self.slot\n            .require_open()",
+      "kind": "function-scoped-whitespace"
+    }
+  ],
+  "exact_syntax": [
+    {
+      "old": "\"enum Phase { Pending, Installing, Ready, Closed }\"",
+      "new": "\"enum Phase {\\n    Pending,\\n    Installing,\\n    Ready,\\n    Closed,\\n}\"",
+      "count": 1
+    },
+    {
+      "old": "\"OriginalQ24 { slot: Arc<crate::circuit_q24_successor::SuccessorSlot> }\"",
+      "new": "\"OriginalQ24 {\\n        slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,\\n    }\"",
+      "count": 1
+    },
+    {
+      "old": "\"CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::OwnerUnavailable)\"",
+      "new": "\"CircuitTaskLearningReadinessV1::Pending(\\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\\n            )\"",
+      "count": 1
+    },
+    {
+      "old": "function = \"fn prepare_original_successor(\", sequence = [\"handoff\\n            .prepare_from_original_root(self, predecessor, target, execution)\\n            .await\"]",
+      "new": "function = \"fn prepare_original_successor(\", sequence = [\"handoff\\n            .prepare_from_original_root(self, predecessor, target, execution)\",\".await\"], top_level = [\"handoff\\n            .prepare_from_original_root(self, predecessor, target, execution)\\n            .await\"]",
+      "count": 1
+    }
+  ],
+  "checker_unchanged": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "negative_diagnostic_preserved": true
+}

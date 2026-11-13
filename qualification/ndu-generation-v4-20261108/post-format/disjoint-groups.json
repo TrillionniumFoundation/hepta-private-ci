@@ -1,0 +1,28 @@
+{
+  "baseline_candidate_unchanged": {
+    "scripts/hepta_cell_joint_config.py": null,
+    "scripts/hepta_ci_chef.py": null,
+    "scripts/test_hepta_cell_joint_config.py": null,
+    "scripts/test_hepta_ci_chef.py": null,
+    "scripts/test_hepta_module_status_facts.py": "b7337d67d9eb96b9a75562df89f20cf60f0f8b9db20d1b3cc527284bcdef2857"
+  },
+  "maintenance": {
+    "candidate_applied": false,
+    "files": 5,
+    "receipt_sha256": "eddce9ba885a50adf0da81628844b2375337dc81a98ba26644406a0eb1cd9a09",
+    "source_ref": "bf952042b3d31fc416f14adfea5c38181580498b",
+    "strict_ast_equal": 5
+  },
+  "old_numeric_source_identity_preserved": true,
+  "original_ci_failure_preserved": "ci-buildtest-128651527237/job.raw.log",
+  "pr": {
+    "candidate_applied": true,
+    "docstring_changes": 2,
+    "executable_ast_equal": 41,
+    "files": 41,
+    "receipt_sha256": "8aa56f135421392e1049d3dea70a1fd306bd1fcd79e7fc65d9927a6be99fba23",
+    "source_ref": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+    "strict_ast_equal": 40
+  },
+  "schema": "hepta.python-format-disjoint-groups.v1"
+}

@@ -1,0 +1,1135 @@
+{
+  "changes": [
+    {
+      "after_bytes": 1550,
+      "after_git_blob": "afcd4fea8a80ab9f9783473de151e3a7d3d1b2b0",
+      "after_sha256": "959d4ee501c6fc9fe6da475d1091b2a58e32d412ecfac79ec5e6858dd69b6246",
+      "before_git_blob": "bcf77f36122c4f8b35173f49bbf29496a4c074d9",
+      "ops": [
+        {
+          "end": 23,
+          "new": "        self.inner\n            .in_lane(move |owners, _training, _runtime| {\n                session\n                    .require_current_successor_session()\n                    .map_err(unavailable)?;\n                owners\n                    .factory\n                    .require_successor_session(&session)\n                    .map_err(unavailable)?;\n                if owners.generation.is_some() || inner.successor.set(weak).is_err() {\n                    return Err(Error::WrongScope);\n                }\n                Ok(())\n            })\n            .await\n",
+          "old": "        self.inner.in_lane(move |owners, _training, _runtime| {\n            session.require_current_successor_session().map_err(unavailable)?;\n            owners.factory.require_successor_session(&session).map_err(unavailable)?;\n            if owners.generation.is_some() || inner.successor.set(weak).is_err() {\n                return Err(Error::WrongScope);\n            }\n            Ok(())\n        }).await\n",
+          "start": 15
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+    },
+    {
+      "after_bytes": 12393,
+      "after_git_blob": "9521f592575e9c68a3f93d8424c6c1295752cf1e",
+      "after_sha256": "d994d556f4f8362170dc18ad85bfb4fd4c49ba619feb2ea7fa426276f5463577",
+      "before_git_blob": "a221e5fb9eddf7ed8b1a5c2de8bd8431338b0d5e",
+      "ops": [
+        {
+          "end": 52,
+          "new": "",
+          "old": "pub(crate) use root_stage::OriginalSuccessorPublication;\npub(crate) use root_stage::require_successor_admission;\n",
+          "start": 50
+        },
+        {
+          "end": 57,
+          "new": "pub(crate) use root_stage::OriginalSuccessorPublication;\npub(crate) use root_stage::require_successor_admission;\n",
+          "old": "",
+          "start": 57
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs"
+    },
+    {
+      "after_bytes": 4514,
+      "after_git_blob": "c2147c915c9c8c3f7de76fa9796d01d08e4354aa",
+      "after_sha256": "4bfbd8e95fb383c8f0d313c612917f895a99c95bd47a9e64ff6f0c8413baa34d",
+      "before_git_blob": "5d245df187cea2e32672110b8aea15a9b5179acc",
+      "ops": [
+        {
+          "end": 27,
+          "new": "        current.require_original_root_successor(\n            self.context.session(),\n            self.context.initial(),\n            self.context.scope(),\n        )?;\n",
+          "old": "        current.require_original_root_successor(self.context.session(), self.context.initial(), self.context.scope())?;\n",
+          "start": 26
+        },
+        {
+          "end": 44,
+          "new": "        handoff\n            .prepare_from_original_root(self, predecessor, target, execution)\n            .await\n",
+          "old": "        handoff.prepare_from_original_root(self, predecessor, target, execution).await\n",
+          "start": 43
+        },
+        {
+          "end": 63,
+          "new": "        {\n            return Err(Error::Binding(\n                \"successor requires the same original aggregate\",\n            ));\n        }\n        context\n            .scope()\n            .validate_snapshot(&self.driver.original.decision.snapshot)\n",
+          "old": "        { return Err(Error::Binding(\"successor requires the same original aggregate\")); }\n        context.scope().validate_snapshot(&self.driver.original.decision.snapshot)\n",
+          "start": 61
+        },
+        {
+          "end": 66,
+          "new": "            context,\n            current: Arc::clone(&self.driver.current),\n",
+          "old": "            context, current: Arc::clone(&self.driver.current),\n",
+          "start": 65
+        },
+        {
+          "end": 78,
+          "new": "        let prepared = self\n            .prepare_successor_current(\n                predecessor,\n                target,\n                state,\n                proof.context.identity().clone(),\n                slot,\n            )\n            .await?;\n        proof\n            .require_current_successor_publication()\n            .await\n            .map_err(crate::circuit_q24_successor::prepared_uncertain)?;\n        Ok(OriginalSuccessorPublication {\n            prepared,\n            proof,\n            model,\n            bundle,\n        })\n",
+          "old": "        let prepared = self.prepare_successor_current(predecessor, target, state, proof.context.identity().clone(), slot).await?;\n        proof.require_current_successor_publication().await.map_err(crate::circuit_q24_successor::prepared_uncertain)?;\n        Ok(OriginalSuccessorPublication { prepared, proof, model, bundle })\n",
+          "start": 75
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+    },
+    {
+      "after_bytes": 5190,
+      "after_git_blob": "ecba0a36c6f5e8741a7fb62aeae98dc38a8a9c65",
+      "after_sha256": "8a860ab3149a755abf7f7501fef666b42bae140fba9f7605d1ccc1469c2c7fd9",
+      "before_git_blob": "85fe9fc433aba1fb6d0356a56bc63f51055c7673",
+      "ops": [
+        {
+          "end": 8,
+          "new": "pub(crate) fn require_successor_admission(\n    state: &AgentdState,\n    identity: &AgentdIdentity,\n) -> Result<(), Error> {\n",
+          "old": "pub(crate) fn require_successor_admission(state: &AgentdState, identity: &AgentdIdentity) -> Result<(), Error> {\n",
+          "start": 7
+        },
+        {
+          "end": 13,
+          "new": "        return Err(Error::Binding(\n            \"successor requires its current Running admission\",\n        ));\n",
+          "old": "        return Err(Error::Binding(\"successor requires its current Running admission\"));\n",
+          "start": 12
+        },
+        {
+          "end": 31,
+          "new": "        validation::feature_target(\n            &original.decision,\n            &target.target,\n            &target.definition,\n            &target.source,\n            &target.model,\n        )?;\n        validation::predecessor(\n            &original.decision,\n            &predecessor,\n            &target.previous,\n            &target.source,\n        )?;\n",
+          "old": "        validation::feature_target(&original.decision, &target.target, &target.definition, &target.source, &target.model)?;\n        validation::predecessor(&original.decision, &predecessor, &target.previous, &target.source)?;\n",
+          "start": 29
+        },
+        {
+          "end": 48,
+          "new": "        owners\n            .with_original_publication(snapshot, manifest, move || {\n                self.driver.original.decision.require_new_work()?;\n                let mut selected = self.selected;\n                revalidate(&self.driver, &mut selected)?;\n                require_successor_admission(&state, &identity)?;\n                slot.require_installation_open()\n                    .map_err(|_| Error::Binding(\"successor installation was cancelled\"))?;\n                let prepared =\n                    current::prepare_selected(self.driver, selected, predecessor, target)\n                        .map_err(crate::circuit_q24_successor::prepared_uncertain)?;\n                require_successor_admission(&state, &identity)\n                    .map_err(crate::circuit_q24_successor::prepared_uncertain)?;\n                slot.require_installation_open().map_err(|_| {\n                    crate::circuit_q24_successor::prepared_uncertain(Error::CommitUncertain)\n                })?;\n                Ok(prepared)\n            })\n            .await\n            .map_err(crate::circuit_q24_successor::prepared_uncertain)\n",
+          "old": "        owners.with_original_publication(snapshot, manifest, move || {\n            self.driver.original.decision.require_new_work()?;\n            let mut selected = self.selected;\n            revalidate(&self.driver, &mut selected)?;\n            require_successor_admission(&state, &identity)?;\n            slot.require_installation_open().map_err(|_| Error::Binding(\"successor installation was cancelled\"))?;\n            let prepared = current::prepare_selected(self.driver, selected, predecessor, target)\n                .map_err(crate::circuit_q24_successor::prepared_uncertain)?;\n            require_successor_admission(&state, &identity)\n                .map_err(crate::circuit_q24_successor::prepared_uncertain)?;\n            slot.require_installation_open().map_err(|_| crate::circuit_q24_successor::prepared_uncertain(Error::CommitUncertain))?;\n            Ok(prepared)\n        }).await.map_err(crate::circuit_q24_successor::prepared_uncertain)\n",
+          "start": 35
+        },
+        {
+          "end": 64,
+          "new": "            return Err(Error::Binding(\n                \"exact original successor FinalUse operation\",\n            ));\n",
+          "old": "            return Err(Error::Binding(\"exact original successor FinalUse operation\"));\n",
+          "start": 63
+        },
+        {
+          "end": 82,
+          "new": "        owners\n            .with_original_publication(snapshot, manifest, move || {\n                self.original.decision.require_new_work()?;\n                validation::require_executable_feature(\n                    &self.original.decision.bundle,\n                    &self.target_manifest,\n                    &self.model,\n                    &self.definition,\n                    &self.source,\n                )?;\n                require_successor_admission(&state, &identity)?;\n                let prepared: PreparedAgentdGenerationUpdateV1<\n                    FileAnchorWitnessStore,\n                    FileAnchorWitnessStore,\n                > = self.prepared;\n                slot.require_installation_open()\n                    .map_err(|_| Error::Binding(\"successor installation was cancelled\"))?;\n                let ready = prepared.publish(&signed)?;\n                let task =\n                    ready.into_circuit_feature_task(self.definition, self.source, self.previous)?;\n                require_successor_admission(&state, &identity)?;\n                slot.require_installation_open()\n                    .map_err(|_| Error::CommitUncertain)?;\n                Ok(task)\n            })\n            .await\n",
+          "old": "        owners.with_original_publication(snapshot, manifest, move || {\n            self.original.decision.require_new_work()?;\n            validation::require_executable_feature(&self.original.decision.bundle, &self.target_manifest,\n                &self.model, &self.definition, &self.source)?;\n            require_successor_admission(&state, &identity)?;\n            let prepared: PreparedAgentdGenerationUpdateV1<FileAnchorWitnessStore, FileAnchorWitnessStore> = self.prepared;\n            slot.require_installation_open().map_err(|_| Error::Binding(\"successor installation was cancelled\"))?;\n            let ready = prepared.publish(&signed)?;\n            let task = ready.into_circuit_feature_task(self.definition, self.source, self.previous)?;\n            require_successor_admission(&state, &identity)?;\n            slot.require_installation_open().map_err(|_| Error::CommitUncertain)?;\n            Ok(task)\n        }).await\n",
+          "start": 69
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+    },
+    {
+      "after_bytes": 12589,
+      "after_git_blob": "af5cd79ac56102e0741a8145504e8266f5912cce",
+      "after_sha256": "2d44ec669d0739c48f0b76a394a53632f1a696464ca76e8dbdd6c1aa1f93e76f",
+      "before_git_blob": "178cdbbdb2427a4bd330dd08e98e7d709a074c5e",
+      "ops": [
+        {
+          "end": 192,
+          "new": "        CellQ24PreparedLearningV1::revalidate_source(self.prepared.as_ref()).map_err(refused)?;\n",
+          "old": "        CellQ24PreparedLearningV1::revalidate_source(self.prepared.as_ref())\n            .map_err(refused)?;\n",
+          "start": 190
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs"
+    },
+    {
+      "after_bytes": 13601,
+      "after_git_blob": "606efd34bc59bfb3bf825c196eb55f48d500bd6b",
+      "after_sha256": "33386e33467e2bf5de8cfd0b3e422ff762e42fb4b090cbc339665f634a669a3c",
+      "before_git_blob": "734f114332599341f32546205afbe14e4755cd0c",
+      "ops": [
+        {
+          "end": 187,
+          "new": "    pub fn original_installed_successor_ingress(\n        &self,\n    ) -> Result<OriginalCircuitFeatureIngressV1, AgentdError> {\n",
+          "old": "    pub fn original_installed_successor_ingress(&self) -> Result<OriginalCircuitFeatureIngressV1, AgentdError> {\n",
+          "start": 186
+        },
+        {
+          "end": 190,
+          "new": "            return Err(invalid(\n                \"installed successor requires the original update publication\",\n            ));\n",
+          "old": "            return Err(invalid(\"installed successor requires the original update publication\"));\n",
+          "start": 189
+        },
+        {
+          "end": 193,
+          "new": "        let client = AgentdClient::new(\n            identity.control_socket.clone(),\n            identity.agent_id.clone(),\n            identity.spawn_generation,\n        )?;\n",
+          "old": "        let client = AgentdClient::new(identity.control_socket.clone(), identity.agent_id.clone(), identity.spawn_generation)?;\n",
+          "start": 192
+        },
+        {
+          "end": 195,
+          "new": "            client,\n            cell: self.cell.clone(),\n            source: Arc::clone(&self.source),\n            identity,\n",
+          "old": "            client, cell: self.cell.clone(), source: Arc::clone(&self.source), identity,\n",
+          "start": 194
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+    },
+    {
+      "after_bytes": 8013,
+      "after_git_blob": "e75cf848c0bd7c0a2ba16c4469f3a775c65df441",
+      "after_sha256": "f31eccead5ef5ad665459e0340dcb0f3a55e1b01ebca58f1a7cbe1b00d3cc035",
+      "before_git_blob": "851694cc5d373fc8c5a629dc33764b8b7c775940",
+      "ops": [
+        {
+          "end": 21,
+          "new": "#[path = \"circuit_q24_successor_invocation.rs\"]\nmod invocation;\n",
+          "old": "",
+          "start": 21
+        },
+        {
+          "end": 28,
+          "new": "pub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;\n",
+          "old": "#[path = \"circuit_q24_successor_invocation.rs\"]\nmod invocation;\npub(crate) use state::SuccessorSlot;\n",
+          "start": 25
+        },
+        {
+          "end": 30,
+          "new": "pub(crate) use state::SuccessorSlot;\n",
+          "old": "",
+          "start": 30
+        },
+        {
+          "end": 33,
+          "new": "",
+          "old": "pub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;\n",
+          "start": 31
+        },
+        {
+          "end": 38,
+          "new": "#[error(\n    \"original successor CURRENT may already be prepared; completion is uncertain, read the original operation: {cause}\"\n)]\n",
+          "old": "#[error(\"original successor CURRENT may already be prepared; completion is uncertain, read the original operation: {cause}\")]\n",
+          "start": 37
+        },
+        {
+          "end": 45,
+          "new": "    Error::Owner(AgentdError::Io(std::io::Error::other(\n        OriginalQ24SuccessorPreparedUncertain {\n            cause: Box::new(cause),\n        },\n    )))\n",
+          "old": "    Error::Owner(AgentdError::Io(std::io::Error::other(OriginalQ24SuccessorPreparedUncertain { cause: Box::new(cause) })))\n",
+          "start": 44
+        },
+        {
+          "end": 48,
+          "new": "struct Quote {\n    binding: FinalUseBinding,\n    intent: Digest32,\n}\n",
+          "old": "struct Quote { binding: FinalUseBinding, intent: Digest32 }\n",
+          "start": 47
+        },
+        {
+          "end": 78,
+          "new": "pub(crate) fn original_pending_successor_invocation(\n    slot: Arc<SuccessorSlot>,\n) -> Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1> {\n",
+          "old": "pub(crate) fn original_pending_successor_invocation(slot: Arc<SuccessorSlot>) -> Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1> {\n",
+          "start": 77
+        },
+        {
+          "end": 87,
+          "new": ") -> Result<\n    (\n        CircuitTaskRuntimeBootstrapV1,\n        Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>,\n        OriginalQ24SuccessorHandoffV1,\n    ),\n    AgentdError,\n> {\n    if !(1..=64).contains(&capacity) {\n        return Err(AgentdError::Invalid(\"successor queue must be 1..64\".into()));\n    }\n",
+          "old": ") -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>, OriginalQ24SuccessorHandoffV1), AgentdError> {\n    if !(1..=64).contains(&capacity) { return Err(AgentdError::Invalid(\"successor queue must be 1..64\".into())); }\n",
+          "start": 85
+        },
+        {
+          "end": 91,
+          "new": "    let pending =\n        PendingSuccessorOwner::new(Arc::clone(&context), Arc::clone(&slot), receiver, capacity);\n    let bootstrap = CircuitTaskRuntimeBootstrapV1::from_original_successor_worker(\n        context.identity(),\n        Arc::clone(&slot),\n        pending,\n    );\n",
+          "old": "    let pending = PendingSuccessorOwner::new(Arc::clone(&context), Arc::clone(&slot), receiver, capacity);\n    let bootstrap = CircuitTaskRuntimeBootstrapV1::from_original_successor_worker(context.identity(), Arc::clone(&slot), pending);\n",
+          "start": 89
+        },
+        {
+          "end": 93,
+          "new": "        context,\n        slot: Arc::clone(&slot),\n        sender: Some(sender),\n        close: CloseOnDrop::new(&slot),\n",
+          "old": "        context, slot: Arc::clone(&slot), sender: Some(sender), close: CloseOnDrop::new(&slot),\n",
+          "start": 92
+        },
+        {
+          "end": 104,
+          "new": "        let snapshot = self\n            .slot\n            .decision(self.context.initial().request.envelope.expiry_unix_seconds)\n            .await?;\n        self.context\n            .scope()\n            .validate_snapshot(&snapshot)\n            .map_err(|_| Error::Binding(\"successor decision scope\"))?;\n",
+          "old": "        let snapshot = self.slot.decision(self.context.initial().request.envelope.expiry_unix_seconds).await?;\n        self.context.scope().validate_snapshot(&snapshot).map_err(|_| Error::Binding(\"successor decision scope\"))?;\n",
+          "start": 102
+        },
+        {
+          "end": 116,
+          "new": "        let work = self\n            .slot\n            .begin_installation()\n            .map_err(|_| Error::Binding(\"successor slot is not pending\"))?;\n",
+          "old": "        let work = self.slot.begin_installation().map_err(|_| Error::Binding(\"successor slot is not pending\"))?;\n",
+          "start": 115
+        },
+        {
+          "end": 125,
+          "new": "        self.sender\n            .take()\n            .ok_or(Error::CommitUncertain)?\n            .send(Installation {\n                driver,\n                predecessor,\n                target,\n                execution,\n                quoted,\n                grant: receive_grant,\n                completed,\n                _work: work,\n            })\n            .map_err(|_| Error::CommitUncertain)?;\n        let quote = quote\n            .await\n            .map_err(|_| prepared_uncertain(Error::CommitUncertain))??;\n        self.slot\n            .require_open()\n            .map_err(|_| prepared_uncertain(Error::CommitUncertain))?;\n",
+          "old": "        self.sender.take().ok_or(Error::CommitUncertain)?.send(Installation {\n            driver, predecessor, target, execution, quoted, grant: receive_grant,\n            completed, _work: work,\n        }).map_err(|_| Error::CommitUncertain)?;\n        let quote = quote.await.map_err(|_| prepared_uncertain(Error::CommitUncertain))??;\n        self.slot.require_open().map_err(|_| prepared_uncertain(Error::CommitUncertain))?;\n",
+          "start": 119
+        },
+        {
+          "end": 129,
+          "new": "            quote,\n            grant: Some(grant),\n            completed: receive_completed,\n            close: self.close,\n",
+          "old": "            quote, grant: Some(grant), completed: receive_completed, close: self.close,\n",
+          "start": 128
+        },
+        {
+          "end": 136,
+          "new": "    pub fn final_use_binding(&self) -> &FinalUseBinding {\n        &self.quote.binding\n    }\n    pub fn intent_digest(&self) -> Digest32 {\n        self.quote.intent\n    }\n",
+          "old": "    pub fn final_use_binding(&self) -> &FinalUseBinding { &self.quote.binding }\n    pub fn intent_digest(&self) -> Digest32 { self.quote.intent }\n",
+          "start": 134
+        },
+        {
+          "end": 142,
+          "new": "    pub async fn publish(\n        mut self,\n        signed: SignedFinalUseGrant,\n    ) -> Result<OriginalQ24InstalledSuccessorV1, Error> {\n        if signed.grant.binding != self.quote.binding {\n            return Err(prepared_uncertain(Error::Binding(\n                \"exact successor FinalUse binding\",\n            )));\n        }\n        self.grant\n            .take()\n            .ok_or_else(|| prepared_uncertain(Error::CommitUncertain))?\n            .send(signed)\n            .map_err(|_| prepared_uncertain(Error::CommitUncertain))?;\n        let installed = (&mut self.completed)\n            .await\n            .map_err(|_| prepared_uncertain(Error::CommitUncertain))??;\n        self.close\n            .slot\n            .require_open()\n            .map_err(|_| prepared_uncertain(Error::CommitUncertain))?;\n",
+          "old": "    pub async fn publish(mut self, signed: SignedFinalUseGrant) -> Result<OriginalQ24InstalledSuccessorV1, Error> {\n        if signed.grant.binding != self.quote.binding { return Err(prepared_uncertain(Error::Binding(\"exact successor FinalUse binding\"))); }\n        self.grant.take().ok_or_else(|| prepared_uncertain(Error::CommitUncertain))?.send(signed).map_err(|_| prepared_uncertain(Error::CommitUncertain))?;\n        let installed = (&mut self.completed).await.map_err(|_| prepared_uncertain(Error::CommitUncertain))??;\n        self.close.slot.require_open().map_err(|_| prepared_uncertain(Error::CommitUncertain))?;\n",
+          "start": 137
+        },
+        {
+          "end": 147,
+          "new": "",
+          "old": "\n",
+          "start": 146
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+    },
+    {
+      "after_bytes": 4766,
+      "after_git_blob": "afa37c4b1ca4c7108e72f77cf1bc3484a7b9ebab",
+      "after_sha256": "7809c4312ba2b1dc5f85e14fce8f6470776feaf1181132fd0cc2cddc2aa963d4",
+      "before_git_blob": "e3ba16e2e4a2481a559dc3ea69f0341d11be30a0",
+      "ops": [
+        {
+          "end": 3,
+          "new": "use super::*;\n",
+          "old": "",
+          "start": 3
+        },
+        {
+          "end": 5,
+          "new": "",
+          "old": "use super::*;\n",
+          "start": 4
+        },
+        {
+          "end": 30,
+          "new": "    pub fn source(&self) -> Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>> {\n        Arc::clone(&self.source)\n    }\n    pub fn cell(&self) -> PublishedCircuitCellOwnerV1<FileAnchorWitnessStore> {\n        self.cell.clone()\n    }\n    pub fn published_task(&self) -> PublishedCircuitFeatureTaskV1 {\n        self.task.clone()\n    }\n",
+          "old": "    pub fn source(&self) -> Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>> { Arc::clone(&self.source) }\n    pub fn cell(&self) -> PublishedCircuitCellOwnerV1<FileAnchorWitnessStore> { self.cell.clone() }\n    pub fn published_task(&self) -> PublishedCircuitFeatureTaskV1 { self.task.clone() }\n",
+          "start": 27
+        },
+        {
+          "end": 43,
+          "new": "        TaskFlowFence::new(\n            self.fence.owner_agent_id.clone(),\n            &self.fence.owner_id,\n            self.fence.owner_epoch,\n            self.fence.generation,\n            &self.fence.fencing_token,\n        )\n        .map_err(|error| AgentdError::Invalid(error.to_string()))?;\n        if self.fence.owner_agent_id != identity.agent_id\n            || identity.spawn_generation == 0\n",
+          "old": "        TaskFlowFence::new(self.fence.owner_agent_id.clone(), &self.fence.owner_id,\n            self.fence.owner_epoch, self.fence.generation, &self.fence.fencing_token)\n            .map_err(|error| AgentdError::Invalid(error.to_string()))?;\n        if self.fence.owner_agent_id != identity.agent_id || identity.spawn_generation == 0\n",
+          "start": 39
+        },
+        {
+          "end": 45,
+          "new": "            || self.worker_generation == 0\n            || !(1..=64).contains(&capacity)\n",
+          "old": "            || self.worker_generation == 0 || !(1..=64).contains(&capacity)\n",
+          "start": 44
+        },
+        {
+          "end": 48,
+          "new": "        {\n            return Err(AgentdError::GenerationFenced(\n                \"successor execution identity or bounds differ\".into(),\n            ));\n        }\n        let program = self\n            .circuit\n            .programs\n            .iter()\n            .find(|program| program.program_id == self.circuit.entry_program)\n",
+          "old": "        { return Err(AgentdError::GenerationFenced(\"successor execution identity or bounds differ\".into())); }\n        let program = self.circuit.programs.iter().find(|program| program.program_id == self.circuit.entry_program)\n",
+          "start": 46
+        },
+        {
+          "end": 53,
+          "new": "        CircuitCellRegistryV1::new(\n            self.circuit.clone(),\n            vec![CircuitCellBindingV1 {\n                program_id: program.program_id.clone(),\n                node_id: program.entry_node.clone(),\n                cell: target.definition.clone(),\n                routes: self.routes.clone(),\n            }],\n        )\n        .map_err(|error| AgentdError::Invalid(error.to_string()))?;\n",
+          "old": "        CircuitCellRegistryV1::new(self.circuit.clone(), vec![CircuitCellBindingV1 {\n            program_id: program.program_id.clone(), node_id: program.entry_node.clone(),\n            cell: target.definition.clone(), routes: self.routes.clone(),\n        }]).map_err(|error| AgentdError::Invalid(error.to_string()))?;\n",
+          "start": 49
+        },
+        {
+          "end": 70,
+          "new": "    ) -> Result<\n        (\n            CircuitTaskRuntimeBootstrapV1,\n            Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n            OriginalQ24InstalledSuccessorV1,\n        ),\n        AgentdError,\n    > {\n        let runtime: CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> =\n            circuit_q24_task_channel_v1(\n                identity,\n                CircuitQ24TaskProfileV1 {\n                    files: self.files,\n                    source_mode: self.source_mode,\n                    published_task: task.clone(),\n                    fence: self.fence,\n                    circuit: self.circuit,\n                    routes: self.routes,\n                    bundle,\n                    model,\n                    worker_generation: self.worker_generation,\n                    maximum_cell_records: self.maximum_cell_records,\n                    queue_capacity: capacity,\n                    clock: self.clock,\n                },\n            )?;\n",
+          "old": "    ) -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>, OriginalQ24InstalledSuccessorV1), AgentdError> {\n        let runtime: CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> = circuit_q24_task_channel_v1(identity, CircuitQ24TaskProfileV1 {\n            files: self.files, source_mode: self.source_mode, published_task: task.clone(),\n            fence: self.fence, circuit: self.circuit, routes: self.routes, bundle, model,\n            worker_generation: self.worker_generation, maximum_cell_records: self.maximum_cell_records,\n            queue_capacity: capacity, clock: self.clock,\n        })?;\n",
+          "start": 63
+        },
+        {
+          "end": 72,
+          "new": "            identity: identity.clone(),\n            source: runtime.source,\n            cell: runtime.cell,\n            task,\n",
+          "old": "            identity: identity.clone(), source: runtime.source, cell: runtime.cell, task,\n",
+          "start": 71
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+    },
+    {
+      "after_bytes": 2340,
+      "after_git_blob": "a89adc2c612699b23363aebd6f1dcb5bd8d489f7",
+      "after_sha256": "6f0a954dde6c1220c61b5b52c6d5876465bb07d208d06214eef1adb5bf33b671",
+      "before_git_blob": "62d5ed12523da84cba2c3fac8b76efea8b22051e",
+      "ops": [
+        {
+          "end": 16,
+          "new": "pub(super) struct PendingSuccessorInvocation {\n    pub(super) slot: Arc<SuccessorSlot>,\n}\n",
+          "old": "pub(super) struct PendingSuccessorInvocation { pub(super) slot: Arc<SuccessorSlot> }\n",
+          "start": 15
+        },
+        {
+          "end": 20,
+          "new": "    fn build(\n        &self,\n        identity: &AgentdIdentity,\n        record: &RunStartRecordV1,\n    ) -> Result<CircuitTaskRequestV1, AgentdError> {\n        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> =\n            self.slot.actual_invocation().map_err(refused)?;\n",
+          "old": "    fn build(&self, identity: &AgentdIdentity, record: &RunStartRecordV1) -> Result<CircuitTaskRequestV1, AgentdError> {\n        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> = self.slot.actual_invocation().map_err(refused)?;\n",
+          "start": 18
+        },
+        {
+          "end": 26,
+          "new": "    fn publish_result(\n        &self,\n        identity: &AgentdIdentity,\n        record: &RunStartRecordV1,\n        receipt: &CircuitTaskReceiptV1,\n    ) -> Result<(), AgentdError> {\n        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> =\n            self.slot.actual_invocation().map_err(refused)?;\n",
+          "old": "    fn publish_result(&self, identity: &AgentdIdentity, record: &RunStartRecordV1, receipt: &CircuitTaskReceiptV1) -> Result<(), AgentdError> {\n        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> = self.slot.actual_invocation().map_err(refused)?;\n",
+          "start": 24
+        },
+        {
+          "end": 30,
+          "new": "    fn observe_learning(\n        &self,\n        identity: &AgentdIdentity,\n        record: &RunStartRecordV1,\n        trace: &CircuitCommittedTraceV2,\n    ) -> CircuitTaskLearningReadinessV1 {\n",
+          "old": "    fn observe_learning(&self, identity: &AgentdIdentity, record: &RunStartRecordV1, trace: &CircuitCommittedTraceV2) -> CircuitTaskLearningReadinessV1 {\n",
+          "start": 29
+        },
+        {
+          "end": 36,
+          "new": "            }\n            Err(_) => CircuitTaskLearningReadinessV1::Pending(\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\n            ),\n",
+          "old": "            },\n            Err(_) => CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::OwnerUnavailable),\n",
+          "start": 34
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs"
+    },
+    {
+      "after_bytes": 3891,
+      "after_git_blob": "52e23589d983bdd7ef3362454f84ddf7e3d7b733",
+      "after_sha256": "5aa014f1f1eb636cc781f6c6da4feeb57136f152f15e64c2c2e160f411a261d5",
+      "before_git_blob": "a45bbc63362ed80fea9318d311ccaa2e437d0e06",
+      "ops": [
+        {
+          "end": 5,
+          "new": "use crate::circuit_q24_successor::SuccessorSlot;\n",
+          "old": "",
+          "start": 5
+        },
+        {
+          "end": 7,
+          "new": "",
+          "old": "use crate::circuit_q24_successor::SuccessorSlot;\n",
+          "start": 6
+        },
+        {
+          "end": 10,
+          "new": "async fn pending_and_closed_views_refuse_a_real_authenticated_task_without_queuing()\n-> anyhow::Result<()> {\n",
+          "old": "async fn pending_and_closed_views_refuse_a_real_authenticated_task_without_queuing() -> anyhow::Result<()> {\n",
+          "start": 9
+        },
+        {
+          "end": 14,
+          "new": "    let response = f\n        .runtime\n        .state\n        .response(\n            /*request_id*/ 1,\n            /*spawn_generation*/ 1,\n            AgentdMethod::ObjectiveStart {\n                request: f.request.clone(),\n            },\n        )\n        .await?;\n    let AgentdPayload::ObjectiveRun(admission) = response.payload else {\n        panic!(\"actual original admission\");\n    };\n",
+          "old": "    let response = f.runtime.state.response(/*request_id*/ 1, /*spawn_generation*/ 1,\n        AgentdMethod::ObjectiveStart { request: f.request.clone() }).await?;\n    let AgentdPayload::ObjectiveRun(admission) = response.payload else { panic!(\"actual original admission\"); };\n",
+          "start": 11
+        },
+        {
+          "end": 21,
+          "new": "    let invocation =\n        crate::circuit_q24_successor::original_pending_successor_invocation(Arc::clone(&slot));\n",
+          "old": "    let invocation = crate::circuit_q24_successor::original_pending_successor_invocation(Arc::clone(&slot));\n",
+          "start": 20
+        },
+        {
+          "end": 23,
+          "new": "        if closed {\n            slot.close();\n        }\n",
+          "old": "        if closed { slot.close(); }\n",
+          "start": 22
+        },
+        {
+          "end": 29,
+          "new": "        assert!(\n            invocation\n                .publish_result(&f.runtime.identity, &record, &receipt)\n                .is_err()\n        );\n        assert!(matches!(\n            invocation.observe_learning(&f.runtime.identity, &record, receipt.trace()),\n            crate::CircuitTaskLearningReadinessV1::Pending(\n                crate::CircuitTaskLearningPendingV1::OwnerUnavailable\n            )\n        ));\n        assert_eq!(\n            timeout(\n                Duration::from_millis(100),\n                handle.submit(request.clone(), record.clone())\n            )\n            .await?,\n            Err(crate::CircuitTaskErrorV1::Unavailable)\n        );\n        assert_eq!(\n            timeout(\n                Duration::from_millis(100),\n                handle.readback(request.clone(), record.clone())\n            )\n            .await?,\n            Err(crate::CircuitTaskErrorV1::Unavailable)\n        );\n",
+          "old": "        assert!(invocation.publish_result(&f.runtime.identity, &record, &receipt).is_err());\n        assert!(matches!(invocation.observe_learning(&f.runtime.identity, &record, receipt.trace()),\n            crate::CircuitTaskLearningReadinessV1::Pending(crate::CircuitTaskLearningPendingV1::OwnerUnavailable)));\n        assert_eq!(timeout(Duration::from_millis(100), handle.submit(request.clone(), record.clone())).await?, Err(crate::CircuitTaskErrorV1::Unavailable));\n        assert_eq!(timeout(Duration::from_millis(100), handle.readback(request.clone(), record.clone())).await?, Err(crate::CircuitTaskErrorV1::Unavailable));\n",
+          "start": 24
+        },
+        {
+          "end": 46,
+          "new": "    assert!(\n        crate::cell_q24_publication_driver::require_successor_admission(state, &other).is_err()\n    );\n",
+          "old": "    assert!(crate::cell_q24_publication_driver::require_successor_admission(state, &other).is_err());\n",
+          "start": 45
+        },
+        {
+          "end": 50,
+          "new": "    assert!(\n        crate::cell_q24_publication_driver::require_successor_admission(state, &other).is_err()\n    );\n    f.runtime.registry.compare_and_transition(\n        &identity.agent_id,\n        identity.spawn_generation + 1,\n        AgentLifecycle::Draining,\n    )?;\n",
+          "old": "    assert!(crate::cell_q24_publication_driver::require_successor_admission(state, &other).is_err());\n    f.runtime.registry.compare_and_transition(&identity.agent_id, identity.spawn_generation + 1, AgentLifecycle::Draining)?;\n",
+          "start": 48
+        },
+        {
+          "end": 53,
+          "new": "    assert!(\n        crate::cell_q24_publication_driver::require_successor_admission(state, identity).is_err()\n    );\n",
+          "old": "    assert!(crate::cell_q24_publication_driver::require_successor_admission(state, identity).is_err());\n",
+          "start": 52
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_runtime_tests.rs"
+    },
+    {
+      "after_bytes": 10711,
+      "after_git_blob": "35b702c52e89f1d38ad7ef9da6f0274fe62b62f2",
+      "after_sha256": "67a9c8e0859c77ea0ec8875c056a8b6572f57f5f815d4facd98c3d6977aa4680",
+      "before_git_blob": "6efe16dc178fe88935b8550756dcbb215cec298f",
+      "ops": [
+        {
+          "end": 23,
+          "new": "enum Phase {\n    Pending,\n    Installing,\n    Ready,\n    Closed,\n}\n",
+          "old": "enum Phase { Pending, Installing, Ready, Closed }\n",
+          "start": 22
+        },
+        {
+          "end": 50,
+          "new": "        Self {\n            slot: Arc::clone(slot),\n            armed: true,\n        }\n",
+          "old": "        Self { slot: Arc::clone(slot), armed: true }\n",
+          "start": 49
+        },
+        {
+          "end": 52,
+          "new": "    pub(super) fn disarm(&mut self) {\n        self.armed = false;\n    }\n",
+          "old": "    pub(super) fn disarm(&mut self) { self.armed = false; }\n",
+          "start": 51
+        },
+        {
+          "end": 55,
+          "new": "    fn drop(&mut self) {\n        if self.armed {\n            self.slot.close();\n        }\n    }\n",
+          "old": "    fn drop(&mut self) { if self.armed { self.slot.close(); } }\n",
+          "start": 54
+        },
+        {
+          "end": 60,
+          "new": "    fn drop(&mut self) {\n        self.0.fetch_sub(1, Ordering::AcqRel);\n    }\n",
+          "old": "    fn drop(&mut self) { self.0.fetch_sub(1, Ordering::AcqRel); }\n",
+          "start": 59
+        },
+        {
+          "end": 66,
+          "new": "            state: Mutex::new(State {\n                phase: Phase::Pending,\n                decision: None,\n                installed: None,\n                generation: false,\n            }),\n",
+          "old": "            state: Mutex::new(State { phase: Phase::Pending, decision: None, installed: None, generation: false }),\n",
+          "start": 65
+        },
+        {
+          "end": 75,
+          "new": "        if let Ok(mut state) = self.state.lock() {\n            state.phase = Phase::Closed;\n        }\n",
+          "old": "        if let Ok(mut state) = self.state.lock() { state.phase = Phase::Closed; }\n",
+          "start": 74
+        },
+        {
+          "end": 80,
+          "new": "        if self.closed.is_cancelled() {\n            return Err(CircuitTaskErrorV1::Unavailable);\n        }\n",
+          "old": "        if self.closed.is_cancelled() { return Err(CircuitTaskErrorV1::Unavailable); }\n",
+          "start": 79
+        },
+        {
+          "end": 88,
+          "new": "        let state = self\n            .state\n            .lock()\n            .map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n",
+          "old": "        let state = self.state.lock().map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n",
+          "start": 87
+        },
+        {
+          "end": 97,
+          "new": "        let mut state = self\n            .state\n            .lock()\n            .map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n",
+          "old": "        let mut state = self.state.lock().map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n",
+          "start": 96
+        },
+        {
+          "end": 116,
+          "new": "        let mut state = self\n            .state\n            .lock()\n            .map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n        if state.phase != Phase::Installing\n            || state.installed.is_some()\n            || self.closed.is_cancelled()\n        {\n",
+          "old": "        let mut state = self.state.lock().map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n        if state.phase != Phase::Installing || state.installed.is_some() || self.closed.is_cancelled() {\n",
+          "start": 114
+        },
+        {
+          "end": 131,
+          "new": "        let state = self\n            .state\n            .lock()\n            .map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n        if state.phase != Phase::Ready {\n            return Err(CircuitTaskErrorV1::Unavailable);\n        }\n        Ok(state\n            .installed\n            .as_ref()\n            .ok_or(CircuitTaskErrorV1::Unavailable)?\n            .handle\n            .clone())\n",
+          "old": "        let state = self.state.lock().map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n        if state.phase != Phase::Ready { return Err(CircuitTaskErrorV1::Unavailable); }\n        Ok(state.installed.as_ref().ok_or(CircuitTaskErrorV1::Unavailable)?.handle.clone())\n",
+          "start": 128
+        },
+        {
+          "end": 134,
+          "new": "    pub(super) fn actual_invocation(\n        &self,\n    ) -> Result<Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>, CircuitTaskErrorV1> {\n",
+          "old": "    pub(super) fn actual_invocation(&self) -> Result<Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>, CircuitTaskErrorV1> {\n",
+          "start": 133
+        },
+        {
+          "end": 138,
+          "new": "        let state = self\n            .state\n            .lock()\n            .map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n        if state.phase != Phase::Ready {\n            return Err(CircuitTaskErrorV1::Unavailable);\n        }\n        Ok(Arc::clone(\n            &state\n                .installed\n                .as_ref()\n                .ok_or(CircuitTaskErrorV1::Unavailable)?\n                .invocation,\n        ))\n",
+          "old": "        let state = self.state.lock().map_err(|_| CircuitTaskErrorV1::Unavailable)?;\n        if state.phase != Phase::Ready { return Err(CircuitTaskErrorV1::Unavailable); }\n        Ok(Arc::clone(&state.installed.as_ref().ok_or(CircuitTaskErrorV1::Unavailable)?.invocation))\n",
+          "start": 135
+        },
+        {
+          "end": 145,
+          "new": "            Ok(state) => active.saturating_add(\n                state\n                    .installed\n                    .as_ref()\n                    .map_or(0, |owner| owner.handle.pending_count()),\n            ),\n",
+          "old": "            Ok(state) => active.saturating_add(state.installed.as_ref().map_or(0, |owner| owner.handle.pending_count())),\n",
+          "start": 144
+        },
+        {
+          "end": 151,
+          "new": "    pub(super) fn require_decision(\n        &self,\n        expected: &LearningIterationSnapshotV1,\n    ) -> Result<(), LearningError> {\n        self.require_open()\n            .map_err(|_| LearningError::Unavailable)?;\n",
+          "old": "    pub(super) fn require_decision(&self, expected: &LearningIterationSnapshotV1) -> Result<(), LearningError> {\n        self.require_open().map_err(|_| LearningError::Unavailable)?;\n",
+          "start": 149
+        },
+        {
+          "end": 153,
+          "new": "        if state.decision.as_ref() != Some(expected) {\n            return Err(LearningError::WrongScope);\n        }\n",
+          "old": "        if state.decision.as_ref() != Some(expected) { return Err(LearningError::WrongScope); }\n",
+          "start": 152
+        },
+        {
+          "end": 157,
+          "new": "    pub(super) async fn decision(\n        &self,\n        expiry: u64,\n    ) -> Result<LearningIterationSnapshotV1, LearningError> {\n",
+          "old": "    pub(super) async fn decision(&self, expiry: u64) -> Result<LearningIterationSnapshotV1, LearningError> {\n",
+          "start": 156
+        },
+        {
+          "end": 161,
+          "new": "            self.require_open()\n                .map_err(|_| LearningError::Unavailable)?;\n            if let Some(snapshot) = self\n                .state\n                .lock()\n                .map_err(|_| LearningError::Unavailable)?\n                .decision\n                .clone()\n            {\n                return Ok(snapshot);\n            }\n",
+          "old": "            self.require_open().map_err(|_| LearningError::Unavailable)?;\n            if let Some(snapshot) = self.state.lock().map_err(|_| LearningError::Unavailable)?.decision.clone() { return Ok(snapshot); }\n",
+          "start": 159
+        },
+        {
+          "end": 180,
+          "new": "                if snapshot.request != original.request\n                    || snapshot.owners != original.owners\n",
+          "old": "                if snapshot.request != original.request || snapshot.owners != original.owners\n",
+          "start": 179
+        },
+        {
+          "end": 183,
+          "new": "                {\n                    return Err(LearningError::WrongScope);\n                }\n            } else {\n                state.decision = Some(snapshot.clone());\n            }\n",
+          "old": "                { return Err(LearningError::WrongScope); }\n            } else { state.decision = Some(snapshot.clone()); }\n",
+          "start": 181
+        },
+        {
+          "end": 187,
+          "new": "            self.require_open()\n                .map_err(|_| LearningError::Unavailable)?;\n",
+          "old": "            self.require_open().map_err(|_| LearningError::Unavailable)?;\n",
+          "start": 186
+        },
+        {
+          "end": 189,
+          "new": "            if self\n                .state\n                .lock()\n                .map_err(|_| LearningError::Unavailable)?\n                .generation\n            {\n",
+          "old": "            if self.state.lock().map_err(|_| LearningError::Unavailable)?.generation {\n",
+          "start": 188
+        },
+        {
+          "end": 203,
+          "new": "    pub(crate) fn original_generation_installed(\n        &self,\n        snapshot: &LearningIterationSnapshotV1,\n    ) -> Result<(), LearningError> {\n        self.require_open()\n            .map_err(|_| LearningError::Unavailable)?;\n",
+          "old": "    pub(crate) fn original_generation_installed(&self, snapshot: &LearningIterationSnapshotV1) -> Result<(), LearningError> {\n        self.require_open().map_err(|_| LearningError::Unavailable)?;\n",
+          "start": 201
+        },
+        {
+          "end": 207,
+          "new": "        if state.phase != Phase::Ready\n            || state.generation\n            || snapshot.request != original.request\n            || snapshot.owners != original.owners\n            || !snapshot.receipts.starts_with(&original.receipts)\n",
+          "old": "        if state.phase != Phase::Ready || state.generation || snapshot.request != original.request\n            || snapshot.owners != original.owners || !snapshot.receipts.starts_with(&original.receipts)\n",
+          "start": 205
+        },
+        {
+          "end": 225,
+          "new": "    let now = SystemTime::now()\n        .duration_since(UNIX_EPOCH)\n        .map_err(|_| LearningError::Unavailable)?;\n    Duration::from_secs(expiry)\n        .checked_sub(now)\n        .filter(|remaining| !remaining.is_zero())\n",
+          "old": "    let now = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| LearningError::Unavailable)?;\n    Duration::from_secs(expiry).checked_sub(now).filter(|remaining| !remaining.is_zero())\n",
+          "start": 223
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+    },
+    {
+      "after_bytes": 5782,
+      "after_git_blob": "1f28d093df3b8479debeeafecaa3d3477a3e920f",
+      "after_sha256": "dc61465026e089274e3f01e7906e40509e3f9195bcf7d8b6c067f84cf23d34a6",
+      "before_git_blob": "806162f30659c3ffe8db6c8cb5a23c03b85b1e87",
+      "ops": [
+        {
+          "end": 3,
+          "new": "use super::*;\nuse crate::neuron_generation_current::test_support::Fixture;\nuse crate::neuron_generation_current::test_support::config;\nuse crate::neuron_generation_update_bootstrap::learning_test_baseline;\nuse crate::neuron_generation_update_bootstrap::learning_test_decision;\n",
+          "old": "",
+          "start": 3
+        },
+        {
+          "end": 7,
+          "new": "",
+          "old": "use super::*;\nuse crate::neuron_generation_current::test_support::{Fixture, config};\nuse crate::neuron_generation_update_bootstrap::{learning_test_baseline, learning_test_decision};\n",
+          "start": 4
+        },
+        {
+          "end": 15,
+          "new": "    let mut snapshot = learning_test_decision(&fixture, baseline, \"none\")?\n        .snapshot()\n        .clone();\n",
+          "old": "    let mut snapshot = learning_test_decision(&fixture, baseline, \"none\")?.snapshot().clone();\n",
+          "start": 14
+        },
+        {
+          "end": 18,
+          "new": "    snapshot.request.envelope.expiry_unix_seconds =\n        SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() + 30;\n",
+          "old": "    snapshot.request.envelope.expiry_unix_seconds = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() + 30;\n",
+          "start": 17
+        },
+        {
+          "end": 26,
+          "new": "    assert!(matches!(\n        slot.actual_handle(),\n        Err(CircuitTaskErrorV1::Unavailable)\n    ));\n    assert!(matches!(\n        slot.actual_invocation(),\n        Err(CircuitTaskErrorV1::Unavailable)\n    ));\n",
+          "old": "    assert!(matches!(slot.actual_handle(), Err(CircuitTaskErrorV1::Unavailable)));\n    assert!(matches!(slot.actual_invocation(), Err(CircuitTaskErrorV1::Unavailable)));\n",
+          "start": 24
+        },
+        {
+          "end": 29,
+          "new": "    assert!(matches!(\n        slot.require_installation_open(),\n        Err(CircuitTaskErrorV1::Unavailable)\n    ));\n    assert!(matches!(\n        slot.begin_installation(),\n        Err(CircuitTaskErrorV1::Unavailable)\n    ));\n",
+          "old": "    assert!(matches!(slot.require_installation_open(), Err(CircuitTaskErrorV1::Unavailable)));\n    assert!(matches!(slot.begin_installation(), Err(CircuitTaskErrorV1::Unavailable)));\n",
+          "start": 27
+        },
+        {
+          "end": 41,
+          "new": "        if repeat {\n            assert!(slot.begin_installation().is_err());\n        } else {\n            slot.close();\n        }\n",
+          "old": "        if repeat { assert!(slot.begin_installation().is_err()); } else { slot.close(); }\n",
+          "start": 40
+        },
+        {
+          "end": 43,
+          "new": "        assert!(matches!(\n            slot.require_installation_open(),\n            Err(CircuitTaskErrorV1::Unavailable)\n        ));\n",
+          "old": "        assert!(matches!(slot.require_installation_open(), Err(CircuitTaskErrorV1::Unavailable)));\n",
+          "start": 42
+        },
+        {
+          "end": 45,
+          "new": "        assert!(matches!(\n            slot.actual_handle(),\n            Err(CircuitTaskErrorV1::Unavailable)\n        ));\n",
+          "old": "        assert!(matches!(slot.actual_handle(), Err(CircuitTaskErrorV1::Unavailable)));\n",
+          "start": 44
+        },
+        {
+          "end": 60,
+          "new": "    assert_eq!(\n        slot.decision(snapshot.request.envelope.expiry_unix_seconds)\n            .await?,\n        snapshot\n    );\n",
+          "old": "    assert_eq!(slot.decision(snapshot.request.envelope.expiry_unix_seconds).await?, snapshot);\n",
+          "start": 59
+        },
+        {
+          "end": 74,
+          "new": "    assert!(matches!(\n        slot.wait_original_generation(&snapshot).await,\n        Err(LearningError::DeadlineExceeded)\n    ));\n",
+          "old": "    assert!(matches!(slot.wait_original_generation(&snapshot).await, Err(LearningError::DeadlineExceeded)));\n",
+          "start": 73
+        },
+        {
+          "end": 90,
+          "new": "            \"request\" => {\n                changed.request.operation_id = codex_hepta_types::StableId::new(\"other-operation\")?\n            }\n            \"prefix\" => {\n                changed.receipts.pop();\n            }\n",
+          "old": "            \"request\" => changed.request.operation_id = codex_hepta_types::StableId::new(\"other-operation\")?,\n            \"prefix\" => { changed.receipts.pop(); },\n",
+          "start": 88
+        },
+        {
+          "end": 93,
+          "new": "        assert!(\n            matches!(\n                slot.wait_original_generation(&changed).await,\n                Err(LearningError::WrongScope)\n            ),\n            \"{field}\"\n        );\n",
+          "old": "        assert!(matches!(slot.wait_original_generation(&changed).await, Err(LearningError::WrongScope)), \"{field}\");\n",
+          "start": 92
+        },
+        {
+          "end": 106,
+          "new": "    {\n        let mut state = slot.state.lock().unwrap();\n        state.decision = Some(snapshot.clone());\n        state.generation = true;\n    }\n",
+          "old": "    { let mut state = slot.state.lock().unwrap(); state.decision = Some(snapshot.clone()); state.generation = true; }\n",
+          "start": 105
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state_tests.rs"
+    },
+    {
+      "after_bytes": 8445,
+      "after_git_blob": "0f71072a2ca33ab137d492d5ecc66a85ca62b91d",
+      "after_sha256": "4afa8b3ccfd2fbbc85b0e72f87d0adf194be33689dae4b2b362918bfd7597c12",
+      "before_git_blob": "bc33bab828c4d8ea08efbfdbf1023394d43033c0",
+      "ops": [
+        {
+          "end": 3,
+          "new": "use super::*;\nuse crate::AgentdState;\n",
+          "old": "",
+          "start": 3
+        },
+        {
+          "end": 7,
+          "new": "",
+          "old": "use super::*;\nuse crate::AgentdState;\n",
+          "start": 5
+        },
+        {
+          "end": 25,
+          "new": "        Self {\n            context,\n            slot: Arc::clone(&slot),\n            receiver: Some(receiver),\n            capacity,\n            _lifetime: CloseOnDrop::new(&slot),\n        }\n",
+          "old": "        Self { context, slot: Arc::clone(&slot), receiver: Some(receiver), capacity,\n            _lifetime: CloseOnDrop::new(&slot) }\n",
+          "start": 23
+        },
+        {
+          "end": 37,
+          "new": "            let runtime = self\n                .install_original_successor(Arc::clone(&state))\n                .await\n                .map_err(|error| AgentdError::Protocol(error.to_string()))?;\n            runtime\n                .run_in_original_successor_lane(store, state, slot.closed.clone())\n                .await\n",
+          "old": "            let runtime = self.install_original_successor(Arc::clone(&state)).await.map_err(|error| AgentdError::Protocol(error.to_string()))?;\n            runtime.run_in_original_successor_lane(store, state, slot.closed.clone()).await\n",
+          "start": 35
+        },
+        {
+          "end": 51,
+          "new": "    async fn install_original_successor(\n        &mut self,\n        state: Arc<AgentdState>,\n    ) -> Result<CircuitTaskRuntimeBootstrapV1, Error> {\n",
+          "old": "    async fn install_original_successor(&mut self, state: Arc<AgentdState>) -> Result<CircuitTaskRuntimeBootstrapV1, Error> {\n",
+          "start": 50
+        },
+        {
+          "end": 58,
+          "new": "        let Installation {\n            driver,\n            predecessor,\n            target,\n            execution,\n            quoted,\n            grant,\n            completed,\n            _work,\n        } = command;\n        let result = self\n            .prepare_original_worker(driver, predecessor, target, &execution, Arc::clone(&state))\n            .await;\n",
+          "old": "        let Installation { driver, predecessor, target, execution, quoted, grant, completed, _work } = command;\n        let result = self.prepare_original_worker(driver, predecessor, target, &execution, Arc::clone(&state)).await;\n",
+          "start": 56
+        },
+        {
+          "end": 67,
+          "new": "        let quote = Quote {\n            binding: original.prepared.final_use_binding().clone(),\n            intent: original.prepared.intent_digest(),\n        };\n",
+          "old": "        let quote = Quote { binding: original.prepared.final_use_binding().clone(), intent: original.prepared.intent_digest() };\n",
+          "start": 66
+        },
+        {
+          "end": 72,
+          "new": "        let result = self\n            .finish_original_worker(original, execution, grant, Arc::clone(&state))\n            .await\n            .map_err(prepared_uncertain);\n",
+          "old": "        let result = self.finish_original_worker(original, execution, grant, Arc::clone(&state)).await.map_err(prepared_uncertain);\n",
+          "start": 71
+        },
+        {
+          "end": 75,
+          "new": "                if self\n                    .slot\n                    .install_original_owner(runtime.handle(), invocation)\n                    .is_err()\n                {\n",
+          "old": "                if self.slot.install_original_owner(runtime.handle(), invocation).is_err() {\n",
+          "start": 74
+        },
+        {
+          "end": 106,
+          "new": "        self.slot\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?;\n        self.slot\n            .require_decision(driver.original_successor_decision())?;\n",
+          "old": "        self.slot.require_open().map_err(|_| Error::CommitUncertain)?;\n        self.slot.require_decision(driver.original_successor_decision())?;\n",
+          "start": 104
+        },
+        {
+          "end": 109,
+          "new": "        crate::cell_q24_publication_driver::require_successor_admission(\n            &state,\n            self.context.identity(),\n        )?;\n        execution.validate_original_successor_execution(\n            self.context.identity(),\n            &target,\n            self.capacity,\n        )?;\n",
+          "old": "        crate::cell_q24_publication_driver::require_successor_admission(&state, self.context.identity())?;\n        execution.validate_original_successor_execution(self.context.identity(), &target, self.capacity)?;\n",
+          "start": 107
+        },
+        {
+          "end": 112,
+          "new": "        self.slot\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?;\n        driver\n            .prepare_in_original_successor_worker(\n                Arc::clone(&self.context),\n                predecessor,\n                target,\n                state,\n                Arc::clone(&self.slot),\n            )\n            .await\n",
+          "old": "        self.slot.require_open().map_err(|_| Error::CommitUncertain)?;\n        driver.prepare_in_original_successor_worker(Arc::clone(&self.context), predecessor, target, state, Arc::clone(&self.slot)).await\n",
+          "start": 110
+        },
+        {
+          "end": 121,
+          "new": "    ) -> Result<\n        (\n            CircuitTaskRuntimeBootstrapV1,\n            Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n            OriginalQ24InstalledSuccessorV1,\n        ),\n        Error,\n    > {\n",
+          "old": "    ) -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>, OriginalQ24InstalledSuccessorV1), Error> {\n",
+          "start": 120
+        },
+        {
+          "end": 139,
+          "new": "        original\n            .proof\n            .require_current_successor_publication()\n            .await?;\n        self.slot\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?;\n        crate::cell_q24_publication_driver::require_successor_admission(\n            &state,\n            self.context.identity(),\n        )?;\n        let task = original\n            .prepared\n            .publish_successor_current(\n                signed,\n                Arc::clone(&state),\n                self.context.identity().clone(),\n                Arc::clone(&self.slot),\n            )\n            .await?;\n        original\n            .proof\n            .require_current_successor_publication()\n            .await?;\n        self.slot\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?;\n        crate::cell_q24_publication_driver::require_successor_admission(\n            &state,\n            self.context.identity(),\n        )?;\n        let opened = execution.open_original_successor_channel(\n            self.context.identity(),\n            task,\n            original.bundle,\n            original.model,\n            self.capacity,\n        )?;\n        original\n            .proof\n            .require_current_successor_publication()\n            .await?;\n        self.slot\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?;\n        crate::cell_q24_publication_driver::require_successor_admission(\n            &state,\n            self.context.identity(),\n        )?;\n",
+          "old": "        original.proof.require_current_successor_publication().await?;\n        self.slot.require_open().map_err(|_| Error::CommitUncertain)?;\n        crate::cell_q24_publication_driver::require_successor_admission(&state, self.context.identity())?;\n        let task = original.prepared.publish_successor_current(signed, Arc::clone(&state), self.context.identity().clone(), Arc::clone(&self.slot)).await?;\n        original.proof.require_current_successor_publication().await?;\n        self.slot.require_open().map_err(|_| Error::CommitUncertain)?;\n        crate::cell_q24_publication_driver::require_successor_admission(&state, self.context.identity())?;\n        let opened = execution.open_original_successor_channel(self.context.identity(), task,\n            original.bundle, original.model, self.capacity)?;\n        original.proof.require_current_successor_publication().await?;\n        self.slot.require_open().map_err(|_| Error::CommitUncertain)?;\n        crate::cell_q24_publication_driver::require_successor_admission(&state, self.context.identity())?;\n",
+          "start": 127
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"
+    },
+    {
+      "after_bytes": 11434,
+      "after_git_blob": "9b02f4a550458e1ab1918e64f06c2ebeeedece62",
+      "after_sha256": "26f9e71bc316d74fa4943c923ce6e812c65be7545a34cc140903ebbc0786bbac",
+      "before_git_blob": "21a20ecfa41cac7f6acf5291fda5790a64e403d3",
+      "ops": [
+        {
+          "end": 61,
+          "new": "    Direct {\n        original: Arc<DirectTaskHandle>,\n    },\n",
+          "old": "    Direct { original: Arc<DirectTaskHandle> },\n",
+          "start": 60
+        },
+        {
+          "end": 63,
+          "new": "    OriginalQ24 {\n        slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,\n    },\n",
+          "old": "    OriginalQ24 { slot: Arc<crate::circuit_q24_successor::SuccessorSlot> },\n",
+          "start": 62
+        },
+        {
+          "end": 135,
+          "new": "        original\n            .sender\n",
+          "old": "        original.sender\n",
+          "start": 134
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+    },
+    {
+      "after_bytes": 1822,
+      "after_git_blob": "7085707e2e6bba42b823ff90365bfd6ca2ea9bd5",
+      "after_sha256": "acf269b1e1e92d3f4528aad78d1f061cd40c4454bdf18b6999268f1b5d148c78",
+      "before_git_blob": "35a1e32854b33841585fa75933d06bab9d77ef75",
+      "ops": [
+        {
+          "end": 10,
+          "new": "        Self {\n            route: TaskHandleRoute::OriginalQ24 { slot },\n        }\n",
+          "old": "        Self { route: TaskHandleRoute::OriginalQ24 { slot } }\n",
+          "start": 9
+        },
+        {
+          "end": 36,
+          "new": "        self.handle\n            .require_direct_original_handle()\n            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;\n",
+          "old": "        self.handle.require_direct_original_handle().map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;\n",
+          "start": 35
+        },
+        {
+          "end": 38,
+          "new": "            return Err(AgentdError::GenerationFenced(\n                \"successor Automation owner differs\".into(),\n            ));\n",
+          "old": "            return Err(AgentdError::GenerationFenced(\"successor Automation owner differs\".into()));\n",
+          "start": 37
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+    },
+    {
+      "after_bytes": 1576,
+      "after_git_blob": "31065cbfee69386a9854fcb540e04448ea64de1f",
+      "after_sha256": "9369228e19a22e317248a27eacaccc43fbd3a5bf6856ca4eb3a93c2d534e8264",
+      "before_git_blob": "14a44ad294fd1138317c908cf973b6076925554e",
+      "ops": [
+        {
+          "end": 17,
+          "new": "            return Err(AgentdError::Invalid(\n                \"successor capacity must be 1..64\".into(),\n            ));\n",
+          "old": "            return Err(AgentdError::Invalid(\"successor capacity must be 1..64\".into()));\n",
+          "start": 16
+        },
+        {
+          "end": 22,
+          "new": "            AgentdError::GenerationFenced(\n                \"assembled original Root learning bootstrap required\".into(),\n            )\n",
+          "old": "            AgentdError::GenerationFenced(\"assembled original Root learning bootstrap required\".into())\n",
+          "start": 21
+        },
+        {
+          "end": 25,
+          "new": "        let context = learning\n            .prepare_original_successor_context(&identity, session, &slot)\n            .await?;\n        let (bootstrap, invocation, handoff) =\n            crate::circuit_q24_successor::compose_original_successor_runtime(\n                context, slot, capacity,\n            )?;\n",
+          "old": "        let context = learning.prepare_original_successor_context(&identity, session, &slot).await?;\n        let (bootstrap, invocation, handoff) = crate::circuit_q24_successor::compose_original_successor_runtime(context, slot, capacity)?;\n",
+          "start": 23
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs"
+    },
+    {
+      "after_bytes": 23973,
+      "after_git_blob": "aef3938e673088fb600bca94c0ddb0864ee6b7f3",
+      "after_sha256": "24269abed467bfed370edebf6a2453a1f1fe603c72027a153f71e28f94e3b514",
+      "before_git_blob": "8abac8784438b7d265777e135628b108ded161c0",
+      "ops": [
+        {
+          "end": 520,
+          "new": "            self.wait_original_successor_stage(state, coordinator.snapshot(), stage)\n                .await?;\n",
+          "old": "            self.wait_original_successor_stage(state, coordinator.snapshot(), stage).await?;\n",
+          "start": 519
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs"
+    },
+    {
+      "after_bytes": 5455,
+      "after_git_blob": "2d961729c0640bdf9fb9372c90dc464cbfd68ee6",
+      "after_sha256": "306bc1b96470608366c13e563edc916de542f749f588955323590122c8c8541c",
+      "before_git_blob": "c8ffd1ca9f5158c0476274f35673ae7cc3418c37",
+      "ops": [
+        {
+          "end": 18,
+          "new": "    pub(crate) fn identity(&self) -> &AgentdIdentity {\n        &self.identity\n    }\n    pub(crate) fn owners(&self) -> &Arc<crate::OriginalCellQ24LearningStageOwnersV1> {\n        &self.owners\n    }\n    pub(crate) fn session(&self) -> &OriginalQ24SuccessorSession {\n        &self.session\n    }\n",
+          "old": "    pub(crate) fn identity(&self) -> &AgentdIdentity { &self.identity }\n    pub(crate) fn owners(&self) -> &Arc<crate::OriginalCellQ24LearningStageOwnersV1> { &self.owners }\n    pub(crate) fn session(&self) -> &OriginalQ24SuccessorSession { &self.session }\n",
+          "start": 15
+        },
+        {
+          "end": 30,
+          "new": "        let retained: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> =\n            &self.retained;\n",
+          "old": "        let retained: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> = &self.retained;\n",
+          "start": 29
+        },
+        {
+          "end": 33,
+          "new": "        owners\n            .require_current()\n            .await\n            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;\n",
+          "old": "        owners.require_current().await.map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;\n",
+          "start": 32
+        },
+        {
+          "end": 46,
+          "new": "        let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = self\n            .original_q24\n            .as_ref()\n            .ok_or_else(|| successor_refused(\"original Root Q24 owners required\"))?;\n",
+          "old": "        let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = self.original_q24.as_ref().ok_or_else(|| successor_refused(\"original Root Q24 owners required\"))?;\n",
+          "start": 45
+        },
+        {
+          "end": 49,
+          "new": "        let retained = self\n            .retained_source\n            .as_ref()\n            .ok_or_else(|| successor_refused(\"registered retained A source required\"))?;\n        let registry = self\n            .circuit_delivery_registry\n            .as_ref()\n            .ok_or_else(|| successor_refused(\"original Root delivery registry required\"))?;\n",
+          "old": "        let retained = self.retained_source.as_ref().ok_or_else(|| successor_refused(\"registered retained A source required\"))?;\n        let registry = self.circuit_delivery_registry.as_ref().ok_or_else(|| successor_refused(\"original Root delivery registry required\"))?;\n",
+          "start": 47
+        },
+        {
+          "end": 52,
+          "new": "            || !matches!(\n                self.circuit_delivery_source,\n                CircuitLearningSourceV1::OriginalQ24\n            )\n",
+          "old": "            || !matches!(self.circuit_delivery_source, CircuitLearningSourceV1::OriginalQ24)\n",
+          "start": 51
+        },
+        {
+          "end": 59,
+          "new": "            return Err(successor_refused(\n                \"successor differs from assembled Root and retained source\",\n            ));\n",
+          "old": "            return Err(successor_refused(\"successor differs from assembled Root and retained source\"));\n",
+          "start": 58
+        },
+        {
+          "end": 63,
+          "new": "            identity: identity.clone(),\n            owners: Arc::clone(original),\n            retained: Arc::clone(retained),\n            session,\n",
+          "old": "            identity: identity.clone(), owners: Arc::clone(original),\n            retained: Arc::clone(retained), session,\n",
+          "start": 61
+        },
+        {
+          "end": 66,
+          "new": "        original\n            .register_original_successor(Arc::clone(&context.session), slot)\n            .await\n",
+          "old": "        original.register_original_successor(Arc::clone(&context.session), slot).await\n",
+          "start": 65
+        },
+        {
+          "end": 78,
+          "new": "        let Some(slot) = &self.successor else {\n            return Ok(());\n        };\n",
+          "old": "        let Some(slot) = &self.successor else { return Ok(()); };\n",
+          "start": 77
+        },
+        {
+          "end": 82,
+          "new": "                && !snapshot.receipts.last().is_some_and(|receipt| {\n                    receipt.observation.stage() == LearningIterationStageV1::Proposal\n                }));\n        if !needs_publication {\n            return Ok(());\n        }\n",
+          "old": "                && !snapshot.receipts.last().is_some_and(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal));\n        if !needs_publication { return Ok(()); }\n",
+          "start": 80
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+    },
+    {
+      "after_bytes": 63695,
+      "after_git_blob": "2cbcceb440a7c39313e687a4b0baa1f172defcd3",
+      "after_sha256": "770d9b5df542c36a1a055d4892d4ed7fa2da8640ca9c58261b2621031fa9178b",
+      "before_git_blob": "7259731f13b1fa5d6c36fe622a7b6c142316e932",
+      "ops": [
+        {
+          "end": 320,
+          "new": "mod circuit_q24_successor;\n#[cfg(target_os = \"linux\")]\n",
+          "old": "",
+          "start": 320
+        },
+        {
+          "end": 323,
+          "new": "pub use circuit_q24_successor::OriginalQ24InstalledSuccessorV1;\n",
+          "old": "mod circuit_q24_successor;\n",
+          "start": 322
+        },
+        {
+          "end": 325,
+          "new": "pub use circuit_q24_successor::OriginalQ24PreparedSuccessorV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_q24_successor::OriginalQ24SuccessorExecutionInputsV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_q24_successor::OriginalQ24SuccessorHandoffV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_q24_successor::OriginalQ24SuccessorPreparedUncertain;\n",
+          "old": "pub use circuit_q24_successor::{OriginalQ24SuccessorHandoffV1, OriginalQ24PreparedSuccessorV1, OriginalQ24InstalledSuccessorV1, OriginalQ24SuccessorExecutionInputsV1, OriginalQ24SuccessorPreparedUncertain};\n",
+          "start": 324
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after_bytes": 3732,
+      "after_git_blob": "c4641148de7fc97f4c35ad9efbd883c0da594881",
+      "after_sha256": "e3200c92d643139d5a5dd6c08bc958a53582ad9573a1635585d966f74a329d5e",
+      "before_git_blob": "9ba3cee2ae65175bd932a1cc9107bcd51b998210",
+      "ops": [
+        {
+          "end": 92,
+          "new": "        self.store\n            .require_original_root_successor(session, initial, scope)\n",
+          "old": "        self.store.require_original_root_successor(session, initial, scope)\n",
+          "start": 91
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+    },
+    {
+      "after_bytes": 5779,
+      "after_git_blob": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+      "after_sha256": "12cd56df56fedf2a12a36dca8bb54e0981c90333fd34eeeaebfd738a6a6de8b9",
+      "before_git_blob": "27a4bb6c6c610e80e61029b9de40fb719cd18255",
+      "ops": [
+        {
+          "end": 105,
+          "new": "            _ => Err(invalid(\n                \"successor requires the same actual Root update client\",\n            )),\n",
+          "old": "            _ => Err(invalid(\"successor requires the same actual Root update client\")),\n",
+          "start": 104
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+    },
+    {
+      "after_bytes": 1186,
+      "after_git_blob": "01085f258e95e6ac04e805c79c5789bed7b2d2a8",
+      "after_sha256": "0ab15ce4fa30fb9a5e3e7cfe5dbec1e8cc39b2e81aff566e5882107f1a9508c3",
+      "before_git_blob": "0cc4ac326828635bd0511331530957e8db8f3ba1",
+      "ops": [
+        {
+          "end": 15,
+          "new": "            return Err(AgentdError::Invalid(\n                \"successor requires assembled learning and the update purpose\".into(),\n            ));\n",
+          "old": "            return Err(AgentdError::Invalid(\"successor requires assembled learning and the update purpose\".into()));\n",
+          "start": 14
+        },
+        {
+          "end": 20,
+          "new": "        let session = Arc::new(\n            OriginalQ24SuccessorSession::capture_original_successor_session(\n                &self.root.session,\n                &self.root.bootstrap,\n                config.identity(),\n            )?,\n        );\n        let (config, handoff) = config\n            .with_original_pending_successor(session, queue_capacity)\n            .await?;\n",
+          "old": "        let session = Arc::new(OriginalQ24SuccessorSession::capture_original_successor_session(\n            &self.root.session, &self.root.bootstrap, config.identity(),\n        )?);\n        let (config, handoff) = config.with_original_pending_successor(session, queue_capacity).await?;\n",
+          "start": 16
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs"
+    },
+    {
+      "after_bytes": 11018,
+      "after_git_blob": "c868a7eca4117f79f5f3e35ef1ecd3f0863184d9",
+      "after_sha256": "2ae54af7f5f5e63f6fbafb04b192e5f02e8b22954df7917f54047621eaca8b03",
+      "before_git_blob": "9969acd431b9b6df4543149d2857de33a0ac89ae",
+      "ops": [
+        {
+          "end": 135,
+          "new": "            || self.profile.identity\n                != crate::neuron_generation_process_identity_digest_v1(session.identity())?\n                    .to_string()\n",
+          "old": "            || self.profile.identity != crate::neuron_generation_process_identity_digest_v1(session.identity())?.to_string()\n",
+          "start": 134
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+    },
+    {
+      "after_bytes": 13853,
+      "after_git_blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "after_sha256": "c5f5fffd7b433e612b371ff595b6e4cccc6a242c145a70a6bf7066bf5935e340",
+      "before_git_blob": "8ae2b69866db8fc7701ad3be565542b2462ffe24",
+      "ops": [
+        {
+          "end": 39,
+          "new": "pub(crate) use publication_connection::OriginalQ24SuccessorSession;\n",
+          "old": "",
+          "start": 39
+        },
+        {
+          "end": 42,
+          "new": "",
+          "old": "pub(crate) use publication_connection::OriginalQ24SuccessorSession;\n",
+          "start": 41
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs"
+    },
+    {
+      "after_bytes": 14321,
+      "after_git_blob": "3d4ed8f0ddf8e5b339a22eb664ef218c18a6df6c",
+      "after_sha256": "c0ef789823be8190f76e9d165ea268956088e2277c1e85f05daffa969204d486",
+      "before_git_blob": "0ecfac0632d30a9820855d7bd25f5cf0b8b63d53",
+      "ops": [
+        {
+          "end": 113,
+          "new": "        self.profile\n            .require_context(\n                original.identity(),\n                &original.writer_proof()?,\n                &self.initial,\n                &self.scope,\n            )\n            .map_err(refused)\n",
+          "old": "        self.profile.require_context(\n            original.identity(),\n            &original.writer_proof()?,\n            &self.initial,\n            &self.scope,\n        ).map_err(refused)\n",
+          "start": 107
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+    },
+    {
+      "after_bytes": 3152,
+      "after_git_blob": "5732a30f3e7ad17f46cb80ff541cbff59239791a",
+      "after_sha256": "760101a0b220f3c1f549cce0d1fa11441c7aad81ca0a11f9846111da1a178c9b",
+      "before_git_blob": "942991414cbe42361e46b6c27407b828ff652f15",
+      "ops": [
+        {
+          "end": 45,
+          "new": "        if uid == 0\n            || effective_uid == 0\n",
+          "old": "        if uid == 0 || effective_uid == 0\n",
+          "start": 44
+        },
+        {
+          "end": 58,
+          "new": "        self.verifier\n            .verify_sender_process_binding(\n                &self.authority,\n                &self.identity.agent_id,\n                &self.original.writer.local_lease_id,\n                self.original.writer.local_lease_generation,\n                self.identity.spawn_generation,\n            )\n            .map_err(AgentdError::GenerationFenced)\n",
+          "old": "        self.verifier.verify_sender_process_binding(\n            &self.authority,\n            &self.identity.agent_id,\n            &self.original.writer.local_lease_id,\n            self.original.writer.local_lease_generation,\n            self.identity.spawn_generation,\n        ).map_err(AgentdError::GenerationFenced)\n",
+          "start": 51
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+    }
+  ],
+  "mechanism": "Exact native maintenance postimages; compilation state recorded separately; no behavior qualification",
+  "source_sha": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56"
+}

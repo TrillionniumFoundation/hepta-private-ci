@@ -1,0 +1,33 @@
+{
+  "note": "GitHub commit API assigned different metadata. Blobs and each published counterpart tree were compared exactly. Raw local commit objects preserve the IDs recorded by validation; they are not claims of separate CI runs.",
+  "commits": [
+    {
+      "local_commit": "723a2d763339a55833519417a5f99f4defa9f8e2",
+      "published_counterpart": "2540a651de522c6164ac8c16024dc7d67956bf16",
+      "tree": "63b36ed30394d135b481813b1020548d8cf628c5",
+      "raw_commit": "tree 63b36ed30394d135b481813b1020548d8cf628c5\nparent 6e4842b5ed28ab6f948646c051651a6c75085085\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794456463 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794456463 -0500\n\nfix(learn): preserve agent identity in Root Source scope\n",
+      "original_git_object_id_verified": true
+    },
+    {
+      "local_commit": "f2bd9e335e08a24252e5dd2972fb8f58d29875f0",
+      "published_counterpart": "3ba4aa9216e7e1f17501dee5ea50e532bfeb68f7",
+      "tree": "bd4880b83701fd41635429d0903a971204a8bec8",
+      "raw_commit": "tree bd4880b83701fd41635429d0903a971204a8bec8\nparent 723a2d763339a55833519417a5f99f4defa9f8e2\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794456825 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794456825 -0500\n\ntest(learn): encode Source pin fixture identities as strings\n",
+      "original_git_object_id_verified": true
+    },
+    {
+      "local_commit": "cea80a70f43ab04006e495391a422d7a105e7332",
+      "published_counterpart": "678bc1e5248594e76e87aab08c84c76534eb5c52",
+      "tree": "4dd49dfb11b449758f417ca867b4223b17eb21ac",
+      "raw_commit": "tree 4dd49dfb11b449758f417ca867b4223b17eb21ac\nparent f2bd9e335e08a24252e5dd2972fb8f58d29875f0\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794456901 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794456901 -0500\n\ndocs(learn): preserve restored-executor compile and gate evidence\n",
+      "original_git_object_id_verified": true
+    },
+    {
+      "local_commit": "202190c3e67c8d27fd1290b3f736cdc495ac37bd",
+      "published_counterpart": "81e88a1ba767c0ffe10ad2023f304c795804c846",
+      "tree": "df78d019a1efae10199bf58d527e5ab5af89f2e9",
+      "raw_commit": "tree df78d019a1efae10199bf58d527e5ab5af89f2e9\nparent 678bc1e5248594e76e87aab08c84c76534eb5c52\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794457322 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794457322 -0500\n\nfix(learn): reject fields on zero-payload Source commands\n",
+      "original_git_object_id_verified": true
+    }
+  ]
+}

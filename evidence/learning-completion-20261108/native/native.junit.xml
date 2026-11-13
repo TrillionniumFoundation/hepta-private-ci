@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="5" failures="0" errors="0" uuid="fdc93ac3-5a10-4113-83e7-0ddddab6afcb" timestamp="2026-11-08T12:35:13.539-05:00" time="15.011">
+    <testsuite name="codex-hepta-agentd" tests="5" disabled="0" errors="0" failures="0">
+        <testcase name="neuron_generation_runtime::tests::update::adopted_learning::updated_actor_rechecks_current_withdrawal_and_revocation" classname="codex-hepta-agentd" timestamp="2026-11-08T12:35:13.542-05:00" time="3.678">
+        </testcase>
+        <testcase name="neuron_generation_runtime::tests::update::adopted_learning::updated_candidate_uses_original_actor_and_recovers_without_another_reset" classname="codex-hepta-agentd" timestamp="2026-11-08T12:35:17.225-05:00" time="3.335">
+        </testcase>
+        <testcase name="neuron_generation_runtime::tests::update::learning::ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution" classname="codex-hepta-agentd" timestamp="2026-11-08T12:35:20.560-05:00" time="3.115">
+        </testcase>
+        <testcase name="neuron_generation_runtime::tests::update::learning::running_actor_refuses_current_withdrawal_and_revocation" classname="codex-hepta-agentd" timestamp="2026-11-08T12:35:23.675-05:00" time="4.583">
+        </testcase>
+        <testcase name="neuron_generation_runtime::tests::update::learning::unpublished_actor_refuses_learning_readback_and_keeps_transport_errors" classname="codex-hepta-agentd" timestamp="2026-11-08T12:35:28.258-05:00" time="0.292">
+        </testcase>
+    </testsuite>
+</testsuites>
