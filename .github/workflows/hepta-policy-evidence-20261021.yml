@@ -146,4 +146,3 @@ jobs:
           test "$(cat "$POLICY_EVIDENCE_DIR/cargo-deny.exit")" = 0
           test "$(cat "$POLICY_EVIDENCE_DIR/cargo-metadata.exit")" = 0
           test "$(cat "$POLICY_EVIDENCE_DIR/source-diff.exit")" = 0
-
