@@ -1,0 +1,135 @@
+{
+  "format": "hepta-a489-actual-inventory-exact-recovery-archive-manifest-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "coordinator-a489-actual-inventory-recovery-v1/",
+  "status": "EXACT_RECOVERY_MATCHED_ALL_ACTUAL_PRODUCER_IDENTITIES",
+  "source_job": "1a1d468462a-392-3bb",
+  "source": {
+    "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "status": "",
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "parents": [
+    "cc57c7198db6293ccca562253c42fffbe2a04633"
+  ],
+  "original_expected_archive": "88ad362796481f768cde7953c9c9485719c04591",
+  "actual_result": {
+    "name": "RESULT.original.json",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/RESULT.original.json",
+    "bytes": 14663,
+    "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
+    "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
+  },
+  "actual_artifacts": {
+    "name": "ARTIFACTS.original.json",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/ARTIFACTS.original.json",
+    "bytes": 84294,
+    "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603",
+    "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af"
+  },
+  "recovery_review": {
+    "name": "EXACT_RECOVERY_REVIEW.json",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/EXACT_RECOVERY_REVIEW.json",
+    "bytes": 5311,
+    "sha256": "40586dccc16c929cbca673b15a68fa77b30d9cd902d2d96b118acc92da449297",
+    "git_blob": "16518fb96481e196ff8a39749260fb10db9a2a2e"
+  },
+  "alias_map": {
+    "name": "ACTUAL_ARTIFACT_ALIAS_MAP.json",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/ACTUAL_ARTIFACT_ALIAS_MAP.json",
+    "bytes": 15021,
+    "sha256": "44cb782298c606c8da2e77ed40cf0469f39ed3f5f27896dd2dad88ace60c639a",
+    "git_blob": "f1601ff4dc9c85e800a89f2112389d998e95aae2"
+  },
+  "reproducible_script": {
+    "name": "recover_actual_inventory.py",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/recover_actual_inventory.py",
+    "bytes": 13848,
+    "sha256": "9a324e677713de10443950aceb8d8652d474e2dcab9e362b16df95d9639cbb8e",
+    "git_blob": "f518f6159fd00d900234fec60cc47db9873c0b29"
+  },
+  "original_functions": [
+    {
+      "name": "ORIGINAL_gzrecord.py.txt",
+      "path": "coordinator-a489-actual-inventory-recovery-v1/ORIGINAL_gzrecord.py.txt",
+      "bytes": 554,
+      "sha256": "99cc1c9f1ba061d7f6555d0aa18ac41e512a3d4c6d4a04c19ecd0625e50f0544",
+      "git_blob": "22a107d7e3684a96328277376afa7ac29d328ec1"
+    },
+    {
+      "name": "ORIGINAL_native_projection.py.txt",
+      "path": "coordinator-a489-actual-inventory-recovery-v1/ORIGINAL_native_projection.py.txt",
+      "bytes": 507,
+      "sha256": "da592df905b5d33d870eda11fb38e9183341b7bf79914a940b5c349d47756b1a",
+      "git_blob": "f796ea0da2da35981b6f66c32bb724d1c2e7abb0"
+    }
+  ],
+  "payload_index": {
+    "name": "ARCHIVE_PAYLOAD_INDEX.json",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/ARCHIVE_PAYLOAD_INDEX.json",
+    "bytes": 8494,
+    "sha256": "6d8d461031d17f8c103b1798bcbc588bf33a1469a9f27a57acbdd125041dc727",
+    "git_blob": "03f563e54de6dc1e5a80d565e328b9d1e31ab939"
+  },
+  "preceding_18_full_readback_proof": {
+    "name": "ACTUAL_GIT_FULL_READBACK.json",
+    "path": "coordinator-a489-actual-inventory-recovery-v1/ACTUAL_GIT_FULL_READBACK.json",
+    "bytes": 15030,
+    "sha256": "c1a8db5e7e0a5c37721f499bc3b04b1fd7315ad7f0b8f61bcf62176e38a101ab",
+    "git_blob": "a117fbed7f4ea585ea1dcb7aa55a4ffae5fb748c"
+  },
+  "recovered_complete": {
+    "bytes": 5631947,
+    "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+    "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0"
+  },
+  "recovered_native_five_field": {
+    "bytes": 3543409,
+    "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+    "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+  },
+  "complete_gzip": {
+    "bytes": 1266081,
+    "sha256": "168938a213eec03b3f4cff4dd1f79ce0c02ea815539d878cc7daa99c77a0337f",
+    "git_blob": "b57873ef32a740f0aa13e01b6b662e95a3a3d40b"
+  },
+  "native_gzip": {
+    "bytes": 1174189,
+    "sha256": "c79272d1e07e506951ca994ddebc8b04ecf3ff0897c6f8d8ec3077efbe1ce884",
+    "git_blob": "81a36ed6ef087c7d953b90e527a737434cd190fa"
+  },
+  "exact_complete_file_count": 15243,
+  "modes": {
+    "100644": 15152,
+    "100755": 90,
+    "120000": 1
+  },
+  "matched_original_alias_records": 5,
+  "matched_original_named_part_records": 25,
+  "distinct_full_raw": 2,
+  "distinct_full_gzip": 2,
+  "distinct_base64_part_leaves": 10,
+  "serializer": "Exact original gzrecord extracted from driver2044; gzip.compress(raw,mtime=0), original default level9, 262144 compressed bytes per part, canonical base64 plus LF.",
+  "direct_raw_and_gzip_git_upload_claim": false,
+  "complete_raw_and_gzip_preserved_by": "10 bounded original-format base64 part leaves with exact raw/gzip/all part three-pin proof. The two pre-held raw objects remain expected-byte provenance, constrained by independently read actual producer receipts.",
+  "observed_preceding_payloads": 19,
+  "payload_count_including_this_manifest": 20,
+  "placement_is_additional_separately_verified_leaf": true,
+  "maximum_payload_bytes": 349529,
+  "leaf_limit": 512000,
+  "original_stage_archive": "f88502467498432e5766d2c17c4e9a6457850209",
+  "no_second_native_full_read": true,
+  "no_index_or_stat_reconstruction": true,
+  "qualification": false,
+  "maintenance_or_test_success_claim": false,
+  "real_task_chain_completion_claim": false,
+  "source_writes": 0,
+  "H_calls": 0,
+  "trees_commits_refs_created": 0,
+  "limitations": [
+    "Exact recovery is from pre-held full bytes constrained by actual three-pin identities; it is not a new external/native download or fresh physical scan.",
+    "The current raw index and its stat fields are not reconstructed here. Existing native original metadata/index evidence has separate provenance.",
+    "This packet supplies no maintenance success, compiled result, test pass, source qualification, or real task-chain completion.",
+    "Large raw and gzip files remain local exact recovered companions; bounded actual-format base64 parts preserve their complete bytes in Git."
+  ]
+}

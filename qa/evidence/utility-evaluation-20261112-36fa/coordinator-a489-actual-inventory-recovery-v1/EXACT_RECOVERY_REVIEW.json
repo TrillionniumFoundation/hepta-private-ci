@@ -1,0 +1,115 @@
+{
+  "H_calls": 0,
+  "actual_alias_records_checked": 5,
+  "actual_artifacts": {
+    "bytes": 84294,
+    "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+    "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+  },
+  "actual_before_after_inventory_identities_equal": true,
+  "actual_compressed_part_size": 262144,
+  "actual_encoding": "base64 plus one LF; gzip.compress(raw, mtime=0), original default level9",
+  "actual_named_part_records_checked": 25,
+  "actual_result": {
+    "bytes": 14663,
+    "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+    "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+  },
+  "distinct_base64_leaves_archived": 10,
+  "driver_main_import_or_execution": false,
+  "files": 15243,
+  "format": "hepta-d256-materialized-inventory-exact-offline-recovery-v1",
+  "inputs": [
+    {
+      "bytes": 84294,
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-runtime-v1/ARTIFACTS.json",
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+    },
+    {
+      "bytes": 14663,
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-runtime-v1/RESULT.json",
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "path": "/tmp/hepta-36fa-coordinator-a489-static-control-archive-v1/originals/driver.HOLD.py",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    {
+      "bytes": 5631947,
+      "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+      "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/expected-inventory-v1/EXPECTED_CLEAN_INVENTORY.json",
+      "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0"
+    },
+    {
+      "bytes": 3543409,
+      "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+      "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/expected-inventory-v1/EXPECTED_NATIVE_FIVE_FIELD.json",
+      "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+    }
+  ],
+  "limits": [
+    "Exact recovery is from pre-held full bytes constrained by actual three-pin identities; it is not a new external/native download or fresh physical scan.",
+    "The current raw index and its stat fields are not reconstructed here. Existing native original metadata/index evidence has separate provenance.",
+    "This packet supplies no maintenance success, compiled result, test pass, source qualification, or real task-chain completion.",
+    "Large raw and gzip files remain local exact recovered companions; bounded actual-format base64 parts preserve their complete bytes in Git."
+  ],
+  "modes": {
+    "100644": 15152,
+    "100755": 90,
+    "120000": 1
+  },
+  "new_native_reads": 0,
+  "original_driver": {
+    "bytes": 70596,
+    "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+    "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+  },
+  "original_expected_archive": "88ad362796481f768cde7953c9c9485719c04591",
+  "original_function_sources": {
+    "gzrecord": {
+      "bytes": 554,
+      "chars": 554,
+      "git_blob": "22a107d7e3684a96328277376afa7ac29d328ec1",
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-actual-inventory-recovery-v1/ORIGINAL_gzrecord.py.txt",
+      "name": "ORIGINAL_gzrecord.py.txt",
+      "path": "coordinator-a489-actual-inventory-recovery-v1/ORIGINAL_gzrecord.py.txt",
+      "sha256": "99cc1c9f1ba061d7f6555d0aa18ac41e512a3d4c6d4a04c19ecd0625e50f0544"
+    },
+    "native_projection": {
+      "bytes": 507,
+      "chars": 507,
+      "git_blob": "f796ea0da2da35981b6f66c32bb724d1c2e7abb0",
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-actual-inventory-recovery-v1/ORIGINAL_native_projection.py.txt",
+      "name": "ORIGINAL_native_projection.py.txt",
+      "path": "coordinator-a489-actual-inventory-recovery-v1/ORIGINAL_native_projection.py.txt",
+      "sha256": "da592df905b5d33d870eda11fb38e9183341b7bf79914a940b5c349d47756b1a"
+    }
+  },
+  "parents": [
+    "cc57c7198db6293ccca562253c42fffbe2a04633"
+  ],
+  "project_gates": 0,
+  "provenance": "Pre-held full expected bytes from placement88ad were compared with actual producer RESULT/ARTIFACTS. The exact original pure gzip/part serializer was rerun only in a memory-only namespace. All actual raw, gzip and named-part pins match. No second native full inventory read occurred.",
+  "qualification": false,
+  "recovered_complete": {
+    "bytes": 5631947,
+    "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+    "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0"
+  },
+  "recovered_native_five_field": {
+    "bytes": 3543409,
+    "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+    "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+  },
+  "source": {
+    "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "status": "",
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "source_or_ref_changes": false,
+  "status": "EXACT_RECOVERY_MATCHED_ALL_ACTUAL_RAW_GZIP_AND_PART_IDENTITIES"
+}

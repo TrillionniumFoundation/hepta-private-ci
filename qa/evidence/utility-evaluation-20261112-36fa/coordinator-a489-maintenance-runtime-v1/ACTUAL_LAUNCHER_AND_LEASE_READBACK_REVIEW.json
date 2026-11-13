@@ -1,0 +1,54 @@
+{
+  "format": "hepta-actual-maintenance-launcher-lease-readback-v1",
+  "job_id": "1a1d47cebc8-392-41e",
+  "records": [
+    {
+      "name": "SOURCE_COORDINATION_EX.json",
+      "bytes": 841,
+      "sha256": "523208c3692d5ffe93a546cd06faf7500daf4f036386996082301943f19acd26",
+      "git_blob": "d2f348f2e2864be124049548118b0ad2eea424e5",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/SOURCE_COORDINATION_EX.json",
+      "version": "2050:51121719:841:1794566320606380425:1794566320606380425",
+      "original_sdk": {
+        "name": "SOURCE_COORDINATION_EX.json.READ_01.original.json",
+        "bytes": 1612,
+        "sha256": "f9b987816d0fcfe854a8186cc60af8c7ad13bf920d86e815072ed55dd2e66fe1",
+        "git_blob": "9b685dac479622dfa59968ce167e5ab8fb651572"
+      }
+    },
+    {
+      "name": "ACTUAL_LAUNCHER.py",
+      "bytes": 4933,
+      "sha256": "eed04ccc9167360b518d8c8fdc16f1fc4c4471edc98988185dcaf1d74e87d740",
+      "git_blob": "41a4b2cd40cad895afd944573aec29793613632f",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/ACTUAL_LAUNCHER.py",
+      "version": "2050:51121900:4933:1794566320619963511:1794566320619963511",
+      "original_sdk": {
+        "name": "ACTUAL_LAUNCHER.py.READ_01.original.json",
+        "bytes": 7062,
+        "sha256": "229b7df85ad178a79e6a478add5be4265da86c90114f6639e0bf1f286e03b83d",
+        "git_blob": "cee12a13ec0d94c8f77f47c28fb179946033efe1"
+      }
+    },
+    {
+      "name": "ACTUAL_LAUNCHER_ARGV.json",
+      "bytes": 5708,
+      "sha256": "eeaddfcaf686947cfc6fae729f4aed5274b5904d53acd9423e75eebd08eae701",
+      "git_blob": "efa1b4c127a57993a9618b65d9f5ac49695778a8",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/ACTUAL_LAUNCHER_ARGV.json",
+      "version": "2050:51121901:5708:1794566320621668357:1794566320621668357",
+      "original_sdk": {
+        "name": "ACTUAL_LAUNCHER_ARGV.json.READ_01.original.json",
+        "bytes": 8101,
+        "sha256": "071c6c6130bab96acf9ad2e6996eb209ac3c071fc60f233a08b5f79444de7786",
+        "git_blob": "cc40a5d30e9cfa5df2efe9a896a2b43e0218ce7f"
+      }
+    }
+  ],
+  "actual_launcher_bytes_equal_approved": true,
+  "actual_argv_cwd_and_pins_equal": true,
+  "actual_lease_same_approved_inode": true,
+  "existing_lock_not_replaced": true,
+  "scope": "Current cooperative writer lease for this original launcher; original full source/Git/runtime gates remain in force. This is not a maintenance terminal or qualification result.",
+  "qualification": false
+}

@@ -1,0 +1,31 @@
+{
+  "format": "hepta-observer-local-postloop-error-v1",
+  "at": "2026-11-13T10:42:54.470Z",
+  "cell_id": "g2:665",
+  "kind": "local_JavaScript_aggregate_condition_typo_after_both_successful_H_read_responses_were_saved",
+  "actual_H_observations": [
+    {
+      "name": "STATUS_03.original.json",
+      "bytes": 658,
+      "git_blob": "3a221c839e9ba0b1ac60ddab1ad0c92235bac771",
+      "observed_state": "running"
+    },
+    {
+      "name": "STREAM_READ_04.original.json",
+      "bytes": 13890,
+      "git_blob": "afe38792ac34879b382994d2f9579a236bba87bc",
+      "observed_range": [
+        34515,
+        38954
+      ]
+    }
+  ],
+  "incorrect_condition": "if(all[i].status!==\"rejected\")throw Error(ops[i][0]+\":\"+all[i].reason);",
+  "correct_condition_for_future_observations": "if(all[i].status!==\"fulfilled\")throw Error(ops[i][0]+\":\"+all[i].reason);",
+  "not_native_failure": true,
+  "not_H_transport_failure": true,
+  "original_outputs_preserved": true,
+  "repeated_H_calls_for_this_error": 0,
+  "native_job_unchanged": "1a1d47cebc8-392-41e",
+  "note": "The displayed functions error is preserved verbatim in a separate observed-error text file. It is not represented as a native SDK response. No native driver, request, environment, budget or source was changed."
+}

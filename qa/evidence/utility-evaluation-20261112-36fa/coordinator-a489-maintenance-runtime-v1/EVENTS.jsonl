@@ -1,0 +1,6 @@
+{"at":"2026-11-13T10:38:40.712056+00:00","event":"scoped_maintenance_preconditions_started"}
+{"at":"2026-11-13T10:38:48.346127+00:00","event":"maintenance_preflight_completed","physical_leaves":15243,"source_commit":"d25675445c39f76db69a7bd8e71a1a72e1cd5b9f","source_tests_started":false,"source_tree":"a489b394666b8141840275128a780605b024cde0"}
+{"argv":["just","fix","-p","codex-hepta-intelligence-eval","-p","codex-hepta-agentd","-p","codex-hepta-learning-ledger"],"at":"2026-11-13T10:38:52.332403+00:00","event":"original_maintenance_command_attempted","name":"fix","timeout_seconds":7200}
+{"at":"2026-11-13T10:46:33.652899+00:00","command_returncode":0,"command_returned":true,"event":"original_maintenance_command_terminal","name":"fix","status":"completed_review_required"}
+{"argv":["just","fmt","--base","c0f78493f815780f68b9bf5e390a21314d79311f"],"at":"2026-11-13T10:46:37.186535+00:00","event":"original_maintenance_command_attempted","name":"fmt","timeout_seconds":900}
+{"at":"2026-11-13T10:46:51.411281+00:00","command_returncode":0,"command_returned":true,"event":"original_maintenance_command_terminal","name":"fmt","status":"completed_review_required"}

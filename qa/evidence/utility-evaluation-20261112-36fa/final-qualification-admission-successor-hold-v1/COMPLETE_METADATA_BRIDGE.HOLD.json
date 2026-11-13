@@ -1,0 +1,61 @@
+{
+  "actual_maintenance": {
+    "all_six_file_common_fields_match_actual3bb": true,
+    "ownership_inferred_from_projection": false,
+    "pin": {
+      "bytes": 2654,
+      "git_blob": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+      "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9"
+    },
+    "producer": "41e",
+    "shape": "V5 format/root/files;6file+6directory rows; no uid/gid fields"
+  },
+  "actual_start": {
+    "pin": {
+      "bytes": 2234,
+      "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b",
+      "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13"
+    },
+    "producer": "3bb",
+    "shape": "6 regular files; full raw identity and st_* includinguid/gid; no directory rows"
+  },
+  "field_map": {
+    "bytes": "bytes (files)",
+    "ctime_ns": "ctime_ns",
+    "device": "device",
+    "gid": "Retain and compare in complete canonical observation; absent in V5 projection",
+    "inode": "inode",
+    "kind": "kind",
+    "mode": "mode",
+    "mtime_ns": "mtime_ns",
+    "nlink": "nlink",
+    "path": "path",
+    "sha256": "sha256 (files)",
+    "uid": "Retain and compare in complete canonical observation; absent in V5 projection"
+  },
+  "format": "hepta-qualification-complete-git-metadata-bridge-hold-v1",
+  "fresh_observation_requirements": [
+    "Same real.git root; no symlink or unsupported kind; complete membership.",
+    "Stable exact integer stat fields before/open/after each file includinguid/gid, and complete byte hash/length; no JavaScript-number roundtrip of nanosecond times.",
+    "Complete canonical original and fresh observations equal before and after original gates.",
+    "Full canonical.uid/gid retained separately from the exact V5 byte projection.",
+    "Original nine-field Git-state equality remains required but is not full metadata proof."
+  ],
+  "future_canonical": {
+    "actual": null,
+    "shape": "{root,files}, globally os.fsencode(path)-sorted realfile/dir rows includinguid/gid; exact templatee8d606",
+    "template": {
+      "bytes": 46159,
+      "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+      "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+    }
+  },
+  "status": "STATIC_SCHEMA_ONLY_FUTURE_CANONICAL_NULL",
+  "v5_projection": {
+    "called_with_future_actual_data": false,
+    "format": "hepta-source-git-metadata-inventory-v1",
+    "ordering": "Original recursive per-directory os.fsencode(name)-sorted DFS, not arbitrary global path sorting",
+    "pure_reference_function": "prepare_static_migration.py::canonical_to_v5_projection",
+    "serializer": "json.dumps(ensure_ascii=False,sort_keys=True,separators=(',',':')) + LF, UTF-8"
+  }
+}

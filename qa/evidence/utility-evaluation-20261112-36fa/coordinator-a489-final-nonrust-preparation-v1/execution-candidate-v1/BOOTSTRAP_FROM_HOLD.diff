@@ -1,0 +1,11 @@
+--- cb67-bootstrap-HOLD.py
++++ ACTUAL_BOOTSTRAP.candidate.py
+@@ -1,7 +1,7 @@
+ import base64, gzip, hashlib, io, json, os, pathlib, stat, sys, traceback
+ 
+ BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1')
+-PINS = {'driver.py': {'bytes': 28657, 'sha256': 'f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46', 'git_blob': '27c0db4e4bceb69bcaafc97f5cc843a37b180941'}, 'MAINTENANCE_NORMAL.original.json': {'bytes': 956, 'sha256': '865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04', 'git_blob': '70e1866f963a2a2a8d6f3bd468ddd0c291fbf871'}, 'NONRUST_PACKET.json': {'bytes': 2998722, 'sha256': 'b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3', 'git_blob': 'ab032ffdfd8b540a0d3a82558d8a07e70ab0c548'}, 'APPROVED_CONFIG.json': {'bytes': 2897, 'sha256': 'e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a', 'git_blob': '92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3'}}
++PINS = {'driver.py': {'bytes': 28657, 'sha256': 'f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46', 'git_blob': '27c0db4e4bceb69bcaafc97f5cc843a37b180941'}, 'MAINTENANCE_NORMAL.original.json': {'bytes': 956, 'sha256': '865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04', 'git_blob': '70e1866f963a2a2a8d6f3bd468ddd0c291fbf871'}, 'NONRUST_PACKET.json': {'bytes': 2998722, 'sha256': 'b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3', 'git_blob': 'ab032ffdfd8b540a0d3a82558d8a07e70ab0c548'}, 'APPROVED_CONFIG.json': {'bytes': 2906, 'sha256': '9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1', 'git_blob': 'c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708'}}
+ 
+ created = False
+ 

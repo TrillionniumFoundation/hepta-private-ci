@@ -1,0 +1,103 @@
+{
+  "format": "hepta-root-projected-nonrust-git-object-availability-v1",
+  "qualification": false,
+  "native_application_observed": false,
+  "source_ref_updates": false,
+  "source_index_updates": false,
+  "source_commit_created": false,
+  "source_projection_review": "94c9d4fa5843806a0ae8e0a08296840c4ad625d9",
+  "tree_plan": "b0eb728d992750ee3830714afb515b9d6b0d68cb",
+  "actual_Git_create_tree": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+    },
+    "isError": false
+  },
+  "actual_tree_full_GETs": [
+    {
+      "path": "",
+      "sha": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+      "entries": 56,
+      "checks": {
+        "sha": true,
+        "not_truncated": true,
+        "typed_hash": true,
+        "entries": true,
+        "property_order_sensitive_string_equal": false
+      }
+    },
+    {
+      "path": ".github",
+      "sha": "629f248f37f1ae553c318f3c4768ab950dced588",
+      "entries": 13,
+      "checks": {
+        "sha": true,
+        "not_truncated": true,
+        "typed_hash": true,
+        "entries": true,
+        "property_order_sensitive_string_equal": false
+      }
+    },
+    {
+      "path": "qa",
+      "sha": "f4ab0e2467bf0bab125ae8ac9262668fd5fd1313",
+      "entries": 5,
+      "checks": {
+        "sha": true,
+        "not_truncated": true,
+        "typed_hash": true,
+        "entries": true,
+        "property_order_sensitive_string_equal": false
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass",
+      "sha": "2f7f04080e2228a3c3a0a46ac5a5d8d5be18302e",
+      "entries": 66,
+      "checks": {
+        "sha": true,
+        "not_truncated": true,
+        "typed_hash": true,
+        "entries": true,
+        "property_order_sensitive_string_equal": false
+      }
+    }
+  ],
+  "source_after_blobs": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "sha": "19241ceb6ee0c0122ab8c6e9c5b47ccb5d079add",
+      "bytes": 13480,
+      "sha256": "264c0216a90b471c692a86cf98f1a596f70b85f77d8cddb410110d912a4cf1be",
+      "full_GET": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "sha": "7123126e368a9e7f65c95b8eb29b0c469e2fa893",
+      "bytes": 1855908,
+      "sha256": "62fc6814e2f24ecbf37a83583f526d215870cf2ab5202f524f34de46b77273fa",
+      "full_GET": true
+    },
+    {
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "sha": "3e5950ad4959af76cfbf7d350e45f14facf77491",
+      "bytes": 358632,
+      "sha256": "0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644",
+      "full_GET": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "sha": "6cf198adc90668e5cc413495ae507d2556b3dafb",
+      "bytes": 17979,
+      "sha256": "e04d85ac4343347859d3b523a971e5e4a8d9490fd5a3335c7d362f9164c5249f",
+      "full_GET": true
+    }
+  ],
+  "initial_local_observer_diagnostic": "First local immutable-tree verifier compared JSON.stringify property order. Corrected to exact field comparisons and typed object hash; all four original tree objects match. No source or H action repeated."
+}

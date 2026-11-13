@@ -1,0 +1,96 @@
+{
+  "format": "hepta-independent-review-actual-git-full-readback-v1",
+  "cutoff_utc": "2026-11-13T11:41:19.929931+00:00",
+  "scope": "Only six fixed actual 50f core/empty-transition originals plus previous pinned41e RESULT; no later canonical or qualification observations.",
+  "published_own_artifacts": [
+    {
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-emptyfmt-independent-peer-v1/REVIEW.json",
+      "name": "REVIEW.json",
+      "bytes": 4644,
+      "sha256": "03ea7ecefb7ac14659c3b0ac0543df825e67fc204830e3acda80f88f09d8f5f1",
+      "git_blob": "c1a83933e35baa0f855da6cef92f7d8c20108ee3",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "0bab9fa8c745a7afd54669fa220c099cdc2c2c42914e6a9dcd57ad2e02661b1d",
+        "git_blob": "4cd43802ece183965a42bcc42c32ae1e1289edcc"
+      },
+      "get_sdk": {
+        "bytes": 10823,
+        "sha256": "141c5a02c9e561437c26b48242b62a1bb1df6cd444a9090e43bed4368888a1ea",
+        "git_blob": "3189c662e8754b1f27c065d47ce11a05f9632a6f"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-emptyfmt-independent-peer-v1/review_empty_fmt.py",
+      "name": "review_empty_fmt.py",
+      "bytes": 7665,
+      "sha256": "38690952e4eeee3f15fb032407f88d6647792d49cdbf7d8f1738207f740dc398",
+      "git_blob": "e5925851948e444e841f63dc03141639d6994b6a",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "4b83037bff8af1969c4f0ab522ba2f289b21d37f4c68abcb684ce8c5d6098369",
+        "git_blob": "82633efc7a0453e456b12bec5f713ed38b23b21a"
+      },
+      "get_sdk": {
+        "bytes": 16387,
+        "sha256": "ee6701952759456e1c7e49d871357cdf1d3b15aa96afe5ddf2a870f1d3b798c9",
+        "git_blob": "166a32f1d989f870234c0088832b3dc305e81580"
+      }
+    }
+  ],
+  "independently_retrieved_inputs": [
+    {
+      "name": "RESULT.json",
+      "bytes": 7408,
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b",
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "NORMAL.original.json",
+      "bytes": 952,
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90",
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "FMT_TERMINAL.original.json",
+      "bytes": 1327,
+      "sha256": "3e8bbf3f5407cbeabd43cc069c236541f528d79c82557e1de9fb54dc6ecf5f8f",
+      "git_blob": "1d12f8870768081a3f35c32aaa9daab61e68a788",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "bytes": 67498,
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f",
+      "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "fmt.after.postimages.json",
+      "bytes": 438,
+      "sha256": "22e40d9fa4e982ae4aedccbe4636f039a377e5af9c54a167455dbf54ffa5d144",
+      "git_blob": "f5c7643422eecfcde833cffc4cb61004f4f682ea",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "fmt.after.postimages.json.gz.part-001.b64",
+      "bytes": 369,
+      "sha256": "c44dc5b366c7d1ac8f900a82af8e8f5cc06fd70bef64b129065d8fc3bd455cdb",
+      "git_blob": "522981a1c63c0d98514e0b396692bf5d01853624",
+      "independent_full_get_equal": true
+    }
+  ],
+  "prior_immutable_dependency": {
+    "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+    "local_path": "/tmp/hepta-36fa-final-qualification-admission-successor-hold-v1/inputs/MAINTENANCE_41E_RESULT.json",
+    "scope": "Exact byte identity checked by reviewer; prior independent schema package contains source proof."
+  },
+  "sdk_storage": "Original SDK responses are preserved locally. This ledger does not claim that SDK JSON itself was uploaded as a separate blob.",
+  "no_H_or_project_execution": true
+}

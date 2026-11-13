@@ -1,0 +1,1121 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
+index cde16a60860fa5eccb1160353d6806f3f9f81477..df7c63ed5575737e2e710973e895fde8c047d063 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
+@@ -36,7 +36,7 @@ impl Release {
+         let mut released = self
+             .released
+             .lock()
+-            .unwrap_or_else(|error| error.into_inner());
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         *released = true;
+         self.changed.notify_all();
+     }
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
+index 3970dbf29eb46dede4337aca04a0f500163ddd03..aaee6029f22846af5c1bc7f945a490aa98d9ea29 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
+@@ -90,8 +90,7 @@ pub(super) async fn two_original_sets(
+                 Err(error) => {
+                     drop(dataset);
+                     let cleanup = material_ports::finish(dataset_peer);
+-                    return Err(anyhow::Error::from(error)
+-                        .context(format!("original T channel cleanup: {cleanup:?}")));
++                    return Err(error.context(format!("original T channel cleanup: {cleanup:?}")));
+                 }
+             };
+             let trainer_peer = commands::serve(Arc::clone(&fixture.trainer), channel);
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
+index 83cc4158e980804b0e7bd4365e51cf88b43a2196..465c0b789d4d8254254657357aaabf22ea79c99b 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
+@@ -475,15 +475,15 @@ impl SameHostCase {
+         {
+             connections::collect_peer_cleanup(peers, &mut errors);
+         }
+-        if let Some(mut task) = self.task.take() {
+-            if let Err(error) = task.stop().await {
+-                errors.push(error.to_string());
+-            }
++        if let Some(mut task) = self.task.take()
++            && let Err(error) = task.stop().await
++        {
++            errors.push(error.to_string());
+         }
+-        if let Some(fixture) = self.fixture.take() {
+-            if let Err(error) = (*fixture).finish().await {
+-                errors.push(error.to_string());
+-            }
++        if let Some(fixture) = self.fixture.take()
++            && let Err(error) = (*fixture).finish().await
++        {
++            errors.push(error.to_string());
+         }
+         anyhow::ensure!(errors.is_empty(), "same-owner S/C cleanup: {errors:?}");
+         Ok(())
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
+index 444fbbb4e48743f51de91d39d77c34b37364b002..e030d82ac55871fb3d3d272740f96e296d8b5a74 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
+@@ -333,14 +333,14 @@ async fn paused_local_read_case(mode: PausedLocalReadCase) -> anyhow::Result<()>
+     // No serving lane is detached merely to turn cleanup into a pass.
+     probe.release();
+     let mut cleanup_error = None;
+-    if let Some(task) = task.take() {
+-        if !consumed_join {
+-            task.abort();
+-            match task.await {
+-                Ok(_) => {}
+-                Err(error) if error.is_cancelled() => {}
+-                Err(error) => cleanup_error = Some(anyhow::anyhow!("local read join: {error}")),
+-            }
++    if let Some(task) = task.take()
++        && !consumed_join
++    {
++        task.abort();
++        match task.await {
++            Ok(_) => {}
++            Err(error) if error.is_cancelled() => {}
++            Err(error) => cleanup_error = Some(anyhow::anyhow!("local read join: {error}")),
+         }
+     }
+     if probe.original_submitted() {
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+index b9a4d5bda8f02c16a198efde82a7d0d589f3d18c..5d007652d6d483df47c49e9a7fc0bfe424afbb98 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+@@ -301,10 +301,10 @@ impl NextUseCase {
+             }
+             drop(task);
+         }
+-        if let Some(fixture) = self.fixture.take() {
+-            if let Err(error) = (*fixture).finish().await {
+-                failures.push(error.to_string());
+-            }
++        if let Some(fixture) = self.fixture.take()
++            && let Err(error) = (*fixture).finish().await
++        {
++            failures.push(error.to_string());
+         }
+         anyhow::ensure!(
+             failures.is_empty(),
+@@ -576,7 +576,7 @@ async fn deadline_case(already_expired: bool) -> anyhow::Result<()> {
+         anyhow::ensure!(first.is_err(), "no expired original response is successful");
+         anyhow::ensure!(matches!(after, Err(ReadError::Unavailable)), "failure consumes the same channel without retry");
+         anyhow::ensure!(served.is_err(), "actual server preserves refusal");
+-        anyhow::ensure!(observed.load(Ordering::Acquire) == !already_expired,
++        anyhow::ensure!(observed.load(Ordering::Acquire) != already_expired,
+             "pre-expiry refuses before IO; crossing case first produced the actual original response");
+         anyhow::ensure!(case.original_bytes()? == before, "deadline failure cannot repair or publish");
+         anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs
+index 2dafccfb708098871d5ab4807ec185920c73c544..c7e21f5aa6339a32b47f1d4342123b57bd80425e 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs
+@@ -139,10 +139,10 @@ impl ExportCase {
+             }
+             drop(task);
+         }
+-        if let Some(fixture) = self.fixture.take() {
+-            if let Err(error) = (*fixture).finish().await {
+-                failures.push(error.to_string());
+-            }
++        if let Some(fixture) = self.fixture.take()
++            && let Err(error) = (*fixture).finish().await
++        {
++            failures.push(error.to_string());
+         }
+         anyhow::ensure!(
+             failures.is_empty(),
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs
+index ffafea99606924aa115f6c9ba06f417a7a08618b..c22d692aa075e100700bff81e5d030d3b1fde6a6 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs
+@@ -226,8 +226,11 @@ impl Case {
+         // Join every held peer even when an earlier one has the expected
+         // exhaustion/transport error. Parent HeldPeers::finish short-circuits.
+         let dataset = self.dataset_peer.take().map(material_ports::finish);
+-        let trainer = self.trainer_peer.take().map(|thread| thread.join());
+-        let evaluator = self.evaluator_peer.take().map(|thread| thread.join());
++        let trainer = self.trainer_peer.take().map(std::thread::JoinHandle::join);
++        let evaluator = self
++            .evaluator_peer
++            .take()
++            .map(std::thread::JoinHandle::join);
+         let mut failures = Vec::new();
+         if let Some(Err(error)) = dataset {
+             failures.push(format!("original D peer: {error:?}"));
+diff --git a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+index 24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef..b4bb99427c2dba9efd116b295a4ec2d7df67334e 100644
+--- a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -179,10 +179,10 @@ impl OriginalCircuitPublishedLocalReadV1 {
+             )
+             .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));
+             #[cfg(test)]
+-            if response.is_ok() {
+-                if let Some(terminal) = &terminal {
+-                    terminal.pause_after_original_response(deadline)?;
+-                }
++            if response.is_ok()
++                && let Some(terminal) = &terminal
++            {
++                terminal.pause_after_original_response(deadline)?;
+             }
+             response
+         });
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
+index 3a1ca23dd755c46ae852830b0a27419e58c3cb54..dd82f2decb88abc8bfcbd92cf94528b40acd0cda 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
+@@ -242,14 +242,14 @@ async fn first_pending_material_uses_full_original_signatures_and_preheld_policy
+                 .is_err(),
+             "canonical causal replay is not original signature authentication"
+         );
+-        let mut added = base.clone();
++        let mut added = base;
+         added["host_trust"] = serde_json::json!("child-selected");
+         anyhow::ensure!(
+             RootMaterialContract::from_preheld(held.clone())?
+                 .verify_report(&serde_json::to_vec(&added)?)
+                 .is_err()
+         );
+-        let mut trailing = raw.clone();
++        let mut trailing = raw;
+         trailing.push(b' ');
+         anyhow::ensure!(
+             RootMaterialContract::from_preheld(held.clone())?
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs
+index 2f35bcacff40827fd96b3d4ce289455929d64a82..bba6305de3212ab31c2fef8edf0ef78e63ebc522 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs
+@@ -440,14 +440,14 @@ async fn fresh_original_material_control_preserves_complete_inputs_and_rejects_s
+         );
+         let mut changed_freeze_payload = fixture.original_material_inputs.freeze_payload.clone();
+         changed_freeze_payload.push(0);
+-        let mut changed_payload = base.clone();
++        let mut changed_payload = base;
+         changed_payload["freeze_payload"] =
+             serde_json::json!(STANDARD_NO_PAD.encode(changed_freeze_payload));
+         anyhow::ensure!(
+             held.decode_report(&canonical_report(&changed_payload)?)
+                 .is_err()
+         );
+-        let mut trailing = raw.clone();
++        let mut trailing = raw;
+         trailing.push(b' ');
+         anyhow::ensure!(held.decode_report(&trailing).is_err());
+         anyhow::ensure!(held.decode_report(&vec![0_u8; CONTROL_LIMIT + 1]).is_err());
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs
+index 491bbac2876891948de35f11ac790c2500fdfc2f..a6a0635108ec762858fcc0c667b4a7a40561511e 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs
+@@ -662,10 +662,10 @@ impl FreshPublication {
+                 tempfile::tempdir()?,
+             ));
+         }
+-        if let Some(stages) = self.stages.take() {
+-            if let Err(error) = stages.finish().await {
+-                errors.push(error.to_string());
+-            }
++        if let Some(stages) = self.stages.take()
++            && let Err(error) = stages.finish().await
++        {
++            errors.push(error.to_string());
+         }
+         drop(self.c_home.take());
+         drop(self.source_home.take());
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
+index 2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8..64e983dfca5c03797e66b186325ee436dd8ba6b0 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
+@@ -320,10 +320,10 @@ impl FreshStages {
+         if let Err(error) = self.close_evaluation_clients() {
+             errors.push(error.to_string());
+         }
+-        if let Some(panel) = self.panel.take() {
+-            if let Err(error) = panel.finish() {
+-                errors.push(error.to_string());
+-            }
++        if let Some(panel) = self.panel.take()
++            && let Err(error) = panel.finish()
++        {
++            errors.push(error.to_string());
+         }
+         drop(self.candidate_client.take());
+         drop(self.root_trainer.take());
+@@ -332,10 +332,10 @@ impl FreshStages {
+         drop(self.version_dataset.take());
+         drop(self.experience.take());
+         drop(self.dataset.take());
+-        if let Some(peers) = self.training_peers.take() {
+-            if let Err(error) = peers.finish_shared() {
+-                errors.push(error.to_string());
+-            }
++        if let Some(peers) = self.training_peers.take()
++            && let Err(error) = peers.finish_shared()
++        {
++            errors.push(error.to_string());
+         }
+         for peer in self.training_servers.drain(..) {
+             match peer.join() {
+@@ -349,10 +349,10 @@ impl FreshStages {
+                 errors.push(error.to_string());
+             }
+         }
+-        if let Some(original) = self.original.take() {
+-            if let Err(error) = (*original).finish().await {
+-                errors.push(error.to_string());
+-            }
++        if let Some(original) = self.original.take()
++            && let Err(error) = (*original).finish().await
++        {
++            errors.push(error.to_string());
+         }
+         anyhow::ensure!(
+             errors.is_empty(),
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs
+index 944a1927f2761000c206d018034b26d01a2ce0df..c38f1b85029ecba6f9cdc9a73cf2bf719f7ec6c0 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs
+@@ -25,10 +25,8 @@ impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {
+         recovery: AgentdGenerationUpdateRecoveryV1,
+     ) -> Result<Self, AgentdError> {
+         require_root()?;
+-        let original = current.recover_initial_operation(
+-            &recovery.operation_id,
+-            recovery.intent_digest,
+-        )?;
++        let original =
++            current.recover_initial_operation(&recovery.operation_id, recovery.intent_digest)?;
+         let binding = original.final_use_binding().clone();
+         let before = current.read_initial_operation(&original)?;
+         let ready = recover_agentd_generation_initial_v1(
+@@ -48,7 +46,9 @@ impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {
+             binding,
+         };
+         if operation.read_original()? != before {
+-            return Err(invalid("original initial publication changed across cold recovery"));
++            return Err(invalid(
++                "original initial publication changed across cold recovery",
++            ));
+         }
+         Ok(Self {
+             operation,
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs
+index 4eeb2015fef5aa45775fe117903bbdb2d3ac8592..795fa0a9639a9dd4156dd3de91e78456cd8955ee 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs
+@@ -3,24 +3,29 @@
+ //! these tests do not claim a complete Root process or daemon restart.
+ 
+ use super::*;
+-use codex_hepta_types::Digest32;
+ use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;
+ use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
++use codex_hepta_types::Digest32;
+ 
+ fn reopened_current(fixture: &RootFixture) -> anyhow::Result<Arc<NeuronGenerationCurrentOwnerV1>> {
+     let root = RootAuthorityDirectory::open(fixture.root_directory.path())?;
+     Ok(Arc::new(NeuronGenerationCurrentOwnerV1::open(
+-        root, &fixture.providers.target_config.initial.scope,
++        root,
++        &fixture.providers.target_config.initial.scope,
+     )?))
+ }
+ 
+ fn recovery(intent_digest: Digest32) -> AgentdGenerationUpdateRecoveryV1 {
+-    AgentdGenerationUpdateRecoveryV1 { operation_id: OPERATION.into(), intent_digest }
++    AgentdGenerationUpdateRecoveryV1 {
++        operation_id: OPERATION.into(),
++        intent_digest,
++    }
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task() -> anyhow::Result<()> {
++async fn root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task()
++-> anyhow::Result<()> {
+     let mut fixture = RootFixture::new("root-custody-cold-original-task").await?;
+     let mut old = fixture.custody()?;
+     let signed = fixture.sign(&old)?;
+@@ -33,15 +38,27 @@ async fn root_initial_cold_entry_reopens_existing_current_and_runs_the_original_
+     drop(old);
+ 
+     let mut recovered = Custody::recover_from_original_current(
+-        reopened_current(&fixture)?, fixture.providers.authorities()?,
+-        fixture.providers.selection()?, fixture.providers.target_reopen()?, recovery(intent),
++        reopened_current(&fixture)?,
++        fixture.providers.authorities()?,
++        fixture.providers.selection()?,
++        fixture.providers.target_reopen()?,
++        recovery(intent),
+     )?;
+     anyhow::ensure!(recovered.original_final_use_binding() == &binding);
+     anyhow::ensure!(recovered.read_original_operation()? == published);
+-    anyhow::ensure!(fixture.root_bytes()? == before, "cold entry rewrote protected history");
+-    anyhow::ensure!(fixture.generation_bytes()? == target_before, "cold entry replaced the target");
+-    anyhow::ensure!(matches!(recovered.publish(&signed), Err(crate::AgentdError::Invalid(ref text))
+-        if text == "original publication was already consumed"), "cold entry must not expose Prepared");
++    anyhow::ensure!(
++        fixture.root_bytes()? == before,
++        "cold entry rewrote protected history"
++    );
++    anyhow::ensure!(
++        fixture.generation_bytes()? == target_before,
++        "cold entry replaced the target"
++    );
++    anyhow::ensure!(
++        matches!(recovered.publish(&signed), Err(crate::AgentdError::Invalid(ref text))
++        if text == "original publication was already consumed"),
++        "cold entry must not expose Prepared"
++    );
+     // No Source or Cell existed before this first installation. Create is the
+     // explicit initial task lifecycle, not a fallback from a failed Recover.
+     let session = fixture.start(recovered).await?;
+@@ -50,22 +67,34 @@ async fn root_initial_cold_entry_reopens_existing_current_and_runs_the_original_
+         let completion = session.drain()?;
+         let source = completion.source_publication();
+         anyhow::ensure!(source.original_record().snapshot.run_id == fixture.source.scope.run_id);
+-        anyhow::ensure!(source.original_record().snapshot.objective_digest == fixture.source.objective_digest);
++        anyhow::ensure!(
++            source.original_record().snapshot.objective_digest == fixture.source.objective_digest
++        );
+         anyhow::ensure!(source.bundle_digest() == fixture.bundle.digest()?);
+-        anyhow::ensure!(!source.output().is_empty(), "reopened original task has no result");
++        anyhow::ensure!(
++            !source.output().is_empty(),
++            "reopened original task has no result"
++        );
+         anyhow::ensure!(session.installed.custody.read_original_operation()? == published);
+-        anyhow::ensure!(fixture.root_bytes()? == before, "task replaced the original publication");
+-        anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 1,
+-                        "recovery claimed another grant");
++        anyhow::ensure!(
++            fixture.root_bytes()? == before,
++            "task replaced the original publication"
++        );
++        anyhow::ensure!(
++            fixture.providers.authority.capacity()?.used_nonces == 1,
++            "recovery claimed another grant"
++        );
+         Ok(())
+-    }.await;
++    }
++    .await;
+     let cleanup = session.finish().await;
+     result.and(cleanup)
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_cold_entry_refuses_pending_without_reprepare_or_grant() -> anyhow::Result<()> {
++async fn root_initial_cold_entry_refuses_pending_without_reprepare_or_grant() -> anyhow::Result<()>
++{
+     let fixture = RootFixture::new("root-custody-cold-pending").await?;
+     let old = fixture.custody()?;
+     let intent = old.original_intent_digest();
+@@ -73,20 +102,32 @@ async fn root_initial_cold_entry_refuses_pending_without_reprepare_or_grant() ->
+     let before = fixture.root_bytes()?;
+     let target_before = fixture.generation_bytes()?;
+     let rejected = Custody::recover_from_original_current(
+-        reopened_current(&fixture)?, fixture.providers.authorities()?,
+-        fixture.providers.selection()?, fixture.providers.target_reopen()?, recovery(intent),
++        reopened_current(&fixture)?,
++        fixture.providers.authorities()?,
++        fixture.providers.selection()?,
++        fixture.providers.target_reopen()?,
++        recovery(intent),
++    );
++    anyhow::ensure!(
++        matches!(rejected, Err(crate::AgentdError::Invalid(ref text))
++        if text == "initial generation remains pending; no redispatch")
++    );
++    anyhow::ensure!(
++        fixture.root_bytes()? == before,
++        "pending recovery rewrote Current"
++    );
++    anyhow::ensure!(
++        fixture.generation_bytes()? == target_before,
++        "pending recovery recreated target"
+     );
+-    anyhow::ensure!(matches!(rejected, Err(crate::AgentdError::Invalid(ref text))
+-        if text == "initial generation remains pending; no redispatch"));
+-    anyhow::ensure!(fixture.root_bytes()? == before, "pending recovery rewrote Current");
+-    anyhow::ensure!(fixture.generation_bytes()? == target_before, "pending recovery recreated target");
+     anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 0);
+     Ok(())
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_cold_entry_rechecks_original_artifact_after_published_readback() -> anyhow::Result<()> {
++async fn root_initial_cold_entry_rechecks_original_artifact_after_published_readback()
++-> anyhow::Result<()> {
+     let fixture = RootFixture::new("root-custody-cold-withdrawn").await?;
+     let mut old = fixture.custody()?;
+     let signed = fixture.sign(&old)?;
+@@ -102,10 +143,16 @@ async fn root_initial_cold_entry_rechecks_original_artifact_after_published_read
+     let before = fixture.root_bytes()?;
+     let target_before = fixture.generation_bytes()?;
+     let rejected = Custody::recover_from_original_current(
+-        current, fixture.providers.authorities()?, selected,
+-        fixture.providers.target_reopen()?, recovery(intent),
++        current,
++        fixture.providers.authorities()?,
++        selected,
++        fixture.providers.target_reopen()?,
++        recovery(intent),
++    );
++    anyhow::ensure!(
++        rejected.is_err(),
++        "historical Published bypassed original Artifact withdrawal"
+     );
+-    anyhow::ensure!(rejected.is_err(), "historical Published bypassed original Artifact withdrawal");
+     anyhow::ensure!(fixture.root_bytes()? == before);
+     anyhow::ensure!(fixture.generation_bytes()? == target_before);
+     anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 1);
+@@ -114,7 +161,8 @@ async fn root_initial_cold_entry_rechecks_original_artifact_after_published_read
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_cold_entry_retains_same_operation_after_installation_error() -> anyhow::Result<()> {
++async fn root_initial_cold_entry_retains_same_operation_after_installation_error()
++-> anyhow::Result<()> {
+     let mut fixture = RootFixture::new("root-custody-cold-install-error").await?;
+     let mut old = fixture.custody()?;
+     let signed = fixture.sign(&old)?;
+@@ -131,12 +179,17 @@ async fn root_initial_cold_entry_retains_same_operation_after_installation_error
+     let before = fixture.root_bytes()?;
+     let target_before = fixture.generation_bytes()?;
+     let mut recovered = Custody::recover_from_original_current(
+-        reopened_current(&fixture)?, fixture.providers.authorities()?,
+-        fixture.providers.selection()?, fixture.providers.target_reopen()?, recovery(intent),
++        reopened_current(&fixture)?,
++        fixture.providers.authorities()?,
++        fixture.providers.selection()?,
++        fixture.providers.target_reopen()?,
++        recovery(intent),
+     )?;
+     anyhow::ensure!(recovered.read_original_operation()? == published);
+-    anyhow::ensure!(matches!(recovered.publish(&signed), Err(crate::AgentdError::Invalid(ref text))
+-        if text == "original publication was already consumed"));
++    anyhow::ensure!(
++        matches!(recovered.publish(&signed), Err(crate::AgentdError::Invalid(ref text))
++        if text == "original publication was already consumed")
++    );
+     anyhow::ensure!(fixture.root_bytes()? == before);
+     anyhow::ensure!(fixture.generation_bytes()? == target_before);
+     anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 1);
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs
+index 31ede1a405c6469508871d672c50a4f000342985..ae30e3bddeec100da2f609df60fc1571ef9a78be 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs
+@@ -51,10 +51,9 @@ struct OriginalInitialOperation {
+ impl OriginalInitialOperation {
+     fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {
+         require_root()?;
+-        let original = self.current.recover_initial_operation(
+-            &self.recovery.operation_id,
+-            self.recovery.intent_digest,
+-        )?;
++        let original = self
++            .current
++            .recover_initial_operation(&self.recovery.operation_id, self.recovery.intent_digest)?;
+         if original.final_use_binding() != &self.binding {
+             return Err(invalid("original initial operation binding changed"));
+         }
+@@ -86,7 +85,9 @@ impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {
+         if original.final_use_binding() != prepared.final_use_binding()
+             || original.target() != prepared.prepared.target()
+         {
+-            return Err(invalid("Root custody differs from the original preparation"));
++            return Err(invalid(
++                "Root custody differs from the original preparation",
++            ));
+         }
+         let operation = OriginalInitialOperation {
+             current,
+@@ -173,7 +174,9 @@ fn require_root() -> Result<(), AgentdError> {
+     // The existing Root directory/current factories remain authoritative.
+     // This additional local boundary rejects a process that dropped Root UID.
+     if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
+-        return Err(invalid("original generation custody requires the Root host"));
++        return Err(invalid(
++            "original generation custody requires the Root host",
++        ));
+     }
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs
+index 61b21fa07f57b750c9206f04604759535f5c65c2..fd05921ed84097b84187ea5db3d91afd51739015 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs
+@@ -9,8 +9,6 @@ use super::*;
+ use std::collections::BTreeMap;
+ use std::os::unix::fs::PermissionsExt as _;
+ 
+-use codex_hepta_contracts::RootAuthorityDirectory;
+-use codex_hepta_contracts::SignedFinalUseGrant;
+ use crate::OriginalRootCircuitTaskInputsV1;
+ use crate::OriginalRootCircuitTaskRuntimeV1;
+ use crate::OriginalRootInitialGenerationCustodyV1;
+@@ -19,6 +17,8 @@ use crate::PublishedCircuitFeatureCompletionV1;
+ use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;
+ use crate::neuron_generation_initial::prepare_agentd_generation_initial_v1;
+ use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
++use codex_hepta_contracts::RootAuthorityDirectory;
++use codex_hepta_contracts::SignedFinalUseGrant;
+ 
+ const OPERATION: &str = "root-local-original-initial-publication";
+ type Custody = OriginalRootInitialGenerationCustodyV1<FileAnchorWitnessStore>;
+@@ -41,8 +41,10 @@ struct RootFixture {
+ 
+ impl RootFixture {
+     async fn new(run: &str) -> anyhow::Result<Self> {
+-        anyhow::ensure!(unsafe { libc::getuid() } == 0 && unsafe { libc::geteuid() } == 0,
+-                        "this ignored case requires the actual Root process");
++        anyhow::ensure!(
++            unsafe { libc::getuid() } == 0 && unsafe { libc::geteuid() } == 0,
++            "this ignored case requires the actual Root process"
++        );
+         // A writable /tmp ancestor is intentionally not accepted by the original
+         // Root factory. There is no alternate UID, chown or test-store fallback.
+         let root_directory = tempfile::Builder::new()
+@@ -56,22 +58,38 @@ impl RootFixture {
+         let source = source(&admission, [Q, Q / 4])?;
+         let generation = configuration(&model, &bundle, &definition, &source, 1)?;
+         let providers = VersionFixture::new_initial(generation, OPERATION)?;
+-        Ok(Self { root, root_directory, providers, admission: Some(admission),
+-                  model, bundle, definition, source, _model_directory: model_directory })
++        Ok(Self {
++            root,
++            root_directory,
++            providers,
++            admission: Some(admission),
++            model,
++            bundle,
++            definition,
++            source,
++            _model_directory: model_directory,
++        })
+     }
+ 
+-    fn prepare_original(&self) -> anyhow::Result<PreparedAgentdGenerationInitialV1<FileAnchorWitnessStore>> {
++    fn prepare_original(
++        &self,
++    ) -> anyhow::Result<PreparedAgentdGenerationInitialV1<FileAnchorWitnessStore>> {
+         Ok(prepare_agentd_generation_initial_v1(
+             Arc::clone(&self.root),
+             self.providers.authorities()?,
+             self.providers.selection()?,
+             self.providers.target_create()?,
+-            AgentdGenerationUpdateRequestV1 { operation_id: OPERATION.into() },
++            AgentdGenerationUpdateRequestV1 {
++                operation_id: OPERATION.into(),
++            },
+         )?)
+     }
+ 
+     fn custody(&self) -> anyhow::Result<Custody> {
+-        Ok(Custody::from_original_prepared(self.prepare_original()?, OPERATION.into())?)
++        Ok(Custody::from_original_prepared(
++            self.prepare_original()?,
++            OPERATION.into(),
++        )?)
+     }
+ 
+     fn sign(&self, custody: &Custody) -> anyhow::Result<SignedFinalUseGrant> {
+@@ -82,24 +100,44 @@ impl RootFixture {
+         let mut bytes = BTreeMap::new();
+         for entry in fs::read_dir(self.root_directory.path())? {
+             let entry = entry?;
+-            anyhow::ensure!(entry.file_type()?.is_file(), "unexpected authority child entry");
+-            bytes.insert(entry.file_name().into_string()
+-                .map_err(|_| anyhow::anyhow!("non-UTF8 authority test file"))?, fs::read(entry.path())?);
++            anyhow::ensure!(
++                entry.file_type()?.is_file(),
++                "unexpected authority child entry"
++            );
++            bytes.insert(
++                entry
++                    .file_name()
++                    .into_string()
++                    .map_err(|_| anyhow::anyhow!("non-UTF8 authority test file"))?,
++                fs::read(entry.path())?,
++            );
+         }
+         Ok(bytes)
+     }
+ 
+     fn generation_bytes(&self) -> anyhow::Result<[Vec<u8>; 2]> {
+-        Ok([self.providers.bytes("target-journal")?, self.providers.bytes("target-witness")?])
++        Ok([
++            self.providers.bytes("target-journal")?,
++            self.providers.bytes("target-witness")?,
++        ])
+     }
+ 
+-    fn take_task_inputs(&mut self, queue_capacity: usize) -> anyhow::Result<(
++    fn take_task_inputs(
++        &mut self,
++        queue_capacity: usize,
++    ) -> anyhow::Result<(
+         AgentdConfig,
+         OriginalRootCircuitTaskInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+         RuntimeFixture,
+         AuthBusObjectiveIngress,
+     )> {
+-        let Admission { runtime, config, mut request } = self.admission.take()
++        let Admission {
++            runtime,
++            config,
++            mut request,
++        } = self
++            .admission
++            .take()
+             .ok_or_else(|| anyhow::anyhow!("the original Admission was already consumed"))?;
+         // This is the unchanged original fixture issuer and complete body
+         // binding used by super::start, before the real signed ingress below.
+@@ -108,43 +146,72 @@ impl RootFixture {
+         request.body.artifact_set_digest = self.bundle.digest()?.to_string();
+         request.signature_hex = SigningKey::from_bytes(&[91; 32])
+             .sign(&crate::authbus_objective_claims(&runtime.identity, &request)?.signing_bytes())
+-            .to_bytes().iter().map(|byte| format!("{byte:02x}")).collect();
+-        let file = |name| OpenOptions::new().read(true).write(true).create(true)
+-            .truncate(false).open(runtime.identity.home_root.join(name));
+-        let witness = |name, label: &str| FileAnchorWitnessStore::open(
+-            file(name)?,
+-            JournalScope { scope_digest: cell::d(label), objective_digest: self.source.objective_digest },
+-            Generation::new(1).expect("original constant generation"),
+-            64,
+-        );
++            .to_bytes()
++            .iter()
++            .map(|byte| format!("{byte:02x}"))
++            .collect();
++        let file = |name| {
++            OpenOptions::new()
++                .read(true)
++                .write(true)
++                .create(true)
++                .truncate(false)
++                .open(runtime.identity.home_root.join(name))
++        };
++        let witness = |name, label: &str| {
++            FileAnchorWitnessStore::open(
++                file(name)?,
++                JournalScope {
++                    scope_digest: cell::d(label),
++                    objective_digest: self.source.objective_digest,
++                },
++                Generation::new(1).expect("original constant generation"),
++                64,
++            )
++        };
+         let (mut circuit, mut bindings) = super::super::super::configuration();
+         bindings[0].cell = self.definition.clone();
+-        circuit.parameter_bundle_digest = Sha256Digest::parse(self.bundle.digest()?.to_string())
+-            .map_err(anyhow::Error::msg)?;
++        circuit.parameter_bundle_digest =
++            Sha256Digest::parse(self.bundle.digest()?.to_string()).map_err(anyhow::Error::msg)?;
+         circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
+         circuit.limits.work_budget = 20_000_000;
+         circuit.limits.max_elapsed_ms = 60_000;
+-        circuit.programs[0].nodes[0].kind = CircuitNodeKindV2::Decide { max_work: 10_000_000 };
++        circuit.programs[0].nodes[0].kind = CircuitNodeKindV2::Decide {
++            max_work: 10_000_000,
++        };
+         let epoch = Instant::now();
+         let inputs = OriginalRootCircuitTaskInputsV1 {
+-            definition: self.definition.clone(), source: self.source.clone(),
++            definition: self.definition.clone(),
++            source: self.source.clone(),
+             files: CircuitQ24TaskFilesV1 {
+                 source_journal: file("q24-source.journal")?,
+                 source_witness: witness("q24-source.witness", "original-source-owner")?,
+                 cell_journal: file("q24-cell.journal")?,
+                 cell_witness: witness("q24-cell.witness", "original-cell-owner")?,
+                 inference_control: DurableInferenceControl::open(
+-                    runtime.identity.home_root.join("q24-control.journal"), 4)?,
++                    runtime.identity.home_root.join("q24-control.journal"),
++                    4,
++                )?,
+             },
+             source_mode: CircuitQ24TaskOpenModeV1::Create,
+-            fence: TaskFlowFence::new(runtime.identity.agent_id.clone(), "ordinary-q24-owner", 1,
+-                                     runtime.state.current_generation()?, "ordinary-q24-fence")?,
+-            circuit, routes: bindings.remove(0).routes, bundle: self.bundle.clone(),
+-            model: Arc::clone(&self.model), worker_generation: 1, maximum_cell_records: 16,
++            fence: TaskFlowFence::new(
++                runtime.identity.agent_id.clone(),
++                "ordinary-q24-owner",
++                1,
++                runtime.state.current_generation()?,
++                "ordinary-q24-fence",
++            )?,
++            circuit,
++            routes: bindings.remove(0).routes,
++            bundle: self.bundle.clone(),
++            model: Arc::clone(&self.model),
++            worker_generation: 1,
++            maximum_cell_records: 16,
+             queue_capacity,
+             clock: Arc::new(move || crate::CircuitCellTimeV1 {
+                 circuit_millis: crate::authbus_ingress::now_ms().expect("original live wall clock"),
+-                cell_micros: 10 + u64::try_from(epoch.elapsed().as_micros()).expect("original live Cell clock"),
++                cell_micros: 10
++                    + u64::try_from(epoch.elapsed().as_micros()).expect("original live Cell clock"),
+             }),
+         };
+         let config = config
+@@ -154,8 +221,14 @@ impl RootFixture {
+         Ok((config, inputs, runtime, request))
+     }
+ 
+-    fn install(&mut self, custody: Custody, queue_capacity: usize) -> anyhow::Result<(
+-        Result<Installed, OriginalRootInitialInstallationErrorV1>, RuntimeFixture, AuthBusObjectiveIngress,
++    fn install(
++        &mut self,
++        custody: Custody,
++        queue_capacity: usize,
++    ) -> anyhow::Result<(
++        Result<Installed, OriginalRootInitialInstallationErrorV1>,
++        RuntimeFixture,
++        AuthBusObjectiveIngress,
+     )> {
+         let (config, inputs, runtime, request) = self.take_task_inputs(queue_capacity)?;
+         Ok((custody.into_q24_task(config, inputs), runtime, request))
+@@ -164,14 +237,37 @@ impl RootFixture {
+     async fn start(&mut self, custody: Custody) -> anyhow::Result<RootSession> {
+         let (installed, runtime, request) = self.install(custody, 4)?;
+         let mut installed = installed?;
+-        let (bootstrap, invocation) = installed.config.take_circuit_task_bootstrap()?
+-            .ok_or_else(|| anyhow::anyhow!("coordinator did not install the original task profile"))?;
+-        runtime.state.attach_automation_store(AutomationStore::open(&runtime.identity.layout).await?)?;
+-        anyhow::ensure!(runtime.state.circuit_task.set(bootstrap.handle()).is_ok(), "one original task handle");
+-        anyhow::ensure!(runtime.state.circuit_task_invocation.set(invocation).is_ok(), "one original Source invocation");
++        let (bootstrap, invocation) =
++            installed
++                .config
++                .take_circuit_task_bootstrap()?
++                .ok_or_else(|| {
++                    anyhow::anyhow!("coordinator did not install the original task profile")
++                })?;
++        runtime
++            .state
++            .attach_automation_store(AutomationStore::open(&runtime.identity.layout).await?)?;
++        anyhow::ensure!(
++            runtime.state.circuit_task.set(bootstrap.handle()).is_ok(),
++            "one original task handle"
++        );
++        anyhow::ensure!(
++            runtime
++                .state
++                .circuit_task_invocation
++                .set(invocation)
++                .is_ok(),
++            "one original Source invocation"
++        );
+         let cancellation = CancellationToken::new();
+         let worker = tokio::spawn(bootstrap.run(Arc::clone(&runtime.state), cancellation.clone()));
+-        Ok(RootSession { runtime, request, installed, cancellation, worker: Some(worker) })
++        Ok(RootSession {
++            runtime,
++            request,
++            installed,
++            cancellation,
++            worker: Some(worker),
++        })
+     }
+ }
+ 
+@@ -185,13 +281,25 @@ struct RootSession {
+ 
+ impl RootSession {
+     async fn execute(&self) -> anyhow::Result<()> {
+-        let response = self.runtime.state.response(1, self.runtime.identity.spawn_generation,
+-            AgentdMethod::ObjectiveStart { request: self.request.clone() }).await?;
++        let response = self
++            .runtime
++            .state
++            .response(
++                1,
++                self.runtime.identity.spawn_generation,
++                AgentdMethod::ObjectiveStart {
++                    request: self.request.clone(),
++                },
++            )
++            .await?;
+         let AgentdPayload::ObjectiveRun(admission) = response.payload else {
+             anyhow::bail!("original signed ingress did not return ObjectiveRun");
+         };
+-        anyhow::ensure!(admission.disposition == "circuit_succeeded",
+-                        "actual original Circuit did not complete: {}", admission.disposition);
++        anyhow::ensure!(
++            admission.disposition == "circuit_succeeded",
++            "actual original Circuit did not complete: {}",
++            admission.disposition
++        );
+         Ok(())
+     }
+ 
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs
+index 1166c82d9189461a7d8468347c6018cb4239ba40..438767164b3f231f6f3c39003f7f1f44dbcb69f9 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs
+@@ -5,95 +5,166 @@ use super::*;
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_custody_refuses_another_operation_without_rewriting_current() -> anyhow::Result<()> {
++async fn root_initial_custody_refuses_another_operation_without_rewriting_current()
++-> anyhow::Result<()> {
+     let fixture = RootFixture::new("root-custody-wrong-operation").await?;
+     let prepared = fixture.prepare_original()?;
+     let before = fixture.root_bytes()?;
+     let journal_before = fixture.generation_bytes()?;
+-    let rejected = Custody::from_original_prepared(prepared, "different-root-original-operation".into());
+-    anyhow::ensure!(matches!(rejected, Err(crate::AgentdError::Invalid(ref text))
++    let rejected =
++        Custody::from_original_prepared(prepared, "different-root-original-operation".into());
++    anyhow::ensure!(
++        matches!(rejected, Err(crate::AgentdError::Invalid(ref text))
+         if text == "original initial generation operation cannot be recovered"),
+-        "a different operation must not borrow the original preparation");
+-    anyhow::ensure!(fixture.root_bytes()? == before, "original protected Current changed");
+-    anyhow::ensure!(fixture.generation_bytes()? == journal_before, "original target changed");
+-    anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 0, "no grant was consumed");
++        "a different operation must not borrow the original preparation"
++    );
++    anyhow::ensure!(
++        fixture.root_bytes()? == before,
++        "original protected Current changed"
++    );
++    anyhow::ensure!(
++        fixture.generation_bytes()? == journal_before,
++        "original target changed"
++    );
++    anyhow::ensure!(
++        fixture.providers.authority.capacity()?.used_nonces == 0,
++        "no grant was consumed"
++    );
+     Ok(())
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_custody_failed_publish_keeps_only_same_operation_readback() -> anyhow::Result<()> {
++async fn root_initial_custody_failed_publish_keeps_only_same_operation_readback()
++-> anyhow::Result<()> {
+     let fixture = RootFixture::new("root-custody-failed-publication").await?;
+     let mut custody = fixture.custody()?;
+-    anyhow::ensure!(matches!(custody.read_original_operation()?, NeuronGenerationInitialReadbackV1::Prepared));
++    anyhow::ensure!(matches!(
++        custody.read_original_operation()?,
++        NeuronGenerationInitialReadbackV1::Prepared
++    ));
+     let signed = fixture.sign(&custody)?;
+     let mut damaged = signed.clone();
+-    anyhow::ensure!(!damaged.signature.is_empty(), "original issuer signature is complete");
++    anyhow::ensure!(
++        !damaged.signature.is_empty(),
++        "original issuer signature is complete"
++    );
+     damaged.signature[0] ^= 1;
+     let before = fixture.root_bytes()?;
+     let journal_before = fixture.generation_bytes()?;
+     let failure = custody.publish(&damaged);
+-    anyhow::ensure!(failure.is_err(), "the damaged original signature was admitted");
+-    anyhow::ensure!(matches!(custody.read_original_operation()?, NeuronGenerationInitialReadbackV1::Prepared));
++    anyhow::ensure!(
++        failure.is_err(),
++        "the damaged original signature was admitted"
++    );
++    anyhow::ensure!(matches!(
++        custody.read_original_operation()?,
++        NeuronGenerationInitialReadbackV1::Prepared
++    ));
+     let repeated = custody.publish(&signed);
+-    anyhow::ensure!(matches!(repeated, Err(crate::AgentdError::Invalid(ref text))
++    anyhow::ensure!(
++        matches!(repeated, Err(crate::AgentdError::Invalid(ref text))
+         if text == "original publication was already consumed"),
+-        "an error must not return the consumed Prepared value");
+-    let recovery = custody.recover_original(fixture.providers.selection()?, fixture.providers.target_reopen()?);
+-    anyhow::ensure!(matches!(recovery, Err(crate::AgentdError::Invalid(ref text))
++        "an error must not return the consumed Prepared value"
++    );
++    let recovery = custody.recover_original(
++        fixture.providers.selection()?,
++        fixture.providers.target_reopen()?,
++    );
++    anyhow::ensure!(
++        matches!(recovery, Err(crate::AgentdError::Invalid(ref text))
+         if text == "initial generation remains pending; no redispatch"),
+-        "pending readback must not manufacture a Ready owner");
+-    anyhow::ensure!(fixture.root_bytes()? == before, "readback or rejection rewrote Current");
+-    anyhow::ensure!(fixture.generation_bytes()? == journal_before, "readback rewrote the original target");
+-    anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 0, "bad signature claimed a nonce");
++        "pending readback must not manufacture a Ready owner"
++    );
++    anyhow::ensure!(
++        fixture.root_bytes()? == before,
++        "readback or rejection rewrote Current"
++    );
++    anyhow::ensure!(
++        fixture.generation_bytes()? == journal_before,
++        "readback rewrote the original target"
++    );
++    anyhow::ensure!(
++        fixture.providers.authority.capacity()?.used_nonces == 0,
++        "bad signature claimed a nonce"
++    );
+     Ok(())
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_custody_installs_the_original_task_and_drains_its_same_cell() -> anyhow::Result<()> {
++async fn root_initial_custody_installs_the_original_task_and_drains_its_same_cell()
++-> anyhow::Result<()> {
+     let mut fixture = RootFixture::new("root-custody-original-task").await?;
+     let mut custody = fixture.custody()?;
+     let signed = fixture.sign(&custody)?;
+     custody.publish(&signed)?;
+     let published = custody.read_original_operation()?;
+-    anyhow::ensure!(matches!(&published, NeuronGenerationInitialReadbackV1::Published(actual)
+-        if actual.signed_grant() == &signed), "the protected store did not retain the original publication");
++    anyhow::ensure!(
++        matches!(&published, NeuronGenerationInitialReadbackV1::Published(actual)
++        if actual.signed_grant() == &signed),
++        "the protected store did not retain the original publication"
++    );
+     let repeated = custody.publish(&signed);
+-    anyhow::ensure!(matches!(repeated, Err(crate::AgentdError::Invalid(ref text))
+-        if text == "original publication was already consumed"));
++    anyhow::ensure!(
++        matches!(repeated, Err(crate::AgentdError::Invalid(ref text))
++        if text == "original publication was already consumed")
++    );
+     let before = fixture.root_bytes()?;
+     let session = fixture.start(custody).await?;
+     let result: anyhow::Result<()> = async {
+         anyhow::ensure!(session.installed.custody.read_original_operation()? == published);
+-        anyhow::ensure!(session.drain().is_err(), "a task without original RunStart cannot complete");
++        anyhow::ensure!(
++            session.drain().is_err(),
++            "a task without original RunStart cannot complete"
++        );
+         session.execute().await?;
+         let completed = session.drain()?;
+         let original = completed.source_publication();
+         let expected_input = codex_hepta_neuron::CellStepInputV1 {
+             operation_id: original.input().operation_id.clone(),
+-            scope: fixture.source.scope.clone(), source_frontier: fixture.source.source_frontier,
+-            objective_digest: fixture.source.objective_digest, ndu_snapshot_digest: fixture.source.ndu_snapshot_digest,
+-            monotonic_micros: fixture.source.monotonic_micros, deadline_micros: fixture.source.deadline_micros,
+-            observation: fixture.source.observation.clone(), candidates: fixture.source.candidates.clone(),
++            scope: fixture.source.scope.clone(),
++            source_frontier: fixture.source.source_frontier,
++            objective_digest: fixture.source.objective_digest,
++            ndu_snapshot_digest: fixture.source.ndu_snapshot_digest,
++            monotonic_micros: fixture.source.monotonic_micros,
++            deadline_micros: fixture.source.deadline_micros,
++            observation: fixture.source.observation.clone(),
++            candidates: fixture.source.candidates.clone(),
+         };
+-        anyhow::ensure!(original.input() == &expected_input, "the actual original Cell input differs");
++        anyhow::ensure!(
++            original.input() == &expected_input,
++            "the actual original Cell input differs"
++        );
+         anyhow::ensure!(original.original_record().snapshot.run_id == fixture.source.scope.run_id);
+-        anyhow::ensure!(original.original_record().snapshot.objective_digest == fixture.source.objective_digest);
++        anyhow::ensure!(
++            original.original_record().snapshot.objective_digest == fixture.source.objective_digest
++        );
+         anyhow::ensure!(original.bundle_digest() == fixture.bundle.digest()?);
+-        anyhow::ensure!(!original.output().is_empty(), "no original Circuit result bytes");
++        anyhow::ensure!(
++            !original.output().is_empty(),
++            "no original Circuit result bytes"
++        );
+         anyhow::ensure!(session.installed.custody.read_original_operation()? == published);
+-        anyhow::ensure!(fixture.root_bytes()? == before, "task execution changed its publication operation");
+-        anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 1, "publication claimed more than once");
++        anyhow::ensure!(
++            fixture.root_bytes()? == before,
++            "task execution changed its publication operation"
++        );
++        anyhow::ensure!(
++            fixture.providers.authority.capacity()?.used_nonces == 1,
++            "publication claimed more than once"
++        );
+         Ok(())
+-    }.await;
++    }
++    .await;
+     let cleanup = session.finish().await;
+     result.and(cleanup)
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_custody_installation_error_retains_original_publication_readback() -> anyhow::Result<()> {
++async fn root_initial_custody_installation_error_retains_original_publication_readback()
++-> anyhow::Result<()> {
+     let mut fixture = RootFixture::new("root-custody-installation-error").await?;
+     let mut custody = fixture.custody()?;
+     let signed = fixture.sign(&custody)?;
+@@ -105,9 +176,18 @@ async fn root_initial_custody_installation_error_retains_original_publication_re
+         Ok(_) => anyhow::bail!("the original factory admitted a zero-capacity task"),
+         Err(error) => error,
+     };
+-    anyhow::ensure!(matches!(error.original_error(), crate::AgentdError::Invalid(_)));
+-    anyhow::ensure!(error.read_original_operation()? == published, "installation lost the same original operation");
+-    anyhow::ensure!(fixture.root_bytes()? == before, "installation rewrote its protected publication");
++    anyhow::ensure!(matches!(
++        error.original_error(),
++        crate::AgentdError::Invalid(_)
++    ));
++    anyhow::ensure!(
++        error.read_original_operation()? == published,
++        "installation lost the same original operation"
++    );
++    anyhow::ensure!(
++        fixture.root_bytes()? == before,
++        "installation rewrote its protected publication"
++    );
+     anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 1);
+     // Source/Cell files may already have been opened. No absence-of-effect or
+     // automatic Create retry is inferred from the original installation error.
+@@ -116,7 +196,8 @@ async fn root_initial_custody_installation_error_retains_original_publication_re
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ #[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]
+-async fn root_initial_custody_original_artifact_withdrawal_fences_task_installation() -> anyhow::Result<()> {
++async fn root_initial_custody_original_artifact_withdrawal_fences_task_installation()
++-> anyhow::Result<()> {
+     let mut fixture = RootFixture::new("root-custody-original-withdrawal").await?;
+     let mut custody = fixture.custody()?;
+     let signed = fixture.sign(&custody)?;
+@@ -129,9 +210,14 @@ async fn root_initial_custody_original_artifact_withdrawal_fences_task_installat
+         Ok(_) => anyhow::bail!("withdrawn original Artifact became a task"),
+         Err(error) => error,
+     };
+-    anyhow::ensure!(error.read_original_operation()? == published,
+-                    "historical Published fact must remain distinct from live admission");
+-    anyhow::ensure!(fixture.root_bytes()? == before, "withdrawal caused a replacement Current");
++    anyhow::ensure!(
++        error.read_original_operation()? == published,
++        "historical Published fact must remain distinct from live admission"
++    );
++    anyhow::ensure!(
++        fixture.root_bytes()? == before,
++        "withdrawal caused a replacement Current"
++    );
+     anyhow::ensure!(fixture.providers.authority.capacity()?.used_nonces == 1);
+     Ok(())
+ }

@@ -1,0 +1,42 @@
+{
+  "format": "canonical-exact-request-preparation-contract-v1",
+  "not_a_dispatchable_tool_request": true,
+  "future_tool": "h_process_start",
+  "future_field_names": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "stdin",
+    "timeout_seconds",
+    "idempotency_key"
+  ],
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args_shape": [
+    "-B",
+    "-c",
+    "Exact bootstrap after only the two missing PINS are sealed"
+  ],
+  "cwd": "/home/qian-qi",
+  "stdin": null,
+  "timeout_seconds": 900,
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-final-canonical-alignment-v1",
+  "environment_field": "absent",
+  "control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1",
+  "action_seconds": 600,
+  "record_seconds": 180,
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+  "before_head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+  "before_head_tree": "a489b394666b8141840275128a780605b024cde0",
+  "actual_before_physical_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "actual_before_leaf_count": 15243,
+  "canonical_commit": null,
+  "canonical_packet": null,
+  "requires_root_final_exact_approval": true,
+  "native_dispatches": 0,
+  "physical_source_writes_authorized": false,
+  "tests_authorized": false,
+  "ref_updates_authorized": false,
+  "qualification": false
+}

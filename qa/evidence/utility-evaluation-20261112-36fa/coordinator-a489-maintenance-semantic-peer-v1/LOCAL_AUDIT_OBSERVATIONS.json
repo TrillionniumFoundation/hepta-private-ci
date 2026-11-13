@@ -1,0 +1,30 @@
+{
+  "events": [
+    {
+      "action": "Pure source lexical audit v1",
+      "meaning": "The actual formatter inserted optional trailing commas in function parameter lists. Names, parameters, return types, and bodies were not changed by this assertion failure.",
+      "native_or_gate_failure": false,
+      "outcome": "AssertionError on exact token equality of three function headers in neuron_generation_initial_root_custody_support_tests.rs",
+      "project_code_executed": false,
+      "remedy": "v2 records exact header token differences and separately requires identical names/body-presence and attributes; optional commas remain individually reviewable, not globally erased."
+    },
+    {
+      "action": "Pure summary assembly attempted flat lookup of a raw postimage ARTIFACTS record",
+      "meaning": "Original gzip records nest raw_bytes/raw_sha256/raw_git_blob; there is no standalone raw-name entry.",
+      "native_or_gate_failure": false,
+      "outcome": "KeyError before any summary file was written",
+      "project_code_executed": false,
+      "remedy": "Final sealing script checks the original nested schema explicitly and matches the independent gzip/part records."
+    },
+    {
+      "action": "Pure macro-token enumerator v2 review",
+      "meaning": "Provisional 439 includes one Rust keyword expression; actual macro invocation total is 438.",
+      "native_or_gate_failure": false,
+      "outcome": "One unary if !(1..=128) expression was incorrectly counted as a macro-like token tree",
+      "project_code_executed": false,
+      "remedy": "v3 excludes statement keywords before !. Source bytes, 19 fix splices, and exact token diffs are unchanged. One actual Boolean ensure remains the only changed macro."
+    }
+  ],
+  "format": "hepta-main41e-local-review-observations-v1",
+  "source_files_unchanged": true
+}

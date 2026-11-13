@@ -1,0 +1,153 @@
+{
+  "format": "hepta-root-exact-final-nonrust-and-format-dispatch-approval-v1",
+  "created_at_utc": "2026-11-13 11:25:35 UTC",
+  "status": "ROOT_APPROVED_FOR_ONE_EXACT_FINAL_NONRUST_FORMAT_ATTEMPT",
+  "root_engineering_approval": true,
+  "authorization_basis": "The user's continuing instruction to complete the isolated Hepta utility implementation and original verification. This approval is limited to the reviewed engineering operation below and is not a Hepta Model, Selector, Version, Training, FinalUse, Root runtime owner or task grant.",
+  "executor": "/root/native_ci_audit",
+  "dispatch_count": 1,
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-final-nonrust-format-v1",
+  "exact_request": {
+    "local_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-preparation-v1/execution-candidate-v1/ACTUAL_PROCESS_INPUT.candidate.json",
+    "bytes": 757672,
+    "sha256": "bffdf1e54e4f2437c34086b2f5322484deeef2b1190728068801ef20da621b26",
+    "git_blob": "9ca09c7e486277f72669173c649290d2124d794e",
+    "raw_standalone_git_GET_claimed": false,
+    "bounded_actual_git_placement": "2527949ebafa7d1160c0a2efb3d6034b58f89426",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi",
+    "args_shape": [
+      "-B",
+      "-c",
+      "exact 5700-byte approved bootstrap"
+    ],
+    "timeout_seconds": 2100,
+    "request_fields": [
+      "args",
+      "cwd",
+      "executable",
+      "host",
+      "idempotency_key",
+      "stdin",
+      "timeout_seconds"
+    ]
+  },
+  "stdin": {
+    "bytes": 751579,
+    "sha256": "3362aba972f9a8daaf3d6036106c8c4c38cbb27fb9797c633eddb89f53ac8804",
+    "git_blob": "17a80f7079d350bafb73bcd82bb54c45a5f8c990"
+  },
+  "bootstrap": {
+    "bytes": 5700,
+    "sha256": "d9ad747e42fa3a23fecac735a3a2927d4f81d9ba5d4371ce2427a55b5af1290b",
+    "git_blob": "3f4692a37efcdc6cb6cfe070f1d574d88fbea14a"
+  },
+  "approved_config": {
+    "bytes": 2906,
+    "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1",
+    "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708"
+  },
+  "thin_driver": {
+    "bytes": 28657,
+    "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46",
+    "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941"
+  },
+  "unchanged_maintenance_driver": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+  "source": {
+    "repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+    "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "head_tree": "a489b394666b8141840275128a780605b024cde0",
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ],
+    "actual_current_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+    "actual_current_inventory": {
+      "bytes": 5633323,
+      "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1",
+      "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba"
+    },
+    "leaf_count": 15243,
+    "strict_packet": {
+      "bytes": 2998722,
+      "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3",
+      "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548"
+    },
+    "expected_after_four_applies_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+    "final_after_formatter_tree": null,
+    "manual_apply_paths": [
+      ".github/blob-size-allowlist.txt",
+      "CALLERS.toml",
+      "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py"
+    ],
+    "new_explicit_target_permission": {
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "mode": "100644",
+      "before": {
+        "bytes": 358159,
+        "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7",
+        "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0"
+      },
+      "after": {
+        "bytes": 358632,
+        "sha256": "0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644",
+        "git_blob": "3e5950ad4959af76cfbf7d350e45f14facf77491"
+      },
+      "is_pure_subset_of_original_safe_rule": false,
+      "old_generic_QA_python_write_permission_removed": true
+    }
+  },
+  "operation": {
+    "control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1",
+    "output": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run",
+    "sequence": [
+      "Verify the exact four immutable inputs in memory",
+      "Create the new fixed control directory and retain complete staging readback",
+      "Exec the exact thin driver",
+      "Thin main alone acquires the same original nonblocking EX",
+      "Run unchanged complete live source, Git, environment and global process guards",
+      "Apply exactly four reviewed existing files with original repeat-preimage, owner, mode, no-follow and atomic-write checks",
+      "Run exactly the original fmt --base command once",
+      "Retain complete actual postimages, source/Git/input/same-lock audits and original terminal evidence"
+    ],
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "budgets": {
+      "preflight_and_apply": 600,
+      "fmt": 900,
+      "total_retention": 300,
+      "outer": 2100
+    },
+    "single_EX_owner": "Unchanged thin main only. No staging EX or replacement lock.",
+    "original_runtime_tool_V8_target_disk_and_output_guards": "Retained unchanged",
+    "source_index_or_HEAD_updates": false,
+    "remote_refs_or_PR_updates": false,
+    "tests_or_fix_or_dependency_installation": false,
+    "canonical_alignment_authorized": false
+  },
+  "evidence_reviewed": {
+    "actual_maintenance_result": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+    "actual_maintenance_normal": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+    "Root_actual_maintenance_runtime": "775898e4ef848f9203576a5efac2da4c505bc39d",
+    "Root_actual_maintenance_source": "43d03bd7f8d663de9893fd603ff0162ab03c349b",
+    "independent_Rust_semantics": "d3bccc02d7be04d5d5fec510aa73f1447109d5df",
+    "independent_nonRust_fences": "7dce432cbecd7b349db5e8599a8e1c58a0b7f4bf",
+    "Root_nonRust_complete_projection": "94c9d4fa5843806a0ae8e0a08296840c4ad625d9",
+    "Root_candidate_source_Git_objects": "5dab645c15ad69a98f509a25f03f814e3ccb1e94",
+    "independent_control_HOLD": "0216a7064812580ba6e2eb8db3fbc9ef71f19a8d",
+    "independent_exact_request": "12c4dce5eb6b587e437ba961abc283916c17e301",
+    "Root_exact_request_review": "d3e6482501050b2a25692beebec765808897c12c",
+    "Root_61_entry_actual_control_full_GET_ledger": "0da6488c7f7a9005201dd107cbda989c2a0a3b11",
+    "all_referenced_review_bodies_actual_Git_full_GET": true
+  },
+  "observation_permission": "After the one dispatch, reconcile and read only that same original job/key/path/version: complete original admission, normal terminal, stdout/stderr, staging files, result, artifacts, source transitions, inventories, raw Git state/metadata and audit records. Preserve raw native nanosecond integers using Python/raw bytes, never JavaScript reserialization.",
+  "unknown_policy": "On ambiguous admission, timeout, cancellation, partial records, failed original guards or incomplete source retention, preserve the exact original identity and actual partial state. No second key/path/variant, automatic retry, overwrite, rollback, reset, guard weakening or foreign process termination.",
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "limits": "This is one reviewed engineering maintenance attempt. It grants no runtime task/model/evaluator/consumer authority and proves no adoption, complete NoUpdate, independent causal benefit, complete cost contract or real daemon/Root process cold recovery. Final format success and canonical/full source/native qualification require actual later evidence."
+}

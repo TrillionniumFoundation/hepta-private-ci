@@ -1,0 +1,885 @@
+{
+  "actual_static_native_command_payloads": {
+    "eval_lib": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final",
+      "--test-threads",
+      "2"
+    ],
+    "focused": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "-E",
+      "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "ordinary": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "root": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "--run-ignored",
+      "only",
+      "-E",
+      "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes) | test(=authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace) | test(=authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation) | test(=authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect) | test(=authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch) | test(=authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent) | test(=authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel) | test(=authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback) | test(=authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c) | test(=authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline) | test(=authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch) | test(=authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile) | test(=authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root) | test(=authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work) | test(=authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error)",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ]
+  },
+  "added9": [
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error"
+  ],
+  "current_prepared_runtime_source_rows": {
+    ".github/workflows/hepta-daemon-learning-native.yml": {
+      "bytes": 30745,
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "kind": "file",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "kind": "file",
+      "mode": "100644",
+      "path": "codex-rs/.config/nextest.toml",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "kind": "file",
+      "mode": "100644",
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/hepta_c_observer_coverage.py": {
+      "bytes": 28918,
+      "git_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+      "kind": "file",
+      "mode": "100644",
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "sha256": "a2138ead7b212acf8f4fb747c7bf41b07df56aa51b34f45544d1a1690911a0df"
+    },
+    "scripts/hepta_cell_test_helpers.py": {
+      "bytes": 18658,
+      "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+      "kind": "file",
+      "mode": "100644",
+      "path": "scripts/hepta_cell_test_helpers.py",
+      "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+    },
+    "scripts/hepta_ci_exec.py": {
+      "bytes": 12863,
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "kind": "file",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_exec.py",
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    "scripts/hepta_ci_junit.py": {
+      "bytes": 6613,
+      "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "kind": "file",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_junit.py",
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "kind": "file",
+      "mode": "100644",
+      "path": "scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    }
+  },
+  "definitions": {
+    "NATIVE_DRIVER_B92.py": {
+      "all_functions_including_nested": 7,
+      "top_level_classes": 0,
+      "top_level_functions": 1
+    },
+    "NATIVE_WRAPPER_DE3.py": {
+      "all_functions_including_nested": 9,
+      "top_level_classes": 0,
+      "top_level_functions": 8
+    },
+    "RUN_NEXTEST_ORIGINAL.py": {
+      "all_functions_including_nested": 12,
+      "top_level_classes": 1,
+      "top_level_functions": 5
+    },
+    "SOURCE_GATES_5118.py": {
+      "all_functions_including_nested": 19,
+      "top_level_classes": 1,
+      "top_level_functions": 19
+    },
+    "SOURCE_WRAPPER_8607.py": {
+      "all_functions_including_nested": 1,
+      "top_level_classes": 0,
+      "top_level_functions": 1
+    }
+  },
+  "format": "hepta-final-qualification-successor-binding-static-extraction-v1",
+  "fourteen_phase_ids": [
+    "eval-lib",
+    "native-toolchain",
+    "helper-build",
+    "helper-verify-before",
+    "focused",
+    "ordinary",
+    "root-setup",
+    "root",
+    "all-native-driver",
+    "helper-verify-after",
+    "root-cleanup",
+    "source-closure",
+    "caller-self-test",
+    "caller-verify"
+  ],
+  "ordinary_packages_argv": [
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-neuron"
+  ],
+  "original33_equal_prefix": true,
+  "original_inputs": {
+    "HISTORICAL_SOURCE_REQUEST.json": {
+      "bytes": 990,
+      "git_blob": "eae8d46956ac3afd89bf18b30d69997cbe925788",
+      "sha256": "81fb594800d838ccc1f4bc348bc5af409abb66ce62a9f2d981c9e99143a2ebbd"
+    },
+    "JUSTFILE.original": {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "NATIVE_DRIVER_B92.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "NATIVE_WRAPPER_DE3.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "NEXTEST_ORIGINAL.toml": {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    "PLAN_3AEF.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "RUN_NEXTEST_ORIGINAL.py": {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "SOURCE_GATES_5118.py": {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    "SOURCE_WRAPPER_8607.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    },
+    "WORKFLOW_D256.yml": {
+      "bytes": 30745,
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+    }
+  },
+  "original_interfaces_reused": {
+    "bytes": 4842,
+    "git_blob": "56ff9b0019da0e2b9d4c49189ef170acd13eb45e",
+    "sha256": "49259e92555d45b6aac3f3910519dc81b4bee6b157122ffd674cb847d477a172"
+  },
+  "outer_budgets_seconds": {
+    "all_driver": 21000,
+    "focused_driver": 12000,
+    "native": 45000,
+    "source": 7200
+  },
+  "phase_budgets_seconds": {
+    "caller-self-test": 300,
+    "caller-verify": 4800,
+    "eval-lib": 3600,
+    "focused": 7200,
+    "helper-build": 3600,
+    "helper-verify-after": 120,
+    "helper-verify-before": 120,
+    "native-toolchain": 120,
+    "ordinary": 7200,
+    "root": 7200,
+    "root-cleanup": 60,
+    "root-setup": 60,
+    "source-closure": 600
+  },
+  "phase_contracts_reused_from_original_plan": [
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--test-threads",
+        "2"
+      ],
+      "cwd": "${FINAL_REPO}/codex-rs",
+      "evidence": "Fresh original runner JSON/log, fresh JUnit and collector summary, complete final-source library inventory and all four required regression names. Derive actual final counts from that execution. Do not select, truncate or reject the final full-library run merely to reproduce the historical 163; do not borrow old PASS.",
+      "id": "eval-lib",
+      "minimum_tests": 1,
+      "required_coverage": {
+        "actual_final_executed_unique_tests": null,
+        "actual_final_passed_tests": null,
+        "final_source_count_policy": "Observe executed unique names and passed/failed/skipped counts from the new fresh JUnit and actual final-source full library inventory. Run the original complete unfiltered library argv. 163 is only the recorded c0f historical count; it is not a target, filter, ceiling or expected final count.",
+        "required_four": [
+          "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+          "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+          "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+          "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+        ]
+      },
+      "runner": "original scripts/hepta_ci_exec.py run",
+      "stop_rule": "Failure, missing/stale JUnit, wrong inventory or source change stops later native suites.",
+      "threads": 2,
+      "timeout_seconds": 3600
+    },
+    {
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']];[subprocess.run(c,check=True) for c in commands]"
+      ],
+      "id": "native-toolchain",
+      "minimum_tests": 0,
+      "scope": "Executed by each invocation of original b92 native driver.",
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers"
+      ],
+      "cwd": "${FINAL_REPO}",
+      "evidence": "Original Cargo JSONL/stderr, build-finished success, compiler-artifact executable, immutable copied helper bytes/hash, source-bound manifest.json and env.json; no guessed existing binary.",
+      "id": "helper-build",
+      "inner_original_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "minimum_tests": 0,
+      "offline_via_environment": true,
+      "stop_rule": "Any incomplete helper or source mismatch stops tests.",
+      "timeout_seconds": 3600
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers",
+        "--verify-only"
+      ],
+      "id": "helper-verify-before",
+      "minimum_tests": 0,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "-E",
+        "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "cwd": "${FINAL_REPO}",
+      "driver_invocation": [
+        "python3",
+        "${PINNED_B92_DRIVER}",
+        "--repo",
+        "${FINAL_REPO}",
+        "--records",
+        "${FRESH_FOCUSED_RECORDS}",
+        "--source",
+        "${FINAL_HEAD}",
+        "--suite",
+        "focused"
+      ],
+      "filter_tokens_exact": [
+        "cell_q24_dataset::tests::",
+        "circuit_experience_intake::tests::",
+        "original_execution_owner_",
+        "neuron_cell_evaluation::tests::learning::",
+        "holdout_current_completed_execution_readback_requires_physical_original",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+      ],
+      "id": "focused",
+      "outer_driver_budget_seconds": 12000,
+      "required_existing_case": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+      "runner": "original CLI hepta_ci_exec.py --timeout-seconds 7200 --minimum-tests 1 --output ${RECORDS}/focused.json -- <command>",
+      "stop_rule": "Nextest retains --no-fail-fast inside the selected suite. Any suite/collection/source failure stops the later all driver; no retries.",
+      "threads": 2,
+      "timeout_seconds": 7200
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron",
+        "--lib",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "id": "ordinary",
+      "required_evidence": "Original hepta_ci_junit.collect plus exact named owner coverage from final-source hepta_c_observer_coverage.py, with matching original terminal log and JUnit; skipped/flaky/repeated/missing named cases cannot pass.",
+      "scope": "All library tests in the exact five existing workflow packages; not the full Rust workspace.",
+      "stop_rule": "Failure or missing coverage prevents Root setup/tests.",
+      "threads": 2,
+      "timeout_seconds": 7200
+    },
+    {
+      "id": "root-setup",
+      "scope": "Original b92 sudo -n setup of one fresh direct /run child containing source/bind/checkpoints; actual UID0 and bind mount, no fabricated readiness.",
+      "timeout_seconds": 60
+    },
+    {
+      "command_payload": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "-E",
+        "${EXACT_FINAL_WORKFLOW_PARENT_EXPRESSION}",
+        "--test-threads",
+        "1",
+        "--retries",
+        "0",
+        "--status-level",
+        "pass",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "execution_wrapper": "Original b92 sudo -n env -i whitelist + original hepta_ci_exec.py via UID0 assertion; no command rewrite.",
+      "id": "root",
+      "inventory_source": "Parse parents AST from the final-source workflow. Prepared 86dd currently has exactly 33, namely the original c0f 32 plus the one registered evaluated-Version late-failure UID0 case.",
+      "prepared_parent_count": 33,
+      "prepared_parent_names": [
+        "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+        "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+        "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+        "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+        "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+        "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+        "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+        "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+        "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+        "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+        "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+        "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+        "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+        "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+        "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+        "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+        "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c"
+      ],
+      "stop_rule": "Original collector must retain fresh JUnit and sorted non-skipped names must equal exact parents; default ignored skips never count. Cleanup and source audit remain mandatory on failure.",
+      "threads": 1,
+      "timeout_seconds": 7200
+    },
+    {
+      "driver_invocation": [
+        "python3",
+        "${PINNED_B92_DRIVER}",
+        "--repo",
+        "${FINAL_REPO}",
+        "--records",
+        "${FRESH_ALL_RECORDS}",
+        "--source",
+        "${FINAL_HEAD}",
+        "--suite",
+        "all",
+        "--root-parent",
+        "${FRESH_DIRECT_RUN_CHILD}"
+      ],
+      "id": "all-native-driver",
+      "outer_driver_budget_seconds": 21000,
+      "scope": "all = ordinary then Root, not focused plus ordinary plus Root. Repeats original toolchain/helper preparation for this new invocation/records; do not skip its helper manifest checks."
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "${NATIVE_RECORDS}/helpers",
+        "--verify-only"
+      ],
+      "condition": "Original normal success path only; if an earlier stage failed this is not run, not implicitly passed.",
+      "id": "helper-verify-after",
+      "minimum_tests": 0,
+      "timeout_seconds": 120
+    },
+    {
+      "id": "root-cleanup",
+      "scope": "Original ownership restoration/unmount in finally when Root setup was attempted; retain fixture/error if unsuccessful.",
+      "timeout_seconds": 60
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "600",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "${SOURCE_RECORDS}/source-closure/source-closure.json",
+        "--",
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "id": "source-closure",
+      "minimum_tests": 1,
+      "scope": "Original complete discovery on final source, no path subset or new filtering.",
+      "stop_rule": "Known failure stays failed. In original 5118 independent caller self-test may still run if source unchanged; it does not cancel or turn closure failure into pass.",
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "id": "caller-self-test",
+      "minimum_tests": 0,
+      "runner": "original execute_logged",
+      "stop_rule": "Any nonzero returncode/timed_out/output_limit_exceeded prevents full verify.",
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "id": "caller-verify",
+      "minimum_tests": 0,
+      "runner": "original execute_logged",
+      "scope": "Complete final-source collector, CALLERS and every protected row; previous scoped diagnostics or c0f PASS do not replace this.",
+      "timeout_seconds": 4800
+    }
+  ],
+  "prepared_graph": {
+    "bytes": 3818494,
+    "git_blob": "097282896b5881614498faf2231e4c8c0da393c3",
+    "sha256": "41e1924454c39e21d46f4dddde2cc61a654f462cd82e8a6b659f46fa8e3eae4a"
+  },
+  "prepared_nonrust_counts": {
+    "boundaries": 633,
+    "changed_original_protected_rows": 23,
+    "changed_original_scope_spans": 80,
+    "explicit_old_method_migrations": 2,
+    "meaning": "Reused independently reviewed pre-maintenance reservation only, not final inventory or QA results.",
+    "new_qa_methods": 3,
+    "old_methods_identical": 602,
+    "old_qa_methods": 604,
+    "ordinary_critical_literals": 17,
+    "ordinary_scopes": 34,
+    "original_boundary_prefix": 621,
+    "original_protected_rows": 437,
+    "prepared_qa_methods": 607,
+    "protected_rows": 442,
+    "provider_original_paths": 41,
+    "provider_original_scopes": 264,
+    "provider_paths": 45,
+    "provider_scopes": 288,
+    "qa_files": 64,
+    "unchanged_original_protected_rows": 414,
+    "workflow_root_parents": 48
+  },
+  "prepared_tree": "a489b394666b8141840275128a780605b024cde0",
+  "previous39_equal_prefix": true,
+  "prior_registration_proof_reused": {
+    "bytes": 389989,
+    "git_blob": "b84c6853a31996e21df55d2f9239e4e29387e0fd",
+    "sha256": "8fcea20afef2070dc83583e11807567bff29a607abe3b49f273d3b1eb999f237"
+  },
+  "project_execution_counts": {
+    "H": 0,
+    "QA": 0,
+    "Rust": 0,
+    "formatter": 0,
+    "source_gates": 0,
+    "source_ref_writes": 0
+  },
+  "reserved_nonrust_paths": {
+    ".github/blob-size-allowlist.txt": {
+      "bytes": 13318,
+      "git_blob": "bf6cae8fe21f249a6e055b5edd2f69a2a61cafa8",
+      "kind": "file",
+      "mode": "100644",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha256": "28d1f9a9319d4eaad3455f9d14d83e5f7cef2a7731f5b5dbfbf94ce4a428b059"
+    },
+    ".github/workflows/hepta-daemon-learning-native.yml": {
+      "bytes": 30745,
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "kind": "file",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+    },
+    "CALLERS.toml": {
+      "bytes": 1855845,
+      "git_blob": "1f53a53349aa18d37a0c7299f2ab9fe94b0de244",
+      "kind": "file",
+      "mode": "100644",
+      "path": "CALLERS.toml",
+      "sha256": "8c32ce84deefdb06bf98728dae51e287496349fc1abda95ecc96a9ce5599ce5c"
+    },
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json": {
+      "bytes": 358159,
+      "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+      "kind": "file",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7"
+    },
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py": {
+      "bytes": 102696,
+      "git_blob": "03ca2b5de52c6982cfe1623885a1675fd3ed74fd",
+      "kind": "file",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "sha256": "caba0dc645261cb5ecb2ae8eb92e10bab92683f6fb9bb399b62a26eabe5360d3"
+    },
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py": {
+      "bytes": 17979,
+      "git_blob": "da9574801cfd3a7ef43232a8bfffe4510099fbad",
+      "kind": "file",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "sha256": "84d899d007956d9594b1465152467ecc6ba7eff2fc152a36f3ae83355de89b41"
+    },
+    "qa/b4-no-bypass/test_resident_root_source_closure.py": {
+      "bytes": 33253,
+      "git_blob": "5a6f9372830e4eee584484b88e53e4ffbf5127d9",
+      "kind": "file",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "sha256": "019a8988beea067db2d71784f5cc4a8516d8830f749c6f6cf47cd7084adb2129"
+    }
+  },
+  "root_exact_expression": "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes) | test(=authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace) | test(=authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation) | test(=authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect) | test(=authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch) | test(=authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent) | test(=authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel) | test(=authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback) | test(=authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs) | test(=authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c) | test(=authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline) | test(=authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch) | test(=authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile) | test(=authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root) | test(=authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work) | test(=authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback) | test(=runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error)",
+  "runtime": {
+    "default_config_retries": 1,
+    "default_slow_timeout": {
+      "period": "30s",
+      "terminate-after": 2
+    },
+    "explicit_command_retries": 0,
+    "ledger_existing_overrides": [
+      {
+        "filter": "package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)",
+        "slow-timeout": {
+          "period": "30s",
+          "terminate-after": 6
+        },
+        "test-group": "hepta_durable_capacity"
+      },
+      {
+        "filter": "package(codex-hepta-learning-ledger) & test(signed_product_history_curve_append_lookup_reopen_and_exact_retry)",
+        "retries": 0,
+        "slow-timeout": {
+          "period": "30s",
+          "terminate-after": 20
+        },
+        "test-group": "hepta_durable_capacity"
+      }
+    ],
+    "nextest_profile": "local",
+    "no_fail_fast": true,
+    "note": "Unchanged config default retries=1 is overridden by exact --retries 0 on every selected test invocation.",
+    "rust_min_stack_bytes": 8388608
+  },
+  "scope": "Pure stdlib JSON/TOML/AST/hash inspection; no imported runner, subprocess, test, formatter, source/ref mutation or H.",
+  "source_gate_tuples": [
+    [
+      "source-closure",
+      600,
+      [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ]
+    ],
+    [
+      "self-test",
+      300,
+      [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ]
+    ],
+    [
+      "verify",
+      4800,
+      [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ]
+    ]
+  ],
+  "status": "FROZEN_TEXT_AND_AST_RELATIONS_MATCH; ACTUAL_FINAL_SOURCE_NOT_BOUND",
+  "unknown_final_bindings": {
+    "canonical_commit": null,
+    "canonical_tree": null,
+    "clean_complete_inventory": null,
+    "formatter_changed_paths": null,
+    "native_compact_inventory": null,
+    "native_results": null,
+    "post_final_nonrust_source": null,
+    "postmaintenance_source": null,
+    "source_gate_results": null
+  },
+  "workflow_root_parent_count": 48,
+  "workflow_root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+    "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+    "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+    "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+    "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+    "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+    "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error"
+  ]
+}

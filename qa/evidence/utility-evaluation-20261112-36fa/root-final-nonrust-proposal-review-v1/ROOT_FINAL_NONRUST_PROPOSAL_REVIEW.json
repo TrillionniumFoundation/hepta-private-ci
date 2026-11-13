@@ -1,0 +1,152 @@
+{
+  "H_calls": 0,
+  "actual_base_graph": {
+    "bytes": 4702236,
+    "git_blob": "a8714cfd209763bff062bb61a2819287b355fe47",
+    "sha256": "c3d5defca1958b38d60e51479277169ecf1755a299a0014eb901ce16db427e97"
+  },
+  "actual_base_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "actual_final_inventory": {
+    "bytes": 5633323,
+    "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba",
+    "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1"
+  },
+  "all_seven_images": {
+    "bytes": 6437165,
+    "git_blob": "5c670d9a47c429122585e5a01b2d0ad38b559240",
+    "sha256": "a5e1196e9beb071fe34835c49db14a1fd918805c2323fae948ce9022ad8d8082"
+  },
+  "format": "hepta-root-final-nonrust-proposal-complete-source-review-v1",
+  "four_exact_writes": [
+    {
+      "after": {
+        "bytes": 13480,
+        "git_blob": "19241ceb6ee0c0122ab8c6e9c5b47ccb5d079add",
+        "sha256": "264c0216a90b471c692a86cf98f1a596f70b85f77d8cddb410110d912a4cf1be"
+      },
+      "before": {
+        "bytes": 13318,
+        "git_blob": "bf6cae8fe21f249a6e055b5edd2f69a2a61cafa8",
+        "sha256": "28d1f9a9319d4eaad3455f9d14d83e5f7cef2a7731f5b5dbfbf94ce4a428b059"
+      },
+      "mode": "100644",
+      "path": ".github/blob-size-allowlist.txt"
+    },
+    {
+      "after": {
+        "bytes": 1855908,
+        "git_blob": "7123126e368a9e7f65c95b8eb29b0c469e2fa893",
+        "sha256": "62fc6814e2f24ecbf37a83583f526d215870cf2ab5202f524f34de46b77273fa"
+      },
+      "before": {
+        "bytes": 1855845,
+        "git_blob": "1f53a53349aa18d37a0c7299f2ab9fe94b0de244",
+        "sha256": "8c32ce84deefdb06bf98728dae51e287496349fc1abda95ecc96a9ce5599ce5c"
+      },
+      "mode": "100644",
+      "path": "CALLERS.toml"
+    },
+    {
+      "after": {
+        "bytes": 358632,
+        "git_blob": "3e5950ad4959af76cfbf7d350e45f14facf77491",
+        "sha256": "0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644"
+      },
+      "before": {
+        "bytes": 358159,
+        "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+        "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json"
+    },
+    {
+      "after": {
+        "bytes": 17979,
+        "git_blob": "6cf198adc90668e5cc413495ae507d2556b3dafb",
+        "sha256": "e04d85ac4343347859d3b523a971e5e4a8d9490fd5a3335c7d362f9164c5249f"
+      },
+      "before": {
+        "bytes": 17979,
+        "git_blob": "da9574801cfd3a7ef43232a8bfffe4510099fbad",
+        "sha256": "84d899d007956d9594b1465152467ecc6ba7eff2fc152a36f3ae83355de89b41"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py"
+    }
+  ],
+  "full_git_readback_entries": 55,
+  "full_git_readback_ledger": {
+    "bytes": 22428,
+    "git_blob": "4e94d4eb99b49e79ed31a2b79905b5887258fc5f",
+    "sha256": "de0754945480f2129d62954681579200a258f91933c059e6596ce346f7c8814b"
+  },
+  "leaves": 15243,
+  "limits": [
+    "This proves complete byte projection and provenance, not actual application or final fmt.",
+    "Semantic fence review is independently owned by evaluation_audit.",
+    "No qualification, real owner, task, evaluation, consumer or process cold recovery inference."
+  ],
+  "native_application_observed": false,
+  "no_rust_mode_deletion_or_addition": true,
+  "project_or_QA_commands": 0,
+  "projected_full_inventory": {
+    "bytes": 5633513,
+    "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+    "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+  },
+  "projected_graph": {
+    "bytes": 4702324,
+    "git_blob": "7c515dbe48ae3ab42ccc85d916e38675db06ced2",
+    "sha256": "797bb22fdad8ec3cd8b5bc8751769d33c8be9306467afdb6dbb464a96a0808a8"
+  },
+  "projected_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "proposal_packet": {
+    "bytes": 5999431,
+    "git_blob": "b3490071b2b109aa1854afd3353952890b8e0eab",
+    "sha256": "a197e68853035ea4dd46eae16b15d548ded6bccb1392f528a1cc9677ce0d0082"
+  },
+  "qualification": false,
+  "required_target_permission_adaptation": {
+    "after": {
+      "bytes": 358632,
+      "git_blob": "3e5950ad4959af76cfbf7d350e45f14facf77491",
+      "sha256": "0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644"
+    },
+    "before": {
+      "bytes": 358159,
+      "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+      "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7"
+    },
+    "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "pure_subset_of_old_safe": false,
+    "scope": "Only this exact existing contract JSON target is added; all previous QA wildcard write scope is removed. No native execution permission is implied."
+  },
+  "seven_bound_paths": [
+    ".github/blob-size-allowlist.txt",
+    ".github/workflows/hepta-daemon-learning-native.yml",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "source_commit_ref_or_index_mutations": 0,
+  "source_identity_preserved_exact": true,
+  "strict_packet": {
+    "bytes": 2998722,
+    "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+    "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+  },
+  "tree_plan": {
+    "bytes": 27229,
+    "git_blob": "b0eb728d992750ee3830714afb515b9d6b0d68cb",
+    "sha256": "0156f945284531d61f58b674cc60a3f5abc7799845f7104299264c7beae8b25a"
+  },
+  "unchanged_paths": 15239,
+  "updates": {
+    "bytes": 653,
+    "git_blob": "e9178e5c9eb328d66a432f8d1f2c5299d9f31b4a",
+    "sha256": "070a5880012bbc916bf33ea8f2e94509ccb846beb5367a61ce9e6d276e9850b2"
+  }
+}

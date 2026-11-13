@@ -1,0 +1,95 @@
+{
+  "H_calls": 0,
+  "all_four_decoded_bytes_equal": true,
+  "bootstrap": {
+    "bytes": 5700,
+    "git_blob": "cb67cf33b0262e9c4836e16888d125d5ee9c7ed7",
+    "sha256": "987f747ec050db58d19a9967f59907165f12c93c986f7538597dd027a998fc09"
+  },
+  "bootstrap_original": {
+    "bytes": 5711,
+    "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+    "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+  },
+  "config": {
+    "bytes": 2897,
+    "git_blob": "92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3",
+    "sha256": "e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a"
+  },
+  "current_config_is_HOLD": true,
+  "exact_changes": [
+    "BASE fixed new control path",
+    "PINS exact four new input identities"
+  ],
+  "execution_order": [
+    "Verify bounded input and all four hashes in memory",
+    "Create fresh fixed control directory only",
+    "Create and fully read back original bootstrap/argv/payload plus four files, O_EXCL|O_NOFOLLOW, 0600",
+    "Retain STAGING_READBACK and fsync",
+    "exec original thin driver without holding any lock",
+    "Thin main alone acquires the original EX and revalidates full actual source/Git/runtime",
+    "Apply exactly four reviewed nonRust files",
+    "Original fmt900",
+    "Full actual retention and three final audits"
+  ],
+  "format": "hepta-last-nonrust-exact-hold-launch-review-v1",
+  "four_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2897,
+      "git_blob": "92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3",
+      "sha256": "e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a"
+    },
+    "MAINTENANCE_NORMAL.original.json": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2998722,
+      "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+      "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+    },
+    "driver.py": {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    }
+  },
+  "full_inverse_equal": true,
+  "no_env_field": true,
+  "outer_seconds": 2100,
+  "qualification": false,
+  "request": {
+    "bytes": 757660,
+    "git_blob": "1302cc1ea34041636f0ba31ee7c44232e485435d",
+    "sha256": "a1ec74be3f91546b93ecb7b6b594aa15e705e3f0263f3b548ed4b1a7d27d8e3d"
+  },
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "request_is_not_dispatch_authority": true,
+  "root_execution_approved": false,
+  "single_ex_owner": "thin main only; no bootstrap fcntl or lease",
+  "source_packet_bound": 40000000,
+  "status": "HOLD_NOT_DISPATCHED",
+  "stdin": {
+    "bytes": 751567,
+    "git_blob": "734b0109ab680a521553b42240b3b27adf784e81",
+    "sha256": "118804b581cb804b1687fe8c582bc23b6657bd8d01c753207e0227a6c8270384"
+  },
+  "stdin_bytes": 751567,
+  "typed_bytes": 757660,
+  "unchanged_helper_bodies": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ],
+  "unknown_policy": "No new key/path/variant, rollback or overwrite. No native request has been submitted. A future exact engineering approval must bind the final approved config and final request bytes."
+}

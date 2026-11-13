@@ -1,0 +1,90 @@
+{
+  "H_calls": 0,
+  "actual_binary_read_sdk_count": 6,
+  "actual_final_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "after_fix_physical_tree": "c29d4e478e7561cadf062e108aa6413623a62ac2",
+  "all_15243_modes_and_source_blobs_composed": true,
+  "all_before_after_bodies_verified": true,
+  "base_tree": "a489b394666b8141840275128a780605b024cde0",
+  "changed_tree_count": 4,
+  "changed_tree_plan": {
+    "bytes": 210773,
+    "git_blob": "3d65d94c1ac5179b36c666f99b495b2a17dc4fcc",
+    "sha256": "b0eba868cde35b8000cf0cb9f357aafa18beb03850b9cf2669aa52e70d78dc87"
+  },
+  "changes": {
+    "final_union": 17,
+    "fix": 12,
+    "fmt": 14
+  },
+  "complete_graph": {
+    "bytes": 4702236,
+    "git_blob": "a8714cfd209763bff062bb61a2819287b355fe47",
+    "sha256": "c3d5defca1958b38d60e51479277169ecf1755a299a0014eb901ce16db427e97"
+  },
+  "consecutive_and_direct_final_transitions_equal": true,
+  "exact_source_updates": {
+    "bytes": 5065,
+    "git_blob": "5aa27520898d334c9e71d788e9f73fc5c23ebe99",
+    "sha256": "c2a0d544a084608504e7e47f5b15448d1b5f059304b4ab1049685ae9d17317d7"
+  },
+  "format": "hepta-root-actual-41e-source-transition-review-v1",
+  "inventory_scope": "Original actual inventory pins are linked through all three packets. Full inventory serialization recovery is separately owned by ordinary_path; no second Root H source scan is claimed.",
+  "job": "1a1d47cebc8-392-41e",
+  "original_binary_reads": [
+    {
+      "bytes": 87884,
+      "git_blob": "6b0d1e7e1deed538e9307ab34fc3b4a67a2b93c7",
+      "name": "fix.after.postimages.json.gz.READ_01.original.json",
+      "sha256": "e9daebe6e66a5f05f92e2fc1df9e1b1e3d7ff67eabb2d062d03e7211daaff85d"
+    },
+    {
+      "bytes": 40475,
+      "git_blob": "2895015cd765a25c2bf56fd0af37bd72b77576ae",
+      "name": "fix.after.postimages.json.gz.READ_02.original.json",
+      "sha256": "8052fb91fcc90b87ca1553a5400538d23d4de38c5c53e170a2326e83ea65826e"
+    },
+    {
+      "bytes": 87886,
+      "git_blob": "724e178c14b8631b4c4007cdf2f56b708feb32b2",
+      "name": "fmt.after.postimages.json.gz.READ_01.original.json",
+      "sha256": "36c46658becfd0f44cdcf966053461e69f54939c95a2a1bb567fd52c315889ee"
+    },
+    {
+      "bytes": 47762,
+      "git_blob": "e87daca6859c2058325eb00ef67068cde603380d",
+      "name": "fmt.after.postimages.json.gz.READ_02.original.json",
+      "sha256": "c97ddbd064112d88571fc388ca9456da614c6bef2c8023e4f136cca4a5d4577c"
+    },
+    {
+      "bytes": 87882,
+      "git_blob": "6689d519a7c1f69535d6938b4110e173007f8bd4",
+      "name": "final.postimages.json.gz.READ_01.original.json",
+      "sha256": "c91cdcc568691e7737cc51cd1e8160b08615498c328d2adfba9d0b7165372011"
+    },
+    {
+      "bytes": 69674,
+      "git_blob": "914120ad42790f0cba5495df10e20ee707c12dd1",
+      "name": "final.postimages.json.gz.READ_02.original.json",
+      "sha256": "3d53cd5b8d2a3a1cfc4655c648bc2a516534236b88ed0b0faff7d3ab26dbcef9"
+    }
+  ],
+  "packet_readback": {
+    "bytes": 7107,
+    "git_blob": "9f4fc20c0b8adf15da75382ae916b84b2f9bf8b7",
+    "sha256": "a0871945995ecacc836a033a3482616130d579b2d5f3bb676ce26f7429ddab0e"
+  },
+  "qualification": false,
+  "real_authorized_task_chains": 0,
+  "result": {
+    "bytes": 12532,
+    "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+    "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+  },
+  "semantic_review": "Separate independent peer examines automatic fix semantics and formatter tokens; this report proves bytes, linkage and complete mode-aware source composition.",
+  "source_head_and_index_remain_d256_a489": true,
+  "source_writes": 0,
+  "status": "ALL_ACTUAL_PACKET_BYTES_AND_COMPLETE_SOURCE_TREES_MATCH",
+  "test_commands_dispatched": 0,
+  "unchanged_other_paths": 15226
+}

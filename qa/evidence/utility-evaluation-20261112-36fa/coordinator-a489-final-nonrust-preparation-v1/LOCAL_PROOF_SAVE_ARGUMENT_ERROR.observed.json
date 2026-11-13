@@ -1,0 +1,8 @@
+{
+  "format": "hepta-local-evidence-helper-error-v1",
+  "error": "Error: fixed basename/raw string required",
+  "cause": "Called the local save helper with two arguments instead of its (directory, basename, raw) signature. It rejected before any local or H tool call.",
+  "original_helpers_or_controls_modified": false,
+  "subsequent_action": "Use the original three-argument helper; save exactly the existing v2 exec result.",
+  "H_calls": 0
+}

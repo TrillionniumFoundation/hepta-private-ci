@@ -1,0 +1,188 @@
+{
+  "fix_log": {
+    "bytes": 117521,
+    "claim": "exact original raw log bytes recovered from one contiguous stdout interval; not a second H raw-file read",
+    "end_offset": 118383,
+    "git_blob": "3fd1317daf9db7c84fe0956cbf75c8571cc7e80e",
+    "offset": 862,
+    "output": "fix.raw.log.exact_extracted.txt",
+    "sha256": "4057c3deb09a37ba741b975e88342307da8963b410660c4913e236b758dc089d",
+    "source": "complete actual supervisor stdout",
+    "stdout": {
+      "bytes": 119309,
+      "git_blob": "44fdb7a4083ff407aafbb4fee29a2dc01956e0b7",
+      "sha256": "6bef263848107929171c0e84319578bcfe2b20230abf674924f830fe253a7b48"
+    }
+  },
+  "job_id": "1a1d47cebc8-392-41e",
+  "packets": [
+    {
+      "actual_binary_read_sdks": [
+        {
+          "bytes": 87884,
+          "eof": false,
+          "git_blob": "6b0d1e7e1deed538e9307ab34fc3b4a67a2b93c7",
+          "name": "fix.after.postimages.json.gz.READ_01.original.json",
+          "next_offset": 65536,
+          "offset": 0,
+          "sha256": "e9daebe6e66a5f05f92e2fc1df9e1b1e3d7ff67eabb2d062d03e7211daaff85d",
+          "version": "2050:51122050:95513:1794566789622487931:1794566789622487931"
+        },
+        {
+          "bytes": 40475,
+          "eof": true,
+          "git_blob": "2895015cd765a25c2bf56fd0af37bd72b77576ae",
+          "name": "fix.after.postimages.json.gz.READ_02.original.json",
+          "next_offset": 95513,
+          "offset": 65536,
+          "sha256": "8052fb91fcc90b87ca1553a5400538d23d4de38c5c53e170a2326e83ea65826e",
+          "version": "2050:51122050:95513:1794566789622487931:1794566789622487931"
+        }
+      ],
+      "compressed": {
+        "bytes": 95513,
+        "git_blob": "3e55b852f07e13b10e8e3da5c36e57305787d046",
+        "sha256": "ffd361393e4a0400ba53a41542b9608698b52de60c768c0a329e687efd09f4f2"
+      },
+      "name": "fix.after.postimages.json.gz",
+      "original_record_parts": [
+        {
+          "bytes": 127353,
+          "git_blob": "20dd7d549e853f9664429fda17802692c0af985d",
+          "name": "fix.after.postimages.json.gz.part-001.b64",
+          "sha256": "35b1aabe37707746b16737163851ae4b4ea9c97d9acf8371ef7e4cb26811ae99"
+        }
+      ],
+      "packet_top_level_keys": [
+        "after_inventory_sha256",
+        "all_physical_changes_including_untracked_or_ignored_are_recorded",
+        "base_inventory_sha256",
+        "changes",
+        "format",
+        "qualification",
+        "source_commit_unchanged",
+        "stage"
+      ],
+      "raw": {
+        "bytes": 555679,
+        "git_blob": "1cb4a10f1ca57b4487c4eb03e239d643bf93c0d7",
+        "sha256": "da484cc8d169e80b539a939902d3c4c16d5db40ea594adc98be1ffdcdb7992b7"
+      },
+      "raw_name": "fix.after.postimages.json",
+      "version": "2050:51122050:95513:1794566789622487931:1794566789622487931"
+    },
+    {
+      "actual_binary_read_sdks": [
+        {
+          "bytes": 87886,
+          "eof": false,
+          "git_blob": "724e178c14b8631b4c4007cdf2f56b708feb32b2",
+          "name": "fmt.after.postimages.json.gz.READ_01.original.json",
+          "next_offset": 65536,
+          "offset": 0,
+          "sha256": "36c46658becfd0f44cdcf966053461e69f54939c95a2a1bb567fd52c315889ee",
+          "version": "2050:51122093:100978:1794566807127522804:1794566807127522804"
+        },
+        {
+          "bytes": 47762,
+          "eof": true,
+          "git_blob": "e87daca6859c2058325eb00ef67068cde603380d",
+          "name": "fmt.after.postimages.json.gz.READ_02.original.json",
+          "next_offset": 100978,
+          "offset": 65536,
+          "sha256": "c97ddbd064112d88571fc388ca9456da614c6bef2c8023e4f136cca4a5d4577c",
+          "version": "2050:51122093:100978:1794566807127522804:1794566807127522804"
+        }
+      ],
+      "compressed": {
+        "bytes": 100978,
+        "git_blob": "e010270c7a9d886197082ef873897e0f4375e857",
+        "sha256": "6621de7fee0d02fcabe5997a43fdd584d342d46493274a233c524271ba2259e0"
+      },
+      "name": "fmt.after.postimages.json.gz",
+      "original_record_parts": [
+        {
+          "bytes": 134641,
+          "git_blob": "960d167cdeae0539323bd152365e096e77a7e62e",
+          "name": "fmt.after.postimages.json.gz.part-001.b64",
+          "sha256": "eb10eef6d32294f34c6fc07c9a80afa3e5eaab4b25ae1fca936bc45513591c05"
+        }
+      ],
+      "packet_top_level_keys": [
+        "after_inventory_sha256",
+        "all_physical_changes_including_untracked_or_ignored_are_recorded",
+        "base_inventory_sha256",
+        "changes",
+        "format",
+        "qualification",
+        "source_commit_unchanged",
+        "stage"
+      ],
+      "raw": {
+        "bytes": 555856,
+        "git_blob": "fd45c00bc5956ed4de6f666f0c1d509de86f0ac0",
+        "sha256": "fac9941be31c2e366aa56f487fde4f63b68e679ef2afcf31edfe3b855846b445"
+      },
+      "raw_name": "fmt.after.postimages.json",
+      "version": "2050:51122093:100978:1794566807127522804:1794566807127522804"
+    },
+    {
+      "actual_binary_read_sdks": [
+        {
+          "bytes": 87882,
+          "eof": false,
+          "git_blob": "6689d519a7c1f69535d6938b4110e173007f8bd4",
+          "name": "final.postimages.json.gz.READ_01.original.json",
+          "next_offset": 65536,
+          "offset": 0,
+          "sha256": "c91cdcc568691e7737cc51cd1e8160b08615498c328d2adfba9d0b7165372011",
+          "version": "2050:51122117:117415:1794566815646105714:1794566815646105714"
+        },
+        {
+          "bytes": 69674,
+          "eof": true,
+          "git_blob": "914120ad42790f0cba5495df10e20ee707c12dd1",
+          "name": "final.postimages.json.gz.READ_02.original.json",
+          "next_offset": 117415,
+          "offset": 65536,
+          "sha256": "3d53cd5b8d2a3a1cfc4655c648bc2a516534236b88ed0b0faff7d3ab26dbcef9",
+          "version": "2050:51122117:117415:1794566815646105714:1794566815646105714"
+        }
+      ],
+      "compressed": {
+        "bytes": 117415,
+        "git_blob": "3fc4ea110842f84d6db20bf3c1f27bf7ad35fc40",
+        "sha256": "47d010ee5046c09fcfee902d170aa9b458b50b1e91bdf405f1508602bf307a11"
+      },
+      "name": "final.postimages.json.gz",
+      "original_record_parts": [
+        {
+          "bytes": 156557,
+          "git_blob": "7ff9c82ac2f6369e0116f4aec9c48187c9444748",
+          "name": "final.postimages.json.gz.part-001.b64",
+          "sha256": "a6131a8c3e1c4eb23f92052a1cfe392e08c354d67f79d151ae0d5c523de2ef49"
+        }
+      ],
+      "packet_top_level_keys": [
+        "after_inventory_sha256",
+        "all_physical_changes_including_untracked_or_ignored_are_recorded",
+        "base_inventory_sha256",
+        "changes",
+        "format",
+        "qualification",
+        "source_commit_unchanged",
+        "stage"
+      ],
+      "raw": {
+        "bytes": 665433,
+        "git_blob": "88b9299120113937610da4a84b344eda76011674",
+        "sha256": "732c48099edc5a704f3aab74d91f997b98f92fdd122adbf49d31b750b77e28a8"
+      },
+      "raw_name": "final.postimages.json",
+      "version": "2050:51122117:117415:1794566815646105714:1794566815646105714"
+    }
+  ],
+  "qualification": false,
+  "schema": "hepta-original-postimage-readback-v1",
+  "source_write": false
+}

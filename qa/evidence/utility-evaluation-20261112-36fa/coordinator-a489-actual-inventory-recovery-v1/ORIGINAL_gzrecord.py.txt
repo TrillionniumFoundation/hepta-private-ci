@@ -1,0 +1,11 @@
+def gzrecord(name, raw):
+    gz = gzip.compress(raw,mtime=0)
+    check(gzip.decompress(gz)==raw,'gzip roundtrip')
+    row = write(name+'.gz',gz)
+    row.update(raw_bytes=len(raw),raw_sha256=sha256(raw),raw_git_blob=oid('blob',raw),parts=[])
+    for n, off in enumerate(range(0,len(gz),262144),1):
+        block = gz[off:off+262144]
+        part = write(name+'.gz.part-%03d.b64'%n,base64.b64encode(block)+b'\n')
+        part.update(decoded_offset=off,decoded_bytes=len(block),decoded_sha256=sha256(block))
+        row['parts'].append(part)
+    return row

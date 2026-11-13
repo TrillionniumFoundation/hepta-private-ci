@@ -1,0 +1,112 @@
+{
+  "format": "hepta-final-canonical-b608-independent-exact-review-v1",
+  "status": "NO_CONCRETE_STATIC_BLOCKER_FOR_EXACT_CANDIDATE_NOT_EXECUTION_APPROVAL",
+  "reviewed_at_utc": "2026-11-13T12:00:47.598951+00:00",
+  "candidate_request": {
+    "bytes": 940279,
+    "sha256": "a83c5966abbbc5af9b6f6ea555cd8f671698f2f54f48b78e6743929c51ac8048",
+    "git_blob": "fd655e0dea612e9dd13d4026c11d01b811c8fd8d"
+  },
+  "candidate_stdin": {
+    "bytes": 934139,
+    "sha256": "a1a42f3c0184c1d8fe796e31ec25653e8635613216922138638ff663849aa666",
+    "git_blob": "268aacaec6be37bf047b34278656d83008a1a34a"
+  },
+  "candidate_bootstrap": {
+    "bytes": 5738,
+    "sha256": "d775986c25d6a1a3e91c4661486d566712344e78b4a5347b3758089e28a403d9",
+    "git_blob": "601a3b9448f46c44936ea7789b57d6499e584926"
+  },
+  "driver": {
+    "bytes": 46159,
+    "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5",
+    "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a"
+  },
+  "config": {
+    "bytes": 3453,
+    "sha256": "a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db",
+    "git_blob": "0f69f739486c1dc3506f61c0e8a6ef3737fbe17e"
+  },
+  "canonical_packet": {
+    "bytes": 3428251,
+    "sha256": "8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6",
+    "git_blob": "bb4b4abd809047be4c9402b95fa2a2dc30b2ab78"
+  },
+  "exact_dataflow": {
+    "bytes": 15940,
+    "sha256": "7ce11df949c2c3c44ddf2303fb2ac1de64dff5af77bc868c2642176c7957267a",
+    "git_blob": "c9ffd054746de59cf4d2888c2cb63e494b4840e6"
+  },
+  "pure_reproducer": {
+    "bytes": 14975,
+    "sha256": "dc8714af59de2227878ad9decb4c5fee2f1266a38d3221290259af3525a07fcf",
+    "git_blob": "c2b3c0aef8e93a25b4056efd325ba09b02cf9d83"
+  },
+  "findings": [
+    {
+      "id": "C01",
+      "scope": "Original driver bytes",
+      "conclusion": "Complete candidate inversely substitutes exactly seven module constants back to authentic765ada bytes. All46 top-level functions and one nested read_exact remain byte-for-byte identical. No action/record budget or command/guard/failure-body change."
+    },
+    {
+      "id": "C02",
+      "scope": "Original bootstrap bytes",
+      "conclusion": "Complete bootstrap inversely restores authentic13963075 by replacing only BASE and PINS assignments. All five function bodies including nested stamp, try/exec layout, input decoder and failure retention are byte-identical. Bootstrap acquires no EX lock."
+    },
+    {
+      "id": "C03",
+      "scope": "Exact request and four inputs",
+      "conclusion": "Independently retrieved lossless parts restore exact940279-byte seven-field request and934139-byte stdin. Host desktop, cwd /home/qian-qi, python3 -B -c exact bootstrap, no env field, fixed idempotency key and900 outer seconds. Both typed request and stdin are below the unchanged1048576-byte ceiling. Strict decoding yields exact driver, actual50f normal, Root config and packet; no extra file is admitted."
+    },
+    {
+      "id": "C04",
+      "scope": "Create-only staging",
+      "conclusion": "Unchanged real parent walk, owned parent, absent private BASE,0700 directory, O_EXCL/O_NOFOLLOW0600 files, complete nine-field fd/path stat and exact byte readback, file/directory fsync remain. Existing BASE or partial staging is not overwritten or assigned a replacement identity. Fixed gzip expansion bound remains40MB and exact packet bytes are checked."
+    },
+    {
+      "id": "C05",
+      "scope": "Current baseline and actual50f proof",
+      "conclusion": "Actual50f RESULT, supervisor and raw Git state are pinned. The exact original validate_final_format predicate succeeds using only captured bytes with in-memory read/write adapters. It requires normal0 without timeout/output limit, one original fmt --base c0f at900, all three audits, current d256/a489, physical8ebb/15243, zero tests/fix/ref updates, exact reviewed formatter changes[]. No live path was read by this predicate."
+    },
+    {
+      "id": "C06",
+      "scope": "Canonical source equality",
+      "conclusion": "Actual recovered e3ce full inventory retains15243 stable physical leaves. Independent pure projection changes only source head/tree/status and index_blob/index_mode/matches_index; all physical fields remain equal and exact projected bytes match457adb. Independent full Merkle recomputation produces a489 for old index and8ebb for current physical content. The projected clean inventory is not an actual alignment observation."
+    },
+    {
+      "id": "C07",
+      "scope": "Authentic object packet",
+      "conclusion": "All29 unique typed Git objects are independently strict-decoded and full-hashed:21 changed blobs,7 changed tree bodies and the775-byte authentic b608 commit. Supplied object membership exactly equals changed leaf identities, derived changed trees and this commit. Commit tree8ebb and sole ordered parentd256 match raw storage blob bcef892; no source mutation or new commit creation was performed by this reviewer."
+    },
+    {
+      "id": "C08",
+      "scope": "Runtime guard and object import",
+      "conclusion": "Original fixed Git executable pin/uid,1000 operator, no Git redirection, detached HEAD/no refs/indirection/lock checks, complete original index checksum/flags/TREE extension, full physical inventory and full Git metadata remain. Same-UID build/formatter concurrency checks precede import and index transition. Missing approved objects only are imported with exact typed full body readback; complete old/new snapshots and explicit commit anchors are fully checked before index/HEAD writes."
+    },
+    {
+      "id": "C09",
+      "scope": "Only authorized Git alignment",
+      "conclusion": "Unchanged main owns the sole LOCK_EX|LOCK_NB on the original fixed coordination inode. Entire physical source must equal canonical tree before mutation. The exact sequence remains read-tree without -u/-m, normal update-index --refresh, write-tree equality, full pre-CAS15243-entry stat/flags/path/blob audit, physical-record equality, then detached HEAD compare-and-swap from d256 to b608. No source file write, branch/remote ref, formatter, install or test is authorized."
+    },
+    {
+      "id": "C10",
+      "scope": "Complete success/failure semantics",
+      "conclusion": "Success requires action completion plus all source/git/inputs final audits verified. Actual clean inventory must equal exact projection, physical bytes/modes stay unchanged, complete index entries/stat equal actual files, config/branch refs remain unchanged, and full Git metadata permits only explicit HEAD/index/object effects. Failure/Unknown retains partial state and mutation records without rollback/reset/retry. Existing inherited subprocess cleanup behavior is retained, not strengthened or claimed unconditionally terminal."
+    },
+    {
+      "id": "C11",
+      "scope": "Budgets and authority",
+      "conclusion": "600 action,180 records and900 outer seconds remain. The Root config permission fields are an execution candidate, not dispatch authorization; this report does not grant H permission. Original history, failed/Unknown records and all qualification limits remain. Actual canonical job/result/current-index/stat are still unobserved in this review."
+    }
+  ],
+  "actual_execution": {
+    "H_calls": 0,
+    "canonical_main_calls": 0,
+    "preflight_calls": 0,
+    "source_index_HEAD_ref_mutations": 0,
+    "project_tests": 0,
+    "qualification": false
+  },
+  "input_scope": "23 independently full-GET original bodies and encoded parts, plus fixed locally captured50f RESULT/Git state and exact-recovered inventory with previously reviewed native artifact identities. Large request, stdin, packet and expected inventory raw IDs are lossless-reconstruction identities, not standalone raw GET claims.",
+  "remaining": "Root separate exact dispatch decision, then actual single-job terminal, complete source/index/Git/input audits and retained originals. Actual clean alignment and later source/native qualification cannot be inferred from this static review."
+}

@@ -1,0 +1,19 @@
+--- decode_actual_reads.py
++++ decode_actual_reads_v2.py
+@@ -1,6 +1,7 @@
+ import base64
+ import hashlib
+ import json
++import re
+ import sys
+ import zlib
+ from pathlib import Path
+@@ -24,7 +25,7 @@
+ 
+ 
+ def decode(name, expected):
+-    files = sorted(ROOT.glob(name + ".READ_*.original.json"))
++    files = sorted(path for path in ROOT.iterdir() if re.fullmatch(re.escape(name) + r"\.READ_[0-9]+\.original\.json", path.name))
+     assert files, name
+     chunks = []
+     observed = []

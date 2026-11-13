@@ -1,0 +1,8 @@
+{
+  "scope": "Pure immutable Git object verification; no H, source, index or ref mutation",
+  "initial_error": "tree comparison used JSON.stringify on objects with differing property order",
+  "resolution": "Full exact ordered tree entries compared explicitly by path, mode, type and sha; typed tree hash also independently recomputed",
+  "all_four_actual_trees_match": true,
+  "native_application_observed": false,
+  "qualification": false
+}

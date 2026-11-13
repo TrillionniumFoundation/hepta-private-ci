@@ -1,0 +1,1663 @@
+{
+  "Rust_or_H_calls": 0,
+  "actual_marker_locations": [
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": ".take()",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "!(1..=128).contains(&slot.next_request_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "request_id.checked_add(1)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": ".min(self.original.original.original_end())",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "tokio::time::timeout_at(",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "response.require_request(&request)?",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "self.require_original_window()?",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 3,
+      "before_occurrences": 3,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "Instant::now() >= deadline",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "*destination = Some(slot)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": ".take()",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "!(1..=128).contains(&slot.next_request_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": ".min(self.original.end)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "OriginalCircuitSelectionLocalReadbackV1::require_original_selection(self, &value)?",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "Instant::now() >= deadline",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "*restore = Some(slot)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": "Duration::from_millis(500)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": "Duration::from_secs(300)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": ".try_acquire_owned()",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": "Instant::now() >= admission_end",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "self.version.state.try_lock()",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(held_trainer, given_trainer)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(held_evaluator, given_evaluator)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "PublicationAccess::Readback",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "RetainedVersionFinalUseOutcomeV1::Published",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_shared_predecessors",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(original_t, current_t)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_shared_predecessors",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(original_e, current_e)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_original_local_shared_readbacks",
+      "group": "original_identity",
+      "marker": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "scope != material.scope",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "initial.snapshot() != &material.initial",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "&original_dataset != dataset.snapshot()",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "channel: Mutex::new(None)",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "local: Some(local)",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_completion_readiness",
+      "group": "readiness",
+      "marker": "self.original.context.mode()? != wire::Mode::NextUse",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "read_completion_readiness",
+      "group": "readiness",
+      "marker": "LocalReadOperation::CompletionReadiness",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "current.recover_initial_operation(",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "current.read_initial_operation(&original)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "recover_agentd_generation_initial_v1(",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "Arc::clone(&current)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "operation.read_original()? != before",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_root",
+      "group": "root_custody_consumption",
+      "marker": "libc::getuid()",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "require_root",
+      "group": "root_custody_consumption",
+      "marker": "libc::geteuid()",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "from_original_prepared",
+      "group": "root_custody_consumption",
+      "marker": "current.recover_initial_operation(&operation_id, intent_digest)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "from_original_prepared",
+      "group": "root_custody_consumption",
+      "marker": "original.target() != prepared.prepared.target()",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "publish",
+      "group": "root_custody_consumption",
+      "marker": "std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "publish",
+      "group": "root_custody_consumption",
+      "marker": "(*prepared).publish(signed)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_original",
+      "group": "root_custody_consumption",
+      "marker": "matches!(self.phase, InitialPhase::ReadbackRequired)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "recover_original",
+      "group": "root_custody_consumption",
+      "marker": "recover_agentd_generation_initial_v1(",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "super::root_pair(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "super::require_root_pin(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "require_process(&recipient)?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "sockets.insert(wire::socket_identity(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "now.checked_add(lifetime_ns)",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "receive_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "super::require_root_pin(&sender, root.pid as u32)?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "receive_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "validate_packet(&packet, profile.binding())?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "validate_packet(&self.packet, profile.binding())?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "check_lifetime(&self.sender)",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "minimum.checked_sub(now)",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "require_timing(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "receive",
+      "group": "root_handoff",
+      "marker": "libc::MSG_CMSG_CLOEXEC",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "receive",
+      "group": "root_handoff",
+      "marker": "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "ResidentRootAuthorityV3::perform(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "ResidentRootAuthorityV3::readonly(&self.owner.authority)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "run",
+      "group": "root_service",
+      "marker": "cancellation.clone().drop_guard()",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "run",
+      "group": "root_service",
+      "marker": "tokio::join!(run, server)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "run",
+      "group": "root_service",
+      "marker": "root_cancellation.cancelled()",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "run",
+      "group": "root_service",
+      "marker": "shutdown.0.shutdown(Shutdown::Both)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "run",
+      "group": "root_service",
+      "marker": "work.await",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "InitialPhase::Ready(ready)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "(*ready).into_circuit_feature_task(inputs.definition, inputs.source)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "let retirement = task.clone();",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "published_task: task",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "config.with_q24_circuit_task_profile(profile)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "cell: runtime.cell",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "source: runtime.source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "drain_completed_task",
+      "group": "root_task_same_cell",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "drain_completed_task",
+      "group": "root_task_same_cell",
+      "marker": ".drain_completed_task(&self.cell, self.source.as_ref(), &self.identity)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "clone",
+      "group": "sealed_clones",
+      "marker": "Arc::clone(&self.original)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "clone",
+      "group": "sealed_clones",
+      "marker": "Arc::clone(&self.original)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "original != expected",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.peer.check_peer_lifetime()?",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "wire::authenticate_receipt(",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "&authenticated != original",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.execution_requested = true",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "Ok(Arc::new(self))",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "original != expected",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.peer.check_peer_lifetime()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "wire::authenticate_completed(",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "&authenticated != original",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.execution_requested = true",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "Ok(Arc::new(self))",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "self.read_original(&state)?",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "before != after",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "after.publication().is_none()",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "cut.require_fresh(",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "selection.original_receipt_predecessors(",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "RetainedVersionFinalUseOutcomeV1::Published",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "respond",
+      "group": "version_current",
+      "marker": "Instant::now() >= self.end",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 1,
+      "before_occurrences": 1,
+      "function": "respond",
+      "group": "version_current",
+      "marker": "!(1..=128).contains(&request_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "after_occurrences": 2,
+      "before_occurrences": 2,
+      "function": "respond",
+      "group": "version_current",
+      "marker": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    }
+  ],
+  "actual_source_review": {
+    "bytes": 922962,
+    "git_blob": "b9444fae986af6a55ece34d60ca0dcc34e904674",
+    "sha256": "ca01ae3278adfe00a80e1108537536ac36bddfadc0f82642b81abacf5dca0893"
+  },
+  "all_607_method_bodies_byte_equal": true,
+  "all_attack_specs_unchanged": true,
+  "all_boundary_rows_unchanged": true,
+  "all_forbidden_arrays_equal": true,
+  "all_root_parent_order_and_workflow_bytes_unchanged": true,
+  "all_scope_selectors_mounts_exports_unchanged": true,
+  "appended_allowlist_line": "sha256:62fc6814e2f24ecbf37a83583f526d215870cf2ab5202f524f34de46b77273fa CALLERS.toml",
+  "base_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "boundaries": 633,
+  "existing_allowlist_bytes_preserved": true,
+  "format": "hepta-actual-maintenance-exact-fence-refresh-v1",
+  "full_gate_or_QA_method_executions": 0,
+  "guard_changes": [
+    {
+      "after": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "pub trait OriginalSelectionOwner",
+          "pub(crate) trait OriginalSelectionOwner",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false"
+        ],
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn clone(",
+            "sequence": [
+              "fn ",
+              "clone(&self) -> Self {\n        Self {\n            original: Arc::clone(&self.original),\n        }\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_version(",
+            "sequence": [
+              "fn ",
+              "from_original_version(\n        original: OriginalVersionLocalReadBindingV1,\n    ) -> Result<Self, Error> {\n        if Instant::now() >= original.original_end() {\n            return Err(Error::Unavailable);\n        }\n        let context = ReadProfile::Evaluated(original.original_context());\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            original: Arc::new(OriginalLocalReadState {\n                original,\n                context,\n                binding,\n                slot: Mutex::new(Some(OriginalLocalReadSlot {\n                    next_request_id: 1,\n                    retained: None,\n                })),\n                            \n                                        \n            }),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_selection(",
+            "sequence": [
+              "fn ",
+              "require_original_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                   ));\n        };\n        context.require_original_selection(expected)?;\n        Ok(self.original.original.original_end())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_next_use(",
+            "sequence": [
+              "fn ",
+              "require_original_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                 ));\n        };\n        context.require_original_next_use(expected)?;\n        Ok(self.original.original.original_end())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_window(",
+            "sequence": [
+              "fn ",
+              "require_original_window(&self) -> Result<(), Error> {\n        if Instant::now() >= self.original.original.original_end()\n            || self.original.context.binding(now()?)? != self.original.binding\n        {\n            return Err(Error::Unavailable);\n        }\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn read_current(",
+            "sequence": [
+              "fn ",
+              "read_current(&self) -> Result<Readback, Error> {\n        self.read_original(LocalReadOperation::Readback)\n            .await?\n            .ok_or(Error::Binding(                                        ))\n    }"
+            ]
+          },
+          {
+            "function": "fn read_completion_readiness(",
+            "sequence": [
+              "fn ",
+              "read_completion_readiness(&self) -> Result<Option<Readback>, Error> {\n        if self.original.context.mode()? != wire::Mode::NextUse {\n            return Err(Error::Binding(                                           ));\n        }\n        self.read_original(LocalReadOperation::CompletionReadiness)\n            .await\n    }"
+            ]
+          },
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn ",
+              "read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                               \n                                                 \n             \n                                                                  \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_evaluated_local_selection(",
+            "sequence": [
+              "fn ",
+              "from_original_evaluated_local_selection(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Self, Error> {\n        local.require_original_selection(&context)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(context)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_evaluated_local_next_use(",
+            "sequence": [
+              "fn ",
+              "from_original_evaluated_local_next_use(\n        local: OriginalCircuitPublishedLocalReadV1,\n        selection: OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Self, Error> {\n        local.require_original_next_use(&selection)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_local_profile(",
+            "sequence": [
+              "fn ",
+              "from_original_local_profile(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: ReadProfile,\n    ) -> Result<Self, Error> {\n        let binding = context.binding(now()?)?;\n        if binding != local.original.binding {\n            return Err(Error::Binding(                                  ));\n        }\n        local.require_original_window()?;\n        Ok(Self {\n            context,\n            binding,\n            channel: Mutex::new(None),\n            retained: Mutex::new(None),\n            local: Some(local),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_local_shared_readbacks(",
+            "sequence": [
+              "fn ",
+              "require_original_local_shared_readbacks(\n        &self,\n        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,\n    ) -> Result<(), Error> {\n        let local = self\n            .local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?;\n        local.require_original_window()?;\n        OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(\n            &local.original.original,\n            shared,\n        )\n        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;\n        local.require_original_window()\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_local_evaluated_selection(",
+            "sequence": [
+              "fn ",
+              "require_original_local_evaluated_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_selection(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                     ))?\n            .require_original_selection(expected)\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_local_evaluated_next_use(",
+            "sequence": [
+              "fn ",
+              "require_original_local_evaluated_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_next_use(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?\n            .require_original_next_use(expected)\n    }"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "struct ",
+            "OriginalLocalReadSlot {\n    next_request_id: u64,\n    retained: Option<Readback>,\n}"
+          ],
+          [
+            "struct ",
+            "OriginalLocalReadState {\n    original: OriginalVersionLocalReadBindingV1,\n    context: ReadProfile,\n    binding: Digest32,\n    slot: Mutex<Option<OriginalLocalReadSlot>>,\n                \n                                                                    \n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalCircuitPublishedLocalReadV1 {\n    original: Arc<OriginalLocalReadState>,\n}"
+          ],
+          [
+            "impl ",
+            "Clone for OriginalCircuitPublishedLocalReadV1 {\n    fn clone(&self) -> Self {\n        Self {\n            original: Arc::clone(&self.original),\n        }\n    }\n}"
+          ],
+          [
+            "impl ",
+            "OriginalCircuitPublishedLocalReadV1 {\n    pub(crate) fn from_original_version(\n        original: OriginalVersionLocalReadBindingV1,\n    ) -> Result<Self, Error> {\n        if Instant::now() >= original.original_end() {\n            return Err(Error::Unavailable);\n        }\n        let context = ReadProfile::Evaluated(original.original_context());\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            original: Arc::new(OriginalLocalReadState {\n                original,\n                context,\n                binding,\n                slot: Mutex::new(Some(OriginalLocalReadSlot {\n                    next_request_id: 1,\n                    retained: None,\n                })),\n                            \n                                        \n            }),\n        })\n    }\n\n    fn require_original_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                   ));\n        };\n        context.require_original_selection(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                 ));\n        };\n        context.require_original_next_use(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_window(&self) -> Result<(), Error> {\n        if Instant::now() >= self.original.original.original_end()\n            || self.original.context.binding(now()?)? != self.original.binding\n        {\n            return Err(Error::Unavailable);\n        }\n        Ok(())\n    }\n\n    pub(crate) async fn read_current(&self) -> Result<Readback, Error> {\n        self.read_original(LocalReadOperation::Readback)\n            .await?\n            .ok_or(Error::Binding(                                        ))\n    }\n\n    pub(crate) async fn read_completion_readiness(&self) -> Result<Option<Readback>, Error> {\n        if self.original.context.mode()? != wire::Mode::NextUse {\n            return Err(Error::Binding(                                           ));\n        }\n        self.read_original(LocalReadOperation::CompletionReadiness)\n            .await\n    }\n\n    async fn read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                               \n                                                 \n             \n                                                                  \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }\n}"
+          ],
+          [
+            "impl ",
+            "OriginalCircuitLearningReadClientV1 {\n    pub fn from_original_evaluated_local_selection(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Self, Error> {\n        local.require_original_selection(&context)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(context)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }\n\n    pub fn from_original_evaluated_local_next_use(\n        local: OriginalCircuitPublishedLocalReadV1,\n        selection: OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Self, Error> {\n        local.require_original_next_use(&selection)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }\n\n    fn from_original_local_profile(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: ReadProfile,\n    ) -> Result<Self, Error> {\n        let binding = context.binding(now()?)?;\n        if binding != local.original.binding {\n            return Err(Error::Binding(                                  ));\n        }\n        local.require_original_window()?;\n        Ok(Self {\n            context,\n            binding,\n            channel: Mutex::new(None),\n            retained: Mutex::new(None),\n            local: Some(local),\n        })\n    }\n\n    pub(crate) fn require_original_local_shared_readbacks(\n        &self,\n        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,\n    ) -> Result<(), Error> {\n        let local = self\n            .local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?;\n        local.require_original_window()?;\n        OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(\n            &local.original.original,\n            shared,\n        )\n        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;\n        local.require_original_window()\n    }\n\n    pub(crate) fn require_original_local_evaluated_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_selection(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                     ))?\n            .require_original_selection(expected)\n    }\n\n    pub(crate) fn require_original_local_evaluated_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_next_use(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?\n            .require_original_next_use(expected)\n    }\n}"
+          ]
+        ]
+      },
+      "before": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "pub trait OriginalSelectionOwner",
+          "pub(crate) trait OriginalSelectionOwner",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false"
+        ],
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn clone(",
+            "sequence": [
+              "fn ",
+              "clone(&self) -> Self {\n        Self {\n            original: Arc::clone(&self.original),\n        }\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_version(",
+            "sequence": [
+              "fn ",
+              "from_original_version(\n        original: OriginalVersionLocalReadBindingV1,\n    ) -> Result<Self, Error> {\n        if Instant::now() >= original.original_end() {\n            return Err(Error::Unavailable);\n        }\n        let context = ReadProfile::Evaluated(original.original_context());\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            original: Arc::new(OriginalLocalReadState {\n                original,\n                context,\n                binding,\n                slot: Mutex::new(Some(OriginalLocalReadSlot {\n                    next_request_id: 1,\n                    retained: None,\n                })),\n                            \n                                        \n            }),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_selection(",
+            "sequence": [
+              "fn ",
+              "require_original_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                   ));\n        };\n        context.require_original_selection(expected)?;\n        Ok(self.original.original.original_end())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_next_use(",
+            "sequence": [
+              "fn ",
+              "require_original_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                 ));\n        };\n        context.require_original_next_use(expected)?;\n        Ok(self.original.original.original_end())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_window(",
+            "sequence": [
+              "fn ",
+              "require_original_window(&self) -> Result<(), Error> {\n        if Instant::now() >= self.original.original.original_end()\n            || self.original.context.binding(now()?)? != self.original.binding\n        {\n            return Err(Error::Unavailable);\n        }\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn read_current(",
+            "sequence": [
+              "fn ",
+              "read_current(&self) -> Result<Readback, Error> {\n        self.read_original(LocalReadOperation::Readback)\n            .await?\n            .ok_or(Error::Binding(                                        ))\n    }"
+            ]
+          },
+          {
+            "function": "fn read_completion_readiness(",
+            "sequence": [
+              "fn ",
+              "read_completion_readiness(&self) -> Result<Option<Readback>, Error> {\n        if self.original.context.mode()? != wire::Mode::NextUse {\n            return Err(Error::Binding(                                           ));\n        }\n        self.read_original(LocalReadOperation::CompletionReadiness)\n            .await\n    }"
+            ]
+          },
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn ",
+              "read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                                 \n                                                   \n                                                                      \n                 \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_evaluated_local_selection(",
+            "sequence": [
+              "fn ",
+              "from_original_evaluated_local_selection(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Self, Error> {\n        local.require_original_selection(&context)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(context)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_evaluated_local_next_use(",
+            "sequence": [
+              "fn ",
+              "from_original_evaluated_local_next_use(\n        local: OriginalCircuitPublishedLocalReadV1,\n        selection: OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Self, Error> {\n        local.require_original_next_use(&selection)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_local_profile(",
+            "sequence": [
+              "fn ",
+              "from_original_local_profile(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: ReadProfile,\n    ) -> Result<Self, Error> {\n        let binding = context.binding(now()?)?;\n        if binding != local.original.binding {\n            return Err(Error::Binding(                                  ));\n        }\n        local.require_original_window()?;\n        Ok(Self {\n            context,\n            binding,\n            channel: Mutex::new(None),\n            retained: Mutex::new(None),\n            local: Some(local),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_local_shared_readbacks(",
+            "sequence": [
+              "fn ",
+              "require_original_local_shared_readbacks(\n        &self,\n        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,\n    ) -> Result<(), Error> {\n        let local = self\n            .local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?;\n        local.require_original_window()?;\n        OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(\n            &local.original.original,\n            shared,\n        )\n        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;\n        local.require_original_window()\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_local_evaluated_selection(",
+            "sequence": [
+              "fn ",
+              "require_original_local_evaluated_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_selection(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                     ))?\n            .require_original_selection(expected)\n    }"
+            ]
+          },
+          {
+            "function": "fn require_original_local_evaluated_next_use(",
+            "sequence": [
+              "fn ",
+              "require_original_local_evaluated_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_next_use(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?\n            .require_original_next_use(expected)\n    }"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "struct ",
+            "OriginalLocalReadSlot {\n    next_request_id: u64,\n    retained: Option<Readback>,\n}"
+          ],
+          [
+            "struct ",
+            "OriginalLocalReadState {\n    original: OriginalVersionLocalReadBindingV1,\n    context: ReadProfile,\n    binding: Digest32,\n    slot: Mutex<Option<OriginalLocalReadSlot>>,\n                \n                                                                    \n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalCircuitPublishedLocalReadV1 {\n    original: Arc<OriginalLocalReadState>,\n}"
+          ],
+          [
+            "impl ",
+            "Clone for OriginalCircuitPublishedLocalReadV1 {\n    fn clone(&self) -> Self {\n        Self {\n            original: Arc::clone(&self.original),\n        }\n    }\n}"
+          ],
+          [
+            "impl ",
+            "OriginalCircuitPublishedLocalReadV1 {\n    pub(crate) fn from_original_version(\n        original: OriginalVersionLocalReadBindingV1,\n    ) -> Result<Self, Error> {\n        if Instant::now() >= original.original_end() {\n            return Err(Error::Unavailable);\n        }\n        let context = ReadProfile::Evaluated(original.original_context());\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            original: Arc::new(OriginalLocalReadState {\n                original,\n                context,\n                binding,\n                slot: Mutex::new(Some(OriginalLocalReadSlot {\n                    next_request_id: 1,\n                    retained: None,\n                })),\n                            \n                                        \n            }),\n        })\n    }\n\n    fn require_original_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                   ));\n        };\n        context.require_original_selection(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                 ));\n        };\n        context.require_original_next_use(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_window(&self) -> Result<(), Error> {\n        if Instant::now() >= self.original.original.original_end()\n            || self.original.context.binding(now()?)? != self.original.binding\n        {\n            return Err(Error::Unavailable);\n        }\n        Ok(())\n    }\n\n    pub(crate) async fn read_current(&self) -> Result<Readback, Error> {\n        self.read_original(LocalReadOperation::Readback)\n            .await?\n            .ok_or(Error::Binding(                                        ))\n    }\n\n    pub(crate) async fn read_completion_readiness(&self) -> Result<Option<Readback>, Error> {\n        if self.original.context.mode()? != wire::Mode::NextUse {\n            return Err(Error::Binding(                                           ));\n        }\n        self.read_original(LocalReadOperation::CompletionReadiness)\n            .await\n    }\n\n    async fn read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                                 \n                                                   \n                                                                      \n                 \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }\n}"
+          ],
+          [
+            "impl ",
+            "OriginalCircuitLearningReadClientV1 {\n    pub fn from_original_evaluated_local_selection(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Self, Error> {\n        local.require_original_selection(&context)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(context)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }\n\n    pub fn from_original_evaluated_local_next_use(\n        local: OriginalCircuitPublishedLocalReadV1,\n        selection: OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Self, Error> {\n        local.require_original_next_use(&selection)?;\n        let context =\n            OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection)?;\n        Self::from_original_local_profile(local, ReadProfile::Evaluated(context))\n    }\n\n    fn from_original_local_profile(\n        local: OriginalCircuitPublishedLocalReadV1,\n        context: ReadProfile,\n    ) -> Result<Self, Error> {\n        let binding = context.binding(now()?)?;\n        if binding != local.original.binding {\n            return Err(Error::Binding(                                  ));\n        }\n        local.require_original_window()?;\n        Ok(Self {\n            context,\n            binding,\n            channel: Mutex::new(None),\n            retained: Mutex::new(None),\n            local: Some(local),\n        })\n    }\n\n    pub(crate) fn require_original_local_shared_readbacks(\n        &self,\n        shared: &crate::OriginalCircuitPublishedEvidenceReadbackV1,\n    ) -> Result<(), Error> {\n        let local = self\n            .local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?;\n        local.require_original_window()?;\n        OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(\n            &local.original.original,\n            shared,\n        )\n        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;\n        local.require_original_window()\n    }\n\n    pub(crate) fn require_original_local_evaluated_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_selection(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                     ))?\n            .require_original_selection(expected)\n    }\n\n    pub(crate) fn require_original_local_evaluated_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_evaluated_next_use(expected)?;\n        self.local\n            .as_ref()\n            .ok_or(Error::Binding(                                   ))?\n            .require_original_next_use(expected)\n    }\n}"
+          ]
+        ]
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "replacements": [
+        {
+          "after": "OriginalCircuitPublishedLocalReadV1 {\n    pub(crate) fn from_original_version(\n        original: OriginalVersionLocalReadBindingV1,\n    ) -> Result<Self, Error> {\n        if Instant::now() >= original.original_end() {\n            return Err(Error::Unavailable);\n        }\n        let context = ReadProfile::Evaluated(original.original_context());\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            original: Arc::new(OriginalLocalReadState {\n                original,\n                context,\n                binding,\n                slot: Mutex::new(Some(OriginalLocalReadSlot {\n                    next_request_id: 1,\n                    retained: None,\n                })),\n                            \n                                        \n            }),\n        })\n    }\n\n    fn require_original_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                   ));\n        };\n        context.require_original_selection(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                 ));\n        };\n        context.require_original_next_use(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_window(&self) -> Result<(), Error> {\n        if Instant::now() >= self.original.original.original_end()\n            || self.original.context.binding(now()?)? != self.original.binding\n        {\n            return Err(Error::Unavailable);\n        }\n        Ok(())\n    }\n\n    pub(crate) async fn read_current(&self) -> Result<Readback, Error> {\n        self.read_original(LocalReadOperation::Readback)\n            .await?\n            .ok_or(Error::Binding(                                        ))\n    }\n\n    pub(crate) async fn read_completion_readiness(&self) -> Result<Option<Readback>, Error> {\n        if self.original.context.mode()? != wire::Mode::NextUse {\n            return Err(Error::Binding(                                           ));\n        }\n        self.read_original(LocalReadOperation::CompletionReadiness)\n            .await\n    }\n\n    async fn read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                               \n                                                 \n             \n                                                                  \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }\n}",
+          "before": "OriginalCircuitPublishedLocalReadV1 {\n    pub(crate) fn from_original_version(\n        original: OriginalVersionLocalReadBindingV1,\n    ) -> Result<Self, Error> {\n        if Instant::now() >= original.original_end() {\n            return Err(Error::Unavailable);\n        }\n        let context = ReadProfile::Evaluated(original.original_context());\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            original: Arc::new(OriginalLocalReadState {\n                original,\n                context,\n                binding,\n                slot: Mutex::new(Some(OriginalLocalReadSlot {\n                    next_request_id: 1,\n                    retained: None,\n                })),\n                            \n                                        \n            }),\n        })\n    }\n\n    fn require_original_selection(\n        &self,\n        expected: &OriginalCircuitEvaluatedRetentionContextV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                   ));\n        };\n        context.require_original_selection(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_next_use(\n        &self,\n        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,\n    ) -> Result<Instant, Error> {\n        self.require_original_window()?;\n        let ReadProfile::Evaluated(context) = &self.original.context else {\n            return Err(Error::Binding(                                 ));\n        };\n        context.require_original_next_use(expected)?;\n        Ok(self.original.original.original_end())\n    }\n\n    fn require_original_window(&self) -> Result<(), Error> {\n        if Instant::now() >= self.original.original.original_end()\n            || self.original.context.binding(now()?)? != self.original.binding\n        {\n            return Err(Error::Unavailable);\n        }\n        Ok(())\n    }\n\n    pub(crate) async fn read_current(&self) -> Result<Readback, Error> {\n        self.read_original(LocalReadOperation::Readback)\n            .await?\n            .ok_or(Error::Binding(                                        ))\n    }\n\n    pub(crate) async fn read_completion_readiness(&self) -> Result<Option<Readback>, Error> {\n        if self.original.context.mode()? != wire::Mode::NextUse {\n            return Err(Error::Binding(                                           ));\n        }\n        self.read_original(LocalReadOperation::CompletionReadiness)\n            .await\n    }\n\n    async fn read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                                 \n                                                   \n                                                                      \n                 \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }\n}",
+          "field": "required_order[4][1]"
+        },
+        {
+          "after": "read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                               \n                                                 \n             \n                                                                  \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }",
+          "before": "read_original(\n        &self,\n        operation: LocalReadOperation,\n    ) -> Result<Option<Readback>, Error> {\n                                                                             \n                                                                              \n                                                                         \n        let mut slot = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?\n            .take()\n            .ok_or(Error::Unavailable)?;\n        self.require_original_window()?;\n        if !(1..=128).contains(&slot.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let started_at = now()?;\n        let started = Instant::now();\n        let deadline = started\n            .checked_add(self.original.original.original_timeout())\n            .ok_or(Error::Unavailable)?\n            .min(self.original.original.original_end());\n        if started >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let request_id = slot.next_request_id;\n        slot.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\n        let request = self\n            .original\n            .context\n            .request(self.original.binding, request_id)?;\n        let bytes = match operation {\n            LocalReadOperation::Readback => serde_json::to_vec(&request)?,\n            LocalReadOperation::CompletionReadiness => {\n                serde_json::to_vec(&readiness::Request::from_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?)?\n            }\n        };\n        let original = Arc::clone(&self.original);\n                    \n                                                                   \n        let worker = tokio::task::spawn_blocking(move || {\n                        \n                                               \n                                                 \n             \n            let response = OriginalVersionLocalReadBindingV1::respond(\n                &original.original,\n                operation,\n                &bytes,\n                request_id,\n            )\n            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));\n                        \n                                 \n                                                   \n                                                                      \n                 \n             \n            response\n        });\n        let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)\n            .await\n            .map_err(|_| Error::Unavailable)?\n            .map_err(|_| Error::Unavailable)??;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        let current = match operation {\n            LocalReadOperation::Readback => {\n                let response: wire::Response = serde_json::from_slice(&response)?;\n                response.require_request(&request)?;\n                Some(self.original.context.decode(response.read)?)\n            }\n            LocalReadOperation::CompletionReadiness => {\n                let response: readiness::Response = serde_json::from_slice(&response)?;\n                response.request.require_profile(\n                    &self.original.context,\n                    self.original.binding,\n                    request_id,\n                )?;\n                match response.result {\n                    readiness::Readiness::NotReady => None,\n                    readiness::Readiness::Ready { read } => {\n                        Some(self.original.context.decode(read)?)\n                    }\n                }\n            }\n        };\n        let fresh = now()?;\n        if fresh < started_at\n            || self.original.context.binding(fresh)? != self.original.binding\n            || Instant::now() >= deadline\n        {\n            return Err(Error::Binding(                                            ));\n        }\n        if slot\n            .retained\n            .as_ref()\n            .is_some_and(|prior| current.as_ref() != Some(prior))\n        {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        if let Some(read) = &current {\n            slot.retained = Some(read.clone());\n        }\n        let mut destination = self\n            .original\n            .slot\n            .try_lock()\n            .map_err(|_| Error::Unavailable)?;\n        self.require_original_window()?;\n        if Instant::now() >= deadline {\n            return Err(Error::Unavailable);\n        }\n        *destination = Some(slot);\n        Ok(current)\n    }",
+          "field": "required_function_order[7].sequence[1]"
+        }
+      ],
+      "row": 429
+    },
+    {
+      "after": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "required": [
+          "#[path = \"neuron_generation_initial_root_task.rs\"]\nmod task;",
+          "#[path = \"neuron_generation_initial_root_cold.rs\"]\nmod cold;"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn ",
+              "read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self\n            .current\n            .recover_initial_operation(&self.recovery.operation_id, self.recovery.intent_digest)?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_prepared(",
+            "sequence": [
+              "fn ",
+              "from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(\n                                                                    ,\n            ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn original_final_use_binding(",
+            "sequence": [
+              "fn ",
+              "original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }"
+            ]
+          },
+          {
+            "function": "fn original_intent_digest(",
+            "sequence": [
+              "fn ",
+              "original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }"
+            ]
+          },
+          {
+            "function": "fn read_original_operation(",
+            "sequence": [
+              "fn ",
+              "read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }"
+            ]
+          },
+          {
+            "function": "fn publish(",
+            "sequence": [
+              "fn ",
+              "publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn recover_original(",
+            "sequence": [
+              "fn ",
+              "recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_root(",
+            "sequence": [
+              "fn ",
+              "require_root() -> Result<(), AgentdError> {\n                                                                          \n                                                                              \n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(invalid(\n                                                                ,\n        ));\n    }\n    Ok(())\n}"
+            ]
+          },
+          {
+            "function": "fn invalid(",
+            "sequence": [
+              "fn ",
+              "invalid(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Invalid(error.to_string())\n}"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "enum ",
+            "InitialPhase<W: AnchorWitnessStore> {\n    Prepared(Box<PreparedAgentdGenerationInitialV1<W>>),\n    Ready(Box<ReadyAgentdGenerationInitialV1<W>>),\n    ReadbackRequired,\n}"
+          ],
+          [
+            "struct ",
+            "OriginalInitialOperation {\n    current: Arc<NeuronGenerationCurrentOwnerV1>,\n    authorities: AgentdGenerationUpdateAuthoritiesV1,\n    recovery: AgentdGenerationUpdateRecoveryV1,\n    binding: FinalUseBinding,\n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalRootInitialGenerationCustodyV1<W: AnchorWitnessStore> {\n    operation: OriginalInitialOperation,\n    phase: InitialPhase<W>,\n}"
+          ],
+          [
+            "impl ",
+            "OriginalInitialOperation {\n    fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self\n            .current\n            .recover_initial_operation(&self.recovery.operation_id, self.recovery.intent_digest)?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }\n}"
+          ],
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                              \n                                                                           \n                                                                                 \n    pub fn from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(\n                                                                    ,\n            ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }\n\n    #[must_use]\n    pub fn original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }\n\n    #[must_use]\n    pub fn original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }\n\n                                                                                \n                                                                                 \n                                                                                 \n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n\n                                                                              \n                                                                               \n                                                                               \n    pub fn publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n\n                                                                             \n                                                                              \n                                                                               \n    pub fn recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n}"
+          ]
+        ]
+      },
+      "before": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "required": [
+          "#[path = \"neuron_generation_initial_root_task.rs\"]\nmod task;",
+          "#[path = \"neuron_generation_initial_root_cold.rs\"]\nmod cold;"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn ",
+              "read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self.current.recover_initial_operation(\n            &self.recovery.operation_id,\n            self.recovery.intent_digest,\n        )?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_prepared(",
+            "sequence": [
+              "fn ",
+              "from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(                                                    ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn original_final_use_binding(",
+            "sequence": [
+              "fn ",
+              "original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }"
+            ]
+          },
+          {
+            "function": "fn original_intent_digest(",
+            "sequence": [
+              "fn ",
+              "original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }"
+            ]
+          },
+          {
+            "function": "fn read_original_operation(",
+            "sequence": [
+              "fn ",
+              "read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }"
+            ]
+          },
+          {
+            "function": "fn publish(",
+            "sequence": [
+              "fn ",
+              "publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn recover_original(",
+            "sequence": [
+              "fn ",
+              "recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_root(",
+            "sequence": [
+              "fn ",
+              "require_root() -> Result<(), AgentdError> {\n                                                                          \n                                                                              \n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(invalid(                                                    ));\n    }\n    Ok(())\n}"
+            ]
+          },
+          {
+            "function": "fn invalid(",
+            "sequence": [
+              "fn ",
+              "invalid(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Invalid(error.to_string())\n}"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "enum ",
+            "InitialPhase<W: AnchorWitnessStore> {\n    Prepared(Box<PreparedAgentdGenerationInitialV1<W>>),\n    Ready(Box<ReadyAgentdGenerationInitialV1<W>>),\n    ReadbackRequired,\n}"
+          ],
+          [
+            "struct ",
+            "OriginalInitialOperation {\n    current: Arc<NeuronGenerationCurrentOwnerV1>,\n    authorities: AgentdGenerationUpdateAuthoritiesV1,\n    recovery: AgentdGenerationUpdateRecoveryV1,\n    binding: FinalUseBinding,\n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalRootInitialGenerationCustodyV1<W: AnchorWitnessStore> {\n    operation: OriginalInitialOperation,\n    phase: InitialPhase<W>,\n}"
+          ],
+          [
+            "impl ",
+            "OriginalInitialOperation {\n    fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self.current.recover_initial_operation(\n            &self.recovery.operation_id,\n            self.recovery.intent_digest,\n        )?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }\n}"
+          ],
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                              \n                                                                           \n                                                                                 \n    pub fn from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(                                                    ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }\n\n    #[must_use]\n    pub fn original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }\n\n    #[must_use]\n    pub fn original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }\n\n                                                                                \n                                                                                 \n                                                                                 \n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n\n                                                                              \n                                                                               \n                                                                               \n    pub fn publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n\n                                                                             \n                                                                              \n                                                                               \n    pub fn recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n}"
+          ]
+        ]
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "replacements": [
+        {
+          "after": "OriginalInitialOperation {\n    fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self\n            .current\n            .recover_initial_operation(&self.recovery.operation_id, self.recovery.intent_digest)?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }\n}",
+          "before": "OriginalInitialOperation {\n    fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self.current.recover_initial_operation(\n            &self.recovery.operation_id,\n            self.recovery.intent_digest,\n        )?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }\n}",
+          "field": "required_order[3][1]"
+        },
+        {
+          "after": "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                              \n                                                                           \n                                                                                 \n    pub fn from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(\n                                                                    ,\n            ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }\n\n    #[must_use]\n    pub fn original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }\n\n    #[must_use]\n    pub fn original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }\n\n                                                                                \n                                                                                 \n                                                                                 \n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n\n                                                                              \n                                                                               \n                                                                               \n    pub fn publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n\n                                                                             \n                                                                              \n                                                                               \n    pub fn recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n}",
+          "before": "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                              \n                                                                           \n                                                                                 \n    pub fn from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(                                                    ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }\n\n    #[must_use]\n    pub fn original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }\n\n    #[must_use]\n    pub fn original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }\n\n                                                                                \n                                                                                 \n                                                                                 \n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n\n                                                                              \n                                                                               \n                                                                               \n    pub fn publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n\n                                                                             \n                                                                              \n                                                                               \n    pub fn recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n}",
+          "field": "required_order[4][1]"
+        },
+        {
+          "after": "read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self\n            .current\n            .recover_initial_operation(&self.recovery.operation_id, self.recovery.intent_digest)?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }",
+          "before": "read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self.current.recover_initial_operation(\n            &self.recovery.operation_id,\n            self.recovery.intent_digest,\n        )?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }",
+          "field": "required_function_order[0].sequence[1]"
+        },
+        {
+          "after": "from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(\n                                                                    ,\n            ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }",
+          "before": "from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(                                                    ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }",
+          "field": "required_function_order[1].sequence[1]"
+        },
+        {
+          "after": "require_root() -> Result<(), AgentdError> {\n                                                                          \n                                                                              \n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(invalid(\n                                                                ,\n        ));\n    }\n    Ok(())\n}",
+          "before": "require_root() -> Result<(), AgentdError> {\n                                                                          \n                                                                              \n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(invalid(                                                    ));\n    }\n    Ok(())\n}",
+          "field": "required_function_order[7].sequence[1]"
+        }
+      ],
+      "row": 438
+    },
+    {
+      "after": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn recover_from_original_current(",
+            "sequence": [
+              "fn ",
+              "recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original =\n            current.recover_initial_operation(&recovery.operation_id, recovery.intent_digest)?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(\n                                                                           ,\n            ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                           \n                                                                             \n                                                                             \n                                                                                \n                                                           \n       \n                                                                             \n                                                                               \n                                                                            \n    pub fn recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original =\n            current.recover_initial_operation(&recovery.operation_id, recovery.intent_digest)?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(\n                                                                           ,\n            ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }\n}"
+          ]
+        ]
+      },
+      "before": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn recover_from_original_current(",
+            "sequence": [
+              "fn ",
+              "recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original = current.recover_initial_operation(\n            &recovery.operation_id,\n            recovery.intent_digest,\n        )?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(                                                           ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                           \n                                                                             \n                                                                             \n                                                                                \n                                                           \n       \n                                                                             \n                                                                               \n                                                                            \n    pub fn recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original = current.recover_initial_operation(\n            &recovery.operation_id,\n            recovery.intent_digest,\n        )?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(                                                           ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }\n}"
+          ]
+        ]
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "replacements": [
+        {
+          "after": "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                           \n                                                                             \n                                                                             \n                                                                                \n                                                           \n       \n                                                                             \n                                                                               \n                                                                            \n    pub fn recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original =\n            current.recover_initial_operation(&recovery.operation_id, recovery.intent_digest)?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(\n                                                                           ,\n            ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }\n}",
+          "before": "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                           \n                                                                             \n                                                                             \n                                                                                \n                                                           \n       \n                                                                             \n                                                                               \n                                                                            \n    pub fn recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original = current.recover_initial_operation(\n            &recovery.operation_id,\n            recovery.intent_digest,\n        )?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(                                                           ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }\n}",
+          "field": "required_order[0][1]"
+        },
+        {
+          "after": "recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original =\n            current.recover_initial_operation(&recovery.operation_id, recovery.intent_digest)?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(\n                                                                           ,\n            ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }",
+          "before": "recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original = current.recover_initial_operation(\n            &recovery.operation_id,\n            recovery.intent_digest,\n        )?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(                                                           ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }",
+          "field": "required_function_order[0].sequence[1]"
+        }
+      ],
+      "row": 440
+    }
+  ],
+  "inspected_protected_rows": [
+    {
+      "after_source": {
+        "bytes": 12139,
+        "git_blob": "b4bb99427c2dba9efd116b295a4ec2d7df67334e",
+        "sha256": "8da96fab3c0917de8a2ee65597abfd141db689c23163124d8c2f8ac5b02602d2"
+      },
+      "before_source": {
+        "bytes": 12151,
+        "git_blob": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+        "sha256": "da9b6959af1488715c55e0aea8311fbeab1242e40741b6822025f977e52a5359"
+      },
+      "changed": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after_source": {
+        "bytes": 7888,
+        "git_blob": "ae30e3bddeec100da2f609df60fc1571ef9a78be",
+        "sha256": "aafd14d9da9f43e881812ebecf1aeebf9e104686f6f46736d548c1fcfe57f692"
+      },
+      "before_source": {
+        "bytes": 7843,
+        "git_blob": "31ede1a405c6469508871d672c50a4f000342985",
+        "sha256": "137c8703d605fb76c06f01a5a89e452bd2c5dc59ac1cb8403732638343a945a0"
+      },
+      "changed": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "row": 438
+    },
+    {
+      "after_source": {
+        "bytes": 2512,
+        "git_blob": "c38f1b85029ecba6f9cdc9a73cf2bf719f7ec6c0",
+        "sha256": "84f0731a69e61078730eb7a8b9d12825af21b1efc215898b43664d35e0b655d5"
+      },
+      "before_source": {
+        "bytes": 2504,
+        "git_blob": "944a1927f2761000c206d018034b26d01a2ce0df",
+        "sha256": "f85bd6c3e22b917be0c77b5068d52b2e68d623c28314ea068772b96337328e17"
+      },
+      "changed": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "row": 440
+    }
+  ],
+  "module_shape_updates": [],
+  "no_path_deduplication": true,
+  "old_row411_equal": true,
+  "ordinary_28_boundary_slice_unchanged": true,
+  "ordinary_literals": 17,
+  "ordinary_scope_updates": [],
+  "ordinary_scopes": 34,
+  "protected_rows": 442,
+  "provider_paths": 45,
+  "provider_scope_updates": [
+    {
+      "after": {
+        "literal_source_sha256": "a08bc79cdadf4f9a9033890bf17bd655a7f35062c2b8aa6e1ccfdfe5eb9a006f",
+        "masked_sha256": "20ebe626a372589e72e5f977796d98814df09eb4b24a899cd80c9de0f35ca7df"
+      },
+      "before": {
+        "literal_source_sha256": "ed23200f13480690ba27e287be81b3ad7ba8d11cfd1f169606f8ac58da815775",
+        "masked_sha256": "82806fb863fe84b9e40617da2384ba78df45827ac7d7d83a2d789a17d18c4f1e"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "selector": {
+        "header": "impl OriginalCircuitPublishedLocalReadV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "eb3bf78793d3e2ac018655824c4261dd3aeab65a6898761d9591d17e19a51326",
+        "masked_sha256": "1289eaccdffcb32e1f90a491b80d566a2b680a319c3f263c1af991d0ffa26069"
+      },
+      "before": {
+        "literal_source_sha256": "fb963a2d3b625717b201ae56f0473624ff83e277f408264363608f830e8ce6fd",
+        "masked_sha256": "2885e21c9ec4ea924258cf282a07bbea5cae733e7868cc71d175fa1f0e71b5d9"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "043b5edeb48b2aaaa0c2fd57a604b2b2a2ffdf7f7c505019b965d31e6710912c",
+        "masked_sha256": "066513c5c67877e6a53b39fd3506bf5a8becb7aaa603e885ee45d139bb9326f5"
+      },
+      "before": {
+        "literal_source_sha256": "36ea14447f02aa3805ffa70d0e38ea9c1334ff53843c7589d4bc236a0094d935",
+        "masked_sha256": "76f820f1532f173717c1a0ead91dc996688f2250755ae0c5eef95fa098f0158f"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "selector": {
+        "header": "impl OriginalInitialOperation",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "529bcaeda0b52428856d5a08bc8c9c89485229de1f9442b189ff8035ead20c41",
+        "masked_sha256": "b56066b19b0cb9e296454f7868a1122785dd7c17178845d12eb4fb8003309d0e"
+      },
+      "before": {
+        "literal_source_sha256": "b8740801e418a3b3f0ce6d0bc867d7c1e55f046b7db4e694c56902344ec1663a",
+        "masked_sha256": "e815fd06a117c5666094bc93cbfef81fcb82c83fe180879ddaf72129f3c69631"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "451c6965ad7ed5c1dba38d21ec8b310fce0f12cda2f245072d1d3042c9e46cce",
+        "masked_sha256": "bc672f65c01d2ea8ffef68024e5500a016ceb3920db9c28b69dde194592eb18f"
+      },
+      "before": {
+        "literal_source_sha256": "7cc589df97fa11c450cc52d121a072e114215adc8bbcd5fda98611253e4298f9",
+        "masked_sha256": "cf1779ad2ee2481033adb9fc62de51079b99b5be8bd650c4a67afd762235c660"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "require_root"
+      }
+    }
+  ],
+  "provider_scopes": 288,
+  "qa_files": 64,
+  "qa_methods": 607,
+  "qualification": false,
+  "root_parent_count": 48,
+  "row_order_and_duplicate_path_rows_preserved": true,
+  "source_roots_ignore_authority_and_privileged_inventory_unchanged": true,
+  "source_tree_or_ref_writes": 0,
+  "status": "PREPARED_EXACT_ACTUAL_SOURCE_GUARDS_NOT_QUALIFIED"
+}

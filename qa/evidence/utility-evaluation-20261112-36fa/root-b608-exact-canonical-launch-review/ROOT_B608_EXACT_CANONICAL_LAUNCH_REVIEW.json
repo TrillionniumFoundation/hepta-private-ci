@@ -1,0 +1,165 @@
+{
+  "H_calls": 0,
+  "action_record_outer_seconds": [
+    600,
+    180,
+    900
+  ],
+  "after_expected_projection_only": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "inventory": {
+      "bytes": 5631947,
+      "filesystem_entries": 15243,
+      "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+      "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e",
+      "tracked_entries": 15243
+    },
+    "parents": [
+      "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+    ],
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "all_15243_physical_rows_exactly_preserved": true,
+  "all_29_raw_objects_typed_hash_valid": true,
+  "approval_boundary": "Configuration is executable-shaped data. This report is not dispatch authorization; separate exact Root approval follows independent peer and full Git readback.",
+  "before_actual": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "git_state": {
+      "config_bytes": 123,
+      "config_sha256": "5e224c2f489801ee7d2f46cf5c4e40261ea686332bac1588d05a5f463c59f84f",
+      "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+      "head_raw_sha256": "576fb0120bbf996a96f0576d0d28b4efad2b90e69fdb6137defefdc1f59fb619",
+      "index_bytes": 2080152,
+      "index_sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "a489b394666b8141840275128a780605b024cde0"
+    },
+    "inventory": {
+      "bytes": 5633513,
+      "filesystem_entries": 15243,
+      "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+      "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202",
+      "tracked_entries": 15243
+    },
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ],
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "bootstrap": {
+    "bytes": 5738,
+    "git_blob": "601a3b9448f46c44936ea7789b57d6499e584926",
+    "sha256": "d775986c25d6a1a3e91c4661486d566712344e78b4a5347b3758089e28a403d9"
+  },
+  "bootstrap_has_no_lock": true,
+  "bootstrap_inverse": {
+    "all_function_definitions_byte_identical": 5,
+    "changed_assignments_only": [
+      "BASE",
+      "PINS"
+    ],
+    "top_level_functions_byte_identical": 4,
+    "whole_inverse_equal": true
+  },
+  "canonical_alignment_observed": false,
+  "config": {
+    "bytes": 3453,
+    "git_blob": "0f69f739486c1dc3506f61c0e8a6ef3737fbe17e",
+    "sha256": "a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db"
+  },
+  "config_changed_fields": [
+    "actual_final_postimages_reviewed",
+    "after_commit",
+    "after_inventory",
+    "after_parents",
+    "after_tree",
+    "before_inventory",
+    "canonical_object_count",
+    "canonical_packet",
+    "expected_before_git_state",
+    "final_format",
+    "reviewed_formatter_changed_paths",
+    "root_execution_approved",
+    "status"
+  ],
+  "driver": {
+    "bytes": 46159,
+    "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+    "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+  },
+  "driver_inverse": {
+    "all_function_definitions_byte_identical": 47,
+    "changed_assignments_only": [
+      "CONTROL",
+      "INVENTORY",
+      "LEAVES",
+      "OLD",
+      "OLD_PARENTS",
+      "OLD_TREE",
+      "REPO"
+    ],
+    "top_level_functions_byte_identical": 46,
+    "whole_inverse_equal": true
+  },
+  "driver_single_original_exclusive_lock_retained": true,
+  "environment_override": false,
+  "format": "hepta-root-b608-exact-canonical-launch-review-v1",
+  "objects": 29,
+  "original_bootstrap": {
+    "bytes": 5720,
+    "git_blob": "13963075b37d38b1ef88fd7d3e76201b2318dbbe",
+    "sha256": "e6dd088ef698449150d9a110bdbf10f2d15511ab4428c2379977348017dbefb9"
+  },
+  "original_driver": {
+    "bytes": 46094,
+    "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+    "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+  },
+  "original_final_format_guard_retained_copies": [
+    "FINAL_FORMAT_GIT_STATE.original.json",
+    "FINAL_FORMAT_RESULT.original.json",
+    "FINAL_FORMAT_SUPERVISOR.original.json"
+  ],
+  "packet": {
+    "bytes": 3428251,
+    "git_blob": "bb4b4abd809047be4c9402b95fa2a2dc30b2ab78",
+    "sha256": "8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6"
+  },
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "request": {
+    "bytes": 940279,
+    "git_blob": "fd655e0dea612e9dd13d4026c11d01b811c8fd8d",
+    "sha256": "a83c5966abbbc5af9b6f6ea555cd8f671698f2f54f48b78e6743929c51ac8048"
+  },
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "scope": "One original create-only four-input bootstrap and original canonical index/HEAD alignment. Existing source bytes/modes and repository refs stay unchanged.",
+  "source_or_ref_mutations": 0,
+  "status": "EXACT_CANDIDATE_REVIEWED_PENDING_PEER_AND_ROOT_APPROVAL",
+  "stdin": {
+    "bytes": 934139,
+    "git_blob": "268aacaec6be37bf047b34278656d83008a1a34a",
+    "sha256": "a1a42f3c0184c1d8fe796e31ec25653e8635613216922138638ff663849aa666"
+  },
+  "stdin_and_request_below_original_one_MiB": true,
+  "unchanged_pure_guards_executed": [
+    "check",
+    "inventory_summary",
+    "nodup",
+    "oid",
+    "parse",
+    "parse_supervisor",
+    "physical_projection",
+    "sha256",
+    "validate_final_format"
+  ]
+}

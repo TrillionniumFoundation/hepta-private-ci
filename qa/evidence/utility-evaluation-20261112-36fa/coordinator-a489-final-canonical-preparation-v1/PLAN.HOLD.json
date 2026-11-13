@@ -1,0 +1,44 @@
+{
+  "H_calls": 0,
+  "before_commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+  "before_parents": [
+    "cc57c7198db6293ccca562253c42fffbe2a04633"
+  ],
+  "before_tree": "a489b394666b8141840275128a780605b024cde0",
+  "complete_leaf_count": 15243,
+  "driver": {
+    "bytes": 46159,
+    "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+    "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+  },
+  "exact_constant_changes": 7,
+  "format": "hepta-d256-last-canonical-alignment-plan-v1",
+  "future_native_request": null,
+  "limits": "Original 600/180/900 budgets and original child cleanup behavior are preserved; no new claim of stronger process cleanup is made.",
+  "original_driver": {
+    "bytes": 46094,
+    "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+    "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+  },
+  "pending": [
+    "Actual final nonRust+fmt normal/result/full inventory/postimages review",
+    "Root canonical authentic commit/tree/parents and bounded object packet",
+    "Exact four-input staging/typed request and Root approval"
+  ],
+  "permitted_future_mutations": [
+    "Only missing exact approved canonical objects",
+    "Full normal index read-tree without -u/-m/--reset and explicit stat refresh",
+    "write-tree exact approved root",
+    "Detached HEAD CAS after all original checks"
+  ],
+  "physical_source_writes": false,
+  "qualification": false,
+  "remote_ref_updates": false,
+  "requires_actual_successful_final_nonrust_fmt": true,
+  "scope": "The original whole-source, independent object closure, raw index, metadata allowlist, input and same-lock audits remain unchanged. Existing historical current metadata and later canonical metadata are kept separate.",
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+  "status": "HOLD",
+  "successor_consumer_contract": "Original 765ada validate_final_format remains byte-identical and consumes hepta-reviewed-nonrust-final-format-result-v1, with actual one fmt900, three final audits, full physical inventory and exact Git state. No old fix101 exception is used.",
+  "test_or_formatter_commands": false,
+  "unchanged_function_count": 46
+}

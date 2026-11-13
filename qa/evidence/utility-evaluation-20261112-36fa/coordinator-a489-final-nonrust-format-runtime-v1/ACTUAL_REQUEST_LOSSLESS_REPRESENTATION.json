@@ -1,0 +1,48 @@
+{
+  "format": "actual-dispatched-request-lossless-representation-v1",
+  "job_id": "1a1d4a979d9-392-50f",
+  "original_name": "ACTUAL_PROCESS_INPUT.original.json",
+  "raw": {
+    "bytes": 757672,
+    "git_blob": "9ca09c7e486277f72669173c649290d2124d794e",
+    "sha256": "bffdf1e54e4f2437c34086b2f5322484deeef2b1190728068801ef20da621b26"
+  },
+  "gzip": {
+    "bytes": 555010,
+    "git_blob": "d5ed4d9fd9fcc355bd1c93ae4a5ad99b0cd84ebd",
+    "sha256": "eb4ec75fc34d862a35e2d812c9924e28044c8f97ee4b95dbc4455a28e52d97cb"
+  },
+  "parts": [
+    {
+      "bytes": 409601,
+      "decoded": {
+        "bytes": 307200,
+        "git_blob": "a8944761d8a068cbe52b2d696fb080eea7af7c4d",
+        "sha256": "8183c0f085c6ba2bbe6a6dcd843cbb457a44046f751f53cc2f0e0dd494d5056f"
+      },
+      "decoded_offset": 0,
+      "git_blob": "ae9b944996c5046d587c31ed8c6acbf9a68a475f",
+      "name": "ACTUAL_PROCESS_INPUT.original.json.gz.part-001.b64",
+      "sha256": "37f5f5db9313fe3b3bf1965c0a9525344f45ade2d2ed7d4f8f9d1665bab6a411",
+      "source_candidate_name": "ACTUAL_PROCESS_INPUT.candidate.json.gz.part-001.b64"
+    },
+    {
+      "bytes": 330417,
+      "decoded": {
+        "bytes": 247810,
+        "git_blob": "d2b331460c6723ceffe358b7b4ea330a89940482",
+        "sha256": "1dc5647e3736dacb2797c2e556d26ab9baa68486654e9cee41db98b007bcada5"
+      },
+      "decoded_offset": 307200,
+      "git_blob": "a34db825775de2a6aa321ff79cfeb440bda0993d",
+      "name": "ACTUAL_PROCESS_INPUT.original.json.gz.part-002.b64",
+      "sha256": "7b90b0aa2cebffda2b68ca898be2c03f818f286a875a8dc0a17da5cb5286d8e6",
+      "source_candidate_name": "ACTUAL_PROCESS_INPUT.candidate.json.gz.part-002.b64"
+    }
+  ],
+  "exact_candidate_bytes_equal": true,
+  "candidate_placement": "2527949ebafa7d1160c0a2efb3d6034b58f89426",
+  "standalone_large_raw_git_get_claimed": false,
+  "actual_admission": "MAIN_ADMISSION.original.json",
+  "actual_supervisor": "STATUS_02.original.json"
+}

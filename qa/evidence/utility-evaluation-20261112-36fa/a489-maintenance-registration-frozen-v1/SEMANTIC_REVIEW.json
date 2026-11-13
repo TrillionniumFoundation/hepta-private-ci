@@ -1,0 +1,201 @@
+{
+  "H_calls": 0,
+  "actual_result": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+  "all_17_actual_paths_read_and_chained": true,
+  "all_literal_and_comment_sequences_equal": true,
+  "byte_and_lexical_report": {
+    "bytes": 922962,
+    "git_blob": "b9444fae986af6a55ece34d60ca0dcc34e904674",
+    "sha256": "ca01ae3278adfe00a80e1108537536ac36bddfadc0f82642b81abacf5dca0893"
+  },
+  "fix_files": [
+    {
+      "after": {
+        "bytes": 7565,
+        "git_blob": "df7c63ed5575737e2e710973e895fde8c047d063",
+        "sha256": "d95ee2c765ee27cb1ed2159ba7dccda07ff2cb9e0c1fb4ef3a0242a0f99e372d"
+      },
+      "before": {
+        "bytes": 7557,
+        "git_blob": "cde16a60860fa5eccb1160353d6806f3f9f81477",
+        "sha256": "4de86df4dd59a579f00863e461277946e3f04cbcc69d8b43f50c1fc66fa3f836"
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "reason": "The poisoned Mutex error closure is replaced by the identical PoisonError::into_inner method item; release/notify and poison recovery behavior are retained."
+    },
+    {
+      "after": {
+        "bytes": 6605,
+        "git_blob": "35b9f4bf5258ace24b9c5aaf380f3665a29732eb",
+        "sha256": "48db64941aaa29d1747710e8a32e6d290fc30586363dfcc264a1570b6a144fa9"
+      },
+      "before": {
+        "bytes": 6626,
+        "git_blob": "3970dbf29eb46dede4337aca04a0f500163ddd03",
+        "sha256": "cc4a94f932cde080926a8b674272adb55d1b139501cd4cd74c14d5ef54d314f3"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "reason": "Removes an identity anyhow::Error::from conversion before the same context operation. The dataset is still dropped and the same original peer cleanup is attempted before returning the original error."
+    },
+    {
+      "after": {
+        "bytes": 20356,
+        "git_blob": "7403a7189e8cda62a4e1f5ea58d6fcbb01cd664b",
+        "sha256": "a2cbacfffcc0efaadc5030922c5314599af168c51f6e57e1d6154e7f767579f7"
+      },
+      "before": {
+        "bytes": 20380,
+        "git_blob": "83cc4158e980804b0e7bd4365e51cf88b43a2196",
+        "sha256": "e65ad37b6d97b3001c09bbbe2e4c219e147740a087f9a5cd9428872f30ec060e"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "reason": "Two nested take/finish error conditions become left-to-right short-circuit let chains. Each Option is still consumed once, each held resource is finished once, all recorded errors remain collected."
+    },
+    {
+      "after": {
+        "bytes": 14813,
+        "git_blob": "26403acbd0a6fcad495482e1872122e0af2b4fe3",
+        "sha256": "cf955571287a2eb8e55c4feb00f29fe6959535f3cece47e253a0ad38f27f37e7"
+      },
+      "before": {
+        "bytes": 14821,
+        "git_blob": "444fbbb4e48743f51de91d39d77c34b37364b002",
+        "sha256": "9aa9a9a908790683bcab368f9d528707d9dda39c238d30e8a163a1aaa1f16e94"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "reason": "The same task.take and !consumed_join condition become a let chain. Abort, awaiting the original handle, cancelled JoinError handling and the subsequent original-terminal observation are unchanged."
+    },
+    {
+      "after": {
+        "bytes": 27360,
+        "git_blob": "8b338d070d7d136bb1d2afd8a2cfbf76b5d6a2b1",
+        "sha256": "dc0960274ab3dc0c47ad3e3f8ca518c6f142926dbb02d35c7e46014308fdc683"
+      },
+      "before": {
+        "bytes": 27373,
+        "git_blob": "b9a4d5bda8f02c16a198efde82a7d0d589f3d18c",
+        "sha256": "6195fb4dd0704c4d932f33bfb8f4d4af6d966015576b477f7feeb75f5ff899f5"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "reason": "Equivalent fixture take/finish let chain and Boolean observed == !already_expired to observed != already_expired. The two Boolean truth values, original deadline assertions and cell/source observations are preserved."
+    },
+    {
+      "after": {
+        "bytes": 13502,
+        "git_blob": "b14590e5ea4f39b871d02609c3af26901f494e98",
+        "sha256": "67f7ce49c6dc6062468724a074457076859714e97786cfad2ea3c6eefb08432c"
+      },
+      "before": {
+        "bytes": 13514,
+        "git_blob": "2dafccfb708098871d5ab4807ec185920c73c544",
+        "sha256": "499c240eb53e179e01b5aa589d5e0c51a1ac74eed28e2fd7499b9b72770cbf80"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "reason": "Equivalent fixture take/finish let chain; all held peer cleanup results remain aggregated and the original refusal/current assertions are retained."
+    },
+    {
+      "after": {
+        "bytes": 24095,
+        "git_blob": "cc36737a44005d2d2bfc2e4965d3a78887a9a6db",
+        "sha256": "d59d9488c55015a82fb767b0bfd7e6229cbc6f9fad522eab76f07f275e2bb54a"
+      },
+      "before": {
+        "bytes": 24081,
+        "git_blob": "ffafea99606924aa115f6c9ba06f417a7a08618b",
+        "sha256": "1a9f84835d412587b76da140f7e684d4cdbffaaeb988a19ae62dce1fd793cb2b"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "reason": "Two Option::map closures become the identical consuming JoinHandle::join method item; both original handles are still taken and joined before collecting errors."
+    },
+    {
+      "after": {
+        "bytes": 12135,
+        "git_blob": "55e0b3d16fee7f6b046ab9cfae48ea9efb91c04b",
+        "sha256": "af32165371490c7a29b9c5cb13e35853931fc19e7746a2ad68d10241a8d16811"
+      },
+      "before": {
+        "bytes": 12151,
+        "git_blob": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+        "sha256": "da9b6959af1488715c55e0aea8311fbeab1242e40741b6822025f977e52a5359"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "reason": "Only a cfg(test) pause hook combines response.is_ok and the same Some(terminal) condition. The original production exchange, 128 counter, absolute end, slot ownership and actual response authentication remain unchanged."
+    },
+    {
+      "after": {
+        "bytes": 12023,
+        "git_blob": "dd82f2decb88abc8bfcbd92cf94528b40acd0cda",
+        "sha256": "3f9e747cafe5c7ab37163525ff2469246d921fe2ee3d719ba5b571eb7ac1acf6"
+      },
+      "before": {
+        "bytes": 12039,
+        "git_blob": "3a1ca23dd755c46ae852830b0a27419e58c3cb54",
+        "sha256": "f425edd533db1b7a2bef0d69a9e6b9598a498daad8fc7db75d61670e41e63302"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "reason": "Two last-use JSON/byte Vec clones become ownership moves. Negative payload construction and every rejection check remain; no owner, FD, opaque grant or Source capability is cloned or created."
+    },
+    {
+      "after": {
+        "bytes": 20389,
+        "git_blob": "bba6305de3212ab31c2fef8edf0ef78e63ebc522",
+        "sha256": "d5a236690ad87b9faf2ed2f0c3713427b960801da8674b10741a68c31da83643"
+      },
+      "before": {
+        "bytes": 20405,
+        "git_blob": "2f35bcacff40827fd96b3d4ce289455929d64a82",
+        "sha256": "d7860ce4fec0525b352c260eea9357b074c4cb0a9bc5103d48b9edf76940ea4c"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "reason": "Two last-use JSON/byte Vec clones become ownership moves. Original changed-freeze-payload, trailing-byte and oversize negative inputs and all assertions remain."
+    },
+    {
+      "after": {
+        "bytes": 29307,
+        "git_blob": "b15903d31d31a0b93eeb6600f80e2491f2eb72d9",
+        "sha256": "cbdf9c2db67131c32c5c243167b8c6b338132d29d79bf1bd1dfdaf2a2c1a73e5"
+      },
+      "before": {
+        "bytes": 29319,
+        "git_blob": "491bbac2876891948de35f11ac790c2500fdfc2f",
+        "sha256": "f31d54f0c4ae278588e50696b93e6b2e6f237efc581caee4bb1af21d7e3c8483"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "reason": "Equivalent stages.take/finish let chain; original staged peer cleanup still occurs once before retained home handles are dropped and aggregated errors are returned."
+    },
+    {
+      "after": {
+        "bytes": 15860,
+        "git_blob": "5eddfe1e7186ee704aa261ab3c90759885e5156b",
+        "sha256": "586498c6fe8370c56cf497e8f3795dc549781ecd846a4ef4732413557e99330c"
+      },
+      "before": {
+        "bytes": 15896,
+        "git_blob": "2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8",
+        "sha256": "b9986ffa2fb5b676a8f3012472adc296a8fbe5bef30763887f613251851a5927"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "reason": "Three equivalent panel/training-peer/original take+finish let chains. The original consumer close, held-client drops, server joins and remaining cleanup ordering are preserved."
+    }
+  ],
+  "format": "hepta-actual-a489-scoped-fix-format-author-semantic-review-v1",
+  "format_files": 14,
+  "format_files_with_exact_tokens": 9,
+  "format_remaining_changes": {
+    "comma_contexts": "Only original function/method argument and parameter lists, struct/variant expressions and pattern fields, and an array literal. No singleton tuple meaning or custom macro token grammar is changed.",
+    "import_order_only_files": [
+      "neuron_generation_initial_root_cold_tests.rs",
+      "neuron_generation_initial_root_custody_support_tests.rs"
+    ],
+    "optional_trailing_comma_hunks": 23,
+    "three_tail_expression_closure_blocks": "The same OpenOptions::open, FileAnchorWitnessStore::open and anyhow error expressions are wrapped as block tail expressions; no added statement, async boundary, operation, capture, value or error mapping."
+  },
+  "limits": [
+    "Static source review is separate from the actual two maintenance return codes; no Rust tests or full source qualification have run on these final bytes.",
+    "Existing timeout/cancellation and lack of ordinary Root startup integration limits are preserved. This refresh supplies no real A/B/C task chain.",
+    "The original fix101 failure in the earlier source attempt is retained; this new single scoped fix success does not rewrite that historical result."
+  ],
+  "qualification": false,
+  "status": "NO_CONCRETE_SEMANTIC_BLOCKER_IDENTIFIED_IN_ACTUAL_DIFF",
+  "tests_or_source_gates_run_by_review": 0
+}

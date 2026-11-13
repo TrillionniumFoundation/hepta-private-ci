@@ -1,0 +1,69 @@
+{
+  "format": "canonical-bootstrap-hold-original-inverse-review-v1",
+  "original": {
+    "bytes": 5720,
+    "sha256": "e6dd088ef698449150d9a110bdbf10f2d15511ab4428c2379977348017dbefb9",
+    "git_blob": "13963075b37d38b1ef88fd7d3e76201b2318dbbe"
+  },
+  "held": {
+    "bytes": 5445,
+    "sha256": "7660e0084afbba3be4c1276c92d7897088acf278f42152c2b6975eb6fe0763b9",
+    "git_blob": "4cca2bcc593172d60f25361e85bcc6e793d6cb72"
+  },
+  "whole_text_inverse_equal": true,
+  "changed_assignments_only": [
+    "BASE",
+    "PINS"
+  ],
+  "unchanged_all_function_definitions": [
+    {
+      "name": "check",
+      "bytes": 78,
+      "sha256": "9eeabea706c4492bd9f8a6b506734b2e1c54cc716ad12b4eaf8ad9369d9b86aa",
+      "git_blob": "5065541ab022b262bf9305359a9bafb096d19cbf",
+      "bytes_equal": true
+    },
+    {
+      "name": "identity",
+      "bytes": 191,
+      "sha256": "15a8d2ddff92ae5b486c7f9ecbc4ac5305626dafb12cb34ed186a2c94ae8d2ee",
+      "git_blob": "cf7c0f353cf61fd307f05f0c7f578f879e804055",
+      "bytes_equal": true
+    },
+    {
+      "name": "real_parents",
+      "bytes": 346,
+      "sha256": "f90341397b5dcd5417a8527bc2f6398c5debe86ebe01d272ee5d8987aab852a2",
+      "git_blob": "b6245ddfd1c76a0ad7bcd90694369e4f3887d4bd",
+      "bytes_equal": true
+    },
+    {
+      "name": "retain",
+      "bytes": 985,
+      "sha256": "75b619ee78238867713827fefe80034ca4d6b87bf7f5e07d5347c7abc3d76ffd",
+      "git_blob": "0540c995dc0e2d51ec0f2e2effa4a4a66df52879",
+      "bytes_equal": true
+    },
+    {
+      "name": "stamp",
+      "bytes": 149,
+      "sha256": "eef5169ae588ed74bd08fd91a0abb4fe4ed76f11e5a92de94820c508067ee98f",
+      "git_blob": "fc39af07db34ebd5c2ea4f9152041414174820a3",
+      "bytes_equal": true
+    }
+  ],
+  "original_top_level_helpers": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ],
+  "original_try_exec_layout_preserved": true,
+  "bootstrap_takes_no_source_lock": true,
+  "sole_source_exclusive_lock": "Original e8d606 thin main takes one LOCK_EX|LOCK_NB; bootstrap holds none.",
+  "original_input_limit": 1048576,
+  "original_reviewed_packet_expanded_limit": 40000000,
+  "canonical_packet_and_root_config_pins_remain_null": true,
+  "native_dispatches": 0,
+  "qualification": false
+}

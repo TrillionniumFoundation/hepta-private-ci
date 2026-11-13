@@ -1,0 +1,3001 @@
+{
+  "format": "hepta-closed-runtime-archive-full-git-readback-v1",
+  "original_index": {
+    "bytes": 68010,
+    "sha256": "0f43e1642a9eea168816f9dab4d4da2e116e4b81e1711f31311b21bacf26ea76",
+    "git_blob": "ef30e3874442496c90cbd26fae098c225b6b6563"
+  },
+  "frozen_original_cutoff": "2026-11-13T11:43:41.900374+00:00",
+  "original_file_count": 118,
+  "index_included": true,
+  "entry_count": 119,
+  "unique_git_blobs": 110,
+  "verified_kinds": {
+    "NEW_CREATE_AND_COMPLETE_GIT_GET": 84,
+    "REUSED_COMPLETE_ORIGINAL_GIT_SDK": 25,
+    "FIXED_BLOB_CREATE_AFTER_TRANSPORT_ERROR_AND_404_RECONCILIATION": 1
+  },
+  "entries": [
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP.py",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_BOOTSTRAP.py",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP.py",
+      "sha": "3f4692a37efcdc6cb6cfe070f1d574d88fbea14a",
+      "bytes": 5700,
+      "sha256": "d9ad747e42fa3a23fecac735a3a2927d4f81d9ba5d4371ce2427a55b5af1290b",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9f5f6beb7dd68e49d2e880724c4d8cc57c6ad6bc0aa215e92ba857ec5299bd93",
+        "git_blob": "889a74edb97d83236132e624cb4ae3e796a7b6a8"
+      },
+      "get_sdk": {
+        "bytes": 12435,
+        "sha256": "01cb7191b6d126663506889e1670c1f317192c3a0f1bfb66b6ad322f5c77a1c3",
+        "git_blob": "4f8361bae63cdf803d3d279e39d0739e1c69c6b8"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/3f4692a37efcdc6cb6cfe070f1d574d88fbea14a.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/3f4692a37efcdc6cb6cfe070f1d574d88fbea14a.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP.py.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_BOOTSTRAP.py.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP.py.READ_01.original.json",
+      "sha": "bd6112a26312954d004adaffa6f2aafcfa211a0b",
+      "bytes": 8092,
+      "sha256": "b9197dd5fe9d6148318d5aeefae64af2087e9c1f9363227663c4b21c59038cb8",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "98e0cd49fe7f320f6c552db4a94d090ddf5ef746177d0e31e8cd4b5dfcd91efe",
+        "git_blob": "abb85b9b64639d624bed3b786b66294297daf37f"
+      },
+      "get_sdk": {
+        "bytes": 17169,
+        "sha256": "8ac99fadc29cb6fe924ca3c96697536e8f25a3bb052c5cfff8a679f021df4231",
+        "git_blob": "a520d28a50551a6471840379e0339eb38aaafe29"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/bd6112a26312954d004adaffa6f2aafcfa211a0b.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/bd6112a26312954d004adaffa6f2aafcfa211a0b.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP_ARGV.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_BOOTSTRAP_ARGV.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP_ARGV.json",
+      "sha": "382c98a43122e6e4de04bcd61819aa68bf542252",
+      "bytes": 5844,
+      "sha256": "76905d46acaaba454c384eea22338c4cef9c2937dc843a913e2636891ec6c26a",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "103adc005102b25441b4f19dddf14384ba585e70ebf12299400af0da4997caff",
+        "git_blob": "865bc678691a57332947f1ef334b515f84cacc5a"
+      },
+      "get_sdk": {
+        "bytes": 12759,
+        "sha256": "bc6ec0de78c85e9c3d43ff4023a8f190095313554307567c5bf7b9704378fd2c",
+        "git_blob": "77160e16d20f14c980fdb3ed5ad715191b2ba5d7"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/382c98a43122e6e4de04bcd61819aa68bf542252.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/382c98a43122e6e4de04bcd61819aa68bf542252.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP_ARGV.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_BOOTSTRAP_ARGV.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_BOOTSTRAP_ARGV.json.READ_01.original.json",
+      "sha": "302856ac000f3f4d4d75e8b83094e7a42f32f9f8",
+      "bytes": 8291,
+      "sha256": "10165baecf74e5c0ff6991b10a3c86b0d7b892ad62ae5e01955ed19373af34a2",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "1a3d61bd45487993752517253f883a1a4853408b451d810fb9ef14a38f3a12bd",
+        "git_blob": "c149e1437ace61dff6091328f0a28cfd8d453901"
+      },
+      "get_sdk": {
+        "bytes": 17567,
+        "sha256": "98bb75e90e88b55c29f6bd79856ea8f8e2620d0ba214866ca754f69c4618c8ec",
+        "git_blob": "2aebe9e97e8dbbf31e212627814fa26b147f1eb7"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/302856ac000f3f4d4d75e8b83094e7a42f32f9f8.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/302856ac000f3f4d4d75e8b83094e7a42f32f9f8.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_PROCESS_INPUT.original.json.gz.part-001.b64",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_PROCESS_INPUT.original.json.gz.part-001.b64",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_PROCESS_INPUT.original.json.gz.part-001.b64",
+      "sha": "ae9b944996c5046d587c31ed8c6acbf9a68a475f",
+      "bytes": 409601,
+      "sha256": "37f5f5db9313fe3b3bf1965c0a9525344f45ade2d2ed7d4f8f9d1665bab6a411",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e69b0d22f866c488d653fbb35968b1c65fffb8761906a6bd312fa10b66ca3e59",
+        "git_blob": "d7c8c5c5e74679192be421e199b5787780eb9aee"
+      },
+      "get_sdk": {
+        "bytes": 820045,
+        "sha256": "d75859114ad1bf41048f3ee5dd592dc64980462bfaadc588d91184ec8a21023d",
+        "git_blob": "a7f652654e901849497d2d042a6c7b18b30c82bd"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ae9b944996c5046d587c31ed8c6acbf9a68a475f.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ae9b944996c5046d587c31ed8c6acbf9a68a475f.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_PROCESS_INPUT.original.json.gz.part-002.b64",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_PROCESS_INPUT.original.json.gz.part-002.b64",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_PROCESS_INPUT.original.json.gz.part-002.b64",
+      "sha": "a34db825775de2a6aa321ff79cfeb440bda0993d",
+      "bytes": 330417,
+      "sha256": "7b90b0aa2cebffda2b68ca898be2c03f818f286a875a8dc0a17da5cb5286d8e6",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "3b52bd17b6656791af6790fc2f28c925d7a21094291712276b7856db1c24549e",
+        "git_blob": "d430c92440ad750e38968777c00b70ae823e257a"
+      },
+      "get_sdk": {
+        "bytes": 661677,
+        "sha256": "33d66b634d5398572ae39e5056c2bcbfef35bad2d68c68bc3e0699ee7c85c6b7",
+        "git_blob": "5a796d79a223c0c07664b113e0e0ee5e913e7649"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/a34db825775de2a6aa321ff79cfeb440bda0993d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/a34db825775de2a6aa321ff79cfeb440bda0993d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_REQUEST_LOSSLESS_REPRESENTATION.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_REQUEST_LOSSLESS_REPRESENTATION.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_REQUEST_LOSSLESS_REPRESENTATION.json",
+      "sha": "860d6c3022422152b8789acc5a59155cc220f57c",
+      "bytes": 1931,
+      "sha256": "500a36b38093750d9ca8a67ae281c5582dc84d8c1663987a06e320211b238a3f",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "82dd33218e76620f0734cfa87f097479ff2c92f9f3ce070b89ae24f33de38917",
+        "git_blob": "f75fa184f401cfc98119fd00c78451581524d394"
+      },
+      "get_sdk": {
+        "bytes": 5035,
+        "sha256": "b6bd7ead5e847b56bf4460c5d2a58916f21faca63f5b6a76fc2cabdfedf0c1a6",
+        "git_blob": "8e6af103ebca01e3d64bb77c8612f963eac30293"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/860d6c3022422152b8789acc5a59155cc220f57c.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/860d6c3022422152b8789acc5a59155cc220f57c.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_RUNTIME_READBACK_REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ACTUAL_RUNTIME_READBACK_REVIEW.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_RUNTIME_READBACK_REVIEW.json",
+      "sha": "8bbab678f620fa87da2370b909cc1a6f587319c9",
+      "bytes": 62092,
+      "sha256": "6d037114a8c30661cf1bc9280c7a6ca44b50a976a47cd72e60ab19cbfd8f97c5",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "69af80e27fd3a49cc8b5547bf1bf76fc8dbd44fdbac2bee3f999741f2eaffdb0",
+        "git_blob": "c92877254890f300791e4aaa3e7399d418bfd9d6"
+      },
+      "get_sdk": {
+        "bytes": 66927,
+        "sha256": "eab2d8f5859d4dd2ca65dadbe54c43fc8365321f629191332a8ecfdeca93b4d1",
+        "git_blob": "725baf896cf502e0c77cfa9ccc538c7d5e84e05d"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_RUNTIME_READBACK_REVIEW.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ACTUAL_RUNTIME_READBACK_REVIEW.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.attempt.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.001.attempt.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.attempt.json",
+      "sha": "e6640cff382036d222b9fe97660156376f4defc1",
+      "bytes": 430,
+      "sha256": "fc5f81c317437534c98dadbc2eede8edfd2b259ee50cbb559dce47ef2684e5a5",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "dfc94e2df8709fdaf7e9eba6fbc4ad83ad3344a012d2463af708b21f98d5ec79",
+        "git_blob": "bb8c7d1927fd1277261e4a447ed90be9dda58c61"
+      },
+      "get_sdk": {
+        "bytes": 1779,
+        "sha256": "b6e9380d596d1ee30b1542b32e17e3e2ed9b9a6a3547b8b9f172e3c96cae2cc8",
+        "git_blob": "c3d92b8a6267983d60d5ebe7a27ff4226f52d159"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e6640cff382036d222b9fe97660156376f4defc1.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e6640cff382036d222b9fe97660156376f4defc1.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.attempt.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.001.attempt.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.attempt.json.READ_01.original.json",
+      "sha": "e7c02d5734d34de4068d2089b7559cbb4baa5ba2",
+      "bytes": 1072,
+      "sha256": "df5dfbae4e61e222adb182295f171ea7090bee6cb5e2d81834ef084580481894",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "0994d116ff64c52eb7fd934e51dfa5a37e0158c48cd2df4e5a785171398567ff",
+        "git_blob": "5c7b6f3968dfb33159d44734d4c41b1d618b5d8f"
+      },
+      "get_sdk": {
+        "bytes": 3129,
+        "sha256": "14b7fd1a68df48afc43115adc56976109d52275fe20a28c11f6010149ca0413f",
+        "git_blob": "6958b3d73bd7bed85f7d41c25cc31d24c04c6025"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e7c02d5734d34de4068d2089b7559cbb4baa5ba2.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e7c02d5734d34de4068d2089b7559cbb4baa5ba2.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.completed.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.001.completed.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.completed.json",
+      "sha": "61c46056a1dd8206e7fe3fad5f88aa05a57abc54",
+      "bytes": 266,
+      "sha256": "c6248f755a7d67fc4d280989a7f68fd59aa37e9dd4c38c5e31f158af74dd1a02",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "02fd71a8638d32d44e60270fd46ab0fa847f017386c64c07fa2388392d3ea46f",
+        "git_blob": "61c945d09dc22b4b3129aed10de2544b466c49eb"
+      },
+      "get_sdk": {
+        "bytes": 1423,
+        "sha256": "72d6e71c045db16e915df0e008ed368d7c9b4d8f4a8f76879982d77828f8e27f",
+        "git_blob": "c3da0b06aca174d4b254749fdc3c8f1c87f0d7da"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/61c46056a1dd8206e7fe3fad5f88aa05a57abc54.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/61c46056a1dd8206e7fe3fad5f88aa05a57abc54.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.completed.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.001.completed.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.completed.json.READ_01.original.json",
+      "sha": "011206e869dd93885c89ea6df6592b83c4af49ee",
+      "bytes": 854,
+      "sha256": "2c21f4f7475c140319b72fca51682833245c9256d041dcc387cbbe18f8333749",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9e2f0905a6f4904e40ae90187e68b663e241de1bb5c184cd5797347b65069e41",
+        "git_blob": "3505b1aca63729507a4f0c1fd9eae7f9fe95e4c1"
+      },
+      "get_sdk": {
+        "bytes": 2693,
+        "sha256": "2370f914153815f01226374c6b035018695bc8cd8bd5c2c5fe797d02c3949c4b",
+        "git_blob": "459c358e9320b76da35db0c0719419aad3eef17d"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/011206e869dd93885c89ea6df6592b83c4af49ee.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/011206e869dd93885c89ea6df6592b83c4af49ee.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.temporary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.001.temporary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.temporary.json",
+      "sha": "978775c0ff7440676e320e367e988da0d1d6f115",
+      "bytes": 160,
+      "sha256": "cab2ed9b007dad43f29237a916f2400c139385ec40f0d05b10f60b30594ae7d2",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "8e482d98a0a8a7da5b08453e46e3b6c57ae8b7334c8295d921b09569f2a9f079",
+        "git_blob": "dc7e4110dca5f03100035625acd0aff6c852000a"
+      },
+      "get_sdk": {
+        "bytes": 1179,
+        "sha256": "03d4e4f097fa4b4e880469eefe6e1af7b4c94fe76694dd7f9030fa95683f5bff",
+        "git_blob": "1a3647f8a93877cb19f7b71ba9a10a91ea6b746f"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/978775c0ff7440676e320e367e988da0d1d6f115.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/978775c0ff7440676e320e367e988da0d1d6f115.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.temporary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.001.temporary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.001.temporary.json.READ_01.original.json",
+      "sha": "99aeb85546e4cd20e904b94aeadabfd03836c0c9",
+      "bytes": 714,
+      "sha256": "e55ba0877b57ab594b13858828e15797ecd3056272813808bfa22d013e4f5c57",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "300a2b064fc0c3bc310a3e109b9e165d73976bded4380ef46b2d055ea9c471eb",
+        "git_blob": "16a7ba5d88a81fb0622498823bc4a79d93cb6c23"
+      },
+      "get_sdk": {
+        "bytes": 2413,
+        "sha256": "138ca124bc1532ecd9949205b8d30a81083875b3615dcd37eb4365c90e893aac",
+        "git_blob": "eecb7b32196971017804e6d9b06c4ef0ac4e7d4a"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/99aeb85546e4cd20e904b94aeadabfd03836c0c9.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/99aeb85546e4cd20e904b94aeadabfd03836c0c9.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.attempt.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.002.attempt.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.attempt.json",
+      "sha": "e812576d2abd45c9f8b39d95df6e2e154a349aef",
+      "bytes": 415,
+      "sha256": "009460d37961fb059136bd511c54d5c6a32a8fcd8a257370e2da1eb2f8064540",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "da96b02238afb03ada822b05d571ddf6ca09d2e496400e87d8e75fdda7902ee8",
+        "git_blob": "08d7c7cd6a841dc8b7fa1a94fcee5e31f7e4eadc"
+      },
+      "get_sdk": {
+        "bytes": 1749,
+        "sha256": "2cff90465bb5a823f476f9062687499e1d1ed80dcba6e600649c9b0ad55739b7",
+        "git_blob": "19e62b167f4a2e02f6beac45b1ebdfb1f91a07a3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e812576d2abd45c9f8b39d95df6e2e154a349aef.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e812576d2abd45c9f8b39d95df6e2e154a349aef.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.attempt.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.002.attempt.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.attempt.json.READ_01.original.json",
+      "sha": "aa06936732bbdb29fd32cb998f2fb5cbac81ca0d",
+      "bytes": 1052,
+      "sha256": "3e2d28e99f2c8ecd2e03708c14b21e6de02fc4067e228b782895b3a91474634e",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "5c9d09eda883fe831fa3d77fb0f2b4aedc9025d1e5855a952d90391d374f936e",
+        "git_blob": "264b658da2c21296ea2b6c8bdf139baf41bd66af"
+      },
+      "get_sdk": {
+        "bytes": 3089,
+        "sha256": "b016ecdf3b3365e0faea27d19df75b64b29d484a67055e3bfd10840da65dda56",
+        "git_blob": "45f863cfb33e7dbdda823e411134f1cb036db533"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/aa06936732bbdb29fd32cb998f2fb5cbac81ca0d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/aa06936732bbdb29fd32cb998f2fb5cbac81ca0d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.completed.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.002.completed.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.completed.json",
+      "sha": "fd35e869430f6fe237355dfce0cb24be1a3ae14d",
+      "bytes": 249,
+      "sha256": "b7f5c714517390eea5950706a8cea1ee97b3b7760bd594968a5125e7d48f2852",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "69a8b7a6e1d6a2091a69b9311cfd6d109daa01c386588b2d1e36fdeab00def5c",
+        "git_blob": "8f224892f43d76a32617b575c7c58e6cf41aae1b"
+      },
+      "get_sdk": {
+        "bytes": 1389,
+        "sha256": "1f2d4f7dc135cc1f3ec20f2766d88f5a006dbfd88f61a8615b0fa7528c9e609a",
+        "git_blob": "7875f3560f8088c6518fc789560187b1a2de654e"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/fd35e869430f6fe237355dfce0cb24be1a3ae14d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/fd35e869430f6fe237355dfce0cb24be1a3ae14d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.completed.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.002.completed.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.completed.json.READ_01.original.json",
+      "sha": "ce4f71ec29b764bee8355a547833720f42ebfe4d",
+      "bytes": 830,
+      "sha256": "95e6eed2c6d11c4bd957728b17dedc02693a6caa62bced37ed544e333c1e79f9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "a4125e3d681463f45a84b4158d2c2e07dde2bf45cc6765421d28ca83383e900d",
+        "git_blob": "33878ff34a1a391978ca5d7231eb252cdb8b11dc"
+      },
+      "get_sdk": {
+        "bytes": 2645,
+        "sha256": "162f5d795f41675bc13145f8873fa02544f5994687f10d00bbf00d4d1f64a2e7",
+        "git_blob": "d8adcf8ff3bef9d0b9d87808c2e38ccd52b42849"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ce4f71ec29b764bee8355a547833720f42ebfe4d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ce4f71ec29b764bee8355a547833720f42ebfe4d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.temporary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.002.temporary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.temporary.json",
+      "sha": "e64dfc7eccb90c30c80a70470f1a5ee529526fd0",
+      "bytes": 133,
+      "sha256": "6922eb6a04ddd65fef2c3227f7f249f6e4149c00bb9931fa66ddf8f3f7c7aaec",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "7ba227c71bd8e58896628ba435c0568026e7f47e8b6f9b89ec108b1ce1e50522",
+        "git_blob": "f2bcb48b7de335eaac5fb3b8819ef0b812c4128a"
+      },
+      "get_sdk": {
+        "bytes": 1125,
+        "sha256": "012496482bbadfaab853e170837dbe5d4bd2eee16d9fdced635934374c3982be",
+        "git_blob": "6a273c54694e75f520dcd0306ed14ee6f06fac9f"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e64dfc7eccb90c30c80a70470f1a5ee529526fd0.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e64dfc7eccb90c30c80a70470f1a5ee529526fd0.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.temporary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.002.temporary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.002.temporary.json.READ_01.original.json",
+      "sha": "47b2bfa8e3d83b948a67479474d4519400bc75d8",
+      "bytes": 678,
+      "sha256": "f0816a0cf3c966b28dbf2e80c7c85cb3f6a472d1598f69c4dd698c7be2ab8cd9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "a3dc47292d1baa5f1dce2a7b26ad7fe7b4f592c70f8f00fa954cdb1d3a3376a7",
+        "git_blob": "17bcee5785d82de106bd2df2429ba7a76b5daf03"
+      },
+      "get_sdk": {
+        "bytes": 2341,
+        "sha256": "043482da9ab9b91feef0408a294495ab2a54aeaf018d19a90c33bc3d7c2ada84",
+        "git_blob": "ab0cf1e681191d837ce907946366572359376a9f"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/47b2bfa8e3d83b948a67479474d4519400bc75d8.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/47b2bfa8e3d83b948a67479474d4519400bc75d8.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.attempt.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.003.attempt.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.attempt.json",
+      "sha": "30d22e336148ef68cbfc9db718b79826d05d07d1",
+      "bytes": 457,
+      "sha256": "f4c9411fc982401ed669da707dca8d98298d34bc876d6546228c2cd34bdce198",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "f4198da981bc153ffe8fefdddd5bd2c431621a9f957c2dcbf7c9c298dcfc1127",
+        "git_blob": "fc8f83a8ecbcc4b844988dda9ab98931cb875eae"
+      },
+      "get_sdk": {
+        "bytes": 1833,
+        "sha256": "fa898854a54dd51d7715526b7ce3a167163758a83f5b19c38e023bd50a973243",
+        "git_blob": "29e1a6c1dd2077623aeb2099baede5a790d6bf5e"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/30d22e336148ef68cbfc9db718b79826d05d07d1.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/30d22e336148ef68cbfc9db718b79826d05d07d1.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.attempt.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.003.attempt.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.attempt.json.READ_01.original.json",
+      "sha": "d7c22bf547b23800224513ccd7acf5306bc42ade",
+      "bytes": 1108,
+      "sha256": "0214f8f3b072c4aedd9ca6ce53186c5168c7652547493f6adcfe9814cb65ddb7",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "dc1e34ee3043aac912380725c30ed42e0064deb7e0792ed1a26efe841c97c39d",
+        "git_blob": "ba14d8b645aa677d9b9013258afe43da3c29e740"
+      },
+      "get_sdk": {
+        "bytes": 3201,
+        "sha256": "6f359ad384bd3f1a678cc3dc77c49c7868f4c22db085f493183c8463f9bcaf79",
+        "git_blob": "c827fba7bc7e983b40312e774cc0fc058376f0f5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d7c22bf547b23800224513ccd7acf5306bc42ade.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d7c22bf547b23800224513ccd7acf5306bc42ade.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.completed.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.003.completed.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.completed.json",
+      "sha": "e25d62c09da14cd90504352bf8f1b86190d03be6",
+      "bytes": 292,
+      "sha256": "9d9e211e685c71b8d1b3b7776186deed7dfefd45310d7a61ff3671468af8c3ef",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "eaac0f375018806dc96827bddabc9b50d89591eb954ed5eb7558c6440e12177f",
+        "git_blob": "0edfdc5e34ec80107e47373365c41b09d597a603"
+      },
+      "get_sdk": {
+        "bytes": 1475,
+        "sha256": "b835b4f28ebc0044664b0bfc751a7f76a01e6aeeb6c93d4c620d6b27c7f4f467",
+        "git_blob": "c2fc45d3752652c85767df82eeb07fbe66184296"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e25d62c09da14cd90504352bf8f1b86190d03be6.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e25d62c09da14cd90504352bf8f1b86190d03be6.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.completed.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.003.completed.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.completed.json.READ_01.original.json",
+      "sha": "d09d5c33cce1d16392cb4ce9d14ec635a9b76933",
+      "bytes": 890,
+      "sha256": "eb193e13d4e530b91b92ec2fe772ebf17771649617eea89acdec56e527cfe3cb",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "3e862076ae3cbfececcb584f58aec18f5891e3e8c9ecce8a26dd2b6c19c9c905",
+        "git_blob": "d0cb24eae02529eddebeca0c9a99bee6e34f062f"
+      },
+      "get_sdk": {
+        "bytes": 2765,
+        "sha256": "56351080cbeaae43f5158a375283e219dec30a92ff84c306d4cb2cd0d1306f68",
+        "git_blob": "95255118e99bf454ca2e762d085b73fb33669615"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d09d5c33cce1d16392cb4ce9d14ec635a9b76933.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d09d5c33cce1d16392cb4ce9d14ec635a9b76933.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.temporary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.003.temporary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.temporary.json",
+      "sha": "74bddb63713d8f0c7f68f125299f3593d47d66eb",
+      "bytes": 193,
+      "sha256": "466c033c21399feced76b4a5cce4d6c519f7e2db0bec15d356fe4d806a284bd1",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "7eb4f804d80381edc424c2de55eb5036c2e52a3bfe567b78cf89bf3b58ff5cfb",
+        "git_blob": "655fc704611b1685487128ae688a0a3dfffe1af5"
+      },
+      "get_sdk": {
+        "bytes": 1245,
+        "sha256": "ba9b7d128b2b06527e3b1058ef30fcd31fb3d441aa60f1deb2996967764e2cc9",
+        "git_blob": "6d97516b0e859feaf70c8d7bd7571108856711b9"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/74bddb63713d8f0c7f68f125299f3593d47d66eb.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/74bddb63713d8f0c7f68f125299f3593d47d66eb.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.temporary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.003.temporary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.003.temporary.json.READ_01.original.json",
+      "sha": "1ec8991a488cfde47560260c5562a61233c73fc0",
+      "bytes": 758,
+      "sha256": "d60bc17e108d430f3c33495d336d543178b45fc5cf510708d9f2e862cdc518c2",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "659451fa254590212e50712219a90b1b4a762e86b7ec9bea9830be089fe27c75",
+        "git_blob": "6d22113a78e2ce7730443e5e0f2ce19d27a9ff4d"
+      },
+      "get_sdk": {
+        "bytes": 2501,
+        "sha256": "86c2c0b1a97875ac95e87b0a87cc49afc47b6e32ad6cff1f1688638a80a38044",
+        "git_blob": "a11768e26c0ac597107bea9e195db8432ed87b5b"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1ec8991a488cfde47560260c5562a61233c73fc0.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1ec8991a488cfde47560260c5562a61233c73fc0.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.attempt.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.004.attempt.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.attempt.json",
+      "sha": "2d7626f54875cc5c43d71118549eff4fb8592aa9",
+      "bytes": 466,
+      "sha256": "cb8533022936da727c2bbc8ffae432950c8807a752922483fa1f0d7c1df0ef02",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "b2da8a91c2ebe20d6240c48af53750fe8695617286879447c8af8df4b77507ac",
+        "git_blob": "b77833ae2e6f4840f9dbf64ae7d6671e7d4e4b7e"
+      },
+      "get_sdk": {
+        "bytes": 1851,
+        "sha256": "855bfcdbe3ca9bebb033cf883f03c382bbbf6ee8221fa1a3eec33a50bf3d466c",
+        "git_blob": "b0c7efa0042af6df3bd045b7e2bc19a9deb14c5e"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2d7626f54875cc5c43d71118549eff4fb8592aa9.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2d7626f54875cc5c43d71118549eff4fb8592aa9.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.attempt.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.004.attempt.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.attempt.json.READ_01.original.json",
+      "sha": "50d513de130bf0f7d95072d4e2dcd602095563cc",
+      "bytes": 1120,
+      "sha256": "ee90e14f61dc8c1c5b2729958e1267b2eb975cf316133f6f9d6988bdf93b943b",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "5b17e0dda410cd0325b130cc3b15161c0588a6dc2b7ab6582a64c7f44d270c42",
+        "git_blob": "330a00f5f8f1bfe348993a295fcb12339d793055"
+      },
+      "get_sdk": {
+        "bytes": 3225,
+        "sha256": "89dcfe672c3ee03994529c02de4b2717a00c71e0bc8f822a9058664e8138eca3",
+        "git_blob": "00d6144392437d3967d759bd1f6da8d5d20ecb87"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/50d513de130bf0f7d95072d4e2dcd602095563cc.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/50d513de130bf0f7d95072d4e2dcd602095563cc.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.completed.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.004.completed.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.completed.json",
+      "sha": "2764354531c5cac6fc600f9bd55f8208d48ea7a3",
+      "bytes": 302,
+      "sha256": "d767d69943a1f98c4f864285c1cf3bd6fe418b66e9b7c5240a58f2d65b9ee014",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e6f2a4e578dda2945ffeed8fcb545d298067137981c1e79bcfe6545654563714",
+        "git_blob": "90254ccfbcc653dcda9bac8a8b9ff9fba83c440e"
+      },
+      "get_sdk": {
+        "bytes": 1495,
+        "sha256": "a6594cd3782391393b996ff095ca2460453c9ff9c29b7123a5fb798a335de78d",
+        "git_blob": "43d555e7316c7b30b2128bb57973bed3c197759b"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2764354531c5cac6fc600f9bd55f8208d48ea7a3.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2764354531c5cac6fc600f9bd55f8208d48ea7a3.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.completed.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.004.completed.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.completed.json.READ_01.original.json",
+      "sha": "ed73fc7e6a9b476ac63fa745b3b4462b7264b029",
+      "bytes": 902,
+      "sha256": "0941718a797ae6edc942b24de6f05b70d9598a36ac8f335a93dc9d296554545f",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "71b47c37738afaffb2e0da66a5f9d6b0329d1f7fbeea9cb85024f37842e6ea4c",
+        "git_blob": "d26a4f44a7e65abb00bf01ef1f23f942ce02c5f4"
+      },
+      "get_sdk": {
+        "bytes": 2789,
+        "sha256": "03cb33153aafdf2f2b9934148d3cd2c5625dc2383ef0f5a4d6f9dc0efca4db3f",
+        "git_blob": "5fdbe521c4b0bf646bb40e8f16ac2b8e58823c6d"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ed73fc7e6a9b476ac63fa745b3b4462b7264b029.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ed73fc7e6a9b476ac63fa745b3b4462b7264b029.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.temporary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.004.temporary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.temporary.json",
+      "sha": "09470ce8a3931842f83677e0a58eba3e076b0c87",
+      "bytes": 204,
+      "sha256": "e4aef11fe2100110303005869caeb879b207d493e8a72e2ba311022d5f7b5f34",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "a585b09fcc2131f8dc00f49f93c6eeb02e4f1e4254f887e9a6b02684a495d16d",
+        "git_blob": "02bae0604cf6b934ef312d93777f139a756ec47f"
+      },
+      "get_sdk": {
+        "bytes": 1267,
+        "sha256": "4af85a9dcf9536813498ab721ed715b08fc037f90987a0f84c1cb2613092d81a",
+        "git_blob": "1b56143920735ca4bba917466d05f64389394b99"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/09470ce8a3931842f83677e0a58eba3e076b0c87.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/09470ce8a3931842f83677e0a58eba3e076b0c87.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.temporary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.004.temporary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.004.temporary.json.READ_01.original.json",
+      "sha": "bd2dd79dda1df3146103931789c936e8ab8f0d03",
+      "bytes": 770,
+      "sha256": "935882bd76e291a379939d3687204282fdd0905814e8fd1822de57dee49f06d2",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "556534d90defaca2e9127a19d28a743e2da1799105ae6bd85e46a561946b8b39",
+        "git_blob": "f4019a0d088a56ce19685a8580dbdc9e26cf4ebf"
+      },
+      "get_sdk": {
+        "bytes": 2525,
+        "sha256": "61aa24a472329977356a1d64be1a352da05db080f7134916de3b9d8a32e516aa",
+        "git_blob": "2e27659349799849c2e198b4526a5d07c94ece13"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/bd2dd79dda1df3146103931789c936e8ab8f0d03.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/bd2dd79dda1df3146103931789c936e8ab8f0d03.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.process-preflight.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.process-preflight.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.process-preflight.json",
+      "sha": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+      "bytes": 185,
+      "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "adf3de51946943875d153631ff7f250084cfacebffbe6ba3b0bdb687237d230c",
+        "git_blob": "5d69d8a6f5cfe2824696a2f4e4d934bb819fcd49"
+      },
+      "get_sdk": {
+        "bytes": 1229,
+        "sha256": "d1033d948cc6b0461b0d1fbb977e8b37a55fb6966fc15519600608bb1d013be6",
+        "git_blob": "d27c2698fcdecf11f43e7aac7fa62ccf03fdf4e5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cb85dc048a8923e7c2242704bd7693012c1bd55.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cb85dc048a8923e7c2242704bd7693012c1bd55.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPLY.process-preflight.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPLY.process-preflight.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPLY.process-preflight.json.READ_01.original.json",
+      "sha": "e616c2ca9dae6c202c1949bbbe22ff11b64a30fa",
+      "bytes": 750,
+      "sha256": "c2eb51a55000286497a8f6922ade3b5b68f6e0f3af24c07b98311d488be989ab",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "d6c002e47c38d7d6374da21dc59220cd46fdbe826330959601d93b83d97b8f83",
+        "git_blob": "616623c6c660abc152981b04d16bc0fe6d403ba5"
+      },
+      "get_sdk": {
+        "bytes": 2485,
+        "sha256": "31eb7c30d145159ed0e72a4666d930f9800d11730052be5b44a50469d9308a5b",
+        "git_blob": "7f0140612015021a53ff00c39014425155d47c5a"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e616c2ca9dae6c202c1949bbbe22ff11b64a30fa.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e616c2ca9dae6c202c1949bbbe22ff11b64a30fa.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPROVED_CONFIG.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPROVED_CONFIG.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPROVED_CONFIG.json",
+      "sha": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "bytes": 2906,
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "8460f0e83d8ef6f341bc8960ad77acd795361723ed272d5a15c0453962b5af6a",
+        "git_blob": "fd1dbf68f098839ce853995643013895b19d0739"
+      },
+      "get_sdk": {
+        "bytes": 7175,
+        "sha256": "50231fb3e2441954b3ffbe2e37266497070086312fc55fd8dfa78d4bd7227d55",
+        "git_blob": "d4eb51ebee52d40b29e65a4876950d91b71445f9"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/APPROVED_CONFIG.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/APPROVED_CONFIG.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/APPROVED_CONFIG.json.READ_01.original.json",
+      "sha": "3b70876f6f7e2be442d6510c186d950d6ce3dd20",
+      "bytes": 4369,
+      "sha256": "f67af30873e482cc42f65a179212459e95e94751ec16a0da78d62755f3686050",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "37b33bb0a85af0d1547946a32b6a89e0156982913e9e836f4db414bbffd0a43c",
+        "git_blob": "d38f2a1f881e675b71c2f8e5d2eed464c82d5dc0"
+      },
+      "get_sdk": {
+        "bytes": 9723,
+        "sha256": "22345d37b57cae1b359550cd96867aa3f70c0aea41a1decef53379020b21d62e",
+        "git_blob": "117b75dad6a998f7c154128749e4cfc0854ed499"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/3b70876f6f7e2be442d6510c186d950d6ce3dd20.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/3b70876f6f7e2be442d6510c186d950d6ce3dd20.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ARTIFACTS.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json",
+      "sha": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "bytes": 67498,
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "242887bf5a8131aa47baee456e8ee61f87037aec1fdabdc98dfb90f5a9710d3b",
+        "git_blob": "6dcf1d49fc6bb63af40168dee461c13cb5e7a055"
+      },
+      "get_sdk": {
+        "bytes": 72478,
+        "sha256": "027a49d2105709363eec3cb1b3e9113241cc8c75d9a175fa3d54fbd9704a1dff",
+        "git_blob": "311dd0e6699d25218a2af40d6977c17ad71280fc"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ARTIFACTS.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json.READ_01.original.json",
+      "sha": "5f12cf36518f10f6453d022921d01b356124729b",
+      "bytes": 87879,
+      "sha256": "b3ad85559b3307a7e6551547f2a04880e1267b8f08c8eac41381e69151768dd4",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "FIXED_BLOB_CREATE_AFTER_TRANSPORT_ERROR_AND_404_RECONCILIATION",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ffb30e4d68aff944e7080d78cae5c4cd3dc31b19705a8c5ef2acb06100d2fd30",
+        "git_blob": "08cc8500515135afe2a3158c2e15923586b54d93"
+      },
+      "get_sdk": {
+        "bytes": 176743,
+        "sha256": "ce5abcda5303ce0f0e5b89418619cd5ca48d12b4678d28920fde788902a58ecd",
+        "git_blob": "8fe0f2087685ca4f2997a8f45d0ff4fed98b9ae7"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/5f12cf36518f10f6453d022921d01b356124729b.CREATE_02.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/5f12cf36518f10f6453d022921d01b356124729b.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json.READ_02.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ARTIFACTS.json.READ_02.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ARTIFACTS.json.READ_02.original.json",
+      "sha": "b181ae7ebab22eb279b14f407c2482fa5a9a1930",
+      "bytes": 3114,
+      "sha256": "471bbe334e83553956c278a989db5cf5eed627f5e253fdb82c68be067d46089c",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "96fe114e76006cbfcdfb45d4cee79a370bd55740fb7beb4d92e8c116ea14db6c",
+        "git_blob": "3dddc439bd234240a34f0611fea704681fb1819a"
+      },
+      "get_sdk": {
+        "bytes": 7213,
+        "sha256": "431b6680b3087ede53abcf26a307efc2ae1bbafffbf7dd6b9f57ce1d6d8b022a",
+        "git_blob": "29b2632a4536f26148d0131e6d2c4d25e36bf8de"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b181ae7ebab22eb279b14f407c2482fa5a9a1930.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b181ae7ebab22eb279b14f407c2482fa5a9a1930.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/BUILD_PROCESS_PREFLIGHT.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/BUILD_PROCESS_PREFLIGHT.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/BUILD_PROCESS_PREFLIGHT.json",
+      "sha": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+      "bytes": 185,
+      "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "adf3de51946943875d153631ff7f250084cfacebffbe6ba3b0bdb687237d230c",
+        "git_blob": "5d69d8a6f5cfe2824696a2f4e4d934bb819fcd49"
+      },
+      "get_sdk": {
+        "bytes": 1229,
+        "sha256": "d1033d948cc6b0461b0d1fbb977e8b37a55fb6966fc15519600608bb1d013be6",
+        "git_blob": "d27c2698fcdecf11f43e7aac7fa62ccf03fdf4e5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cb85dc048a8923e7c2242704bd7693012c1bd55.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cb85dc048a8923e7c2242704bd7693012c1bd55.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/BUILD_PROCESS_PREFLIGHT.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/BUILD_PROCESS_PREFLIGHT.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/BUILD_PROCESS_PREFLIGHT.json.READ_01.original.json",
+      "sha": "eac6d4ee2370e2f5600b2fc1ef60a69641ffaa35",
+      "bytes": 750,
+      "sha256": "8570a829c18addbae3208cedfdd6d0b57cbc992bf350501af91a5ea2fbcfe683",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9edceb29345b83275e48749740eb13890d0594a65f4b68272595299329421295",
+        "git_blob": "7d86522c78772455ee4889d5dffa98fce49a6a15"
+      },
+      "get_sdk": {
+        "bytes": 2485,
+        "sha256": "d4bdaa0132b164189fb9ff4064acf45231a1fab38d2910623a4a69b83a34c7b5",
+        "git_blob": "9b9d1c98fca25476cc305f6182787708ac8ddecd"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/eac6d4ee2370e2f5600b2fc1ef60a69641ffaa35.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/eac6d4ee2370e2f5600b2fc1ef60a69641ffaa35.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ENVIRONMENT_PREFLIGHT.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ENVIRONMENT_PREFLIGHT.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ENVIRONMENT_PREFLIGHT.json",
+      "sha": "4568a96ae6d36851c04ceb3750ebcd3bdfa9408e",
+      "bytes": 6702,
+      "sha256": "2a5af305d55fb2788068f947fbaffc9f87593239e9f0bc2936e4339e284499a4",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "0f394739e0d839ef199a7a450c6861df4cadfa1d3bded6720612e5c323832341",
+        "git_blob": "f952a644ed7ffb404c42de917fe5281516b0de0d"
+      },
+      "get_sdk": {
+        "bytes": 15173,
+        "sha256": "247dbea33e217cb6790be99eb6a8b2153cbde72d1cd43f8df6a8be6e24f60339",
+        "git_blob": "7fc091568c3e7d62a7e8ece783fbb6dd9e08beb4"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/4568a96ae6d36851c04ceb3750ebcd3bdfa9408e.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/4568a96ae6d36851c04ceb3750ebcd3bdfa9408e.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ENVIRONMENT_PREFLIGHT.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ENVIRONMENT_PREFLIGHT.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ENVIRONMENT_PREFLIGHT.json.READ_01.original.json",
+      "sha": "e705a1fb48054dec72a8b6a3a0dac2afce7b22c4",
+      "bytes": 9439,
+      "sha256": "eb3eabbcf7e5966ae6ecfa5f0c186eb5b4060aa70e8d8d1cdecb4c67b50dbbfd",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "13113f87e188220c737bbec8276d3a22d6060fdfe778741b1ac9099cc12164e9",
+        "git_blob": "49b60707aa2de48477042e23ef6de3438ba4688d"
+      },
+      "get_sdk": {
+        "bytes": 19863,
+        "sha256": "d77a3d5c0e0cd54386bd6c4a77a8210d0a18f904b33f7608ee3b207920797ac9",
+        "git_blob": "4c9d2bdb8d0531bdaf2cde30e8213f4f15fa3588"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e705a1fb48054dec72a8b6a3a0dac2afce7b22c4.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e705a1fb48054dec72a8b6a3a0dac2afce7b22c4.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/EVENTS.jsonl",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/EVENTS.jsonl",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/EVENTS.jsonl",
+      "sha": "2b0a1fdae0cde013291929c38de5fe10a12a105c",
+      "bytes": 806,
+      "sha256": "0cfbe7939f4ab7bf8991be100939d5560d5df5f4d84f1eb74971da9d07d8514e",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "d48bce565a5d85931c3a897e6ca3aa7f288c588275aa97a776450e0a81c77ef5",
+        "git_blob": "8e659ef54f6ab7bbe54f40b0063721eaeb36526e"
+      },
+      "get_sdk": {
+        "bytes": 2603,
+        "sha256": "4c214d18d30f36899d7fbe314f3b758bdd4a6fc24c75f1dc35d26a23700cbff2",
+        "git_blob": "335026913448f4b2a995b8c3317bb0d3039e40c1"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2b0a1fdae0cde013291929c38de5fe10a12a105c.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2b0a1fdae0cde013291929c38de5fe10a12a105c.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/EVENTS.jsonl.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/EVENTS.jsonl.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/EVENTS.jsonl.READ_01.original.json",
+      "sha": "5e9de26546d3cccecd4e69f6b2efa17172a0592f",
+      "bytes": 1562,
+      "sha256": "4678563dcbdfe61f8cbfbacb91ae0fd63247548756a49277ca7c1f78885cc161",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "68af3842f3d08ed6fd77a7641dfd80642d78159f1a744b532b30c85be3bdfcee",
+        "git_blob": "0bb9b94d7f5aef2ca6b63bdf7ca3c5388dd7e5a8"
+      },
+      "get_sdk": {
+        "bytes": 4109,
+        "sha256": "ec14c2e278e13d0c354f40f8544d3c684a21a65b564794eac802502c93d8a0c3",
+        "git_blob": "a4fe70453c6a8203dd12dd2b35accfaa01524bb2"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/5e9de26546d3cccecd4e69f6b2efa17172a0592f.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/5e9de26546d3cccecd4e69f6b2efa17172a0592f.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/EXACT_RECOVERY_REFERENCE.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/EXACT_RECOVERY_REFERENCE.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/EXACT_RECOVERY_REFERENCE.json",
+      "sha": "d8bdca50268f8ed52b83baf39664202f786b6ea0",
+      "bytes": 758,
+      "sha256": "70415fe2cf557af885a68715b01ff23e44f57290e821c8022184c047a231021e",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "f903ae40740ae4eab73e8df25fe05305c1b2c936a826d82b8b9fa6eb7ab4b8f0",
+        "git_blob": "ac87044ddc603621a33f037136edef81fa4acd15"
+      },
+      "get_sdk": {
+        "bytes": 2465,
+        "sha256": "9de80b64b5ddad393de3cc2d029b5d9da070afe0b61a565a7433f497ace8082b",
+        "git_blob": "d2442759f468d64bf1a68e2d389d67fb2178c065"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d8bdca50268f8ed52b83baf39664202f786b6ea0.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d8bdca50268f8ed52b83baf39664202f786b6ea0.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/FORMATTER_ENVIRONMENT.before-override.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/FORMATTER_ENVIRONMENT.before-override.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/FORMATTER_ENVIRONMENT.before-override.json",
+      "sha": "1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d",
+      "bytes": 1382,
+      "sha256": "eb8fe090db31cc6c8a3422e8159bce58e1259072fcd5c5822d975b53005976b7",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "8834d51876bea7b5e81436f0598419d990d05be2b74f152df4c317e349e9c8de",
+        "git_blob": "d39550a0f9919b30083dcf44f92aed6a6c681405"
+      },
+      "get_sdk": {
+        "bytes": 3783,
+        "sha256": "1456be268f67a31ef844e35ad5a3df38ec105e7f8824f371b6b661af8593d152",
+        "git_blob": "f220e38e7e74316e2d268a6d3f2b18cc4555cc77"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/FORMATTER_ENVIRONMENT.before-override.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/FORMATTER_ENVIRONMENT.before-override.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/FORMATTER_ENVIRONMENT.before-override.json.READ_01.original.json",
+      "sha": "48e2af16a1c538390f1c0df58db05201a70148c3",
+      "bytes": 2363,
+      "sha256": "4ddf7519c443bf4809155ada33f564d90ef2fcd17a35b1b92715629e8fc1607f",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "d0cc8841beaf0116ee052716a1de825c1b996bd38c83d5aa19a266765a4ea768",
+        "git_blob": "0ec0d8dc9d0b7fab4d544b6d458a76de7624f2d6"
+      },
+      "get_sdk": {
+        "bytes": 5711,
+        "sha256": "6568c873a61ebf34a8960963fcfc7e7ced077f994c940ff412580ff7aa30df6d",
+        "git_blob": "804532fd832ea904366fd0b88dfafcbaf5e85867"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/48e2af16a1c538390f1c0df58db05201a70148c3.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/48e2af16a1c538390f1c0df58db05201a70148c3.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/INPUT_IDENTITIES.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json",
+      "sha": "51ca8acea55f78b7323551f4288ab5ead2c8e233",
+      "bytes": 7273,
+      "sha256": "52946287f8b6f52d60acdcd70565622fe9c57ab8ba63eb0a5331f5cde8c3204e",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "616ccc9c2862de98d893f3789e068a677c90bdfe4acfc1d316246d9355673489",
+        "git_blob": "cdd5070a6766997c7b87ada054c91b76f0987ffd"
+      },
+      "get_sdk": {
+        "bytes": 7769,
+        "sha256": "af95e2c4681d96625b5e01a65fa2cf706ba72c74917be1c7662be8ad15e1ef47",
+        "git_blob": "e76afdd5333c2d5b5b2579995f68b94763b5f059"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/INPUT_IDENTITIES.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json.READ_01.original.json",
+      "sha": "e718aeeb7113a6f3aa2429e2fe1355a28a1b7a57",
+      "bytes": 10198,
+      "sha256": "841ffc805316d7890c265d0f2114b35f263ea79c8a91b3958b0f1f197e7642fb",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ec8f8be43b2ce9f5ac0fa00969f4c7a071840f39376ea4fe9be6345e82514879",
+        "git_blob": "66558f1f1c6352d1192e414c6d9bacc12c4a0c1a"
+      },
+      "get_sdk": {
+        "bytes": 21381,
+        "sha256": "89a28a1e8f3b3b140c16a69fb8284d018d50d1c54f1575c8b9c30c9a0e40d450",
+        "git_blob": "97915d80541acb36f8e060d85be7705643be2dad"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e718aeeb7113a6f3aa2429e2fe1355a28a1b7a57.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e718aeeb7113a6f3aa2429e2fe1355a28a1b7a57.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/LOCAL_DECODE_CALL_FAILURE_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/LOCAL_DECODE_CALL_FAILURE_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/LOCAL_DECODE_CALL_FAILURE_01.original.json",
+      "sha": "8bbeb7120843400214eb3261732d088715a135f7",
+      "bytes": 1639,
+      "sha256": "e2b85f97051c547130dd2c0abd963a47ea27924508de794d18eedcc2dca6b6d3",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "331ed09c43c75bb5229dc62c56cd7ab5b43ba4fde1a7a1354e3142f5fc4f8800",
+        "git_blob": "705ab0e83605d26e3532c382031147aeb29f0c83"
+      },
+      "get_sdk": {
+        "bytes": 4187,
+        "sha256": "2013625525c84cf2570a76331b5dcccbf78cde828822db055f43286ccd4674cc",
+        "git_blob": "a5f20035290fe00e02d9bb8908a1e7d8cca8eea0"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/8bbeb7120843400214eb3261732d088715a135f7.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/8bbeb7120843400214eb3261732d088715a135f7.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/LOCAL_DECODE_PATTERN_CORRECTION.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/LOCAL_DECODE_PATTERN_CORRECTION.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/LOCAL_DECODE_PATTERN_CORRECTION.json",
+      "sha": "cbd641f09437d60ad4bed81037b040c76f4cbe44",
+      "bytes": 913,
+      "sha256": "07f9db5e42b57d6c55ba834da44aaf58e44c48fdf0cb49411575e9188c3c61d5",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "bbe6614cd4d56773cbf9aa124277643aec3243a3b3a256a7f25a5edd4fb02461",
+        "git_blob": "b2a06b6418ff39d6f9a7e44a9a9b4b451283bc6b"
+      },
+      "get_sdk": {
+        "bytes": 2763,
+        "sha256": "45a69e31c42b0c2151f795fa0fc84e7345fa820b7b8f785adb15f09100c28206",
+        "git_blob": "a466bea5a376448ff9c41a7d664c9bd6c711bb66"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/cbd641f09437d60ad4bed81037b040c76f4cbe44.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/cbd641f09437d60ad4bed81037b040c76f4cbe44.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/MAINTENANCE_NORMAL.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/MAINTENANCE_NORMAL.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/MAINTENANCE_NORMAL.original.json",
+      "sha": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "bytes": 956,
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "dd47747557a0f41de8ade7c29f47bf086cebcfbe15f2199038a09923b6e8177a",
+        "git_blob": "afe107fd5943cdbbc2bbac354aa2db3426039a8d"
+      },
+      "get_sdk": {
+        "bytes": 3129,
+        "sha256": "d202fcd59b7bdf59357f8792615c33e7511445089df016d4123d8bfd79617205",
+        "git_blob": "50362cc54118e1afcb5f72707d004779ee00e5ce"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/70e1866f963a2a2a8d6f3bd468ddd0c291fbf871.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/70e1866f963a2a2a8d6f3bd468ddd0c291fbf871.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/MAINTENANCE_NORMAL.original.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/MAINTENANCE_NORMAL.original.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/MAINTENANCE_NORMAL.original.json.READ_01.original.json",
+      "sha": "55146b18f2e8410e39c1ef394b0904894be726b1",
+      "bytes": 1778,
+      "sha256": "a7d0a97411835c43217ddf10774b419bde66af52737c7c4bf810a24e8970fbdc",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "3da0f32c87cbeb186ade53da2c1befd07e96afaa31f3d27d3064c655b5992d6a",
+        "git_blob": "1449dddfc0a4abf29602f3e892c6458f62cffbad"
+      },
+      "get_sdk": {
+        "bytes": 4541,
+        "sha256": "50e7057f7bd242d3445c1b39c5987466e4194d3a87c8158b5ae27cffc352add9",
+        "git_blob": "db01d5af845eff2e63e44b32222e96f0c54ccd42"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/55146b18f2e8410e39c1ef394b0904894be726b1.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/55146b18f2e8410e39c1ef394b0904894be726b1.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/MAIN_ADMISSION.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/MAIN_ADMISSION.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/MAIN_ADMISSION.original.json",
+      "sha": "1d879b542c99b921b0047640f2d50a1d3ca4fb64",
+      "bytes": 7146,
+      "sha256": "756048e840e35d04176b14a2e31342f6afadf0a47e59a69be661c247a032677a",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "bdd729f69c489ddafd6f953b406fbdfe42e7af49b48e9274c5beeaed7ee87a00",
+        "git_blob": "2a4cec8e28cc9904ad714f9563300cfe86eb4b25"
+      },
+      "get_sdk": {
+        "bytes": 7732,
+        "sha256": "e579c28aff208dd7d7c357c42ec0dfad11a343cc12a4e2e7b65fa64f0ffd3a73",
+        "git_blob": "34cdad9de56dc1ea16deaa1a04f39b5d08301921"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/MAIN_ADMISSION.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/MAIN_ADMISSION.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/MAIN_DISPATCH_INTENT.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/MAIN_DISPATCH_INTENT.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/MAIN_DISPATCH_INTENT.json",
+      "sha": "682d1ac77cec54901a21e90309f10f95bb36184d",
+      "bytes": 718,
+      "sha256": "37dd7af28b9b38c26689990f4234d8972dad9b312eff1e660237c0fe4334f7d6",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "3fb662331b54ac98de596bea721637c9299d74da02aa696f0e04705062264717",
+        "git_blob": "a8275c4f211c6291f8b425ef213fbc3fa1d19696"
+      },
+      "get_sdk": {
+        "bytes": 2401,
+        "sha256": "776560211fa5616cc50a7387984a1b6ee007de91602e8dcbbfb43c14d80b6d7a",
+        "git_blob": "1f4898a5dba0331f7b01dd171bc68aa9a69e93a8"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/682d1ac77cec54901a21e90309f10f95bb36184d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/682d1ac77cec54901a21e90309f10f95bb36184d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/READONLY_COMMANDS.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/READONLY_COMMANDS.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/READONLY_COMMANDS.json",
+      "sha": "f72ed8612f4769e2be0f94c5531c8c3e11b1be88",
+      "bytes": 21855,
+      "sha256": "62f4c7041cb4cd56b4ae43b062c34aa2777b7e08bc008ddf99682a5a50632e59",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "8bffa8c7e5ee7da6fe6269d4d1b8dfe651baecad423de9aa68c60a4712f1b430",
+        "git_blob": "10033d6b33230267d010760825d979fbf57412aa"
+      },
+      "get_sdk": {
+        "bytes": 23863,
+        "sha256": "e636ea0dd0201906d1781337187ac373b93833529307b448f2d0fc616896d24e",
+        "git_blob": "faca4ed5a480e117ada579a217c9e85e5a9bfadd"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/READONLY_COMMANDS.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/READONLY_COMMANDS.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/READONLY_COMMANDS.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/READONLY_COMMANDS.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/READONLY_COMMANDS.json.READ_01.original.json",
+      "sha": "1cd5f28a4b0f2aebdae23d97bbc3b61a7b6da1ab",
+      "bytes": 29642,
+      "sha256": "635f60394c8cfc743753680836355cde4b6394e08c19dcb81cd93488bb3a32e9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e641bb3ffcfa22149d894c99edb4b9ea04843add1309cdc20e127616a53884f2",
+        "git_blob": "03b2db4875161d0371b9ec1308812c9b98ae11d6"
+      },
+      "get_sdk": {
+        "bytes": 60269,
+        "sha256": "5fb0bfe9d6801d8b51afc4b7368ac5d79553f2e2b9ab2e6053d24b951ea1b711",
+        "git_blob": "5fe3e262d121c96d220b567ab039e5f7bd3d6c05"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cd5f28a4b0f2aebdae23d97bbc3b61a7b6da1ab.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cd5f28a4b0f2aebdae23d97bbc3b61a7b6da1ab.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/RESULT.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json",
+      "sha": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "bytes": 7408,
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "944ea9d61a3f7e0aa890f2c88c99ad748b64decf4464d1f7f6f27f8e4be8bfba",
+        "git_blob": "774648d644b01a7c1f77b6c07fe4c4f18cb77566"
+      },
+      "get_sdk": {
+        "bytes": 8058,
+        "sha256": "a81718495c9210f3f580ed933f3b3eeab993d04ff19553dfd8b5d96cff7ccc9d",
+        "git_blob": "9b758e02438639949764af2667396cd5e0e44736"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/RESULT.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json.READ_01.original.json",
+      "sha": "9cc0bbc20f264adfe40ffd1683a86a1ff245ab16",
+      "bytes": 10368,
+      "sha256": "60fb76609e6810ce4fe588aaf82764415d0b1f953673aa2b146be2d0b801b00f",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "1fe8426e2a0cfecfe6f3720715b2e554336c0a5520447dadb5acd8cc84b46798",
+        "git_blob": "2b79a96d45b144369ea671335b1113c1cc833484"
+      },
+      "get_sdk": {
+        "bytes": 10599,
+        "sha256": "b46c00e891ec339e05514a67efb8ed7f44adc5f0df724cd6978e470a164f55ba",
+        "git_blob": "91067beee9dba06ee508d083e1992cf2e9323dd3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json.READ_01.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/RESULT.json.READ_01.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ROOT_APPROVAL.GITHUB_GET.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ROOT_APPROVAL.GITHUB_GET.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ROOT_APPROVAL.GITHUB_GET.original.json",
+      "sha": "50f04eb2c4094e0cbb437be4bed20f86da9bb3f5",
+      "bytes": 8554,
+      "sha256": "799957c23d7ee8e3cb8477223ba459f27b7736a47232d942ee9fc79f36f15cc4",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e0f251ed1e2f3d3ca0f4bf92809ee98aaee69ae48f82c9bc6dab8ab869b0322f",
+        "git_blob": "80be1b0be884c021a4e699a460d00a29911d697d"
+      },
+      "get_sdk": {
+        "bytes": 19811,
+        "sha256": "87be94c1fed0022fa46fe87ea1e74d4f54f00328ea15263294339e5b79c11bf5",
+        "git_blob": "8ea92906ef41d3c98b790803467fb3070f44dfe0"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/50f04eb2c4094e0cbb437be4bed20f86da9bb3f5.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/50f04eb2c4094e0cbb437be4bed20f86da9bb3f5.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/ROOT_EXACT_APPROVAL.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/ROOT_EXACT_APPROVAL.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/ROOT_EXACT_APPROVAL.original.json",
+      "sha": "355674e5538e91757ea50b7264315eed426460f0",
+      "bytes": 7868,
+      "sha256": "ceb81a9858248fbb380d3739b57a2ae6a0e60922b02b79a6b2bf5dd5ea1e7a90",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "95ed4fafe24c23cd0c5ad29d676b6ac65133bb9d1495d2df1b247b8a0789a04a",
+        "git_blob": "bc4906ae978f022def6a938e5011e4da06164b58"
+      },
+      "get_sdk": {
+        "bytes": 17631,
+        "sha256": "f683aa0874ea3e76888dc404ee733250743c9aa25c105ecd5d780a71c02056be",
+        "git_blob": "7e9b35e94575439937e062a87818a994373d3206"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/355674e5538e91757ea50b7264315eed426460f0.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/355674e5538e91757ea50b7264315eed426460f0.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_COORDINATION_EX.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_COORDINATION_EX.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_COORDINATION_EX.json",
+      "sha": "005c63fedcccb60696d1c4845d9baebd3672bb71",
+      "bytes": 352,
+      "sha256": "52b184ecbab972489cbf0aa0eff9600e7bf760f7e8a5a9bf93f8acd4467b2c8c",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9a076a95b64bf07b5ff2e3855e87f349174eb718105e96d7e2cefaf3eb030e7a",
+        "git_blob": "2426dd09f2deaa53ed10b05de1a797beee56810f"
+      },
+      "get_sdk": {
+        "bytes": 542,
+        "sha256": "6f8cfca8b3cdcfe9230601a937721a68e03a4567b6bcf1c7394cbc7e4128e789",
+        "git_blob": "31bd91cd45677a8a751e7144d6034c26d7d60ec5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_COORDINATION_EX.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_COORDINATION_EX.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+      "sha": "8b5bb54383ba3d47ed30b8389f93580853e24c5d",
+      "bytes": 973,
+      "sha256": "6665554907977f9cc7972d5ebea4a472e60e324ce91975b6d38724197e57477c",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e5b559d06adda4686e3c9bded04d9b978f79485cbae0fe41bc5288eae8f2e9fe",
+        "git_blob": "d2866e7e2dde3952632f0745d4751fd85a70d9b9"
+      },
+      "get_sdk": {
+        "bytes": 2931,
+        "sha256": "8b086a34abf8ddd2130f00d480080e7409743fbd9e3167a5ecaa95b441adfcb4",
+        "git_blob": "57b05fc896a7c5cef3bd579f65a3642791bbe5af"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/8b5bb54383ba3d47ed30b8389f93580853e24c5d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/8b5bb54383ba3d47ed30b8389f93580853e24c5d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_ENTRY_SNAPSHOTS.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_ENTRY_SNAPSHOTS.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_ENTRY_SNAPSHOTS.json",
+      "sha": "2ded0fac56b90a54b2df7442253c7440359e443c",
+      "bytes": 2072,
+      "sha256": "a9d76ee7024dbf993ab436cf85d391c7ed8781907a9c063fab05fbc0b396e147",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "3920e8bbea6cd35a153ce64858725abf427ee05e5b9a493f3bd4a7122508ff12",
+        "git_blob": "79998e47429cbde5dcb78308abd5433d5cf34624"
+      },
+      "get_sdk": {
+        "bytes": 5227,
+        "sha256": "fdc0f3d2edeeedca8d71a650b5fab46a586e909b1954c789215e27a6935e22ea",
+        "git_blob": "cf6aadab63aab92ab6b58c4b13269a48f96d50d8"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2ded0fac56b90a54b2df7442253c7440359e443c.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/2ded0fac56b90a54b2df7442253c7440359e443c.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_ENTRY_SNAPSHOTS.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_ENTRY_SNAPSHOTS.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_ENTRY_SNAPSHOTS.json.READ_01.original.json",
+      "sha": "8a5c446079ad506f72ebb590836f8f0d1db9c194",
+      "bytes": 3268,
+      "sha256": "aa82484e17b5ccc9a5eb882e73b4ca8cad2ce4094bbc5b5288d18b23ecb8ddbc",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "70c15e0d89037ca83244eeb890b0ea94fba2072d9481c805b6a2f61e42b9fd51",
+        "git_blob": "baadd63d94c2ce0f1d3f9846a9e46dd321ae204c"
+      },
+      "get_sdk": {
+        "bytes": 7521,
+        "sha256": "75a5ecdf953f64a828b8775ccb7bab590692f2fa0690166948fbdd5e1a59c410",
+        "git_blob": "8538491963502946ed54f8de2c0ca3ced7f4ee27"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/8a5c446079ad506f72ebb590836f8f0d1db9c194.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/8a5c446079ad506f72ebb590836f8f0d1db9c194.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_METADATA.after.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json",
+      "sha": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+      "bytes": 2654,
+      "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9750faaf5d9f26305ca03f7b303cd67c0edcb50942fddaf64a8fad8c8c1c3a1b",
+        "git_blob": "695119c125f67e99bf2ca62486b49648c597a480"
+      },
+      "get_sdk": {
+        "bytes": 3100,
+        "sha256": "25050b9562158460bd267a6b67852128ce15e78a3da52321718ef7aeb21bc925",
+        "git_blob": "a986f5abd11930762c5dc1eb4f4a39172bd36313"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_METADATA.after.json.gz.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.READ_01.original.json",
+      "sha": "be1b83c501333489db17ecda20ced942ec6f3901",
+      "bytes": 1563,
+      "sha256": "7ae9399e7fe7051a974e79d72b370782220a55180eec35690faac94f477ca4ec",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "d801d10802b97352f081c2e79e54173f3a1a9dfb78b8baec463eceb7d6a23b4b",
+        "git_blob": "6c6f5824986815d3044b53d49d089300305ab3ff"
+      },
+      "get_sdk": {
+        "bytes": 1794,
+        "sha256": "280f842766aacd311a1676e8ec82a592e9763aeece895c2189eda77fb8e5dfa3",
+        "git_blob": "ef37379aa90dad83cc81e2265ca5630b3ca6a1b9"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.READ_01.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.READ_01.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "sha": "bb8e5c203eebd014c17179cc5697162fa15916ff",
+      "bytes": 1057,
+      "sha256": "c6fc2575933f4869e36895a0146291e6d9263bd6ba2f05a27b87e80e1bfd6728",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "00c5e80d2f5306cc1bbfe04adfb3668d83116544c5a61140cdd89768b96fa23d",
+        "git_blob": "ee52a7144dae5071b297167b71aef20112d7f852"
+      },
+      "get_sdk": {
+        "bytes": 1217,
+        "sha256": "e310948fbf776893bfdae564c7e43008b7d0da66e04e451e83eafaa02b1650bf",
+        "git_blob": "f5c86a90a0707e6a47dbe284d7ce5d8c9ce262fa"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.before.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_METADATA.before.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.before.json",
+      "sha": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+      "bytes": 2654,
+      "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9750faaf5d9f26305ca03f7b303cd67c0edcb50942fddaf64a8fad8c8c1c3a1b",
+        "git_blob": "695119c125f67e99bf2ca62486b49648c597a480"
+      },
+      "get_sdk": {
+        "bytes": 3100,
+        "sha256": "25050b9562158460bd267a6b67852128ce15e78a3da52321718ef7aeb21bc925",
+        "git_blob": "a986f5abd11930762c5dc1eb4f4a39172bd36313"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.before.json.gz.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_METADATA.before.json.gz.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.before.json.gz.READ_01.original.json",
+      "sha": "420f2ee913db2a4f6716a4e6ee9c2bec6e8ce902",
+      "bytes": 1564,
+      "sha256": "f03d40f5549363723b5a0ffa7966bf0d5696ca840b3e3380c8848c646140807d",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "20bd44c2fa3a0f4720cdde103cb4bf1db2bbf24cf55c2943827e187dcbf0a7c4",
+        "git_blob": "22bd9023b6f0a55817b5368c4daca7bbcd8392a1"
+      },
+      "get_sdk": {
+        "bytes": 4113,
+        "sha256": "3e955d83575832cd05287a91b82341a31be11192f54f5358047b9f2ea1691790",
+        "git_blob": "a9e3f2ad73b5f71e628531ba034036a0963c843e"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/420f2ee913db2a4f6716a4e6ee9c2bec6e8ce902.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/420f2ee913db2a4f6716a4e6ee9c2bec6e8ce902.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "sha": "bb8e5c203eebd014c17179cc5697162fa15916ff",
+      "bytes": 1057,
+      "sha256": "c6fc2575933f4869e36895a0146291e6d9263bd6ba2f05a27b87e80e1bfd6728",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "00c5e80d2f5306cc1bbfe04adfb3668d83116544c5a61140cdd89768b96fa23d",
+        "git_blob": "ee52a7144dae5071b297167b71aef20112d7f852"
+      },
+      "get_sdk": {
+        "bytes": 1217,
+        "sha256": "e310948fbf776893bfdae564c7e43008b7d0da66e04e451e83eafaa02b1650bf",
+        "git_blob": "f5c86a90a0707e6a47dbe284d7ce5d8c9ce262fa"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_STATE.before.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_STATE.before.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_STATE.before.json",
+      "sha": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "bytes": 489,
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ab841b8f24d2e715a244214f01f63fec0b85cc547037ea16b35ca9cb465c14a7",
+        "git_blob": "2ade4f4124670eb8ea5c1dfaa7b5d3ac91dd0303"
+      },
+      "get_sdk": {
+        "bytes": 679,
+        "sha256": "c2ecf48529d1af2ca3dc58fa009759e8f74ebb7a201ff4aae01c7ada40554e73",
+        "git_blob": "bb8269c883373da647facb65bdac4bc1875902f3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_STATE.before.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/SOURCE_GIT_STATE.before.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/SOURCE_GIT_STATE.before.json.READ_01.original.json",
+      "sha": "9f1bd06ab363e3146f6e4a2b36a56bdc09f38a8e",
+      "bytes": 1154,
+      "sha256": "cfee9d157b2852902e6df26b5c801ca3d929a12c1fc6d20687a2c29cb6150d82",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "fb43beca99be301fc8aae19d0936687fcf61cfd1e9d08d1c587e9c273f49bd82",
+        "git_blob": "f95ec3b3f6e2b5009842d3238ed5dfc3fee7d4e5"
+      },
+      "get_sdk": {
+        "bytes": 3293,
+        "sha256": "bf50e7356ed73d63a12dc40b269b6c9e8a321ab1e3a6583d820ccaaaf3394ce2",
+        "git_blob": "4481a9655c0b67577af8e31a2a21ff18a96af7dc"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/9f1bd06ab363e3146f6e4a2b36a56bdc09f38a8e.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/9f1bd06ab363e3146f6e4a2b36a56bdc09f38a8e.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STAGING_READBACK.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STAGING_READBACK.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STAGING_READBACK.READ_01.original.json",
+      "sha": "ff30831febf93b3cd9e84fa7e77083242c201101",
+      "bytes": 3606,
+      "sha256": "29537410e012e33857b07514110427de9ad4e1577c368d6752bd2ecd69bb4c95",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e05c47716dce2ab0673eff88403476beb6e75a822085ce696b4d9e2d7c2ce3d2",
+        "git_blob": "714a57ae02625c0ec96d566fe917cb8f6713692d"
+      },
+      "get_sdk": {
+        "bytes": 8197,
+        "sha256": "e881e956d4c4f989f0dbc3b87e2b688d958e57dc2b7e12c648efa3d2f5d6600c",
+        "git_blob": "8f14e8f27f3cbcb859f168dd26412c03f366709f"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ff30831febf93b3cd9e84fa7e77083242c201101.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ff30831febf93b3cd9e84fa7e77083242c201101.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STAGING_READBACK.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STAGING_READBACK.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STAGING_READBACK.json",
+      "sha": "80e9e58441ae5a31063ecba5eb763b4a44ee4a44",
+      "bytes": 2333,
+      "sha256": "109534137baad5ccb7acb874240966a7a970a2a731b883ce3b76feea39b3de56",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ee88ec2818850ce0c51f31f113100714b030fdcf4274e2dbfb5bc6359cc38ffc",
+        "git_blob": "6854ec15203e2f8798903bba814597dcbc3979e6"
+      },
+      "get_sdk": {
+        "bytes": 2649,
+        "sha256": "ac1c746da975809c6b72f95eeaa08be974e29e6414dfbcf524adabd8490e97f9",
+        "git_blob": "bf27cb046ecbc746ca06316c033da14b302b9637"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STAGING_READBACK.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STAGING_READBACK.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STATUS_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STATUS_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STATUS_01.original.json",
+      "sha": "97266ea4b61327235ecd40c07bba2fd2d695512b",
+      "bytes": 656,
+      "sha256": "956cf4162cc4e2023883c55d64045b616be20ab82cd5c922d164ae1227514dfe",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9d73d26a947c9bdcc693dad14440bdb6c107ee7730cef823ba46c2b930d7a8eb",
+        "git_blob": "4e169343d01a7bbdeb7d7c19832a611686349ef4"
+      },
+      "get_sdk": {
+        "bytes": 2441,
+        "sha256": "13877c7b0f89db7b7bd23569539c1733e2d8d58b822c64ee77bf11df8587454a",
+        "git_blob": "7098eece957a9d01c45c38a9be9aa4e235596d4f"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/97266ea4b61327235ecd40c07bba2fd2d695512b.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/97266ea4b61327235ecd40c07bba2fd2d695512b.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STATUS_02.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STATUS_02.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STATUS_02.original.json",
+      "sha": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "bytes": 952,
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "31a16aa8f6a27f16b772847cb07f651a8ecf6d7b0b2ff65f73ac4e6ef7f3a397",
+        "git_blob": "6722788a6b7cd44e4dbe0349e2270b2b8a341f29"
+      },
+      "get_sdk": {
+        "bytes": 1299,
+        "sha256": "2c1b571efeaaeda1b5c37d4a7f6b95a6ca00bd657fef2ce8c4d1a5cac226a0be",
+        "git_blob": "93f0c92f7222c516ee6dca2a1832c7c0bda70733"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STATUS_02.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STATUS_02.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STDERR.complete.original.txt",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STDERR.complete.original.txt",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDERR.complete.original.txt",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "bc9288a3bdc17e2e6741c5c10f68ebd873b8fadb65466b5e155e32ed61c121f5",
+        "git_blob": "60d90a09befe34708877a1208f012d54c34f38b6"
+      },
+      "get_sdk": {
+        "bytes": 159,
+        "sha256": "7173bab0464503075b9e0b24c826aa70bc826da3263edde1dabbc8833deaeceb",
+        "git_blob": "057869c39a49a846680dac04c8959ee70d52e272"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDERR.complete.original.txt.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDERR.complete.original.txt.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STDOUT.complete.original.txt",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STDOUT.complete.original.txt",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDOUT.complete.original.txt",
+      "sha": "dfbb4d7af73d85df2416632ab6df618c74ddf2b4",
+      "bytes": 1298,
+      "sha256": "3e4337f6534f508649a25789a810a770338c94ffc6a1eaad53f1703d3e1029d0",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "1fb07aa3df3c87380f5da7c1a74dcf70171e898924dabc41b3d9dcaad3f2b536",
+        "git_blob": "bf20312d851cfaa8c4d00b3462f0d1b7a92d3897"
+      },
+      "get_sdk": {
+        "bytes": 1562,
+        "sha256": "8f85510af93531bbc92d584fc2d8fe8885b73838b0766086908162cd178d8200",
+        "git_blob": "e92c6c0381dd89a4bbfb02d8f93005e9676e73fa"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDOUT.complete.original.txt.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDOUT.complete.original.txt.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/STREAM_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/STREAM_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STREAM_01.original.json",
+      "sha": "e801baa1ee640b66a36b075b4385c3e73f7ca0ce",
+      "bytes": 4709,
+      "sha256": "ca77818bfbf1396a5e3e60728392a038cad0682e646d931b945e83ba86973df9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "d862d0112697c4c371a8a6253df80bfd5e39ce7e6401a29760ee20caf725cf53",
+        "git_blob": "48ed231164bfaa1af123544bcca7bf431ea8faff"
+      },
+      "get_sdk": {
+        "bytes": 5405,
+        "sha256": "d4b4b5ea54aac8732c1eb63a8f08411d989eccfe4579cf67f3ef60aa9b0ec647",
+        "git_blob": "151a026756af71fe660c4d2635cda762e42764df"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STREAM_01.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STREAM_01.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/apply.after.git-state.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/apply.after.git-state.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/apply.after.git-state.json",
+      "sha": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "bytes": 489,
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ab841b8f24d2e715a244214f01f63fec0b85cc547037ea16b35ca9cb465c14a7",
+        "git_blob": "2ade4f4124670eb8ea5c1dfaa7b5d3ac91dd0303"
+      },
+      "get_sdk": {
+        "bytes": 679,
+        "sha256": "c2ecf48529d1af2ca3dc58fa009759e8f74ebb7a201ff4aae01c7ada40554e73",
+        "git_blob": "bb8269c883373da647facb65bdac4bc1875902f3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/apply.after.git-state.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/apply.after.git-state.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/apply.after.git-state.json.READ_01.original.json",
+      "sha": "077795bbbf6c0824f31846362d119510793c6207",
+      "bytes": 1152,
+      "sha256": "246f41f38ee3495d5b345197162b3e0878c5e0101f2e71ee8adc27baecf26ffc",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "57326afa720105cb5a043bd3df896b06c9e8a43adc31bb4affdab1c7211a1b5e",
+        "git_blob": "fda4cb9b086b0da71822aaae1c8ea91448580efd"
+      },
+      "get_sdk": {
+        "bytes": 3289,
+        "sha256": "acadba9f85c65f92ed0931b5990f7e9c1764eb989042ca25b2750d3354aac57a",
+        "git_blob": "95e2ec01e32e1511f45dabd0406c3c057bdee48c"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/077795bbbf6c0824f31846362d119510793c6207.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/077795bbbf6c0824f31846362d119510793c6207.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/apply.after.postimages-summary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/apply.after.postimages-summary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/apply.after.postimages-summary.json",
+      "sha": "6473c1fcd673e5e4c047a3f0aec3290f7ae32724",
+      "bytes": 610,
+      "sha256": "9b3f1bab97030b8a1609921a7ab29d90eb449df95456f5605e7dff005565d601",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "10dd3531b4365f176b28a8e367300367f1f92432bc7abb054c99f645174df1c0",
+        "git_blob": "67d0824315099a4e15f0a717a105174f5a4878af"
+      },
+      "get_sdk": {
+        "bytes": 2123,
+        "sha256": "135aaf714ef6567bd0ec5c19be464c72bca3a08185ba06e69c3cc209c7c093b0",
+        "git_blob": "b2696973a76de535e2f5d02a8231c232bb9bbbb3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6473c1fcd673e5e4c047a3f0aec3290f7ae32724.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6473c1fcd673e5e4c047a3f0aec3290f7ae32724.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/apply.after.postimages-summary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/apply.after.postimages-summary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/apply.after.postimages-summary.json.READ_01.original.json",
+      "sha": "c873bb50fe02c0b25a148531b139fc8d2430c47d",
+      "bytes": 1325,
+      "sha256": "5684bafc3e3a2407748b50ce1939aad0a39a21af5f27cb95ccd9faa6937b8675",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "c5c249c9f89ad233a5a73fc400a3501b73c26f92631f5d2ba533c0e98bdae814",
+        "git_blob": "20dbac85748ee79c851eee4858352dd3a87f6945"
+      },
+      "get_sdk": {
+        "bytes": 3635,
+        "sha256": "5c06e773009de279cb3e28e3522b77b6c8ae6c2dbc145dfd78f90180f497dd1c",
+        "git_blob": "c8dd18f3eb4721db503e2ae92d9456ae7ab168fb"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/c873bb50fe02c0b25a148531b139fc8d2430c47d.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/c873bb50fe02c0b25a148531b139fc8d2430c47d.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/decode_actual_reads.py",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/decode_actual_reads.py",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/decode_actual_reads.py",
+      "sha": "d267f967466d7f97abb2517d254890f3dee18cc2",
+      "bytes": 3706,
+      "sha256": "a362b884e891ed5cccb9b16b86b25343291053b6c6e8a6f15dd8542f53f530f4",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "83bfab93358f8bf5ed66d6cf8f8b0d1f64a8c68f7ff8628e5c8373ee33008cc5",
+        "git_blob": "00f4dbfa6f564bcf879f8acffbd9187437940b47"
+      },
+      "get_sdk": {
+        "bytes": 8717,
+        "sha256": "bbe9e271a9e3ee78663d9b40256daef0395401c2b8bce10a1b34e89314b38b10",
+        "git_blob": "016d1e52e141a68a8e92e4a930aa440c0d15ae5e"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d267f967466d7f97abb2517d254890f3dee18cc2.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/d267f967466d7f97abb2517d254890f3dee18cc2.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/decode_actual_reads_pattern_only.diff",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/decode_actual_reads_pattern_only.diff",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/decode_actual_reads_pattern_only.diff",
+      "sha": "6fc96ac23845863bbad5ec357895f04e32d870a4",
+      "bytes": 485,
+      "sha256": "0ee9772bc8d16d778eb22d4e6c8d9d938d35817bf472d27d296d4b555351e1ba",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "1e4bb83f7f70e2d4ed49224e61a4c17bb0f12980e6b6c131027db10fac6e4942",
+        "git_blob": "545e76f0bf60b7f020b02809c84d1de144983b6f"
+      },
+      "get_sdk": {
+        "bytes": 1863,
+        "sha256": "f8be51483ce5d16aefd1d7757ce98c5a354019d8c0c37f85319f65128752be2c",
+        "git_blob": "09e912f3cce1e56afe2adc46e9960fbbd942ee89"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6fc96ac23845863bbad5ec357895f04e32d870a4.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6fc96ac23845863bbad5ec357895f04e32d870a4.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/decode_actual_reads_v2.py",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/decode_actual_reads_v2.py",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/decode_actual_reads_v2.py",
+      "sha": "abd669e67c64625a9157f7339193c3411ee38f76",
+      "bytes": 3785,
+      "sha256": "70462dd2971df6bd124b755bfa56623664733004ea2a3a9d120d8299e55a30a7",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "33e130b19ca9ba4dfe5dcff02a332663c98e6733ba7baf6f753092dd652f5ef7",
+        "git_blob": "664d26f6f4718c71c6662a3f812ec366cf45877e"
+      },
+      "get_sdk": {
+        "bytes": 8883,
+        "sha256": "b20d591ccae5548fd86d88aedc7a7dfed41f75d6dcfa569c2f2ddcf326d09215",
+        "git_blob": "b31214188608d6f9f0788e6155b7eb3dcbc13e62"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/abd669e67c64625a9157f7339193c3411ee38f76.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/abd669e67c64625a9157f7339193c3411ee38f76.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/driver.py",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/driver.py",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/driver.py",
+      "sha": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "bytes": 28657,
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "6aa0470ed401dea43502c15734fd2299360cc3c859d074cd84fb6a9d0aa95ec2",
+        "git_blob": "8f92e6fa2984baa422a276ab41319c8ab79d53ef"
+      },
+      "get_sdk": {
+        "bytes": 59021,
+        "sha256": "da73ccb5182614b0ad3fd2096f63d717012be1164462e46e33324b8806d558f8",
+        "git_blob": "e126fd7a44daa0e7ebd4e220edb00e7e7e82601a"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/27c0db4e4bceb69bcaafc97f5cc843a37b180941.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/27c0db4e4bceb69bcaafc97f5cc843a37b180941.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/driver.py.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/driver.py.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/driver.py.READ_01.original.json",
+      "sha": "be68aada26d82ba18035e14359e7a26cefab8e46",
+      "bytes": 38697,
+      "sha256": "dbe1f298a43756318f76b4d509a22d0c055fc741e4816e86976de3b0e02d9996",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "6364ed80674a5d78e2b2c8daafe3b5b335e578a78b1b39fc4c204913a4132869",
+        "git_blob": "55574a9ada4e305cc8950141d572738f5a81ebf8"
+      },
+      "get_sdk": {
+        "bytes": 78379,
+        "sha256": "ba2a90fb55d7810fa724f09e730ab92fbc5b00f2f450e6e4fa7e9aec9d5f1d01",
+        "git_blob": "c4329df8054915741b16f056ec921614145ea667"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/be68aada26d82ba18035e14359e7a26cefab8e46.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/be68aada26d82ba18035e14359e7a26cefab8e46.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.HEAD-working.patch",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch",
+      "sha": "61d3ff75acfb9a4626950e8444b0d43bf93d9556",
+      "bytes": 138901,
+      "sha256": "55679beda2bfe611703443fd8931962925a55386596a3ea9105660587bbb50bd",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "605c281f99eccd976dd1e258c8d6659fe123d73647220c4f43d421c99ff9c801",
+        "git_blob": "ffde07d9e1ca33ffd16d2eb21d1d2586c1c3c097"
+      },
+      "get_sdk": {
+        "bytes": 286501,
+        "sha256": "afec84b05ae90a904f19517dda23b76c1d66608189091b48aa235b542a54b573",
+        "git_blob": "a9647a17e9b559e8a292435ebbe1beed1cf65ddc"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/61d3ff75acfb9a4626950e8444b0d43bf93d9556.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/61d3ff75acfb9a4626950e8444b0d43bf93d9556.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.HEAD-working.patch.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch.READ_01.original.json",
+      "sha": "0db092f6ae23e5c45deb5954b56e65d72c5b0523",
+      "bytes": 87891,
+      "sha256": "71e1d9a4c5f6eaf03c948cead8ca9a35c63347b1135d112d54879ee5c1bf9b68",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "dbcce4b56875d732ad92b2d977ff790836cc4244cde3f8d993a8d022d89beec4",
+        "git_blob": "5de9fb679adf099a83ee6421fef0021b989969c6"
+      },
+      "get_sdk": {
+        "bytes": 176767,
+        "sha256": "86d0a0d7cbbb9979f49f6bf5e5704f34758cd2fac7f5f9743da1f5cbbb3f7b52",
+        "git_blob": "3643b1b110f16138648b59c608672254d6745b8c"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/0db092f6ae23e5c45deb5954b56e65d72c5b0523.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/0db092f6ae23e5c45deb5954b56e65d72c5b0523.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch.READ_02.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.HEAD-working.patch.READ_02.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch.READ_02.original.json",
+      "sha": "b327ba48b0ca20c723dff99211288ff75ef784ac",
+      "bytes": 87896,
+      "sha256": "906d9e2a9155cefa86dc196d1a7b38e4430e377e93905e1ea90e2cb402a6cef7",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "f52520ab9755b0b0bafc213778e951edfd3605914c705f2ac4f1497d71e2aa0c",
+        "git_blob": "ee236ea6cb7a3c35f650ff2aae24b52a17f51fca"
+      },
+      "get_sdk": {
+        "bytes": 176777,
+        "sha256": "bb7e3c7673aea25b8c68bea91db7c9d08e88c019638a24825f062d2e56e7abb8",
+        "git_blob": "52a4112f0c51a319aed4e8654a8fabb962bf2ee8"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b327ba48b0ca20c723dff99211288ff75ef784ac.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b327ba48b0ca20c723dff99211288ff75ef784ac.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch.READ_03.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.HEAD-working.patch.READ_03.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.HEAD-working.patch.READ_03.original.json",
+      "sha": "73d2e8715c5816b1a6865f5c4c95e815f8108b14",
+      "bytes": 10952,
+      "sha256": "d6d54cbc4ce3464b2eb104a6b541fe7172bf2c4d0c7a8aa73d79dec0c03d84c7",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "850534bcbf1e69451a0dea80bb810715946f90845d8c3d3360122ba98625930f",
+        "git_blob": "0acb15b2098d65b4e79cfb09342161a4a7560405"
+      },
+      "get_sdk": {
+        "bytes": 22889,
+        "sha256": "4e31fe7e1f76f3dba740a5b47dde403fd827c6bc5c404268f411a7af6254f3c4",
+        "git_blob": "e89086ff985ee087a546fc1477ac99d783543a0f"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/73d2e8715c5816b1a6865f5c4c95e815f8108b14.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/73d2e8715c5816b1a6865f5c4c95e815f8108b14.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.git-state.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json",
+      "sha": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "bytes": 489,
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ab841b8f24d2e715a244214f01f63fec0b85cc547037ea16b35ca9cb465c14a7",
+        "git_blob": "2ade4f4124670eb8ea5c1dfaa7b5d3ac91dd0303"
+      },
+      "get_sdk": {
+        "bytes": 679,
+        "sha256": "c2ecf48529d1af2ca3dc58fa009759e8f74ebb7a201ff4aae01c7ada40554e73",
+        "git_blob": "bb8269c883373da647facb65bdac4bc1875902f3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.git-state.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.READ_01.original.json",
+      "sha": "1db181b925d8e22a8fca932c6a03e932cb7aa088",
+      "bytes": 1146,
+      "sha256": "f4df6ee9f21c463a058dcb6d801d5a9594a45c12ed2370d27192a9655668b827",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "f3cbe241d6833d180d0323d5295198f2c1a92bc21d0529b27d1283682a5a4aac",
+        "git_blob": "2d6f0ebb5592a55293e5d56f42fac1b7e2aa5275"
+      },
+      "get_sdk": {
+        "bytes": 1377,
+        "sha256": "043a48a9aec2c9a02fc009a263b905321581ea7062d1583813e5d3c9911be220",
+        "git_blob": "af32e3b8ab68b158afe9920d4864a881c8c084e9"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.READ_01.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.READ_01.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.postimages-summary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.postimages-summary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.postimages-summary.json",
+      "sha": "6473c1fcd673e5e4c047a3f0aec3290f7ae32724",
+      "bytes": 610,
+      "sha256": "9b3f1bab97030b8a1609921a7ab29d90eb449df95456f5605e7dff005565d601",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "10dd3531b4365f176b28a8e367300367f1f92432bc7abb054c99f645174df1c0",
+        "git_blob": "67d0824315099a4e15f0a717a105174f5a4878af"
+      },
+      "get_sdk": {
+        "bytes": 2123,
+        "sha256": "135aaf714ef6567bd0ec5c19be464c72bca3a08185ba06e69c3cc209c7c093b0",
+        "git_blob": "b2696973a76de535e2f5d02a8231c232bb9bbbb3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6473c1fcd673e5e4c047a3f0aec3290f7ae32724.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6473c1fcd673e5e4c047a3f0aec3290f7ae32724.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/final.postimages-summary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/final.postimages-summary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.postimages-summary.json.READ_01.original.json",
+      "sha": "3ca59d48b795069573675bc1898543bfcc7eddd2",
+      "bytes": 1319,
+      "sha256": "433667474ba29805be83459126b8956693c464c529ec0c2a857b9526147b3929",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "a06fac8d4fbfab8961b668e628f55acf26d6e05edbf0d22716b88ceb243f5529",
+        "git_blob": "de9575214794ef00b41df4bb157afc60c1b696d1"
+      },
+      "get_sdk": {
+        "bytes": 3623,
+        "sha256": "1ca4592fe3aad711c933d5b4abfe863c6573ccfc639bbb5c1be3a722be146dee",
+        "git_blob": "f358a443165cf7e7265c8638de06173e44ecbd90"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/3ca59d48b795069573675bc1898543bfcc7eddd2.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/3ca59d48b795069573675bc1898543bfcc7eddd2.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.git-state.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.git-state.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.git-state.json",
+      "sha": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "bytes": 489,
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ab841b8f24d2e715a244214f01f63fec0b85cc547037ea16b35ca9cb465c14a7",
+        "git_blob": "2ade4f4124670eb8ea5c1dfaa7b5d3ac91dd0303"
+      },
+      "get_sdk": {
+        "bytes": 679,
+        "sha256": "c2ecf48529d1af2ca3dc58fa009759e8f74ebb7a201ff4aae01c7ada40554e73",
+        "git_blob": "bb8269c883373da647facb65bdac4bc1875902f3"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/final.git-state.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.git-state.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.git-state.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.git-state.json.READ_01.original.json",
+      "sha": "b882b9b577456d7dfc1ba966284c7a470996e0c1",
+      "bytes": 1150,
+      "sha256": "66eeacaa6b7f975080114163f3b5d4918b7519d2fb3f1a92534fbb4d5c511289",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "d97446a21d8b95805fc327d9b66bbea8573ad532b2ff67ca2b9a75f138146828",
+        "git_blob": "4d85256bc21bb6feb761ce2916cfe6d0995759a2"
+      },
+      "get_sdk": {
+        "bytes": 3285,
+        "sha256": "2dc91c3c991589bc0357ea6492e64d66948aa1e5de0724706872cf85ac420c1b",
+        "git_blob": "5e71085410650ee171eb9dc2eedbc62e3009098d"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b882b9b577456d7dfc1ba966284c7a470996e0c1.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b882b9b577456d7dfc1ba966284c7a470996e0c1.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages-summary.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.postimages-summary.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages-summary.json",
+      "sha": "5c10fbf7305fe85f2095ddabd3b989453c4d5cb9",
+      "bytes": 433,
+      "sha256": "81f932ff762a6da716f3da7d3efc56fdbc351eed02f87552d6fa78e0c975650b",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "6b9db37d5411c06e1d75395fb80b30990af9b456692cd82bb5d1de10b96e23a0",
+        "git_blob": "c372dfbc311f985d0d0287461a8de9a1d1d7d0c4"
+      },
+      "get_sdk": {
+        "bytes": 1753,
+        "sha256": "39a2cf4ef331cd23bbb45f00cadd3479f7241a298538d75ada40a4f6f3a290b6",
+        "git_blob": "17076bb56d5f7d71daadbdab722f0e995369e885"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/5c10fbf7305fe85f2095ddabd3b989453c4d5cb9.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/5c10fbf7305fe85f2095ddabd3b989453c4d5cb9.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages-summary.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.postimages-summary.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages-summary.json.READ_01.original.json",
+      "sha": "13ec77ac477f57e8da155721d155d40cd55cff11",
+      "bytes": 1087,
+      "sha256": "b436ef05e47ed1b072018a586458707b26b86061035eab85a78b3bdd187ab6dc",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "64c98fcd8b1a57f35f604696e676b89c207650d3117909776672f5c8db086f2e",
+        "git_blob": "ae5388ec5dc7b957f5637c0951d9c9ac2c0f50ba"
+      },
+      "get_sdk": {
+        "bytes": 3159,
+        "sha256": "159dc2cc80e9840a48ccc697bde96617e1cb099f4bc626d646be85b364efb2ed",
+        "git_blob": "c5f7720e19196a43da2ddbc9a6ec24e1bdd26088"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/13ec77ac477f57e8da155721d155d40cd55cff11.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/13ec77ac477f57e8da155721d155d40cd55cff11.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.postimages.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json",
+      "sha": "f5c7643422eecfcde833cffc4cb61004f4f682ea",
+      "bytes": 438,
+      "sha256": "22e40d9fa4e982ae4aedccbe4636f039a377e5af9c54a167455dbf54ffa5d144",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "b6a101dda84535b336129a9bcaa3fc55828c3dddd3ef9996d36073aa168da18b",
+        "git_blob": "41f4e2050cc779ebd86d82106940a8210de06d86"
+      },
+      "get_sdk": {
+        "bytes": 624,
+        "sha256": "6dad6a8f1a893a892a9eb60e5a9b9ff04c19e5560769cb71fdd92773ec8d48b5",
+        "git_blob": "bd31be62ee74765207eb392f5ea74313751ffd92"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.postimages.json.gz.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.READ_01.original.json",
+      "sha": "632d12c28446f4b45a46931115b1113cc7959983",
+      "bytes": 870,
+      "sha256": "8888cb82e585ead99294ad5b6164798de01b6bdccc786432879392c6cb218eb9",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "c2ceec0da09eef70b01d45c0cbebb7b2d41992c42a48a24ebf34f33f43729a9d",
+        "git_blob": "509836c550b21549adad06078891f1d423a77d19"
+      },
+      "get_sdk": {
+        "bytes": 1101,
+        "sha256": "294539700fd00d2bb3ca4d704d09b53a742ea2161ba50f46fc55f7da0576de64",
+        "git_blob": "fd8698a6455b232d36037c99677423c29ad6474a"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.READ_01.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.READ_01.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.part-001.b64",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.after.postimages.json.gz.part-001.b64",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.part-001.b64",
+      "sha": "522981a1c63c0d98514e0b396692bf5d01853624",
+      "bytes": 369,
+      "sha256": "c44dc5b366c7d1ac8f900a82af8e8f5cc06fd70bef64b129065d8fc3bd455cdb",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "df8f184a6afc892d0e281459958085474c8be39c082cdc99a21073df9443c5e6",
+        "git_blob": "f8ea0c9490e0fc4db4d3fb25e8949070c8424a0b"
+      },
+      "get_sdk": {
+        "bytes": 529,
+        "sha256": "ac38a56ffc75588175a40866f22d4e88cee5917765c2f78ea4aeeed02854b318",
+        "git_blob": "e6d385e6e539b16cc7c43b54c288727cd2b5582c"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.part-001.b64.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz.part-001.b64.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.attempt.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.attempt.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.attempt.json",
+      "sha": "6e3d7c82ed0b3f475c83bad0e5125b7ac1118cb9",
+      "bytes": 382,
+      "sha256": "fb3104e9ff6cf8d82643ff82249e0c6845a192be252b9aa75494021a328ad794",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "e6dc9814f645f340781ddfaa75f0ed136d5d220057ac331fad06528a3fa4b886",
+        "git_blob": "4469a700dc1faa5a50f972dfb16095192a020d6c"
+      },
+      "get_sdk": {
+        "bytes": 1683,
+        "sha256": "76c6e2d75ea7d6a4792a9a848845e8a976cacdf88cdc02bc9011b5d4addde6f5",
+        "git_blob": "d05c94ef9e3df45ef8914dfce82528edd084786d"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6e3d7c82ed0b3f475c83bad0e5125b7ac1118cb9.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/6e3d7c82ed0b3f475c83bad0e5125b7ac1118cb9.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.attempt.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.attempt.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.attempt.json.READ_01.original.json",
+      "sha": "59c1b67f06e59e5c223419bcb1df4836c58a4d07",
+      "bytes": 1002,
+      "sha256": "3745d2720103f28b28b05ec9e160caa43aed6d9d92d2cdf2a38816b534e09ac2",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "16df70f0ffd232259a372067ff6b048e2be60d7cb27f01c6c5b801aea2eafe22",
+        "git_blob": "17f287e0bb2f99ad5416a1b4c6b0e7b029d75944"
+      },
+      "get_sdk": {
+        "bytes": 2989,
+        "sha256": "3e4cfe255ca8fe5c488d8f9c9dc8b4f9e231e43c7c772140909277a0fff8111c",
+        "git_blob": "d407ef1347946713bcce60b68b08680029dd37ca"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/59c1b67f06e59e5c223419bcb1df4836c58a4d07.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/59c1b67f06e59e5c223419bcb1df4836c58a4d07.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.execute_logged.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.execute_logged.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.execute_logged.original.json",
+      "sha": "d25d08516250c5a01853b778852340de8c3fea41",
+      "bytes": 211,
+      "sha256": "576857307006836e4ec752735f3fd7a22d7bb177077b98c13184a3f76d29333a",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "13ec442cff8fefded0dd664bea55734dc7a578a71f1b48f82705da8e3eca5f92",
+        "git_blob": "87da7982344cca8d63489ddd4b67b5cb678540c1"
+      },
+      "get_sdk": {
+        "bytes": 387,
+        "sha256": "72bfe5943be252d2e1fc886cc55b740a1b09a4eb7583e694162ce724add7541d",
+        "git_blob": "84186ea49a83c0df29dea565a5bb8ebf6654df92"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.execute_logged.original.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.execute_logged.original.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.execute_logged.original.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.execute_logged.original.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.execute_logged.original.json.READ_01.original.json",
+      "sha": "b83984564821d2f6a22a70099581d61c33a95bd6",
+      "bytes": 790,
+      "sha256": "aa84209706f54222c24b0febb33e220e76ea63fcf888dbb30806e199b8492647",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "b6c5310902f62421bd73b3b0139b6264e98f1f7622bed418caec038f31cd5b91",
+        "git_blob": "5b67d6ed44afea424d985df9c72c601730d41605"
+      },
+      "get_sdk": {
+        "bytes": 2565,
+        "sha256": "21aa5541dc829ca9bc402cf76c4079cf1ba373084a75adf225e05b9fc9b786f1",
+        "git_blob": "330f6da3c791d6009c0b0c5dd4b027c4032cb335"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b83984564821d2f6a22a70099581d61c33a95bd6.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/b83984564821d2f6a22a70099581d61c33a95bd6.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.launch-source-entries.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.launch-source-entries.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.launch-source-entries.json",
+      "sha": "a9768ebee0402f421a45f871d8ecd781087d64d3",
+      "bytes": 856,
+      "sha256": "5aa27818d48b7db4329ee9ccb527524a3dfa2118ae5c72f97e2b949653cd2f3e",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9545f15353080836a39f20334d744cb3be666c4ae0d46e0577cdb0e702bacdcf",
+        "git_blob": "b4ae5bacafec3e739ad59edafbb37c17f2aeef22"
+      },
+      "get_sdk": {
+        "bytes": 2679,
+        "sha256": "57d77e16cbeedb3648b9a02830aa77606574ec7d34cc62536131e61d7c03a761",
+        "git_blob": "4f7589baf3f7991c2c6b6bb5f961be26e41c08fe"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/a9768ebee0402f421a45f871d8ecd781087d64d3.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/a9768ebee0402f421a45f871d8ecd781087d64d3.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.launch-source-entries.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.launch-source-entries.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.launch-source-entries.json.READ_01.original.json",
+      "sha": "743ac310062039f5ebfabd26a1fb7c21ac59932e",
+      "bytes": 1648,
+      "sha256": "0d0d3cc10aad692b8233c904686c030595290eb9131ab134ed3a159bddb2cc63",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "8dbe6eb395593ee31985b69c29dc1ea66ae5204ba8b24894fd2cdea424648991",
+        "git_blob": "8a42f70672686da283204098bfcbde64a3be6008"
+      },
+      "get_sdk": {
+        "bytes": 4281,
+        "sha256": "e23cd13f22bd411653a083de198cd894abd49b36ff25ec05d5a17ad33961ab78",
+        "git_blob": "d64c92b98a36aea6ba5c0e9aa0159f8ddae29a5c"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/743ac310062039f5ebfabd26a1fb7c21ac59932e.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/743ac310062039f5ebfabd26a1fb7c21ac59932e.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.process-preflight.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.process-preflight.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.process-preflight.json",
+      "sha": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+      "bytes": 185,
+      "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "adf3de51946943875d153631ff7f250084cfacebffbe6ba3b0bdb687237d230c",
+        "git_blob": "5d69d8a6f5cfe2824696a2f4e4d934bb819fcd49"
+      },
+      "get_sdk": {
+        "bytes": 1229,
+        "sha256": "d1033d948cc6b0461b0d1fbb977e8b37a55fb6966fc15519600608bb1d013be6",
+        "git_blob": "d27c2698fcdecf11f43e7aac7fa62ccf03fdf4e5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cb85dc048a8923e7c2242704bd7693012c1bd55.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/1cb85dc048a8923e7c2242704bd7693012c1bd55.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.process-preflight.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.process-preflight.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.process-preflight.json.READ_01.original.json",
+      "sha": "ea1a5255a50f231cf1fa2375d401127573801b8e",
+      "bytes": 748,
+      "sha256": "78b4838edb9560a1a3dc548c630e9054502173cb1cb001cc3d6f3799a9f57820",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "1ae21c111b126c4ba34e8c9e037c4dac53badb632af04f072b760a83306919cb",
+        "git_blob": "5cda7621a5d3b19d153a5f2bf09e7feaa540643f"
+      },
+      "get_sdk": {
+        "bytes": 2481,
+        "sha256": "3c75b1af5e17e095060639cb94a558bd33afa568657468f9a602a48d3b014ad5",
+        "git_blob": "56f7ba28c0ed87c70ef888b24eb4d5bd316dcae4"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ea1a5255a50f231cf1fa2375d401127573801b8e.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/ea1a5255a50f231cf1fa2375d401127573801b8e.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.raw.log",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.raw.log",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.raw.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "bc9288a3bdc17e2e6741c5c10f68ebd873b8fadb65466b5e155e32ed61c121f5",
+        "git_blob": "60d90a09befe34708877a1208f012d54c34f38b6"
+      },
+      "get_sdk": {
+        "bytes": 159,
+        "sha256": "7173bab0464503075b9e0b24c826aa70bc826da3263edde1dabbc8833deaeceb",
+        "git_blob": "057869c39a49a846680dac04c8959ee70d52e272"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDERR.complete.original.txt.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/STDERR.complete.original.txt.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.raw.log.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.raw.log.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.raw.log.READ_01.original.json",
+      "sha": "e37d9b30d1a1d6391a2214ed5bd7f42af0444dd0",
+      "bytes": 479,
+      "sha256": "a07d4fdab610a65f470af5fc809edb13885de3dad5cbeb5cc2a88dc8efda4900",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "4562291ff2a35432fbf9eb170120c753a214b7ea22ce1911d1ea817bf1864191",
+        "git_blob": "7598813ebab74900d24042b2b9f25273316629c4"
+      },
+      "get_sdk": {
+        "bytes": 1943,
+        "sha256": "5bd94eb1e6423fe05e42e8b26835d861f5b7dd5c598e9c3231a6ad1757015df3",
+        "git_blob": "4e81c0586336cb3b94b1bedad715e599a8cfcaa5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e37d9b30d1a1d6391a2214ed5bd7f42af0444dd0.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/e37d9b30d1a1d6391a2214ed5bd7f42af0444dd0.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.terminal.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.terminal.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.terminal.json",
+      "sha": "1d12f8870768081a3f35c32aaa9daab61e68a788",
+      "bytes": 1327,
+      "sha256": "3e8bbf3f5407cbeabd43cc069c236541f528d79c82557e1de9fb54dc6ecf5f8f",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "88101ef5a0d3320132f76ed88d5c778e5df750433aca1681daad9ecf90667719",
+        "git_blob": "a3bcd42272bf20cd080d740291708f3376a3535c"
+      },
+      "get_sdk": {
+        "bytes": 1589,
+        "sha256": "7afbfd592ea4aae045f58522189ecfa3245dea7498687bcd59966aeabf9f6131",
+        "git_blob": "3943223ad4557088c760dc9f1abdec0f502d2484"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.terminal.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.terminal.json.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/fmt.terminal.json.READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/fmt.terminal.json.READ_01.original.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.terminal.json.READ_01.original.json",
+      "sha": "90b6a9920cc4437803004fe6774675d51471139c",
+      "bytes": 2266,
+      "sha256": "c9d5fae3ca2043662f2236cceae5961904aa56b6e91e0d39d9e70b3de440eded",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "NEW_CREATE_AND_COMPLETE_GIT_GET",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "ef0c24b9f726728bbaa2a213885b8d619825ef00c2bce136e514ab5c2ad439a4",
+        "git_blob": "308cf453ac88fb53913fb2acfa8ac831ec103696"
+      },
+      "get_sdk": {
+        "bytes": 5517,
+        "sha256": "8081f009a4056b22516bbc472407a2fb1001c21e3384f0133c9aa0017fee7bac",
+        "git_blob": "0e60c93270de7b23cf67092f1a41a93f818b5ed5"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/90b6a9920cc4437803004fe6774675d51471139c.CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/github/90b6a9920cc4437803004fe6774675d51471139c.GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/verify_actual_runtime.py",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/verify_actual_runtime.py",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/verify_actual_runtime.py",
+      "sha": "23fc85a4a961627e508b1a6aeffe05202d741640",
+      "bytes": 13781,
+      "sha256": "15e90557c65cb05b212ec76efd864807e8c80755db30e9268a3c78476ebce173",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "a81df915fb652a05838e94a00aac84d7bfcceb10c50349a93509917ad8b3a511",
+        "git_blob": "63b50fefa8e435d1687fa534ce4969c65023252b"
+      },
+      "get_sdk": {
+        "bytes": 14892,
+        "sha256": "86b593494b5e3275c4649e8a8f68f0e8a8650cca2518741d6f56b8fa062df077",
+        "git_blob": "b25cc22a0e746e9b23d5a71fe6a8e98f948bcd45"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/verify_actual_runtime.py.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/verify_actual_runtime.py.PUBLISH_GET.original.json"
+    },
+    {
+      "path": "coordinator-a489-final-nonrust-format-runtime-v1/CLOSED_RUNTIME_ARCHIVE_INPUTS.json",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-50f-runtime-archive-v1/frozen/CLOSED_RUNTIME_ARCHIVE_INPUTS.json",
+      "source_original_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/CLOSED_RUNTIME_ARCHIVE_INPUTS.json",
+      "sha": "ef30e3874442496c90cbd26fae098c225b6b6563",
+      "bytes": 68010,
+      "sha256": "0f43e1642a9eea168816f9dab4d4da2e116e4b81e1711f31311b21bacf26ea76",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "mode": "100644",
+      "type": "blob",
+      "kind": "REUSED_COMPLETE_ORIGINAL_GIT_SDK",
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "b39b0144570af63ae75fa2ec6df4850abcef47baa13dff34e2213e51d286682c",
+        "git_blob": "1dd63457ec859470ccb94395dd7cf898f7c516a8"
+      },
+      "get_sdk": {
+        "bytes": 72525,
+        "sha256": "f984de31ada0022132b28a0b0424e2a4ec2d7e735ac784faa7a2294db19b6b2c",
+        "git_blob": "102f74f8ba375a3dec87517a89ca6bf18bf3afaf"
+      },
+      "create_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/CLOSED_RUNTIME_ARCHIVE_INPUTS.json.PUBLISH_CREATE.original.json",
+      "get_sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/CLOSED_RUNTIME_ARCHIVE_INPUTS.json.PUBLISH_GET.original.json"
+    }
+  ],
+  "sdk_storage": "All complete Git SDK responses retained locally. SDK identities are recorded; no claim that every new archiving SDK is a separately published blob.",
+  "local_failure_and_reconciliation": {
+    "bytes": 2250,
+    "sha256": "c46d68ecf3cef5d577bd3e48c4b60d6442bbf5ed0bfcd73c8ec3db0acbc303ad",
+    "git_blob": "f8e00986e79d045b71e5a7ac6ab91837d12fa17b"
+  }
+}

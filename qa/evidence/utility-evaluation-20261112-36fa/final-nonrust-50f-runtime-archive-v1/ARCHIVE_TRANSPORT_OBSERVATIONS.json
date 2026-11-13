@@ -1,0 +1,26 @@
+{
+  "format": "hepta-archive-transport-observations-v1",
+  "scope": "One Git evidence-blob creation transport failure, independent of H/source/test execution.",
+  "fixed_blob": "5f12cf36518f10f6453d022921d01b356124729b",
+  "first_create_error_original": {
+    "bytes": 304,
+    "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede",
+    "git_blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+    "utf8": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"RemoteProtocolError: Server disconnected without sending a response.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"RemoteProtocolError: Server disconnected without sending a response.\",\n    \"error_code\": \"UNKNOWN\"\n  },\n  \"isError\": true\n}\n"
+  },
+  "same_identity_get_404_original": {
+    "bytes": 617,
+    "sha256": "d62f54fee07e365fca37f4a79662e88646d97a91452d72b5f37746e03fac29c0",
+    "git_blob": "e29c207758d4c774a30e93068d840967f2b7cd6b",
+    "utf8": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\"\n    }\n  ],\n  \"structuredContent\": {\n    \"error\": \"GitHub API error 404: {\\\"message\\\":\\\"Not Found\\\",\\\"documentation_url\\\":\\\"https://docs.github.com/rest/git/blobs#get-a-blob\\\",\\\"status\\\":\\\"404\\\"}\",\n    \"error_code\": \"NOT_FOUND\",\n    \"error_data\": {\n      \"message\": \"Not Found\",\n      \"documentation_url\": \"https://docs.github.com/rest/git/blobs#get-a-blob\",\n      \"status\": \"404\"\n    }\n  },\n  \"isError\": true\n}\n"
+  },
+  "same_content_second_create_original": {
+    "bytes": 195,
+    "sha256": "ffb30e4d68aff944e7080d78cae5c4cd3dc31b19705a8c5ef2acb06100d2fd30",
+    "git_blob": "08cc8500515135afe2a3158c2e15923586b54d93",
+    "utf8": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"sha\": \"5f12cf36518f10f6453d022921d01b356124729b\"\n  },\n  \"isError\": false\n}\n"
+  },
+  "final_full_get_equal": true,
+  "source_original_unchanged": true,
+  "new_H_calls": 0
+}

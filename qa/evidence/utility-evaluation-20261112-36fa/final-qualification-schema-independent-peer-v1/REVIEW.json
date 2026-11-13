@@ -1,0 +1,105 @@
+{
+  "format": "hepta-final-qualification-admission-schema-independent-peer-v1",
+  "review_cutoff_utc": "2026-11-13 11:31:15 UTC",
+  "status": "STATIC_SUCCESSOR_REQUIREMENTS_IDENTIFIED_ACTUAL_FINAL_CHAIN_PENDING",
+  "scope": "Independent schema review of immutable 23d412 admission, original V5/plan/wrapper inputs, captured materialization 3bb and maintenance 41e, and frozen future canonical producer e8d606. No successor draft was approved. No input module was imported or executed.",
+  "dataflow": {
+    "path": "CAPTURED_SCHEMA_DATAFLOW.json",
+    "bytes": 15963,
+    "sha256": "84a15fb56f91f108ff1369ba9bf5bfcfcb21318ed942d6976591ba9a0c7c0ffa",
+    "git_blob": "8cc6fa50d54d384d21474d79c2774fe8d8f96727"
+  },
+  "findings": [
+    {
+      "id": "S01",
+      "classification": "required_source_identity_adaptation",
+      "finding": "The old admission equates the materializer's current endpoint and nine-field raw Git state with the final canonical qualification subject. That equality is invalid for the new chain: 3bb materialized d256/a489, maintenance changed physical bytes while retaining its HEAD/index, final nonRust format changes physical bytes again, and canonical alone will align a new HEAD/index.",
+      "evidence": [
+        "23d412ed67927a6cbfa5f521884e891afc93eb6f: Admission.acquire_and_validate and validate_materialization",
+        "30ab4aad6ff10942063da972e02db49629e3809c: current_source_before/current_source_after/current_git_state_after",
+        "b87aed7647ac34e3db0e381110bf685438aee0ee: source_initial_inventory/actual_final_source"
+      ],
+      "minimum_contract": "Bind 3bb to its fixed d25675445c39f76db69a7bd8e71a1a72e1cd5b9f/a489b394666b8141840275128a780605b024cde0 endpoint with parent cc57 and 15243 leaves. Bind final qualification initial_git to actual canonical.after.git_state, not materialized.current_git_state_after. Final commit/parents/inventory/native compact remain unfilled until actual canonical evidence and exact reviewed subject exist."
+    },
+    {
+      "id": "S02",
+      "classification": "actual_captured_continuity_verified_with_limited_scope",
+      "finding": "The already observed 3bb→41e seam closes: full materialized inventory exactly equals 41e.source_initial_inventory, raw nine-field Git state agrees, all six materializer regular Git file records project exactly to the corresponding V5 rows, and complete V5 metadata before/after is byte-identical. The six extra V5 rows are actual directories, not missing materializer file records.",
+      "evidence": [
+        "3bb full inventory f1e2d72f99093581403a2dcc91b55da22a33f905 / 5631947 bytes",
+        "3bb regular metadata 8d6af319d99c5f9c47e5a7e761c118c5ba2c767b / 2234 bytes",
+        "41e full Git metadata 42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a / 2654 bytes / 12 rows",
+        "41e raw Git state aef9e645b81c2a7f349b11d546c5555b1475c906 / 489 bytes"
+      ],
+      "minimum_contract": "Keep each original full record and its authentic raw/gzip/artifact binding. Do not compare the materializer's file-only metadata serialization directly with V5's complete file-and-directory serialization. Preserve exact types and integer nanosecond values. This pure comparison is not a new native filesystem read."
+    },
+    {
+      "id": "S03",
+      "classification": "required_producer_roles_and_transition_links",
+      "finding": "In actual 3bb RESULT, source_repo denotes the clean cc57 donor while destination_repo denotes the d256 current repository; top-level source_commit/source_tree denote d256/a489. Old history/donor/current names cannot be replaced as one global role. Maintenance has two verified final audits; final nonRust format has three, and canonical has three differently named audits.",
+      "minimum_contract": [
+        "3bb packet.current == captured 3bb current_source endpoints; packet donor/source_repo == actual clean cc57 donor. Preserve donor 15188/all present, full original 16449 objects, additional 83 base +129 candidate and complete union16661 with four snapshot scope; do not revive the older seven-missing donor route.",
+        "41e actual_materialization_result/job references exact 3bb; source_initial_inventory equals the materialized full input. Require both fix and fmt original normal command records, original budgets and complete source/input audits. It remains maintenance, not qualification.",
+        "41e final physical tree c026a8d7e93c958b39a36c666debecb3dba4be14 and full inventory 4a77b645fd76a980ef746997efbd09fcd8f233ba identify the finalfmt preimage. Match the finalfmt producer's explicit initial proof and exact four approved changes; do not compare this dirty full hash with a later clean inventory.",
+        "Future finalfmt actual final full three-pin identity must equal canonical.before.inventory's three identity fields, with its exact raw Git state equal canonical.before.git_state. Canonical physical_projection must preserve every physical source row while permitting only reviewed index fields/HEAD changes.",
+        "Future canonical.after defines the final clean source, index, full inventory, parents and actual raw Git. Original native compact snapshot is a separate projection with its own bytes/hash/count and must still be observed by the native wrapper."
+      ]
+    },
+    {
+      "id": "S04",
+      "classification": "required_explicit_canonical_to_v5_metadata_bridge",
+      "finding": "Canonical e8d606 emits {root,files} with uid/gid and global path sorting. V5 emits {format,root,files}, omits uid/gid, and traverses directories depth-first with sorted siblings. Its serializer also explicitly uses ensure_ascii=False. Direct equality or raw-pin comparison is therefore invalid even when both capture the same filesystem state.",
+      "evidence": [
+        "e8d606b801b54ab949c5f215c49cdf47ed0ea89a: metadata_inventory/verify_metadata/encoded",
+        "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735: metadata_inventory/jbytes",
+        "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6 retains the V5 metadata_inventory body verbatim"
+      ],
+      "minimum_contract": "Require the exact supported envelope and per-kind fields, safe unique relative paths and complete membership. Retain full original canonical rich bytes and their artifact identity; do not silently discard unknown fields or default missing fields. Compare every V5 field and separately verify uid/gid against the actual current entries. If reconstructing a V5 byte representation, reproduce its DFS order, envelope and exact serializer; alternatively compare complete path maps then retain independently observed V5 raw bytes. Any global-sort shortcut must be proved on the complete actual captured path set. No actual canonical metadata exists in this review's input cutoff."
+    },
+    {
+      "id": "S05",
+      "classification": "historical_runtime_environment_must_remain_original",
+      "finding": "The original ENV 8b62 records V8 archive inode26738826. Actual v3 restoration records inode26738823. Their original V5 five-field projections (path,resolved,bytes,sha256,mode) are exactly equal, including the complete29366352-byte archive identity. This is expected distinct restoration metadata, not a reason to alter the historical ENV.",
+      "evidence": [
+        "8b62ac16f554c1f34ee72974637752f5a3b58aec: tool_and_material_files.v8-sandbox-archive",
+        "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8: actual ARCHIVE_READBACK",
+        "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735: project_runtime_file/environment_preflight",
+        "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6: validate_archive_restoration"
+      ],
+      "minimum_contract": "Keep the separate unchanged historical V5 instance on its original 86dd source/SEED and preserve complete ENV bytes. Retain/validate actual v3 archive result, normal supervisor, artifact index and full readback/stat separately; continue original five-field live content checks without rewriting historical richer metadata. Do not claim the five-field comparison proves current inode continuity. No install, cache reset, target creation or resource relaxation is implied."
+    },
+    {
+      "id": "S06",
+      "classification": "deterministic_old_template_pin_rejection",
+      "finding": "The original 3aef plan's reviewed_source_pins includes workflow08ffc5c603a4c950cca285ed2b1e479508d8b5ed/28133 bytes. Current reviewed48-parent workflow is c0012652889b0cca409b27f87bfdc74b234c0fbe/30745 bytes. The unchanged 23d412 source-pin loop would deterministically reject it.",
+      "minimum_contract": "Keep the full original3aef plan and all eleven other original source-control pins. Bind exactly this already-reviewed workflow path to its actual current pin with explicit validation; do not skip workflow verification or alter the original plan in place. Preserve original b92 dynamic AST48 exact names/JUnit equality, ignored-only, single thread, retries0 and all budgets."
+    }
+  ],
+  "gates_to_preserve": {
+    "source_driver": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "source_wrapper": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+    "native_wrapper": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+    "native_driver": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+    "full_plan": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+    "prior_detailed_binding_checklist": "460b157828209ac8be972ed42549a04dd21d82c2",
+    "phase_count": 14,
+    "source_outer_seconds": 7200,
+    "native_outer_seconds": 45000,
+    "root_parent_count_current_workflow": 48,
+    "source_sequence": "Original shared/no-hardlinks fresh clone and complete source gates/terminal/freeze must complete before native Cargo can create ignored JUnit in the original source."
+  },
+  "future_outputs_required": [
+    "Actual finalfmt normal/result/complete transition/inventory/raw Git and metadata plus reviewed formatter changed paths",
+    "Exact Root-reviewed canonical commit, packet and approval followed by actual canonical normal/result/full inventory/index audit/metadata/allowed actual delta",
+    "Exact final source-entry controls and unchanged48-parent workflow verification",
+    "Separate final native compact expected identity and actual native snapshot validation",
+    "A frozen successor admission/config delta preserving original source/native programs before any qualification launch"
+  ],
+  "limits": [
+    "No successor source was written or evaluated. This report identifies the minimum interfaces to review; it is not an executable configuration or an approval.",
+    "No future finalfmt/canonical actual pin was supplied by expectation. Later real observations must form their own append-only evidence.",
+    "Nine exact Git bodies were independently fetched and compared. Additional captured local inputs are pinned in the dataflow record; no new H observation was performed.",
+    "One local SDK-saving command exceeded argument length; a subsequent complete GET was saved in bounded chunks and reverified. The local persistence observation is retained separately; it is not a source/gate/native failure."
+  ],
+  "execution": {"H": 0, "input_module_imports": 0, "admission_main_preflight": 0, "QA_Rust_tests": 0, "source_or_ref_writes": 0, "qualification": false}
+}

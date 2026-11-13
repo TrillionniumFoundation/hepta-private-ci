@@ -1,0 +1,191 @@
+{
+  "H_calls": 0,
+  "actual_stdin_bytes": 751579,
+  "actual_typed_bytes": 757672,
+  "approval_keys_only": [
+    "status",
+    "root_execution_approved"
+  ],
+  "args_shape": [
+    "-B",
+    "-c",
+    "exact 5700-byte bootstrap"
+  ],
+  "bootstrap": {
+    "bytes": 5700,
+    "git_blob": "3f4692a37efcdc6cb6cfe070f1d574d88fbea14a",
+    "sha256": "d9ad747e42fa3a23fecac735a3a2927d4f81d9ba5d4371ce2427a55b5af1290b"
+  },
+  "config": {
+    "bytes": 2906,
+    "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+    "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+  },
+  "control_HOLD_peer": "0216a7064812580ba6e2eb8db3fbc9ef71f19a8d",
+  "control_byte_and_actual_dataflow": "476fc866d87c94c012b4c97796cb3b7218832fd2",
+  "cwd": "/home/qian-qi",
+  "decision": "NO_CONCRETE_STATIC_BLOCKER_IN_THIS_EXACT_REQUEST; ROOT_DISPATCH_DECISION_REQUIRED",
+  "dispatch_authorized_by_this_peer": false,
+  "executable": "/usr/bin/python3",
+  "format": "hepta-final-nonrust-exact-execution-candidate-independent-binding-v1",
+  "four_fully_decoded_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2906,
+      "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+    },
+    "MAINTENANCE_NORMAL.original.json": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2998722,
+      "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+      "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+    },
+    "driver.py": {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    }
+  },
+  "four_original_helpers_byte_equal": true,
+  "from_reviewed_HOLD_bootstrap_only_config_pin_changes": true,
+  "future_canonical_alignment": "Separate e8d606 HOLD remains unapproved and lacks actual final-format/canonical proofs. This request neither aligns index/HEAD nor moves refs.",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-final-nonrust-format-v1",
+  "independent_full_GETs": [
+    {
+      "actual_GET_SDK": {
+        "bytes": 820045,
+        "git_blob": "a7f652654e901849497d2d042a6c7b18b30c82bd",
+        "sha256": "d75859114ad1bf41048f3ee5dd592dc64980462bfaadc588d91184ec8a21023d"
+      },
+      "body": {
+        "bytes": 409601,
+        "git_blob": "ae9b944996c5046d587c31ed8c6acbf9a68a475f",
+        "sha256": "37f5f5db9313fe3b3bf1965c0a9525344f45ade2d2ed7d4f8f9d1665bab6a411"
+      },
+      "full_readback_equal": true,
+      "name": "candidate-process.part-001.b64"
+    },
+    {
+      "actual_GET_SDK": {
+        "bytes": 661677,
+        "git_blob": "5a796d79a223c0c07664b113e0e0ee5e913e7649",
+        "sha256": "33d66b634d5398572ae39e5056c2bcbfef35bad2d68c68bc3e0699ee7c85c6b7"
+      },
+      "body": {
+        "bytes": 330417,
+        "git_blob": "a34db825775de2a6aa321ff79cfeb440bda0993d",
+        "sha256": "7b90b0aa2cebffda2b68ca898be2c03f818f286a875a8dc0a17da5cb5286d8e6"
+      },
+      "full_readback_equal": true,
+      "name": "candidate-process.part-002.b64"
+    },
+    {
+      "actual_GET_SDK": {
+        "bytes": 12435,
+        "git_blob": "4f8361bae63cdf803d3d279e39d0739e1c69c6b8",
+        "sha256": "01cb7191b6d126663506889e1670c1f317192c3a0f1bfb66b6ad322f5c77a1c3"
+      },
+      "body": {
+        "bytes": 5700,
+        "git_blob": "3f4692a37efcdc6cb6cfe070f1d574d88fbea14a",
+        "sha256": "d9ad747e42fa3a23fecac735a3a2927d4f81d9ba5d4371ce2427a55b5af1290b"
+      },
+      "full_readback_equal": true,
+      "name": "candidate-bootstrap.py"
+    },
+    {
+      "actual_GET_SDK": {
+        "bytes": 7175,
+        "git_blob": "d4eb51ebee52d40b29e65a4876950d91b71445f9",
+        "sha256": "50231fb3e2441954b3ffbe2e37266497070086312fc55fd8dfa78d4bd7227d55"
+      },
+      "body": {
+        "bytes": 2906,
+        "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+        "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+      },
+      "full_readback_equal": true,
+      "name": "candidate-config.json"
+    }
+  ],
+  "initial_HOLD": {
+    "bytes": 2897,
+    "git_blob": "92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3",
+    "sha256": "e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a"
+  },
+  "no_env": true,
+  "only_stdin_config_payload_changed": true,
+  "original_bootstrap": {
+    "bytes": 5711,
+    "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+    "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+  },
+  "original_bootstrap_full_inverse_BASE_PINS_only": true,
+  "original_input_cap_bytes": 1048576,
+  "original_packet_cap_bytes": 40000000,
+  "outer_seconds": 2100,
+  "qualification": false,
+  "raw_large_request_standalone_GET_claimed": false,
+  "request": {
+    "bytes": 757672,
+    "git_blob": "9ca09c7e486277f72669173c649290d2124d794e",
+    "sha256": "bffdf1e54e4f2437c34086b2f5322484deeef2b1190728068801ef20da621b26"
+  },
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "request_full_GET_transport_gzip": {
+    "bytes": 555010,
+    "git_blob": "d5ed4d9fd9fcc355bd1c93ae4a5ad99b0cd84ebd",
+    "sha256": "eb4ec75fc34d862a35e2d812c9924e28044c8f97ee4b95dbc4455a28e52d97cb"
+  },
+  "required_runtime_order": [
+    "memory verify exact four bounded inputs",
+    "create-only fixed control directory and full stable file readback",
+    "fsync and original execv",
+    "thin main sole existing-lock EX",
+    "actual complete source/Git/runtime checks",
+    "exact four existing100644 replacements",
+    "original fmt900",
+    "bounded full source/input/same-lock audits and retained result"
+  ],
+  "review_binding_keys_only": [
+    "root_input_review",
+    "source_peer_review",
+    "waiting_for"
+  ],
+  "review_bound_HOLD": {
+    "bytes": 2914,
+    "git_blob": "26783f1a7de2bd49164b0f83675e3a6c732d3d96",
+    "sha256": "9e4c971bcd006213829d09c93d99fb729d564443d26565076096751984a82014"
+  },
+  "source_or_ref_mutations": 0,
+  "source_peer": "7dce432cbecd7b349db5e8599a8e1c58a0b7f4bf",
+  "stdin": {
+    "bytes": 751579,
+    "git_blob": "17a80f7079d350bafb73bcd82bb54c45a5f8c990",
+    "sha256": "3362aba972f9a8daaf3d6036106c8c4c38cbb27fb9797c633eddb89f53ac8804"
+  },
+  "strict_packet_expanded_bytes": 2998722,
+  "two_stage_config_inverse_whole_bytes_equal": true,
+  "unchanged_request_fields": [
+    "host",
+    "cwd",
+    "executable",
+    "idempotency_key",
+    "timeout_seconds"
+  ],
+  "unique_EX": "Only original unchanged thin main; neither bootstrap nor staging preholds EX.",
+  "unknown_policy": "Retain/reconcile the same exact job/key and actual partial source state. No automatic retry, new identity, rollback/reset, dependency install, fix or tests."
+}

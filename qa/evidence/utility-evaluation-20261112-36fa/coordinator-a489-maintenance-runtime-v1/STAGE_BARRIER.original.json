@@ -1,0 +1,238 @@
+{
+  "format": "hepta-complete-actual-maintenance-staging-barrier-v1",
+  "at": "2026-11-13T10:38:10.548141+00:00",
+  "status": "ALL_APPROVED_STAGE_CONDITIONS_ACTUALLY_VERIFIED",
+  "root_ordered_approval": "4049efd8e04db8a40d14a9182368a5632005e1da",
+  "job_id": "1a1d47a555d-392-410",
+  "normal": {
+    "bytes": 950,
+    "sha256": "a56e23f1cd482199dcf6aeaffe3850624921f21411797cfb885f79dcbf7a6c25",
+    "git_blob": "3c6c1632b9c22f640219c81d15b5772c30723dfc"
+  },
+  "original_staging_readback": {
+    "bytes": 2947,
+    "sha256": "310c09d3b971368d8b9a4f4855425d49ef5a59f76f1ecc6480b4b86cc64159f8",
+    "git_blob": "5b7235a5234e9a99fbf59f4929ecf4a0d7eb1bac"
+  },
+  "actual_full_read_record_count": 9,
+  "actual_native_binary_read_chunks": 12,
+  "records": [
+    {
+      "name": "ACTUAL_BOOTSTRAP.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/ACTUAL_BOOTSTRAP.py",
+      "bytes": 5646,
+      "sha256": "ad95d6855c2018f2c380ac9e9f6019a575b28f6dae702da7552ab96d0561f88f",
+      "git_blob": "8329b61e228b19a5a157c546bcba654e323b9881",
+      "version": "2050:51121885:5646:1794566151147601593:1794566151147601593",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.ACTUAL_BOOTSTRAP.py.OFFSET_000000.original.json",
+          "bytes": 8011,
+          "sha256": "45f74f392c0d9017d96587f60a5b2679668793c6ad7476c057c893348dcf734a",
+          "git_blob": "017ce033e988323c9ae00db6840c9d55570d32fc",
+          "offset": 0,
+          "next_offset": 5646
+        }
+      ]
+    },
+    {
+      "name": "ACTUAL_BOOTSTRAP_ARGV.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/ACTUAL_BOOTSTRAP_ARGV.json",
+      "bytes": 5783,
+      "sha256": "564cf4c7c4849a79d95249ebc41788bf68f6b4101f633aa08c082876d90f3300",
+      "git_blob": "2ed9762195c86cdcae479df52e7e696c21c6ad0b",
+      "version": "2050:51121888:5783:1794566151149699618:1794566151149699618",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.ACTUAL_BOOTSTRAP_ARGV.json.OFFSET_000000.original.json",
+          "bytes": 8202,
+          "sha256": "76d4e7392c20791d0885df7fbddf93d5647ecfde14a5d405e591f160b756106b",
+          "git_blob": "8eae49c2fcd73dc3feaa20e37086191ad9d22954",
+          "offset": 0,
+          "next_offset": 5783
+        }
+      ]
+    },
+    {
+      "name": "ACTUAL_BOOTSTRAP_PAYLOAD.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/ACTUAL_BOOTSTRAP_PAYLOAD.json",
+      "bytes": 144642,
+      "sha256": "2a6a855b18213c14e8c402742bc38361c97b48d05e410aec2fd7c2ff71de5c9e",
+      "git_blob": "38af59e1726dc519fc331a52aa667c52076ecb82",
+      "version": "2050:51121890:144642:1794566151151423492:1794566151151423492",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.ACTUAL_BOOTSTRAP_PAYLOAD.json.OFFSET_000000.original.json",
+          "bytes": 87883,
+          "sha256": "aa2e88d13db20fa09dc28a4866246943c556cc494b622b9590dfc8b6c426f678",
+          "git_blob": "1eac6b7174ea7bce03b99e6d8faf377c1b9a0492",
+          "offset": 0,
+          "next_offset": 65536
+        },
+        {
+          "name": "READ.ACTUAL_BOOTSTRAP_PAYLOAD.json.OFFSET_065536.original.json",
+          "bytes": 87888,
+          "sha256": "884a250060d5482ba7deb39fa975a83b58aba551e655807de02cbd89004bf72e",
+          "git_blob": "3b3c1f58f96c784b75973e12bd94f1af80a8d89c",
+          "offset": 65536,
+          "next_offset": 131072
+        },
+        {
+          "name": "READ.ACTUAL_BOOTSTRAP_PAYLOAD.json.OFFSET_131072.original.json",
+          "bytes": 18600,
+          "sha256": "14f2e25880bfa37884eda5ffbd1f9549b848fc2c9c71c35610d94d0c33d01d63",
+          "git_blob": "eb0af057a5ce92ca6ae886d9baf55d17a3f10e73",
+          "offset": 131072,
+          "next_offset": 144642
+        }
+      ]
+    },
+    {
+      "name": "driver-maintenance.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/driver-maintenance.py",
+      "bytes": 68520,
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "version": "2050:51121891:68520:1794566151154559647:1794566151154559647",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.driver-maintenance.py.OFFSET_000000.original.json",
+          "bytes": 87873,
+          "sha256": "e0345e0e19510f63e41c6313e21aa8c8420ac8bb1d7babbfbc075576a5a87d3c",
+          "git_blob": "ca9b3080129f0b6f4d09a9ae30ffa1f2fe5a3dab",
+          "offset": 0,
+          "next_offset": 65536
+        },
+        {
+          "name": "READ.driver-maintenance.py.OFFSET_065536.original.json",
+          "bytes": 4472,
+          "sha256": "8cfe54e2690e7c0ffb7347c89e74d294dab70fb5abfbebc9662ab6993dcb37b6",
+          "git_blob": "c0607156ad0fa253edab0802270cd8c72cfd7d6f",
+          "offset": 65536,
+          "next_offset": 68520
+        }
+      ]
+    },
+    {
+      "name": "APPROVED_MAINTENANCE_CONFIG.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/APPROVED_MAINTENANCE_CONFIG.json",
+      "bytes": 13693,
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "version": "2050:51121892:13693:1794566151156943854:1794566151156943854",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.APPROVED_MAINTENANCE_CONFIG.json.OFFSET_000000.original.json",
+          "bytes": 18759,
+          "sha256": "257e95f977f07e34fcb6d92cdb55747374332d4972b69d9da9e4d6a8a25d3d96",
+          "git_blob": "55b19c7c624519f5cdd88e582fe70dea07692f41",
+          "offset": 0,
+          "next_offset": 13693
+        }
+      ]
+    },
+    {
+      "name": "inventory-driver.original.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/inventory-driver.original.py",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "version": "2050:51121893:22946:1794566151158869764:1794566151158869764",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.inventory-driver.original.py.OFFSET_000000.original.json",
+          "bytes": 31091,
+          "sha256": "8c8294ddbc8205bdfc20eb09441c33576a50a3babd319f2a9ea07989dcf85418",
+          "git_blob": "b11a6add7e28b7c5ee9a0491b63c94220634920c",
+          "offset": 0,
+          "next_offset": 22946
+        }
+      ]
+    },
+    {
+      "name": "MAINTENANCE_STARTED.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MAINTENANCE_STARTED.original.json",
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+      "version": "2050:51121894:1154:1794566151160779140:1794566151160779140",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.MAINTENANCE_STARTED.original.json.OFFSET_000000.original.json",
+          "bytes": 2037,
+          "sha256": "86f044d3e18db2db1132957b5375af7dc595e3112b54287b6d3a4a5f0187e578",
+          "git_blob": "5222ab1aff7facec5e0c7425127a6fc2fb367ffe",
+          "offset": 0,
+          "next_offset": 1154
+        }
+      ]
+    },
+    {
+      "name": "MATERIALIZATION_SUPERVISOR.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+      "version": "2050:51121895:952:1794566151162530021:1794566151162530021",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.MATERIALIZATION_SUPERVISOR.original.json.OFFSET_000000.original.json",
+          "bytes": 1773,
+          "sha256": "fef46b0921d4430b9e4c3e7e8cb49c6007c1128a3bde1d752f777c1773eb8fbf",
+          "git_blob": "bb71f5d16892156b391cbb3b789416230195948a",
+          "offset": 0,
+          "next_offset": 952
+        }
+      ]
+    },
+    {
+      "name": "V8_RESTORATION_SUPERVISOR.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/V8_RESTORATION_SUPERVISOR.original.json",
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "version": "2050:51121896:950:1794566151164428425:1794566151164428425",
+      "complete_native_bytes_equal_to_exact_approved_input": true,
+      "original_reads": [
+        {
+          "name": "READ.V8_RESTORATION_SUPERVISOR.original.json.OFFSET_000000.original.json",
+          "bytes": 1768,
+          "sha256": "71af63b55b40e8bde29d1d0e7e37b1e32e9003087643a0c7aaee52e1ed19e324",
+          "git_blob": "5f0757beba034a31df08fe9075b917a1c85a7f4d",
+          "offset": 0,
+          "next_offset": 950
+        }
+      ]
+    }
+  ],
+  "complete_stdout": {
+    "bytes": 212,
+    "sha256": "4ccce3945f46b371a4f23c3f1e3468a6889e7231bbed6081b1273451035b025f",
+    "git_blob": "b520c3369bfbb80da4fd12128cc477eb0b6a947d"
+  },
+  "complete_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_nine_full_bytes_match": true,
+  "all_chunk_versions_pinned_after_first_success": true,
+  "read_failures": [],
+  "main_dispatched": false,
+  "next_allowed_only_under_prior_Root_ordered_approval": {
+    "request_git_blob": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d",
+    "key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-v1",
+    "timeout_seconds": 9300,
+    "maximum_starts": 1
+  },
+  "qualification": false,
+  "source_writes_by_stage": false
+}

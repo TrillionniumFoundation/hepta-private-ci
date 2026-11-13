@@ -1,3 +1,57 @@
+# Hepta utility evaluation: actual maintenance, final source receipts, and b608 candidate
+
+This checkpoint closes the actual **41e maintenance** and **50f four-file application plus final formatter**. It also preserves the immutable `b6084394` source candidate and the precisely bound inputs for a subsequent canonical Git alignment. Canonical execution and source/native qualification results are outside this frozen checkpoint.
+
+**Real qualified task chains: 0. Qualification: false.** Engineering receipts do not supply original runtime owners or task grants, independent task B, complete utility/cost evidence, new consumer C, or daemon/Root process-cold recovery.
+
+## Observed source chain
+
+| Stage | Observed result | Source identity and limit |
+| --- | --- | --- |
+| Original materialization `1a1d468462a-392-3bb` | Succeeded, exit 0 | Clean `d25675445c39f76db69a7bd8e71a1a72e1cd5b9f`, tree `a489b394666b8141840275128a780605b024cde0`; 15,243 files |
+| Original maintenance `1a1d47cebc8-392-41e` | Scoped `just fix` and original `just fmt` both exit 0; all final audits verified | 17 actual Rust changes; physical tree `c026a8d7e93c958b39a36c666debecb3dba4be14`; HEAD/index remain d256/a489 |
+| Final application/format `1a1d4a979d9-392-50f` | Exactly four reviewed non-Rust files applied; original formatter exit 0 with zero additional changes | Physical tree `8ebb37e523ad3932a58cf016af0a9f4e0eeb6638`; 15,243 files, 21 dirty paths relative to d256/a489 |
+| Immutable final candidate | Git commit actually created and fully retrieved | `b6084394a4a38ab495c16eaba09e879f04a96f8e`, tree 8ebb, sole parent d256; authentic typed raw commit verified |
+| Canonical alignment and qualification | Inputs prepared; no execution result included here | Expected clean inventory `457adb9bf9ba3a844e9dfa149be49460bb306998` remains a projection in this checkpoint |
+
+The source branch and draft PR were not advanced merely because maintenance or formatting succeeded. The earlier `0c59` fix return 101 remains a failed, consumed historical attempt. The successful 41e run has its own reviewed changed-source contract and actual receipts; it does not reclassify that earlier failure.
+
+## Complete actual source and runtime closure
+
+The [41e original runtime closure](root-41e-maintenance-runtime-review-v1/ROOT_41E_MAINTENANCE_RUNTIME_CLOSURE.json) and [41e actual source review](root-41e-maintenance-source-review-v1/ROOT_41E_ACTUAL_SOURCE_GRAPH_REVIEW.json) bind the original command, supervisor and artifact records. Seventeen Rust after-images were independently reviewed before final registration work. The original fix and formatter budgets, package scope, tool identities, environment, exclusion lock and failure semantics were preserved.
+
+The [50f Root closure](root-50f-actual-closure/ROOT_50F_ACTUAL_SOURCE_RUNTIME_CLOSURE.json) independently replays **49 original binary-read receipts covering 46 fixed native paths**. It verifies the same admitted request and job, complete 1,298-byte stdout and empty stderr, four application attempt/temporary/completion records, 38 read-only commands returning zero, 28 unchanged input identities and all three final audits. Four raw Git-state records and both complete raw Git-metadata records remain equal. Nanosecond metadata is handled as Python integers, with original raw bytes retained.
+
+The producer's artifact index has 210 entries. That count is not a claim that all 210 artifacts were separately downloaded. The [large companion recovery](a489-final-nonrust-exact-recovery-v1/PLACEMENT.json) reconstructs the two complete postimage packets and full final inventory from already-held complete source bytes, then matches the actual producer's raw, gzip and **all 23 alias-part identities / 10 distinct part bodies**. This is explicit deterministic recovery, not a second native whole-file read. Every unchanged row and all four complete before/after images match; the full 15,243-leaf mode-aware tree recomputes to 8ebb.
+
+The [independent empty-formatter review](final-nonrust-50f-emptyfmt-independent-peer-v1/REVIEW.json) recovers the actual 369-byte part through its 275-byte gzip into the complete 438-byte transition. Its `changes=[]` and equal before/after inventory identities establish that final formatting added no source edits. The four manual applications remain separately identified.
+
+The registration/source-contract work preserves the original security boundaries and negative cases. CALLERS registration, the exact allowlist entry and source-contract digests/ranges follow the actual reviewed source bytes. The contract writer is restricted to four exact existing targets; the necessary permission to update the exact contract JSON is documented explicitly, not described as a pure subset of the older wildcard policy.
+
+## Reviewable immutable candidate and next exact action
+
+The [canonical input placement](coordinator-a489-final-canonical-inputs-v1/PLACEMENT.json) preserves all prepared inputs and bounded, lossless representations of the complete packet and projected clean inventory. The [actual Git-object availability review](coordinator-a489-final-canonical-inputs-v1/ROOT_ACTUAL_GIT_OBJECT_AVAILABILITY.json) binds 21 source blobs, seven trees and the authentic b608 commit. The [commit binding](coordinator-a489-final-canonical-inputs-v1/FINAL_B6084394_COMMIT_BINDING.json) verifies its raw typed identity and sole parent. Availability of these source objects is not evidence of model-material availability or real adoption.
+
+The [exact launch candidate](coordinator-a489-final-canonical-launch-v1/execution-candidate-v1/PLACEMENT.json), [Root exact review](root-b608-exact-canonical-launch-review/ROOT_B608_EXACT_CANONICAL_LAUNCH_REVIEW.json) and [independent exact review](final-canonical-b608-independent-peer-v1/REVIEW.json) bind one seven-field request, four complete decoded inputs and the original transport bounds. The bootstrap changes only BASE/PINS. The canonical driver changes seven fixed source constants; all 46 top-level functions and its nested definition remain byte-identical. The action, record and outer budgets remain 600 / 180 / 900 seconds. The separate [Root approval](root-b608-exact-canonical-launch-review/ROOT_B608_CANONICAL_EXACT_APPROVAL.json) authorizes only this one exact request and reconciliation of its original job; no resulting canonical execution record is included in this checkpoint.
+
+The proposed action imports missing exact canonical objects, aligns the complete normal index, refreshes its actual stat cache and compares-and-swaps the detached HEAD. It does not write physical source files, run cargo/formatters/tests, install dependencies or move remote refs. The original complete live source, two-snapshot object, Git, ownership, metadata and lock checks remain required. Any incomplete terminal or final audit is Unknown/partial; only the same original request/job/key/path/version may be reconciled. A configuration field or static review is not a dispatch authorization or runtime result.
+
+## Qualification and product work still required
+
+The [qualification admission migration specification](final-qualification-admission-successor-hold-v1/PLACEMENT.json) and [independent schema review](final-qualification-schema-independent-peer-v1/PLACEMENT.json) identify four concrete seams: 3bb is the starting materialization rather than the final canonical state; canonical complete metadata and V5 metadata have different fields and ordering; historical V8 environment bytes must remain separate from the actual restoration inode; and the original 12 source-control pins need one explicit current workflow override while the other 11 remain unchanged. These are specifications, not completed qualification runs.
+
+The original source gates, 14 native phases, package/filter selections, budgets and exact 48 unique Root FQN/JUnit membership remain mandatory. Ignored or skipped tests are not passes, and historical results do not qualify b608. Mechanism tests, even when later passed, will not supply a real authorized learning chain.
+
+The normal startup audit still finds that privilege is dropped before learning inputs and that the new APIs lack actual ordinary product callers in the audited scope. Original owner objects, task purpose grants, same-process/writer/Cell relationships, journals, material acquisition and external readback cannot be replaced by hashes, descriptions or fixture identities. Same-process Current/journal reopening does not establish daemon or Root process-cold recovery.
+
+The required product acceptance remains **real authorized A → original Training owner → independent B → Adopt or complete NoUpdate → actual new consumer C → daemon and Root process-cold recovery**. Cost, authorization, privacy, hard task constraints and independence must retain their own frozen contracts. Missing evidence stays InsufficientEvidence/Unknown; a complete unfavorable comparison can be NoUpdate/Ineligible; Objective Fraud requires reproducible deterministic evidence and its explicit challenge process.
+
+## Retained historical checkpoint
+
+The text below is the earlier d256 materialization checkpoint, preserved verbatim. Its time-sensitive statements describe that earlier window.
+
+---
+
 # Hepta utility evaluation: d256 materialization and exact maintenance controls
 
 This checkpoint closes the **actual d256/a489 isolated materialization** and the immutable controls for one subsequent, ordered maintenance attempt. Maintenance execution results are outside this checkpoint; an approval record is not an outcome.

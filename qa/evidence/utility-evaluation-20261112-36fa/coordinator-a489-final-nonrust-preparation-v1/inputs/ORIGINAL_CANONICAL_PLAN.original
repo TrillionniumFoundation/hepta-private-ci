@@ -1,0 +1,89 @@
+{
+  "actual_finalfmt_before_source_inventory": null,
+  "actual_finalfmt_normal_terminal": null,
+  "allowed_git_metadata_delta": [
+    "HEAD raw body exactly new_commit+LF, with actual new-file metadata retained",
+    "index complete canonical entry set and explicitly allowed full stat normalization/cache-tree refresh; no ignored unexplained flags/extensions",
+    "exact newly missing canonical loose object files and necessary owned fanout directories only",
+    "objects and affected fanout directory mtime/ctime/nlink changes caused by those additions; config, refs, existing objects and all other metadata unchanged",
+    "no reflogs, FETCH_HEAD, packed-refs, alternate/shallow/graft/replacement changes; original command prefix disables automatic reflog updates without modifying config"
+  ],
+  "budget_proposal": {
+    "action_seconds": 600,
+    "basis": "Reuse the original source-advance operation/retention budget unchanged; no formatter/compiler/test runs in this new action.",
+    "outer_seconds": 900,
+    "record_seconds": 180
+  },
+  "canonical_commit": null,
+  "canonical_packet": null,
+  "canonical_parents": null,
+  "canonical_tree": null,
+  "format": "hepta-final-canonical-index-head-alignment-plan-v1",
+  "index_and_head_checks": [
+    "Immediately before transition repeat full source and exact old Git-state checks plus unchanged global build guard; persist mutation intent before each command.",
+    "After read-tree+normal refresh parse the complete actual index; every stage-0 path/mode/blob must equal the canonical full leaf set, with no skip-worktree/assume-unchanged/unmerged/sparse entries. Validate full checksum and retain complete raw bytes/extensions.",
+    "Check populated normal stat data against actual current source metadata; record every changed index field rather than carrying a zero-stat or blanket ignore-stat exception.",
+    "write-tree must return the already approved canonical tree; no unapproved extra object additions are permitted.",
+    "Only then CAS detached HEAD from the actual old SHA to the authentic approved canonical SHA; do not update a local branch or remote ref.",
+    "Read exact HEAD/index/config/refs afterward, full actual physical source and clean status; compare all physical row fields before/after while separately validating the expected index/source-identity field transition.",
+    "Retain normal complete supervisor/command exits/raw logs and all partial effects; do not roll back/checkout/reset source or automatically retry if any stage fails."
+  ],
+  "native_execution": false,
+  "object_scope": [
+    "Reuse original raw packet type/length/SHA256/Git SHA checks and exact missing-object batch-check protocol; do not use a guessed cat-file nonzero missing code.",
+    "Import only missing exact objects into current independent object database; verify every imported body by cat-file full readback. Already present objects must equal exact bytes and are never rewritten.",
+    "Verify target commit exact bytes/tree/ordered parents; recursively verify the complete target snapshot tree/blob closure, plus the explicit old/new commit anchors. Do not claim complete historical ancestry or run broad history fsck.",
+    "Every target blob is matched to current complete physical bytes/mode; all existing canonical tree references must be actually available."
+  ],
+  "old_head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "old_head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "preconditions": [
+    "Final apply+fmt completed normally with original fmt 900 returncode0, no timeout/output-limit; Root reviewed every actual final postimage and complete final inventory.",
+    "Root has created and independently verified the authentic canonical commit/tree and exact raw object packet; no source-reference publication claim is made here.",
+    "Acquire the same actual SOURCE_COORDINATION.lock EX, retain it through complete final audit; use unchanged same-UID active/unknown build/formatter guard before any .git mutation.",
+    "Observe exact old detached HEAD/index/config/empty refs and complete actual physical source; retain original raw index, HEAD and complete Git metadata.",
+    "Require all physical source leaves and modes equal the approved canonical tree exactly, with no extra ignored/untracked/missing/symlink ambiguity. HEAD tree may still be old and is kept separate.",
+    "Keep original pinned Git command prefix: --no-optional-locks, core.fsmonitor=false, core.untrackedCache=false, diff.autoRefreshIndex=false, core.logAllRefUpdates=false. No persistent config or external environment override."
+  ],
+  "read_tree_assessment": {
+    "alternative_not_selected": "A single update-index -- <all exact changed paths> could preserve other raw entries, but requires a separate exact path operation list and explicit deletion/new-entry handling. Existing full one-tree read plus full stat normalization is simpler once the entire physical source has been proven equal to the approved canonical tree.",
+    "official_documentation": {
+      "observed_blob": "1c48c289963063c2e0db605bbb27c35dd803270c",
+      "path": "Documentation/git-read-tree.txt",
+      "ref": "v2.43.0",
+      "repository": "git/git",
+      "scope": "Documents index-only read-tree and one-tree -m stat reuse. This does not assert the native Git version; the actual executable is independently pinned and every resulting index/physical identity is verified.",
+      "url": "https://github.com/git/git/blob/v2.43.0/Documentation/git-read-tree.txt"
+    },
+    "selected_sequence": [
+      "git read-tree <approved exact canonical tree> (one tree, no -u, no -m, no --reset)",
+      "git update-index --refresh (intentional whole-index normal stat refresh)",
+      "git write-tree -> exact approved canonical tree",
+      "git update-ref --no-deref HEAD <approved exact canonical commit> <old observed HEAD>"
+    ],
+    "source_bytes": "No operation in this sequence writes working source files. This must also be checked against the complete physical before/after leaf projection, not inferred solely from argv.",
+    "why_stat_refresh_is_required": "Plain one-tree read-tree may replace cached stat metadata. The earlier materialization zero-stat index caused a real archive-time raw-index change. A deliberate normal full refresh is part of this one authorized index transition before the new exact gate baseline is fixed; it is not an ignore-stat exemption."
+  },
+  "reuse_delta_to_original_source_advance": [
+    "Remove all physical source replacement/temporary-file code, original one-path CHANGED assumption, and single-file after-inventory hardcodes.",
+    "Replace old single-entry update-index/index_preservation with one-tree read-tree, normal full stat refresh and exact complete canonical-index validation.",
+    "Keep object import, full snapshot closure, source observation, raw Git metadata audits, mutation intent recording, command lifetime/deadline cleanup and detached HEAD CAS.",
+    "Bind old state to the actual finalfmt record, not to the earlier b19 or c006 index/source observations.",
+    "Recompute the final complete original-serializer inventory with actual new HEAD/index and require clean; compare physical contents unchanged separately."
+  ],
+  "source_advance_existing_actual_metadata_change_scope": [
+    "HEAD",
+    "index",
+    "only added exact approved objects/<fanout>/<object>",
+    "objects directory and affected fanout directory mtime/ctime/nlink, with all remaining directory identity/mode fields unchanged"
+  ],
+  "source_advance_original_driver": {
+    "bytes": 41629,
+    "git_blob": "89434a961e4cc117874464f0308aa8b216c760ed",
+    "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae"
+  },
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "source_writes_authorized": false,
+  "status": "HOLD_PLAN_ONLY",
+  "success_semantics": "CANONICAL_SOURCE_ALIGNED_CLEAN_ONLY; this is not source/native qualification. Independent source-gates clone and original native tests begin only after their own explicit exact-source preconditions."
+}

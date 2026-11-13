@@ -1,0 +1,21 @@
+{
+  "format": "hepta-active-original-maintenance-observer-checkpoint-v1",
+  "at": "2026-11-13T10:45:18.858Z",
+  "job_id": "1a1d47cebc8-392-41e",
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-v1",
+  "exact_request": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d",
+  "root_ordered_approval": "4049efd8e04db8a40d14a9182368a5632005e1da",
+  "stage_job": "1a1d47a555d-392-410",
+  "stage_barrier": "bba04e8954c51bb2adb6e9df99c6a7d4b09f4ec4",
+  "last_authoritative_status_file": "STATUS_04.original.json",
+  "last_authoritative_state": "running",
+  "observed_stdout_through": 95525,
+  "observed_stderr_through": 0,
+  "last_stream_file": "STREAM_READ_08.original.json",
+  "next_status_file": "STATUS_05.original.json",
+  "next_stream_file": "STREAM_READ_09.original.json",
+  "state_rule": "Resume only existing job observations; do not start this main again or change any key, source, budget or request. No qualification or success has been supplied.",
+  "prior_local_observer_error": "OBSERVER_POSTLOOP_ERROR_REVIEW.json",
+  "tool_reads_in_flight": false,
+  "qualification": false
+}

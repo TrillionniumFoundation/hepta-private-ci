@@ -1,0 +1,333 @@
+{
+  "format": "hepta-root-d553-publication-closure-v1",
+  "published_commit": "d5536e6b20e8d7f599af9b24fbd4e011f808175c",
+  "sole_parent": "04874bbc298638cf20007dff5fe8e250df063196",
+  "repository_root": "db5ce4ab4cbcdb2ea9cdf767d1357c59afef5d2a",
+  "qa_tree": "3eef3a144bf2a1e8a0b2a18c62eebd6c3ecfcf24",
+  "evidence_parent": "54427545bd7acfe594d9f91e782e14dc61faa458",
+  "leaf": "874c40baefaa100c894ad0474b4859083d8d1770",
+  "file_count": 6666,
+  "tree_count_including_leaf": 910,
+  "prior_files": 6176,
+  "prior_non_readme_files_preserved": 6175,
+  "new_files": 490,
+  "readme_replaced": true,
+  "new_leaf_limit": 512000,
+  "new_oversized_leaf_count": 0,
+  "all_existing_large_historical_leaves_preserved": true,
+  "immutable_leaf_reconciliation": {
+    "first_call": "Full root tree construction returned no usable SHA; the surrounding script rejection did not retain the tool error message.",
+    "same_expected_tree": "874c40baefaa100c894ad0474b4859083d8d1770",
+    "subsequent_same_tree_GET": "GitHub API 404 Not Found observed",
+    "ref_updates": 0,
+    "followup": "Construct the same exact expected immutable tree using the original base and only changed immediate entries; no new identity or ref movement."
+  },
+  "all_changed_tree_full_get": [
+    {
+      "path": "actual-fmt-qa-literal-peer-v1/dependencies",
+      "sha": "b7cd49220a993f0cb7d4c64015344740d73eebed",
+      "entries": 2,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "actual-fmt-qa-literal-peer-v1",
+      "sha": "2cc1cf098451c469f2ce84fead0009f010b35d66",
+      "entries": 11,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-independent-peer-v1",
+      "sha": "4c1c7e4d24ae79d0b9e1b44aa37f7bf7c3d63003",
+      "entries": 6,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "provider-0c59-fmt62-semantic-peer-v1",
+      "sha": "d7cc8f9202b6990bc37b4007bf7b1f2decc5da52",
+      "entries": 12,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "root-generation-custody-independent-peer-v1",
+      "sha": "a1075d59541e61eaa188adab91ca9b5bd012e36d",
+      "entries": 7,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-independent-peer-v1",
+      "sha": "e7114338aeb0eb50c882e6705a198215049fae9e",
+      "entries": 7,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-getter-name-independent-peer-v1",
+      "sha": "a0e63ce8307eb0d7126b8e19223ac029a3444697",
+      "entries": 7,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-apply-fmt-git-sdk-archive-v1",
+      "sha": "7b9a0083b32e702c44976a09ed72d32c3501c57e",
+      "entries": 64,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-d256-root-binding-v1",
+      "sha": "e538ab6d1f5d14e09e65e9e14f6a704e43fd16fc",
+      "entries": 21,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1/after/.github/workflows",
+      "sha": "b9bf776e85cbd9ecd8ab0d6609e68d30d9dce7b1",
+      "entries": 1,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1/after/.github",
+      "sha": "097f2e146f6b42ba6e01aa3b1b8b90ab6294f038",
+      "entries": 2,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1/after/qa/b4-no-bypass",
+      "sha": "bb61da691333e06692dde7949ae57fcdb3a9886a",
+      "entries": 4,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1/after/qa",
+      "sha": "f3a5dcd45e974666ae0dcbbd3b2f891a0ccbd9f8",
+      "entries": 1,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1/after",
+      "sha": "1ac43d8e1887222ebd637ea8c8708967ed490b93",
+      "entries": 2,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1/authoring",
+      "sha": "0c1f4bdbc0ef533671c8bc957b6977440f198992",
+      "entries": 5,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-f905-registration-v1",
+      "sha": "ca562bbadd99cc16fde2030c693845bbb60dbf12",
+      "entries": 24,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-final-candidate-graph-v1",
+      "sha": "1cf405121c64b150eec227062b34c9e314b81e41",
+      "entries": 16,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-d256-expected-inventory-v1",
+      "sha": "d573b9762d823e8f11fc249db44f8aa1885625a1",
+      "entries": 24,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "normal-root-custody-wiring-independent-review-v1",
+      "sha": "d255c1a9279126846a93e11aa71a3ee3f0049fba",
+      "entries": 7,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "publication-post307",
+      "sha": "979ced9e5430bd37295b432261ccf1cf5fea7f24",
+      "entries": 2,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-materializer-independent-peer-v1",
+      "sha": "90c5e6f1bb2c87b768538e652356b4ec885ff8c1",
+      "entries": 6,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-materializer-data-peer-v1",
+      "sha": "29e5200591b9e3b2d25635c0dae784aa3e2cd389",
+      "entries": 7,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "root-d256-materialization-closure-v1",
+      "sha": "ff18579925e22c70b7386efd3cc6d263f2b53786",
+      "entries": 13,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-static-control-archive-v1/encoded",
+      "sha": "6992384f327580b5ce3774b51633fbb3c1ef0cc8",
+      "entries": 12,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-static-control-archive-v1/originals",
+      "sha": "99f0efd149902a3762b60d27ccb0f60192631ae0",
+      "entries": 83,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-static-control-archive-v1",
+      "sha": "3db44deb472e817622a06b181c6c89464b1e9ba7",
+      "entries": 12,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "normal-root-custody-feasibility-memo-v1",
+      "sha": "cd2bd540810d863a0581c9b058907562395c26a0",
+      "entries": 4,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-maintenance-independent-peer-v1",
+      "sha": "c5f3d4865a6ac537a37837eb6c5cdd2b1772507a",
+      "entries": 12,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-maintenance-successor-v1/execution-candidate-v1/staged-files",
+      "sha": "61a217618f7245a6084d868d07b76dde9608383e",
+      "entries": 6,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-maintenance-successor-v1/execution-candidate-v1",
+      "sha": "dc8d7d9d75a79407a45e9fe7edf9948574017f01",
+      "entries": 13,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-maintenance-successor-v1",
+      "sha": "e5333ad4361930a6c92a5333f1700050c0462624",
+      "entries": 12,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/encoded",
+      "sha": "98062acd717ae6c4cfa00147265e5bbac65a2954",
+      "entries": 6,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/originals",
+      "sha": "c98d38cc88262c8a3f76e1270e601d718e065f88",
+      "entries": 38,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1",
+      "sha": "704465d0523a7569b8fd25b428138aa1d9b4ffec",
+      "entries": 11,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "coordinator-a489-materializer-runtime-v1",
+      "sha": "9f1e83962951e6f22e24529e9fae40b61b13903e",
+      "entries": 58,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    },
+    {
+      "path": "",
+      "sha": "874c40baefaa100c894ad0474b4859083d8d1770",
+      "entries": 334,
+      "whole_nonrecursive_get_verified": true,
+      "typed_tree_hash_equal": true
+    }
+  ],
+  "all_ancestor_full_get": [
+    {
+      "path": "qa/evidence",
+      "old_sha": "26565505144a7a2e4557f019a4e44e93b934fde1",
+      "sha": "54427545bd7acfe594d9f91e782e14dc61faa458",
+      "entries": 3,
+      "only_child_replaced": "utility-evaluation-20261112-36fa",
+      "actual_created_and_full_get_equal": true
+    },
+    {
+      "path": "qa",
+      "old_sha": "ab0b7bbbdd738fcd7775db520ac6136407b24f52",
+      "sha": "3eef3a144bf2a1e8a0b2a18c62eebd6c3ecfcf24",
+      "entries": 5,
+      "only_child_replaced": "evidence",
+      "actual_created_and_full_get_equal": true
+    },
+    {
+      "path": "",
+      "old_sha": "67deb5cb4961000dbae2623ab3538cc4aee3bc4a",
+      "sha": "db5ce4ab4cbcdb2ea9cdf767d1357c59afef5d2a",
+      "entries": 56,
+      "only_child_replaced": "qa",
+      "actual_created_and_full_get_equal": true
+    }
+  ],
+  "compare_and_swap": {
+    "expected": "04874bbc298638cf20007dff5fe8e250df063196",
+    "target": "d5536e6b20e8d7f599af9b24fbd4e011f808175c",
+    "force": false,
+    "actual_ref_readback_equal": true
+  },
+  "source_ref_after": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "pr": {
+    "number": 6203,
+    "state": "open",
+    "draft": true,
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "body": {
+      "git_blob": "1b0fd475853308b81120cd9dfd53a385a5e93418",
+      "bytes": 41090,
+      "sha256": "1b627ff1327c087903d06865fcb067915843965da6cf47f4fd8160599d2a330a"
+    },
+    "full_readback": {
+      "git_blob": "14ea1a0bcb039fa344a7a245b3b430b43b49d51c",
+      "bytes": 60037,
+      "sha256": "85d2a5eedbb428118e998a412874eb69ff972c05e4dff16a2954519f5231c8ff"
+    },
+    "body_complete_equal": true,
+    "prior_body_retained": true
+  },
+  "scope": "Only evidence branch and draft PR body updated. Source ref unchanged; no merge, deployment or runtime activation. Actual maintenance main outcome remains outside this evidence commit.",
+  "qualification": false,
+  "real_qualified_chains": 0
+}

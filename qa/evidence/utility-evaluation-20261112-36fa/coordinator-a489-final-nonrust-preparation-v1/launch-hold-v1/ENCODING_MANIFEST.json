@@ -1,0 +1,87 @@
+{
+  "format": "hepta-bounded-hold-launch-representations-v1",
+  "leaf_limit": 512000,
+  "members": [
+    {
+      "gzip": {
+        "bytes": 552370,
+        "git_blob": "127d881661a0dec8f5cc876ba70f4ae03f2b240b",
+        "sha256": "29fb81bd0f73170efb6ba6f30b73476a4be9a86267e0fdc4543cb0293993cbcf"
+      },
+      "original_name": "ACTUAL_STDIN.HOLD.json",
+      "parts": [
+        {
+          "bytes": 409601,
+          "decoded": {
+            "bytes": 307200,
+            "git_blob": "ad94d40d955a97a34bbd5c9d87e3b05328c44c64",
+            "sha256": "7b53d6bbe8d5ef9a29f5a92d083e02d9f8d818ffa40ef2bb19f884951f7c8daa"
+          },
+          "decoded_offset": 0,
+          "git_blob": "f0925b7654adb114b3fa2e55378f8b11a4aefce2",
+          "name": "ACTUAL_STDIN.HOLD.json.gz.part-001.b64",
+          "sha256": "804716a4c2f83916323f1c16e6dfea0a8b936e8dbdfa6d6fe4b1956c2ad2b73a"
+        },
+        {
+          "bytes": 326897,
+          "decoded": {
+            "bytes": 245170,
+            "git_blob": "2f3b5516c98024a8bba7cbaffd52eabf62b5c9b9",
+            "sha256": "6d65449c9a99193bf6df33771687cd173e7c2502a184feb6b13578fe57f26228"
+          },
+          "decoded_offset": 307200,
+          "git_blob": "009a2c4ea840316214a3d6fd2bfe347f4445effb",
+          "name": "ACTUAL_STDIN.HOLD.json.gz.part-002.b64",
+          "sha256": "f624226371a84af359fc2b6da6b87b056a17e27e7c3c1f4ac3dbeb4731edb19e"
+        }
+      ],
+      "raw": {
+        "bytes": 751567,
+        "git_blob": "734b0109ab680a521553b42240b3b27adf784e81",
+        "sha256": "118804b581cb804b1687fe8c582bc23b6657bd8d01c753207e0227a6c8270384"
+      },
+      "raw_standalone_git_storage_claimed": false
+    },
+    {
+      "gzip": {
+        "bytes": 554963,
+        "git_blob": "e34d3d86666b55b39381555a17320455459ae916",
+        "sha256": "1668fb31c23e95b5af7f58b83d6179a1362ba92d8742d2098556dc750150058f"
+      },
+      "original_name": "ACTUAL_PROCESS_INPUT.HOLD.json",
+      "parts": [
+        {
+          "bytes": 409601,
+          "decoded": {
+            "bytes": 307200,
+            "git_blob": "53d50b2c6e79112f5bd091c67a5dc9ad30c7f8b7",
+            "sha256": "c7b5a3209a812f490316e102a5aca3a3144a963cb3740ba41c5696e3a1f5abba"
+          },
+          "decoded_offset": 0,
+          "git_blob": "d718ef2a5c9ae3dd58a4e5bc49f6509594a03844",
+          "name": "ACTUAL_PROCESS_INPUT.HOLD.json.gz.part-001.b64",
+          "sha256": "54847387e267b56858f48ae516a635259ba47bbad2d6073764fa77ebb73210dd"
+        },
+        {
+          "bytes": 330353,
+          "decoded": {
+            "bytes": 247763,
+            "git_blob": "dc8481060f4add61a59f6d45fd015d978ea5dd58",
+            "sha256": "580bc661e621e98f42c04cbb41b1c57bbddfe2fe3784ac11cc417f3cda0335c5"
+          },
+          "decoded_offset": 307200,
+          "git_blob": "dc558336c993350570cd3fe2e0b3ac4875d6b545",
+          "name": "ACTUAL_PROCESS_INPUT.HOLD.json.gz.part-002.b64",
+          "sha256": "dc14f026e51d26135593e8b91a785c0a869ed0badc27ac8dc3efe48bae68a6b9"
+        }
+      ],
+      "raw": {
+        "bytes": 757660,
+        "git_blob": "1302cc1ea34041636f0ba31ee7c44232e485435d",
+        "sha256": "a1ec74be3f91546b93ecb7b6b594aa15e705e3f0263f3b548ed4b1a7d27d8e3d"
+      },
+      "raw_standalone_git_storage_claimed": false
+    }
+  ],
+  "note": "Lossless representations of exact local HOLD request/stdin; actual native observations do not exist."
+}

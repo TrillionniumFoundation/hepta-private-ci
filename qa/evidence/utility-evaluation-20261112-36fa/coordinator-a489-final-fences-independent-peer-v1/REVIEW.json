@@ -1,0 +1,309 @@
+{
+  "H_calls": 0,
+  "QA_or_Rust_or_full_collector_executions": 0,
+  "actual_base": {
+    "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "index_tree": "a489b394666b8141840275128a780605b024cde0",
+    "inventory": {
+      "bytes": 5633323,
+      "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba",
+      "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1"
+    },
+    "physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14"
+  },
+  "bounded_observation_encoding": {
+    "bytes": 1021,
+    "git_blob": "a5f9514e83e8ba994638666a6d3e32f3357fc5c8",
+    "sha256": "fa4e34098e5b5c0853c313fb6da9b2ed0d8e9a5d9ffaedaee594629da1a3c6f4"
+  },
+  "decision": "NO_CONCRETE_STATIC_BLOCKER_WITHIN_FROZEN_FOUR_MODIFICATION_SEVEN_BINDING_SCOPE",
+  "exact_text_inverse": {
+    "bytes": 5154,
+    "git_blob": "416098fb7046416a05db379d933b651939f64067",
+    "sha256": "a7be8f8b92a2dc62ff2c43a5f63f218a6efac7c48015c96228e7461f3fd4d13c"
+  },
+  "execution_authorized": false,
+  "expected_next_boundary": "Any later exact apply/format and qualification successor requires its own concrete actual input/permission review. This review conveys no H or source write authorization.",
+  "expected_unapplied_after": {
+    "inventory": {
+      "bytes": 5633513,
+      "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+      "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+    },
+    "leaves": 15243,
+    "physical_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "findings": [
+    {
+      "finding": "Independent full GET of manifest, author review and all four bounded packet leaves exactly reproduces the complete 5,999,431-byte proposal. All four before/after bodies match their three identities and actual inventory before rows; the three unchanged reference bodies match actual inventory as well.",
+      "id": "F01",
+      "result": "No concrete static blocker"
+    },
+    {
+      "finding": "The actual 15,243-leaf inventory recomputes c026a8d7e93c958b39a36c666debecb3dba4be14. Updating exactly the four specified files yields 8ebb37e523ad3932a58cf016af0a9f4e0eeb6638 and complete expected inventory e3ce3d7bba028e29efca751c6f43fde124b05ea0. All other 15,239 entries are identical. This is an offline projection, not an applied result; actual HEAD/index remain d256/a489.",
+      "id": "F02",
+      "result": "Four-write projection exact"
+    },
+    {
+      "finding": "Every CALLERS top-level field other than protected_file is semantically identical, including all boundary objects, required IDs, source roots, ignored fragments, rules and false authority fields. Protection row order and duplicate paths are preserved. All 442 forbidden arrays and every nonmarker field are identical; rows 411 and 422 are entirely unchanged.",
+      "id": "F03",
+      "result": "633 boundaries and 442 protection obligations preserved"
+    },
+    {
+      "finding": "Only rows 429, 438 and 440 change, in nine existing required_order/required_function_order string values. Every old value exactly covers its complete real pre-maintenance function or root item; every replacement exactly covers the corresponding complete actual postimage scope. Prefixes, names, selectors and container depth are unchanged. Reversing these nine JSON-quoted values restores the complete original CALLERS file byte for byte.",
+      "id": "F04",
+      "result": "Nine complete scope strings refreshed without widening",
+      "scopes": [
+        {
+          "field": [
+            "required_order",
+            4,
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+          "row": 429,
+          "scope": {
+            "kind": "full original root item",
+            "prefix": "impl "
+          }
+        },
+        {
+          "field": [
+            "required_function_order",
+            7,
+            "sequence",
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+          "row": 429,
+          "scope": {
+            "kind": "full original function",
+            "name": "fn read_original("
+          }
+        },
+        {
+          "field": [
+            "required_order",
+            3,
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "row": 438,
+          "scope": {
+            "kind": "full original root item",
+            "prefix": "impl "
+          }
+        },
+        {
+          "field": [
+            "required_order",
+            4,
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "row": 438,
+          "scope": {
+            "kind": "full original root item",
+            "prefix": "impl<W: "
+          }
+        },
+        {
+          "field": [
+            "required_function_order",
+            0,
+            "sequence",
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "row": 438,
+          "scope": {
+            "kind": "full original function",
+            "name": "fn read_original("
+          }
+        },
+        {
+          "field": [
+            "required_function_order",
+            1,
+            "sequence",
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "row": 438,
+          "scope": {
+            "kind": "full original function",
+            "name": "fn from_original_prepared("
+          }
+        },
+        {
+          "field": [
+            "required_function_order",
+            7,
+            "sequence",
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "row": 438,
+          "scope": {
+            "kind": "full original function",
+            "name": "fn require_root("
+          }
+        },
+        {
+          "field": [
+            "required_order",
+            0,
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+          "row": 440,
+          "scope": {
+            "kind": "full original root item",
+            "prefix": "impl<W: "
+          }
+        },
+        {
+          "field": [
+            "required_function_order",
+            0,
+            "sequence",
+            1
+          ],
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+          "row": 440,
+          "scope": {
+            "kind": "full original function",
+            "name": "fn recover_from_original_current("
+          }
+        }
+      ]
+    },
+    {
+      "changed_scopes": [
+        {
+          "index": 4,
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+          "selector": {
+            "header": "impl OriginalCircuitPublishedLocalReadV1",
+            "kind": "root_container"
+          }
+        },
+        {
+          "index": 0,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+          "selector": {
+            "header": "impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W>",
+            "kind": "root_container"
+          }
+        },
+        {
+          "index": 3,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "selector": {
+            "header": "impl OriginalInitialOperation",
+            "kind": "root_container"
+          }
+        },
+        {
+          "index": 4,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "selector": {
+            "header": "impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W>",
+            "kind": "root_container"
+          }
+        },
+        {
+          "index": 5,
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+          "selector": {
+            "kind": "root_function",
+            "name": "require_root"
+          }
+        }
+      ],
+      "finding": "Both original and refreshed contracts locate all 288 scopes in their exact original/actual files and match masked and literal-preserving hashes. Only five existing scope hash pairs change; all selectors, root module declarations/imports/attributes/final tails, mounts, exports, decoy/protocol items and prior historical provenance are identical. One actual_maintenance_refresh field accurately adds the 41e/c026 observation while qualification remains false.",
+      "id": "F05",
+      "result": "All 45 modules / 288 scopes bound"
+    },
+    {
+      "finding": "All 107 attack definitions are byte-semantically unchanged. The unchanged exact marker algorithm statically locates 123 nonempty real-function targets before and after, with identical count per attack. No mutant was generated or executed, so this result does not assert runtime rejection.",
+      "id": "F06",
+      "result": "Original attack targets retained"
+    },
+    {
+      "finding": "The ordinary QA file is byte-identical. All 34 scope hashes, 17 strict literal spans and 10 module mount spans locate in the actual files. Its original 541:569 boundary slice and provider 569:633 slice remain exact; no collector/parser/ignored-path rule was modified.",
+      "id": "F07",
+      "result": "Ordinary guards retained"
+    },
+    {
+      "finding": "Every one of the 607 existing test methods has identical bytes and AST. All 27 top-level helpers, and all remaining class/helper code, are unchanged. The only provider QA edit replaces its one expected contract SHA; reversing that literal restores its entire original file. There are zero added/deleted test methods and no weakened assertions.",
+      "id": "F08",
+      "result": "64 QA files / 607 methods preserved"
+    },
+    {
+      "finding": "The complete workflow and Root QA are byte-identical, including all 48 distinct Root parent names, prior 39 plus nine custody cases. All nine new original methods remain explicitly ignored for their actual Root fixture requirement. Existing ignored-only/single-thread/retries/JUnit/timeout and stage ordering bytes are unchanged; no workflow was dispatched.",
+      "id": "F09",
+      "result": "48 Root parents / workflow unchanged"
+    },
+    {
+      "finding": "The existing allowlist is an exact prefix. The sole new entry is sha256:62fc6814e2f24ecbf37a83583f526d215870cf2ab5202f524f34de46b77273fa CALLERS.toml, preceded by its descriptive comment. There is no wildcard or rule change.",
+      "id": "F10",
+      "result": "Exact allowlist addition only"
+    },
+    {
+      "finding": "This review does not approve or perform an apply, format, source gate, full caller scan, Rust build/test, native gate, source publication or ref movement. Earlier actual fix0/fmt0 and the separately reviewed 17 Rust postimages are maintenance evidence only. Normal host wiring, actual original owner materials, independent B and useful end-to-end results are not established by these source fences.",
+      "id": "F11",
+      "result": "Execution and utility limits retained"
+    }
+  ],
+  "format": "hepta-c026-final-fences-independent-peer-review-v1",
+  "full_static_observations": {
+    "bytes": 521895,
+    "git_blob": "f659e667a19499d3e03954716bd7a748ee2b5ebf",
+    "sha256": "0603f0ff8e5c5ce04cc109ff077afdcb64461285066e37e402e99e14c6dc507a"
+  },
+  "independent_actual_Rust_semantic_peer": "d3bccc02d7be04d5d5fec510aa73f1447109d5df",
+  "local_helper_observations": {
+    "bytes": 1643,
+    "git_blob": "384e5d40d59f31406c636041e3023086609534fe",
+    "sha256": "c220a49d76f371ef25c41f3b690a4cf26ffe68e9e475f220ffeb640b8fa4cca1"
+  },
+  "pure_lexical_method": "Only the exact named FunctionDefs in FROZEN_BYTE_AND_SCOPE_REVIEW were extracted from inventory-pinned original scanner/QA bytes. No whole project module/global statements, test method, collector or verifier entry point executed.",
+  "qualification": false,
+  "scope_count_summary": {
+    "QA_files": 64,
+    "QA_methods_byte_and_AST_equal": 607,
+    "Root_parents": 48,
+    "attack_specs": 107,
+    "attack_target_occurrences": 123,
+    "boundaries_unchanged": 633,
+    "changed_rows": [
+      429,
+      438,
+      440
+    ],
+    "changed_scope_hash_pairs": 5,
+    "full_scope_marker_values": 9,
+    "ordinary_literals": 17,
+    "ordinary_mounts": 10,
+    "ordinary_scopes": 34,
+    "protected_rows": 442,
+    "provider_exports": 11,
+    "provider_mounts": 18,
+    "provider_paths": 45,
+    "provider_scopes": 288,
+    "top_level_helpers_byte_equal": 27,
+    "unchanged_protected_rows": 439
+  },
+  "source_or_ref_mutations": 0,
+  "source_packet": {
+    "bytes": 5999431,
+    "git_blob": "b3490071b2b109aa1854afd3353952890b8e0eab",
+    "sha256": "a197e68853035ea4dd46eae16b15d548ded6bccb1392f528a1cc9677ce0d0082"
+  },
+  "source_packet_manifest": {
+    "bytes": 13476,
+    "git_blob": "4bc60fab145563469f1cbb992feeaf216d58dfb5",
+    "sha256": "edb8be40cc54bc62608e50a817e07c95dc9031e15701beed7c290fb6141f19e8"
+  }
+}

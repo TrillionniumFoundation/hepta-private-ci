@@ -1,0 +1,2337 @@
+{
+  "boolean_truth_table": [
+    {
+      "after": false,
+      "already_expired": false,
+      "before": false,
+      "observed": false
+    },
+    {
+      "after": true,
+      "already_expired": true,
+      "before": true,
+      "observed": false
+    },
+    {
+      "after": true,
+      "already_expired": false,
+      "before": true,
+      "observed": true
+    },
+    {
+      "after": false,
+      "already_expired": true,
+      "before": false,
+      "observed": true
+    }
+  ],
+  "final_function_and_macro_inventory": [
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 2,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 10,
+      "function_names": [
+        "release",
+        "entered",
+        "release",
+        "drop",
+        "pause_after_next_original_response",
+        "frames",
+        "scheduling_failed",
+        "release_all",
+        "after_original_response",
+        "serve"
+      ],
+      "header_changes": [],
+      "macro_count": 14,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 0,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 2,
+      "function_names": [
+        "two_original_sets",
+        "collect_peer_cleanup"
+      ],
+      "header_changes": [],
+      "macro_count": 9,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 2,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 21,
+      "function_names": [
+        "completed_selection",
+        "missing_selection",
+        "with_distinct_original_connections",
+        "initialize",
+        "initialize_originals",
+        "fixture",
+        "task",
+        "host",
+        "selector_host",
+        "selection",
+        "shared",
+        "export_selection",
+        "create_selector",
+        "install_completion",
+        "install_observer",
+        "recover_completed_observer",
+        "original_bytes",
+        "close_completion",
+        "finish",
+        "receipt_witness",
+        "finish_case"
+      ],
+      "header_changes": [],
+      "macro_count": 9,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 8,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 10,
+      "function_names": [
+        "require_equal",
+        "original_local_c",
+        "local_readiness_and_current_reuse_one_actual_request_sequence",
+        "local_readiness_borrows_the_fourth_lane_without_a_fifth_permit",
+        "local_read_capabilities_reject_cross_purpose_conversions",
+        "local_readiness_rechecks_actual_b_and_fences_all_aliases",
+        "paused_local_read_case",
+        "local_alias_contention_preserves_the_original_pending_response",
+        "local_cancelled_read_never_restores_any_alias",
+        "local_original_response_crossing_fixed_end_is_not_delivered"
+      ],
+      "header_changes": [],
+      "macro_count": 27,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 9,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 1,
+      "function_count": 22,
+      "function_names": [
+        "ready",
+        "initialize",
+        "fixture",
+        "task",
+        "host",
+        "selection",
+        "context",
+        "original_bytes",
+        "start_readiness",
+        "start_readback",
+        "finish",
+        "finish_case",
+        "version_owned_next_use_reads_same_c_after_real_completion",
+        "version_owned_next_use_rejects_another_actual_original_s_cut",
+        "version_owned_next_use_rechecks_actual_b_after_shared_export",
+        "version_owned_next_use_refuses_four_cut_selection_requests",
+        "deadline_case",
+        "version_owned_next_use_rejects_already_elapsed_absolute_end",
+        "version_owned_next_use_rejects_original_response_crossing_absolute_end",
+        "b_withdrawal_after_admission_case",
+        "version_owned_readiness_rechecks_actual_b_after_channel_admission",
+        "version_owned_next_use_rechecks_actual_b_after_channel_admission"
+      ],
+      "header_changes": [],
+      "macro_count": 55,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 6,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 16,
+      "function_names": [
+        "ready",
+        "initialize",
+        "host",
+        "fixture",
+        "fixture_mut",
+        "original_bytes",
+        "cell_has_no_additional_transition",
+        "finish",
+        "finish_case",
+        "published_shared_export_requires_actual_cold_admission_and_retains_same_clients",
+        "cold_published_enum_with_withdrawn_b_cannot_export_shared_clients",
+        "cold_changed_artifact_current_cannot_export_shared_clients",
+        "repeated_shared_export_rechecks_current_original_b",
+        "reject_changed_expected_signature",
+        "cold_changed_expected_training_signature_cannot_export_shared_clients",
+        "cold_changed_expected_evaluation_signature_cannot_export_shared_clients"
+      ],
+      "header_changes": [],
+      "macro_count": 38,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 5,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 22,
+      "function_names": [
+        "ready",
+        "initialize",
+        "shared",
+        "control",
+        "training",
+        "bytes",
+        "c_has_no_new_work",
+        "require_original_training_still_current",
+        "cleanup",
+        "finish",
+        "drop",
+        "start",
+        "cancel",
+        "finish",
+        "drop",
+        "unavailable_trainer",
+        "require_original_frames",
+        "require_closed_terminal",
+        "evaluated_published_readback_alias_competition_uses_same_slot",
+        "evaluated_published_readback_cancelled_alias_cannot_restore_any_alias",
+        "evaluated_published_readback_aliases_share_original_128_frame_budget",
+        "evaluated_published_readback_clone_cannot_renew_original_absolute_deadline"
+      ],
+      "header_changes": [],
+      "macro_count": 56,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 7,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 14,
+      "function_names": [
+        "clone",
+        "from_original_version",
+        "require_original_selection",
+        "require_original_next_use",
+        "require_original_window",
+        "read_current",
+        "read_completion_readiness",
+        "read_original",
+        "from_original_evaluated_local_selection",
+        "from_original_evaluated_local_next_use",
+        "from_original_local_profile",
+        "require_original_local_shared_readbacks",
+        "require_original_local_evaluated_selection",
+        "require_original_local_evaluated_next_use"
+      ],
+      "header_changes": [],
+      "macro_count": 0,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 1,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 2,
+      "function_names": [
+        "held_fixture_policy",
+        "first_pending_material_uses_full_original_signatures_and_preheld_policy"
+      ],
+      "header_changes": [],
+      "macro_count": 28,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 5,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 9,
+      "function_names": [
+        "from_original",
+        "original",
+        "from_original",
+        "require_current_inputs",
+        "report",
+        "encode_original",
+        "decode_report",
+        "canonical_report",
+        "fresh_original_material_control_preserves_complete_inputs_and_rejects_substitution"
+      ],
+      "header_changes": [],
+      "macro_count": 53,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 0,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 14,
+      "function_names": [
+        "new",
+        "stages",
+        "host",
+        "context",
+        "install_same_original_c",
+        "publish_with_original_fixture_root",
+        "complete_original_selection",
+        "hold_original_completion_readiness",
+        "dispatch_original_c_once",
+        "read_original_c_completion_once",
+        "attest_original_c",
+        "original_bytes",
+        "finish",
+        "original_root_reply"
+      ],
+      "header_changes": [],
+      "macro_count": 40,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 0,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 9,
+      "function_names": [
+        "new",
+        "original",
+        "connect_originals",
+        "complete_training",
+        "complete_b_and_evaluation",
+        "original_bytes",
+        "close_evaluation_clients",
+        "finish",
+        "finish_case"
+      ],
+      "header_changes": [],
+      "macro_count": 24,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 0,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 1,
+      "function_names": [
+        "recover_from_original_current"
+      ],
+      "header_changes": [],
+      "macro_count": 0,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 8,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 6,
+      "function_names": [
+        "reopened_current",
+        "recovery",
+        "root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+        "root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+        "root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+        "root_initial_cold_entry_retains_same_operation_after_installation_error"
+      ],
+      "header_changes": [],
+      "macro_count": 31,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 4,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 9,
+      "function_names": [
+        "read_original",
+        "from_original_prepared",
+        "original_final_use_binding",
+        "original_intent_digest",
+        "read_original_operation",
+        "publish",
+        "recover_original",
+        "require_root",
+        "invalid"
+      ],
+      "header_changes": [],
+      "macro_count": 2,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": false,
+      "attribute_count": 2,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 13,
+      "function_names": [
+        "new",
+        "prepare_original",
+        "custody",
+        "sign",
+        "root_bytes",
+        "generation_bytes",
+        "take_task_inputs",
+        "install",
+        "start",
+        "execute",
+        "drain",
+        "finish",
+        "drop"
+      ],
+      "header_changes": [
+        {
+          "after": [
+            [
+              "identifier",
+              "fn"
+            ],
+            [
+              "identifier",
+              "prepare_original"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "identifier",
+              "self"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "->"
+            ],
+            [
+              "identifier",
+              "anyhow"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "PreparedAgentdGenerationInitialV1"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "FileAnchorWitnessStore"
+            ],
+            [
+              "punct",
+              ">>"
+            ]
+          ],
+          "before": [
+            [
+              "identifier",
+              "fn"
+            ],
+            [
+              "identifier",
+              "prepare_original"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "identifier",
+              "self"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "->"
+            ],
+            [
+              "identifier",
+              "anyhow"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "PreparedAgentdGenerationInitialV1"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "FileAnchorWitnessStore"
+            ],
+            [
+              "punct",
+              ">>"
+            ]
+          ],
+          "name": "prepare_original"
+        },
+        {
+          "after": [
+            [
+              "identifier",
+              "fn"
+            ],
+            [
+              "identifier",
+              "take_task_inputs"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "identifier",
+              "mut"
+            ],
+            [
+              "identifier",
+              "self"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "queue_capacity"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "identifier",
+              "usize"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "->"
+            ],
+            [
+              "identifier",
+              "anyhow"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "AgentdConfig"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "OriginalRootCircuitTaskInputsV1"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "FileAnchorWitnessStore"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "FileAnchorWitnessStore"
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "RuntimeFixture"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "AuthBusObjectiveIngress"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "before": [
+            [
+              "identifier",
+              "fn"
+            ],
+            [
+              "identifier",
+              "take_task_inputs"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "identifier",
+              "mut"
+            ],
+            [
+              "identifier",
+              "self"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "queue_capacity"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "identifier",
+              "usize"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "->"
+            ],
+            [
+              "identifier",
+              "anyhow"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "AgentdConfig"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "OriginalRootCircuitTaskInputsV1"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "FileAnchorWitnessStore"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "FileAnchorWitnessStore"
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "RuntimeFixture"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "AuthBusObjectiveIngress"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "name": "take_task_inputs"
+        },
+        {
+          "after": [
+            [
+              "identifier",
+              "fn"
+            ],
+            [
+              "identifier",
+              "install"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "identifier",
+              "mut"
+            ],
+            [
+              "identifier",
+              "self"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "custody"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "identifier",
+              "Custody"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "queue_capacity"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "identifier",
+              "usize"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "->"
+            ],
+            [
+              "identifier",
+              "anyhow"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "Installed"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "OriginalRootInitialInstallationErrorV1"
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "RuntimeFixture"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "AuthBusObjectiveIngress"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "before": [
+            [
+              "identifier",
+              "fn"
+            ],
+            [
+              "identifier",
+              "install"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "identifier",
+              "mut"
+            ],
+            [
+              "identifier",
+              "self"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "custody"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "identifier",
+              "Custody"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "queue_capacity"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "identifier",
+              "usize"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "->"
+            ],
+            [
+              "identifier",
+              "anyhow"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "Result"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "identifier",
+              "Installed"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "OriginalRootInitialInstallationErrorV1"
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "RuntimeFixture"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "identifier",
+              "AuthBusObjectiveIngress"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "name": "install"
+        }
+      ],
+      "macro_count": 10,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs"
+    },
+    {
+      "all_function_headers_exact_token_equal": true,
+      "attribute_count": 10,
+      "attributes_exact_token_equal": true,
+      "changed_macros": 0,
+      "function_count": 5,
+      "function_names": [
+        "root_initial_custody_refuses_another_operation_without_rewriting_current",
+        "root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+        "root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+        "root_initial_custody_installation_error_retains_original_publication_readback",
+        "root_initial_custody_original_artifact_withdrawal_fences_task_installation"
+      ],
+      "header_changes": [],
+      "macro_count": 42,
+      "macro_names_sequence_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    }
+  ],
+  "fix_categories": {
+    "boolean_assertion_equivalence": 1,
+    "cfg_test_only_short_circuit_pause": 1,
+    "identity_anyhow_error_conversion_removed": 1,
+    "last_use_owned_byte_vector_move": 2,
+    "last_use_owned_json_move": 2,
+    "same_standard_method_reference": 3,
+    "short_circuit_let_chain_cleanup": 8,
+    "short_circuit_let_chain_join_cleanup": 1
+  },
+  "fix_exact_splices": [
+    {
+      "after": {
+        "bytes": 7565,
+        "git_blob": "df7c63ed5575737e2e710973e895fde8c047d063",
+        "sha256": "d95ee2c765ee27cb1ed2159ba7dccda07ff2cb9e0c1fb4ef3a0242a0f99e372d"
+      },
+      "before": {
+        "bytes": 7557,
+        "git_blob": "cde16a60860fa5eccb1160353d6806f3f9f81477",
+        "sha256": "4de86df4dd59a579f00863e461277946e3f04cbcc69d8b43f50c1fc66fa3f836"
+      },
+      "categories": [
+        "same_standard_method_reference"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 6605,
+        "git_blob": "35b9f4bf5258ace24b9c5aaf380f3665a29732eb",
+        "sha256": "48db64941aaa29d1747710e8a32e6d290fc30586363dfcc264a1570b6a144fa9"
+      },
+      "before": {
+        "bytes": 6626,
+        "git_blob": "3970dbf29eb46dede4337aca04a0f500163ddd03",
+        "sha256": "cc4a94f932cde080926a8b674272adb55d1b139501cd4cd74c14d5ef54d314f3"
+      },
+      "categories": [
+        "identity_anyhow_error_conversion_removed"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 20356,
+        "git_blob": "7403a7189e8cda62a4e1f5ea58d6fcbb01cd664b",
+        "sha256": "a2cbacfffcc0efaadc5030922c5314599af168c51f6e57e1d6154e7f767579f7"
+      },
+      "before": {
+        "bytes": 20380,
+        "git_blob": "83cc4158e980804b0e7bd4365e51cf88b43a2196",
+        "sha256": "e65ad37b6d97b3001c09bbbe2e4c219e147740a087f9a5cd9428872f30ec060e"
+      },
+      "categories": [
+        "short_circuit_let_chain_cleanup",
+        "short_circuit_let_chain_cleanup"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "splice_count": 2
+    },
+    {
+      "after": {
+        "bytes": 14813,
+        "git_blob": "26403acbd0a6fcad495482e1872122e0af2b4fe3",
+        "sha256": "cf955571287a2eb8e55c4feb00f29fe6959535f3cece47e253a0ad38f27f37e7"
+      },
+      "before": {
+        "bytes": 14821,
+        "git_blob": "444fbbb4e48743f51de91d39d77c34b37364b002",
+        "sha256": "9aa9a9a908790683bcab368f9d528707d9dda39c238d30e8a163a1aaa1f16e94"
+      },
+      "categories": [
+        "short_circuit_let_chain_join_cleanup"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 27360,
+        "git_blob": "8b338d070d7d136bb1d2afd8a2cfbf76b5d6a2b1",
+        "sha256": "dc0960274ab3dc0c47ad3e3f8ca518c6f142926dbb02d35c7e46014308fdc683"
+      },
+      "before": {
+        "bytes": 27373,
+        "git_blob": "b9a4d5bda8f02c16a198efde82a7d0d589f3d18c",
+        "sha256": "6195fb4dd0704c4d932f33bfb8f4d4af6d966015576b477f7feeb75f5ff899f5"
+      },
+      "categories": [
+        "short_circuit_let_chain_cleanup",
+        "boolean_assertion_equivalence"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "splice_count": 2
+    },
+    {
+      "after": {
+        "bytes": 13502,
+        "git_blob": "b14590e5ea4f39b871d02609c3af26901f494e98",
+        "sha256": "67f7ce49c6dc6062468724a074457076859714e97786cfad2ea3c6eefb08432c"
+      },
+      "before": {
+        "bytes": 13514,
+        "git_blob": "2dafccfb708098871d5ab4807ec185920c73c544",
+        "sha256": "499c240eb53e179e01b5aa589d5e0c51a1ac74eed28e2fd7499b9b72770cbf80"
+      },
+      "categories": [
+        "short_circuit_let_chain_cleanup"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 24095,
+        "git_blob": "cc36737a44005d2d2bfc2e4965d3a78887a9a6db",
+        "sha256": "d59d9488c55015a82fb767b0bfd7e6229cbc6f9fad522eab76f07f275e2bb54a"
+      },
+      "before": {
+        "bytes": 24081,
+        "git_blob": "ffafea99606924aa115f6c9ba06f417a7a08618b",
+        "sha256": "1a9f84835d412587b76da140f7e684d4cdbffaaeb988a19ae62dce1fd793cb2b"
+      },
+      "categories": [
+        "same_standard_method_reference",
+        "same_standard_method_reference"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "splice_count": 2
+    },
+    {
+      "after": {
+        "bytes": 12135,
+        "git_blob": "55e0b3d16fee7f6b046ab9cfae48ea9efb91c04b",
+        "sha256": "af32165371490c7a29b9c5cb13e35853931fc19e7746a2ad68d10241a8d16811"
+      },
+      "before": {
+        "bytes": 12151,
+        "git_blob": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+        "sha256": "da9b6959af1488715c55e0aea8311fbeab1242e40741b6822025f977e52a5359"
+      },
+      "categories": [
+        "cfg_test_only_short_circuit_pause"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 12023,
+        "git_blob": "dd82f2decb88abc8bfcbd92cf94528b40acd0cda",
+        "sha256": "3f9e747cafe5c7ab37163525ff2469246d921fe2ee3d719ba5b571eb7ac1acf6"
+      },
+      "before": {
+        "bytes": 12039,
+        "git_blob": "3a1ca23dd755c46ae852830b0a27419e58c3cb54",
+        "sha256": "f425edd533db1b7a2bef0d69a9e6b9598a498daad8fc7db75d61670e41e63302"
+      },
+      "categories": [
+        "last_use_owned_json_move",
+        "last_use_owned_byte_vector_move"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "splice_count": 2
+    },
+    {
+      "after": {
+        "bytes": 20389,
+        "git_blob": "bba6305de3212ab31c2fef8edf0ef78e63ebc522",
+        "sha256": "d5a236690ad87b9faf2ed2f0c3713427b960801da8674b10741a68c31da83643"
+      },
+      "before": {
+        "bytes": 20405,
+        "git_blob": "2f35bcacff40827fd96b3d4ce289455929d64a82",
+        "sha256": "d7860ce4fec0525b352c260eea9357b074c4cb0a9bc5103d48b9edf76940ea4c"
+      },
+      "categories": [
+        "last_use_owned_json_move",
+        "last_use_owned_byte_vector_move"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "splice_count": 2
+    },
+    {
+      "after": {
+        "bytes": 29307,
+        "git_blob": "b15903d31d31a0b93eeb6600f80e2491f2eb72d9",
+        "sha256": "cbdf9c2db67131c32c5c243167b8c6b338132d29d79bf1bd1dfdaf2a2c1a73e5"
+      },
+      "before": {
+        "bytes": 29319,
+        "git_blob": "491bbac2876891948de35f11ac790c2500fdfc2f",
+        "sha256": "f31d54f0c4ae278588e50696b93e6b2e6f237efc581caee4bb1af21d7e3c8483"
+      },
+      "categories": [
+        "short_circuit_let_chain_cleanup"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 15860,
+        "git_blob": "5eddfe1e7186ee704aa261ab3c90759885e5156b",
+        "sha256": "586498c6fe8370c56cf497e8f3795dc549781ecd846a4ef4732413557e99330c"
+      },
+      "before": {
+        "bytes": 15896,
+        "git_blob": "2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8",
+        "sha256": "b9986ffa2fb5b676a8f3012472adc296a8fbe5bef30763887f613251851a5927"
+      },
+      "categories": [
+        "short_circuit_let_chain_cleanup",
+        "short_circuit_let_chain_cleanup",
+        "short_circuit_let_chain_cleanup"
+      ],
+      "forward_and_inverse_complete_file_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "splice_count": 3
+    }
+  ],
+  "fix_splice_total": 19,
+  "fmt": [
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 9,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use anyhow::Context as _;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use anyhow::Context as _;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 9,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use anyhow::Context as _;",
+        "use crate::OriginalCircuitCompletionReadinessClientV1;",
+        "use crate::OriginalCircuitEvaluatedNextUseReceiptConfigV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1;",
+        "use crate::OriginalCircuitLearningReadClientV1;",
+        "use crate::OriginalCircuitNextUseCommandClientV1;",
+        "use crate::OriginalCircuitNextUseCommandContextV1;",
+        "use crate::OriginalCircuitNextUseCommandErrorV1;",
+        "use crate::OriginalCircuitNextUseCommandOwnerV1;",
+        "use crate::OriginalCircuitNextUseReceiptOwnerV1;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1;",
+        "use crate::OriginalCircuitPublishedLocalReadV1;",
+        "use crate::OriginalCircuitSelectionCommandErrorV1;",
+        "use crate::OriginalCircuitSelectionCommandOwnerV1;",
+        "use crate::OriginalCircuitSelectionLocalReadbackV1;",
+        "use crate::OriginalCircuitSelectionReceiptOwnerV1;",
+        "use crate::learning_iteration_evidence_client::next_use_command_test_support as completion_commands;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use anyhow::Context as _;",
+        "use crate::OriginalCircuitCompletionReadinessClientV1;",
+        "use crate::OriginalCircuitEvaluatedNextUseReceiptConfigV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1;",
+        "use crate::OriginalCircuitLearningReadClientV1;",
+        "use crate::OriginalCircuitNextUseCommandClientV1;",
+        "use crate::OriginalCircuitNextUseCommandContextV1;",
+        "use crate::OriginalCircuitNextUseCommandErrorV1;",
+        "use crate::OriginalCircuitNextUseCommandOwnerV1;",
+        "use crate::OriginalCircuitNextUseReceiptOwnerV1;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1;",
+        "use crate::OriginalCircuitPublishedLocalReadV1;",
+        "use crate::OriginalCircuitSelectionCommandErrorV1;",
+        "use crate::OriginalCircuitSelectionCommandOwnerV1;",
+        "use crate::OriginalCircuitSelectionLocalReadbackV1;",
+        "use crate::OriginalCircuitSelectionReceiptOwnerV1;",
+        "use crate::learning_iteration_evidence_client::next_use_command_test_support as completion_commands;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 27,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use crate::OriginalCircuitLearningReadbackV1;",
+        "use crate::OriginalCircuitPublishedLocalReadV1;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use crate::OriginalCircuitLearningReadbackV1;",
+        "use crate::OriginalCircuitPublishedLocalReadV1;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 55,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use anyhow::Context as _;",
+        "use std::os::unix::fs::OpenOptionsExt as _;",
+        "use std::sync::atomic::AtomicBool;",
+        "use std::sync::atomic::Ordering;",
+        "use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1;",
+        "use crate::OriginalCircuitLearningReadClientV1;",
+        "use crate::OriginalCircuitLearningReadErrorV1 as ReadError;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1;",
+        "use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;",
+        "use crate::OriginalCircuitSelectionCommandOwnerV1;",
+        "use crate::OriginalCircuitSelectionReceiptOwnerV1;",
+        "use crate::circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;",
+        "use crate::circuit_feature_current::original_evaluated_readiness_fixture as readiness;",
+        "use crate::circuit_feature_current::original_learning_read_fixture as reads;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use anyhow::Context as _;",
+        "use std::os::unix::fs::OpenOptionsExt as _;",
+        "use std::sync::atomic::AtomicBool;",
+        "use std::sync::atomic::Ordering;",
+        "use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1;",
+        "use crate::OriginalCircuitLearningReadClientV1;",
+        "use crate::OriginalCircuitLearningReadErrorV1 as ReadError;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1;",
+        "use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;",
+        "use crate::OriginalCircuitSelectionCommandOwnerV1;",
+        "use crate::OriginalCircuitSelectionReceiptOwnerV1;",
+        "use crate::circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;",
+        "use crate::circuit_feature_current::original_evaluated_readiness_fixture as readiness;",
+        "use crate::circuit_feature_current::original_learning_read_fixture as reads;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 38,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;",
+        "use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;",
+        "use anyhow::Context as _;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;",
+        "use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;",
+        "use anyhow::Context as _;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 56,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use crate::OriginalCellQ24TrainingCommandErrorV1 as TrainingError;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;",
+        "use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;",
+        "use crate::learning_iteration_evidence_client::command_test_support::shared_readback::ReadbackControl;",
+        "use crate::learning_iteration_evidence_client::command_test_support::shared_readback::{\n    self as controlled_training,\n};",
+        "use anyhow::Context as _;",
+        "use std::error::Error as StdError;",
+        "use std::time::Instant;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use crate::OriginalCellQ24TrainingCommandErrorV1 as TrainingError;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;",
+        "use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;",
+        "use crate::learning_iteration_evidence_client::command_test_support::shared_readback::ReadbackControl;",
+        "use crate::learning_iteration_evidence_client::command_test_support::shared_readback::{\n    self as controlled_training,\n};",
+        "use anyhow::Context as _;",
+        "use std::error::Error as StdError;",
+        "use std::time::Instant;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 0,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use std::sync::Arc;",
+        "use std::sync::Mutex;",
+        "use std::time::Instant;",
+        "use codex_hepta_types::Digest32;",
+        "use super::super::retained_publication::version::OriginalVersionLocalReadBindingV1;",
+        "use super::super::retained_publication::version::OriginalVersionLocalReadOperationV1 as LocalReadOperation;",
+        "use super::Error;",
+        "use super::OriginalCircuitEvaluatedLearningReadContextV1;",
+        "use super::OriginalCircuitLearningReadClientV1;",
+        "use super::OriginalCircuitLearningReadbackV1 as Readback;",
+        "use super::now;",
+        "use super::profile::ReadProfile;",
+        "use super::readiness;",
+        "use super::wire;",
+        "use crate::OriginalCircuitEvaluatedRetentionContextV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1;"
+      ],
+      "use_items_before": [
+        "use std::sync::Arc;",
+        "use std::sync::Mutex;",
+        "use std::time::Instant;",
+        "use codex_hepta_types::Digest32;",
+        "use super::super::retained_publication::version::OriginalVersionLocalReadBindingV1;",
+        "use super::super::retained_publication::version::OriginalVersionLocalReadOperationV1 as LocalReadOperation;",
+        "use super::Error;",
+        "use super::OriginalCircuitEvaluatedLearningReadContextV1;",
+        "use super::OriginalCircuitLearningReadClientV1;",
+        "use super::OriginalCircuitLearningReadbackV1 as Readback;",
+        "use super::now;",
+        "use super::profile::ReadProfile;",
+        "use super::readiness;",
+        "use super::wire;",
+        "use crate::OriginalCircuitEvaluatedRetentionContextV1;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 40,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::stages::FreshStages;",
+        "use super::*;",
+        "use crate::AgentdUnixFinalUseGrantProvider;",
+        "use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;",
+        "use crate::OriginalCircuitEvaluatedRetentionContextV1 as EvaluatedContext;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1 as Selection;",
+        "use crate::OriginalCircuitNextUseCommandClientV1 as CompletionClient;",
+        "use crate::OriginalCircuitNextUseCommandContextV1 as CompletionContext;",
+        "use crate::OriginalCircuitNextUseCommandOwnerV1 as CompletionHost;",
+        "use crate::OriginalCircuitNextUseReceiptOwnerV1 as Observer;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;",
+        "use crate::OriginalCircuitRetainedVersionHostV1 as Version;",
+        "use crate::OriginalCircuitSelectionCommandClientV1 as SelectionClient;",
+        "use crate::OriginalCircuitSelectionCommandContextV1 as SelectionContext;",
+        "use crate::OriginalCircuitSelectionCommandOwnerV1 as SelectionHost;",
+        "use crate::OriginalCircuitSelectionReceiptOwnerV1 as Selector;",
+        "use crate::circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;",
+        "use crate::circuit_feature_current::original_evaluated_readiness_fixture as readiness;",
+        "use crate::circuit_feature_current::original_learning_read_fixture as reads;",
+        "use crate::learning_iteration_evidence_client::next_use_command_test_support as completion_commands;",
+        "use crate::learning_iteration_evidence_client::selection_command_test_support as selection_commands;",
+        "use crate::neuron_generation_current::test_support::RECORDS;",
+        "use anyhow::Context as _;",
+        "use codex_hepta_contracts::FinalUseBinding;",
+        "use codex_hepta_contracts::SignedFinalUseGrant;",
+        "use codex_hepta_neuron::JournalScope;",
+        "use codex_hepta_types::Generation;",
+        "use std::io::Read;",
+        "use std::io::Write;",
+        "use std::os::unix::fs::OpenOptionsExt as _;",
+        "use std::os::unix::net::UnixStream;",
+        "use std::time::Duration;"
+      ],
+      "use_items_before": [
+        "use super::stages::FreshStages;",
+        "use super::*;",
+        "use crate::AgentdUnixFinalUseGrantProvider;",
+        "use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;",
+        "use crate::OriginalCircuitEvaluatedRetentionContextV1 as EvaluatedContext;",
+        "use crate::OriginalCircuitEvaluatedSelectionReceiptV1 as Selection;",
+        "use crate::OriginalCircuitNextUseCommandClientV1 as CompletionClient;",
+        "use crate::OriginalCircuitNextUseCommandContextV1 as CompletionContext;",
+        "use crate::OriginalCircuitNextUseCommandOwnerV1 as CompletionHost;",
+        "use crate::OriginalCircuitNextUseReceiptOwnerV1 as Observer;",
+        "use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;",
+        "use crate::OriginalCircuitRetainedVersionHostV1 as Version;",
+        "use crate::OriginalCircuitSelectionCommandClientV1 as SelectionClient;",
+        "use crate::OriginalCircuitSelectionCommandContextV1 as SelectionContext;",
+        "use crate::OriginalCircuitSelectionCommandOwnerV1 as SelectionHost;",
+        "use crate::OriginalCircuitSelectionReceiptOwnerV1 as Selector;",
+        "use crate::circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;",
+        "use crate::circuit_feature_current::original_evaluated_readiness_fixture as readiness;",
+        "use crate::circuit_feature_current::original_learning_read_fixture as reads;",
+        "use crate::learning_iteration_evidence_client::next_use_command_test_support as completion_commands;",
+        "use crate::learning_iteration_evidence_client::selection_command_test_support as selection_commands;",
+        "use crate::neuron_generation_current::test_support::RECORDS;",
+        "use anyhow::Context as _;",
+        "use codex_hepta_contracts::FinalUseBinding;",
+        "use codex_hepta_contracts::SignedFinalUseGrant;",
+        "use codex_hepta_neuron::JournalScope;",
+        "use codex_hepta_types::Generation;",
+        "use std::io::Read;",
+        "use std::io::Write;",
+        "use std::os::unix::fs::OpenOptionsExt as _;",
+        "use std::os::unix::net::UnixStream;",
+        "use std::time::Duration;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": true,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 24,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "remaining_token_changes": [],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::super::evaluation_provider::fresh_training::CompletedBPanel;",
+        "use super::super::evaluation_provider::fresh_training::CompletedTrainingInputs;",
+        "use super::super::evaluation_provider::fresh_training::PreparedBPanel;",
+        "use super::original_material::ProviderAdmission;",
+        "use super::original_material::UnstartedProvider;",
+        "use super::*;",
+        "use crate::OriginalCellEvaluationCommandClientV1 as EvaluationClient;",
+        "use crate::OriginalCellEvaluationCommandConnectionV1 as EvaluationConnection;",
+        "use crate::OriginalCellEvaluationCommandReceiptV1 as EvaluationReceipt;",
+        "use crate::OriginalCellQ24CandidateMaterialV1 as Candidate;",
+        "use crate::OriginalCellQ24CandidateReadbackClientV1 as CandidateClient;",
+        "use crate::OriginalCellQ24DatasetCommandReadbackV1 as DatasetReadback;",
+        "use crate::OriginalCellQ24MaterialCommandClientV1 as MaterialClient;",
+        "use crate::OriginalCellQ24MaterialCommandReceiptV1 as DatasetReceipt;",
+        "use crate::OriginalCellQ24MaterialEvidenceRoleV1 as Role;",
+        "use crate::OriginalCellQ24TrainingCommandClientV1 as TrainingClient;",
+        "use crate::OriginalCellQ24TrainingCommandConnectionV1 as TrainingConnection;",
+        "use crate::OriginalCellQ24TrainingCommandReceiptV1 as TrainingReceipt;",
+        "use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;",
+        "use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;",
+        "use anyhow::Context as _;"
+      ],
+      "use_items_before": [
+        "use super::super::evaluation_provider::fresh_training::CompletedBPanel;",
+        "use super::super::evaluation_provider::fresh_training::CompletedTrainingInputs;",
+        "use super::super::evaluation_provider::fresh_training::PreparedBPanel;",
+        "use super::original_material::ProviderAdmission;",
+        "use super::original_material::UnstartedProvider;",
+        "use super::*;",
+        "use crate::OriginalCellEvaluationCommandClientV1 as EvaluationClient;",
+        "use crate::OriginalCellEvaluationCommandConnectionV1 as EvaluationConnection;",
+        "use crate::OriginalCellEvaluationCommandReceiptV1 as EvaluationReceipt;",
+        "use crate::OriginalCellQ24CandidateMaterialV1 as Candidate;",
+        "use crate::OriginalCellQ24CandidateReadbackClientV1 as CandidateClient;",
+        "use crate::OriginalCellQ24DatasetCommandReadbackV1 as DatasetReadback;",
+        "use crate::OriginalCellQ24MaterialCommandClientV1 as MaterialClient;",
+        "use crate::OriginalCellQ24MaterialCommandReceiptV1 as DatasetReceipt;",
+        "use crate::OriginalCellQ24MaterialEvidenceRoleV1 as Role;",
+        "use crate::OriginalCellQ24TrainingCommandClientV1 as TrainingClient;",
+        "use crate::OriginalCellQ24TrainingCommandConnectionV1 as TrainingConnection;",
+        "use crate::OriginalCellQ24TrainingCommandReceiptV1 as TrainingReceipt;",
+        "use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;",
+        "use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;",
+        "use anyhow::Context as _;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": false,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 0,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "remaining_token_changes": [
+        {
+          "after": [],
+          "after_context": ", AgentdError > { require_root ( ) ? ; let original = current . recover_initial_operation ( & recovery . operation_id , recovery . intent_digest ) ? ; let binding = original . final_use_binding ( ) . clone ( ) ; let before = current . read_initial_operation ( &",
+          "before": [
+            ","
+          ],
+          "before_context": ", AgentdError > { require_root ( ) ? ; let original = current . recover_initial_operation ( & recovery . operation_id , recovery . intent_digest , ) ? ; let binding = original . final_use_binding ( ) . clone ( ) ; let before = current . read_initial_operation ( &",
+          "classification": "comma_requires_context",
+          "op": "delete"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "authorities , recovery , binding , } ; if operation . read_original ( ) ? != before { return Err ( invalid ( \"original initial publication changed across cold recovery\" , ) ) ; } Ok ( Self { operation , phase : InitialPhase :: Ready ( Box :: new ( ready ) ) ,",
+          "before": [],
+          "before_context": "authorities , recovery , binding , } ; if operation . read_original ( ) ? != before { return Err ( invalid ( \"original initial publication changed across cold recovery\" ) ) ; } Ok ( Self { operation , phase : InitialPhase :: Ready ( Box :: new ( ready ) ) ,",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        }
+      ],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;"
+      ],
+      "use_items_before": [
+        "use super::*;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": false,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 31,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "remaining_token_changes": [
+        {
+          "after": [
+            ","
+          ],
+          "after_context": ") ) } fn recovery ( intent_digest : Digest32 ) -> AgentdGenerationUpdateRecoveryV1 { AgentdGenerationUpdateRecoveryV1 { operation_id : OPERATION . into ( ) , intent_digest , } } # [ tokio :: test ( flavor = \"multi_thread\" , worker_threads = 2 ) ] # [ ignore = \"requires actual RootAuthorityDirectory and original signed owner fixtures\" ] async",
+          "before": [],
+          "before_context": ") ) } fn recovery ( intent_digest : Digest32 ) -> AgentdGenerationUpdateRecoveryV1 { AgentdGenerationUpdateRecoveryV1 { operation_id : OPERATION . into ( ) , intent_digest } } # [ tokio :: test ( flavor = \"multi_thread\" , worker_threads = 2 ) ] # [ ignore = \"requires actual RootAuthorityDirectory and original signed owner fixtures\" ] async",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        }
+      ],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;",
+        "use codex_hepta_types::Digest32;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use codex_hepta_types::Digest32;",
+        "use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": false,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 2,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "remaining_token_changes": [
+        {
+          "after": [],
+          "after_context": ") ? ; let original = self . current . recover_initial_operation ( & self . recovery . operation_id , self . recovery . intent_digest ) ? ; if original . final_use_binding ( ) != & self . binding { return Err ( invalid ( \"original initial operation binding changed\" ) ) ;",
+          "before": [
+            ","
+          ],
+          "before_context": ") ? ; let original = self . current . recover_initial_operation ( & self . recovery . operation_id , self . recovery . intent_digest , ) ? ; if original . final_use_binding ( ) != & self . binding { return Err ( invalid ( \"original initial operation binding changed\" ) ) ;",
+          "classification": "comma_requires_context",
+          "op": "delete"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "final_use_binding ( ) || original . target ( ) != prepared . prepared . target ( ) { return Err ( invalid ( \"Root custody differs from the original preparation\" , ) ) ; } let operation = OriginalInitialOperation { current , authorities : prepared . authorities . clone ( ) , recovery : AgentdGenerationUpdateRecoveryV1",
+          "before": [],
+          "before_context": "final_use_binding ( ) || original . target ( ) != prepared . prepared . target ( ) { return Err ( invalid ( \"Root custody differs from the original preparation\" ) ) ; } let operation = OriginalInitialOperation { current , authorities : prepared . authorities . clone ( ) , recovery : AgentdGenerationUpdateRecoveryV1",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "getuid ( ) } != 0 || unsafe { libc :: geteuid ( ) } != 0 { return Err ( invalid ( \"original generation custody requires the Root host\" , ) ) ; } Ok ( ( ) ) } fn invalid ( error : impl std :: fmt :: Display ) -> AgentdError",
+          "before": [],
+          "before_context": "getuid ( ) } != 0 || unsafe { libc :: geteuid ( ) } != 0 { return Err ( invalid ( \"original generation custody requires the Root host\" ) ) ; } Ok ( ( ) ) } fn invalid ( error : impl std :: fmt :: Display ) -> AgentdError",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        }
+      ],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use std::sync::Arc;",
+        "use codex_hepta_contracts::FinalUseBinding;",
+        "use codex_hepta_contracts::SignedFinalUseGrant;",
+        "use codex_hepta_neuron::AnchorWitnessStore;",
+        "use codex_hepta_types::Digest32;",
+        "use codex_hepta_types::StableId;",
+        "use super::PreparedAgentdGenerationInitialV1;",
+        "use super::recover_agentd_generation_initial_v1;",
+        "use crate::AgentdError;",
+        "use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;",
+        "use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;",
+        "use crate::neuron_generation_initial_bootstrap::ReadyAgentdGenerationInitialV1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;",
+        "use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;",
+        "use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;",
+        "pub use task::OriginalRootCircuitTaskCustodyV1;",
+        "pub use task::OriginalRootCircuitTaskInputsV1;",
+        "pub use task::OriginalRootCircuitTaskRuntimeV1;",
+        "pub use task::OriginalRootInitialInstallationErrorV1;"
+      ],
+      "use_items_before": [
+        "use std::sync::Arc;",
+        "use codex_hepta_contracts::FinalUseBinding;",
+        "use codex_hepta_contracts::SignedFinalUseGrant;",
+        "use codex_hepta_neuron::AnchorWitnessStore;",
+        "use codex_hepta_types::Digest32;",
+        "use codex_hepta_types::StableId;",
+        "use super::PreparedAgentdGenerationInitialV1;",
+        "use super::recover_agentd_generation_initial_v1;",
+        "use crate::AgentdError;",
+        "use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;",
+        "use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;",
+        "use crate::neuron_generation_initial_bootstrap::ReadyAgentdGenerationInitialV1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;",
+        "use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;",
+        "use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;",
+        "pub use task::OriginalRootCircuitTaskCustodyV1;",
+        "pub use task::OriginalRootCircuitTaskInputsV1;",
+        "pub use task::OriginalRootCircuitTaskRuntimeV1;",
+        "pub use task::OriginalRootInitialInstallationErrorV1;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": false,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 10,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "remaining_token_changes": [
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "root , root_directory , providers , admission : Some ( admission ) , model , bundle , definition , source , _model_directory : model_directory , } ) } fn prepare_original ( & self , ) -> anyhow :: Result < PreparedAgentdGenerationInitialV1 < FileAnchorWitnessStore >> { Ok ( prepare_agentd_generation_initial_v1 (",
+          "before": [],
+          "before_context": "root , root_directory , providers , admission : Some ( admission ) , model , bundle , definition , source , _model_directory : model_directory } ) } fn prepare_original ( & self ) -> anyhow :: Result < PreparedAgentdGenerationInitialV1 < FileAnchorWitnessStore >> { Ok ( prepare_agentd_generation_initial_v1 ( Arc",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "( admission ) , model , bundle , definition , source , _model_directory : model_directory , } ) } fn prepare_original ( & self , ) -> anyhow :: Result < PreparedAgentdGenerationInitialV1 < FileAnchorWitnessStore >> { Ok ( prepare_agentd_generation_initial_v1 ( Arc :: clone ( & self . root )",
+          "before": [],
+          "before_context": "Some ( admission ) , model , bundle , definition , source , _model_directory : model_directory } ) } fn prepare_original ( & self ) -> anyhow :: Result < PreparedAgentdGenerationInitialV1 < FileAnchorWitnessStore >> { Ok ( prepare_agentd_generation_initial_v1 ( Arc :: clone ( & self . root )",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": ". selection ( ) ? , self . providers . target_create ( ) ? , AgentdGenerationUpdateRequestV1 { operation_id : OPERATION . into ( ) , } , ) ? ) } fn custody ( & self ) -> anyhow :: Result < Custody > { Ok ( Custody ::",
+          "before": [],
+          "before_context": ". selection ( ) ? , self . providers . target_create ( ) ? , AgentdGenerationUpdateRequestV1 { operation_id : OPERATION . into ( ) } , ) ? ) } fn custody ( & self ) -> anyhow :: Result < Custody > { Ok ( Custody ::",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": ":: Result < Custody > { Ok ( Custody :: from_original_prepared ( self . prepare_original ( ) ? , OPERATION . into ( ) , ) ? ) } fn sign ( & self , custody : & Custody ) -> anyhow :: Result < SignedFinalUseGrant > { self",
+          "before": [],
+          "before_context": ":: Result < Custody > { Ok ( Custody :: from_original_prepared ( self . prepare_original ( ) ? , OPERATION . into ( ) ) ? ) } fn sign ( & self , custody : & Custody ) -> anyhow :: Result < SignedFinalUseGrant > { self",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "| _ | anyhow :: anyhow ! ( \"non-UTF8 authority test file\" ) ) ? , fs :: read ( entry . path ( ) ) ? , ) ; } Ok ( bytes ) } fn generation_bytes ( & self ) -> anyhow :: Result < [ Vec < u8 >",
+          "before": [],
+          "before_context": "| _ | anyhow :: anyhow ! ( \"non-UTF8 authority test file\" ) ) ? , fs :: read ( entry . path ( ) ) ? ) ; } Ok ( bytes ) } fn generation_bytes ( & self ) -> anyhow :: Result < [ Vec < u8 >",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "> { Ok ( [ self . providers . bytes ( \"target-journal\" ) ? , self . providers . bytes ( \"target-witness\" ) ? , ] ) } fn take_task_inputs ( & mut self , queue_capacity : usize , ) -> anyhow :: Result < ( AgentdConfig , OriginalRootCircuitTaskInputsV1",
+          "before": [],
+          "before_context": "> { Ok ( [ self . providers . bytes ( \"target-journal\" ) ? , self . providers . bytes ( \"target-witness\" ) ? ] ) } fn take_task_inputs ( & mut self , queue_capacity : usize ) -> anyhow :: Result < ( AgentdConfig , OriginalRootCircuitTaskInputsV1 <",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": ", self . providers . bytes ( \"target-witness\" ) ? , ] ) } fn take_task_inputs ( & mut self , queue_capacity : usize , ) -> anyhow :: Result < ( AgentdConfig , OriginalRootCircuitTaskInputsV1 < FileAnchorWitnessStore , FileAnchorWitnessStore > , RuntimeFixture , AuthBusObjectiveIngress , ) > { let",
+          "before": [],
+          "before_context": "? , self . providers . bytes ( \"target-witness\" ) ? ] ) } fn take_task_inputs ( & mut self , queue_capacity : usize ) -> anyhow :: Result < ( AgentdConfig , OriginalRootCircuitTaskInputsV1 < FileAnchorWitnessStore , FileAnchorWitnessStore > , RuntimeFixture , AuthBusObjectiveIngress , ) > { let",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": ", OriginalRootCircuitTaskInputsV1 < FileAnchorWitnessStore , FileAnchorWitnessStore > , RuntimeFixture , AuthBusObjectiveIngress , ) > { let Admission { runtime , config , mut request , } = self . admission . take ( ) . ok_or_else ( || anyhow :: anyhow ! ( \"the original Admission was already consumed\" ) ) ? ; request",
+          "before": [],
+          "before_context": ", OriginalRootCircuitTaskInputsV1 < FileAnchorWitnessStore , FileAnchorWitnessStore > , RuntimeFixture , AuthBusObjectiveIngress , ) > { let Admission { runtime , config , mut request } = self . admission . take ( ) . ok_or_else ( || anyhow :: anyhow ! ( \"the original Admission was already consumed\" ) ) ? ; request",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            "{"
+          ],
+          "after_context": ") . map ( | byte | format ! ( \"{byte:02x}\" ) ) . collect ( ) ; let file = | name | { OpenOptions :: new ( ) . read ( true ) . write ( true ) . create ( true ) . truncate ( false",
+          "before": [],
+          "before_context": ") . map ( | byte | format ! ( \"{byte:02x}\" ) ) . collect ( ) ; let file = | name | OpenOptions :: new ( ) . read ( true ) . write ( true ) . create ( true ) . truncate ( false",
+          "classification": "other_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            "}"
+          ],
+          "after_context": ". create ( true ) . truncate ( false ) . open ( runtime . identity . home_root . join ( name ) ) } ; let witness = | name , label : & str | { FileAnchorWitnessStore :: open ( file ( name ) ? , JournalScope",
+          "before": [],
+          "before_context": ". create ( true ) . truncate ( false ) . open ( runtime . identity . home_root . join ( name ) ) ; let witness = | name , label : & str | FileAnchorWitnessStore :: open ( file ( name ) ? , JournalScope {",
+          "classification": "other_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            "{"
+          ],
+          "after_context": "runtime . identity . home_root . join ( name ) ) } ; let witness = | name , label : & str | { FileAnchorWitnessStore :: open ( file ( name ) ? , JournalScope { scope_digest : cell :: d ( label ) , objective_digest : self",
+          "before": [],
+          "before_context": "( runtime . identity . home_root . join ( name ) ) ; let witness = | name , label : & str | FileAnchorWitnessStore :: open ( file ( name ) ? , JournalScope { scope_digest : cell :: d ( label ) , objective_digest : self",
+          "classification": "other_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "file ( name ) ? , JournalScope { scope_digest : cell :: d ( label ) , objective_digest : self . source . objective_digest , } , Generation :: new ( 1 ) . expect ( \"original constant generation\" ) , 64 , ) } ; let ( mut circuit ,",
+          "before": [],
+          "before_context": "file ( name ) ? , JournalScope { scope_digest : cell :: d ( label ) , objective_digest : self . source . objective_digest } , Generation :: new ( 1 ) . expect ( \"original constant generation\" ) , 64 , ) ; let ( mut circuit , mut",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            "}"
+          ],
+          "after_context": ": self . source . objective_digest , } , Generation :: new ( 1 ) . expect ( \"original constant generation\" ) , 64 , ) } ; let ( mut circuit , mut bindings ) = super :: super :: super :: configuration ( ) ; bindings [ 0 ]",
+          "before": [],
+          "before_context": "objective_digest : self . source . objective_digest } , Generation :: new ( 1 ) . expect ( \"original constant generation\" ) , 64 , ) ; let ( mut circuit , mut bindings ) = super :: super :: super :: configuration ( ) ; bindings [ 0 ]",
+          "classification": "other_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "= 60_000 ; circuit . programs [ 0 ] . nodes [ 0 ] . kind = CircuitNodeKindV2 :: Decide { max_work : 10_000_000 , } ; let epoch = Instant :: now ( ) ; let inputs = OriginalRootCircuitTaskInputsV1 { definition : self . definition . clone (",
+          "before": [],
+          "before_context": "= 60_000 ; circuit . programs [ 0 ] . nodes [ 0 ] . kind = CircuitNodeKindV2 :: Decide { max_work : 10_000_000 } ; let epoch = Instant :: now ( ) ; let inputs = OriginalRootCircuitTaskInputsV1 { definition : self . definition . clone (",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "\"q24-cell.witness\" , \"original-cell-owner\" ) ? , inference_control : DurableInferenceControl :: open ( runtime . identity . home_root . join ( \"q24-control.journal\" ) , 4 , ) ? , } , source_mode : CircuitQ24TaskOpenModeV1 :: Create , fence : TaskFlowFence :: new ( runtime . identity . agent_id . clone",
+          "before": [],
+          "before_context": "\"q24-cell.witness\" , \"original-cell-owner\" ) ? , inference_control : DurableInferenceControl :: open ( runtime . identity . home_root . join ( \"q24-control.journal\" ) , 4 ) ? , } , source_mode : CircuitQ24TaskOpenModeV1 :: Create , fence : TaskFlowFence :: new ( runtime . identity . agent_id . clone",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "runtime . identity . agent_id . clone ( ) , \"ordinary-q24-owner\" , 1 , runtime . state . current_generation ( ) ? , \"ordinary-q24-fence\" , ) ? , circuit , routes : bindings . remove ( 0 ) . routes , bundle : self . bundle . clone (",
+          "before": [],
+          "before_context": "runtime . identity . agent_id . clone ( ) , \"ordinary-q24-owner\" , 1 , runtime . state . current_generation ( ) ? , \"ordinary-q24-fence\" ) ? , circuit , routes : bindings . remove ( 0 ) . routes , bundle : self . bundle . clone (",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "config , inputs , runtime , request ) ) } fn install ( & mut self , custody : Custody , queue_capacity : usize , ) -> anyhow :: Result < ( Result < Installed , OriginalRootInitialInstallationErrorV1 > , RuntimeFixture , AuthBusObjectiveIngress , ) > { let ( config",
+          "before": [],
+          "before_context": "config , inputs , runtime , request ) ) } fn install ( & mut self , custody : Custody , queue_capacity : usize ) -> anyhow :: Result < ( Result < Installed , OriginalRootInitialInstallationErrorV1 > , RuntimeFixture , AuthBusObjectiveIngress , ) > { let ( config",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            "{"
+          ],
+          "after_context": "installed = installed ? ; let ( bootstrap , invocation ) = installed . config . take_circuit_task_bootstrap ( ) ? . ok_or_else ( || { anyhow :: anyhow ! ( \"coordinator did not install the original task profile\" ) } ) ? ; runtime . state . attach_automation_store ( AutomationStore :: open ( & runtime .",
+          "before": [],
+          "before_context": "installed = installed ? ; let ( bootstrap , invocation ) = installed . config . take_circuit_task_bootstrap ( ) ? . ok_or_else ( || anyhow :: anyhow ! ( \"coordinator did not install the original task profile\" ) ) ? ; runtime . state . attach_automation_store ( AutomationStore :: open ( & runtime . identity",
+          "classification": "other_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            "}"
+          ],
+          "after_context": ", invocation ) = installed . config . take_circuit_task_bootstrap ( ) ? . ok_or_else ( || { anyhow :: anyhow ! ( \"coordinator did not install the original task profile\" ) } ) ? ; runtime . state . attach_automation_store ( AutomationStore :: open ( & runtime . identity . layout ) . await ? )",
+          "before": [],
+          "before_context": "bootstrap , invocation ) = installed . config . take_circuit_task_bootstrap ( ) ? . ok_or_else ( || anyhow :: anyhow ! ( \"coordinator did not install the original task profile\" ) ) ? ; runtime . state . attach_automation_store ( AutomationStore :: open ( & runtime . identity . layout ) . await ? )",
+          "classification": "other_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "clone ( ) ) ) ; Ok ( RootSession { runtime , request , installed , cancellation , worker : Some ( worker ) , } ) } } struct RootSession { runtime : RuntimeFixture , request : AuthBusObjectiveIngress , installed : Installed , cancellation : CancellationToken , worker",
+          "before": [],
+          "before_context": "clone ( ) ) ) ; Ok ( RootSession { runtime , request , installed , cancellation , worker : Some ( worker ) } ) } } struct RootSession { runtime : RuntimeFixture , request : AuthBusObjectiveIngress , installed : Installed , cancellation : CancellationToken , worker",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "( 1 , self . runtime . identity . spawn_generation , AgentdMethod :: ObjectiveStart { request : self . request . clone ( ) , } , ) . await ? ; let AgentdPayload :: ObjectiveRun ( admission ) = response . payload else { anyhow :: bail !",
+          "before": [],
+          "before_context": "( 1 , self . runtime . identity . spawn_generation , AgentdMethod :: ObjectiveStart { request : self . request . clone ( ) } ) . await ? ; let AgentdPayload :: ObjectiveRun ( admission ) = response . payload else { anyhow :: bail ! (",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        },
+        {
+          "after": [
+            ","
+          ],
+          "after_context": ", self . runtime . identity . spawn_generation , AgentdMethod :: ObjectiveStart { request : self . request . clone ( ) , } , ) . await ? ; let AgentdPayload :: ObjectiveRun ( admission ) = response . payload else { anyhow :: bail ! ( \"original signed ingress did not return ObjectiveRun\"",
+          "before": [],
+          "before_context": "1 , self . runtime . identity . spawn_generation , AgentdMethod :: ObjectiveStart { request : self . request . clone ( ) } ) . await ? ; let AgentdPayload :: ObjectiveRun ( admission ) = response . payload else { anyhow :: bail ! ( \"original signed ingress did not return ObjectiveRun\"",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        }
+      ],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;",
+        "use std::collections::BTreeMap;",
+        "use std::os::unix::fs::PermissionsExt as _;",
+        "use crate::OriginalRootCircuitTaskInputsV1;",
+        "use crate::OriginalRootCircuitTaskRuntimeV1;",
+        "use crate::OriginalRootInitialGenerationCustodyV1;",
+        "use crate::OriginalRootInitialInstallationErrorV1;",
+        "use crate::PublishedCircuitFeatureCompletionV1;",
+        "use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;",
+        "use crate::neuron_generation_initial::prepare_agentd_generation_initial_v1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;",
+        "use codex_hepta_contracts::RootAuthorityDirectory;",
+        "use codex_hepta_contracts::SignedFinalUseGrant;"
+      ],
+      "use_items_before": [
+        "use super::*;",
+        "use std::collections::BTreeMap;",
+        "use std::os::unix::fs::PermissionsExt as _;",
+        "use codex_hepta_contracts::RootAuthorityDirectory;",
+        "use codex_hepta_contracts::SignedFinalUseGrant;",
+        "use crate::OriginalRootCircuitTaskInputsV1;",
+        "use crate::OriginalRootCircuitTaskRuntimeV1;",
+        "use crate::OriginalRootInitialGenerationCustodyV1;",
+        "use crate::OriginalRootInitialInstallationErrorV1;",
+        "use crate::PublishedCircuitFeatureCompletionV1;",
+        "use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;",
+        "use crate::neuron_generation_initial::prepare_agentd_generation_initial_v1;",
+        "use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;"
+      ]
+    },
+    {
+      "all_macro_token_trees_exactly_equal": true,
+      "comments_exact_equal": true,
+      "full_tokens_equal": false,
+      "literal_sequence_exact_equal": true,
+      "macro_invocation_count": 42,
+      "module_inventory_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+      "remaining_token_changes": [
+        {
+          "after": [
+            ","
+          ],
+          "after_context": "let recovery = custody . recover_original ( fixture . providers . selection ( ) ? , fixture . providers . target_reopen ( ) ? , ) ; anyhow :: ensure ! ( matches ! ( recovery , Err ( crate :: AgentdError :: Invalid ( ref text ) )",
+          "before": [],
+          "before_context": "let recovery = custody . recover_original ( fixture . providers . selection ( ) ? , fixture . providers . target_reopen ( ) ? ) ; anyhow :: ensure ! ( matches ! ( recovery , Err ( crate :: AgentdError :: Invalid ( ref text ) )",
+          "classification": "comma_requires_context",
+          "op": "insert"
+        }
+      ],
+      "use_inventory_equal": true,
+      "use_items_after": [
+        "use super::*;"
+      ],
+      "use_items_before": [
+        "use super::*;"
+      ]
+    }
+  ],
+  "format": "hepta-main41e-independent-scoped-semantic-byte-proof-v1",
+  "frozen_lexical_diagnostic": {
+    "bytes": 711302,
+    "git_blob": "60363dffda0d6f475530527fceb729d21706b1e3",
+    "sha256": "6cbda19929e44e21d03f68899cee9d20698be518ef9c548262b67550f3b1b646"
+  },
+  "item_helpers": {
+    "bytes": 3055,
+    "git_blob": "bacee1271f5ab00863ab663fa4dec024f8508211",
+    "sha256": "a2c1d638e75dea12d08511361913c9551cd71025cd2ab654a468712f170c0c02"
+  },
+  "limits": "Pure byte and lexical audit; not a Rust compiler, runtime test or qualification result.",
+  "only_changed_assertion_macro": [
+    {
+      "changes": [
+        {
+          "after": [
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "observed"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "identifier",
+              "load"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "Ordering"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Acquire"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "!="
+            ],
+            [
+              "identifier",
+              "already_expired"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"pre-expiry refuses before IO; crossing case first produced the actual original response\""
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "before": [
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "observed"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "identifier",
+              "load"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "identifier",
+              "Ordering"
+            ],
+            [
+              "punct",
+              "::"
+            ],
+            [
+              "identifier",
+              "Acquire"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "=="
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "identifier",
+              "already_expired"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"pre-expiry refuses before IO; crossing case first produced the actual original response\""
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "name": "anyhow::ensure",
+          "ordinal": 41
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs"
+    }
+  ],
+  "script": {
+    "bytes": 13865,
+    "git_blob": "e84b5316ef480ef657d83270759929ca0c7b1993",
+    "sha256": "b73b6d0c8573d876da83bef04a38e523850b97b7492af4b024c5c58d8631ba86"
+  }
+}

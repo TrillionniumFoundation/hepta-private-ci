@@ -1,0 +1,118 @@
+{
+  "H_calls": 0,
+  "bootstrap": {
+    "bytes": 5700,
+    "git_blob": "3f4692a37efcdc6cb6cfe070f1d574d88fbea14a",
+    "sha256": "d9ad747e42fa3a23fecac735a3a2927d4f81d9ba5d4371ce2427a55b5af1290b"
+  },
+  "bootstrap_full_inverse_original_BASE_PINS": true,
+  "canonical_execution_authorized": false,
+  "canonical_seven_constants_inverse_equal": true,
+  "canonical_unchanged_functions": 46,
+  "config": {
+    "bytes": 2906,
+    "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+    "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+  },
+  "config_permission_changes": [
+    "root_execution_approved",
+    "status"
+  ],
+  "config_review_binding_changes": [
+    "root_input_review",
+    "source_peer_review",
+    "waiting_for"
+  ],
+  "control_peer": "0216a7064812580ba6e2eb8db3fbc9ef71f19a8d",
+  "driver": {
+    "bytes": 28657,
+    "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+    "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+  },
+  "exact_allowed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py"
+  ],
+  "exact_request_peer": "12c4dce5eb6b587e437ba961abc283916c17e301",
+  "fmt_seconds": 900,
+  "format": "hepta-root-final-format-exact-request-byte-review-v1",
+  "four_payload_pins": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2906,
+      "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+    },
+    "MAINTENANCE_NORMAL.original.json": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2998722,
+      "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+      "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+    },
+    "driver.py": {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    }
+  },
+  "full_GET_ledger": {
+    "bytes": 26756,
+    "git_blob": "0da6488c7f7a9005201dd107cbda989c2a0a3b11",
+    "sha256": "d00b45606f8d6bb10dd1460c675098655ec961ef5ade7f008ba743caf9395895"
+  },
+  "full_GET_ledger_entries": 61,
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-final-nonrust-format-v1",
+  "limits": [
+    "No native functions executed by this review; all live guards must still pass in the exact approved job.",
+    "No real A/B/C task or owner authority, causal outcome/cost/evaluator independence or process cold recovery is established.",
+    "Any missing or failed actual proof remains Unknown/failed; no retry, rollback, overwrite or new identity."
+  ],
+  "native_dispatch_authorized_by_this_review": false,
+  "new_explicit_JSON_permission_target": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+  "old_path_rule_pure_subset": false,
+  "original_HOLD": {
+    "bytes": 2897,
+    "git_blob": "92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3",
+    "sha256": "e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a"
+  },
+  "other_QA_wildcard_write_permission_removed": true,
+  "outer_seconds": 2100,
+  "preflight_apply_seconds": 600,
+  "qualification": false,
+  "record_seconds": 300,
+  "request": {
+    "bytes": 757672,
+    "git_blob": "9ca09c7e486277f72669173c649290d2124d794e",
+    "sha256": "bffdf1e54e4f2437c34086b2f5322484deeef2b1190728068801ef20da621b26"
+  },
+  "review_bound_HOLD": {
+    "bytes": 2914,
+    "git_blob": "26783f1a7de2bd49164b0f83675e3a6c732d3d96",
+    "sha256": "9e4c971bcd006213829d09c93d99fb729d564443d26565076096751984a82014"
+  },
+  "root_actual_complete_source_review": "43d03bd7f8d663de9893fd603ff0162ab03c349b",
+  "root_actual_maintenance_runtime_review": "775898e4ef848f9203576a5efac2da4c505bc39d",
+  "root_nonrust_projection_review": "94c9d4fa5843806a0ae8e0a08296840c4ad625d9",
+  "single_EX": "Only original thin main. Bootstrap stages and execs without acquiring or inheriting EX.",
+  "source_peer": "7dce432cbecd7b349db5e8599a8e1c58a0b7f4bf",
+  "status": "EXACT_STATIC_BYTES_REVIEWED_WAITING_ROOT_DISPATCH_DECISION",
+  "stdin": {
+    "bytes": 751579,
+    "git_blob": "17a80f7079d350bafb73bcd82bb54c45a5f8c990",
+    "sha256": "3362aba972f9a8daaf3d6036106c8c4c38cbb27fb9797c633eddb89f53ac8804"
+  },
+  "unchanged_thin_functions": [
+    "identity",
+    "first_read",
+    "lock_identity",
+    "apply_packet",
+    "retain_terminal",
+    "main"
+  ],
+  "whole_byte_config_inverses_equal": true
+}

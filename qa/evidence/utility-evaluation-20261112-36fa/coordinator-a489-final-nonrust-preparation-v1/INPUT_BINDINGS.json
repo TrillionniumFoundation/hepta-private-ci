@@ -1,0 +1,79 @@
+{
+  "actual_maintenance_job": "1a1d47cebc8-392-41e",
+  "baseline_inventory_origin": "Complete original bytes exactly recovered offline and matched to actual 41e ARTIFACTS raw/gzip/part identities. Runtime will read the existing original gzip and independently recapture every current physical source leaf.",
+  "format": "hepta-last-nonrust-original-bindings-v1",
+  "future_actual_result": null,
+  "future_native_request": null,
+  "native_prior_records": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run",
+  "native_source": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+  "pins": {
+    "BASELINE": {
+      "bytes": 5633323,
+      "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba",
+      "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1"
+    },
+    "BASELINE_GZIP_PIN": {
+      "bytes": 1266734,
+      "git_blob": "64d1b890871434829776a4850865eac8d95d79c2",
+      "sha256": "27781a7a5eded2f0b14a07bd7868f23a36d31df10a9e7282eb237bc2ce7b155b"
+    },
+    "MAINTENANCE_ARTIFACTS_PIN": {
+      "bytes": 53526,
+      "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+      "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+    },
+    "MAINTENANCE_CONFIG_PIN": {
+      "bytes": 13693,
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+    },
+    "MAINTENANCE_GIT_PIN": {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    "MAINTENANCE_INPUTS_PIN": {
+      "bytes": 6256,
+      "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+      "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+    },
+    "MAINTENANCE_LEASE_PIN": {
+      "bytes": 841,
+      "git_blob": "d2f348f2e2864be124049548118b0ad2eea424e5",
+      "sha256": "523208c3692d5ffe93a546cd06faf7500daf4f036386996082301943f19acd26"
+    },
+    "MAINTENANCE_METADATA_GZIP_PIN": {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    "MAINTENANCE_METADATA_PIN": {
+      "bytes": 2654,
+      "git_blob": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+      "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9"
+    },
+    "MAINTENANCE_NORMAL_PIN": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    "MAINTENANCE_PIN": {
+      "bytes": 68520,
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+    },
+    "MAINTENANCE_RESULT_PIN": {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    }
+  },
+  "proposed_create_only_control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1",
+  "proposed_four_staged_files": [
+    "driver.py",
+    "APPROVED_CONFIG.json",
+    "NONRUST_PACKET.json",
+    "MAINTENANCE_NORMAL.original.json"
+  ],
+  "qualification": false
+}

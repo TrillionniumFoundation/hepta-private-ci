@@ -1,0 +1,11 @@
+tree 8ebb37e523ad3932a58cf016af0a9f4e0eeb6638
+parent d25675445c39f76db69a7bd8e71a1a72e1cd5b9f
+author Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794570518 -0500
+committer Qian QI <102159240+ProfHepta@users.noreply.github.com> 1794570518 -0500
+
+hepta: freeze reviewed coordinator maintenance and source fences
+
+Bind the actual 41e fix/fmt and 50f final source images to one immutable candidate.
+Refresh the four reviewed registration and source-contract files and preserve the original owner, capability, and test gates.
+
+The 50f full physical inventory contains 15,243 leaves. Final formatting made no further source changes. Source and native qualification remain pending; this commit does not establish a real authorized learning or process-cold recovery chain.

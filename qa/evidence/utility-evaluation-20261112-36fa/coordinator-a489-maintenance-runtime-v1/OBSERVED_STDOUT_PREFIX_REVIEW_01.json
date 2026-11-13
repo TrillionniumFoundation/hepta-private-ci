@@ -1,0 +1,93 @@
+{
+  "format": "hepta-original-durable-running-stdout-prefix-v1",
+  "assembled_at": "2026-11-13T10:46:55.399377+00:00",
+  "job_id": "1a1d47cebc8-392-41e",
+  "original_streams": [
+    {
+      "name": "STREAM_READ_01.original.json",
+      "bytes": 6330,
+      "sha256": "00ff8fb6e9722d9c9201085cd2bd83911173d98080062ccea093ec781ffc9427",
+      "git_blob": "736bfcb6fb082a0dd2722cce737c1eda22570549",
+      "offset": 0,
+      "next_offset": 1859
+    },
+    {
+      "name": "STREAM_READ_02.original.json",
+      "bytes": 50373,
+      "sha256": "470d109d4e547c62824542e984d880433f6d550488ad01155b1731d66d561a86",
+      "git_blob": "a5a4e77c5aa856be001f69a12bfa5403f3926320",
+      "offset": 1859,
+      "next_offset": 18243
+    },
+    {
+      "name": "STREAM_READ_03.original.json",
+      "bytes": 49661,
+      "sha256": "37675b878538f79dacdc67bc6e9dd376517378a33ca68523cbfa78654f2d6d52",
+      "git_blob": "f8cd9a7ff0be5e359adb8edaaffaa12df98bc922",
+      "offset": 18243,
+      "next_offset": 34515
+    },
+    {
+      "name": "STREAM_READ_04.original.json",
+      "bytes": 13890,
+      "sha256": "ec64ee63391ddde3be1ed363146c53e8060557ff302cface553b8d764ce3c417",
+      "git_blob": "afe38792ac34879b382994d2f9579a236bba87bc",
+      "offset": 34515,
+      "next_offset": 38954
+    },
+    {
+      "name": "STREAM_READ_05.original.json",
+      "bytes": 50380,
+      "sha256": "f4841693a734b16a5850fcb4b776fa3f181673bb33ff26c872b91da21c7ecb16",
+      "git_blob": "b6bac720f70b4e286ed05699d9cc65da7fdc3842",
+      "offset": 38954,
+      "next_offset": 55338
+    },
+    {
+      "name": "STREAM_READ_06.original.json",
+      "bytes": 50350,
+      "sha256": "31fac30b11cf70c24ceeea4c56559ba64e3a79baeeb44fbfca3494f8c1029f1a",
+      "git_blob": "0441c368b7fc545f287c1b47196b3eae30dfd7ab",
+      "offset": 55338,
+      "next_offset": 71722
+    },
+    {
+      "name": "STREAM_READ_07.original.json",
+      "bytes": 50406,
+      "sha256": "b59c40d3d1aff32a98f3622b108af688bbcad17f85b06c40a27289f6675b8e35",
+      "git_blob": "7022ba31f1978cb62a1f37ac7575307fe54941f4",
+      "offset": 71722,
+      "next_offset": 88106
+    },
+    {
+      "name": "STREAM_READ_08.original.json",
+      "bytes": 23094,
+      "sha256": "40182cebf10a9fcdef11929baa8f0817f0c3347572f775fd487140dad1103ec5",
+      "git_blob": "eb21cee7dc17607d8ab528456a9735e787f2fb8e",
+      "offset": 88106,
+      "next_offset": 95525
+    },
+    {
+      "name": "STREAM_READ_09.original.json",
+      "bytes": 511,
+      "sha256": "ae18c95c11cea28076c7af5d9f09c0785e37a35a003d8f30fc64c0685c3c6da5",
+      "git_blob": "bacff64725a833b6f776409ccf30eb0b6f469ce1",
+      "offset": 95525,
+      "next_offset": 95525
+    }
+  ],
+  "prefix": {
+    "name": "STDOUT_OBSERVED_0_95525.original.txt",
+    "bytes": 95525,
+    "sha256": "aeffd011488ad5f8b606aaed7bbbf946682c769e296e5f82b3b6c0014343a107",
+    "git_blob": "040d59d194661c633c822bbaebcf00e71a42b88c"
+  },
+  "continuous_range": [
+    0,
+    95525
+  ],
+  "stderr_observed_bytes": 0,
+  "last_authoritative_status": "STATUS_05.original.json",
+  "last_authoritative_state": "running",
+  "native_complete_output_or_terminal_claimed": false
+}

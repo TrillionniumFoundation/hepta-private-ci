@@ -1,0 +1,26 @@
+{
+  "format": "hepta-qualification-checklist-local-preparation-errors-v1",
+  "observations": [
+    {
+      "cause": "Unescaped template interpolation in tool orchestration; discarded before any original runner or test execution",
+      "error": "ReferenceError: EXACT_FINAL_WORKFLOW_PARENT_EXPRESSION is not defined",
+      "resolution": "Literal placeholder assembled without JS interpolation in the new script",
+      "step": "initial JS construction before any file write"
+    },
+    {
+      "cause": "apply_patch added one terminal LF to an original JSON payload with no terminal LF",
+      "error": "Historical source request local copy 991 bytes did not equal original eae8d469 990 bytes",
+      "original_git_blob": "eae8d46956ac3afd89bf18b30d69997cbe925788",
+      "resolution": "Recreated exactly from the already complete Git GET structuredContent.content; source SDK unchanged",
+      "retained_derived_copy": "inputs/HISTORICAL_SOURCE_REQUEST.LOCAL_COPY_EXTRA_LF.json",
+      "step": "first pure extraction execution"
+    }
+  ],
+  "project_execution_counts": {
+    "H": 0,
+    "QA": 0,
+    "Rust": 0,
+    "formatter": 0
+  },
+  "scope": "Only the reviewer local preparation, not source/H/QA/native gates"
+}

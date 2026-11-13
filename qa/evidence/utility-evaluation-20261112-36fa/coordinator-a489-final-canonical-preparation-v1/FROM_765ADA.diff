@@ -1,0 +1,30 @@
+--- original-765ada.py
++++ driver.HOLD.py
+@@ -8,20 +8,20 @@
+ import argparse, base64, datetime, fcntl, gzip, hashlib, json, os, pathlib, select
+ import shutil, signal, stat, struct, subprocess, sys, time, traceback, types, zlib
+ 
+-REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1')
+-CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1')
++REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1')
++CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1')
+ OUT = CONTROL / 'run'
+ CONFIG = CONTROL / 'APPROVED_CONFIG.json'
+ PACKET = CONTROL / 'CANONICAL_PACKET.json'
+ LOCK = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock')
+ LOCK_ID = {'device':2050,'inode':50139448,'uid':1000,'mode':384,'nlink':1}
+-INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py')
++INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/inventory-driver.original.py')
+ GIT = '/usr/bin/git'
+-OLD = '9c4a11f61d30e9cc352bf44d56c98909d202a55d'
+-OLD_TREE = 'ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7'
+-OLD_PARENTS = ['86dd56a930277e0d1aef3e475e35c2b5d60b43b7']
++OLD = 'd25675445c39f76db69a7bd8e71a1a72e1cd5b9f'
++OLD_TREE = 'a489b394666b8141840275128a780605b024cde0'
++OLD_PARENTS = ['cc57c7198db6293ccca562253c42fffbe2a04633']
+ NEW = NEW_TREE = NEW_PARENTS = None
+-LEAVES = 15188
++LEAVES = 15243
+ ACTION_SECONDS = 600
+ RECORD_SECONDS = 180
+ INVENTORY_PIN = {'bytes':22946, 'sha256':'20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob':'51181866cbbb6e0176aab04117efffa8b6792b31'}

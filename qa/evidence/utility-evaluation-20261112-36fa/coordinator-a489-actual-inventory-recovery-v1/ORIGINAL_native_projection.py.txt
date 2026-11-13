@@ -1,0 +1,7 @@
+def native_projection(raw_inventory):
+    rows = []
+    for row in parse(raw_inventory)['files']:
+        rows.append({'path': row['path'], 'mode': row['index_mode'], 'bytes': row['bytes'], 'sha256': row['sha256'], 'blob': row['working_blob']})
+    raw = json.dumps(sorted(rows, key=lambda row: os.fsencode(row['path'])), sort_keys=True, separators=(',', ':')).encode()
+    pin(raw, packet['current']['native_inventory'], 'original native five-field projection of actual new complete bytes')
+    return raw

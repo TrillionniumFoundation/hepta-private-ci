@@ -1,0 +1,215 @@
+{
+  "HOLD_launch": {
+    "approved": false,
+    "bootstrap": {
+      "bytes": 5700,
+      "git_blob": "cb67cf33b0262e9c4836e16888d125d5ee9c7ed7",
+      "sha256": "987f747ec050db58d19a9967f59907165f12c93c986f7538597dd027a998fc09"
+    },
+    "config": {
+      "bytes": 2897,
+      "git_blob": "92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3",
+      "sha256": "e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a"
+    },
+    "decoded_four_inputs": {
+      "APPROVED_CONFIG.json": {
+        "bytes": 2897,
+        "git_blob": "92d3fa23a8894c6aed4d224b2ae9bfccfc8653e3",
+        "sha256": "e772245c4a8d8636b8fa87d24383a28376fdb8b98dbbd18311a26e5deeb5bf5a"
+      },
+      "MAINTENANCE_NORMAL.original.json": {
+        "bytes": 956,
+        "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+        "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+      },
+      "NONRUST_PACKET.json": {
+        "bytes": 2998722,
+        "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+        "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+      },
+      "driver.py": {
+        "bytes": 28657,
+        "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+        "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+      }
+    },
+    "full_inverse_BASE_PINS_only": true,
+    "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-final-nonrust-format-v1",
+    "no_env": true,
+    "original_bootstrap": {
+      "bytes": 5711,
+      "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+      "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+    },
+    "seven_fields": [
+      "args",
+      "cwd",
+      "executable",
+      "host",
+      "idempotency_key",
+      "stdin",
+      "timeout_seconds"
+    ],
+    "stdin": {
+      "bytes": 751567,
+      "git_blob": "734b0109ab680a521553b42240b3b27adf784e81",
+      "sha256": "118804b581cb804b1687fe8c582bc23b6657bd8d01c753207e0227a6c8270384"
+    },
+    "typed": {
+      "bytes": 757660,
+      "git_blob": "1302cc1ea34041636f0ba31ee7c44232e485435d",
+      "sha256": "a1ec74be3f91546b93ecb7b6b594aa15e705e3f0263f3b548ed4b1a7d27d8e3d"
+    },
+    "unique_EX_owner": "unchanged thin main; bootstrap does not hold a lock"
+  },
+  "H_calls": 0,
+  "Rust_or_QA_or_full_collector_executions": 0,
+  "actual_maintenance_module": {
+    "bytes": 68520,
+    "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+    "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+  },
+  "canonical_future_HOLD": {
+    "46_function_bodies_equal": true,
+    "all_future_actual_proofs_still_null": true,
+    "budgets": {
+      "action": 600,
+      "outer": 900,
+      "records": 180
+    },
+    "driver": {
+      "bytes": 46159,
+      "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+      "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+    },
+    "execution_approved": false,
+    "original": {
+      "bytes": 46094,
+      "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+      "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+    },
+    "seven_substitutions": [
+      {
+        "after": "REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1')",
+        "before": "REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1')"
+      },
+      {
+        "after": "CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1')",
+        "before": "CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1')"
+      },
+      {
+        "after": "INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/inventory-driver.original.py')",
+        "before": "INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py')"
+      },
+      {
+        "after": "OLD = 'd25675445c39f76db69a7bd8e71a1a72e1cd5b9f'",
+        "before": "OLD = '9c4a11f61d30e9cc352bf44d56c98909d202a55d'"
+      },
+      {
+        "after": "OLD_TREE = 'a489b394666b8141840275128a780605b024cde0'",
+        "before": "OLD_TREE = 'ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7'"
+      },
+      {
+        "after": "OLD_PARENTS = ['cc57c7198db6293ccca562253c42fffbe2a04633']",
+        "before": "OLD_PARENTS = ['86dd56a930277e0d1aef3e475e35c2b5d60b43b7']"
+      },
+      {
+        "after": "LEAVES = 15243",
+        "before": "LEAVES = 15188"
+      }
+    ]
+  },
+  "decision": "NO_CONCRETE_STATIC_BLOCKER_IN_FIXED_HOLD_CONTROLS; FINAL_REQUEST_BINDING_AND_ROOT_APPROVAL_STILL_REQUIRED",
+  "driver": {
+    "bytes": 28657,
+    "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+    "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+  },
+  "execution_authorized": false,
+  "explicit_JSON_permission_target": {
+    "after": {
+      "bytes": 358632,
+      "git_blob": "3e5950ad4959af76cfbf7d350e45f14facf77491",
+      "sha256": "0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644"
+    },
+    "before": {
+      "bytes": 358159,
+      "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+      "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7"
+    },
+    "mode": "100644",
+    "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json"
+  },
+  "findings": [
+    {
+      "evidence_and_boundary": "The successor consumes exact completed maintenance RESULT, successful original supervisor, final full inventory gzip/raw, raw Git state, complete 2654-byte Git metadata, ARTIFACTS, 24-input map, and historical EX lease. Job, source/parents/target, both fix/fmt argv/budgets, complete retention and both original final audits are checked. The original normal parser rejects missing/partial/timeout/cancel/retry/truncated output; no previous failure or original SH73 read is relabeled.",
+      "finding": "Actual 41e proof explicitly replaces historical capture",
+      "id": "C01"
+    },
+    {
+      "evidence_and_boundary": "Before any source replacement, the runtime must reread all 15243 physical leaves and compare exact raw inventory with actual 41e, verify raw Git state and complete Git metadata byte equality, and recompute c026. All 17 pre-existing dirty Rust files are actually read and cached before apply so later retention has real preimages. Our pure dataflow invocation only checked fixed record schema/bytes; it did not perform this future live observation.",
+      "finding": "Full current baseline must still be observed under the new EX",
+      "id": "C02"
+    },
+    {
+      "evidence_and_boundary": "The old safe rule did not allow the existing contract JSON. This successor is not a pure subset: it explicitly admits only qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json in addition to three exact existing paths. Every strict packet before/after pin and complete after byte string maps to the independently reviewed frozen source proposal. The old generic qa/b4-no-bypass/*.py allowance is removed; arbitrary JSON/Python/new/deleted/Rust paths are rejected by literal-list equality.",
+      "finding": "One explicit JSON permission adaptation",
+      "id": "C03"
+    },
+    {
+      "evidence_and_boundary": "apply_packet is byte-identical to 080753: full source/Git/global-process guard before application; every real parent, no-follow single-link regular preimage and exact old hash; current-user ownership and 0644 mode; sibling temporary write/fsync/fullhash; repeated exact preimage immediately before os.replace; directory fsync and actual final file pin. All physical leaves must match the independently reconstructed 8ebb result before fmt. No reset or rollback is introduced.",
+      "finding": "Original safe source replacement unchanged",
+      "id": "C04"
+    },
+    {
+      "evidence_and_boundary": "The six exact unchanged thin functions include first_read, lock_identity, apply_packet, main and terminal retention. The bootstrap acquires no EX and carries no inherited EX descriptor. Thin main alone obtains LOCK_EX|LOCK_NB on the existing fixed inode and rechecks its identity at completion; there is no second writer lock or replacement lock file.",
+      "finding": "Original single-lock ownership unchanged",
+      "id": "C05"
+    },
+    {
+      "evidence_and_boundary": "The exact 594610 maintenance module is loaded under a non-main name. Its original main, initial_preflight and validate_config are not called; its original runtime/environment checks, source entry snapshots, execute_logged, full source/Git finalizers and global busy/unknown guard are reused. The thin driver has exactly one stage call: original fmt --base c0f with 900 seconds. Preflight/apply600, total record300, outer2100 remain. There is no new fix/test/dependency install/ref operation.",
+      "finding": "Original runtime, stage, budgets and scope retained",
+      "id": "C06"
+    },
+    {
+      "evidence_and_boundary": "Original main and retain_terminal are byte-identical. A partial source attempt or exception after attempting a command is Unknown; real fmt nonzero is FailedFormat only if retained evidence remains sufficient. Any incomplete source/input/same-lock audit downgrades to Unknown. Partial source application and actual fmt postimages are retained, never automatically retried, rolled back or reset. Command success is APPLIED_AND_FORMATTED_REVIEW_REQUIRED, never qualification.",
+      "finding": "Failure and unknown remain failures/unknown",
+      "id": "C07"
+    },
+    {
+      "evidence_and_boundary": "The 5700-byte bootstrap inversely restores original 9ca752 by changing only BASE/PINS; all four helper bodies and execution tail are byte-identical. Its 757660-byte seven-field request has desktop host, original cwd/python, no env field and 2100 seconds. Exact stdin751567 is below1MiB, contains only four inputs, and expands only the strict packet to its exact 2998722 bytes under the original40MB cap. Every payload matches its fixed identity. Control directory creation is absent-only with real-parent checks, O_EXCL|O_NOFOLLOW/0600 files, complete9-field stat/readback, fsync, and the original exec. HOLD approval remains false.",
+      "finding": "Frozen HOLD bootstrap/request is exact and bounded",
+      "id": "C08"
+    },
+    {
+      "evidence_and_boundary": "The separate e8d606 driver reverses exactly seven source/path/count constants to 765ada; all46 function bodies are byte-identical. Original full physical==canonical checks, standard complete index refresh and detached HEAD compare-and-set remain unchanged by this layer. Future actual final-format result/normal/inventory/Git, canonical commit/object packet and reviewed formatter path list remain null. Original600/180/900 budgets remain. This is not a ready canonical operation or an approval to align source.",
+      "finding": "Canonical successor is future HOLD only",
+      "id": "C09"
+    },
+    {
+      "evidence_and_boundary": "This review covers the fixed HOLD identities only. A separately frozen two-permission-field config successor and its regenerated exact bootstrap/stdin/request must be bound before any execution decision. Root alone controls that decision. No H/control entry point/source write/ref operation was performed by this peer.",
+      "finding": "Final execution approval has not been inferred",
+      "id": "C10"
+    }
+  ],
+  "format": "hepta-final-nonrust-canonical-HOLD-independent-peer-v1",
+  "independent_dataflow_scope": "The exact new prove_actual_maintenance FunctionDef and seven original pure JSON/hash/supervisor helper FunctionDefs ran solely against fixed bytes in a local memory adapter. Eight writes were dictionary entries. Native prepare/apply/main/stage/environment/lock functions were never invoked.",
+  "original_thin": {
+    "bytes": 22679,
+    "git_blob": "080753bf6fa5070c0f71096ace0cf199762ee42c",
+    "sha256": "dd5c81cdbfd7f53346304d0d36164b5d7ac753daa854c6dbff0d7e554788dccc"
+  },
+  "pure_byte_and_actual_record_proof": {
+    "bytes": 13878,
+    "git_blob": "476fc866d87c94c012b4c97796cb3b7218832fd2",
+    "sha256": "6983b414387d1771271beb766a474a0baeda8f0ba95e7526ebe5c871e3771843"
+  },
+  "qualification": false,
+  "source_or_ref_mutations": 0,
+  "source_peer_review": "7dce432cbecd7b349db5e8599a8e1c58a0b7f4bf",
+  "strict_packet": {
+    "bytes": 2998722,
+    "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+    "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+  }
+}

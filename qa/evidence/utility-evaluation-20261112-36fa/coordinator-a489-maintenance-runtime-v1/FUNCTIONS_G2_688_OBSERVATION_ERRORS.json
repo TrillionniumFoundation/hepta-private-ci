@@ -1,0 +1,53 @@
+{
+  "format": "hepta-local-observer-recovery-event-v1",
+  "cell": "g2:688",
+  "original_tool_result": [
+    {
+      "i": 0,
+      "ok": "fix.after.HEAD-working.patch"
+    },
+    {
+      "i": 1,
+      "ok": "final.HEAD-working.patch"
+    },
+    {
+      "i": 2,
+      "ok": "fix.after.postimages-summary.json"
+    },
+    {
+      "i": 3,
+      "error": "Error"
+    },
+    {
+      "i": 4,
+      "ok": "final.postimages-summary.json"
+    },
+    {
+      "i": 5,
+      "error": "Error: local fixed text read failed"
+    },
+    {
+      "i": 6,
+      "error": "Error: local fixed text read failed"
+    },
+    {
+      "i": 7,
+      "ok": "final.git-state.json"
+    },
+    {
+      "i": 8,
+      "error": "Error: local fixed text read failed"
+    },
+    {
+      "i": 9,
+      "error": "Error: local fixed text read failed"
+    },
+    {
+      "i": 10,
+      "error": "Error: local fixed text read failed"
+    }
+  ],
+  "native_job": "1a1d47cebc8-392-41e",
+  "native_authoritative_terminal": "succeeded exit 0 (previously retained original)",
+  "limits": "Errors are observation/publication branches; they do not change native execution state. The fmt summary branch did not preserve an authoritative result to this agent before throwing."
+}

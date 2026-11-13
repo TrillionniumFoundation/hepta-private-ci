@@ -1,0 +1,109 @@
+{
+  "format": "hepta-actual-50f-empty-formatter-independent-review-v1",
+  "status": "ACTUAL_EMPTY_FMT_BYTES_AND_CORE_RECORDS_CONSISTENT_NOT_QUALIFICATION",
+  "scope": "One independent check of actual original empty formatter transition and its artifact/terminal/result chain. Does not repeat four-file semantic review or reconstruct their actual postimages.",
+  "actual_job": "1a1d4a979d9-392-50f",
+  "inputs": [
+    {
+      "name": "RESULT.json",
+      "bytes": 7408,
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b",
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "NORMAL.original.json",
+      "bytes": 952,
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90",
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "FMT_TERMINAL.original.json",
+      "bytes": 1327,
+      "sha256": "3e8bbf3f5407cbeabd43cc069c236541f528d79c82557e1de9fb54dc6ecf5f8f",
+      "git_blob": "1d12f8870768081a3f35c32aaa9daab61e68a788",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "bytes": 67498,
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f",
+      "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "fmt.after.postimages.json",
+      "bytes": 438,
+      "sha256": "22e40d9fa4e982ae4aedccbe4636f039a377e5af9c54a167455dbf54ffa5d144",
+      "git_blob": "f5c7643422eecfcde833cffc4cb61004f4f682ea",
+      "independent_full_get_equal": true
+    },
+    {
+      "name": "fmt.after.postimages.json.gz.part-001.b64",
+      "bytes": 369,
+      "sha256": "c44dc5b366c7d1ac8f900a82af8e8f5cc06fd70bef64b129065d8fc3bd455cdb",
+      "git_blob": "522981a1c63c0d98514e0b396692bf5d01853624",
+      "independent_full_get_equal": true
+    }
+  ],
+  "actual_maintenance_to_finalfmt_baseline_equal": true,
+  "actual_format_command": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "actual_format_timeout_seconds": 900,
+  "original_format_returncode": 0,
+  "empty_transition": {
+    "raw": {
+      "bytes": 438,
+      "sha256": "22e40d9fa4e982ae4aedccbe4636f039a377e5af9c54a167455dbf54ffa5d144",
+      "git_blob": "f5c7643422eecfcde833cffc4cb61004f4f682ea"
+    },
+    "gzip": {
+      "bytes": 275,
+      "sha256": "37176043df90538c0485ca19f8365e890cffa77fe8d63bfbe0667a7c40aecfee",
+      "git_blob": "8e906c93044cff287759aa7f55d007a12a80ccb5"
+    },
+    "part": {
+      "bytes": 369,
+      "sha256": "c44dc5b366c7d1ac8f900a82af8e8f5cc06fd70bef64b129065d8fc3bd455cdb",
+      "git_blob": "522981a1c63c0d98514e0b396692bf5d01853624"
+    },
+    "changes": [],
+    "before_inventory_sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202",
+    "after_inventory_sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202",
+    "all_supported_physical_changes_scope": true
+  },
+  "manual_application_path_count": 4,
+  "actual_formatter_path_count": 0,
+  "actual_full_physical_inventory": {
+    "bytes": 5633513,
+    "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+    "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+  },
+  "actual_physical_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "physical_leaf_count": 15243,
+  "HEAD_still_precanonical": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "tree": "a489b394666b8141840275128a780605b024cde0",
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ]
+  },
+  "limits": [
+    "The zero-formatter-change conclusion comes from complete actual438-byte transition recovered from the original275-byte gzip and exact artifact pins, not from normal0 alone.",
+    "RESULT reports three verified audits and28 unchanged inputs; complete original Git/metadata/read-only-command records are being separately retained by the native owner.",
+    "Full actual four-path apply/final image recovery and complete inventory graph equivalence remain ordinary/Root work; this review does not claim a second native physical read.",
+    "Canonical alignment, source closure and native qualification are not observed here. Original maintenance/fix history and all old failures remain preserved.",
+    "This is a new observation window; the preceding schema/migration-spec null cutoff is unchanged."
+  ],
+  "execution": {
+    "new_H_calls": 0,
+    "source_or_ref_writes": 0,
+    "project_tests_run": 0,
+    "qualification": false
+  }
+}

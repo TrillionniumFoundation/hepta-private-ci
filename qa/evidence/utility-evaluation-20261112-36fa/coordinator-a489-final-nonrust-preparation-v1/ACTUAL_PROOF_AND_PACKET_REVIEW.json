@@ -1,0 +1,108 @@
+{
+  "H_calls": 0,
+  "actual_input_reads": [
+    {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/RESULT.json",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/MAINTENANCE_NORMAL.original.json",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    {
+      "bytes": 1266734,
+      "git_blob": "64d1b890871434829776a4850865eac8d95d79c2",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/final.inventory.json.gz",
+      "sha256": "27781a7a5eded2f0b14a07bd7868f23a36d31df10a9e7282eb237bc2ce7b155b"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/final.git-state.json",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 53526,
+      "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/ARTIFACTS.json",
+      "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+    },
+    {
+      "bytes": 6256,
+      "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/INPUT_IDENTITIES.json",
+      "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+    },
+    {
+      "bytes": 841,
+      "git_blob": "d2f348f2e2864be124049548118b0ad2eea424e5",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/SOURCE_COORDINATION_EX.json",
+      "sha256": "523208c3692d5ffe93a546cd06faf7500daf4f036386996082301943f19acd26"
+    }
+  ],
+  "actual_producer_predicate_passed": true,
+  "complete_base_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "complete_leaf_count": 15243,
+  "driver": {
+    "bytes": 28657,
+    "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+    "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+  },
+  "exact_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py"
+  ],
+  "format": "hepta-last-nonrust-pure-actual-predicate-and-packet-review-v1",
+  "full_original_inventory_raw_equal": true,
+  "git_metadata_comparison": "Original raw bytes and Python arbitrary-precision integers; no JavaScript JSON reserialization.",
+  "independent_expected_after_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "local_source_reads_only": true,
+  "memory_only_output_names": [
+    "MAINTENANCE_ARTIFACTS.original.json",
+    "MAINTENANCE_FINAL_INVENTORY.original.json.gz",
+    "MAINTENANCE_GIT_METADATA.original.json.gz",
+    "MAINTENANCE_GIT_STATE.original.json",
+    "MAINTENANCE_INPUTS.original.json",
+    "MAINTENANCE_LEASE.original.json",
+    "MAINTENANCE_NORMAL.original.json",
+    "MAINTENANCE_RESULT.original.json"
+  ],
+  "native_functions_executed": false,
+  "new_json_path_is_explicit_permission_target_adaptation": true,
+  "not_executed": [
+    "module_from_original",
+    "prepare",
+    "apply_packet",
+    "main",
+    "stage",
+    "environment_preflight",
+    "any canonical function",
+    "any H tool"
+  ],
+  "original_module": {
+    "bytes": 68520,
+    "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+    "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+  },
+  "producer_result_returned_unchanged": true,
+  "qualification": false,
+  "scope": "Actual pinned historical producer predicate and complete four-file pure-data Merkle validated offline. No live native filesystem/process/lock condition has been observed by this script and no future success result is created.",
+  "strict_packet": {
+    "bytes": 2998722,
+    "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+    "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+  },
+  "unchanged_source_entries": 15239
+}

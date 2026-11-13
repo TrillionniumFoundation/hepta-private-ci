@@ -1,0 +1,22 @@
+{
+  "format": "hepta-exact-approved-stage-dispatch-intent-v1",
+  "created_at": "2026-11-13T10:35:31.944854+00:00",
+  "root_approval": {
+    "git_blob": "4049efd8e04db8a40d14a9182368a5632005e1da",
+    "bytes": 9587,
+    "sha256": "84e208615cd711d671a5c14d104def18ee9a67489a76f75fb0d50f51e442a21f"
+  },
+  "request": {
+    "git_blob": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be",
+    "bytes": 150690,
+    "sha256": "8617f71ce7831737cac574d865b4b7ecbba56a9982496e5ebaf5bb1642a8c995"
+  },
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-control-staging-v1",
+  "timeout_seconds": 900,
+  "maximum_starts": 1,
+  "phase": "stage_only",
+  "main_authorized_only_after_exact_actual_nine_record_readback_and_normal": true,
+  "source_writes": false,
+  "qualification": false
+}

@@ -1,0 +1,71 @@
+{
+  "format": "hepta-independent-review-full-git-readback-v1",
+  "scope": "Three exact-candidate review artifacts; source/control originals remain separately archived. No canonical execution observed.",
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-final-canonical-b608-independent-peer-v1/REVIEW.json",
+      "bytes": 8006,
+      "sha256": "4f42fa4ad5d1a138c4938f1e438af0063912e36c3effc2049b68322092f0c51b",
+      "git_blob": "e1ee21314bf052b13ed64a9038ceba38643be253",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "9f7c30709e7964123bdbb612624c27c7ad8b48213f436f7711d98bb8121b218c",
+        "git_blob": "e4bfc5425bc5bfcd83240cdc3d8b2be2bafabbc3"
+      },
+      "get_sdk": {
+        "bytes": 17605,
+        "sha256": "3e557efb931b92526251b8a54521f2963f71e9a51b4ea1491a80911c4b2e58af",
+        "git_blob": "cfdc2906a06e3b2482d74681bc23080f1159f164"
+      }
+    },
+    {
+      "name": "EXACT_DATAFLOW_REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-final-canonical-b608-independent-peer-v1/EXACT_DATAFLOW_REVIEW.json",
+      "bytes": 15940,
+      "sha256": "7ce11df949c2c3c44ddf2303fb2ac1de64dff5af77bc868c2642176c7957267a",
+      "git_blob": "c9ffd054746de59cf4d2888c2cb63e494b4840e6",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "086a542348dd17c892ee253240d55e5aa3ecc63037c9f19c0752f15b617e0e49",
+        "git_blob": "78cb2bb2b7f6073cf014efae6ea68d93d780e3f2"
+      },
+      "get_sdk": {
+        "bytes": 35461,
+        "sha256": "72227c0aae9a8e33c5c24df05c73f1abe1128aeedf987fd1956451239e318591",
+        "git_blob": "7823c80796b8d8f9b99a1798ac5358341d9e1cbf"
+      }
+    },
+    {
+      "name": "audit_exact_inputs.py",
+      "local_path": "/tmp/hepta-36fa-final-canonical-b608-independent-peer-v1/audit_exact_inputs.py",
+      "bytes": 14975,
+      "sha256": "dc8714af59de2227878ad9decb4c5fee2f1266a38d3221290259af3525a07fcf",
+      "git_blob": "c2b3c0aef8e93a25b4056efd325ba09b02cf9d83",
+      "actual_create": true,
+      "full_readback_equal": true,
+      "create_sdk": {
+        "bytes": 195,
+        "sha256": "10584318df61cd2cb6e5c0618396df683d31795edfc67359d16f3d46ed689b28",
+        "git_blob": "3dbbb8163243072f27af313c2dd95251891a4a64"
+      },
+      "get_sdk": {
+        "bytes": 31337,
+        "sha256": "54f26d148446b507d167976d1fc81f5ad2ab05bf3798b5c277cdd9bafe5a799f",
+        "git_blob": "934a0f07f00d2fd843c5cbb0590b3fb5750d6589"
+      }
+    }
+  ],
+  "actual_full_get_count": 3,
+  "input_full_GET_count": 23,
+  "input_identity_index": {
+    "bytes": 3705,
+    "sha256": "e275a5a4bf837cb0449ea31d421a4330d89ca0b4c11b23ec25fadd7ba8185dd6",
+    "git_blob": "71f65dfd16c26ee2857bb95a14ea1abc6578deed"
+  },
+  "sdk_storage": "Complete original GET/CREATE SDKs retained locally; this metadata does not claim each SDK is an independently uploaded leaf."
+}

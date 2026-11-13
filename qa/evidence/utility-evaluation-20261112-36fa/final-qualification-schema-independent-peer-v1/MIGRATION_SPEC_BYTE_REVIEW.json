@@ -1,0 +1,109 @@
+{
+  "format": "hepta-static-migration-spec-peer-data-v1",
+  "inputs": [
+    {
+      "name": "ADMISSION_MIGRATION.HOLD.json",
+      "bytes": 14117,
+      "sha256": "d8392be0b8182011cf98850cf75d9bf74a28ac57e3b5f0f59a5a1e15e0713aa7",
+      "git_blob": "4ab2f06f804ee93beff2ee15bc67603e4f366a03"
+    },
+    {
+      "name": "QUALIFICATION_BINDINGS.HOLD.json",
+      "bytes": 17284,
+      "sha256": "df0ed79d0d3061c4405cb5270947de176b6e522cb43a3571212ec5f257db9e8e",
+      "git_blob": "6ddb2402b7aaa2d63330efe627033b7cac0d3a7c"
+    },
+    {
+      "name": "SOURCE_GATES_CONFIG.HOLD.json",
+      "bytes": 597,
+      "sha256": "674f476d8b31a20c7dcc8d48c61fd0a3bdc457bf02a849a0f90b095f994158bd",
+      "git_blob": "e908def6523ea6bbca2381832297d76ea5178073"
+    },
+    {
+      "name": "COMPLETE_METADATA_BRIDGE.HOLD.json",
+      "bytes": 2694,
+      "sha256": "1df92b19d84e9ece97a87048d4149e568f14d8c7b40d379d0b619f1b3933aaf1",
+      "git_blob": "83af92d3f60dda5f53c3b006b2508c2fb254ce62"
+    },
+    {
+      "name": "PRODUCER_CHAIN_STATIC_CHECKS.json",
+      "bytes": 4012,
+      "sha256": "3fb11cb5286fbbb0cae0ce44c9113d7387ca34827fcd6ee600c7e1fff877c9f6",
+      "git_blob": "9e9d6e6020f58316f89c86f0e7e41f52e569da23"
+    },
+    {
+      "name": "IMMUTABLE_CONTROL_BINDINGS.json",
+      "bytes": 36564,
+      "sha256": "a608cd1b5ac25a4b701843498b197b20fc9ae40faa03bf184ec2ab6cd844252d",
+      "git_blob": "66a392a2431e7f445fa58f9697a4fa26bc543496"
+    },
+    {
+      "name": "prepare_static_migration.py",
+      "bytes": 40278,
+      "sha256": "29df112972c28a775984e9a12d9be9c2fa030dbe0ff8f5aa55d6071218cbc4a0",
+      "git_blob": "45f60e9f5bd001b823945356d7a1d7bd2af367e7"
+    }
+  ],
+  "author_sdk_complete_input_count_checked": 44,
+  "independent_predecessor_span_identity_count": 13,
+  "planned_preserved_functions": [
+    "check",
+    "identity",
+    "pin",
+    "load",
+    "Admission.read",
+    "Admission.observed_proof",
+    "Admission.current_lock",
+    "Admission.before_native_stage",
+    "Admission.close"
+  ],
+  "planned_changed_functions": [
+    "Admission.__init__",
+    "Admission.acquire_and_validate",
+    "Admission.validate_materialization",
+    "Admission.finish"
+  ],
+  "planned_is_not_executed_or_generated_code": true,
+  "runtime_guard_deep_equal": true,
+  "source_configuration_exact_changed_fields": [
+    "object_repository",
+    "records",
+    "run_identity",
+    "source_checkout",
+    "source_sha",
+    "source_tree",
+    "state"
+  ],
+  "original_gate_bindings_equal_prior_independent_checklist": true,
+  "phase_count": 14,
+  "root_parent_count": 48,
+  "current_source_control_rows": 12,
+  "source_pin_changes": [
+    ".github/workflows/hepta-daemon-learning-native.yml"
+  ],
+  "bridge_reference_calls": [
+    "'/'.join",
+    "(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + '\\n').encode",
+    "PurePosixPath",
+    "all",
+    "children.get",
+    "children.setdefault",
+    "children.setdefault(parent, []).append",
+    "isinstance",
+    "json.dumps",
+    "len",
+    "os.fsencode",
+    "path.startswith",
+    "result.append",
+    "row.items",
+    "set",
+    "sorted",
+    "str",
+    "type",
+    "visit"
+  ],
+  "bridge_reference_function_executed": false,
+  "future_final_subject_and_proofs_null": true,
+  "scope": "Offline JSON/hash/AST comparisons only; no author script main, original code import or runtime/gate invocation.",
+  "qualification": false
+}

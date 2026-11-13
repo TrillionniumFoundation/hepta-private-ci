@@ -1,0 +1,38 @@
+{
+  "inventory": {
+    "inventory": {
+      "body": "def inventory(root):\n    index = {}\n    raw = subprocess.check_output([\"git\", \"-C\", str(root), \"ls-files\", \"--stage\", \"-z\"])\n    for row in raw.split(b\"\\0\"):\n        if not row:\n            continue\n        metadata, relative = row.split(b\"\\t\", 1)\n        mode, oid, stage = metadata.decode().split()\n        if stage != \"0\":\n            raise RuntimeError(\"unmerged index entry in gate source\")\n        index[os.fsdecode(relative)] = (mode, oid)\n    paths = set()\n    for directory, children, files in os.walk(root, followlinks=False):\n        parent = Path(directory)\n        if parent == root:\n            children[:] = [name for name in children if name != \".git\"]\n        for name in children[:]:\n            path = parent / name\n            if path.is_symlink():\n                paths.add(path.relative_to(root).as_posix())\n                children.remove(name)\n        paths.update((parent / name).relative_to(root).as_posix() for name in files)\n    entries = []\n    for relative in sorted(paths | set(index)):\n        path = root / relative\n        mode, oid = index.get(relative, (None, None))\n        entry = {\"path\": relative, \"index_mode\": mode, \"index_blob\": oid}\n        try:\n            info = path.lstat()\n        except FileNotFoundError:\n            entry.update(kind=\"missing\", matches_index=False)\n            entries.append(entry)\n            continue\n        entry[\"permissions\"] = stat.S_IMODE(info.st_mode)\n        if stat.S_ISLNK(info.st_mode):\n            data = os.fsencode(os.readlink(path))\n            entry.update(kind=\"symlink\", bytes=len(data), sha256=digest(data),\n                         working_blob=blob_sha(data), stable=True)\n        elif stat.S_ISREG(info.st_mode):\n            sha256, working_blob, stable = file_hashes(path, info)\n            entry.update(kind=\"file\", bytes=info.st_size, sha256=sha256,\n                         working_blob=working_blob, stable=stable)\n        elif mode == \"160000\" and stat.S_ISDIR(info.st_mode):\n            entry.update(kind=\"gitlink_directory\", stable=True)\n        else:\n            entry.update(kind=\"unsupported\", stable=False)\n        entry[\"matches_index\"] = (\n            oid is not None and entry.get(\"stable\", False)\n            and (entry.get(\"working_blob\") == oid or entry[\"kind\"] == \"gitlink_directory\")\n        )\n        entries.append(entry)\n    result = {\"schema\": SCHEMA + \".inventory\", \"source\": identity(root),\n              \"tracked_entries\": len(index), \"filesystem_entries\": len(paths), \"files\": entries}\n    return (json.dumps(result, sort_keys=True, separators=(\",\", \":\")) + \"\\n\").encode()\n",
+      "source": {
+        "bytes": 2595,
+        "git_blob": "3c16403570a88de979a1e7dacbefc3897c3ade55",
+        "sha256": "b9faab85b35a569760784d413dfec79e8c9f05d9376377c2c480015dc17a99d9"
+      }
+    }
+  },
+  "transition_and_gzip": {
+    "archive_transition": {
+      "body": "def archive_transition(name,before,after):\n    b={x[\"path\"]:x for x in parse(before)[\"files\"]}\n    a={x[\"path\"]:x for x in parse(after)[\"files\"]}\n    changes=[];reader=None\n    try:\n        for path in sorted(set(b)|set(a)):\n            previous=b.get(path);current=a.get(path)\n            if previous==current:continue\n            old=None;new=None\n            if previous is not None and previous[\"kind\"]!=\"missing\":\n                check(previous[\"kind\"] in (\"file\",\"symlink\") and previous.get(\"stable\") is True,\n                      \"supported stable previous source leaf\")\n                value=previous[\"working_blob\"]\n                old=raw_cache.get(value)\n                if old is None:\n                    check(previous.get(\"matches_index\") is True,\"missing exact previous retained postimage: \"+path)\n                    if reader is None:reader=OriginalBlobReader(name+\"-preimages\")\n                    old=reader.get(value)\n                check(len(old)==previous[\"bytes\"] and sha256(old)==previous[\"sha256\"] and oid(\"blob\",old)==value,\n                      \"exact before bytes for \"+path)\n            if current is not None and current[\"kind\"]!=\"missing\":\n                check(current[\"kind\"] in (\"file\",\"symlink\") and current.get(\"stable\") is True,\n                      \"supported stable actual source leaf\")\n                new=read_actual_leaf(path,current)\n                raw_cache[current[\"working_blob\"]]=new\n            changes.append({\"path\":path,\"before\":previous,\"after\":current,\n                            \"before_raw_base64\":None if old is None else base64.b64encode(old).decode(\"ascii\"),\n                            \"after_raw_base64\":None if new is None else base64.b64encode(new).decode(\"ascii\")})\n    finally:\n        if reader is not None:reader.close()\n    packet={\"format\":\"hepta-maintenance-actual-source-transition-v1\",\"stage\":name,\n            \"source_commit_unchanged\":HEAD,\"base_inventory_sha256\":sha256(before),\n            \"after_inventory_sha256\":sha256(after),\"changes\":changes,\n            \"all_physical_changes_including_untracked_or_ignored_are_recorded\":True,\n            \"qualification\":False}\n    gzrecord(name+\".postimages.json.gz\",jbytes(packet))\n    patch=git(\"-c\",\"diff.autoRefreshIndex=false\",\"diff\",\"--binary\",\"--full-index\",\"--no-ext-diff\",\"--no-textconv\",\n              \"--no-renames\",\"HEAD\",\"--\")\n    write(name+\".HEAD-working.patch\",patch)\n    source_map=actual_leaf_map(after)\n    observation={\"change_count\":len(changes),\"paths\":[x[\"path\"] for x in changes],\n                 \"all_actual_physical_leaf_count\":len(source_map),\"all_actual_physical_tree\":merkle(source_map),\n                 \"tree_scope\":\"Every supported physical source leaf, including untracked/ignored files; no Git tree/ref was written.\",\n                 \"HEAD_working_patch_bytes\":len(patch),\"HEAD_working_patch_sha256\":sha256(patch),\n                 \"untracked_are_in_exact_transition_packet\":True}\n    jwrite(name+\".postimages-summary.json\",observation)\n    return observation\n",
+      "source": {
+        "bytes": 3019,
+        "git_blob": "fe423ff63148c6acb4730b66c05d891e53601bff",
+        "sha256": "a6e1c68964af6ccea3335247eac213089330f058b4692ace1c65d322ba5a78f3"
+      }
+    },
+    "gzrecord": {
+      "body": "def gzrecord(name, raw):\n    gz = gzip.compress(raw, mtime=0)\n    check(gzip.decompress(gz) == raw, \"record gzip roundtrip\")\n    meta = write(name, gz)\n    meta.update(raw_bytes=len(raw), raw_sha256=sha256(raw), raw_git_blob=oid(\"blob\",raw))\n    meta[\"parts\"] = []\n    for i, off in enumerate(range(0,len(gz),262144),1):\n        part = gz[off:off+262144]\n        item = write(name+\".part-%03d.b64\"%i, base64.b64encode(part)+b\"\\n\")\n        item.update(decoded_offset=off, decoded_bytes=len(part), decoded_sha256=sha256(part))\n        meta[\"parts\"].append(item)\n    return meta\n",
+      "source": {
+        "bytes": 576,
+        "git_blob": "26187fb73aa10f609648ddce208187266575cd0e",
+        "sha256": "c856260915c52e6249685c0ad1ee7d1144a0ba886cc8736d1b023fe26762a742"
+      }
+    },
+    "jbytes": {
+      "body": "def jbytes(x):\n    return (json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(\",\",\":\"))+\"\\n\").encode(\"utf-8\")\n",
+      "source": {
+        "bytes": 118,
+        "git_blob": "8841c5984808f14f8697589972cf7a5a939d9ca0",
+        "sha256": "83096e81e5793e81507b37e037266527de4b03458c80c984da61caa9a572ed2c"
+      }
+    }
+  }
+}

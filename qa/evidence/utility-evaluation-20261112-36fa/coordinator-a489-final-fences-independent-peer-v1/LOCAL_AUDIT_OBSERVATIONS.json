@@ -1,0 +1,32 @@
+{
+  "false_runtime_verdicts": false,
+  "final_observations": {
+    "bytes": 521895,
+    "git_blob": "f659e667a19499d3e03954716bd7a748ee2b5ebf",
+    "sha256": "0603f0ff8e5c5ce04cc109ff077afdcb64461285066e37e402e99e14c6dc507a"
+  },
+  "final_script": "verify_final_fences_v3.py",
+  "format": "hepta-independent-review-helper-observations-v1",
+  "observations": [
+    {
+      "native_or_source_failure": false,
+      "observation": "A local assertion expected compact git_blob metadata but actual changes use native working_blob inventory rows.",
+      "resolution": "Explicit bytes/sha256/working_blob projection used; complete original metadata separately checked.",
+      "stage": "initial scratch packet image extraction before this frozen script"
+    },
+    {
+      "native_or_source_failure": false,
+      "observation": "A pure review assertion assumed Rust_source_changes was an empty list; actual schema records integer 0.",
+      "resolution": "v2 requires exact int zero and preserves canonical_source_deletions as an empty list.",
+      "stage": "verify_final_fences.py"
+    },
+    {
+      "native_or_source_failure": false,
+      "observation": "A pure expected-inventory comparison used indented JSON rather than original compact serializer; hash mismatch was local formatting only.",
+      "resolution": "v3 first proves original inventory is sorted compact JSON plus LF, then uses that identical serializer for the four-write projection.",
+      "stage": "verify_final_fences_v2.py"
+    }
+  ],
+  "original_scripts_retained": true,
+  "scope": "Only this peer scratch scripts; no source/H/gate invocation or author file mutation."
+}

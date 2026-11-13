@@ -1,0 +1,53 @@
+{
+  "format": "hepta-four-nonrust-source-objects-actual-readback-v1",
+  "source_graph_or_ref_mutations": 0,
+  "H_calls": 0,
+  "entries": [
+    {
+      "name": ".github/blob-size-allowlist.txt",
+      "local_path": "/tmp/hepta-36fa-a489-maintenance-registration-frozen-v1/after/.github/blob-size-allowlist.txt",
+      "chars": 13480,
+      "bytes": 13480,
+      "git_blob": "19241ceb6ee0c0122ab8c6e9c5b47ccb5d079add",
+      "sha256": "264c0216a90b471c692a86cf98f1a596f70b85f77d8cddb410110d912a4cf1be",
+      "full_GET_equal": true,
+      "created_sha": "19241ceb6ee0c0122ab8c6e9c5b47ccb5d079add",
+      "source_object_not_oversized_evidence_leaf": true
+    },
+    {
+      "name": "CALLERS.toml",
+      "local_path": "/tmp/hepta-36fa-a489-maintenance-registration-frozen-v1/after/CALLERS.toml",
+      "chars": 1855908,
+      "bytes": 1855908,
+      "git_blob": "7123126e368a9e7f65c95b8eb29b0c469e2fa893",
+      "sha256": "62fc6814e2f24ecbf37a83583f526d215870cf2ab5202f524f34de46b77273fa",
+      "full_GET_equal": true,
+      "created_sha": "7123126e368a9e7f65c95b8eb29b0c469e2fa893",
+      "source_object_not_oversized_evidence_leaf": true
+    },
+    {
+      "name": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "local_path": "/tmp/hepta-36fa-a489-maintenance-registration-frozen-v1/after/qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "chars": 358632,
+      "bytes": 358632,
+      "git_blob": "3e5950ad4959af76cfbf7d350e45f14facf77491",
+      "sha256": "0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644",
+      "full_GET_equal": true,
+      "created_sha": "3e5950ad4959af76cfbf7d350e45f14facf77491",
+      "source_object_not_oversized_evidence_leaf": true
+    },
+    {
+      "name": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "local_path": "/tmp/hepta-36fa-a489-maintenance-registration-frozen-v1/after/qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "chars": 17979,
+      "bytes": 17979,
+      "git_blob": "6cf198adc90668e5cc413495ae507d2556b3dafb",
+      "sha256": "e04d85ac4343347859d3b523a971e5e4a8d9490fd5a3335c7d362f9164c5249f",
+      "full_GET_equal": true,
+      "created_sha": "6cf198adc90668e5cc413495ae507d2556b3dafb",
+      "source_object_not_oversized_evidence_leaf": true
+    }
+  ],
+  "all_created_and_full_GET_equal": true,
+  "note": "Large CALLERS source blob is separately allowlisted source content. Bounded evidence representations are the frozen packet parts; no oversized evidence leaf is added."
+}

@@ -1,0 +1,45 @@
+{
+  "candidate": {
+    "bytes": 46159,
+    "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+    "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+  },
+  "inverse_equal": true,
+  "native_calls": 0,
+  "original": {
+    "bytes": 46094,
+    "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+    "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+  },
+  "substitutions": [
+    {
+      "after": "REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1')",
+      "before": "REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1')"
+    },
+    {
+      "after": "CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1')",
+      "before": "CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1')"
+    },
+    {
+      "after": "INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/inventory-driver.original.py')",
+      "before": "INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py')"
+    },
+    {
+      "after": "OLD = 'd25675445c39f76db69a7bd8e71a1a72e1cd5b9f'",
+      "before": "OLD = '9c4a11f61d30e9cc352bf44d56c98909d202a55d'"
+    },
+    {
+      "after": "OLD_TREE = 'a489b394666b8141840275128a780605b024cde0'",
+      "before": "OLD_TREE = 'ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7'"
+    },
+    {
+      "after": "OLD_PARENTS = ['cc57c7198db6293ccca562253c42fffbe2a04633']",
+      "before": "OLD_PARENTS = ['86dd56a930277e0d1aef3e475e35c2b5d60b43b7']"
+    },
+    {
+      "after": "LEAVES = 15243",
+      "before": "LEAVES = 15188"
+    }
+  ],
+  "unchanged_function_count": 46
+}

@@ -1,0 +1,10 @@
+{
+  "format": "hepta-local-pure-review-initial-error-observation-v1",
+  "command": "python /tmp/hepta-36fa-coordinator-a489-final-nonrust-preparation-v1/VERIFY_ACTUAL_PROOF_AND_PACKET.py",
+  "exit_code": 1,
+  "observed_error": "ValueError: malformed node or string on line 37: <ast.Name object at 0x7f17f24f3950>",
+  "scope": "The local review extractor used ast.literal_eval for original FMT, whose last element is the original constant C0F. This failed before any proof predicate, native main, preflight, or H call. The initial script remains unchanged; v2 adds a restricted constant-only AST resolver. No native or control bytes change.",
+  "raw_exec_result_separately_saved": false,
+  "original_functions_output_chunk_id": "503461",
+  "H_calls": 0
+}

@@ -1,0 +1,109 @@
+{
+  "actual_maintenance_2_stages_2_audits_24_inputs": true,
+  "actual_maintenance_final_inventory": {
+    "bytes": 5633323,
+    "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba",
+    "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1"
+  },
+  "actual_maintenance_final_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "actual_maintenance_git_state_equals_materialization_start": true,
+  "actual_maintenance_source_initial_equals_materialization": true,
+  "actual_maintenance_test_commands": 0,
+  "archive_original_five_field_projection_equal": true,
+  "archive_v3_full_readback": {
+    "identity": {
+      "bytes": 29366352,
+      "git_blob": "c6941f7873bdfb8ac18577c9844f234e76dc5ed6",
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+    },
+    "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "stat": {
+      "st_ctime_ns": 1794550522509884679,
+      "st_dev": 2067,
+      "st_gid": 1000,
+      "st_ino": 26738823,
+      "st_mode": 33152,
+      "st_mtime_ns": 1794550522509884679,
+      "st_nlink": 1,
+      "st_size": 29366352,
+      "st_uid": 1000
+    }
+  },
+  "current_finalfmt_template_baseline_equals_actual41e": true,
+  "finalfmt_template_is_not_actual_result": true,
+  "format": "hepta-qualification-producer-chain-pure-checks-v1",
+  "future_canonical_result": null,
+  "future_finalfmt_result": null,
+  "future_qualification": null,
+  "historical_environment_original_pin": {
+    "bytes": 21724,
+    "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+    "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+  },
+  "historical_runtime_guard_exact_equal": true,
+  "materialization_records_full_pin_equal": true,
+  "materialized_counts": {
+    "donor_objects": 16449,
+    "objects": 16661,
+    "physical_leaves": 15243
+  },
+  "materialized_full_inventory": {
+    "bytes": 5631947,
+    "filesystem_entries": 15243,
+    "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+    "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0",
+    "tracked_entries": 15243
+  },
+  "materialized_native_inventory": {
+    "bytes": 3543409,
+    "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+    "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+  },
+  "materialized_subject": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ],
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "normal_proofs": [
+    {
+      "job_id": "1a1d468462a-392-3bb",
+      "normal_zero_complete": true,
+      "original": {
+        "bytes": 952,
+        "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+        "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+      }
+    },
+    {
+      "job_id": "1a1d47cebc8-392-41e",
+      "normal_zero_complete": true,
+      "original": {
+        "bytes": 956,
+        "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+        "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+      }
+    },
+    {
+      "job_id": "1a1d38b82e9-392-160",
+      "normal_zero_complete": true,
+      "original": {
+        "bytes": 950,
+        "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+        "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+      }
+    },
+    {
+      "job_id": "1a1d0fcb212-2564-1bf4",
+      "normal_zero_complete": true,
+      "original": {
+        "bytes": 954,
+        "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+        "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+      }
+    }
+  ],
+  "real_authorized_task_chain_result": "Unknown; this preparation supplies no A/B/C result",
+  "scope": "Complete immutable producer bytes; no native observation or gate execution in this preparation."
+}

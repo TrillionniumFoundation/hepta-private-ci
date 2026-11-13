@@ -1,0 +1,13 @@
+--- BOOTSTRAP.HOLD.py
++++ ACTUAL_BOOTSTRAP.candidate.py
+@@ -4,8 +4,8 @@
+ PINS = {
+     'driver.py': {'bytes': 46159, 'sha256': 'f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5', 'git_blob': 'e8d606b801b54ab949c5f215c49cdf47ed0ea89a'},
+     'FINAL_FORMAT_NORMAL.original.json': {'bytes': 952, 'sha256': '816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90', 'git_blob': '0f7aee8fb7c354f234732b5791e78d63671cd894'},
+-    'CANONICAL_PACKET.json': None,
+-    'APPROVED_CONFIG.json': None,
++    'CANONICAL_PACKET.json': {'bytes': 3428251, 'sha256': '8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6', 'git_blob': 'bb4b4abd809047be4c9402b95fa2a2dc30b2ab78'},
++    'APPROVED_CONFIG.json': {'bytes': 3453, 'sha256': 'a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db', 'git_blob': '0f69f739486c1dc3506f61c0e8a6ef3737fbe17e'},
+ }
+ 
+ created = False

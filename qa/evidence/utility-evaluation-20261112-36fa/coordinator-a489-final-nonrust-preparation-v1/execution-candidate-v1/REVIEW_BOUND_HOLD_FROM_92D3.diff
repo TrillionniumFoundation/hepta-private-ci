@@ -1,0 +1,18 @@
+--- 92d3-input-bound-HOLD.json
++++ REVIEW_BOUND_HOLD_CONFIG.json
+@@ -68,12 +68,12 @@
+   "record_seconds": 300,
+   "ref_updates_authorized": false,
+   "root_execution_approved": false,
+-  "root_input_review": null,
+-  "source_peer_review": null,
++  "root_input_review": "94c9d4fa5843806a0ae8e0a08296840c4ad625d9",
++  "source_peer_review": "7dce432cbecd7b349db5e8599a8e1c58a0b7f4bf",
+   "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+   "status": "HOLD_ROOT_EXACT_REVIEW_REQUIRED",
+   "test_commands_authorized": false,
+   "waiting_for": [
+-    "Root exact inputs and source/control peer review; exact staged bootstrap/payload/request still absent"
++    "Root final exact control approval pending."
+   ]
+ }

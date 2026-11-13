@@ -1,0 +1,84 @@
+{
+  "format": "hepta-original-maintenance-start-observation-v1",
+  "compiled_at": "2026-11-13T10:40:19.129572+00:00",
+  "job_id": "1a1d47cebc8-392-41e",
+  "admission_exact_request_equal": true,
+  "reused": false,
+  "no_env_override": true,
+  "observed_original_events": [
+    {
+      "config_sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+      "driver_sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+      "event": "fixed_original_maintenance_coordinator_a489_launcher_verified",
+      "qualification": false
+    },
+    {
+      "at": "2026-11-13T10:38:40.712056+00:00",
+      "event": "scoped_maintenance_preconditions_started"
+    },
+    {
+      "at": "2026-11-13T10:38:48.346127+00:00",
+      "event": "maintenance_preflight_completed",
+      "physical_leaves": 15243,
+      "source_commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+      "source_tests_started": false,
+      "source_tree": "a489b394666b8141840275128a780605b024cde0"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger"
+      ],
+      "at": "2026-11-13T10:38:52.332403+00:00",
+      "event": "original_maintenance_command_attempted",
+      "name": "fix",
+      "timeout_seconds": 7200
+    }
+  ],
+  "progress_stdout": {
+    "bytes": 1859,
+    "sha256": "a615ef307535e22e55ba5307025f939764dfdefc297ff5c038e6cce5f710d12d",
+    "git_blob": "5f54502508ec416661115f2093f540d748c12bc0"
+  },
+  "observed_fix_start": {
+    "argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "at": "2026-11-13T10:38:52.332403+00:00",
+    "event": "original_maintenance_command_attempted",
+    "name": "fix",
+    "timeout_seconds": 7200
+  },
+  "status_at_first_observation": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1d47cebc8-392-41e",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1d47cebc8-392-41e 2215e950c1a07f362fd14b91bb085e7f",
+      "ExecMainCode": "0",
+      "ExecMainPID": "4057918",
+      "ExecMainStatus": "0",
+      "InvocationID": "41226a0f304c4d36b9ca45181151bad0",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "terminal_or_success_claimed": false,
+  "qualification": false
+}

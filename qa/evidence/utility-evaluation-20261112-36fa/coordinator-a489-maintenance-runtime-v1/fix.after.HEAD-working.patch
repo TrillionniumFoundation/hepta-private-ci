@@ -1,0 +1,258 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
+index cde16a60860fa5eccb1160353d6806f3f9f81477..df7c63ed5575737e2e710973e895fde8c047d063 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
+@@ -36,7 +36,7 @@ impl Release {
+         let mut released = self
+             .released
+             .lock()
+-            .unwrap_or_else(|error| error.into_inner());
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         *released = true;
+         self.changed.notify_all();
+     }
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
+index 3970dbf29eb46dede4337aca04a0f500163ddd03..35b9f4bf5258ace24b9c5aaf380f3665a29732eb 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
+@@ -90,7 +90,7 @@ pub(super) async fn two_original_sets(
+                 Err(error) => {
+                     drop(dataset);
+                     let cleanup = material_ports::finish(dataset_peer);
+-                    return Err(anyhow::Error::from(error)
++                    return Err(error
+                         .context(format!("original T channel cleanup: {cleanup:?}")));
+                 }
+             };
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
+index 83cc4158e980804b0e7bd4365e51cf88b43a2196..7403a7189e8cda62a4e1f5ea58d6fcbb01cd664b 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
+@@ -475,16 +475,14 @@ impl SameHostCase {
+         {
+             connections::collect_peer_cleanup(peers, &mut errors);
+         }
+-        if let Some(mut task) = self.task.take() {
+-            if let Err(error) = task.stop().await {
++        if let Some(mut task) = self.task.take()
++            && let Err(error) = task.stop().await {
+                 errors.push(error.to_string());
+             }
+-        }
+-        if let Some(fixture) = self.fixture.take() {
+-            if let Err(error) = (*fixture).finish().await {
++        if let Some(fixture) = self.fixture.take()
++            && let Err(error) = (*fixture).finish().await {
+                 errors.push(error.to_string());
+             }
+-        }
+         anyhow::ensure!(errors.is_empty(), "same-owner S/C cleanup: {errors:?}");
+         Ok(())
+     }
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
+index 444fbbb4e48743f51de91d39d77c34b37364b002..26403acbd0a6fcad495482e1872122e0af2b4fe3 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs
+@@ -333,8 +333,8 @@ async fn paused_local_read_case(mode: PausedLocalReadCase) -> anyhow::Result<()>
+     // No serving lane is detached merely to turn cleanup into a pass.
+     probe.release();
+     let mut cleanup_error = None;
+-    if let Some(task) = task.take() {
+-        if !consumed_join {
++    if let Some(task) = task.take()
++        && !consumed_join {
+             task.abort();
+             match task.await {
+                 Ok(_) => {}
+@@ -342,7 +342,6 @@ async fn paused_local_read_case(mode: PausedLocalReadCase) -> anyhow::Result<()>
+                 Err(error) => cleanup_error = Some(anyhow::anyhow!("local read join: {error}")),
+             }
+         }
+-    }
+     if probe.original_submitted() {
+         probe.wait_original_terminal().await;
+     }
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+index b9a4d5bda8f02c16a198efde82a7d0d589f3d18c..8b338d070d7d136bb1d2afd8a2cfbf76b5d6a2b1 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+@@ -301,11 +301,10 @@ impl NextUseCase {
+             }
+             drop(task);
+         }
+-        if let Some(fixture) = self.fixture.take() {
+-            if let Err(error) = (*fixture).finish().await {
++        if let Some(fixture) = self.fixture.take()
++            && let Err(error) = (*fixture).finish().await {
+                 failures.push(error.to_string());
+             }
+-        }
+         anyhow::ensure!(
+             failures.is_empty(),
+             "original NextUse cleanup: {failures:?}"
+@@ -576,7 +575,7 @@ async fn deadline_case(already_expired: bool) -> anyhow::Result<()> {
+         anyhow::ensure!(first.is_err(), "no expired original response is successful");
+         anyhow::ensure!(matches!(after, Err(ReadError::Unavailable)), "failure consumes the same channel without retry");
+         anyhow::ensure!(served.is_err(), "actual server preserves refusal");
+-        anyhow::ensure!(observed.load(Ordering::Acquire) == !already_expired,
++        anyhow::ensure!(observed.load(Ordering::Acquire) != already_expired,
+             "pre-expiry refuses before IO; crossing case first produced the actual original response");
+         anyhow::ensure!(case.original_bytes()? == before, "deadline failure cannot repair or publish");
+         anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs
+index 2dafccfb708098871d5ab4807ec185920c73c544..b14590e5ea4f39b871d02609c3af26901f494e98 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs
+@@ -139,11 +139,10 @@ impl ExportCase {
+             }
+             drop(task);
+         }
+-        if let Some(fixture) = self.fixture.take() {
+-            if let Err(error) = (*fixture).finish().await {
++        if let Some(fixture) = self.fixture.take()
++            && let Err(error) = (*fixture).finish().await {
+                 failures.push(error.to_string());
+             }
+-        }
+         anyhow::ensure!(
+             failures.is_empty(),
+             "all original export peers joined: {failures:?}"
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs
+index ffafea99606924aa115f6c9ba06f417a7a08618b..cc36737a44005d2d2bfc2e4965d3a78887a9a6db 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs
+@@ -226,8 +226,8 @@ impl Case {
+         // Join every held peer even when an earlier one has the expected
+         // exhaustion/transport error. Parent HeldPeers::finish short-circuits.
+         let dataset = self.dataset_peer.take().map(material_ports::finish);
+-        let trainer = self.trainer_peer.take().map(|thread| thread.join());
+-        let evaluator = self.evaluator_peer.take().map(|thread| thread.join());
++        let trainer = self.trainer_peer.take().map(std::thread::JoinHandle::join);
++        let evaluator = self.evaluator_peer.take().map(std::thread::JoinHandle::join);
+         let mut failures = Vec::new();
+         if let Some(Err(error)) = dataset {
+             failures.push(format!("original D peer: {error:?}"));
+diff --git a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+index 24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef..55e0b3d16fee7f6b046ab9cfae48ea9efb91c04b 100644
+--- a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -179,11 +179,10 @@ impl OriginalCircuitPublishedLocalReadV1 {
+             )
+             .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));
+             #[cfg(test)]
+-            if response.is_ok() {
+-                if let Some(terminal) = &terminal {
++            if response.is_ok()
++                && let Some(terminal) = &terminal {
+                     terminal.pause_after_original_response(deadline)?;
+                 }
+-            }
+             response
+         });
+         let response = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), worker)
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
+index 3a1ca23dd755c46ae852830b0a27419e58c3cb54..dd82f2decb88abc8bfcbd92cf94528b40acd0cda 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
+@@ -242,14 +242,14 @@ async fn first_pending_material_uses_full_original_signatures_and_preheld_policy
+                 .is_err(),
+             "canonical causal replay is not original signature authentication"
+         );
+-        let mut added = base.clone();
++        let mut added = base;
+         added["host_trust"] = serde_json::json!("child-selected");
+         anyhow::ensure!(
+             RootMaterialContract::from_preheld(held.clone())?
+                 .verify_report(&serde_json::to_vec(&added)?)
+                 .is_err()
+         );
+-        let mut trailing = raw.clone();
++        let mut trailing = raw;
+         trailing.push(b' ');
+         anyhow::ensure!(
+             RootMaterialContract::from_preheld(held.clone())?
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs
+index 2f35bcacff40827fd96b3d4ce289455929d64a82..bba6305de3212ab31c2fef8edf0ef78e63ebc522 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs
+@@ -440,14 +440,14 @@ async fn fresh_original_material_control_preserves_complete_inputs_and_rejects_s
+         );
+         let mut changed_freeze_payload = fixture.original_material_inputs.freeze_payload.clone();
+         changed_freeze_payload.push(0);
+-        let mut changed_payload = base.clone();
++        let mut changed_payload = base;
+         changed_payload["freeze_payload"] =
+             serde_json::json!(STANDARD_NO_PAD.encode(changed_freeze_payload));
+         anyhow::ensure!(
+             held.decode_report(&canonical_report(&changed_payload)?)
+                 .is_err()
+         );
+-        let mut trailing = raw.clone();
++        let mut trailing = raw;
+         trailing.push(b' ');
+         anyhow::ensure!(held.decode_report(&trailing).is_err());
+         anyhow::ensure!(held.decode_report(&vec![0_u8; CONTROL_LIMIT + 1]).is_err());
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs
+index 491bbac2876891948de35f11ac790c2500fdfc2f..b15903d31d31a0b93eeb6600f80e2491f2eb72d9 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs
+@@ -662,11 +662,10 @@ impl FreshPublication {
+                 tempfile::tempdir()?,
+             ));
+         }
+-        if let Some(stages) = self.stages.take() {
+-            if let Err(error) = stages.finish().await {
++        if let Some(stages) = self.stages.take()
++            && let Err(error) = stages.finish().await {
+                 errors.push(error.to_string());
+             }
+-        }
+         drop(self.c_home.take());
+         drop(self.source_home.take());
+         anyhow::ensure!(
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
+index 2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8..5eddfe1e7186ee704aa261ab3c90759885e5156b 100644
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
+@@ -320,11 +320,10 @@ impl FreshStages {
+         if let Err(error) = self.close_evaluation_clients() {
+             errors.push(error.to_string());
+         }
+-        if let Some(panel) = self.panel.take() {
+-            if let Err(error) = panel.finish() {
++        if let Some(panel) = self.panel.take()
++            && let Err(error) = panel.finish() {
+                 errors.push(error.to_string());
+             }
+-        }
+         drop(self.candidate_client.take());
+         drop(self.root_trainer.take());
+         drop(self.root_trainer_initial.take());
+@@ -332,11 +331,10 @@ impl FreshStages {
+         drop(self.version_dataset.take());
+         drop(self.experience.take());
+         drop(self.dataset.take());
+-        if let Some(peers) = self.training_peers.take() {
+-            if let Err(error) = peers.finish_shared() {
++        if let Some(peers) = self.training_peers.take()
++            && let Err(error) = peers.finish_shared() {
+                 errors.push(error.to_string());
+             }
+-        }
+         for peer in self.training_servers.drain(..) {
+             match peer.join() {
+                 Ok(Ok(_)) => {}
+@@ -349,11 +347,10 @@ impl FreshStages {
+                 errors.push(error.to_string());
+             }
+         }
+-        if let Some(original) = self.original.take() {
+-            if let Err(error) = (*original).finish().await {
++        if let Some(original) = self.original.take()
++            && let Err(error) = (*original).finish().await {
+                 errors.push(error.to_string());
+             }
+-        }
+         anyhow::ensure!(
+             errors.is_empty(),
+             "all staged original owners joined: {errors:?}"

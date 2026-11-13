@@ -1,0 +1,13 @@
+{
+  "format": "hepta-local-preparation-attempt-observation-v1",
+  "scope": "Offline exact-inventory serializer inspection, not native maintenance",
+  "attempt": "initial inspector used metadata pretty dump for complete inventory",
+  "observed_result": "AssertionError fix.after actual three-pin comparison",
+  "native_state_affected": false,
+  "source_or_ref_writes": 0,
+  "corrective_basis": {
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/derive_expected_inventory.py",
+    "original_complete_serializer": "json.dumps(result,sort_keys=True,separators=(',',':')) plus LF; default ensure_ascii=True"
+  },
+  "no_mismatched_recovery_was_accepted": true
+}

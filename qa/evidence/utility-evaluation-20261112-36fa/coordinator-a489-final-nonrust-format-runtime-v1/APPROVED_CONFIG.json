@@ -1,0 +1,79 @@
+{
+  "actual_prior_maintenance": {
+    "complete_git_metadata": {
+      "bytes": 2654,
+      "git_blob": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+      "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9"
+    },
+    "git_state": {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    "job_id": "1a1d47cebc8-392-41e",
+    "result": {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    "supervisor": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    }
+  },
+  "allowed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py"
+  ],
+  "baseline_inventory": {
+    "bytes": 5633323,
+    "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba",
+    "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1"
+  },
+  "baseline_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "driver": {
+    "bytes": 28657,
+    "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+    "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+  },
+  "expected_after_leaf_count": 15243,
+  "expected_after_physical_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "fix_authorized": false,
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "fmt_seconds": 900,
+  "format": "hepta-final-nonrust-format-approval-v1",
+  "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+  "head_tree": "a489b394666b8141840275128a780605b024cde0",
+  "native_calls_dispatched": 0,
+  "nonrust_packet": {
+    "bytes": 2998722,
+    "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+    "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+  },
+  "original_maintenance_driver": {
+    "bytes": 68520,
+    "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+    "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+  },
+  "outer_seconds": 2100,
+  "preflight_seconds": 600,
+  "record_seconds": 300,
+  "ref_updates_authorized": false,
+  "root_execution_approved": true,
+  "root_input_review": "94c9d4fa5843806a0ae8e0a08296840c4ad625d9",
+  "source_peer_review": "7dce432cbecd7b349db5e8599a8e1c58a0b7f4bf",
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+  "status": "ROOT_APPROVED_TO_EXECUTE",
+  "test_commands_authorized": false,
+  "waiting_for": [
+    "Root final exact control approval pending."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "H_calls": 0,
+  "actual_final_inventory": {
+    "bytes": 5633323,
+    "git_blob": "4a77b645fd76a980ef746997efbd09fcd8f233ba",
+    "sha256": "981e5971d3e8afc2694bcb1951b0261d24f0238675187005ec8e9bb386a07bf1"
+  },
+  "base_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+  "exactly_four_unique_sorted_existing_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py"
+  ],
+  "execution_approval": false,
+  "expected_after_leaf_count": 15243,
+  "expected_after_physical_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "format": "hepta-strict-nonrust-schema-derivation-review-v1",
+  "note": "Data-only adaptation to the original strict apply schema; the native successor must separately bind exact existing paths, complete actual receipts, live prerequisites and Root approval. The fixed existing provider contract JSON path requires an explicit allowed-path entry; no broad extension allowance is implied.",
+  "original_proposal_unchanged": true,
+  "packet": {
+    "bytes": 2998722,
+    "git_blob": "ab032ffdfd8b540a0d3a82558d8a07e70ab0c548",
+    "sha256": "b1b9ec7658cdc474c99bb3b8dab42c016fae7d6fa46bbb8b141322f1c07594b3"
+  },
+  "project_or_QA_execution": 0,
+  "proposal_manifest_git": "4bc60fab145563469f1cbb992feeaf216d58dfb5",
+  "qualification": false,
+  "seven_reviewed_paths": [
+    ".github/blob-size-allowlist.txt",
+    ".github/workflows/hepta-daemon-learning-native.yml",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "source_bytes_changed_by_derivation": 0,
+  "source_identity_exact_original_dictionary": true,
+  "source_object_full_readback_git": "c0430074e5f2c8943600a9d7dd54ef59d924b741",
+  "source_proposal_raw": {
+    "bytes": 5999431,
+    "git_blob": "b3490071b2b109aa1854afd3353952890b8e0eab",
+    "sha256": "a197e68853035ea4dd46eae16b15d548ded6bccb1392f528a1cc9677ce0d0082"
+  },
+  "source_tree_commit_ref_mutations": 0,
+  "status": "HOLD_NOT_EXECUTED"
+}
