@@ -28,6 +28,10 @@
     "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
     "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb"
   },
+  "runtime_identity": {
+    "torch_version": "2.8.0+cu128",
+    "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
   "contract": {
     "fits": 6,
     "cumulative_active_wall_seconds_per_fit": 43200,
@@ -40,6 +44,8 @@
     {
       "seed": 101,
       "learning_rate": "0.001",
+      "original_plan_sha256": "73d317f53b370307bda2ebf529107b26452bca15c6e39e7fe38c3716cefc3b10",
+      "original_result_sha256": "ebb51a9ffb60e91ec3aa0d7cc896957765b20fd69a3522aad0a2006d933b96c0",
       "original_start_parent_epoch": 46,
       "original_start_parent_sha256": "e0c8c946aa8010bfcf4df5b9e155235d2fb6b12a9832e4eaa5db3d9afb154d78",
       "original_result_wall_seconds": 14373.191371734021,
@@ -52,6 +58,8 @@
     {
       "seed": 101,
       "learning_rate": "0.003",
+      "original_plan_sha256": "33bb3cebd05a70dfd2e51c69bf134f3bb63fbc86bf0a4b8f0b94bd22b8c61ef0",
+      "original_result_sha256": "5cd6f329a00a78c9c0b948dd209897bfaa62c1cbaef1c3c0ba76675dc4e6f1bf",
       "original_start_parent_epoch": 47,
       "original_start_parent_sha256": "bea446e64571e7cd424411036eff207bb6839af4495a7b60cf0f9df81181ba05",
       "original_result_wall_seconds": 14374.921412173193,
@@ -64,6 +72,8 @@
     {
       "seed": 211,
       "learning_rate": "0.001",
+      "original_plan_sha256": "74a25f964a655a0302440cd431f69a46cd4ea62a056c2282f11547ebbec2d8a7",
+      "original_result_sha256": "27246c56ac32c62ff375c0c0e170807f01eaa7e108619f7fc6d21c5d49f29033",
       "original_start_parent_epoch": 46,
       "original_start_parent_sha256": "cdbca6e633c6aba5f72f08f259ab08b1c5c2c5745d1dbd2f323a78df876e1e79",
       "original_result_wall_seconds": 14374.068624393083,
@@ -76,6 +86,8 @@
     {
       "seed": 211,
       "learning_rate": "0.003",
+      "original_plan_sha256": "66db280cced4549900ebab518b327004efb264b3c2d35fcbebf2e449979c49e4",
+      "original_result_sha256": "66182f0b1f0eae1699c6be05e9d3f1cb5f5c20c484f9af6a8b12f302357dd3c1",
       "original_start_parent_epoch": 47,
       "original_start_parent_sha256": "b7d162101f18628fcfcabb21e9609499d62c8a26ad6d53b9c375ed2e0439d2f4",
       "original_result_wall_seconds": 14373.705424577929,
@@ -88,6 +100,8 @@
     {
       "seed": 307,
       "learning_rate": "0.001",
+      "original_plan_sha256": "359c278aea86b9d748f95c5b91efb5d5281302405f84ee07d4afbd6ce36e379e",
+      "original_result_sha256": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0",
       "original_start_parent_epoch": 46,
       "original_start_parent_sha256": "17d6ad363d82ba31b006d0a4f55ca9c63453fa2c9c34f7370f022e2ff66a4f5c",
       "original_result_wall_seconds": 14372.301136150956,
@@ -100,6 +114,8 @@
     {
       "seed": 307,
       "learning_rate": "0.003",
+      "original_plan_sha256": "482db61c6c7002fa0660672ea30b30268d394073ec459fdbe472b0cbdaf02a3a",
+      "original_result_sha256": "e1a463fa16677c7122f265f6b8dc362f3adf75f364d8e074bc901cb4c161c443",
       "original_start_parent_epoch": 46,
       "original_start_parent_sha256": "736ee7d7afe911a3cf5bb7f7ad97babff4dfb74e28a46ec9c148579160a5075c",
       "original_result_wall_seconds": 14373.805557579035,
@@ -118,6 +134,7 @@
   },
   "closed": [
     "exact immutable archive identity and complete central-directory inventory",
+    "exact source commit, data manifest, Torch runtime, and six original plan/result identities",
     "six original campaign-v2 start-parent epochs and checkpoint SHA256 identities",
     "six last-observed later checkpoint epochs, SHA256 identities, and cumulative process-wall lower bounds"
   ],
