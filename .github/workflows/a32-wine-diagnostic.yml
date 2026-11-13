@@ -1,0 +1,159 @@
+name: a32 Wine fresh-job diagnostic
+on:
+  push:
+    branches:
+      - diagnostic/a32-wine-job-isolation-20261022
+permissions:
+  contents: read
+concurrency:
+  group: a32-wine-job-isolation-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+jobs:
+  original:
+    name: Original parallel Wine suite (fresh VM)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      A32_WINE_CASE: full-original-parallelism
+    outputs:
+      provenance_valid: ${{ steps.collect.outputs.provenance_valid == 'true' && steps.artifact.outcome == 'success' }}
+    steps:
+      - name: Preserve exact checkout bytes
+        id: checkout_bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        id: checkout
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        id: python
+        with:
+          python-version: "3.12.10"
+      - name: Guard exact a32 product and input commit
+        id: guard
+        run: python .github/scripts/a32_wine_diagnostic.py init-job "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Harness contract tests (not native Wine tests)
+        id: contracts
+        run: python -m unittest discover -s .github/scripts -p test_a32_wine_diagnostic.py -v
+      - uses: ./.github/actions/setup-ci-build
+        id: build
+      - name: Install checksum-pinned DotSlash 0.5.9
+        id: dotslash
+        run: python .github/scripts/a32_wine_diagnostic.py dotslash "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        id: bazel
+        with:
+          bazelisk-version: "1.28.1"
+          output-base: ${{ steps.build.outputs.bazel-output-base }}
+      - name: One native attempt on this fresh hosted VM
+        id: native
+        timeout-minutes: 32
+        run: python .github/scripts/a32_wine_diagnostic.py run-job "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Guard final sources and freeze complete or partial evidence
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_wine_diagnostic.py collect-job "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        id: artifact
+        if: always()
+        with:
+          name: a32-wine-evidence-${{ github.run_id }}-${{ github.run_attempt }}-original
+          path: ${{ runner.temp }}/a32-wine-frozen
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+  isolated:
+    name: Isolated Wine case / ${{ matrix.case_id }} (fresh VM)
+    needs: original
+    if: ${{ !cancelled() && needs.original.outputs.provenance_valid == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - case_id: powershell
+            case: tests::pinned_powershell_runs_under_wine_with_a_pty
+          - case_id: take-stdout
+            case: tests::take_stdout_panics_when_called_twice
+          - case_id: nonzero-exit
+            case: tests::shutdown_reports_nonzero_process_exit
+          - case_id: teardown-error
+            case: tests::shutdown_returns_teardown_error
+    env:
+      A32_WINE_CASE: ${{ matrix.case }}
+    steps:
+      - name: Preserve exact checkout bytes
+        id: checkout_bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        id: checkout
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        id: python
+        with:
+          python-version: "3.12.10"
+      - name: Guard exact a32 product and input commit
+        id: guard
+        run: python .github/scripts/a32_wine_diagnostic.py init-job "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Harness contract tests (not native Wine tests)
+        id: contracts
+        run: python -m unittest discover -s .github/scripts -p test_a32_wine_diagnostic.py -v
+      - uses: ./.github/actions/setup-ci-build
+        id: build
+      - name: Install checksum-pinned DotSlash 0.5.9
+        id: dotslash
+        run: python .github/scripts/a32_wine_diagnostic.py dotslash "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        id: bazel
+        with:
+          bazelisk-version: "1.28.1"
+          output-base: ${{ steps.build.outputs.bazel-output-base }}
+      - name: One native attempt on this fresh hosted VM
+        id: native
+        timeout-minutes: 32
+        run: python .github/scripts/a32_wine_diagnostic.py run-job "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Guard final sources and freeze complete or partial evidence
+        id: collect
+        if: always() && steps.checkout.outcome == 'success' && steps.python.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python .github/scripts/a32_wine_diagnostic.py collect-job "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        id: artifact
+        if: always()
+        with:
+          name: a32-wine-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.case_id }}
+          path: ${{ runner.temp }}/a32-wine-frozen
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+  complete:
+    name: Require all five native observations
+    needs: [original, isolated]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 2
+    steps:
+      - name: Fail closed on missing, skipped, cancelled or failed observations
+        env:
+          ORIGINAL_RESULT: ${{ needs.original.result }}
+          ORIGINAL_PROVENANCE: ${{ needs.original.outputs.provenance_valid }}
+          ISOLATED_RESULT: ${{ needs.isolated.result }}
+        run: |
+          set -euo pipefail
+          test "$ORIGINAL_RESULT" = success
+          test "$ORIGINAL_PROVENANCE" = true
+          test "$ISOLATED_RESULT" = success
