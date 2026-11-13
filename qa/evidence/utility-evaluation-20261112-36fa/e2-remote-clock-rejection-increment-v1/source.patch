@@ -1,0 +1,94 @@
+--- a/codex-rs/hepta-agentd/src/circuit_cell_remote.rs
++++ b/codex-rs/hepta-agentd/src/circuit_cell_remote.rs
+@@ -45,7 +45,10 @@
+             return Err(CircuitCellErrorV1::ScopeMismatch);
+         }
+         let time = clock();
+-        if time.circuit_millis < admission.observed_at_ms() {
++        if time.circuit_millis == u64::MAX
++            || time.cell_micros == u64::MAX
++            || time.circuit_millis < admission.observed_at_ms()
++        {
+             return Err(CircuitCellErrorV1::ReconciliationRequired);
+         }
+         let admission_deadline = admission
+@@ -108,7 +111,9 @@
+                             || {
+                                 let before = sampled.get();
+                                 let now = clock();
+-                                if now.circuit_millis < before.circuit_millis
++                                if now.circuit_millis == u64::MAX
++                                    || now.cell_micros == u64::MAX
++                                    || now.circuit_millis < before.circuit_millis
+                                     || now.cell_micros < before.cell_micros
+                                     || now.circuit_millis >= admission_deadline
+                                 {
+@@ -138,14 +143,18 @@
+                 }
+             };
+             let decided_at = clock();
+-            if decided_at.circuit_millis < last_time.circuit_millis
++            if decided_at.circuit_millis == u64::MAX
++                || decided_at.cell_micros == u64::MAX
++                || decided_at.circuit_millis < last_time.circuit_millis
+                 || decided_at.cell_micros < last_time.cell_micros
+             {
+                 return Err(CircuitCellErrorV1::ReconciliationRequired);
+             }
+             let proposal = decide_cell(inferred, decided_at.cell_micros)?;
+             let committed_at = clock();
+-            if committed_at.circuit_millis < decided_at.circuit_millis
++            if committed_at.circuit_millis == u64::MAX
++                || committed_at.cell_micros == u64::MAX
++                || committed_at.circuit_millis < decided_at.circuit_millis
+                 || committed_at.cell_micros < decided_at.cell_micros
+             {
+                 return Err(CircuitCellErrorV1::ReconciliationRequired);
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
+@@ -102,6 +102,9 @@
+     let response = match frame.operation {
+         Operation::Clock if frame.loan == record.id && frame.body.is_empty() => {
+             let clock = original.pump.clock();
++            if clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX {
++                return Err(Error::ReconciliationRequired);
++            }
+             let mut bytes = clock.circuit_millis.to_be_bytes().to_vec();
+             bytes.extend_from_slice(&clock.cell_micros.to_be_bytes());
+             bytes
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
+@@ -140,10 +140,14 @@
+             operation: Operation::Clock, loan: id, body: Vec::new(),
+         })?;
+         if bytes.len() != 16 { return Err(Error::InvalidBinding); }
+-        Ok(CircuitCellTimeV1 {
++        let clock = CircuitCellTimeV1 {
+             circuit_millis: u64::from_be_bytes(bytes[..8].try_into().map_err(|_| Error::InvalidBinding)?),
+             cell_micros: u64::from_be_bytes(bytes[8..].try_into().map_err(|_| Error::InvalidBinding)?),
+-        })
++        };
++        if clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX {
++            return Err(Error::ReconciliationRequired);
++        }
++        Ok(clock)
+     }
+ 
+     pub(super) fn original_execution(&self, admission: CircuitComputationAdmissionV2,
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs
+@@ -57,8 +57,12 @@
+                             if cancellation.is_cancelled() { return Err(Error::Unavailable); }
+                             let now_ms = state.require_current_run_start(&record).map_err(|_| Error::Unavailable)?;
+                             let sampled = original.sample_original_clock()?;
+-                            Ok(CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),
+-                                cell_micros: sampled.cell_micros })
++                            let sampled = CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),
++                                cell_micros: sampled.cell_micros };
++                            if sampled.circuit_millis == u64::MAX || sampled.cell_micros == u64::MAX {
++                                return Err(Error::ReconciliationRequired);
++                            }
++                            Ok(sampled)
+                         }).await,
+                     };
+                     let _ = response.send(result);

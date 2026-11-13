@@ -1,0 +1,19 @@
+--- reviewer-v2
++++ reviewer-v3
+@@ -377,8 +377,14 @@
+ for attack in c['critical_guard_deletions']:
+     body = source_view[A + attack['filename']].decode()
+     assert body.count(attack['function']) == 1
+-    assert body.count(attack['marker']) == 1
+-    assert body.index(attack['marker']) > body.index(attack['function'])
++    # The QA's original rejects() removes the first marker in the selected
++    # function. Two intentional before/after checks are not ambiguous failure.
++    function_at = body.index(attack['function'])
++    marker_at = body.index(attack['marker'], function_at)
++    next_fn = re.search(r'(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?fn\s+', body[function_at + len(attack['function']):])
++    assert marker_at > function_at
++    if next_fn is not None:
++        assert marker_at < function_at + len(attack['function']) + next_fn.start()
+     assert next(r['required'] for r in new_protected if r['path'] == A + attack['filename']) == [body]
+ 
+ e1_contract_path = 'qa/b4-no-bypass/ROOT_HOST_INITIAL_PRODUCT_SOURCE_CONTRACT.json'

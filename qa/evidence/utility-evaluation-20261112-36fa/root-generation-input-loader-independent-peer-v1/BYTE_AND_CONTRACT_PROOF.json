@@ -1,0 +1,1097 @@
+{
+  "H_calls": 0,
+  "basis": {
+    "canonical_inventory": {
+      "bytes": 5631947,
+      "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+      "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+    },
+    "v4_composition_review": {
+      "bytes": 56018,
+      "git_blob": "eab2a34d1bd7abbaab81d5c1e06177269a14efd4",
+      "sha256": "ac26163109202bf6786ed163e8047b9425598cb953a0d57b0741dab2cc0c5d30"
+    }
+  },
+  "closed_tagged_operation_enum": true,
+  "closed_two_value_trust_enum": true,
+  "descriptor_and_existing_state_anchors": [
+    {
+      "line": 33,
+      "text": "(&files.registry_snapshot, Access::ReadOnly),"
+    },
+    {
+      "line": 34,
+      "text": "(&files.selected_payload, Access::ReadOnly),"
+    },
+    {
+      "line": 35,
+      "text": "(&files.withdrawal_snapshot, Access::ReadOnly),"
+    },
+    {
+      "line": 36,
+      "text": "(&files.target_journal, Access::ReadWrite),"
+    },
+    {
+      "line": 37,
+      "text": "(&files.target_witness, Access::ReadWrite),"
+    },
+    {
+      "line": 44,
+      "text": "flags & libc::O_ACCMODE != expected"
+    },
+    {
+      "line": 45,
+      "text": "flags & libc::O_APPEND != 0"
+    },
+    {
+      "line": 46,
+      "text": "!identities.insert((metadata.dev(), metadata.ino()))"
+    },
+    {
+      "line": 51,
+      "text": "matches!(purpose, LoadPurpose::Recover)"
+    },
+    {
+      "line": 52,
+      "text": "files.target_journal.metadata()?.len() == 0 || files.target_witness.metadata()?.len() < 112"
+    },
+    {
+      "line": 61,
+      "text": "for name in [\"writer\", \"transactions\", \"payloads\", \"registries\", \"witnesses\", \"heads\"]"
+    },
+    {
+      "line": 64,
+      "text": "open_private(&artifact.join(\"writer/owner.lock\"))?"
+    },
+    {
+      "line": 73,
+      "text": "open_private(&consumer.join(\"authority.lock\"))?"
+    },
+    {
+      "line": 74,
+      "text": "open_private(&consumer.join(\"authority.claims\"))?"
+    },
+    {
+      "line": 77,
+      "text": "open_private(&consumer.join(\"authority.json\"))?"
+    },
+    {
+      "line": 79,
+      "text": "before.len() == 0 || before.len() > 8 * 1024 * 1024"
+    },
+    {
+      "line": 83,
+      "text": "header.by_ref().take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes)?;"
+    },
+    {
+      "line": 86,
+      "text": "before.dev() != after.dev() || before.ino() != after.ino()"
+    },
+    {
+      "line": 88,
+      "text": "before.mtime_nsec() != after.mtime_nsec() || before.ctime() != after.ctime()"
+    },
+    {
+      "line": 89,
+      "text": "before.ctime_nsec() != after.ctime_nsec()"
+    },
+    {
+      "line": 94,
+      "text": "value.get(\"schema\").and_then(serde_json::Value::as_u64) != Some(3)"
+    },
+    {
+      "line": 103,
+      "text": "!state.is_absolute() || !path.is_absolute() || path == state || !path.starts_with(state)"
+    },
+    {
+      "line": 104,
+      "text": "path.components().any(|part| !matches!(part, Component::RootDir | Component::Normal(_)))"
+    },
+    {
+      "line": 108,
+      "text": "RootAuthorityDirectory::open(path).map_err(invalid)?;"
+    },
+    {
+      "line": 116,
+      "text": ".custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK).open(path)?;"
+    },
+    {
+      "line": 122,
+      "text": "!metadata.is_file() || metadata.uid() != 0"
+    },
+    {
+      "line": 123,
+      "text": "metadata.mode() & 0o777 != 0o600 || metadata.nlink() != 1"
+    }
+  ],
+  "exact_patch": {
+    "bytes": 34797,
+    "git_blob": "268d6e07a2cc92aa0453a7d4fc74ad11643c2a66",
+    "sha256": "47073227e3f6a551cb3b06d14804d4a553e71cb6681a33dd2e9815f8289ff86e"
+  },
+  "files": [
+    {
+      "after": {
+        "bytes": 15550,
+        "git_blob": "d99f23d1a15a86fad1c41fc353e4e72e08159a37",
+        "sha256": "51b6d1f46e4ec572190cd9eee46888f2a14a236f8bd8d83f5a47d55c5cbaec50"
+      },
+      "before": {
+        "bytes": 15263,
+        "git_blob": "8ca53769c20627fd9e204c0a0a5b4e77771bebac",
+        "sha256": "3fe84b8d8f29e5e4554ab69f4b81b6a91884a03732020223b32b12c9070e3a72"
+      },
+      "exact_v4_preimage": true,
+      "forward_first_occurrence_and_full_inverse_equal": true,
+      "new_anchor_occurrences": 1,
+      "old_anchor_occurrences": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+    },
+    {
+      "after": {
+        "bytes": 5503,
+        "git_blob": "3890ce73461c0a470d727cee802611583fce9aad",
+        "sha256": "2e3486926d02d11a91602baebb2c4c528107e147c1623b54ecf62c6c1cd31e69"
+      },
+      "before": null,
+      "new_against_b608_and_v4": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_input_files.rs"
+    },
+    {
+      "after": {
+        "bytes": 9949,
+        "git_blob": "a7c07a3f2c211d7c8b32ac14f9dcd76a38ccfa87",
+        "sha256": "e84f5873b3d9d12962e8fcaa292057bbc47a5d442d9bcedffffa0f53428cde21"
+      },
+      "before": null,
+      "new_against_b608_and_v4": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs"
+    },
+    {
+      "after": {
+        "bytes": 12769,
+        "git_blob": "2388b5155541c2929c0b71d34602c26e142d285c",
+        "sha256": "a73754f7b13565c37ebb8b4d8a4e22ebed0e34e43b12892574a5a06b175c9fd8"
+      },
+      "before": null,
+      "new_against_b608_and_v4": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_input_types.rs"
+    },
+    {
+      "after": {
+        "bytes": 23227,
+        "git_blob": "bc77345d21d9d45e9dcb657374f89cf0bcbf2b11",
+        "sha256": "5366e63bd62f4229e035c2056fb3f779d330550f5245a6b3d24542aa7cb0ba69"
+      },
+      "before": {
+        "bytes": 23062,
+        "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff",
+        "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b"
+      },
+      "exact_v4_preimage": true,
+      "forward_first_occurrence_and_full_inverse_equal": true,
+      "new_anchor_occurrences": 1,
+      "old_anchor_occurrences": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs"
+    },
+    {
+      "after": {
+        "bytes": 8649,
+        "git_blob": "ae5cfa5daafb6f6ccff88258197a0a03c5db8b67",
+        "sha256": "97431f782c0af47c3762b02dec540c38541b90fe075b0f244d19dd6a90e30dd9"
+      },
+      "before": {
+        "bytes": 8568,
+        "git_blob": "47941c61d61c6bff18021f2fc241c28f2d82280a",
+        "sha256": "a2ab51bce4e4937ab2fd1536b368d9f30c2f24d240e3539999dc99b5ba57b0a2"
+      },
+      "exact_v4_preimage": true,
+      "forward_first_occurrence_and_full_inverse_equal": true,
+      "new_anchor_occurrences": 1,
+      "old_anchor_occurrences": 2,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+    },
+    {
+      "after": {
+        "bytes": 3348,
+        "git_blob": "55be939758a6f061a761dd97573aef527b006e33",
+        "sha256": "7d4f75d55bc0ee0f5209a81a0a1e094f083de38e94908ba12a30f445a2f4e685"
+      },
+      "before": null,
+      "new_against_b608_and_v4": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs"
+    },
+    {
+      "after": {
+        "bytes": 74249,
+        "git_blob": "9fc8916464870449b19cdda1b22f2e7a848189b0",
+        "sha256": "7f8c94ccedb0a18003dc831ffb990f9387e88ab167dd824995d9d479ba12851d"
+      },
+      "before": {
+        "bytes": 74155,
+        "git_blob": "0f2c7ed70006b228053532117a94df0b7b1322ea",
+        "sha256": "6befd57a74ba6bcff8304903be187612864caa7d2be2d777f7714bf7047ea616"
+      },
+      "exact_v4_preimage": true,
+      "forward_first_occurrence_and_full_inverse_equal": true,
+      "new_anchor_occurrences": 1,
+      "old_anchor_occurrences": 1,
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    }
+  ],
+  "format": "independent-fixed-source-byte-and-contract-review-v1",
+  "git_storage_claim": "These output pins are locally computed only; this script does not upload to Git.",
+  "local_dto_structs_with_deny_unknown_fields": [
+    "GenerationDeploymentFile",
+    "ArtifactFile",
+    "OwnerTrustFile",
+    "SignerFile",
+    "WriterLeaseFile",
+    "WitnessFile",
+    "CurrentHeadFile",
+    "WithdrawalSnapshotFile",
+    "ConsumerFile",
+    "SelectionTrustFile",
+    "SelectorFile",
+    "SelectionFile",
+    "SelectionRecordFile",
+    "TargetFile"
+  ],
+  "manifest": {
+    "bytes": 4580,
+    "git_blob": "e9d0d1de18c6f2ea9a191e86fa63f823b79a4dbe",
+    "sha256": "0a3459b9d230b9791818722c83e52b2a801604292519bc654a0da8175a209b1e"
+  },
+  "ordered_original_factory_calls": [
+    {
+      "line": 75,
+      "text": "require_before(end)?;"
+    },
+    {
+      "line": 76,
+      "text": "let value: GenerationDeploymentFile = read_root_json(deployment)?;"
+    },
+    {
+      "line": 85,
+      "text": "files::require_descriptors(&original_files, purpose)?;"
+    },
+    {
+      "line": 86,
+      "text": "files::require_artifact_directory(original_state, &value.artifacts.state_directory)?;"
+    },
+    {
+      "line": 87,
+      "text": "files::require_existing_consumer(original_state, &value.consumer.state_directory)?;"
+    },
+    {
+      "line": 91,
+      "text": "let root = Arc::clone(self.resident_store_root.as_ref()"
+    },
+    {
+      "line": 93,
+      "text": "if self.root_registry.is_none()"
+    },
+    {
+      "line": 99,
+      "text": "let trust = value.artifacts.trust.original()?;"
+    },
+    {
+      "line": 100,
+      "text": "ArtifactSelectionVerifierV1::new(value.selection.trust.original()?, &trust)"
+    },
+    {
+      "line": 104,
+      "text": "let required_current_head = value.artifacts.required_current_head.original()?;"
+    },
+    {
+      "line": 105,
+      "text": "let withdrawal_registry = read_dataset_withdrawal_snapshot("
+    },
+    {
+      "line": 109,
+      "text": "let artifacts = LearningArtifactOwnerService::open("
+    },
+    {
+      "line": 113,
+      "text": "required_current_head: Some(required_current_head),"
+    },
+    {
+      "line": 118,
+      "text": "let selected = AgentdSelectedGenerationV1::load("
+    },
+    {
+      "line": 128,
+      "text": "let key = self.issuer.trust_key()?;"
+    },
+    {
+      "line": 129,
+      "text": "let head = self.issuer.revocations()?;"
+    },
+    {
+      "line": 131,
+      "text": "if owner_id != key.key_id"
+    },
+    {
+      "line": 132,
+      "text": "signed.grant.signer_id != owner_id"
+    },
+    {
+      "line": 136,
+      "text": "HostAuthorityFrontierStore::<FinalUseFrontier>::open("
+    },
+    {
+      "line": 139,
+      "text": "frontier.load(&owner_id).map_err(invalid)? != value.consumer.required_external_frontier"
+    },
+    {
+      "line": 142,
+      "text": "let final_use = match value.consumer.trust_model"
+    },
+    {
+      "line": 144,
+      "text": "FinalUseAuthority::open_state_dir_with_trust("
+    },
+    {
+      "line": 149,
+      "text": "FinalUseAuthority::open_state_dir_with_issuer_keys("
+    },
+    {
+      "line": 154,
+      "text": "if final_use.current_external_frontier().map_err(invalid)? != value.consumer.required_external_frontier"
+    },
+    {
+      "line": 155,
+      "text": "|| final_use.revocation_head().map_err(invalid)? != head"
+    },
+    {
+      "line": 156,
+      "text": "|| self.issuer.revocations()? != head"
+    },
+    {
+      "line": 162,
+      "text": "CellGenerationOwnerBindingV1::new(&configuration, value.target.maximum_records)"
+    },
+    {
+      "line": 166,
+      "text": "let witness = FileAnchorWitnessStore::open("
+    },
+    {
+      "line": 169,
+      "text": "scope_digest: Digest32::from_array(binding.digest().map_err(invalid)?),"
+    },
+    {
+      "line": 170,
+      "text": "objective_digest: Digest32::from_array(configuration.task_digest),"
+    },
+    {
+      "line": 172,
+      "text": "Generation::new(configuration.initial.generation).map_err(invalid)?,"
+    },
+    {
+      "line": 175,
+      "text": "let target = AgentdGenerationUpdateTargetV1"
+    },
+    {
+      "line": 179,
+      "text": "let artifacts = Arc::new(Mutex::new(artifacts));"
+    },
+    {
+      "line": 180,
+      "text": "let final_use = Arc::new(final_use);"
+    },
+    {
+      "line": 181,
+      "text": "require_before(end)?;"
+    },
+    {
+      "line": 182,
+      "text": "Ok(match value.operation"
+    }
+  ],
+  "project_code_executed": false,
+  "qualification": false,
+  "record_mapping": [
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 7,
+      "dto": "SignerFile",
+      "fields": [
+        "signer_id",
+        "verifying_key",
+        "minimum_authority_epoch",
+        "maximum_authority_epoch",
+        "valid_from",
+        "expires_at",
+        "revoked_at"
+      ],
+      "original_type": "TrustedArtifactSignerV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source_pin": {
+        "bytes": 86789,
+        "git_blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+        "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 7,
+      "dto": "OwnerTrustFile",
+      "fields": [
+        "registry_id",
+        "withdrawal_scope_digest",
+        "minimum_registry_generation",
+        "genesis_predecessor_head_digest",
+        "minimum_authority_epoch",
+        "writer_signers",
+        "head_signers"
+      ],
+      "original_type": "ArtifactOwnerTrustV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source_pin": {
+        "bytes": 86789,
+        "git_blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+        "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 11,
+      "dto": "WriterLeaseFile",
+      "fields": [
+        "lease_id",
+        "producer_id",
+        "registry_id",
+        "withdrawal_scope_digest",
+        "signer_id",
+        "signing_key_digest",
+        "authority_epoch",
+        "lease_generation",
+        "issued_at",
+        "expires_at",
+        "signature"
+      ],
+      "original_type": "SignedArtifactWriterLeaseV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source_pin": {
+        "bytes": 86789,
+        "git_blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+        "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 9,
+      "dto": "WitnessFile",
+      "fields": [
+        "registry_id",
+        "generation",
+        "head_digest",
+        "predecessor_head_digest",
+        "authority_epoch",
+        "signer_id",
+        "signing_key_digest",
+        "issued_at",
+        "expires_at"
+      ],
+      "original_type": "RegistryHeadWitnessV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "source_pin": {
+        "bytes": 27363,
+        "git_blob": "49af2232566bf4c38380d88b7cf63e9b7975537a",
+        "sha256": "68f13a0c3f44dfb774f599f2e36322420621fe21f368fd42e5f8a5483b0f1845"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 4,
+      "dto": "CurrentHeadFile",
+      "fields": [
+        "withdrawal_scope_digest",
+        "binding",
+        "witness",
+        "signature"
+      ],
+      "original_type": "SignedCurrentArtifactHeadV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source_pin": {
+        "bytes": 86789,
+        "git_blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+        "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 6,
+      "dto": "WithdrawalSnapshotFile",
+      "fields": [
+        "binding",
+        "scope_digest",
+        "head_digest",
+        "file_digest",
+        "records",
+        "encoded_bytes"
+      ],
+      "original_type": "DatasetWithdrawalSnapshotReceiptV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+      "source_pin": {
+        "bytes": 23892,
+        "git_blob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf",
+        "sha256": "3472db1eb750164c43f32dbbfa4df5b7b2dbf47259a8cabe9f82f226477823b8"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 7,
+      "dto": "SelectorFile",
+      "fields": [
+        "selector_id",
+        "verifying_key",
+        "minimum_authority_epoch",
+        "maximum_authority_epoch",
+        "valid_from",
+        "expires_at",
+        "revoked_at"
+      ],
+      "original_type": "TrustedArtifactSelectorV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "source_pin": {
+        "bytes": 29173,
+        "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+        "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 4,
+      "dto": "SelectionTrustFile",
+      "fields": [
+        "registry_id",
+        "withdrawal_scope_digest",
+        "minimum_authority_epoch",
+        "selectors"
+      ],
+      "original_type": "ArtifactSelectionTrustV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "source_pin": {
+        "bytes": 29173,
+        "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+        "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df"
+      }
+    },
+    {
+      "complete_declared_and_construction_field_lists_equal": true,
+      "count": 22,
+      "dto": "SelectionRecordFile",
+      "fields": [
+        "selection_id",
+        "artifact_id",
+        "registry_id",
+        "withdrawal_scope_digest",
+        "registry_head_digest",
+        "current_witness_digest",
+        "current_trust_digest",
+        "artifact_kind",
+        "artifact_generation",
+        "predecessor_id",
+        "content_digest",
+        "objective_digest",
+        "support_digest",
+        "compatibility_digest",
+        "encoded_size_bytes",
+        "selector_id",
+        "selector_credential_digest",
+        "signing_key_digest",
+        "authority_epoch",
+        "issued_at",
+        "expires_at",
+        "signature"
+      ],
+      "original_type": "SignedArtifactSelectionV1",
+      "source_path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "source_pin": {
+        "bytes": 29173,
+        "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+        "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df"
+      }
+    }
+  ],
+  "record_mapping_field_count": 77,
+  "references": [
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_owner.rs",
+      "pin": {
+        "bytes": 13229,
+        "git_blob": "bbab4d10cfe07d9f5709bf61f44c56d49698f1c5",
+        "sha256": "357096fbb41fa116ae31eb25bd11dfe2aacdad72375bc35a8f5ddfdd0f7e59c7"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-agentd/src/authority_host_consumer_frontier.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-agentd/src/authority_host_consumer_frontier.rs",
+      "pin": {
+        "bytes": 9390,
+        "git_blob": "ad523bfa8c61597f6406a7983f8cb9baa6d1e22e",
+        "sha256": "a98d37faf0f1c2e2386bc15fa5f52dffd8ff685f7d65292079396b14921bead0"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "pin": {
+        "bytes": 15531,
+        "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+        "sha256": "c2d7a6494c8adfa8f1c4b4d7893847c6f0011adf9f2fac9244a205e41d0561e4"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "pin": {
+        "bytes": 7927,
+        "git_blob": "fb6bede5e306c62320c3a95e113dc60613c41e85",
+        "sha256": "cc5fd43cdf1b410f98338966a599ecc25e416f6b12cf0d0c85dbcaa9b177cc00"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "pin": {
+        "bytes": 16412,
+        "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+        "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-contracts/src/final_use.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "pin": {
+        "bytes": 37673,
+        "git_blob": "84d55caf39b1746285f42c2777ddd410854fb7c9",
+        "sha256": "a3c957633471d79121b39fd5a3ead8ea06a8a379c8ed66e756c40541b5edf214"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-contracts/src/final_use_control.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "pin": {
+        "bytes": 41842,
+        "git_blob": "c933f5bfe49bbc8b5515659edec2811471207659",
+        "sha256": "472357b426d58e7d966c52cd1f8fb873881fac81e8689154f13cc95a169a8a05"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "pin": {
+        "bytes": 27363,
+        "git_blob": "49af2232566bf4c38380d88b7cf63e9b7975537a",
+        "sha256": "68f13a0c3f44dfb774f599f2e36322420621fe21f368fd42e5f8a5483b0f1845"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+      "pin": {
+        "bytes": 23892,
+        "git_blob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf",
+        "sha256": "3472db1eb750164c43f32dbbfa4df5b7b2dbf47259a8cabe9f82f226477823b8"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "pin": {
+        "bytes": 86789,
+        "git_blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+        "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "pin": {
+        "bytes": 26250,
+        "git_blob": "059e4650b02bbf4bd5816c6255f564b566ebe14f",
+        "sha256": "b0747a4cd8cea16a6194d64bf047aa9dd751cf968edcac6b81f5da740aa46408"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "pin": {
+        "bytes": 29173,
+        "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+        "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-neuron/src/witness.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "pin": {
+        "bytes": 12305,
+        "git_blob": "180ddadf5bcc463513305f252358ab3b032b0c75",
+        "sha256": "61f07a52e2a833a6786cb9cf2e666e6dfa03aafeb9bcce9069cc3aadbe1f84a7"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "pin": {
+        "bytes": 9708,
+        "git_blob": "02759f257a58147e8416391d9c1062e93bbc112c",
+        "sha256": "5f8c7bd39912e2954fb5333279b9459ad3ff7c9f943818ab62e39aa270ee8445"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "pin": {
+        "bytes": 2945,
+        "git_blob": "9e498c1685651f41e970b836de499a7a83f11b68",
+        "sha256": "3bc76f5586d0a72ff4ced1e55058fa97dc33664bb92730cb0356eec3e5bd259c"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-automation/src/circuit_profile.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-automation/src/circuit_profile.rs",
+      "pin": {
+        "bytes": 16835,
+        "git_blob": "02234b755b3ea43b78bd17d6ef6a14ce22b77612",
+        "sha256": "c7116938308e8c90a73a796b2e0013a9388ce1a63a82bce169f9575a5541843c"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-automation/src/neural_circuit.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+      "pin": {
+        "bytes": 22078,
+        "git_blob": "851df62359278b19df1f88d3dc5f1f88657c3260",
+        "sha256": "d31047a760f2bf02b6c5fe2db928a043da5da75b0d75061255ce9f89f496945c"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-automation/src/taskflow.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-automation/src/taskflow.rs",
+      "pin": {
+        "bytes": 94260,
+        "git_blob": "1bc4034247f51fd1e5176cf0dbabee1ca7648b30",
+        "sha256": "f9434d11ffed4fb86ab5eb0fcc99672a786389d5256f41516f062d932be06b66"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-contracts/src/final_use_store.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "pin": {
+        "bytes": 22041,
+        "git_blob": "d014fce0c1396b094d4497c58ef905c53e80669f",
+        "sha256": "609dafd09e151bd207adba94c35064bce33721c4463eaa296143a609079eabdb"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-learning-artifacts/src/cell_bundle.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-learning-artifacts/src/cell_bundle.rs",
+      "pin": {
+        "bytes": 10758,
+        "git_blob": "64c7018f44b1365d7e2fb51926209758cef00468",
+        "sha256": "73aa1067d49ed19d58266be4c2ea2052aa760bd6a56a2294be712c7fc0a52769"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/cell_generation_context.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_context.rs",
+      "pin": {
+        "bytes": 5219,
+        "git_blob": "eea475e567d656ee2a9567991f4cfd308af3ead7",
+        "sha256": "a210daee68c7fa2edff3f4a782631ac700add2f4f9c306e5adc18d8ad77475e8"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "pin": {
+        "bytes": 22263,
+        "git_blob": "710afcbeeb7bb05d2ab2cff1ad0e51c990bd6473",
+        "sha256": "eb6a628839b8c5497a47dce89c28a83778b3bd03b474f243810a9477ca35b37d"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "pin": {
+        "bytes": 14129,
+        "git_blob": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+        "sha256": "64c39bb7fd9d7e6acd3c03332f86f8c8749e4a367a6e629c4cd8b7b2e70d8e20"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/cell_generation_types.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/cell_generation_types.rs",
+      "pin": {
+        "bytes": 11218,
+        "git_blob": "11cde7b9f16322905d106fb8107846b27592b9d1",
+        "sha256": "1bc223add61b9d23e72b2b9c802b7c9637d82905d519146f3c9971a50b2cbdd7"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/cell_types.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/cell_types.rs",
+      "pin": {
+        "bytes": 12226,
+        "git_blob": "712fe850d16abeea3dc859827e0082bf3343c780",
+        "sha256": "04e0d7e973103f79275d1b552f60394b697c45402a9c3452d029a934090961c6"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/inference_control.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+      "pin": {
+        "bytes": 4845,
+        "git_blob": "875c5fa7de4c4a0266b777f0cd7b107f66f0fe88",
+        "sha256": "a7fd9eb77b804ee3ea4203fda157a242cba0dd3ce285a8ff8c59b48b92e27591"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/lib.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "pin": {
+        "bytes": 16892,
+        "git_blob": "462ea23f7f3e01be9b04cf90f8431b561fb7cd83",
+        "sha256": "f4d5225c0a6555c8f9bc2518008bdfe6bab51855255ef3aac94e273dd24e5ec8"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/runtime_types.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "pin": {
+        "bytes": 21134,
+        "git_blob": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4",
+        "sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/sparse.rs",
+      "meaning": "content validation, not a claim that every line was semantically audited",
+      "path": "codex-rs/hepta-neuron/src/sparse.rs",
+      "pin": {
+        "bytes": 15728,
+        "git_blob": "d94d50088b4cac452ad259ab08e1813049e4a78f",
+        "sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "pin": {
+        "bytes": 7060,
+        "git_blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+        "sha256": "d940d9ed0cd645bb911c7545a1094cdb6168949972859e4e27cee1f1e65c2d62"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-product-e1-proposal-v1/references/codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "pin": {
+        "bytes": 4428,
+        "git_blob": "7657ebef9ff22db3265484867fbc8b9d622ca531",
+        "sha256": "68947e5bac7dd7541a72c14c982fd46b20af5a989bba87ff246200abe939ad04"
+      }
+    },
+    {
+      "all_bytes_match_b608_inventory": true,
+      "local": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-contracts/src/authority_trust.rs",
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "pin": {
+        "bytes": 2313,
+        "git_blob": "043ffd75a20c42935959a98d37f40e3d7229c407",
+        "sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352"
+      }
+    }
+  ],
+  "scope_limitations": [
+    "Python parsed source text and JSON data only; no Rust compiler, formatter, Cargo, QA, collector, H or owner constructor executed.",
+    "Ordered textual anchors supplement full manual code reading; they are not a Rust AST/type-check proof or a runtime result.",
+    "Reference byte binding to b608 does not mean every referenced module was semantically reviewed in full.",
+    "Root file/path checks do not establish a cross-owner atomic transaction or physical cancellation guarantee.",
+    "Fresh witness initialization and original recovery/store factory effects are not ruled out by these prechecks; a failure is not evidence of unchanged files."
+  ],
+  "session_flows": [
+    {
+      "exact_variant_no_fallback": true,
+      "function": "prepare_original_initial_generation_from_files",
+      "ordered_source_anchors_relative_to_body": [
+        {
+          "line": 2,
+          "text": "let end = Instant::now() + Duration::from_millis(self.config.timeout_ms);"
+        },
+        {
+          "line": 3,
+          "text": "require_original_session(&self, end)?;"
+        },
+        {
+          "line": 4,
+          "text": "let OriginalLoadedGeneration::Fresh(inputs) = HostAuthorityService::load_original_initial_generation_inputs("
+        },
+        {
+          "line": 5,
+          "text": "&self.service, &self.config.state_dir, deployment, files, OriginalGenerationLoadPurpose::Fresh, end,"
+        },
+        {
+          "line": 9,
+          "text": "let operation = HostAuthorityService::bind_original_initial_operation(&self.service, &inputs, end)?;"
+        },
+        {
+          "line": 10,
+          "text": "require_original_session(&self, end)?;"
+        },
+        {
+          "line": 12,
+          "text": "phase: InitialHostPhase::Fresh(inputs)"
+        }
+      ],
+      "session_consumed_and_retained": true,
+      "single_end": true
+    },
+    {
+      "exact_variant_no_fallback": true,
+      "function": "recover_original_initial_generation_from_files",
+      "ordered_source_anchors_relative_to_body": [
+        {
+          "line": 2,
+          "text": "let end = Instant::now() + Duration::from_millis(self.config.timeout_ms);"
+        },
+        {
+          "line": 3,
+          "text": "require_original_session(&self, end)?;"
+        },
+        {
+          "line": 4,
+          "text": "let OriginalLoadedGeneration::Recover(inputs) = HostAuthorityService::load_original_initial_generation_inputs("
+        },
+        {
+          "line": 5,
+          "text": "&self.service, &self.config.state_dir, deployment, files, OriginalGenerationLoadPurpose::Recover, end,"
+        },
+        {
+          "line": 9,
+          "text": "let (operation, custody) = HostAuthorityService::recover_original_initial_operation(&self.service, inputs, end)?;"
+        },
+        {
+          "line": 10,
+          "text": "require_original_session(&self, end)?;"
+        },
+        {
+          "line": 12,
+          "text": "phase: InitialHostPhase::Ready(custody)"
+        }
+      ],
+      "session_consumed_and_retained": true,
+      "single_end": true
+    }
+  ],
+  "source_packet": {
+    "bytes": 287484,
+    "git_blob": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+    "sha256": "7f4d2087943efc969eda7ca540d21e51c52418db5ecfe81a8be77a9362d98d4b"
+  },
+  "source_ref_or_source_worktree_modified": false,
+  "state": "STATIC_SOURCE_ONLY_NOT_COMPILED_OR_EXECUTED",
+  "unchanged_old_source": "All four modified parent files are exact insertion-only first-occurrence splices, full forward and inverse equality; original bodies remain byte-for-byte.",
+  "value_conversion_anchors": [
+    {
+      "line": 138,
+      "text": "signature: signature(self.signature)?,"
+    },
+    {
+      "line": 346,
+      "text": "bytes.try_into().map_err(|_: Vec<u8>| invalid(\"original signature must contain 64 bytes\"))"
+    },
+    {
+      "line": 307,
+      "text": "if self.artifact_kind != \"model\""
+    },
+    {
+      "line": 318,
+      "text": "artifact_kind: ArtifactKind::Model,"
+    },
+    {
+      "line": 320,
+      "text": "predecessor_id: self.predecessor_id.map(StableId::new).transpose().map_err(invalid)?,"
+    },
+    {
+      "line": 103,
+      "text": "writer_signers: self.writer_signers.into_iter().map(SignerFile::original).collect::<Result<_, _>>()?,"
+    },
+    {
+      "line": 104,
+      "text": "head_signers: self.head_signers.into_iter().map(SignerFile::original).collect::<Result<_, _>>()?,"
+    },
+    {
+      "line": 218,
+      "text": "pub(super) required_external_frontier: FinalUseFrontier,"
+    },
+    {
+      "line": 340,
+      "text": "pub(super) configuration: CellGenerationConfigV2,"
+    }
+  ]
+}

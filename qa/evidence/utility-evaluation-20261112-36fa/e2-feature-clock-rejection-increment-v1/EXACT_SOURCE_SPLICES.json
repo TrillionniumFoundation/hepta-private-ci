@@ -1,0 +1,22 @@
+[
+  {
+    "after": {
+      "bytes": 13123,
+      "git_blob": "78ce92d31e0fbf9c4955f25c5629ba67eb4911b2",
+      "sha256": "3b1252b664111baf22778f8ca9c4495e0f3e4806fdcb54149c718d58f9b79bd3"
+    },
+    "before": {
+      "bytes": 13098,
+      "git_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+      "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc"
+    },
+    "exact_splices": [
+      {
+        "new": "        if completed == u64::MAX || completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate",
+        "old": "        if completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate"
+      }
+    ],
+    "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+    "reverse_full_bytes_equal": true
+  }
+]

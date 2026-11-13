@@ -1,0 +1,94 @@
+[
+  {
+    "after": {
+      "bytes": 7788,
+      "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+      "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+    },
+    "before": {
+      "bytes": 7326,
+      "git_blob": "7da8c7b20bba82b648eec3420733f49997561501",
+      "sha256": "7b2f1501aaff75a4ceaad94303c739c0fb0fbd70c8db0049d8f5fae4de16327d"
+    },
+    "exact_splices": [
+      {
+        "new": "        if time.circuit_millis == u64::MAX\n            || time.cell_micros == u64::MAX\n            || time.circuit_millis < admission.observed_at_ms()\n        {",
+        "old": "        if time.circuit_millis < admission.observed_at_ms() {"
+      },
+      {
+        "new": "                                if now.circuit_millis == u64::MAX\n                                    || now.cell_micros == u64::MAX\n                                    || now.circuit_millis < before.circuit_millis",
+        "old": "                                if now.circuit_millis < before.circuit_millis"
+      },
+      {
+        "new": "            if decided_at.circuit_millis == u64::MAX\n                || decided_at.cell_micros == u64::MAX\n                || decided_at.circuit_millis < last_time.circuit_millis",
+        "old": "            if decided_at.circuit_millis < last_time.circuit_millis"
+      },
+      {
+        "new": "            if committed_at.circuit_millis == u64::MAX\n                || committed_at.cell_micros == u64::MAX\n                || committed_at.circuit_millis < decided_at.circuit_millis",
+        "old": "            if committed_at.circuit_millis < decided_at.circuit_millis"
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+    "reverse_full_bytes_equal": true
+  },
+  {
+    "after": {
+      "bytes": 8637,
+      "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+      "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+    },
+    "before": {
+      "bytes": 8481,
+      "git_blob": "3d18fc0d8ce1c9e2a3a7e863bd7bdadac04497ad",
+      "sha256": "68655fc061366fb2435ba687277b4697eb42356c9ecb16f0e0a56a6d14ce7945"
+    },
+    "exact_splices": [
+      {
+        "new": "            let clock = original.pump.clock();\n            if clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX {\n                return Err(Error::ReconciliationRequired);\n            }\n            let mut bytes",
+        "old": "            let clock = original.pump.clock();\n            let mut bytes"
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+    "reverse_full_bytes_equal": true
+  },
+  {
+    "after": {
+      "bytes": 11108,
+      "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+      "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+    },
+    "before": {
+      "bytes": 10937,
+      "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+      "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+    },
+    "exact_splices": [
+      {
+        "new": "        let clock = CircuitCellTimeV1 {\n            circuit_millis: u64::from_be_bytes(bytes[..8].try_into().map_err(|_| Error::InvalidBinding)?),\n            cell_micros: u64::from_be_bytes(bytes[8..].try_into().map_err(|_| Error::InvalidBinding)?),\n        };\n        if clock.circuit_millis == u64::MAX || clock.cell_micros == u64::MAX {\n            return Err(Error::ReconciliationRequired);\n        }\n        Ok(clock)",
+        "old": "        Ok(CircuitCellTimeV1 {\n            circuit_millis: u64::from_be_bytes(bytes[..8].try_into().map_err(|_| Error::InvalidBinding)?),\n            cell_micros: u64::from_be_bytes(bytes[8..].try_into().map_err(|_| Error::InvalidBinding)?),\n        })"
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+    "reverse_full_bytes_equal": true
+  },
+  {
+    "after": {
+      "bytes": 4635,
+      "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+      "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+    },
+    "before": {
+      "bytes": 4376,
+      "git_blob": "c3da579114e1b4b2af2dd52785afc67980595051",
+      "sha256": "72b6616733eaa6213c17a44a9f7ceaf7caa3eb93b56194fa88435c9ea47c9a0c"
+    },
+    "exact_splices": [
+      {
+        "new": "                            let sampled = CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),\n                                cell_micros: sampled.cell_micros };\n                            if sampled.circuit_millis == u64::MAX || sampled.cell_micros == u64::MAX {\n                                return Err(Error::ReconciliationRequired);\n                            }\n                            Ok(sampled)",
+        "old": "                            Ok(CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),\n                                cell_micros: sampled.cell_micros })"
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+    "reverse_full_bytes_equal": true
+  }
+]

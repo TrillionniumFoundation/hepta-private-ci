@@ -1,0 +1,71 @@
+{
+  "assertion_scope": [
+    "Full publication roundtrip, independently exact stored request/input/result bytes and no original journal mutation.",
+    "Rebound original publication digest and foreign run produce exact InvalidBinding; original positive control remains equal.",
+    "Actual original Source withdrawal makes every retained local view refuse encoding/readback with exact Unavailable.",
+    "Original model call count stays one after every read/refusal."
+  ],
+  "cleanup": "Original Driver is dropped and AutomationStore.close awaited on every Result exit in the async fixture; outer cancellation is not a joined-task proof.",
+  "controlled_components": [
+    "Existing RunStart fixture authentication",
+    "Existing controlled Cell inference Model"
+  ],
+  "execution": {
+    "H": false,
+    "collector": false,
+    "compile": false,
+    "format": false,
+    "qa": false,
+    "tests": false
+  },
+  "methods": [
+    "material_source_payload_retains_complete_original_publication",
+    "material_source_encoding_refuses_rebound_publication",
+    "material_source_encoding_refuses_withdrawn_original_for_all_views"
+  ],
+  "not_proven": [
+    "Root/Material process identity or IPC",
+    "Shared remote client concurrency/cancellation",
+    "Real task authorization/inference quality",
+    "Root same-task Cell custody service execution",
+    "Process cold recovery"
+  ],
+  "original_material_production_body_prefix_byte_equal": true,
+  "production_changes": "Only cfg(test) child mount after the exact frozen body.",
+  "real_original_components": [
+    "Source journal and independent file witness",
+    "Cell journal and witness",
+    "CircuitTaskDriver",
+    "AutomationStore",
+    "Private Receipt constructed only by the Driver",
+    "Source publish_result original full receipt validation"
+  ],
+  "source_git_created": false,
+  "source_references": [
+    {
+      "bytes": 26962,
+      "git_blob": "c446a6870044b77f51ae4049df2a4a42482920c0",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "sha256": "4715ad4f92d491bee6445ce60050947859e49ee1d02d8de1517a623c390ed668"
+    },
+    {
+      "bytes": 31428,
+      "git_blob": "a2256001fb5a8c5fd3b2e22b0586e5240669f3ff",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_tests.rs",
+      "sha256": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7"
+    },
+    {
+      "bytes": 7666,
+      "git_blob": "5428558e44bb9ee3116ac1d0ab372d2d74e4f93b",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+      "sha256": "b3ce0e22bb85d9f802fb0bf14da3270b152a49c7422f94ece14d558cee1712ab"
+    },
+    {
+      "bytes": 6682,
+      "git_blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852"
+    }
+  ],
+  "status": "LOCAL_PREPARED_UNEXECUTED"
+}

@@ -1,0 +1,124 @@
+{
+  "combined_collector_result": null,
+  "combined_counts": null,
+  "format": "hepta-e2-material-source-registration-obligations-v1",
+  "modified_paths_requiring_existing_guard_review": [
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "codex-rs/hepta-agentd/src/circuit_task.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+  ],
+  "new_explicit_function_declarations": [
+    {
+      "name": "from_original_supervisor",
+      "path": "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "prepare_original_material_source_host",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "visibility": "pub"
+    },
+    {
+      "name": "serve",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+      "visibility": "pub"
+    },
+    {
+      "name": "into_original_root_source_command_owner",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+      "visibility": "pub"
+    },
+    {
+      "name": "original_source_loan_binding",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "read_original_material_publication",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "from_original_material_root_stream",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "read",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "visibility": "pub(super)"
+    },
+    {
+      "name": "encode_original_material_publication",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "context",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "before",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "bounded",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "request",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "response",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "read_response",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+      "visibility": "pub(crate)"
+    },
+    {
+      "name": "read_original_material_source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs",
+      "visibility": "pub(crate)"
+    }
+  ],
+  "new_production_modules_requiring_full_guard": [
+    "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_material.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs"
+  ],
+  "new_tests_in_this_layer": [],
+  "old_bodies": "Every modified file has complete exact before/after and inverse; original Dataset require_source body is identical. Local Source delegation is explicit and retained.",
+  "source_git_created": false,
+  "visibility_change": {
+    "after": "pub(crate)",
+    "before": "private",
+    "body_whole_byte_equal": true,
+    "name": "require_source",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs"
+  },
+  "whole_file_rebinding_rule": "Existing E1 whole-file required guards must be rebound from exact old required text to final reviewed combined text; never delete the guard, weaken forbidden/authority flags or merely append a duplicate."
+}

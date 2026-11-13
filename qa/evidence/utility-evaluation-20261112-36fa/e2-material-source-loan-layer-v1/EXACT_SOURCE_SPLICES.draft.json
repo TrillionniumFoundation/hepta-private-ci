@@ -1,0 +1,178 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+    "replacements": [
+      {
+        "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_source_material.rs\"]\npub(crate) mod material;\n\nenum OriginalReadback<W: AnchorWitnessStore> {\n    Local(DurableCircuitTaskSourceV1<W>),\n    #[cfg(target_os = \"linux\")]\n    RootMaterial(std::sync::Arc<material::Client>),\n}\n\n/// Only the original source owner constructs the local view. The sealed\n/// Material branch comes only from consuming the real original Material pair.\n/// Every read reaches that same original locked journal, independent witness\n/// and current withdrawal record, locally or through the sealed Material loan.",
+        "before": "/// Only the original source owner constructs this view. Every read reaches the\n/// same locked journal, independent witness and current withdrawal record."
+      },
+      {
+        "after": "    original: OriginalReadback<W>,",
+        "before": "    original: DurableCircuitTaskSourceV1<W>,"
+      },
+      {
+        "after": "            original: match &self.original {\n                OriginalReadback::Local(original) => OriginalReadback::Local(original.clone()),\n                #[cfg(target_os = \"linux\")]\n                OriginalReadback::RootMaterial(original) => OriginalReadback::RootMaterial(std::sync::Arc::clone(original)),\n            },",
+        "before": "            original: self.original.clone(),"
+      },
+      {
+        "after": "            original: OriginalReadback::Local(self.clone()),",
+        "before": "            original: self.clone(),"
+      },
+      {
+        "after": "        let original = match &self.original {\n            OriginalReadback::Local(original) => original,\n            #[cfg(target_os = \"linux\")]\n            OriginalReadback::RootMaterial(_) => return Err(Error::InvalidBinding),\n        };\n        let mut owner = original.0.try_lock().map_err(|_| Error::Unavailable)?;",
+        "before": "        let mut owner = self.original.0.try_lock().map_err(|_| Error::Unavailable)?;"
+      },
+      {
+        "after": "        match &self.original {\n            OriginalReadback::Local(original) => original.read_publication(identity, record),\n            #[cfg(target_os = \"linux\")]\n            OriginalReadback::RootMaterial(original) => {\n                let observed = original.read(identity, &record.snapshot.run_id)?;\n                if observed.original_record() != record { return Err(Error::InvalidBinding); }\n                Ok(observed)\n            }\n        }",
+        "before": "        self.original.read_publication(identity, record)"
+      },
+      {
+        "after": "        match &self.original {\n            OriginalReadback::Local(original) => original.read_run_publication(identity, run_id),\n            #[cfg(target_os = \"linux\")]\n            OriginalReadback::RootMaterial(original) => original.read(identity, run_id),\n        }",
+        "before": "        self.original.read_run_publication(identity, run_id)"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+    "replacements": [
+      {
+        "after": "pub use readback::CircuitTaskSourceReadbackV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use readback::material as material_source;",
+        "before": "pub use readback::CircuitTaskSourceReadbackV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task_source.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+    "replacements": [
+      {
+        "after": "pub(crate) use source::CircuitTaskPolicyProjectionV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use source::material_source as original_material_source;",
+        "before": "pub(crate) use source::CircuitTaskPolicyProjectionV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+    "replacements": [
+      {
+        "after": "#[path = \"cell_q24_material_source_context.rs\"]\nmod original_source_context;\n\n#[path = \"cell_q24_material_command_service.rs\"]",
+        "before": "#[path = \"cell_q24_material_command_service.rs\"]"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/cell_q24_material_command.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+    "replacements": [
+      {
+        "after": "#[cfg(target_os = \"linux\")]\n#[path = \"cell_q24_material_root_source.rs\"]\nmod original_root_source;\n\n#[path = \"cell_q24_material_receipt_binding.rs\"]",
+        "before": "#[path = \"cell_q24_material_receipt_binding.rs\"]"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "replacements": [
+      {
+        "after": "#[path = \"circuit_feature_material_source.rs\"]\nmod original_material_source;\n\n#[path = \"circuit_feature_current_retirement.rs\"]",
+        "before": "#[path = \"circuit_feature_current_retirement.rs\"]"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e1-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+    "replacements": [
+      {
+        "after": "#[path = \"neuron_generation_initial_material_source.rs\"]\nmod original_material_source;\n\n#[path = \"neuron_generation_initial_root_task_channel.rs\"]",
+        "before": "#[path = \"neuron_generation_initial_root_task_channel.rs\"]"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+    "replacements": [
+      {
+        "after": "use std::sync::Arc;\nuse codex_hepta_neuron::AnchorWitnessStore;\n\n#[path = \"authority_host_session_material_source.rs\"]\npub(crate) mod material_source;\npub use material_source::PreparedRootMaterialSourceHostV1;\npub use material_source::OriginalRootMaterialSourceRegistrationV1;",
+        "before": "use codex_hepta_neuron::AnchorWitnessStore;"
+      },
+      {
+        "after": "    session: Arc<PreparedHostAuthoritySession>,\n    operation: Arc<OriginalHostInitialOperation>,",
+        "before": "    session: PreparedHostAuthoritySession,\n    operation: OriginalHostInitialOperation,"
+      },
+      {
+        "after": "    custody: Arc<OriginalRootCircuitTaskCustodyV1<SW, CW>>,\n    material_source_taken: bool,",
+        "before": "    custody: OriginalRootCircuitTaskCustodyV1<SW, CW>,"
+      },
+      {
+        "after": "                session: Arc::new(session), operation: Arc::new(operation), runtime,\n                custody: Arc::new(custody), material_source_taken: false, end,",
+        "before": "                session, operation, runtime, custody, end,"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/lib.rs",
+    "replacements": [
+      {
+        "after": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedRootHostCircuitTaskV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedRootMaterialSourceHostV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::OriginalRootMaterialSourceRegistrationV1;",
+        "before": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedRootHostCircuitTaskV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/lib.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+    "replacements": [
+      {
+        "after": "pub use task::PreparedRootHostCircuitTaskV1;\npub use task::PreparedRootMaterialSourceHostV1;\npub use task::OriginalRootMaterialSourceRegistrationV1;",
+        "before": "pub use task::PreparedRootHostCircuitTaskV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+    "replacements": [
+      {
+        "after": "pub use root_task::PreparedRootHostCircuitTaskV1;\npub use root_task::PreparedRootMaterialSourceHostV1;\npub use root_task::OriginalRootMaterialSourceRegistrationV1;",
+        "before": "pub use root_task::PreparedRootHostCircuitTaskV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "replacements": [
+      {
+        "after": "pub use session::PreparedRootHostCircuitTaskV1;\npub use session::PreparedRootMaterialSourceHostV1;\npub use session::OriginalRootMaterialSourceRegistrationV1;",
+        "before": "pub use session::PreparedRootHostCircuitTaskV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+    "replacements": [
+      {
+        "after": "pub use generation::PreparedRootHostCircuitTaskV1;\npub use generation::PreparedRootMaterialSourceHostV1;\npub use generation::OriginalRootMaterialSourceRegistrationV1;",
+        "before": "pub use generation::PreparedRootHostCircuitTaskV1;"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session.rs"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+    "replacements": [
+      {
+        "after": "pub(crate) fn require_source(\n",
+        "before": "fn require_source(\n"
+      }
+    ],
+    "source": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/cell_q24_dataset.rs"
+  }
+]

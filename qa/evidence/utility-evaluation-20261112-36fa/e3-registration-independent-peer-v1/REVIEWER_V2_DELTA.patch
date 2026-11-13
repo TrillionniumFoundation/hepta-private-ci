@@ -1,0 +1,14 @@
+--- reviewer-v1
++++ reviewer-v2
+@@ -234,8 +234,9 @@
+ old_ids = table_before['privileged_inventory']['required_boundary_ids']
+ new_ids = table_after['privileged_inventory']['required_boundary_ids']
+ assert set(table_before['privileged_inventory']) == set(table_after['privileged_inventory']) == {'required_boundary_ids'}
+-assert old_ids == [r['id'] for r in table_before['boundary']]
+-assert new_ids == [r['id'] for r in table_after['boundary']]
++assert len(old_ids) == len(set(old_ids)) == 650
++assert set(old_ids) == {r['id'] for r in table_before['boundary']}
++assert set(new_ids) == {r['id'] for r in table_after['boundary']}
+ assert new_ids[:650] == old_ids and len(set(new_ids)) == 666
+ 
+ allowed_old = {

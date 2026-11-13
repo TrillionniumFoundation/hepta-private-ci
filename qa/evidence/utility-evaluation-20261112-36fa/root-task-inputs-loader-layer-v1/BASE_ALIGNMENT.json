@@ -1,0 +1,36 @@
+{
+  "from": "composition-v3",
+  "to": "composition-v4",
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "v3": {
+        "bytes": 8464,
+        "sha256": "b3accebb14e2a0b25451c1942f2723d3ef57952c8e79bebfa427b87e09d45afd",
+        "git_blob": "149f1748ab60d88456abee9def4b0a86fd0a7497"
+      },
+      "v4": {
+        "bytes": 8568,
+        "sha256": "a2ab51bce4e4937ab2fd1536b368d9f30c2f24d240e3539999dc99b5ba57b0a2",
+        "git_blob": "47941c61d61c6bff18021f2fc241c28f2d82280a"
+      },
+      "change": "preserve exact Material public exports from immutable v4; original loader insertion unchanged"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "v3": {
+        "bytes": 73959,
+        "sha256": "72f25ccf4aa8123eb8fd971f823a0677db9a20593861f91143dcf0d2adda5977",
+        "git_blob": "049281fe0eb99c95f307d9e8b42d05a40af27254"
+      },
+      "v4": {
+        "bytes": 74155,
+        "sha256": "6befd57a74ba6bcff8304903be187612864caa7d2be2d777f7714bf7047ea616",
+        "git_blob": "0f2c7ed70006b228053532117a94df0b7b1322ea"
+      },
+      "change": "preserve exact Material public exports from immutable v4; original loader insertion unchanged"
+    }
+  ],
+  "same_before_paths": 2,
+  "unfrozen_preparation_only": true
+}

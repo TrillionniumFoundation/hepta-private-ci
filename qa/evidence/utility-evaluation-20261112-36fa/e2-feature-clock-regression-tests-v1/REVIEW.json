@@ -1,0 +1,16 @@
+{
+  "execution": "Not formatted, compiled or run; exact source append/inverse checks only.",
+  "existing_positive_control": "The entire original feature_control_dispatch_fsync_deadline_and_late_result_keep_original_cost test is unchanged, including finite late Cancelled receipt and cost assertions.",
+  "format": "hepta-original-feature-clock-regression-review-v1",
+  "mechanism": [
+    "Use the unchanged actual DurableInferenceControl journal fixture and its explicitly controlled Worker.",
+    "Only after the existing worker increments its real call counter does the fixture clock return MAX.",
+    "Require exact Indeterminate, one worker call, four original clock samples, unresolved original dispatch at timestamp 11 and no terminal readback.",
+    "Same-port reentry and original journal reopen must keep exact pending bytes, no terminal receipt and no repeat work; the reopened live clock panics if sampled."
+  ],
+  "new_test_fqn": "feature_control::tests::feature_control_invalid_completion_clock_retains_original_unresolved_dispatch",
+  "original_prefix_retained_byte_identically": true,
+  "original_test_blob": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+  "production_dependency": "feature-clock-rejection-increment-v1, ade9282388680285416c7829000b7081e22550ef",
+  "scope": "One ordinary lib test, not a real Root authorization, process cold-recovery test or execution result."
+}

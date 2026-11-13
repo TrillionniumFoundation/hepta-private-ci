@@ -1,0 +1,60 @@
+{
+  "all_parts_exact_local_roundtrip": true,
+  "encoding": "ordered separate base64 parts, each one final LF",
+  "format": "hepta-exact-utf8-packet-bounded-archive-v1",
+  "maximum_decoded_part_bytes": 196608,
+  "original": {
+    "bytes": 532571,
+    "git_blob": "911e41dbd5bb0dbe2098fe84e50728a73c5b3757",
+    "sha256": "a749862a739f321a3751c461e403904eb4488af6508cfa912c7e318adee31630"
+  },
+  "original_name": "SOURCE_PACKET.json",
+  "original_packet_not_individually_published_as_blob": true,
+  "part_count": 3,
+  "parts": [
+    {
+      "decoded": {
+        "bytes": 196608,
+        "git_blob": "305338cf162e707cf02990f1a8084f2645457243",
+        "sha256": "a4d789e569f6f5ae0286f75b5103eeb9e7934a2868ecbe5a27eccc6917ccf7e1"
+      },
+      "encoded": {
+        "bytes": 262145,
+        "git_blob": "11cb9e92ee53efc442c5b9795837bf9fe36feed8",
+        "sha256": "bcd783bc65ddf0194284ac3a4e85b7cf1605392d3d0af617dfb5bc91859e7116"
+      },
+      "name": "part-001.b64",
+      "offset": 0
+    },
+    {
+      "decoded": {
+        "bytes": 196608,
+        "git_blob": "65a815f84f8ce38b71d9aedbf2431c7943c833e1",
+        "sha256": "fe6fa0a0a7531d2b89aac270cc32502e21e04dc7716f387bba222ff9c385a933"
+      },
+      "encoded": {
+        "bytes": 262145,
+        "git_blob": "066f3fccaf142dc4d770475cb58639332a9b4138",
+        "sha256": "0769e4886ddd9a4d3fdce125b7bf3b0500c3761586c830877d685e6bf10fee3b"
+      },
+      "name": "part-002.b64",
+      "offset": 196608
+    },
+    {
+      "decoded": {
+        "bytes": 139355,
+        "git_blob": "34c075c2577d5c33e9ffc57b37a8d2b160bf1b78",
+        "sha256": "7df8c1b6bdb9774e156d112511f9103eddc74137820e78fcd7878f9bbf790118"
+      },
+      "encoded": {
+        "bytes": 185809,
+        "git_blob": "3ef2b75b5ae9e2cb67cd4ed8b5962bfaa86f2053",
+        "sha256": "c2ff40cc9811399be575693de5fce58a3b7c2169d16e1ed18e3a2366c828b12c"
+      },
+      "name": "part-003.b64",
+      "offset": 393216
+    }
+  ],
+  "qualification": false,
+  "source_execution": false
+}

@@ -1,0 +1,44 @@
+{
+  "authority": "No public publication/receipt/trace constructor, Source writer getter, new ledger, grant, signing key, Current owner or generic caller callback.",
+  "bounds": {
+    "client_aliases": "same slot, counter and end",
+    "frame_bytes": 16384,
+    "lifetime_seconds_max": 300,
+    "reconnects": 0,
+    "requests_per_original_channel": 128,
+    "retries": 0,
+    "root_end": "same original absolute end",
+    "timeout_ms_max": 500
+  },
+  "material_consumer": {
+    "constructor_path": "Consume actual original pair; create private peer-bound readonly branch; delegate unchanged original into_command_owner.",
+    "entry": "OriginalCellQ24MaterialReceiptOwnersV1<EW,DW>::into_original_root_source_command_owner(self, stream, root, root_pidfd, nonce, identity, existing_ledger_arc, baseline, timeout, lifetime)",
+    "result": "OriginalCellQ24MaterialCommandOwnerV1<EW,DW,FileAnchorWitnessStore>",
+    "witness_note": "FileAnchorWitnessStore is the existing generic interface parameter, not a remotely constructed file/witness. Root reads its retained actual witness."
+  },
+  "registration": {
+    "clone": false,
+    "constructor": "from_original_supervisor(material: OriginalCellQ24MaterialReceiptConfigV1, experience_actor: StableId, dataset_actor: StableId, consumer: AgentdRootAuthorityPeer, consumer_uid: u32, original_consumer_pidfd: OwnedFd, stream: UnixStream, nonce: [u8; 16]) -> Result<Self, AgentdError>",
+    "constructor_visibility": "pub(crate)",
+    "loader_pending": true,
+    "requires": "Protected supervisor Material role, complete original config, both E/D actor IDs, actual Material peer/boot/start/pidfd/socket. Root and registered daemon PID are rejected. Missing trusted Material input remains a refusal.",
+    "type": "OriginalRootMaterialSourceRegistrationV1"
+  },
+  "remaining": [
+    "Root protected loader call and real Material actor binding",
+    "Real Material process listener/client hookup",
+    "Same-session V3 late registration with its independently authorized intent/lease",
+    "Mechanism tests and final combined registration",
+    "Actual cross-process execution and cold recovery"
+  ],
+  "root_host": {
+    "clone": false,
+    "export": "PreparedRootHostCircuitTaskV1::prepare_original_material_source_host(&mut self) -> Result<PreparedRootMaterialSourceHostV1<SW, CW>, AgentdError>",
+    "retained": "Same private Arc session, operation and custody; one wrapping at original task construction. Actual task runtime and writer stay in original non-Clone task.",
+    "serve": "PreparedRootMaterialSourceHostV1::serve(self, OriginalRootMaterialSourceRegistrationV1) -> Result<u64, AgentdError>",
+    "timing": "Export once before moving the task service; later bind a full actual completed-A Material contract. No predicted receipt/history.",
+    "type": "PreparedRootMaterialSourceHostV1<SW, CW>"
+  },
+  "source_read": "Exact same-task Arc and actual Cell committed lookup, original Source publication and stored request/input/result before/after, current withdrawal/current generation plus full host issuer/lease/current observations. Original Dataset require_source is reused unchanged.",
+  "status": "FROZEN_LOCAL_PRODUCTION_UNIT_UNEXECUTED"
+}

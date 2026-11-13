@@ -1,0 +1,810 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation.rs
+@@ -351,6 +351,12 @@
+     }
+ }
+ 
++#[path = "authority_host_generation_input_loader.rs"]
++mod input_loader;
++pub use input_loader::RootHostInitialGenerationFilesV1;
++pub(crate) use input_loader::LoadPurpose as OriginalGenerationLoadPurpose;
++pub(crate) use input_loader::LoadedOriginalGeneration as OriginalLoadedGeneration;
++
+ fn invalid(error: impl std::fmt::Display) -> AgentdError {
+     AgentdError::Invalid(error.to_string())
+ }
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_input_files.rs
+@@ -0,0 +1,128 @@
++//! Open-only path checks and retained descriptor checks for the fixed loader.
++//! No helper initializes an Artifact, FinalUse journal or protected frontier.
++
++use std::collections::BTreeSet;
++use std::fs::File;
++use std::fs::OpenOptions;
++use std::io::Read;
++use std::os::fd::AsRawFd;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::OpenOptionsExt;
++use std::path::Component;
++use std::path::Path;
++
++use codex_hepta_contracts::RootAuthorityDirectory;
++
++use super::LoadPurpose;
++use super::RootHostInitialGenerationFilesV1;
++use super::invalid;
++use crate::AgentdError;
++
++#[derive(Clone, Copy)]
++enum Access {
++    ReadOnly,
++    ReadWrite,
++}
++
++pub(super) fn require_descriptors(
++    files: &RootHostInitialGenerationFilesV1,
++    purpose: LoadPurpose,
++) -> Result<(), AgentdError> {
++    let mut identities = BTreeSet::new();
++    for (file, access) in [
++        (&files.registry_snapshot, Access::ReadOnly),
++        (&files.selected_payload, Access::ReadOnly),
++        (&files.withdrawal_snapshot, Access::ReadOnly),
++        (&files.target_journal, Access::ReadWrite),
++        (&files.target_witness, Access::ReadWrite),
++    ] {
++        let metadata = file.metadata()?;
++        require_private_file(&metadata)?;
++        // SAFETY: F_GETFL inspects this borrowed, still-owned descriptor.
++        let flags = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_GETFL) };
++        let expected = match access { Access::ReadOnly => libc::O_RDONLY, Access::ReadWrite => libc::O_RDWR };
++        if flags < 0 || flags & libc::O_ACCMODE != expected
++            || flags & libc::O_APPEND != 0
++            || !identities.insert((metadata.dev(), metadata.ino()))
++        {
++            return Err(invalid("original generation descriptors must be distinct and have fixed access"));
++        }
++    }
++    if matches!(purpose, LoadPurpose::Recover)
++        && (files.target_journal.metadata()?.len() == 0 || files.target_witness.metadata()?.len() < 112)
++    {
++        return Err(invalid("original recovery cannot initialize an empty journal or witness"));
++    }
++    Ok(())
++}
++
++pub(super) fn require_artifact_directory(state: &Path, artifact: &Path) -> Result<(), AgentdError> {
++    require_private_child(state, artifact)?;
++    for name in ["writer", "transactions", "payloads", "registries", "witnesses", "heads"] {
++        RootAuthorityDirectory::open(&artifact.join(name)).map_err(invalid)?;
++    }
++    let lock = open_private(&artifact.join("writer/owner.lock"))?;
++    require_private_file(&lock.metadata()?)?;
++    Ok(())
++}
++
++pub(super) fn require_existing_consumer(state: &Path, consumer: &Path) -> Result<(), AgentdError> {
++    require_private_child(state, consumer)?;
++    // These exact existing names distinguish this loader from the original
++    // store's explicit first-start path. Do not call a genesis constructor.
++    let lock = open_private(&consumer.join("authority.lock"))?;
++    let claims = open_private(&consumer.join("authority.claims"))?;
++    require_private_file(&lock.metadata()?)?;
++    require_private_file(&claims.metadata()?)?;
++    let mut header = open_private(&consumer.join("authority.json"))?;
++    let before = header.metadata()?;
++    if before.len() == 0 || before.len() > 8 * 1024 * 1024 {
++        return Err(invalid("existing FinalUse state is absent or outside its original bound"));
++    }
++    let mut bytes = Vec::new();
++    header.by_ref().take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes)?;
++    let after = header.metadata()?;
++    if bytes.len() as u64 != before.len()
++        || before.dev() != after.dev() || before.ino() != after.ino()
++        || before.len() != after.len() || before.mtime() != after.mtime()
++        || before.mtime_nsec() != after.mtime_nsec() || before.ctime() != after.ctime()
++        || before.ctime_nsec() != after.ctime_nsec()
++    {
++        return Err(invalid("existing FinalUse header changed during bounded observation"));
++    }
++    let value: serde_json::Value = serde_json::from_slice(&bytes).map_err(invalid)?;
++    if value.get("schema").and_then(serde_json::Value::as_u64) != Some(3) {
++        return Err(invalid("this open-only loader requires the existing FinalUse journal schema"));
++    }
++    // Full trust, head and every nonce are subsequently verified by the actual
++    // original FinalUse factory. This header observation grants no authority.
++    Ok(())
++}
++
++fn require_private_child(state: &Path, path: &Path) -> Result<(), AgentdError> {
++    if !state.is_absolute() || !path.is_absolute() || path == state || !path.starts_with(state)
++        || path.components().any(|part| !matches!(part, Component::RootDir | Component::Normal(_)))
++    {
++        return Err(invalid("generation state must be an existing private child of the same Root state"));
++    }
++    RootAuthorityDirectory::open(path).map_err(invalid)?;
++    Ok(())
++}
++
++fn open_private(path: &Path) -> Result<File, AgentdError> {
++    let parent = path.parent().ok_or_else(|| invalid("missing original state parent"))?;
++    RootAuthorityDirectory::open(parent).map_err(invalid)?;
++    let file = OpenOptions::new().read(true)
++        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK).open(path)?;
++    require_private_file(&file.metadata()?)?;
++    Ok(file)
++}
++
++fn require_private_file(metadata: &std::fs::Metadata) -> Result<(), AgentdError> {
++    if !metadata.is_file() || metadata.uid() != 0
++        || metadata.mode() & 0o777 != 0o600 || metadata.nlink() != 1
++    {
++        return Err(invalid("original generation input must be a Root0600 single-link regular file"));
++    }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs
+@@ -0,0 +1,207 @@
++//! Load concrete generation owners from existing protected Root state. Only
++//! original constructors verify the records; decoding is not authorization.
++
++use std::fs::File;
++use std::path::Path;
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::time::Instant;
++
++use codex_hepta_contracts::AuthorityClock;
++use codex_hepta_contracts::AuthorityFrontierStore;
++use codex_hepta_contracts::FinalUseAuthority;
++use codex_hepta_contracts::FinalUseFrontier;
++use codex_hepta_contracts::HostAuthorityFrontierStore;
++use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
++use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
++use codex_hepta_learning_artifacts::LearningArtifactOwnerServiceConfigV1;
++use codex_hepta_learning_artifacts::read_dataset_withdrawal_snapshot;
++use codex_hepta_neuron::CellGenerationOwnerBindingV1;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use codex_hepta_neuron::JournalScope;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
++
++use super::HostAuthorityService;
++use super::RootHostInitialGenerationInputsV1;
++use super::RootHostInitialGenerationRecoveryV1;
++use super::invalid;
++use crate::AgentdError;
++use crate::authority_host_config::read_root_json;
++use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
++use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
++use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
++use crate::neuron_generation_update_selection::AgentdGenerationSelectionFilesV1;
++use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
++
++#[path = "authority_host_generation_input_types.rs"]
++mod types;
++#[path = "authority_host_generation_input_files.rs"]
++mod files;
++use types::ConsumerTrustModel;
++use types::GenerationDeploymentFile;
++use types::OperationFile;
++
++/// Actual supervisor-owned files, adopted before opening any further files.
++/// They carry no selection, publication or permission until original loading.
++pub struct RootHostInitialGenerationFilesV1 {
++    pub registry_snapshot: File,
++    pub selected_payload: File,
++    pub withdrawal_snapshot: File,
++    pub target_journal: File,
++    pub target_witness: File,
++}
++
++#[derive(Clone, Copy)]
++pub(crate) enum LoadPurpose {
++    Fresh,
++    Recover,
++}
++
++pub(crate) enum LoadedOriginalGeneration {
++    Fresh(RootHostInitialGenerationInputsV1<FileAnchorWitnessStore>),
++    Recover(RootHostInitialGenerationRecoveryV1<FileAnchorWitnessStore>),
++}
++
++impl HostAuthorityService {
++    pub(crate) fn load_original_initial_generation_inputs(
++        &self,
++        original_state: &Path,
++        deployment: &Path,
++        original_files: RootHostInitialGenerationFilesV1,
++        purpose: LoadPurpose,
++        end: Instant,
++    ) -> Result<LoadedOriginalGeneration, AgentdError> {
++        require_before(end)?;
++        let value: GenerationDeploymentFile = read_root_json(deployment)?;
++        if value.schema_version != 1
++            || value.purpose != "hepta.root.initial-generation.existing-inputs.v1"
++            || !matches!((purpose, &value.operation),
++                (LoadPurpose::Fresh, OperationFile::Fresh { .. })
++                | (LoadPurpose::Recover, OperationFile::Recover { .. }))
++        {
++            return Err(invalid("original generation deployment purpose differs"));
++        }
++        files::require_descriptors(&original_files, purpose)?;
++        files::require_artifact_directory(original_state, &value.artifacts.state_directory)?;
++        files::require_existing_consumer(original_state, &value.consumer.state_directory)?;
++        if value.artifacts.state_directory == value.consumer.state_directory {
++            return Err(invalid("Artifact and FinalUse retain separate original stores"));
++        }
++        let root = Arc::clone(self.resident_store_root.as_ref()
++            .ok_or_else(|| invalid("the same original Root directory must be retained"))?);
++        if self.root_registry.is_none() {
++            return Err(invalid("the same original lease Registry must be retained"));
++        }
++        let RootHostInitialGenerationFilesV1 {
++            registry_snapshot, selected_payload, withdrawal_snapshot, target_journal, target_witness,
++        } = original_files;
++        let trust = value.artifacts.trust.original()?;
++        let verifier = ArtifactSelectionVerifierV1::new(value.selection.trust.original()?, &trust)
++            .map_err(invalid)?;
++        let signed_selection = value.selection.signed.original()?;
++        let writer_lease = value.artifacts.writer_lease.original()?;
++        let required_current_head = value.artifacts.required_current_head.original()?;
++        let withdrawal_registry = read_dataset_withdrawal_snapshot(
++            withdrawal_snapshot, value.artifacts.withdrawal_snapshot.original(),
++        ).map_err(invalid)?;
++        require_before(end)?;
++        let artifacts = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
++            root: value.artifacts.state_directory,
++            trust,
++            writer_lease,
++            required_current_head: Some(required_current_head),
++            withdrawal_registry,
++            storage_binding: Digest32::from_array(value.artifacts.storage_binding),
++            now: self.clock.now_unix_ms().map_err(invalid)?,
++        }).map_err(invalid)?;
++        let selected = AgentdSelectedGenerationV1::load(
++            &artifacts, verifier, signed_selection,
++            AgentdGenerationSelectionFilesV1 { registry_snapshot, payload: selected_payload },
++            self.clock.now_unix_ms().map_err(invalid)?,
++        )?;
++        require_before(end)?;
++        // The protected file names an already existing generation nonce owner.
++        // The original issuer verifier binds its grant signer to this key id,
++        // and FinalUse::claim binds that signer to the nonce owner in BOTH trust
++        // models. Keep the explicit owner id and check this original relation.
++        let key = self.issuer.trust_key()?;
++        let head = self.issuer.revocations()?;
++        let owner_id = value.consumer.owner_id;
++        if owner_id != key.key_id
++            || matches!(&value.operation, OperationFile::Fresh { signed, .. } if signed.grant.signer_id != owner_id)
++        {
++            return Err(invalid("the existing generation consumer differs from the original grant signer"));
++        }
++        let frontier = Arc::new(HostAuthorityFrontierStore::<FinalUseFrontier>::open(
++            root, owner_id.clone(),
++        ).map_err(invalid)?);
++        if frontier.load(&owner_id).map_err(invalid)? != value.consumer.required_external_frontier {
++            return Err(invalid("the existing generation consumer frontier differs from its complete pin"));
++        }
++        let final_use = match value.consumer.trust_model {
++            ConsumerTrustModel::SingleCurrentIssuer => {
++                FinalUseAuthority::open_state_dir_with_trust(
++                    &value.consumer.state_directory, owner_id, key.verifying_key,
++                    head.clone(), self.clock.clone(), frontier,
++                )
++            }
++            ConsumerTrustModel::CurrentIssuerKeyRing => FinalUseAuthority::open_state_dir_with_issuer_keys(
++                &value.consumer.state_directory, owner_id,
++                vec![key], head.clone(), self.clock.clone(), frontier,
++            ),
++        }.map_err(invalid)?;
++        if final_use.current_external_frontier().map_err(invalid)? != value.consumer.required_external_frontier
++            || final_use.revocation_head().map_err(invalid)? != head
++            || self.issuer.revocations()? != head
++        {
++            return Err(invalid("the original issuer or consumer changed while loading"));
++        }
++        require_before(end)?;
++        let configuration = value.target.configuration;
++        let binding = CellGenerationOwnerBindingV1::new(&configuration, value.target.maximum_records)
++            .map_err(invalid)?;
++        // Fresh input may initialize the header of its explicitly supplied
++        // empty witness. Recovery was rejected before any such original open.
++        let witness = FileAnchorWitnessStore::open(
++            target_witness,
++            JournalScope {
++                scope_digest: Digest32::from_array(binding.digest().map_err(invalid)?),
++                objective_digest: Digest32::from_array(configuration.task_digest),
++            },
++            Generation::new(configuration.initial.generation).map_err(invalid)?,
++            value.target.maximum_witness_records,
++        ).map_err(invalid)?;
++        let target = AgentdGenerationUpdateTargetV1 {
++            file: target_journal, witness, config: configuration,
++            max_records: value.target.maximum_records,
++        };
++        let artifacts = Arc::new(Mutex::new(artifacts));
++        let final_use = Arc::new(final_use);
++        require_before(end)?;
++        Ok(match value.operation {
++            OperationFile::Fresh { operation_id, signed } => LoadedOriginalGeneration::Fresh(
++                RootHostInitialGenerationInputsV1 {
++                    artifacts, final_use, selected, target,
++                    request: AgentdGenerationUpdateRequestV1 { operation_id }, signed,
++                },
++            ),
++            OperationFile::Recover { operation_id, intent_digest } => LoadedOriginalGeneration::Recover(
++                RootHostInitialGenerationRecoveryV1 {
++                    artifacts, final_use, selected, target,
++                    recovery: AgentdGenerationUpdateRecoveryV1 {
++                        operation_id, intent_digest: Digest32::from_array(intent_digest),
++                    },
++                },
++            ),
++        })
++    }
++}
++
++fn require_before(end: Instant) -> Result<(), AgentdError> {
++    // SAFETY: these calls inspect only the actual current process credentials.
++    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 || Instant::now() >= end {
++        return Err(invalid("the original Root input-loading window ended"));
++    }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_input_types.rs
+@@ -0,0 +1,347 @@
++//! Complete protected-host data for the existing generation factories. These
++//! structs decode public records, never a verified selection, owner or token.
++
++use std::path::PathBuf;
++
++use codex_hepta_contracts::FinalUseFrontier;
++use codex_hepta_contracts::SignedFinalUseGrant;
++use codex_hepta_learning_artifacts::ArtifactKind;
++use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
++use codex_hepta_learning_artifacts::ArtifactSelectionTrustV1;
++use codex_hepta_learning_artifacts::DatasetWithdrawalSnapshotReceiptV1;
++use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
++use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
++use codex_hepta_learning_artifacts::SignedArtifactWriterLeaseV1;
++use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
++use codex_hepta_learning_artifacts::TrustedArtifactSelectorV1;
++use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
++use codex_hepta_neuron::CellGenerationConfigV2;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use super::invalid;
++use crate::AgentdError;
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct GenerationDeploymentFile {
++    pub(super) schema_version: u32,
++    pub(super) purpose: String,
++    pub(super) artifacts: ArtifactFile,
++    pub(super) consumer: ConsumerFile,
++    pub(super) selection: SelectionFile,
++    pub(super) target: TargetFile,
++    pub(super) operation: OperationFile,
++}
++
++#[derive(Deserialize)]
++#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
++pub(super) enum OperationFile {
++    Fresh { operation_id: String, signed: SignedFinalUseGrant },
++    Recover { operation_id: String, intent_digest: [u8; 32] },
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct ArtifactFile {
++    pub(super) state_directory: PathBuf,
++    pub(super) trust: OwnerTrustFile,
++    pub(super) writer_lease: WriterLeaseFile,
++    pub(super) required_current_head: CurrentHeadFile,
++    pub(super) withdrawal_snapshot: WithdrawalSnapshotFile,
++    pub(super) storage_binding: [u8; 32],
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct OwnerTrustFile {
++    registry_id: String,
++    withdrawal_scope_digest: [u8; 32],
++    minimum_registry_generation: u64,
++    genesis_predecessor_head_digest: [u8; 32],
++    minimum_authority_epoch: u64,
++    writer_signers: Vec<SignerFile>,
++    head_signers: Vec<SignerFile>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct SignerFile {
++    signer_id: String,
++    verifying_key: [u8; 32],
++    minimum_authority_epoch: u64,
++    maximum_authority_epoch: u64,
++    valid_from: u64,
++    expires_at: u64,
++    revoked_at: Option<u64>,
++}
++
++impl SignerFile {
++    fn original(self) -> Result<TrustedArtifactSignerV1, AgentdError> {
++        Ok(TrustedArtifactSignerV1 {
++            signer_id: StableId::new(self.signer_id).map_err(invalid)?,
++            verifying_key: self.verifying_key,
++            minimum_authority_epoch: self.minimum_authority_epoch,
++            maximum_authority_epoch: self.maximum_authority_epoch,
++            valid_from: self.valid_from,
++            expires_at: self.expires_at,
++            revoked_at: self.revoked_at,
++        })
++    }
++}
++
++impl OwnerTrustFile {
++    pub(super) fn original(self) -> Result<ArtifactOwnerTrustV1, AgentdError> {
++        Ok(ArtifactOwnerTrustV1 {
++            registry_id: StableId::new(self.registry_id).map_err(invalid)?,
++            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope_digest),
++            minimum_registry_generation: Generation::new(self.minimum_registry_generation).map_err(invalid)?,
++            genesis_predecessor_head_digest: Digest32::from_array(self.genesis_predecessor_head_digest),
++            minimum_authority_epoch: self.minimum_authority_epoch,
++            writer_signers: self.writer_signers.into_iter().map(SignerFile::original).collect::<Result<_, _>>()?,
++            head_signers: self.head_signers.into_iter().map(SignerFile::original).collect::<Result<_, _>>()?,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct WriterLeaseFile {
++    lease_id: String,
++    producer_id: String,
++    registry_id: String,
++    withdrawal_scope_digest: [u8; 32],
++    signer_id: String,
++    signing_key_digest: [u8; 32],
++    authority_epoch: u64,
++    lease_generation: u64,
++    issued_at: u64,
++    expires_at: u64,
++    signature: Vec<u8>,
++}
++
++impl WriterLeaseFile {
++    pub(super) fn original(self) -> Result<SignedArtifactWriterLeaseV1, AgentdError> {
++        Ok(SignedArtifactWriterLeaseV1 {
++            lease_id: StableId::new(self.lease_id).map_err(invalid)?,
++            producer_id: StableId::new(self.producer_id).map_err(invalid)?,
++            registry_id: StableId::new(self.registry_id).map_err(invalid)?,
++            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope_digest),
++            signer_id: StableId::new(self.signer_id).map_err(invalid)?,
++            signing_key_digest: Digest32::from_array(self.signing_key_digest),
++            authority_epoch: self.authority_epoch,
++            lease_generation: self.lease_generation,
++            issued_at: self.issued_at,
++            expires_at: self.expires_at,
++            signature: signature(self.signature)?,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct WitnessFile {
++    registry_id: String,
++    generation: u64,
++    head_digest: [u8; 32],
++    predecessor_head_digest: [u8; 32],
++    authority_epoch: u64,
++    signer_id: String,
++    signing_key_digest: [u8; 32],
++    issued_at: u64,
++    expires_at: u64,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct CurrentHeadFile {
++    withdrawal_scope_digest: [u8; 32],
++    binding: [u8; 32],
++    witness: WitnessFile,
++    signature: Vec<u8>,
++}
++
++impl CurrentHeadFile {
++    pub(super) fn original(self) -> Result<SignedCurrentArtifactHeadV1, AgentdError> {
++        let w = self.witness;
++        Ok(SignedCurrentArtifactHeadV1 {
++            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope_digest),
++            binding: Digest32::from_array(self.binding),
++            witness: RegistryHeadWitnessV1 {
++                registry_id: StableId::new(w.registry_id).map_err(invalid)?,
++                generation: Generation::new(w.generation).map_err(invalid)?,
++                head_digest: Digest32::from_array(w.head_digest),
++                predecessor_head_digest: Digest32::from_array(w.predecessor_head_digest),
++                authority_epoch: w.authority_epoch,
++                signer_id: StableId::new(w.signer_id).map_err(invalid)?,
++                signing_key_digest: Digest32::from_array(w.signing_key_digest),
++                issued_at: w.issued_at,
++                expires_at: w.expires_at,
++            },
++            signature: signature(self.signature)?,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct WithdrawalSnapshotFile {
++    binding: [u8; 32],
++    scope_digest: [u8; 32],
++    head_digest: [u8; 32],
++    file_digest: [u8; 32],
++    records: usize,
++    encoded_bytes: usize,
++}
++
++impl WithdrawalSnapshotFile {
++    pub(super) fn original(self) -> DatasetWithdrawalSnapshotReceiptV1 {
++        DatasetWithdrawalSnapshotReceiptV1 {
++            binding: Digest32::from_array(self.binding),
++            scope_digest: Digest32::from_array(self.scope_digest),
++            head_digest: Digest32::from_array(self.head_digest),
++            file_digest: Digest32::from_array(self.file_digest),
++            records: self.records,
++            encoded_bytes: self.encoded_bytes,
++        }
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct ConsumerFile {
++    pub(super) state_directory: PathBuf,
++    pub(super) owner_id: String,
++    pub(super) trust_model: ConsumerTrustModel,
++    pub(super) required_external_frontier: FinalUseFrontier,
++}
++
++#[derive(Deserialize)]
++#[serde(rename_all = "snake_case")]
++pub(super) enum ConsumerTrustModel {
++    SingleCurrentIssuer,
++    CurrentIssuerKeyRing,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct SelectionTrustFile {
++    registry_id: String,
++    withdrawal_scope_digest: [u8; 32],
++    minimum_authority_epoch: u64,
++    selectors: Vec<SelectorFile>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct SelectorFile {
++    selector_id: String,
++    verifying_key: [u8; 32],
++    minimum_authority_epoch: u64,
++    maximum_authority_epoch: u64,
++    valid_from: u64,
++    expires_at: u64,
++    revoked_at: Option<u64>,
++}
++
++impl SelectionTrustFile {
++    pub(super) fn original(self) -> Result<ArtifactSelectionTrustV1, AgentdError> {
++        let selectors = self.selectors.into_iter().map(|v| {
++            Ok(TrustedArtifactSelectorV1 {
++                selector_id: StableId::new(v.selector_id).map_err(invalid)?,
++                verifying_key: v.verifying_key,
++                minimum_authority_epoch: v.minimum_authority_epoch,
++                maximum_authority_epoch: v.maximum_authority_epoch,
++                valid_from: v.valid_from,
++                expires_at: v.expires_at,
++                revoked_at: v.revoked_at,
++            })
++        }).collect::<Result<Vec<_>, AgentdError>>()?;
++        Ok(ArtifactSelectionTrustV1 {
++            registry_id: StableId::new(self.registry_id).map_err(invalid)?,
++            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope_digest),
++            minimum_authority_epoch: self.minimum_authority_epoch,
++            selectors,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct SelectionFile {
++    pub(super) trust: SelectionTrustFile,
++    pub(super) signed: SelectionRecordFile,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct SelectionRecordFile {
++    selection_id: String,
++    artifact_id: String,
++    registry_id: String,
++    withdrawal_scope_digest: [u8; 32],
++    registry_head_digest: [u8; 32],
++    current_witness_digest: [u8; 32],
++    current_trust_digest: [u8; 32],
++    artifact_kind: String,
++    artifact_generation: u64,
++    predecessor_id: Option<String>,
++    content_digest: [u8; 32],
++    objective_digest: [u8; 32],
++    support_digest: [u8; 32],
++    compatibility_digest: [u8; 32],
++    encoded_size_bytes: u64,
++    selector_id: String,
++    selector_credential_digest: [u8; 32],
++    signing_key_digest: [u8; 32],
++    authority_epoch: u64,
++    issued_at: u64,
++    expires_at: u64,
++    signature: Vec<u8>,
++}
++
++impl SelectionRecordFile {
++    pub(super) fn original(self) -> Result<SignedArtifactSelectionV1, AgentdError> {
++        if self.artifact_kind != "model" {
++            return Err(invalid("an original Model selection is required"));
++        }
++        Ok(SignedArtifactSelectionV1 {
++            selection_id: StableId::new(self.selection_id).map_err(invalid)?,
++            artifact_id: StableId::new(self.artifact_id).map_err(invalid)?,
++            registry_id: StableId::new(self.registry_id).map_err(invalid)?,
++            withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope_digest),
++            registry_head_digest: Digest32::from_array(self.registry_head_digest),
++            current_witness_digest: Digest32::from_array(self.current_witness_digest),
++            current_trust_digest: Digest32::from_array(self.current_trust_digest),
++            artifact_kind: ArtifactKind::Model,
++            artifact_generation: Generation::new(self.artifact_generation).map_err(invalid)?,
++            predecessor_id: self.predecessor_id.map(StableId::new).transpose().map_err(invalid)?,
++            content_digest: Digest32::from_array(self.content_digest),
++            objective_digest: Digest32::from_array(self.objective_digest),
++            support_digest: Digest32::from_array(self.support_digest),
++            compatibility_digest: Digest32::from_array(self.compatibility_digest),
++            encoded_size_bytes: self.encoded_size_bytes,
++            selector_id: StableId::new(self.selector_id).map_err(invalid)?,
++            selector_credential_digest: Digest32::from_array(self.selector_credential_digest),
++            signing_key_digest: Digest32::from_array(self.signing_key_digest),
++            authority_epoch: self.authority_epoch,
++            issued_at: self.issued_at,
++            expires_at: self.expires_at,
++            signature: signature(self.signature)?,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct TargetFile {
++    pub(super) configuration: CellGenerationConfigV2,
++    pub(super) maximum_records: u64,
++    pub(super) maximum_witness_records: usize,
++}
++
++fn signature(bytes: Vec<u8>) -> Result<[u8; 64], AgentdError> {
++    bytes.try_into().map_err(|_: Vec<u8>| invalid("original signature must contain 64 bytes"))
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_service.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_service.rs
+@@ -62,6 +62,9 @@
+ pub(crate) use generation::OriginalHostInitialOperation;
+ pub use generation::RootHostInitialGenerationInputsV1;
+ pub use generation::RootHostInitialGenerationRecoveryV1;
++pub use generation::RootHostInitialGenerationFilesV1;
++pub(crate) use generation::OriginalGenerationLoadPurpose;
++pub(crate) use generation::OriginalLoadedGeneration;
+ 
+ /// A lane is fixed by its private listener, never selected by a wire request.
+ #[derive(Clone, Copy, Debug)]
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
+@@ -39,6 +39,9 @@
+     phase: InitialHostPhase<W>,
+     end: Instant,
+ }
++
++#[path = "authority_host_session_generation_input_loader.rs"]
++mod input_loader;
+ 
+ impl PreparedHostAuthoritySession {
+     /// Bind the same original Root/lease/issuer/clock to actual Artifact,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs
+@@ -0,0 +1,66 @@
++//! Fixed normal-host loading under the same session and absolute operation end.
++
++use std::path::Path;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_neuron::FileAnchorWitnessStore;
++
++use super::InitialHostPhase;
++use super::PreparedHostAuthoritySession;
++use super::PreparedRootHostInitialGenerationV1;
++use super::invalid;
++use super::require_original_session;
++use crate::AgentdError;
++use crate::HostAuthorityService;
++use crate::RootHostInitialGenerationFilesV1;
++use crate::authority_host_service::OriginalGenerationLoadPurpose;
++use crate::authority_host_service::OriginalLoadedGeneration;
++
++impl PreparedHostAuthoritySession {
++    /// Load existing original Artifact/consumer state and real selection/target
++    /// files, then retain Fresh inputs without publishing CURRENT or signing.
++    /// The explicit empty target witness can receive its original header. An
++    /// error is not a general promise that all supplied files are unchanged.
++    pub fn prepare_original_initial_generation_from_files(
++        self,
++        deployment: &Path,
++        files: RootHostInitialGenerationFilesV1,
++    ) -> Result<PreparedRootHostInitialGenerationV1<FileAnchorWitnessStore>, AgentdError> {
++        let end = Instant::now() + Duration::from_millis(self.config.timeout_ms);
++        require_original_session(&self, end)?;
++        let OriginalLoadedGeneration::Fresh(inputs) = HostAuthorityService::load_original_initial_generation_inputs(
++            &self.service, &self.config.state_dir, deployment, files, OriginalGenerationLoadPurpose::Fresh, end,
++        )? else {
++            return Err(invalid("the fixed Fresh input loader returned another purpose"));
++        };
++        let operation = HostAuthorityService::bind_original_initial_operation(&self.service, &inputs, end)?;
++        require_original_session(&self, end)?;
++        Ok(PreparedRootHostInitialGenerationV1 {
++            session: self, operation, phase: InitialHostPhase::Fresh(inputs), end,
++        })
++    }
++
++    /// Recover the exact existing publication under this retained session. The
++    /// complete protected operation id/intent, target, signed selection, issuer,
++    /// consumed nonce and CURRENT are checked by the original recovery factory.
++    /// This path never falls back to Fresh or increases the original deadline.
++    pub fn recover_original_initial_generation_from_files(
++        self,
++        deployment: &Path,
++        files: RootHostInitialGenerationFilesV1,
++    ) -> Result<PreparedRootHostInitialGenerationV1<FileAnchorWitnessStore>, AgentdError> {
++        let end = Instant::now() + Duration::from_millis(self.config.timeout_ms);
++        require_original_session(&self, end)?;
++        let OriginalLoadedGeneration::Recover(inputs) = HostAuthorityService::load_original_initial_generation_inputs(
++            &self.service, &self.config.state_dir, deployment, files, OriginalGenerationLoadPurpose::Recover, end,
++        )? else {
++            return Err(invalid("the fixed recovery loader returned another purpose"));
++        };
++        let (operation, custody) = HostAuthorityService::recover_original_initial_operation(&self.service, inputs, end)?;
++        require_original_session(&self, end)?;
++        Ok(PreparedRootHostInitialGenerationV1 {
++            session: self, operation, phase: InitialHostPhase::Ready(custody), end,
++        })
++    }
++}
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -200,6 +200,8 @@
+ pub use authority_host_service::RootHostInitialGenerationInputsV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_service::RootHostInitialGenerationRecoveryV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_service::RootHostInitialGenerationFilesV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_service::resident::AgentdRootResidentLearningClientV3;
+ #[cfg(target_os = "linux")]

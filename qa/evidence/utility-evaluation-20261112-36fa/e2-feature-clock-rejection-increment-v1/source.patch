@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-neuron/src/feature_control.rs
++++ b/codex-rs/hepta-neuron/src/feature_control.rs
+@@ -287,7 +287,7 @@
+             .map_err(|_| NeuronModelError::Indeterminate)?;
+         let mut observation = self.worker.execute(request)?;
+         let completed = (self.clock)();
+-        if completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate
++        if completed == u64::MAX || completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate
+         {
+             return Err(NeuronModelError::Indeterminate);
+         }

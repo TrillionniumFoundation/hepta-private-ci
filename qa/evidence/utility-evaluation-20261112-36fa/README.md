@@ -1,3 +1,60 @@
+# Current checkpoint: Material readback and clock-error correction; runtime remains Unknown
+
+Checkpoint: 2026-11-13 15:51 UTC. **HOLD — qualification=false; real qualified A → B → C → daemon/Root cold-recovery chains: 0.**
+
+This checkpoint records exact source proposals and static reviews. It does not promote an execution result, source-gate pass, successful deployment, scientific independence finding, legal material authority, or real adoption. The original source branch remains `cc57c7198db6293ccca562253c42fffbe2a04633`; the isolated E1 source proposal branch remains `99fada80470f175ba14004ea9fcb006853c7d98f`. The newer E2/E3/loader composition is represented by immutable source packets and exact composition reports, not an already committed or qualified full source candidate.
+
+## Latest exact composition
+
+[Root composition v6](root-product-composition-v6/PREQUALIFICATION_COMPOSITION_REVIEW.json) binds **100 changed paths: 64 new files and 36 modified original files**, giving 15,307 source files over the exact b608 baseline. Its blob is `cbf945f1d602aa8545d18a1a2c2fce72fcea755b`, 42,919 bytes, SHA-256 `44d1af9cdb11d6241f340e3210420939243b8111f60eb6b21b41d3559f47ab6b`.
+
+The new fixed layers are:
+
+| Layer | Evidence and exact scope |
+| --- | --- |
+| Material Source loan | [22-file packet metadata](e2-material-source-loan-layer-v1/MANIFEST.json), [bounded complete packet](e2-material-source-loan-bounded-packet-v1/MANIFEST.json), [Root full Git readback reconstruction](e2-material-source-loan-bounded-packet-v1/ROOT_ACTUAL_GIT_READBACK_REVIEW.json), [independent review](e2-material-source-loan-independent-peer-v1/REVIEW.json). |
+| Material mechanism cases | [3 source-only cases](e2-material-source-mechanism-tests-layer-v1/REVIEW.json); none executed. |
+| Root generation input loader | [8-file fixed packet](root-task-inputs-loader-layer-v1/MANIFEST.json), [independent review](root-generation-input-loader-independent-peer-v1/REVIEW.json). |
+| Remote clock refusal | [4-file, 7-splice correction](e2-remote-clock-rejection-increment-v1/MANIFEST.json). |
+| Native feature completion clock | [one 25-byte guard addition](e2-feature-clock-rejection-increment-v1/MANIFEST.json). |
+| Feature clock regression | [one new case with the complete original test file preserved](e2-feature-clock-regression-tests-v1/REVIEW.json); not executed. |
+
+The v6 composition independently verifies every full current preimage, forward edit and inverse edit for the three clock-related layers. No repository module, Rust compiler, project test, collector, QA suite, or H command was executed by this byte-composition procedure.
+
+The earlier [v5 proof-assumption failure and correction](root-product-composition-v5/FIRST_COMPOSITION_PROOF_RECONCILIATION.json) remain preserved. One loader insertion used the first of two identical impl anchors. The initial Root checker incorrectly required a unique before-anchor; the corrected checker accepts the actual first-occurrence edit only when its entire after-image and inverse are exact. The source packet was unchanged.
+
+## Material and loader boundaries
+
+The Material host retains the actual original Root Task, Source and Cell owners. A separate original Material process receives a read-only, one-use loan through its actual signed context, process identity, UID, pidfd and fixed stream. The original Dataset, ledger, freeze and owner checks remain necessary. The fixed frame is 16,384 bytes including its 64-byte request prefix, leaving at most 16,320 bytes for the complete publication payload. Oversized material is refused; there is no paging or digest-only substitute. No real task payload or Material IPC execution is claimed here.
+
+Repeated current-state observations are not one global atomic owner transaction. A response may already have been delivered before a later observation fails. Blocking storage calls may reject an overdue result without providing physical cancellation or bounded join. Such failures do not prove that nothing happened.
+
+The first Root generation loader uses complete protected input records, existing Artifact/Selected/FinalUse state, the same retained issuer and the same absolute end. Both trust modes require the supplied consumer owner ID to equal the retained issuer key ID; Fresh grants also retain that exact signer binding. Recovery never falls back to Fresh. Some original Fresh constructors can initialize an existing empty witness header, so a loader error cannot be described as proof of no file effects. The independent review covers this fixed eight-file layer only.
+
+## Clock defect and correction scope
+
+[The original static finding](root-clock-failure-static-finding-v1/FINDING.json) is retained unchanged. The former remote Cell path could pass `u64::MAX` from a failed clock/admission sample into recovery, decision or commit code before its final refusal. A separate original feature-control completion path could convert MAX into a deterministic late Cancelled receipt and settle it.
+
+The new remote guards reject MAX before those consumers. The feature guard returns the existing **Indeterminate** result before queue/cost/status/receipt construction or settlement. It preserves ordinary finite late-completion behavior and its original cost rules. The regression source checks that an already executed worker leaves an unresolved claim without a terminal receipt, including no repeated execution through the same port or a reopened journal. This is an unexecuted mechanism case, not evidence of a real task.
+
+The original local Cell body is unchanged. The subsequent task loader must keep its new clock inside the guarded remote and feature paths; the complete private-wrapper consumer proof and actual Task/Material/V3 CLI orchestration remain in progress. The independent clock-layer review was still in progress at this checkpoint. No general claim that every old MAX consumer is safe is made.
+
+## Runtime disposition remains unchanged
+
+The exact source-only successor request under key `hepta-utility-36fa-final-source-gates-b608-v2` returned an MCP timeout without a job ID. The fixed result-path read was unavailable at that observation. The separately authorized metadata reconciliation made two bounded page calls, returned zero job rows, and then received an explicit inventory-bound refusal. These facts do not establish non-admission, non-execution, success, failure, or unchanged physical source state. The disposition remains **Unknown**.
+
+H is stopped. No replacement executable, new process key, refreshed inventory snapshot, wider search, original path alias repair, source repair, or native fourteen-phase run is authorized by these source proposals. Prior actual failures remain failures; prior successful partial checks retain their exact original scope.
+
+## Remaining acceptance work
+
+The complete same-session Task/Material/V3 protected launcher and real non-Root Material hookup are not yet supplied by the frozen composition. The E3 registration review remains an isolated E1+E3 projection; final E2/loader caller sets, exact protected bodies, source contract hashes, parent test names and total counts still require an explicit union. Old rules, forbidden rows, authority flags and budgets must remain intact.
+
+Formatting, compilation, original source/native gates and actual process-cold recovery remain unproved. A real authorized A, original Training owner, independently identified and observed B, complete Adopt or complete NoUpdate, and real new consumer C still require their own obtainable material and original authority. Source assembly and content roots cannot replace those facts.
+
+---
+
+## Previous checkpoint retained verbatim
+
 # Current checkpoint: merged ordinary Root source review; execution remains Unknown
 
 Cutoff: 2026-11-13 15:20:52 UTC. **qualification=false; actual qualified authorized A → independent B → new C → daemon/Root process cold-recovery chains=0.** Source proposals, byte checks, archive closure and prepared tests do not establish real utility or runtime authorization.

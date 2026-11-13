@@ -1,0 +1,25 @@
+{
+  "baseline": "Exact reviewed E2 source bytes in Root composition v5; earlier frozen layers are unchanged.",
+  "checks": [
+    "Initial sample rejects either MAX field before lookup, pending recovery, enter_cell_step or replay acceptance.",
+    "Inference callback rejects either MAX field before sampled.set; existing infer_cell_with_clock rejects its MAX marker before admission or before dispatch/queue persistence.",
+    "Decision sample rejects either MAX field before decide_cell numerical/policy work.",
+    "Commit sample rejects either MAX field before commit_cell_step.",
+    "Root CLOCK response refuses either MAX field before encoding response bytes.",
+    "Daemon CLOCK decoder refuses either MAX field before exposing a clock value.",
+    "Daemon runtime refuses either MAX field after max with current RunStart time, before returning a clock to its original Driver."
+  ],
+  "format": "hepta-e2-remote-clock-rejection-review-v1",
+  "primary_error": "Existing CircuitCellErrorV1::ReconciliationRequired or CircuitTaskErrorV1::ReconciliationRequired; no new enum or authority.",
+  "separate_required_successors": [
+    "Original feature_control completed sample must reject MAX before cancelled receipt construction/settlement (separate one-line layer).",
+    "Loader owns permanent poison and retained first real protected-clock error; this layer neither fabricates nor recovers that error."
+  ],
+  "unchanged": [
+    "Original local AgentdCircuitCellOwnerV1::execute and CircuitTaskDriver methods.",
+    "Finite expired clocks can still take original read-only pending recovery; no new deadline, retry, queue or authority.",
+    "Existing loan check failures retain original operation and pending state; rejection does not prove no prior work.",
+    "500ms, 128 requests, fixed absolute end, same task and original peer/loan controls."
+  ],
+  "validation": "Exact source preimages and full inverse only. No Rust, project QA, H or live execution."
+}

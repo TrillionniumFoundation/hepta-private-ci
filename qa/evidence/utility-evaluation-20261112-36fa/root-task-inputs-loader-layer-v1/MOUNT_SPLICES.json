@@ -1,0 +1,46 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+    "before": {
+      "bytes": 15263,
+      "sha256": "3fe84b8d8f29e5e4554ab69f4b81b6a91884a03732020223b32b12c9070e3a72",
+      "git_blob": "8ca53769c20627fd9e204c0a0a5b4e77771bebac"
+    },
+    "old": "\nfn invalid(error: impl std::fmt::Display) -> AgentdError {",
+    "new": "\n#[path = \"authority_host_generation_input_loader.rs\"]\nmod input_loader;\npub use input_loader::RootHostInitialGenerationFilesV1;\npub(crate) use input_loader::LoadPurpose as OriginalGenerationLoadPurpose;\npub(crate) use input_loader::LoadedOriginalGeneration as OriginalLoadedGeneration;\n\nfn invalid(error: impl std::fmt::Display) -> AgentdError {",
+    "inverse_exact": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+    "before": {
+      "bytes": 23062,
+      "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b",
+      "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff"
+    },
+    "old": "pub use generation::RootHostInitialGenerationRecoveryV1;",
+    "new": "pub use generation::RootHostInitialGenerationRecoveryV1;\npub use generation::RootHostInitialGenerationFilesV1;\npub(crate) use generation::OriginalGenerationLoadPurpose;\npub(crate) use generation::OriginalLoadedGeneration;",
+    "inverse_exact": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+    "before": {
+      "bytes": 8568,
+      "sha256": "a2ab51bce4e4937ab2fd1536b368d9f30c2f24d240e3539999dc99b5ba57b0a2",
+      "git_blob": "47941c61d61c6bff18021f2fc241c28f2d82280a"
+    },
+    "old": "\nimpl PreparedHostAuthoritySession {",
+    "new": "\n#[path = \"authority_host_session_generation_input_loader.rs\"]\nmod input_loader;\n\nimpl PreparedHostAuthoritySession {",
+    "inverse_exact": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/lib.rs",
+    "before": {
+      "bytes": 74155,
+      "sha256": "6befd57a74ba6bcff8304903be187612864caa7d2be2d777f7714bf7047ea616",
+      "git_blob": "0f2c7ed70006b228053532117a94df0b7b1322ea"
+    },
+    "old": "pub use authority_host_service::RootHostInitialGenerationRecoveryV1;",
+    "new": "pub use authority_host_service::RootHostInitialGenerationRecoveryV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootHostInitialGenerationFilesV1;",
+    "inverse_exact": true
+  }
+]

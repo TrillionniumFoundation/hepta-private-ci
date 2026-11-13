@@ -1,0 +1,7 @@
+{
+  "chunk_id": "b92526",
+  "wall_time_seconds": 0.193384737,
+  "exit_code": 1,
+  "original_token_count": 155,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-generation-input-loader-independent-review-v1/verify_inputs_layer.py\", line 197, in <module>\n    a=declared_fields(types,dto);b=declared_fields(source,original);c=literal_fields(types,original)\n                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-root-generation-input-loader-independent-review-v1/verify_inputs_layer.py\", line 67, in literal_fields\n    assert len(matches)==1,(name,len(matches))\n           ^^^^^^^^^^^^^^^\nAssertionError: ('DatasetWithdrawalSnapshotReceiptV1', 2)\n"
+}

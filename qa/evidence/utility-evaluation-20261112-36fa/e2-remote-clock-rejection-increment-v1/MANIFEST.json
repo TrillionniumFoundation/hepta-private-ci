@@ -1,0 +1,86 @@
+{
+  "files": [
+    {
+      "bytes": 5086,
+      "git_blob": "c8d4fff60a25da7c3e0c6dad4fe9f4032eac32e2",
+      "path": "EXACT_SOURCE_SPLICES.json",
+      "sha256": "eaf0b86e6c9676d76368fe659e730283b5d53c3ffe97ecad1d66170a5de7cbb5"
+    },
+    {
+      "bytes": 1966,
+      "git_blob": "eafa93398a9b7472b7139a6de89afabf417758a3",
+      "path": "REVIEW.json",
+      "sha256": "afb536919409184b943efe91cc6c5a22f63867230334ec84c4fd955dd8b7b85c"
+    },
+    {
+      "bytes": 66844,
+      "git_blob": "9f780f963b0e9585b5b85a83f87de593f604bfa5",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "e3056b6b268b3c5503485fe125330f6405e9e56f4ac09b9ab472d962c62b963e"
+    },
+    {
+      "bytes": 4963,
+      "git_blob": "d5d383c7e54cc61937acffd68caac16ea2fa8a3b",
+      "path": "source.patch",
+      "sha256": "9437ac17034c90eb0f03f5c8d461b8c70e6f6e10427a1f37fbd678340d939eec"
+    }
+  ],
+  "format": "hepta-e2-clock-increment-manifest-v1",
+  "git_source_written": false,
+  "rust_or_project_qa_executed": false,
+  "source_images": [
+    {
+      "after": {
+        "bytes": 7788,
+        "git_blob": "bc92b6d5071274d933a48fc116a9d570c099d9ca",
+        "sha256": "4a9b62c652f2ecaea5672cc58e3b1fa4dd04bc13783037677b94c373fe55be28"
+      },
+      "before": {
+        "bytes": 7326,
+        "git_blob": "7da8c7b20bba82b648eec3420733f49997561501",
+        "sha256": "7b2f1501aaff75a4ceaad94303c739c0fb0fbd70c8db0049d8f5fae4de16327d"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs"
+    },
+    {
+      "after": {
+        "bytes": 8637,
+        "git_blob": "ce30d8ba73f687e44f0532256ed9ac1e17193d11",
+        "sha256": "40da940c10da791a96fa65a0e2cc649cfc30ccc967065719aea96e3a11e7b28d"
+      },
+      "before": {
+        "bytes": 8481,
+        "git_blob": "3d18fc0d8ce1c9e2a3a7e863bd7bdadac04497ad",
+        "sha256": "68655fc061366fb2435ba687277b4697eb42356c9ecb16f0e0a56a6d14ce7945"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs"
+    },
+    {
+      "after": {
+        "bytes": 11108,
+        "git_blob": "6251325c5ca71f5b8ccb8ab6c55b8a5fd4e03fbc",
+        "sha256": "8bf659c6af7f088ac137db9a45f3065cf0d12d6574c7052baf6c6cee49e216d4"
+      },
+      "before": {
+        "bytes": 10937,
+        "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+        "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+    },
+    {
+      "after": {
+        "bytes": 4635,
+        "git_blob": "9c7e118007bb4167ef16fa6f1215733850f337dc",
+        "sha256": "2cb756bb93b475f222cb976814247077d1aaedb3c8c6546dd9e9c0468d8d5d04"
+      },
+      "before": {
+        "bytes": 4376,
+        "git_blob": "c3da579114e1b4b2af2dd52785afc67980595051",
+        "sha256": "72b6616733eaa6213c17a44a9f7ceaf7caa3eb93b56194fa88435c9ea47c9a0c"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+    }
+  ],
+  "source_paths": 4
+}

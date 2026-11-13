@@ -1,0 +1,769 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs
+@@ -0,0 +1,47 @@
++//! Fixed supervisor-selected Material role/process. The public type is opaque
++//! and non-Clone. Its crate-only constructor is for the protected Root loader;
++//! Source wire bytes and the daemon registration cannot choose this recipient.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use codex_hepta_types::StableId;
++use crate::{AgentdError, AgentdRootAuthorityPeer, OriginalCellQ24MaterialReceiptConfigV1};
++use crate::circuit_task::original_material_source::wire;
++
++/// Opaque one-use registration for the protected supervisor's separate
++/// Material process and complete original signed Material context.
++pub struct OriginalRootMaterialSourceRegistrationV1 {
++    pub(super) material: OriginalCellQ24MaterialReceiptConfigV1,
++    pub(super) consumer: AgentdRootAuthorityPeer,
++    pub(super) consumer_uid: u32,
++    pub(super) original_consumer_pidfd: OwnedFd,
++    pub(super) stream: UnixStream,
++    pub(super) nonce: [u8; 16],
++}
++
++impl OriginalRootMaterialSourceRegistrationV1 {
++    /// Called only after the Root loader has read its protected supervisor
++    /// contract. Both actor IDs are explicit and must match the full Material
++    /// context; this is not an actor inferred from a socket or source report.
++    /// The original process/boot/start/pidfd and real SO_PEERCRED are checked
++    /// again when this single registration is consumed by the actual host.
++    pub(crate) fn from_original_supervisor(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        experience_actor: StableId,
++        dataset_actor: StableId,
++        consumer: AgentdRootAuthorityPeer,
++        consumer_uid: u32,
++        original_consumer_pidfd: OwnedFd,
++        stream: UnixStream,
++        nonce: [u8; 16],
++    ) -> Result<Self, AgentdError> {
++        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0
++            || consumer_uid == 0 || consumer.pid == 0 || consumer.pid == std::process::id()
++            || consumer.process_start_ticks == 0 || nonce == [0; 16]
++            || experience_actor != material.initial.owners.experience
++            || dataset_actor != material.initial.owners.dataset
++        { return Err(AgentdError::Invalid("original Material supervisor role binding differs".into())); }
++        wire::context(&material).map_err(super::protocol)?;
++        Ok(Self { material, consumer, consumer_uid, original_consumer_pidfd, stream, nonce })
++    }
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_runtime.rs
+@@ -43,6 +43,8 @@
+ pub use session::PreparedHostAuthoritySession;
+ pub use session::PreparedRootHostInitialGenerationV1;
+ pub use session::PreparedRootHostCircuitTaskV1;
++pub use session::PreparedRootMaterialSourceHostV1;
++pub use session::OriginalRootMaterialSourceRegistrationV1;
+ pub use session::RootHostInitialTaskInstallationErrorV1;
+ pub use session::RootNotesPolicyPredecessor;
+ 
+--- a/codex-rs/hepta-agentd/src/authority_host_session.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session.rs
+@@ -25,6 +25,8 @@
+ mod generation;
+ pub use generation::PreparedRootHostInitialGenerationV1;
+ pub use generation::PreparedRootHostCircuitTaskV1;
++pub use generation::PreparedRootMaterialSourceHostV1;
++pub use generation::OriginalRootMaterialSourceRegistrationV1;
+ pub use generation::RootHostInitialTaskInstallationErrorV1;
+ 
+ /// One Root session's immutable registration, retained actual process handle
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
+@@ -22,6 +22,8 @@
+ mod task;
+ pub use task::RootHostInitialTaskInstallationErrorV1;
+ pub use task::PreparedRootHostCircuitTaskV1;
++pub use task::PreparedRootMaterialSourceHostV1;
++pub use task::OriginalRootMaterialSourceRegistrationV1;
+ 
+ enum InitialHostPhase<W: AnchorWitnessStore> {
+     Fresh(RootHostInitialGenerationInputsV1<W>),
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
+@@ -7,7 +7,13 @@
+ #[path = "authority_host_session_generation_task_handoff.rs"]
+ mod ordinary_handoff;
+ 
++use std::sync::Arc;
+ use codex_hepta_neuron::AnchorWitnessStore;
++
++#[path = "authority_host_session_material_source.rs"]
++pub(crate) mod material_source;
++pub use material_source::PreparedRootMaterialSourceHostV1;
++pub use material_source::OriginalRootMaterialSourceRegistrationV1;
+ 
+ use super::InitialHostPhase;
+ use super::OriginalInstallationFailure;
+@@ -30,10 +36,11 @@
+ /// cross-process connection. Only the later purpose-fixed service may consume
+ /// the private runtime; callers receive no owner, Config or writer getter.
+ pub struct PreparedRootHostCircuitTaskV1<SW: AnchorWitnessStore, CW: AnchorWitnessStore> {
+-    session: PreparedHostAuthoritySession,
+-    operation: OriginalHostInitialOperation,
++    session: Arc<PreparedHostAuthoritySession>,
++    operation: Arc<OriginalHostInitialOperation>,
+     runtime: CircuitQ24TaskRuntimeV1<SW, CW>,
+-    custody: OriginalRootCircuitTaskCustodyV1<SW, CW>,
++    custody: Arc<OriginalRootCircuitTaskCustodyV1<SW, CW>>,
++    material_source_taken: bool,
+     end: std::time::Instant,
+ }
+ 
+@@ -113,7 +120,8 @@
+         })();
+         match install {
+             Ok((runtime, custody)) => Ok(PreparedRootHostCircuitTaskV1 {
+-                session, operation, runtime, custody, end,
++                session: Arc::new(session), operation: Arc::new(operation), runtime,
++                custody: Arc::new(custody), material_source_taken: false, end,
+             }),
+             Err(failure) => Err(RootHostInitialTaskInstallationErrorV1 {
+                 session, operation, end, failure,
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
+@@ -139,3 +139,5 @@
+ #[path = "authority_host_session_generation_root_task.rs"]
+ mod root_task;
+ pub use root_task::PreparedRootHostCircuitTaskV1;
++pub use root_task::PreparedRootMaterialSourceHostV1;
++pub use root_task::OriginalRootMaterialSourceRegistrationV1;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_material_source.rs
+@@ -0,0 +1,135 @@
++//! One read-only Material loan shares the Root task's actual owners. It may be
++//! retained before A completes and bound to the later actual Material contract,
++//! but every request requires original completed Source/Cell/current readback.
++
++use std::sync::Arc;
++use std::time::{Duration, Instant};
++use codex_hepta_contracts::HostIssuerTransportError;
++use codex_hepta_neuron::AnchorWitnessStore;
++use super::{PreparedRootHostCircuitTaskV1, OriginalHostInitialOperation,
++    OriginalRootCircuitTaskCustodyV1, PreparedHostAuthoritySession, require_original_session};
++use crate::AgentdError;
++use crate::circuit_task::original_material_source::wire;
++use crate::learning_owner_command_channel::original_owner_command_channel_v1;
++use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;
++
++#[path = "authority_host_material_source_registration.rs"]
++mod registration;
++pub use registration::OriginalRootMaterialSourceRegistrationV1;
++
++/// Non-Clone, single-use, Material-only reader. The Arcs retain the same
++/// concrete original owners; they neither duplicate a writer nor expose one.
++/// The session's original absolute end remains fixed across task/loan use.
++pub struct PreparedRootMaterialSourceHostV1<SW: AnchorWitnessStore, CW: AnchorWitnessStore> {
++    session: Arc<PreparedHostAuthoritySession>,
++    operation: Arc<OriginalHostInitialOperation>,
++    custody: Arc<OriginalRootCircuitTaskCustodyV1<SW, CW>>,
++    end: Instant,
++}
++
++impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>
++where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
++{
++    /// Export this one bounded read service before moving the actual task pump
++    /// into its service thread. This cannot build a Material contract, publish
++    /// Source or cause A to run. Export failure after the once bit is consumed
++    /// never restores it or substitutes another source.
++    pub fn prepare_original_material_source_host(&mut self)
++        -> Result<PreparedRootMaterialSourceHostV1<SW, CW>, AgentdError>
++    {
++        self.read_original_root_task_generation()?;
++        if self.material_source_taken {
++            return Err(AgentdError::Invalid("original Material Source service already exported".into()));
++        }
++        self.material_source_taken = true;
++        let host = PreparedRootMaterialSourceHostV1 {
++            session: Arc::clone(&self.session), operation: Arc::clone(&self.operation),
++            custody: Arc::clone(&self.custody), end: self.end,
++        };
++        host.require_current()?;
++        Ok(host)
++    }
++}
++
++impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> PreparedRootMaterialSourceHostV1<SW, CW> {
++    fn require_current(&self) -> Result<(), AgentdError> {
++        require_original_session(&self.session, self.end)?;
++        let observed = OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;
++        OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;
++        if !matches!(observed, NeuronGenerationInitialReadbackV1::Published(_)) {
++            return Err(AgentdError::Invalid("original Material Source generation is not published".into()));
++        }
++        require_original_session(&self.session, self.end)
++    }
++
++    /// Consume the one opaque supervisor registration. No action/run/path or
++    /// actor is accepted from requests. The original command peer checker still
++    /// rejects same-UID/same-PID connections; the Material process is separate.
++    /// Missing, expired, changed or unavailable original evidence ends this
++    /// loan. This serves no cached publication and supplies no reconnect retry.
++    pub fn serve(self, registration: OriginalRootMaterialSourceRegistrationV1)
++        -> Result<u64, AgentdError>
++    {
++        self.require_current()?;
++        let registration::OriginalRootMaterialSourceRegistrationV1 {
++            material, consumer, consumer_uid, original_consumer_pidfd, stream, nonce,
++        } = registration;
++        if consumer.pid == self.session.registration.peer_pid {
++            return Err(protocol("the registered daemon is not the original Material process"));
++        }
++        let binding = wire::context(&material).map_err(protocol)?;
++        let timeout = Duration::from_millis(self.session.config.timeout_ms.min(500));
++        let lifetime = self.end.checked_duration_since(Instant::now())
++            .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))
++            .ok_or_else(|| protocol("original Material Source scope expired"))?;
++        let mut channel = original_owner_command_channel_v1(stream, consumer, consumer_uid,
++            original_consumer_pidfd, timeout, lifetime).map_err(protocol)?;
++        self.require_current()?;
++        wire::before(self.end).map_err(protocol)?;
++        for id in 1..=wire::LIMIT {
++            let request = wire::request(binding, nonce, id).map_err(protocol)?;
++            let mut failure = None;
++            let mut deadline = None;
++            let exchanged = channel.exchange(|bytes| {
++                let result = (|| -> Result<Vec<u8>, AgentdError> {
++                    let until = (Instant::now() + timeout).min(self.end);
++                    deadline = Some(until);
++                    wire::before(until).map_err(protocol)?;
++                    if bytes != request || wire::context(&material).map_err(protocol)? != binding {
++                        return Err(protocol("original Material Source request differs"));
++                    }
++                    self.require_current()?;
++                    let payload = OriginalRootCircuitTaskCustodyV1::read_original_material_source(
++                        &self.custody, &material.initial.request,
++                    )?;
++                    self.require_current()?;
++                    if wire::context(&material).map_err(protocol)? != binding {
++                        return Err(protocol("original Material Source context changed"));
++                    }
++                    let response = wire::response(&request, &payload).map_err(protocol)?;
++                    wire::before(until).map_err(protocol)?;
++                    Ok(response)
++                })();
++                result.map_err(|error| { failure = Some(error); HostIssuerTransportError::Unavailable })
++            });
++            match exchanged {
++                Ok(false) => { self.require_current()?; return Ok(id - 1); }
++                Ok(true) => {
++                    channel.check_peer_lifetime().map_err(protocol)?;
++                    self.require_current()?;
++                    if wire::context(&material).map_err(protocol)? != binding {
++                        return Err(protocol("original Material Source context changed after response"));
++                    }
++                    let until = deadline.ok_or_else(|| protocol("original Source deadline missing"))?;
++                    wire::before(until).map_err(protocol)?;
++                }
++                Err(error) => return Err(failure.unwrap_or_else(|| protocol(error))),
++            }
++        }
++        Err(protocol("original Material Source request bound exhausted"))
++    }
++}
++
++fn protocol(error: impl std::fmt::Display) -> AgentdError {
++    AgentdError::Protocol(format!("original Material Source loan: {error}"))
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_dataset.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_dataset.rs
+@@ -424,7 +424,7 @@
+     }
+ }
+ 
+-fn require_source(
++pub(crate) fn require_source(
+     identity: &AgentdIdentity,
+     source: &CircuitTaskSourcePublicationV1,
+     request: &LearningIterationRequestV1,
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_command.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_command.rs
+@@ -32,6 +32,9 @@
+ #[path = "cell_q24_material_dataset_readback.rs"]
+ mod dataset_readback;
+ pub use dataset_readback::OriginalCellQ24DatasetCommandReadbackV1;
++
++#[path = "cell_q24_material_source_context.rs"]
++mod original_source_context;
+ 
+ #[path = "cell_q24_material_command_service.rs"]
+ mod serving;
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs
+@@ -35,6 +35,10 @@
+ use crate::learning_owner_evidence;
+ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
+ use crate::learning_owner_journal::LearningOwnerJournalV1;
++
++#[cfg(target_os = "linux")]
++#[path = "cell_q24_material_root_source.rs"]
++mod original_root_source;
+ 
+ #[path = "cell_q24_material_receipt_binding.rs"]
+ mod binding;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs
+@@ -0,0 +1,34 @@
++//! Consumes the actual pair once into its old command factory. Only the Source
++//! reader changes transport; the original LedgerWriter, freeze, signers,
++//! admission bits and all four command connection permits remain unchanged.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::sync::{Arc, Mutex};
++use std::time::Duration;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use super::*;
++use crate::{AgentdRootAuthorityPeer, OriginalCellQ24MaterialCommandErrorV1,
++    OriginalCellQ24MaterialCommandOwnerV1};
++
++impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore> OriginalCellQ24MaterialReceiptOwnersV1<EW, DW> {
++    /// The host supplies a real connection to the same protected Root task and
++    /// its actual pidfd. Root independently binds this Material process from
++    /// its supervisor contract; the daemon's consumer identity is insufficient.
++    /// No Source path, Source witness, decoded receipt or new ledger is accepted.
++    pub fn into_original_root_source_command_owner(
++        self, stream: UnixStream, root: AgentdRootAuthorityPeer, root_pidfd: OwnedFd,
++        nonce: [u8; 16], identity: AgentdIdentity, ledger: Arc<Mutex<LedgerWriter>>,
++        baseline: Arc<LoadedCellQ24ModelV1>, timeout: Duration, lifetime: Duration,
++    ) -> Result<OriginalCellQ24MaterialCommandOwnerV1<EW, DW, FileAnchorWitnessStore>,
++        OriginalCellQ24MaterialCommandErrorV1>
++    {
++        let source = CircuitTaskSourceReadbackV1::from_original_material_root_stream(
++            stream, root, root_pidfd, self.config.clone(), identity.clone(), nonce, timeout, lifetime,
++        ).map_err(|error| OriginalCellQ24MaterialCommandErrorV1::Dataset(
++            CellQ24DatasetErrorV1::Source(error)))?;
++        OriginalCellQ24MaterialReceiptOwnersV1::into_command_owner(
++            self, source, identity, ledger, baseline,
++        )
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs
+@@ -0,0 +1,11 @@
++//! Reuse the original complete Material binding for the sole read-only Source
++//! lane. This validates/pins data and signers; it does not issue any authority.
++
++use super::{Error, OriginalCellQ24MaterialReceiptConfigV1, wire};
++use codex_hepta_types::Digest32;
++
++impl OriginalCellQ24MaterialReceiptConfigV1 {
++    pub(crate) fn original_source_loan_binding(&self, at: u64) -> Result<Digest32, Error> {
++        wire::context_binding(self, at)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_feature_current.rs
++++ b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+@@ -43,6 +43,9 @@
+ mod owner;
+ #[path = "circuit_feature_current_recovery.rs"]
+ mod recovery;
++#[path = "circuit_feature_material_source.rs"]
++mod original_material_source;
++
+ #[path = "circuit_feature_current_retirement.rs"]
+ mod retirement;
+ 
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_feature_material_source.rs
+@@ -0,0 +1,23 @@
++//! A same-task, same-Cell read for the original Material Source loan. Unlike
++//! retirement this performs no drain, mutation or admission.
++
++use super::*;
++
++impl PublishedCircuitFeatureTaskV1 {
++    pub(crate) fn read_original_material_publication<CW: AnchorWitnessStore, SW: AnchorWitnessStore>(
++        &self, cell: &PublishedCircuitCellOwnerV1<CW>, source: &CircuitTaskSourceReadbackV1<SW>,
++        identity: &AgentdIdentity, run: &StableId,
++    ) -> Result<CircuitTaskSourcePublicationV1, AgentdError> {
++        if !Arc::ptr_eq(&self.0, &cell.task.0) || run != &self.source().scope.run_id {
++            return Err(invalid("Material Source belongs to a different original task"));
++        }
++        self.require_current()?;
++        let observed = source.read_run_publication(identity, run).map_err(invalid)?;
++        let decision = cell.committed(&observed)?;
++        if source.read_run_publication(identity, run).map_err(invalid)? != observed
++            || cell.committed(&observed)? != decision
++        { return Err(invalid("original Material Source or Cell changed")); }
++        self.require_current()?;
++        Ok(observed)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task.rs
+@@ -59,6 +59,8 @@
+ pub use runtime::CircuitTaskRuntimeBootstrapV1;
+ pub use runtime::circuit_task_channel_v1;
+ pub(crate) use source::CircuitTaskPolicyProjectionV1;
++#[cfg(target_os = "linux")]
++pub(crate) use source::material_source as original_material_source;
+ pub use source::CircuitTaskSourceInputV1;
+ pub use source::CircuitTaskSourcePublicationV1;
+ pub use source::CircuitTaskSourceReadbackV1;
+--- a/codex-rs/hepta-agentd/src/circuit_task_source.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source.rs
+@@ -60,6 +60,8 @@
+ #[path = "circuit_task_source_readback.rs"]
+ mod readback;
+ pub use readback::CircuitTaskSourceReadbackV1;
++#[cfg(target_os = "linux")]
++pub(crate) use readback::material as material_source;
+ 
+ /// Explicit source bytes and original Cell-clock values, fixed before task
+ /// ingress. Only the operation ID is derived later from the original Circuit
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_material.rs
+@@ -0,0 +1,152 @@
++//! Closed Material-only reader. The only remote constructor is called while
++//! consuming the actual Material pair; local Source observers keep their old
++//! implementation. A wire value cannot construct a Driver receipt or writer.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::sync::{Arc, Mutex};
++use std::time::{Duration, Instant};
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_neuron::{AnchorWitnessStore, FileAnchorWitnessStore};
++use codex_hepta_types::{Digest32, StableId};
++
++use super::{CircuitTaskSourceReadbackV1, OriginalReadback};
++use super::super::{CircuitTaskSourcePublicationV1, Error, codec};
++use crate::{AgentdIdentity, AgentdRootAuthorityPeer, OriginalCellQ24MaterialReceiptConfigV1};
++use crate::learning_owner_command_channel::original_owner_command_channel_v1;
++
++#[path = "circuit_task_source_material_wire.rs"]
++pub(crate) mod wire;
++
++struct Channel {
++    original: HostAuthorityPeerChannel,
++    next: u64,
++}
++
++pub(super) struct Client {
++    slot: Mutex<Option<Channel>>,
++    config: OriginalCellQ24MaterialReceiptConfigV1,
++    identity: AgentdIdentity,
++    binding: Digest32,
++    nonce: [u8; 16],
++    timeout: Duration,
++    end: Instant,
++}
++
++impl CircuitTaskSourceReadbackV1<FileAnchorWitnessStore> {
++    /// Private consuming-pair factory only. FileAnchorWitnessStore remains a
++    /// type parameter for the original local branch; no witness/file is made
++    /// for this remote branch. The actual witness is read by the Root owner.
++    pub(crate) fn from_original_material_root_stream(
++        stream: UnixStream,
++        root: AgentdRootAuthorityPeer,
++        root_pidfd: OwnedFd,
++        config: OriginalCellQ24MaterialReceiptConfigV1,
++        identity: AgentdIdentity,
++        nonce: [u8; 16],
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        if timeout.is_zero() || timeout > wire::TIMEOUT
++            || lifetime.is_zero() || lifetime > Duration::from_secs(300)
++            || nonce == [0; 16]
++        { return Err(Error::InvalidBinding); }
++        let end = Instant::now() + lifetime;
++        let binding = wire::context(&config)?;
++        let original = original_owner_command_channel_v1(stream, root, /*uid*/ 0,
++            root_pidfd, timeout, lifetime).map_err(|_| Error::Unavailable)?;
++        if wire::context(&config)? != binding { return Err(Error::InvalidBinding); }
++        wire::before(end)?;
++        Ok(Self { original: OriginalReadback::RootMaterial(Arc::new(Client {
++            slot: Mutex::new(Some(Channel { original, next: 1 })), config, identity,
++            binding, nonce, timeout, end,
++        })) })
++    }
++}
++
++impl Client {
++    pub(super) fn read(&self, identity: &AgentdIdentity, run: &StableId)
++        -> Result<CircuitTaskSourcePublicationV1, Error>
++    {
++        if identity != &self.identity || run != &self.config.initial.request.source_run_id {
++            return Err(Error::InvalidBinding);
++        }
++        let mut channel = self.slot.try_lock().map_err(|_| Error::Unavailable)?
++            .take().ok_or(Error::Unavailable)?;
++        let deadline = (Instant::now() + self.timeout).min(self.end);
++        wire::before(deadline)?;
++        if wire::context(&self.config)? != self.binding { return Err(Error::InvalidBinding); }
++        let request = wire::request(self.binding, self.nonce, channel.next)?;
++        channel.next = channel.next.checked_add(1).ok_or(Error::Unavailable)?;
++        let response = channel.original.request(&request).map_err(|_| Error::CommitUncertain)?;
++        wire::before(deadline)?;
++        let payload = wire::read_response(&request, &response)?;
++        // Only this successful fixed Root exchange reaches the private decoder.
++        // No public/raw-result overload manufactures an original publication.
++        let observed = decode_current_root_payload(payload)?;
++        crate::cell_q24_dataset::require_source(identity, &observed, &self.config.initial.request)
++            .map_err(|_| Error::InvalidBinding)?;
++        channel.original.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
++        if wire::context(&self.config)? != self.binding { return Err(Error::InvalidBinding); }
++        let mut slot = self.slot.try_lock().map_err(|_| Error::Unavailable)?;
++        wire::before(deadline)?;
++        *slot = Some(channel);
++        Ok(observed)
++    }
++}
++
++fn decode_current_root_payload(payload: &[u8]) -> Result<CircuitTaskSourcePublicationV1, Error> {
++    let mut reader = wire::Reader::new(payload, b"HCMATPUB1")?;
++    let binding = reader.digest()?;
++    if binding.is_zero() { return Err(Error::InvalidBinding); }
++    let request = reader.bytes()?;
++    let saved = reader.bytes()?;
++    let result = reader.bytes()?;
++    reader.end()?;
++    let record = codec::original_record(request)?;
++    let input = codec::decode_input(saved)?;
++    let (history_digest, output) = codec::publication(result, saved)?;
++    let (bundle_digest, checkpoint_digest) = codec::decision_metadata(result)?;
++    Ok(CircuitTaskSourcePublicationV1 {
++        record, input, output, history_digest, bundle_digest, checkpoint_digest,
++        publication_digest: Digest32::of_parts(&[
++            b"hepta.circuit.original-source-publication.v1\0", binding.as_array(),
++            request, saved, result,
++        ]),
++        result_bytes: result.to_vec(),
++    })
++}
++
++impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
++    /// Root serializes only data just read through the actual local owner.
++    /// Another remote reader cannot be used as a Root source for this loan.
++    pub(crate) fn encode_original_material_publication(
++        &self, identity: &AgentdIdentity, expected: &CircuitTaskSourcePublicationV1,
++    ) -> Result<Vec<u8>, Error> {
++        let OriginalReadback::Local(original) = &self.original else {
++            return Err(Error::InvalidBinding);
++        };
++        if original.read_publication(identity, expected.original_record())? != *expected {
++            return Err(Error::InvalidBinding);
++        }
++        let mut owner = original.0.try_lock().map_err(|_| Error::Unavailable)?;
++        let request = owner.request(identity, expected.original_record())?;
++        let request_bytes = codec::request(&request, expected.original_record())?;
++        owner.require_bytes("request", &request.start.run_id, &request_bytes)?;
++        let saved = owner.read("input", &request.start.run_id)?;
++        let result = owner.read("result", &request.start.run_id)?;
++        if codec::decode_input(&saved)? != *expected.input() || result != expected.result_bytes() {
++            return Err(Error::InvalidBinding);
++        }
++        let mut out = wire::Writer::new(b"HCMATPUB1");
++        out.digest(owner.binding)?;
++        out.bytes(&request_bytes)?;
++        out.bytes(&saved)?;
++        out.bytes(&result)?;
++        owner.require_active(&request.start.run_id)?;
++        owner.require_current()?;
++        let payload = out.finish();
++        wire::bounded(&payload)?;
++        Ok(payload)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs
+@@ -0,0 +1,52 @@
++//! One fixed Material Source read. No request selects a run, operation, stage,
++//! path, signer or receipt. The complete original payload must fit one frame.
++
++use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
++use codex_hepta_types::Digest32;
++use crate::{CircuitTaskErrorV1 as Error, OriginalCellQ24MaterialReceiptConfigV1};
++pub(crate) use crate::circuit_task::root_bootstrap_codec::{Reader, Writer};
++
++pub(crate) const BOUND: usize = 16_384;
++pub(crate) const TIMEOUT: Duration = Duration::from_millis(500);
++pub(crate) const LIMIT: u64 = 128;
++
++pub(crate) fn context(config: &OriginalCellQ24MaterialReceiptConfigV1) -> Result<Digest32, Error> {
++    let at = SystemTime::now().duration_since(UNIX_EPOCH)
++        .map_err(|_| Error::Unavailable)?.as_secs();
++    OriginalCellQ24MaterialReceiptConfigV1::original_source_loan_binding(config, at)
++        .map_err(|_| Error::InvalidBinding)
++}
++
++pub(crate) fn before(end: Instant) -> Result<(), Error> {
++    if Instant::now() >= end { return Err(Error::DeadlineExceeded); }
++    Ok(())
++}
++
++pub(crate) fn bounded(bytes: &[u8]) -> Result<(), Error> {
++    if bytes.is_empty() || bytes.len() > BOUND { return Err(Error::InvalidBinding); }
++    Ok(())
++}
++
++pub(crate) fn request(binding: Digest32, nonce: [u8; 16], id: u64) -> Result<Vec<u8>, Error> {
++    if binding.is_zero() || nonce == [0; 16] || !(1..=LIMIT).contains(&id) {
++        return Err(Error::InvalidBinding);
++    }
++    let mut bytes = b"HCMATRD1".to_vec();
++    bytes.extend_from_slice(binding.as_array());
++    bytes.extend_from_slice(&nonce);
++    bytes.extend_from_slice(&id.to_be_bytes());
++    Ok(bytes)
++}
++
++pub(crate) fn response(request: &[u8], payload: &[u8]) -> Result<Vec<u8>, Error> {
++    let mut bytes = request.to_vec();
++    bytes.extend_from_slice(payload);
++    bounded(&bytes)?;
++    Ok(bytes)
++}
++
++pub(crate) fn read_response<'a>(request: &[u8], response: &'a [u8]) -> Result<&'a [u8], Error> {
++    bounded(response)?;
++    response.strip_prefix(request).filter(|payload| !payload.is_empty())
++        .ok_or(Error::InvalidBinding)
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_readback.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_readback.rs
+@@ -11,16 +11,32 @@
+ use super::Error;
+ use crate::AgentdIdentity;
+ 
+-/// Only the original source owner constructs this view. Every read reaches the
+-/// same locked journal, independent witness and current withdrawal record.
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_source_material.rs"]
++pub(crate) mod material;
++
++enum OriginalReadback<W: AnchorWitnessStore> {
++    Local(DurableCircuitTaskSourceV1<W>),
++    #[cfg(target_os = "linux")]
++    RootMaterial(std::sync::Arc<material::Client>),
++}
++
++/// Only the original source owner constructs the local view. The sealed
++/// Material branch comes only from consuming the real original Material pair.
++/// Every read reaches that same original locked journal, independent witness
++/// and current withdrawal record, locally or through the sealed Material loan.
+ pub struct CircuitTaskSourceReadbackV1<W: AnchorWitnessStore> {
+-    original: DurableCircuitTaskSourceV1<W>,
++    original: OriginalReadback<W>,
+ }
+ 
+ impl<W: AnchorWitnessStore> Clone for CircuitTaskSourceReadbackV1<W> {
+     fn clone(&self) -> Self {
+         Self {
+-            original: self.original.clone(),
++            original: match &self.original {
++                OriginalReadback::Local(original) => OriginalReadback::Local(original.clone()),
++                #[cfg(target_os = "linux")]
++                OriginalReadback::RootMaterial(original) => OriginalReadback::RootMaterial(std::sync::Arc::clone(original)),
++            },
+         }
+     }
+ }
+@@ -29,7 +45,7 @@
+     /// Give an observer read access without either task-source writer trait.
+     pub fn readback(&self) -> CircuitTaskSourceReadbackV1<W> {
+         CircuitTaskSourceReadbackV1 {
+-            original: self.clone(),
++            original: OriginalReadback::Local(self.clone()),
+         }
+     }
+ }
+@@ -43,7 +59,12 @@
+         identity: &AgentdIdentity,
+         input: &super::CircuitTaskSourceInputV1,
+     ) -> Result<(), Error> {
+-        let mut owner = self.original.0.try_lock().map_err(|_| Error::Unavailable)?;
++        let original = match &self.original {
++            OriginalReadback::Local(original) => original,
++            #[cfg(target_os = "linux")]
++            OriginalReadback::RootMaterial(_) => return Err(Error::InvalidBinding),
++        };
++        let mut owner = original.0.try_lock().map_err(|_| Error::Unavailable)?;
+         owner.require_current()?;
+         if identity != &owner.identity
+             || owner.sources.get(input.scope.run_id.as_str()) != Some(input)
+@@ -59,7 +80,15 @@
+         identity: &AgentdIdentity,
+         record: &RunStartRecordV1,
+     ) -> Result<CircuitTaskSourcePublicationV1, Error> {
+-        self.original.read_publication(identity, record)
++        match &self.original {
++            OriginalReadback::Local(original) => original.read_publication(identity, record),
++            #[cfg(target_os = "linux")]
++            OriginalReadback::RootMaterial(original) => {
++                let observed = original.read(identity, &record.snapshot.run_id)?;
++                if observed.original_record() != record { return Err(Error::InvalidBinding); }
++                Ok(observed)
++            }
++        }
+     }
+ 
+     pub fn read_run_publication(
+@@ -67,6 +96,10 @@
+         identity: &AgentdIdentity,
+         run_id: &StableId,
+     ) -> Result<CircuitTaskSourcePublicationV1, Error> {
+-        self.original.read_run_publication(identity, run_id)
++        match &self.original {
++            OriginalReadback::Local(original) => original.read_run_publication(identity, run_id),
++            #[cfg(target_os = "linux")]
++            OriginalReadback::RootMaterial(original) => original.read(identity, run_id),
++        }
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -152,6 +152,10 @@
+ pub use authority_host_runtime::PreparedRootHostInitialGenerationV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::PreparedRootHostCircuitTaskV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::PreparedRootMaterialSourceHostV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::OriginalRootMaterialSourceRegistrationV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootHostInitialTaskInstallationErrorV1;
+ #[cfg(target_os = "linux")]
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs
+@@ -0,0 +1,24 @@
++//! Read only the factory's retained original Source and same-Arc Cell. The
++//! result is bounded data; no caller can obtain a Source/Cell/current writer.
++
++use super::*;
++use codex_hepta_learning_artifacts::LearningIterationRequestV1;
++
++impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW> {
++    pub(crate) fn read_original_material_source(&self, request: &LearningIterationRequestV1) -> Result<Vec<u8>, AgentdError> {
++        require_root()?;
++        self.read_original_operation()?;
++        let run = &request.source_run_id;
++        let observed = self.task.read_original_material_publication(
++            &self.cell, &self.source, &self.identity, run,
++        )?;
++        crate::cell_q24_dataset::require_source(&self.identity, &observed, request).map_err(invalid)?;
++        let payload = self.source.encode_original_material_publication(&self.identity, &observed)
++            .map_err(invalid)?;
++        if self.task.read_original_material_publication(
++            &self.cell, &self.source, &self.identity, run,
++        )? != observed { return Err(invalid("original Material Source changed during encoding")); }
++        self.read_original_operation()?;
++        Ok(payload)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs
+@@ -176,5 +176,8 @@
+     }
+ }
+ 
++#[path = "neuron_generation_initial_material_source.rs"]
++mod original_material_source;
++
+ #[path = "neuron_generation_initial_root_task_channel.rs"]
+ mod original_channel;

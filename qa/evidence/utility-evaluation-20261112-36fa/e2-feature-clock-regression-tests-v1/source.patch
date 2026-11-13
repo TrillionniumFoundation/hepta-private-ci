@@ -1,0 +1,57 @@
+--- a/codex-rs/hepta-neuron/src/feature_control_tests.rs
++++ b/codex-rs/hepta-neuron/src/feature_control_tests.rs
+@@ -371,3 +371,54 @@
+     assert_eq!(checked(fs::read(fixture.path())), bytes);
+     assert_eq!(calls.load(Ordering::SeqCst), 1);
+ }
++
++#[test]
++fn feature_control_invalid_completion_clock_retains_original_unresolved_dispatch() {
++    let fixture = Fixture::new();
++    let calls = Arc::new(AtomicUsize::new(0));
++    let samples = Arc::new(AtomicUsize::new(0));
++    let worker_calls = Arc::clone(&calls);
++    let clock_samples = Arc::clone(&samples);
++    let request = fixture.binding.expected.clone();
++    let mut port = fixture.port(
++        Mode::Success,
++        Arc::clone(&calls),
++        Arc::new(move || {
++            clock_samples.fetch_add(1, Ordering::SeqCst);
++            if worker_calls.load(Ordering::SeqCst) == 0 { 11 } else { u64::MAX }
++        }),
++    );
++    assert_eq!(
++        port.execute_feature(&request),
++        Err(NeuronModelError::Indeterminate)
++    );
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert_eq!(samples.load(Ordering::SeqCst), 4);
++    assert!(checked(port.owner.generation_has_unresolved()));
++    let record = checked(port.owner.generation_record(&fixture.binding.journal));
++    assert_eq!(record.and_then(|value| value.dispatched_at_micros), Some(11));
++    assert_eq!(checked(port.read_feature(&request)), None);
++    let pending_bytes = checked(fs::read(fixture.path()));
++    assert_eq!(
++        port.execute_feature(&request),
++        Err(NeuronModelError::Indeterminate)
++    );
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert_eq!(samples.load(Ordering::SeqCst), 4);
++    assert_eq!(checked(fs::read(fixture.path())), pending_bytes);
++    drop(port);
++
++    let mut reopened = fixture.port(
++        Mode::Success,
++        Arc::clone(&calls),
++        Arc::new(|| panic!("unresolved completion sampled a replacement clock")),
++    );
++    assert!(checked(reopened.owner.generation_has_unresolved()));
++    assert_eq!(checked(reopened.read_feature(&request)), None);
++    assert_eq!(
++        reopened.execute_feature(&request),
++        Err(NeuronModelError::Indeterminate)
++    );
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert_eq!(checked(fs::read(fixture.path())), pending_bytes);
++}

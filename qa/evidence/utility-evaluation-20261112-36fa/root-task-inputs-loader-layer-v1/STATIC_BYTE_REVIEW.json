@@ -1,0 +1,39 @@
+{
+  "explicitly_not_executed": [
+    "Rust parser/compiler",
+    "rustfmt",
+    "Cargo",
+    "QA",
+    "typed collector",
+    "loader",
+    "owner constructors",
+    "H",
+    "Git source/ref mutation"
+  ],
+  "files": 8,
+  "forbidden_new_authority_paths_absent": true,
+  "new_files": 4,
+  "old_files": 4,
+  "old_files_complete_inverse_equal": true,
+  "old_methods_rewritten": 0,
+  "original_reference_count": 29,
+  "original_references_match_actual_b608_inventory": true,
+  "preimages_equal_composition_v4": true,
+  "preserved_material_exports": true,
+  "public_callable_additions": [
+    "prepare_original_initial_generation_from_files",
+    "recover_original_initial_generation_from_files"
+  ],
+  "public_data_type": "RootHostInitialGenerationFilesV1; owns five actual File descriptors; no Clone/serde",
+  "scope": "Pure text, JSON and SHA checks only; no candidate or project code executed",
+  "source_packet": {
+    "bytes": 287484,
+    "git_blob": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+    "sha256": "7f4d2087943efc969eda7ca540d21e51c52418db5ecfe81a8be77a9362d98d4b"
+  },
+  "source_references": {
+    "bytes": 12987,
+    "git_blob": "b82f7a2cf74222025fda9c2b135e51f396dbcbef",
+    "sha256": "59373f76493415bf7b978fff5b0140d3c4bd533b42ba8499797472441ee1e9f4"
+  }
+}

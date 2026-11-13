@@ -1,0 +1,495 @@
+{
+  "actions": {
+    "H_calls": 0,
+    "Rust_commands": 0,
+    "candidate_edits": 0,
+    "collector_or_qa_execution": 0,
+    "local_reviewer_artifacts_only": true,
+    "project_imports": 0,
+    "source_or_ref_mutations": 0
+  },
+  "candidate": {
+    "bytes": 4628695,
+    "git_blob": "43f723f2de9d8910cf9958ba21f63f2201f8fc79",
+    "path": "/tmp/hepta-36fa-root-product-e3-proposal-v1/registration-proposal-v1/SOURCE_PACKET.json",
+    "sha256": "7085385105a3af327248d37a2b5716be941a74f4fac28527cd8ba1779261ae3e"
+  },
+  "checked_boundaries": [
+    {
+      "finding": "All seven embedded before/after byte streams and the full SOURCE_DELTA.patch match the fixed local files. Six preimages equal the prior E1 registration packet 805b2840; the E3 source contract is the sole new registration path. Three bounded ASCII parts strictly decode and gunzip to the complete 4,628,695-byte packet. Three E3 source packets form a checked 21-path chain with every old first preimage pinned to b608 complete inventory. This is not an observation of the current H filesystem.",
+      "topic": "Exact source and transport provenance"
+    },
+    {
+      "finding": "All 650 old rows retain their order and every field other than product_callers. Exactly 18 selected rows append exactly 24 fixed production file paths; no former caller is removed, no wildcard is introduced and no caller_markers or receiver_type is weakened. The 16 new rows use exact definition paths and markers, empty caller_markers and explicit receiver types for all eight associated-method rows. OriginalHostTrust::from_value stays private to its defining file with an empty external product caller set. Added call sites were read in the frozen source; textual corroboration is not a replacement for the original typed collector.",
+      "topic": "Old boundaries and exact caller permissions"
+    },
+    {
+      "finding": "The original 650 required IDs remain an exact ordered prefix and the 16 E3 IDs are appended without duplication. Existing required-ID order differs from boundary row order beginning at the old index 446; this historical order is preserved. schema_version, plan_id, plan_version, source_roots, ignored_path_fragments, rule and the seven false authority flags are unchanged. Removing precisely the appended rows and the 18 caller additions and restoring the one required-ID line recovers the entire prior CALLERS.toml byte for byte.",
+      "topic": "Required IDs, flags and complete inverse"
+    },
+    {
+      "finding": "All 451 prior protected rows, including their complete required/forbidden text and any additional flags, are preserved verbatim by the full TOML inverse; parsed rows 411 and 422 also compare exactly. Exactly 19 rows are appended: 12 full new production module bodies and seven existing-file insertion sets. Each has the same four explicit forbidden spellings, none present in the bounded source. All 13 touched old protected rows, including the E1 overlap rows 444 and 449, remain satisfied in the E1+E3-only composition. The new exact-source contract additionally hashes all 12 complete production files and both test files; a new function or getter added to those complete files changes their expected identity.",
+      "topic": "Protected source and forbidden patterns"
+    },
+    {
+      "finding": "Only authority_host_runtime.rs and lib.rs identities change in the existing E1 contract. Independent insertion composition derives the actual E1+E3 bytes and matches both frozen composed files. Removing those two identity changes restores the complete previous contract JSON exactly. The old E1 17-boundary subset moves from a last-17 selection to the fixed slice [633:650], preserving the same entries when E3 appends 16 more. Every original E1 old_boundary_additions expectation still equals the corresponding projected row.",
+      "topic": "E1 source identity refresh"
+    },
+    {
+      "finding": "The previous 54 Root FQNs remain an exact ordered prefix. The only workflow change appends the three actual Linux Root ignored-test FQNs in the E3 handoff module, giving 57 unique projected parents. Replacing only that list recovers the entire previous workflow, including all command lines, selectors, threads, retries, JUnit and time limits. The blob allowlist is the complete old byte prefix plus one comment and one exact SHA256 for this CALLERS.toml; no generic allowance is added.",
+      "topic": "Workflow and blob allowance"
+    },
+    {
+      "finding": "Across the two QA files, 71 existing qualified function definitions are retained: 68 are byte-identical and exactly three migrate explicit counts, the complete boundary digest, the E1 contract hash or the old E1 fixed slice. No old function is deleted. Restoring those three AST bodies plus the two changed constants and removing the new constant/two new methods makes both complete ASTs equal their preimages. The two new methods bind the E3 contract SHA, exact 666/470 rows, old 451 protected prefix, 16 new boundaries, 19 protected rows, 18 old-row updates, 14 full source identities, 12 scoped deletion cases and the real three Root parents. Original rejects() is byte-identical and still invokes the protected verifier on the original source and expects rejection after a selected marker removal. These methods were read, not executed.",
+      "topic": "QA source preservation and new checks"
+    },
+    {
+      "finding": "The new deletion matrix targets validate_sealed in wire::read and validate_lane_paths in ResidentListener::bind_original, each intentionally called before and after relevant work. The original rejects() removes the first occurrence inside its uniquely selected function; complete-source protection makes either deletion differ from the pinned file. The reviewer does not require globally unique marker text or remove the second runtime check.",
+      "topic": "Two deliberate repeated guard spellings"
+    }
+  ],
+  "durability": {
+    "Root_owns_later_publication": true,
+    "all_pins_computed_from_complete_local_raw_bytes": true,
+    "reviewer_did_not_create_or_fetch_Git_objects_for_this_review": true
+  },
+  "format": "hepta-independent-e3-registration-projection-review-v1",
+  "independent_proof": {
+    "bytes": 69679,
+    "git_blob": "a90c9c6f46f2a694c10a3de85878e560ebe1d0ca",
+    "path": "/tmp/hepta-36fa-e3-registration-independent-review-v1/BYTE_AND_STRUCTURE_REVIEW.json",
+    "sha256": "21748238c4693f83bbe224869065c2655279420be7fa577e07da1658f800dc33"
+  },
+  "manifest": {
+    "bytes": 6337,
+    "git_blob": "67e8eadcd00da4ab48f17682cb5d5c560ba268b4",
+    "path": "/tmp/hepta-36fa-root-product-e3-proposal-v1/registration-proposal-v1/MANIFEST.json",
+    "sha256": "dbf788eb20e4d85f7634f78a572cf7171568a493a699140d75e74fd1b503848e"
+  },
+  "new_boundary_table": [
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub fn prepare_host_resident_candidate_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "id": "e3_root_candidate_prepare",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+      ],
+      "symbol": "prepare_host_resident_candidate_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub fn recover_host_resident_candidate_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "id": "e3_root_candidate_recover",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+      ],
+      "symbol": "recover_host_resident_candidate_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub async fn prepare_host_resident_candidate_enrollment_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "id": "e3_root_candidate_late_prepare",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs"
+      ],
+      "symbol": "prepare_host_resident_candidate_enrollment_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub async fn recover_host_resident_candidate_enrollment_v3("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "id": "e3_root_candidate_late_recover",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs"
+      ],
+      "symbol": "recover_host_resident_candidate_enrollment_v3"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub async fn run(self,"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "id": "e3_root_candidate_late_run",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs"
+      ],
+      "receiver_type": "RootResidentCandidateEnrollmentServiceV3",
+      "symbol": "RootResidentCandidateEnrollmentServiceV3::run"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) async fn connect_original_resident_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs",
+      "id": "e3_daemon_resident_connect",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs"
+      ],
+      "symbol": "connect_original_resident_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) fn send_original_resident_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "id": "e3_root_resident_handoff_send",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "symbol": "send_original_resident_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) async fn receive_original_resident_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "id": "e3_daemon_resident_handoff_receive",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+      ],
+      "symbol": "receive_original_resident_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) fn require_original_resident_process_pin("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "id": "e3_root_resident_original_process_pin",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "symbol": "require_original_resident_process_pin"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn read(path:"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_root_resident_trust_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn from_root_enrollment("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_daemon_resident_root_trust_decode",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+      ],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::from_root_enrollment"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn from_value(value:"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_root_resident_trust_construct",
+      "product_callers": [],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::from_value"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn observer("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "id": "e3_root_resident_observer_binding",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+      ],
+      "receiver_type": "OriginalHostTrust",
+      "symbol": "OriginalHostTrust::observer"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(super) fn read("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+      "id": "e3_root_resident_deployment_read",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "receiver_type": "OriginalDeployment",
+      "symbol": "OriginalDeployment::read"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) fn bind_original("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "id": "e3_root_resident_listener_bind",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "receiver_type": "ResidentListener",
+      "symbol": "ResidentListener::bind_original"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "pub(crate) async fn accept_original("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "id": "e3_root_resident_listener_accept",
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "receiver_type": "ResidentListener",
+      "symbol": "ResidentListener::accept_original"
+    }
+  ],
+  "not_a_qualification_result": true,
+  "not_an_execution_approval": true,
+  "old_caller_additions": [
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs"
+      ],
+      "id": "root_original_private_sealed_bytes",
+      "index": 178
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs"
+      ],
+      "id": "learning_frozen_update_scope_constructor",
+      "index": 182
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs"
+      ],
+      "id": "learning_original_owner_snapshot_encode",
+      "index": 296
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs"
+      ],
+      "id": "learning_original_owner_snapshot_decode",
+      "index": 297
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+      ],
+      "id": "learning_original_material_initial_context_check",
+      "index": 360
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+      ],
+      "id": "root_resident_original_register",
+      "index": 394
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+      ],
+      "id": "root_resident_original_recover",
+      "index": 395
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "id": "root_resident_original_custody_open",
+      "index": 396
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "id": "root_resident_registration_create",
+      "index": 398
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "id": "root_resident_registration_recover",
+      "index": 399
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+      ],
+      "id": "root_resident_original_client_create",
+      "index": 405
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+      ],
+      "id": "root_resident_original_client_recover",
+      "index": 406
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+      ],
+      "id": "root_resident_late_enrollment_config",
+      "index": 415
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+      ],
+      "id": "root_resident_late_enrollment_submit",
+      "index": 416
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+      ],
+      "id": "learning_original_evaluation_panel_registration",
+      "index": 425
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "id": "provider_root_resident_learning_registration_v3_into_candidate_service",
+      "index": 569
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "id": "provider_root_resident_candidate_service_v1_run",
+      "index": 570
+    },
+    {
+      "added_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+        "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+      ],
+      "id": "provider_receive_root_candidate_stage_handoff",
+      "index": 619
+    }
+  ],
+  "overall_finding": "The exact seven-path registration projection preserves its prior closed allow sets and guards except for the explicitly enumerated E3 caller additions. It does not weaken the existing forbidden patterns, authority flags, source roots or workflow execution parameters. No concrete new static blocker was found in this frozen projection. Full caller discovery, QA mutation execution, formatting, Rust compilation and runtime qualification have not run and remain separate obligations.",
+  "permission_addition_scope": {
+    "added_callers": 24,
+    "new_boundary_rows": 16,
+    "new_protected_rows": 19,
+    "new_qa_methods": 2,
+    "new_root_parents": 3,
+    "old_rows_with_appended_callers": 18,
+    "permissions_are_explicit_additions_not_zero_change": true
+  },
+  "preserved_authority_flags": {
+    "external_effect": false,
+    "production_caller": false,
+    "production_writer": false,
+    "promotion": false,
+    "release": false,
+    "runtime_authority": false,
+    "self_issued_acceptance": false
+  },
+  "qa_counts": [
+    {
+      "added": [
+        "ResidentRootSourceClosureTests.test_e3_resident_enrollment_exact_sources_and_closed_rows",
+        "ResidentRootSourceClosureTests.test_e3_resident_enrollment_guards_and_original_root_lane"
+      ],
+      "changed": [
+        "ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof",
+        "ResidentRootSourceClosureTests.test_root_host_initial_product_exact_source_and_original_guards"
+      ],
+      "old_definitions": 14,
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "unchanged": 12
+    },
+    {
+      "added": [],
+      "changed": [
+        "EvaluatedOrdinaryRetainedClosureTests.test_new_typed_edges_and_old_boundary_inventory_are_exact"
+      ],
+      "old_definitions": 57,
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "unchanged": 56
+    }
+  ],
+  "remaining_integration_obligations": [
+    "Root must combine E2 and E3 registration rather than publishing this isolated 666/470 or 57-parent projection as the final union.",
+    "Final composed production_launcher, its input flags, lib and other overlapping source identities require exact Root rebinding; the already separately reviewed 21-flag v3 union is not part of this packet.",
+    "Original typed collector, full source closure/QA, formatter/build and all approved native checks still need genuine execution on an explicitly frozen final source under separate authorization.",
+    "Three ignored Root cases and two ordinary wire cases are source registrations, not test results. No new Root grant, real-owner action, deployment activation or original H source result is inferred.",
+    "The frozen E3 source still requires original protected deployment owners and Material inputs; this registry does not close the separately identified ordinary Root CLI loader or Material Source loan product work."
+  ],
+  "reviewer_diagnostics": [
+    {
+      "file": "PRELIMINARY_INLINE_COMMAND_DIAGNOSTIC.json",
+      "meaning": "An initial display-only query had an unmatched parenthesis; it did not run candidate or H code."
+    },
+    {
+      "actual_exit_code": 1,
+      "file": "BYTE_VERIFIER_01.original.json",
+      "meaning": "Reviewer incorrectly assumed the original required-ID order matched boundary-row order. Both sets and sizes match; the old order is different at index 446 and remains unchanged.",
+      "script": "verify_registration_projection.py"
+    },
+    {
+      "actual_exit_code": 1,
+      "file": "BYTE_VERIFIER_02.original.json",
+      "meaning": "Reviewer incorrectly required global uniqueness for two intentionally repeated before/after guard spellings. The existing scoped QA first-occurrence semantics were then read and preserved.",
+      "script": "verify_registration_projection_v2.py"
+    },
+    {
+      "actual_exit_code": 0,
+      "file": "BYTE_VERIFIER_03.original.json",
+      "meaning": "Corrected pure review passes; exact reviewer v2/v3 deltas and all prior scripts are retained. No candidate file changed.",
+      "script": "verify_registration_projection_v3.py"
+    }
+  ],
+  "root_parents": [
+    "root_production_handoff::resident_enrollment::tests::exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd",
+    "root_production_handoff::resident_enrollment::tests::v1_marker_cannot_enter_the_v3_resident_handoff",
+    "root_production_handoff::resident_enrollment::tests::sealed_file_alias_cannot_replace_the_original_root_pidfd"
+  ],
+  "scope": "Frozen E1 registration plus exactly root-service, late-enrollment and explicit-callers E3 source layers; excludes E2 and the final Root union.",
+  "status": "STATIC_REVIEW_COMPLETE_NO_NEW_CONCRETE_BLOCKER_WITHIN_EXACT_ISOLATED_SCOPE",
+  "verifier": {
+    "actual_exit_code": 0,
+    "bytes": 32490,
+    "git_blob": "03bd899aafc11c5d9d171ff60449a863239afbcd",
+    "path": "/tmp/hepta-36fa-e3-registration-independent-review-v1/verify_registration_projection_v3.py",
+    "sha256": "463d995d0b01bfa6266bc8ee8e6681ec91a93cca6e0499bc1f22570e452feb23"
+  }
+}

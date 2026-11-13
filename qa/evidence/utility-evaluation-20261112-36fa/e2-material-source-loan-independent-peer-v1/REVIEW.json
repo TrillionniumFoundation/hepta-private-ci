@@ -1,0 +1,217 @@
+{
+  "format": "hepta-independent-e2-material-source-loan-review-v1",
+  "reviewer": "/root/native_ci_audit",
+  "status": "NO_NEW_CONCRETE_STATIC_BLOCKER_IN_FIXED_MATERIAL22_SCOPE",
+  "candidate": {
+    "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/material-source-loan-layer-v1/SOURCE_PACKET.json",
+    "bytes": 532571,
+    "sha256": "a749862a739f321a3751c461e403904eb4488af6508cfa912c7e318adee31630",
+    "git_blob": "911e41dbd5bb0dbe2098fe84e50728a73c5b3757"
+  },
+  "independent_byte_proof": {
+    "path": "/tmp/hepta-36fa-e2-material-source-loan-independent-review-v1/BYTE_AND_CONTROL_FLOW_PROOF.json",
+    "bytes": 64290,
+    "sha256": "39fc7418eed2fc654fda03016754e81d11b408ac69f6b37e41f9faf1e717502f",
+    "git_blob": "17b8ce8fd3f1798a77af9bbd8ba147379fd9cf29",
+    "execution": "Reviewer-owned standard-library Python byte/schema checks returned exit 0. No project module, collector, QA, formatter, Rust compiler, test, H command, source or ref mutation was executed."
+  },
+  "decision": {
+    "confirmed_new_blockers": [],
+    "scope": "All 8 new production files, complete 14 modified-file diffs, embedded/local before and after bytes, complete patch and 23 forward/inverse replacements; selected original dependencies identified separately in the byte proof.",
+    "sufficient_for": "Independent static review of this immutable production layer and further isolated composition review.",
+    "not_sufficient_for": "Compilation, live Root/Material IPC, actual Source qualification, a complete product loader, cancellation/physical-termination guarantees, execution approval or source publication.",
+    "source_status": "Prepared only. The earlier b608 source dispatch remains Unknown; this review changes no H observation."
+  },
+  "byte_scope": {
+    "base": "b6084394a4a38ab495c16eaba09e879f04a96f8e / 8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+    "canonical_inventory": "457adb9bf9ba3a844e9dfa149be49460bb306998; 15,243 rows; historical complete bytes, not a new live observation",
+    "prior_layers": [
+      "1ca7a06948fcae69bf7c8e4c7823627a872c0c62",
+      "36cd9a693ce75070e1225a978575ca6dea5f72c2",
+      "62ad5a5363ca91c335f2d599128f763c355b33bf",
+      "12459a8255be0358c822a825d2445fa48828a7e1",
+      "06dafdbdeb53eb5ccf6480993596bbb4d939f203",
+      "69d6d5eda401ff59f7e89b1e659f77a431274248",
+      "65e62f807885cd890d8fa9944c58e232dc55ae01"
+    ],
+    "counts": {"paths": 22, "modified": 14, "new": 8, "exact_splices": 23, "new_explicit_public_or_restricted_functions": 16, "tests_in_this_production_layer": 0},
+    "complete_preimage_chain": true,
+    "complete_patch_reconstructed": true,
+    "all_new_paths_absent_from_canonical_and_predecessors": true,
+    "all_source_modes": "100644",
+    "authors_proof_used_as_claim_not_substitute": true
+  },
+  "findings": [
+    {
+      "id": "M01",
+      "topic": "Original owners and the one actual pump",
+      "conclusion": "The successful original task construction wraps the existing session, operation and custody exactly once in private Arc values. The task runtime remains one non-Clone field in PreparedRootHostCircuitTaskV1; it is not present in PreparedRootMaterialSourceHostV1. Export clones only those three existing Arcs and copies the already established end.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs", "symbols": ["PreparedRootHostCircuitTaskV1", "prepare_original_root_task"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs", "symbols": ["PreparedRootMaterialSourceHostV1", "prepare_original_material_source_host"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs", "symbols": ["original runtime.take_original_root_lane"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs", "symbols": ["original runtime lane take and scoped original host service"]}
+      ],
+      "limit": "Arc retention deliberately keeps these original owners alive with the loan. It does not by itself prove that a serving thread has ended, or invalidate all owners when another wrapper is dropped. Final loader scope/joins remain a separate obligation."
+    },
+    {
+      "id": "M02",
+      "topic": "Send/Sync reasoning and visibility",
+      "conclusion": "The new production layer introduces no unsafe Send/Sync implementation, Rc, RefCell, raw owner getter or duplicate runtime. The exporting task constructor retains SW/CW: Send + 'static. Source is already Arc<Mutex<SourceOwner<W>>>; Cell is already Arc<Mutex<CellOwnerJournal<W>>>; the published task retains its type-erased OriginalVersion: Send behind a Mutex. Root admin's Receiver is behind a Mutex; the inspected production Root frontier store retains File/Arc plus Mutex<DurableRecord>. These are consistent with the intended shared-owner thread design.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source.rs", "symbols": ["SourceOwner", "DurableCircuitTaskSourceV1"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs", "symbols": ["PublishedCircuitCellOwnerV1"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs", "symbols": ["OriginalVersion", "PublishedTask"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_admin.rs", "symbols": ["RootAdminRuntime", "Pending", "Lifetime"]},
+        {"path": "codex-rs/hepta-contracts/src/authority_host_store.rs", "symbols": ["HostAuthorityFrontierStore", "RootAuthorityDirectory", "DurableRecord"]}
+      ],
+      "limit": "This is inspection of the concrete source layout, not a compiler auto-trait proof. The complete downstream trait/type closure, all cfg(test) substitutions and final loader thread spawning were not compiled. No specific non-Send/Sync field was established in this fixed layer."
+    },
+    {
+      "id": "M03",
+      "topic": "Single-use, non-Clone Material loan",
+      "conclusion": "Export first checks the actual original task generation, rejects a consumed flag, sets material_source_taken before creating the loan and rechecks current state afterward. There is no reset. The host and registration types have no Clone implementation; serve consumes both by value. The original runtime/pump cannot be obtained from either type.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs", "symbols": ["prepare_original_material_source_host", "serve"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs", "symbols": ["OriginalRootMaterialSourceRegistrationV1"]}
+      ],
+      "failure_semantics": "Failure before setting the bit does not consume an export; failure after setting it does. Neither outcome manufactures completion, a fresh task or an execution retry. The separately Clone readonly Source client shares its existing Arc slot/counter/end; this does not clone the host loan."
+    },
+    {
+      "id": "M04",
+      "topic": "Actual independent Material process",
+      "conclusion": "The crate-only supervisor constructor requires actual real/effective Root credentials, a non-Root consumer UID, non-self/nonzero PID, nonzero start ticks and nonce, plus both explicit Experience/Dataset actor IDs equal the complete Material config. The consuming host additionally rejects the registered daemon PID. Both ends delegate to the unchanged original owner-channel checker, including different real/effective UID and PID, boot/start checks, actual SO_PEERCRED and the pre-held PIDFD.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs", "symbols": ["from_original_supervisor"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs", "symbols": ["serve"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs", "symbols": ["from_original_material_root_stream"]},
+        {"path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs", "symbols": ["original_owner_command_channel_v1", "require_original_process"]},
+        {"path": "codex-rs/hepta-contracts/src/authority_host_peer.rs", "symbols": ["from_stream", "check_peer_lifetime"]}
+      ],
+      "limit": "The registration type is an opaque transfer of already protected supervisor inputs; merely constructing its fields internally is not evidence of a real Material actor. This layer has no complete protected Root loader call or real Material process hookup. The future loader must supply that authorization and process binding explicitly."
+    },
+    {
+      "id": "M05",
+      "topic": "Original context and premature use",
+      "conclusion": "The wire context reuses the original Material context_binding at the current wall-clock time. Its original initial snapshot, owner/trust/scope/objective/freeze-plan and signer-binding checks remain unchanged. The host requires actual Published original generation, then reads an actually completed Source/Cell pair for the config's original request. Export may precede A completion, but a missing or pending A completion cannot satisfy that read. The request cannot select a different run, path, action, signer or owner.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs", "symbols": ["original_source_loan_binding"]},
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "symbols": ["context_binding"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs", "symbols": ["require_current", "serve"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs", "symbols": ["committed"]}
+      ],
+      "limit": "The context digest commits the original freeze signing bytes and signature, but context_binding alone is not complete Ledger freeze authentication. The consuming original Material path still performs the original read_material/verify_freeze and full Dataset checks. This review does not treat a freeze-shaped config or context hash as a successful freeze."
+    },
+    {
+      "id": "M06",
+      "topic": "Complete same-cut Source and Cell data",
+      "conclusion": "The Root reader checks same task Arc with the Cell and exact original run, reads Source and the actual Cell committed decision, repeats both and rechecks current state. The custody adds the unchanged full Dataset source predicate, serializes from the actual local Source owner, then repeats the same task/Cell/Source read and original operation observation. The serializer rechecks the exact saved request, full input and result bytes, active withdrawal state and current journal. The remote Source variant is rejected as a Root serializer input.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs", "symbols": ["read_original_material_publication"]},
+        {"path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs", "symbols": ["read_original_material_source"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs", "symbols": ["encode_original_material_publication"]},
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs", "symbols": ["require_source"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs", "symbols": ["committed"]}
+      ],
+      "limit": "These are repeated original observations, not one atomic global lock across all owners and the remote recipient. They establish the checked cut at the documented reads; they do not prevent a later withdrawal after the final check."
+    },
+    {
+      "id": "M07",
+      "topic": "Only authenticated response reaches the private decoder",
+      "conclusion": "The new decoder is private and reached after the actual pinned Root exchange, exact request prefix and deadline checks. It consumes the original canonical request/input/result codecs and constructs the same Source-publication digest domain over those full bytes. The caller then applies the unchanged Dataset predicate, peer lifetime, complete context and final deadline checks before restoring the channel. It does not construct a Driver Receipt, Trace, signer, grant, Source writer or LedgerWriter.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs", "symbols": ["Client::read", "decode_current_root_payload"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs", "symbols": ["original_record", "decode_input", "publication", "decision_metadata"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs", "symbols": ["Reader", "Writer"]}
+      ],
+      "limit": "The decoded Source view is transported evidence authenticated through the selected Root process. This new private decoder must not be exposed later as a public raw-bytes constructor or accepted from a generic caller callback."
+    },
+    {
+      "id": "M08",
+      "topic": "One slot, nonce and request budget across aliases",
+      "conclusion": "Every remote Source clone retains the same Arc<Client>, hence the same Mutex<Option<Channel>>, fixed context/nonce, next counter and end. Reads use try_lock and take the channel before I/O; a competing read cannot open a second exchange. The counter advances once per attempted request, and restoration is only at the single final successful branch. Root enforces its own matching sequence 1 through 128. Neither side reconnects or retries.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs", "symbols": ["Clone", "read_publication", "read_run_publication"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs", "symbols": ["Client", "Client::read"]},
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs", "symbols": ["serve request loop"]}
+      ],
+      "precise_failure_boundary": "Wrong identity/run is rejected before taking the slot. Every error within Client::read after the take drops its channel rather than restoring it. A caller-record mismatch in the outer read_publication wrapper is checked after an otherwise successful Client read, so that particular error may leave the valid channel restored with its counter already advanced. It grants no extra requests and is not an unknown transport failure. Do not claim that every possible outer API error poisons the slot.",
+      "separate_limits": "This is one Source-read channel's 128-request limit. It does not merge or replace the original Material owner's four command connection permits or other original channels' separate limits."
+    },
+    {
+      "id": "M09",
+      "topic": "Absolute end and response acceptance",
+      "conclusion": "The Root handle retains the exact existing session end. Its per-request checks use min(now + timeout, end), with timeout at most 500 ms and channel lifetime at most 300 seconds. The client fixes its end at construction and all aliases retain it. Root validates current/context before the read, after the read and after the original exchange; client revalidates complete source/context/peer/deadline before restoring the slot. The original channel additionally enforces one frame-exchange deadline including the response write.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs", "symbols": ["serve"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs", "symbols": ["from_original_material_root_stream", "Client::read"]},
+        {"path": "codex-rs/hepta-contracts/src/authority_host_peer.rs", "symbols": ["request", "exchange", "exchange_inner"]}
+      ],
+      "specific_limits": [
+        "Original synchronous Source/Cell/current store locks can block. Deadline checks reject an overdue result but do not forcibly interrupt or join that work. The original channel documents the same restriction.",
+        "The new APIs are synchronous; aborting an outer spawn_blocking await would not cancel the closure. No such wrapper or join protocol is supplied by this fixed layer.",
+        "A response may already have been delivered when Root's additional post-exchange observation fails. Such a failure is not proof of no delivery or of A not having run."
+      ]
+    },
+    {
+      "id": "M10",
+      "topic": "Exact bounded transport",
+      "conclusion": "The full Source publication uses one response and original bounded Reader/Writer. The fixed request is exactly 64 bytes: HCMATRD1 plus 32-byte context, 16-byte nonce and 8-byte request ID. The entire response is limited to 16,384 bytes, so at most 16,320 bytes remain for the complete HCMATPUB1 payload. Oversize, trailing, truncated or malformed data is refused; there is no paging, truncation, digest-only substitute or fallback.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs", "symbols": ["BOUND", "request", "response", "read_response"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs", "symbols": ["decode_current_root_payload", "encode_original_material_publication"]},
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs", "symbols": ["Reader::bytes", "Reader::end", "Writer::bytes"]}
+      ],
+      "limit": "A particular full production Source payload has not been exercised against this bound. A larger legitimate payload is an availability refusal, not permission to increase the bound or send only a digest."
+    },
+    {
+      "id": "M11",
+      "topic": "Original Material custody and freeze authority remain separate",
+      "conclusion": "The sole new public consuming factory changes only the readonly Source transport. It passes the actual pair by value and the same identity, existing LedgerWriter Arc and baseline directly to the unchanged into_command_owner. The original FreshCreate versus recovered readonly admission, actual pair signers/owners, freeze/ledger checks, four connection permits and stage execution logic remain on that old path. FileAnchorWitnessStore is only the original generic interface parameter for the remote Source variant; no witness file is created by this new constructor.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs", "symbols": ["into_original_root_source_command_owner"]},
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs", "symbols": ["into_command_owner"]},
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "symbols": ["from_original_pair", "serve_role_commands"]},
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs", "symbols": ["validate_config", "read_material", "verify_freeze"]}
+      ],
+      "failure_semantics": "Failure during construction consumes/drops the supplied pair and stream; no returned fresh owner or automatic recreation branch is added. Historical receipts or a recovered pair are not upgraded into new execution authority."
+    },
+    {
+      "id": "M12",
+      "topic": "Existing local readers and platform gates",
+      "conclusion": "Local Source readers continue to delegate to the original DurableCircuitTaskSourceV1 methods. Their input-precondition method keeps all old checks and rejects the new remote variant. The original Dataset predicate changes only private-to-crate visibility, with its complete body unchanged. The original Material pair and command files are byte-identical after removing only their new private module mounts. Linux cfg gates protect the new remote mounts and public exports; previous exports keep their own gates.",
+      "evidence": [
+        {"path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs", "symbols": ["OriginalReadback", "require_original_input", "read_publication", "read_run_publication"]},
+        {"path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs", "symbols": ["require_source"]},
+        {"path": "codex-rs/hepta-agentd/src/lib.rs", "symbols": ["new and old guarded exports"]},
+        {"path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs", "symbols": ["original Linux root custody module gate"]}
+      ],
+      "limit": "This review does not replace cross-platform compilation. E3 and future loader composition must retain both sets of exports and exact preimages."
+    },
+    {
+      "id": "M13",
+      "topic": "Registration and integration obligations",
+      "conclusion": "The author's explicit inventory correctly lists the 8 new production modules, 14 modified files and 16 new public/restricted declarations. Final combined caller/protection registration remains pending; no collector result or combined count is claimed. Existing protected whole-file bodies must be rebound to the exact reviewed composition while preserving every rule and forbidden boundary, rather than deleting a guard or appending a duplicate. The production layer has no new tests.",
+      "evidence": [
+        {"path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/material-source-loan-layer-v1/REGISTRATION_IMPACT.json", "symbols": ["entire exact proposal"]},
+        {"path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/material-source-loan-layer-v1/INTERFACE_CONTRACT.json", "symbols": ["remaining", "registration.loader_pending"]}
+      ],
+      "remaining": [
+        "Separate immutable Root protected-input/loader review and true independent Material process connection.",
+        "Final combined CALLERS/protected/module/QA registration and exact composed source identities.",
+        "Compilation and meaningful mechanism/IPC validation under the original budget, only if later authorized.",
+        "The separate material-source-mechanism-tests-layer-v1 packet e120273ac730addd8cc47f31e829692afa17bc0d is excluded from this production review."
+      ]
+    }
+  ],
+  "read_scope_and_citations": "All source paths in findings resolve against the exact candidate or the canonical/prior dependency mappings in BYTE_AND_CONTROL_FLOW_PROOF.json, which supplies complete file pins and explicitly named reviewed regions. Byte hashing a dependency does not assert semantic review of every unlisted region.",
+  "execution_and_publication": {
+    "h_calls": 0,
+    "project_imports": 0,
+    "rust_compilation": 0,
+    "tests_or_qa_methods_executed": 0,
+    "source_or_ref_mutations": 0,
+    "git_uploads_by_this_reviewer": 0,
+    "storage_status": "LOCAL_COMPUTED_CONTENT_IDENTITIES_ONLY; Root owns Git persistence, source composition and all action decisions."
+  }
+}

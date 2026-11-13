@@ -1,0 +1,314 @@
+{
+  "all_modified_whole_inverse_equal": true,
+  "claim": "Offline bytes only; not Rust type checking, project collector or execution.",
+  "files": [
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 2414,
+        "git_blob": "61d1366da710d94d46668883f458a72db5bda515",
+        "sha256": "4056a6cd38b5f23dade1f99fc877413105d1034c2dede124d87e08a6f2e4470f"
+      },
+      "new_module_lines": 47,
+      "path": "codex-rs/hepta-agentd/src/authority_host_material_source_registration.rs"
+    },
+    {
+      "after": {
+        "bytes": 20274,
+        "git_blob": "f9995fd012e8c8ded943fef7303e3813731a48bb",
+        "sha256": "dcd2c392c0d63613d308e46682a7e286de5a65e8856a5f58018d49d8d4360671"
+      },
+      "before": {
+        "bytes": 20164,
+        "git_blob": "01eab9d99ce36ead9904e5061576c64b0fc88321",
+        "sha256": "fff7573a8512112c785328059f125d63f2cd80c2a9ab6082f82344db4ba4e5a6"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 18020,
+        "git_blob": "dd660c7336156838db6fe13ab0f4d9c6569679c2",
+        "sha256": "ceefcf384b4fced4212119c9689adfd189f1d956902067e35171e3577513df8e"
+      },
+      "before": {
+        "bytes": 17904,
+        "git_blob": "865e4ccef6c9695d6b3b38f0591276c0189f4d8b",
+        "sha256": "dadf8427b8c6ae2438d51cc2b38557b1fff690222b89cde226cddafb86b020bd"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 8568,
+        "git_blob": "47941c61d61c6bff18021f2fc241c28f2d82280a",
+        "sha256": "a2ab51bce4e4937ab2fd1536b368d9f30c2f24d240e3539999dc99b5ba57b0a2"
+      },
+      "before": {
+        "bytes": 8464,
+        "git_blob": "149f1748ab60d88456abee9def4b0a86fd0a7497",
+        "sha256": "b3accebb14e2a0b25451c1942f2723d3ef57952c8e79bebfa427b87e09d45afd"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 6079,
+        "git_blob": "86bf9f8ca4a51bb1e60499bbfd4a89a1a23d0153",
+        "sha256": "df39b1a3457fa48ab7f51bbf051aebd6b862575b281107393f65d9c6a9187148"
+      },
+      "before": {
+        "bytes": 5693,
+        "git_blob": "c0c9a27346533a404c44729f4ee22f1b735f09f0",
+        "sha256": "11f03e3c89279f8ed3b102a03bedc5d97e3cd717abfdbfd519730b6e4e7e6b29"
+      },
+      "exact_replacements": 4,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 5849,
+        "git_blob": "feba361d5e87d7fd849d3a061116a0cdbef69a9b",
+        "sha256": "c2c5e4b44413f2dda5c934be9d03b9b8e4d60e8609d902fc912a413f21df8427"
+      },
+      "before": {
+        "bytes": 5735,
+        "git_blob": "436ebee095fc5b2c491e023215e4005f356b02cf",
+        "sha256": "5916ca686fc93d61b978ad5d7dc49ead17b96d21abcec5bd7884f57729a23be8"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 7220,
+        "git_blob": "299fe9fdf551fca5d365d9f47087d48c79d061b4",
+        "sha256": "924d9c18c2097ca7cb2394b3c7345e561f9c5d443b224f91025fe5df8f238cf4"
+      },
+      "new_module_lines": 135,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material_source.rs"
+    },
+    {
+      "after": {
+        "bytes": 23894,
+        "git_blob": "2613ee4b9dc7a75de3b3bb8f0b614fd59d67e7d5",
+        "sha256": "bfce10fc0578e23507770d6c070478bc910aa92682c9b9822b2e3075e7fecde4"
+      },
+      "before": {
+        "bytes": 23883,
+        "git_blob": "ffb3b82e610f5d7d4905185a4f306ae49998e66b",
+        "sha256": "1ac1f1fef376155512418850822d38ebc41bdb194a26de7bab8c7eb46eb940b5"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 15297,
+        "git_blob": "09238becf6f75f2b3e64997fdebb6275a6bbec06",
+        "sha256": "f5d1c03b161d8640c5ae868c75e28227564896a0e87d44b8c68d094aa2dfb067"
+      },
+      "before": {
+        "bytes": 15219,
+        "git_blob": "8cbfa41153ddc401ca7cc5aace42592be909de2f",
+        "sha256": "11e55727e50e64c8c0173753cf7b2e23ad1b019004d8314926a468ea3a40c77a"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 21059,
+        "git_blob": "54fd51b9e735fd59fefdab6d7e820742c32691c0",
+        "sha256": "1164c27fad6375ebcbf7aac5c2865650a628ade7680d095d7ab88f9486890806"
+      },
+      "before": {
+        "bytes": 20959,
+        "git_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+        "sha256": "3acf8e3a56434b003fe68498f67ac1c93daaa98bfd23c5dc624736b8e2372e53"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 1858,
+        "git_blob": "fd5f79399cb5c8b6ce63765f7e5ca2ff6c8a865c",
+        "sha256": "de01b089d4b74ba4d27ea47231292c0dfd31480fc642bcea008ce327db68c1b4"
+      },
+      "new_module_lines": 34,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_root_source.rs"
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 447,
+        "git_blob": "ab5675559e64699e370caa1d96a0b5a5e11387f5",
+        "sha256": "568feb1a8c929ff1f61465d0c9f7bb1915ba71ec26fb242bb00ac5d3e5691bae"
+      },
+      "new_module_lines": 11,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_context.rs"
+    },
+    {
+      "after": {
+        "bytes": 16535,
+        "git_blob": "6e8deb94493ee5f9240cb820841d19655cce021c",
+        "sha256": "c3b25200ad7350bd43631ef3500906bf879404471949d07b4efe1a48dbf06f97"
+      },
+      "before": {
+        "bytes": 16457,
+        "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+        "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e1-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 1138,
+        "git_blob": "37df880c5fad725baddc29848e4932bdfba5bea0",
+        "sha256": "9978ee1e41a5ca573b1d76138ebb7e122a168133822cc391bad28fc6851ed8ef"
+      },
+      "new_module_lines": 23,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_material_source.rs"
+    },
+    {
+      "after": {
+        "bytes": 6240,
+        "git_blob": "a004b90ac1c372360ff63e306e3b360ab164264f",
+        "sha256": "18864159c5fa8d2a80f7c4b22e9d54075d9cdfbfa2493a5f237a04c9d26b4e55"
+      },
+      "before": {
+        "bytes": 6144,
+        "git_blob": "16390326836911dce15e4c89eb078523779fce3e",
+        "sha256": "491db9e2ace6586a8195c630fd5d8fb2c5ec71309d77fe85fb19365248d87772"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 16326,
+        "git_blob": "2aa4cf6481938e5f4cda2da2179cda4faab5375b",
+        "sha256": "146100b2a2a7470a48ce5ff819edc756902ee41e50b819e7908b8bfd798fe6b2"
+      },
+      "before": {
+        "bytes": 16244,
+        "git_blob": "b548c49bbb0d9b2dac11f36dca33567c81e9238c",
+        "sha256": "8f3ff61b3e9b4f45a6829f0fd0c83ea92a3e5db10f5750fe9abc31bc7564eb5c"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 6970,
+        "git_blob": "f86baedbeefdb2b6a59282b281ee8b51e4f3c781",
+        "sha256": "50a6da7e4a70c7bf8a7e049b5f5bce0c7b56616ed4abe5e0b70b91f47d92f3f4"
+      },
+      "new_module_lines": 152,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs"
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 2043,
+        "git_blob": "87129e309c1cd3f0beca524c20f820b4e149defe",
+        "sha256": "c1fc8a9c499f104b23f39ea4f9d4984d4c203d43a1dcef2c2f7c29ef0b172ec9"
+      },
+      "new_module_lines": 52,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_material_wire.rs"
+    },
+    {
+      "after": {
+        "bytes": 4126,
+        "git_blob": "bc8a9d502689685f2f65412d5d943eab9bfbd7da",
+        "sha256": "98c59005a416c5b2242fa07e8b10d9de8cffbc07fd3b1fba5e93e645f962cf42"
+      },
+      "before": {
+        "bytes": 2565,
+        "git_blob": "aaa5cdec33f71d30ba82313c5c46d1cdd137390a",
+        "sha256": "dafc0ad870c3402605c42bd79ac5da4983b04be7603ff80bda073e94e60d7333"
+      },
+      "exact_replacements": 7,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "after": {
+        "bytes": 73447,
+        "git_blob": "38b555efa206b54abb2b0c55f04a41a161050424",
+        "sha256": "df82f61845a9ae35286f30e75d22e270189a7a32d4fee62046ec197db19ca6f2"
+      },
+      "before": {
+        "bytes": 73251,
+        "git_blob": "6f2de0d5801ac8139dc1d6023eea8852686015b9",
+        "sha256": "08f561395a4630742bb01828e0adfe1f4f6a1521e34fb5aff7729710b671c2b1"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+      "whole_inverse_equal": true
+    },
+    {
+      "absent_in_b608_inventory": true,
+      "after": {
+        "bytes": 1224,
+        "git_blob": "def8f0f90c3fe260686f1b828095f6f3ca04a259",
+        "sha256": "8baa78a95d91801cd3ff7112e9f1046ec67c900cb0d81165e7f5bd33515c2544"
+      },
+      "new_module_lines": 24,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_material_source.rs"
+    },
+    {
+      "after": {
+        "bytes": 7242,
+        "git_blob": "39c9d0ffc7d2b88b5eaac8f19f70e071466ec807",
+        "sha256": "1492aae9010d932b89f78f6e60b4f1a7bd5483809880faf49bfd75398c198a52"
+      },
+      "before": {
+        "bytes": 7154,
+        "git_blob": "62003e507fa59e1ccc1d41b87ff5a1340562e714",
+        "sha256": "406c0dba21ac91a57b71f7b21a2e1242ee68f7aa60dad424829a6565f82bfb60"
+      },
+      "exact_replacements": 1,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "predecessor_file": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "whole_inverse_equal": true
+    }
+  ],
+  "format": "hepta-e2-material-source-byte-proof-v1",
+  "modified": 14,
+  "new": 8,
+  "original_dataset_predicate_body_equal": true
+}

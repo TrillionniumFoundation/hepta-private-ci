@@ -1,0 +1,20 @@
+{
+  "scope": "Pure local whole-file composition before any composed source output",
+  "failure": {
+    "chunk_id": "63a023",
+    "wall_time_seconds": 0.110519834,
+    "exit_code": 1,
+    "original_token_count": 61,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-product-composition-v5/compose.py\", line 57, in <module>\n    assert before.count(old) == after.count(new) == 1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "diagnostic": {
+    "chunk_id": "33dab2",
+    "wall_time_seconds": 0.0000202,
+    "exit_code": 0,
+    "original_token_count": 467,
+    "output": "{\"path\": \"codex-rs/hepta-agentd/src/authority_host_generation.rs\", \"old_count\": 1, \"new_count\": 1, \"forward_equal_all\": true, \"forward_equal_first\": true, \"inverse_all\": true, \"old\": \"\\nfn invalid(error: impl std::fmt::Display) -> AgentdError {\", \"new\": \"\\n#[path = \\\"authority_host_generation_input_loader.rs\\\"]\\nmod input_loader;\\npub use input_loader::RootHostInitialGenerationFilesV1;\\npub(crate) use input_loader::LoadPurpose as OriginalGenerationLoadPurpose;\\npub(crate) use input_loader::LoadedOriginalGeneration as OriginalLoadedGeneration;\\n\\nfn invalid(error: impl std::fmt::Display) -> AgentdError {\"}\n{\"path\": \"codex-rs/hepta-agentd/src/authority_host_service.rs\", \"old_count\": 1, \"new_count\": 1, \"forward_equal_all\": true, \"forward_equal_first\": true, \"inverse_all\": true, \"old\": \"pub use generation::RootHostInitialGenerationRecoveryV1;\", \"new\": \"pub use generation::RootHostInitialGenerationRecoveryV1;\\npub use generation::RootHostInitialGenerationFilesV1;\\npub(crate) use generation::OriginalGenerationLoadPurpose;\\npub(crate) use generation::OriginalLoadedGeneration;\"}\n{\"path\": \"codex-rs/hepta-agentd/src/authority_host_session_generation.rs\", \"old_count\": 2, \"new_count\": 1, \"forward_equal_all\": false, \"forward_equal_first\": true, \"inverse_all\": true, \"old\": \"\\nimpl PreparedHostAuthoritySession {\", \"new\": \"\\n#[path = \\\"authority_host_session_generation_input_loader.rs\\\"]\\nmod input_loader;\\n\\nimpl PreparedHostAuthoritySession {\"}\n{\"path\": \"codex-rs/hepta-agentd/src/lib.rs\", \"old_count\": 1, \"new_count\": 1, \"forward_equal_all\": true, \"forward_equal_first\": true, \"inverse_all\": true, \"old\": \"pub use authority_host_service::RootHostInitialGenerationRecoveryV1;\", \"new\": \"pub use authority_host_service::RootHostInitialGenerationRecoveryV1;\\n#[cfg(target_os = \\\"linux\\\")]\\npub use authority_host_service::RootHostInitialGenerationFilesV1;\"}\n"
+  },
+  "correction": "The frozen loader inserts one module before the first of two identical top-level impl anchors. Exact forward first replacement and the unique full inverse both match the frozen whole before/after images. Root's initial unique-before-anchor assumption was too strict; no source packet is changed.",
+  "H_calls": 0,
+  "project_code_executed": false
+}

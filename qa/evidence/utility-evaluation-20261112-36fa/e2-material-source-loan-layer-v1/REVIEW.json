@@ -1,0 +1,32 @@
+{
+  "execution": {
+    "H": false,
+    "collector": false,
+    "compile": false,
+    "format": false,
+    "qa": false,
+    "tests": false
+  },
+  "limits": [
+    "No real Material supervisor/CLI hookup in this layer; loader is a separate reviewed successor.",
+    "Complete payload over 16 KiB is rejected, never paged/truncated. This layer does not establish that every real source fits.",
+    "Observer/issuer/lease checks are bounded before/after observations, not a new atomic lease across unrelated owners.",
+    "Cancellation or process death is not proved by this offline review; no task completion or cold process recovery is claimed.",
+    "Same signed Material context authenticates binding; original E/D path still checks actual ledger/freeze evidence before issuing receipts."
+  ],
+  "modified_paths": 14,
+  "new_paths": 8,
+  "scope": [
+    "One non-Clone Material host exported once from the same original task; private Arcs retain existing owners, not the runtime or daemon Config.",
+    "Registration binds a separate Material process and exact E/D actors; real f42 peer/pidfd/SO_PEERCRED checker remains unchanged and same UID/PID rejection is retained.",
+    "Requests carry only fixed complete context, nonce and monotonic request ID. No wire run/path/action/actor dispatch.",
+    "Root original Source encoding follows same Task/Cell/Source current readback and original Dataset Source predicate; it never encodes a caller receipt.",
+    "Private client decode is reachable only after a successful bound Root channel exchange; actual pair consumption is the sole constructor caller.",
+    "All client clones share one slot/counter/end. Failure after taking a slot does not restore it; no queue/reconnect/retry.",
+    "Root full context/current/deadline is checked after response as well. A late server failure does not retract an already sent response or assert NotApplied.",
+    "Original Material LedgerWriter, full freeze verification, signers, admission bits and four original command permits are not changed."
+  ],
+  "source_bytes_and_inverse_checked": true,
+  "source_git_created": false,
+  "status": "FROZEN_LOCAL_PREPARED_UNEXECUTED"
+}

@@ -1,0 +1,392 @@
+{
+  "conclusion": {
+    "H_remains_stopped": true,
+    "concrete_static_blockers": [],
+    "is_execution_approval": false,
+    "is_runtime_authority": false,
+    "may_be_considered_for_further_prequalification_source_integration": true,
+    "prior_unknown_source_dispatch_not_reclassified": true,
+    "qualification": false
+  },
+  "findings": [
+    {
+      "details": [
+        "The Session parent contains two occurrences of the impl anchor. The author inserts before the first; the complete expected afterimage and reverse splice match exactly. No original impl or Material private-Arc export is removed.",
+        "The lib public file-container export has its own Linux cfg and does not absorb or remove the old export attribute. The existing old bodies and prior E1/E2/E3 mounts remain in the four exact preimages.",
+        "The new public surface consists of the five-File transport container and two consuming Session methods. Private/crate-only loading enums and internal method carry the original owners internally; no public owner/secret getter, new generic callback or configurable authorization implementation is added."
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation.rs",
+          "pin": {
+            "bytes": 15550,
+            "git_blob": "d99f23d1a15a86fad1c41fc353e4e72e08159a37",
+            "sha256": "51b6d1f46e4ec572190cd9eee46888f2a14a236f8bd8d83f5a47d55c5cbaec50"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_service.rs",
+          "pin": {
+            "bytes": 23227,
+            "git_blob": "bc77345d21d9d45e9dcb657374f89cf0bcbf2b11",
+            "sha256": "5366e63bd62f4229e035c2056fb3f779d330550f5245a6b3d24542aa7cb0ba69"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "pin": {
+            "bytes": 8649,
+            "git_blob": "ae5cfa5daafb6f6ccff88258197a0a03c5db8b67",
+            "sha256": "97431f782c0af47c3762b02dec540c38541b90fe075b0f244d19dd6a90e30dd9"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+          "pin": {
+            "bytes": 74249,
+            "git_blob": "9fc8916464870449b19cdda1b22f2e7a848189b0",
+            "sha256": "7f8c94ccedb0a18003dc831ffb990f9387e88ab167dd824995d9d479ba12851d"
+          }
+        }
+      ],
+      "id": "L1_exact_mounts_and_api",
+      "result": "All four old parents remain byte-for-byte intact apart from their explicit insertions."
+    },
+    {
+      "details": [
+        "The existing unchanged read_root_json requires a private Root parent, O_NOFOLLOW/CLOEXEC/NONBLOCK opened regular file, uid 0, masked mode 0600 and link count 1. It reads at most 65,537 bytes, rejects empty or over-65,536-byte input and deserializes the complete JSON.",
+        "The loader requires schema 1 and the exact existing-inputs purpose. Fourteen new DTO structs deny unknown fields; OperationFile is a closed tagged Fresh/Recover enum and ConsumerTrustModel has exactly two named variants. Existing nested FinalUse/Cell types use their original parser contracts.",
+        "Nine original record types receive all 77 fields: signers, Owner trust, writer lease, Registry head witness/current head, complete withdrawal receipt, selectors/selection trust and the full 22-field signed selection. The checked source lists and actual construction lists are identical.",
+        "StableId and Generation constructors remain fallible; digest bytes are passed through their original wrappers; each local signature conversion requires exactly 64 bytes. The selected artifact kind is accepted only as Model, and its generation, optional predecessor, content/objective/support/compatibility, credentials, time window and signature are preserved.",
+        "SignedFinalUseGrant, FinalUseFrontier and CellGenerationConfigV2 remain their original types; the loader does not substitute an opaque VerifiedSelection/Receipt/token. The original 64 KiB outer input and original signer/record bounds remain in effect.",
+        "This original JSON reader does not provide a before/after fstat stability proof. The report does not claim such a proof; later complete cryptographic/current-state checks are independently required."
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_input_types.rs",
+          "pin": {
+            "bytes": 12769,
+            "git_blob": "2388b5155541c2929c0b71d34602c26e142d285c",
+            "sha256": "a73754f7b13565c37ebb8b4d8a4e22ebed0e34e43b12892574a5a06b175c9fd8"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs",
+          "pin": {
+            "bytes": 9949,
+            "git_blob": "a7c07a3f2c211d7c8b32ac14f9dcd76a38ccfa87",
+            "sha256": "e84f5873b3d9d12962e8fcaa292057bbc47a5d442d9bcedffffa0f53428cde21"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-product-e3-proposal-v1/references/codex-rs/hepta-agentd/src/authority_host_config.rs",
+          "pin": {
+            "bytes": 7060,
+            "git_blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+            "sha256": "d940d9ed0cd645bb911c7545a1094cdb6168949972859e4e27cee1f1e65c2d62"
+          }
+        }
+      ],
+      "id": "L2_protected_json_and_full_records",
+      "result": "Protected-host data is decoded into original public records, then original constructors perform validation."
+    },
+    {
+      "details": [
+        "Registry, selected payload and withdrawal snapshot must be read-only; target journal and target witness must be read-write. F_GETFL rejects incorrect access and O_APPEND; all five fstat identities must be distinct dev/inode pairs and all are Root0600 single-link regular files.",
+        "Artifact and consumer paths must be different absolute private child paths under the same Session state path, without parent or special components. RootAuthorityDirectory validates them. Every one of the six original Artifact subdirectories and existing writer/owner.lock is required.",
+        "FinalUse requires the original authority.lock, authority.claims and nonempty authority.json; the bounded 8 MiB header observation compares dev/inode/size/mtime/ctime including nanoseconds and requires schema 3. Complete trust, head and nonce replay are still delegated to the original store.",
+        "Recover additionally rejects an empty target journal or witness shorter than its original 112-byte header before opening the witness. It does not treat an empty consumer journal as proof of a valid recovery: the original nonce replay and published CURRENT chain remain mandatory.",
+        "These are protected-path/precondition observations, not a cross-owner atomic lease. They do not prove all files are unchanged on failure or prevent a privileged concurrent Root actor from changing a path between two original constructors."
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_input_files.rs",
+          "pin": {
+            "bytes": 5503,
+            "git_blob": "3890ce73461c0a470d727cee802611583fce9aad",
+            "sha256": "2e3486926d02d11a91602baebb2c4c528107e147c1623b54ecf62c6c1cd31e69"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-contracts/src/authority_host_store.rs",
+          "pin": {
+            "bytes": 16412,
+            "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+            "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+          }
+        }
+      ],
+      "id": "L3_five_descriptor_roles_and_existing_paths",
+      "result": "All five retained file roles and existing owner paths have explicit restrictions before original opening."
+    },
+    {
+      "details": [
+        "Complete Owner trust and signed writer lease are constructed without changing their fields. required_current_head is mandatory and always passed as Some; the exact storage binding and original protected clock are supplied to LearningArtifactOwnerService::open.",
+        "The withdrawal snapshot consumes the real supplied file and complete receipt through read_dataset_withdrawal_snapshot. The original reader enforces nonzero bindings, size/count bounds, digest, scope/head, record replay and canonical byte reconstruction; no empty replacement history is fabricated.",
+        "The original independent selection verifier receives selection trust and Owner trust. AgentdSelectedGenerationV1::load uses the actual owner CURRENT plus actual registry and payload files, the full signed selection and current original time. Its original payload/canonical manifest/compatibility/withdrawal checks stay intact.",
+        "The original owner constructor may perform its original directory/lock/recovery work. Candidate prechecks are intended to require existing state but do not replace that constructor with a read-only fake or a new owner implementation."
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs",
+          "pin": {
+            "bytes": 9949,
+            "git_blob": "a7c07a3f2c211d7c8b32ac14f9dcd76a38ccfa87",
+            "sha256": "e84f5873b3d9d12962e8fcaa292057bbc47a5d442d9bcedffffa0f53428cde21"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+          "pin": {
+            "bytes": 26250,
+            "git_blob": "059e4650b02bbf4bd5816c6255f564b566ebe14f",
+            "sha256": "b0747a4cd8cea16a6194d64bf047aa9dd751cf968edcac6b81f5da740aa46408"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "pin": {
+            "bytes": 86789,
+            "git_blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+            "sha256": "07c7c0166264454d60305f3193b999edea472921f85332a01b945a60043923f2"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+          "pin": {
+            "bytes": 23892,
+            "git_blob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf",
+            "sha256": "3472db1eb750164c43f32dbbfa4df5b7b2dbf47259a8cabe9f82f226477823b8"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+          "pin": {
+            "bytes": 7927,
+            "git_blob": "fb6bede5e306c62320c3a95e113dc60613c41e85",
+            "sha256": "cc5fd43cdf1b410f98338966a599ecc25e416f6b12cf0d0c85dbcaa9b177cc00"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "pin": {
+            "bytes": 29173,
+            "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+            "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df"
+          }
+        }
+      ],
+      "id": "L4_actual_artifact_withdrawal_and_selection",
+      "result": "The owner, withdrawal history and selected generation are produced by the original verification path."
+    },
+    {
+      "details": [
+        "The only Root directory used for the external frontier is the retained private resident_store_root Arc on this same service; a retained original lease Registry is required. No new Root registry, issuer, policy, Config or AutomationStore is constructed here.",
+        "The explicit consumer owner_id must equal the retained issuer trust_key.key_id. Fresh additionally requires signed.grant.signer_id to equal that same owner id. This matches the original issuer full-grant verifier and FinalUse claim signer check, rather than relying on a test convention.",
+        "HostAuthorityFrontierStore::open opens the existing frontier under that Root directory. The complete protected FinalUseFrontier is compared before the original consumer open. No initialize/for_initial_head or head-update call is introduced.",
+        "SingleCurrentIssuer uses the original open_state_dir_with_trust; CurrentIssuerKeyRing uses original open_state_dir_with_issuer_keys with only the retained current issuer key. A preexisting incompatible rotation key set refuses rather than being migrated by this loader.",
+        "Both original factories use exact original store/trust/head validation and original nonce replay. current_external_frontier then checks current effect state; the complete frontier, consumer revocation head and a new original issuer-head read must still agree before continuing.",
+        "No nonce is refunded, cleared or synthesized. Recover obtains its actual signed grant through the original protected CURRENT/recovery chain; the loader supplies only the exact protected operation id/intent and real selected target."
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs",
+          "pin": {
+            "bytes": 9949,
+            "git_blob": "a7c07a3f2c211d7c8b32ac14f9dcd76a38ccfa87",
+            "sha256": "e84f5873b3d9d12962e8fcaa292057bbc47a5d442d9bcedffffa0f53428cde21"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+          "pin": {
+            "bytes": 2945,
+            "git_blob": "9e498c1685651f41e970b836de499a7a83f11b68",
+            "sha256": "3bc76f5586d0a72ff4ced1e55058fa97dc33664bb92730cb0356eec3e5bd259c"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-contracts/src/final_use.rs",
+          "pin": {
+            "bytes": 37673,
+            "git_blob": "84d55caf39b1746285f42c2777ddd410854fb7c9",
+            "sha256": "a3c957633471d79121b39fd5a3ead8ea06a8a379c8ed66e756c40541b5edf214"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-contracts/src/final_use_store.rs",
+          "pin": {
+            "bytes": 22041,
+            "git_blob": "d014fce0c1396b094d4497c58ef905c53e80669f",
+            "sha256": "609dafd09e151bd207adba94c35064bce33721c4463eaa296143a609079eabdb"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-product-e1-proposal-v1/references/codex-rs/hepta-contracts/src/final_use_retained.rs",
+          "pin": {
+            "bytes": 4428,
+            "git_blob": "7657ebef9ff22db3265484867fbc8b9d622ca531",
+            "sha256": "68947e5bac7dd7541a72c14c982fd46b20af5a989bba87ff246200abe939ad04"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-contracts/src/authority_host_store.rs",
+          "pin": {
+            "bytes": 16412,
+            "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+            "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+          }
+        }
+      ],
+      "id": "L5_final_use_exact_existing_owner",
+      "result": "The original issuer, existing consumer nonce state and independently durable frontier are retained and checked."
+    },
+    {
+      "details": [
+        "CellGenerationOwnerBindingV1::new receives the unchanged original configuration and record bound. Its digest, actual task digest and initial generation are passed to the original FileAnchorWitnessStore with the original witness bound and actual retained file.",
+        "Fresh can initialize the original witness header in its explicitly supplied empty witness. This is disclosed behavior, not proof that this loader is globally read-only. Original constructors and later recovery may perform their normal durable effects.",
+        "Each consuming public Session entry creates one end from the original timeout, verifies the actual pinned Session before loading, passes the same end to the loader and original bind/recover factory, rechecks the Session and stores exactly that end in the returned carrier.",
+        "Fresh accepts only the Fresh DTO and returns InitialHostPhase::Fresh after the original bind operation. It does not publish CURRENT, sign a grant or return a Ready carrier merely from decoded data.",
+        "Recover accepts only the Recover DTO, invokes the original recovery factory and returns Ready only with actual original recovered custody. The prior original code requires exact operation/intent and protected Published state, target/selection, consumed FinalUse, lease/issuer/head/frontier and current witness; no Fresh fallback exists.",
+        "The same non-Clone Session is moved into the returned object. No additional public wrapper is used to reset the end. Local require_before checks actual real/effective uid 0 and the same Instant before/intermediate/after work.",
+        "The end is a result-admission bound, not a proof that every synchronous filesystem/owner operation physically terminates at that Instant. No new per-stage extension, queue, network budget, role identity exception or process cancellation behavior is introduced by this layer."
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation_input_loader.rs",
+          "pin": {
+            "bytes": 9949,
+            "git_blob": "a7c07a3f2c211d7c8b32ac14f9dcd76a38ccfa87",
+            "sha256": "e84f5873b3d9d12962e8fcaa292057bbc47a5d442d9bcedffffa0f53428cde21"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_input_loader.rs",
+          "pin": {
+            "bytes": 3348,
+            "git_blob": "55be939758a6f061a761dd97573aef527b006e33",
+            "sha256": "7d4f75d55bc0ee0f5209a81a0a1e094f083de38e94908ba12a30f445a2f4e685"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_generation.rs",
+          "pin": {
+            "bytes": 15550,
+            "git_blob": "d99f23d1a15a86fad1c41fc353e4e72e08159a37",
+            "sha256": "51b6d1f46e4ec572190cd9eee46888f2a14a236f8bd8d83f5a47d55c5cbaec50"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+          "pin": {
+            "bytes": 8649,
+            "git_blob": "ae5cfa5daafb6f6ccff88258197a0a03c5db8b67",
+            "sha256": "97431f782c0af47c3762b02dec540c38541b90fe075b0f244d19dd6a90e30dd9"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-loader-references-v1/codex-rs/hepta-neuron/src/witness.rs",
+          "pin": {
+            "bytes": 12305,
+            "git_blob": "180ddadf5bcc463513305f252358ab3b032b0c75",
+            "sha256": "61f07a52e2a833a6786cb9cf2e666e6dfa03aafeb9bcce9069cc3aadbe1f84a7"
+          }
+        },
+        {
+          "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/references/codex-rs/hepta-neuron/src/cell_generation_context.rs",
+          "pin": {
+            "bytes": 5219,
+            "git_blob": "eea475e567d656ee2a9567991f4cfd308af3ead7",
+            "sha256": "a210daee68c7fa2edff3f4a782631ac700add2f4f9c306e5adc18d8ad77475e8"
+          }
+        }
+      ],
+      "id": "L6_target_and_same_session_phase",
+      "result": "Target binding and original Fresh/Recover phase transitions share one absolute end per public entry."
+    }
+  ],
+  "format": "independent-root-existing-generation-input-loader-review-v1",
+  "method": [
+    "Read all four new production modules and every parent splice, then read the original protected JSON, Artifact trust/lease/head, withdrawal snapshot, selected generation, FinalUse store/frontier/retained-use, target witness and same-Session bind/recover implementations at the exact cited source pins.",
+    "Independently parse the frozen full-before/after packet and manifest as duplicate-key-rejecting JSON data; hash each complete file and compare all parent preimages to the immutable v4 composition and its file identities.",
+    "Apply the four exact splices to the first matching occurrence and require complete forward and inverse byte equality. Reconstruct the complete unified patch independently. A repeated impl anchor is not presumed unique.",
+    "Compare nine local DTO declaration field lists, original public-record declaration fields, and actual literal construction fields. All 77 fields align; manually inspect each conversion expression, retained signature and exact Model-kind restriction.",
+    "Validate all 29 supplied reference files and three additional references against the exact b608 complete inventory. This content check is broader than the named semantic reading and is not a claim that all referenced files were semantically audited in full.",
+    "Run only the reviewer-owned Python standard-library byte/schema/ordered-anchor script. Ordered source anchors supplement manual reading; no Rust AST compiler or runtime was invoked."
+  ],
+  "proof": {
+    "path": "/tmp/hepta-36fa-root-generation-input-loader-independent-review-v1/BYTE_AND_CONTRACT_PROOF.json",
+    "pin": {
+      "bytes": 40648,
+      "git_blob": "99605ba19ac949b600a3f9c7abc10e9777110711",
+      "sha256": "47d61deff7fd3e3cbb8b0ebfced85ee423f2c9b3251847f5697e351322a02da2"
+    }
+  },
+  "reviewer": "/root/native_ci_audit",
+  "reviewer_check_correction": {
+    "narrow_correction": "Exclude only the source-line occurrence preceded by -> when locating these fixed record literals. All record declaration and construction fields are still compared completely.",
+    "original_failure": "The reviewer literal locator counted the receipt factory return type followed by a function body as a second record literal. The candidate itself was not changed.",
+    "v1_raw_result": {
+      "bytes": 758,
+      "git_blob": "85f1469d758f028f756e5c0f752d18cb2f57d7cc",
+      "sha256": "dd699c5f96a581d993ea31e5185a39b2cd17ad87d98b19f81cab98fe01e71257"
+    },
+    "v1_script": {
+      "bytes": 18606,
+      "git_blob": "3e2164afda7c3e1a337731f67bdfc593d574a5bd",
+      "sha256": "82973d3376562747e0af0b218537284f3b279bc8753eb88ea0ef6353ad08847a"
+    },
+    "v2_exit_code": 0,
+    "v2_raw_result": {
+      "bytes": 478,
+      "git_blob": "c65d784a0ff5bf20fd6b0135198fbed9ae57023c",
+      "sha256": "2093a1c226549d3ff186dfa3c5d73d6cf8f19dd8e41f30a01cc561167e4c850e"
+    },
+    "v2_script": {
+      "bytes": 18851,
+      "git_blob": "cfaaefe0d6451c3fdcc1b3236c88bcf912480a4e",
+      "sha256": "092775528c5965e91cdda90fc64a0c8e5752aa7601d0936716343b9d643a32a5"
+    }
+  },
+  "scope": {
+    "H_calls": 0,
+    "base_composition": {
+      "bytes": 56018,
+      "git_blob": "eab2a34d1bd7abbaab81d5c1e06177269a14efd4",
+      "sha256": "ac26163109202bf6786ed163e8047b9425598cb953a0d57b0741dab2cc0c5d30"
+    },
+    "canonical_reference_inventory": {
+      "bytes": 5631947,
+      "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+      "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+    },
+    "exact_preimage": "Root composition-v4; not canonical b608 for the four already-composed parents",
+    "files": 8,
+    "insertion_only_parents": 4,
+    "new_production_modules": 4,
+    "new_tests_in_this_layer": 0,
+    "project_compilation_formatting_tests_collectors_or_QA_executed": false,
+    "review_of_later_composition_v5": false,
+    "scope_of_writes": "Only these reviewer-owned local report and pure-check files.",
+    "source_Git_objects_refs_or_source_worktree_writes": false
+  },
+  "source_packet": {
+    "path": "/tmp/hepta-36fa-root-task-cli-loader-proposal-v1/inputs-layer-v1/SOURCE_PACKET.json",
+    "pin": {
+      "bytes": 287484,
+      "git_blob": "e78f0413a20e306c1064c51eb8e53e76d597fd93",
+      "sha256": "7f4d2087943efc969eda7ca540d21e51c52418db5ecfe81a8be77a9362d98d4b"
+    }
+  },
+  "specific_limitations_and_remaining_work": [
+    "No Rust compilation, formatting, unit test, positive original owner run, IPC fixture or H/native qualification was performed; static field coverage is not a type-check result.",
+    "The four-module layer does not connect the ordinary Root CLI, create the actual task/model files or factory, orchestrate Material Source lending, or complete V3 enrollment. Later source layers must preserve this same Session and actual owner/cut bindings.",
+    "It intentionally supports existing consumer schema 3 and the retained current issuer key only. A different historical key-ring/schema is a refused deployment input, not a reason to reset or broaden trust.",
+    "Recovery requires existing target state and actual original Published evidence. It is not a generic recovery-to-fresh or missing-state repair facility.",
+    "Only fixed opened file identities are checked here. Original full data verification and owner locking remain mandatory. The report makes no claim of a fresh native observation or global filesystem immutability.",
+    "Root0600 protected input is supplied by the trusted deployment context, not authenticated peer JSON. The loader does not transfer permission based solely on these decoded records.",
+    "New public methods/modules still require eventual exact combined CALLERS/protection/source registration and real compilation/test coverage. This layer has no new tests and is not a final union registration review."
+  ],
+  "status": "NO_NEW_CONCRETE_STATIC_BLOCKER_IDENTIFIED_IN_THIS_FROZEN_LAYER",
+  "storage_boundary": "All pins in this local report are computed full-byte content identities. This reviewer did not create or full-GET Git objects for these new report artifacts. Root owns subsequent durable evidence publication."
+}

@@ -1,0 +1,14 @@
+{
+  "combined_registration_pending": true,
+  "guard_rebinding": "The Material client whole-file guard must bind to this exact cfg(test) mount successor; original production prefix remains byte identical.",
+  "ignored_root": false,
+  "new_fqns": [
+    "circuit_task::source::readback::material::tests::material_source_payload_retains_complete_original_publication",
+    "circuit_task::source::readback::material::tests::material_source_encoding_refuses_rebound_publication",
+    "circuit_task::source::readback::material::tests::material_source_encoding_refuses_withdrawn_original_for_all_views"
+  ],
+  "new_module": "codex-rs/hepta-agentd/src/circuit_task_source_material_tests.rs",
+  "new_root_parents": [],
+  "ordinary_linux_tests": true,
+  "parent": "codex-rs/hepta-agentd/src/circuit_task_source_material.rs"
+}

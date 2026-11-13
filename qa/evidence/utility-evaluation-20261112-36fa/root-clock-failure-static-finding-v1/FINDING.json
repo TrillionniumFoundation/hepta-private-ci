@@ -1,0 +1,41 @@
+{
+  "confirmed_source_facts": [
+    "The E2 remote Cell clock wrapper returns both u64::MAX values when its retained remote admission ceases to be current.",
+    "The first sample only rejects regression relative to observed_at. MAX instead enters the read_only condition.",
+    "A pending inference branch is allowed to continue to recover_cell_inference with the sampled cell time.",
+    "The decide and commit samples only reject backwards movement; MAX can therefore be passed to decide_cell or commit_cell_step before the final loan_failed check.",
+    "An unfrozen second Root task-input loader draft independently proposed MAX for original AuthorityClock errors, multiplication overflow, or fixed deadline expiry. This draft is not part of the 98-path frozen view."
+  ],
+  "discovered_at_utc": "2026-11-13T15:45:00Z",
+  "discovery_time_precision": "minute-level review window, not a process event timestamp",
+  "earlier_reviews": "Earlier no-identified-static-blocker statements retain their original time and reviewed scope. This newly identified defect supersedes any inference that the complete 98-path view has no known blocker.",
+  "execution": {
+    "H_calls": 0,
+    "project_imports": 0,
+    "rust_compilation": 0,
+    "tests": 0
+  },
+  "fixed_source_view": {
+    "changed_paths": 98,
+    "review_git_blob": "59014cde8a2ed41b652260773f81e09d7e3f67eb"
+  },
+  "format": "hepta-root-clock-error-static-finding-v1",
+  "interpretation": "MAX is not proven to be a universal fail-closed time. Passing an error sentinel into state/outcome/cost computation before explicit rejection is a real source defect. No runtime execution, physical mutation, successful commit, or observed utility consequence is claimed.",
+  "qualification": false,
+  "qualified_real_chains": 0,
+  "required_correction": [
+    "Freeze a separate minimal E2 remote delta; do not rewrite historical source packets.",
+    "Reject invalid samples before recovery, dispatch, decide, or commit uses them; preserve normal explicit read-only recovery semantics and original local methods.",
+    "Review CLOCK transport, decoder, remote runtime and every consumer of the new protected Root task clock.",
+    "Keep the first original clock error and fence subsequent samples permanently; do not discard its cause via .ok().",
+    "If a complete sentinel boundary cannot be shown, replace the new adapter with a fallible boundary rather than assume MAX is invalid everywhere.",
+    "Update final source protection and exact registration identities; run no project or H operations in this review."
+  ],
+  "source": {
+    "bytes": 7326,
+    "git_blob": "7da8c7b20bba82b648eec3420733f49997561501",
+    "path": "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+    "sha256": "7b2f1501aaff75a4ceaad94303c739c0fb0fbd70c8db0049d8f5fae4de16327d"
+  },
+  "status": "CONCRETE_STATIC_BLOCKER_AWAITING_SEPARATE_CORRECTION"
+}
