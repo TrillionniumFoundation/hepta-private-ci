@@ -1,0 +1,55 @@
+{
+  "entries": [
+    {
+      "insertions": [
+        "\n#[path = \"authority_host_generation_root_task_tests.rs\"]\nmod root_task_tests;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_support_tests.rs"
+    },
+    {
+      "insertions": [
+        "pub use session::PreparedRootHostCircuitTaskV1;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "insertions": [
+        "pub use generation::PreparedRootHostCircuitTaskV1;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs"
+    },
+    {
+      "insertions": [
+        "pub use task::PreparedRootHostCircuitTaskV1;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+    },
+    {
+      "insertions": [
+        "\n#[path = \"authority_host_session_generation_root_task.rs\"]\nmod root_task;\npub use root_task::PreparedRootHostCircuitTaskV1;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+    },
+    {
+      "insertions": [
+        "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::PreparedRootHostCircuitTaskV1;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "insertions": [
+        "\n#[path = \"neuron_generation_initial_root_task_channel.rs\"]\nmod original_channel;\n"
+      ],
+      "inverse_complete_bytes_equal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    }
+  ],
+  "format": "hepta-e2-factory-old-body-preservation-v1",
+  "project_verifier_called": false
+}

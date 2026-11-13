@@ -1,0 +1,70 @@
+{
+  "actual_factory": "Original Ready.into_circuit_feature_task -> unchanged circuit_q24_task_channel_v1 -> factory-returned Cell and Source retained with the same task for original drain",
+  "all_existing_source_bodies_byte_preserved": true,
+  "error_scope": "The original factory can have effects before an error. The same operation and original Host session are retained only for protected readback; no automatic Create retry.",
+  "executed": {
+    "cross_process_or_useful_task_chain": false,
+    "fmt": false,
+    "h": false,
+    "qa": false,
+    "rust": false,
+    "source_git": false
+  },
+  "format": "hepta-e2-config-free-root-factory-review-v1",
+  "new_production": 2,
+  "new_tests": 1,
+  "note": "All identities are locally computed. The unchanged b608/E1 sources and running qualification controls were not modified.",
+  "old": 7,
+  "ownership": {
+    "not_created_or_consumed": [
+      "daemon Config",
+      "daemon AgentdState",
+      "daemon AutomationStore",
+      "another database",
+      "another PublishedTask",
+      "another Cell",
+      "another grant or issuer"
+    ],
+    "root": [
+      "protected generation operation",
+      "one task factory and its unique native Cell writer",
+      "same Cell and Source retirement custody",
+      "original Host session and fixed expiry"
+    ]
+  },
+  "paths": 10,
+  "prepared_cases": [
+    "root_host_task_factory_keeps_unstarted_source_incomplete",
+    "root_host_task_factory_refusal_retains_only_the_same_operation"
+  ],
+  "registration_obligations": {
+    "existing_ignores_budgets_or_uid_rules_changed": false,
+    "full_collector_run": false,
+    "future_root_parents_delta": 2,
+    "new_boundaries": [
+      "OriginalRootInitialGenerationCustodyV1::into_original_root_task_channel",
+      "PreparedRootHostInitialGenerationV1::prepare_original_root_task",
+      "PreparedRootHostCircuitTaskV1::read_original_root_task_generation",
+      "PreparedRootHostCircuitTaskV1::pending_original_root_task_operations",
+      "PreparedRootHostCircuitTaskV1::drain_completed_original_root_task"
+    ],
+    "old_callers_to_enumerate": [
+      "ReadyAgentdGenerationInitialV1::into_circuit_feature_task",
+      "circuit_q24_task_channel_v1",
+      "CircuitQ24TaskRuntimeV1::cell",
+      "CircuitQ24TaskRuntimeV1::source",
+      "OriginalRootCircuitTaskCustodyV1::read_original_operation",
+      "OriginalRootCircuitTaskCustodyV1::drain_completed_task",
+      "OriginalHostInitialOperation::require_observed"
+    ]
+  },
+  "remaining": [
+    "No bounded sealed cross-process task protocol is implemented by this subunit.",
+    "The existing mpsc owner lane is not a transported capability.",
+    "Daemon RunStart origin/current authentication must remain with its original journal/state.",
+    "Daemon AutomationStore and its writer must remain the original instance; Root must not reopen a chosen database.",
+    "The Root driver still needs a purpose-fixed authenticated adapter to the original opaque Circuit admissions and durable trace.",
+    "Ordinary daemon V3 learning enrollment must retain its original complete source/current/outbox checks."
+  ],
+  "status": "LOCAL_PREPARED_SUBUNIT_NOT_TRANSPORT"
+}

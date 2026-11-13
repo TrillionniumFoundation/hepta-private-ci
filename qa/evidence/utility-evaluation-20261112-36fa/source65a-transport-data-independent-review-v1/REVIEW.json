@@ -1,0 +1,995 @@
+{
+  "closed_set": {
+    "distinct_bodies": 50,
+    "matrix_54_paths_and_one_immutable_v5_history_only": true,
+    "no_new_live_subject_in_map": true,
+    "original_paths_pins_consumers_and_capture_classifications_unchanged": true,
+    "present_original_path_availability": "Unknown",
+    "raw_original_bytes": 7976106,
+    "roles": 55
+  },
+  "complete_originals": [
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/CANONICAL_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 950,
+        "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+        "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.supervisor.original"
+    },
+    {
+      "capture_evidence": "content_pin_known_no_original_path_read_in_finite_input_set",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 954,
+        "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+        "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+      },
+      "producer_job_id": "1a1d0fcb212-2564-1bf4",
+      "role": "runtime.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.supervisor.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 3453,
+        "git_blob": "0f69f739486c1dc3506f61c0e8a6ef3737fbe17e",
+        "sha256": "a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.config",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.config.original"
+    },
+    {
+      "capture_evidence": "actual_staging_record",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/CANONICAL_PACKET.json",
+      "pin": {
+        "bytes": 3428251,
+        "git_blob": "bb4b4abd809047be4c9402b95fa2a2dc30b2ab78",
+        "sha256": "8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.packet",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.packet.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json",
+      "pin": {
+        "bytes": 952,
+        "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+        "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.supervisor.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/driver.py",
+      "pin": {
+        "bytes": 46159,
+        "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+        "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.driver",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.driver.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 108578,
+        "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+        "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.artifacts",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.artifacts.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/COMMANDS.json",
+      "pin": {
+        "bytes": 85193,
+        "git_blob": "42892d9ac0723d2db86f9f0bda89ad822311b06a",
+        "sha256": "f0519deb676f5112a03519eabd50046202db921069d245f35dfce5a3ef2ac4a7"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.commands",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.commands.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.allowed-actual-delta.json",
+      "pin": {
+        "bytes": 18995,
+        "git_blob": "898fef6b5d237a84f9ce89d20328f895166301e2",
+        "sha256": "791f445db5745c68cfb03bf4e9a9c7c068732714933f96a8207d91fa96d05f7e"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.metadata_delta",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.metadata_delta.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.before.json.gz",
+      "pin": {
+        "bytes": 772,
+        "git_blob": "b17f38eb110fe02a9fb084d24d330eedf0642d6e",
+        "sha256": "a85ee80c20bd7f3cec3646fa5000e84165517a40afa6ac7fd650ff3206b31768"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.metadata_before_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.metadata_before_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.final.json.gz",
+      "pin": {
+        "bytes": 3742,
+        "git_blob": "cc6edb61dadf7d2c6fa8f7a88ec3795adf40f740",
+        "sha256": "2c13b9d1425fd6d15aec7c336821657ce6a117bf5af514bea523a6dc976a59fa"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.metadata_final_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.metadata_final_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_STATE.final.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "35c071ff79b5d932bd234c6e886ad8b18345e498",
+        "sha256": "1de2b67a144e21ef6ca48bbf31a3138e39de902d459ca10ff70e45dc97f21b9c"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.git_state_final",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.git_state_final.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.complete-entry-delta.json.gz",
+      "pin": {
+        "bytes": 4310,
+        "git_blob": "3deb21a26ae251da6ea0db485811cdcd5b6cd593",
+        "sha256": "44129318730a270d3296f587ab6454410fabf6ff292e3b06a01e5b132eb997de"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.index_delta_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.index_delta_gzip.original"
+    },
+    {
+      "capture_evidence": "captured_producer_artifact_binding",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.audit.json.gz",
+      "pin": {
+        "bytes": 1454307,
+        "git_blob": "306c40d8289428cf80e374261f97d139fd6d1747",
+        "sha256": "c5cddf9d2f2e35517ba2ec0baa33a77c14f4e132b6a07da4c42a91dab66b46d2"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.index_audit_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.index_audit_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "pin": {
+        "bytes": 726723,
+        "git_blob": "afffd6a6d3175c4ea4a1c9818e3673d38fa15f27",
+        "sha256": "dc3425b207c7cf08ab0ff624509aac2958848184127b31bde5b33816527188d7"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.index_raw_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.index_raw_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INPUTS.final.json",
+      "pin": {
+        "bytes": 1955,
+        "git_blob": "47477f42fd23094aae63beca190bd42def89fd08",
+        "sha256": "e4059b53db565f763b4613490e1dcac80126ec7d091f91d78ecf428cf0be2983"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.inputs",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.inputs.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/MUTATION_PROGRESS.json",
+      "pin": {
+        "bytes": 8111,
+        "git_blob": "530806cf0cbf1922c6e2c2dfea152a94967928f4",
+        "sha256": "84d1c1965f1410f48f7b487973c504bbfd10f068c05c754fcc78daa4a1b79cd7"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.progress",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.progress.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 224883,
+        "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+        "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.result",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.result.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 2906,
+        "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+        "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.config",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.config.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/MAINTENANCE_NORMAL.original.json",
+      "pin": {
+        "bytes": 956,
+        "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+        "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.supervisor.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/driver.py",
+      "pin": {
+        "bytes": 28657,
+        "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+        "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.driver",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.driver.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 67498,
+        "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+        "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.artifacts",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.artifacts.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/INPUT_IDENTITIES.json",
+      "pin": {
+        "bytes": 7273,
+        "git_blob": "51ca8acea55f78b7323551f4288ab5ead2c8e233",
+        "sha256": "52946287f8b6f52d60acdcd70565622fe9c57ab8ba63eb0a5331f5cde8c3204e"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.inputs",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.inputs.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 7408,
+        "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+        "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.result",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.result.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.after.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.metadata_after_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.metadata_after_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.before.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.metadata_before_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.metadata_before_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.git-state.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+        "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.git_state_final",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.git_state_final.original"
+    },
+    {
+      "capture_evidence": "captured_producer_artifact_binding",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.inventory.json.gz",
+      "pin": {
+        "bytes": 1266970,
+        "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+        "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.inventory_final_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.inventory_final_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/fmt.after.postimages.json.gz",
+      "pin": {
+        "bytes": 275,
+        "git_blob": "8e906c93044cff287759aa7f55d007a12a80ccb5",
+        "sha256": "37176043df90538c0485ca19f8365e890cffa77fe8d63bfbe0667a7c40aecfee"
+      },
+      "producer_job_id": "1a1d4a979d9-392-50f",
+      "role": "final_format.empty_transition_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.empty_transition_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_staging_record",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 666,
+        "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+        "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.config",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.config.original"
+    },
+    {
+      "capture_evidence": "actual_staging_record",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/MATERIALIZATION_PACKET.json",
+      "pin": {
+        "bytes": 14404,
+        "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+        "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.packet",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.packet.original"
+    },
+    {
+      "capture_evidence": "actual_staging_record",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/driver.py",
+      "pin": {
+        "bytes": 70596,
+        "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+        "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.driver",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.driver.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 84294,
+        "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+        "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.artifacts",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.artifacts.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/COMMANDS.json",
+      "pin": {
+        "bytes": 34319,
+        "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246",
+        "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.commands",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.commands.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/INPUT_IDENTITIES.before.json",
+      "pin": {
+        "bytes": 3326,
+        "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687",
+        "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.inputs",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.inputs.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/MUTATION_INTENTS.json",
+      "pin": {
+        "bytes": 744,
+        "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64",
+        "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.mutations",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.mutations.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 14663,
+        "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+        "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.result",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.result.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/final.git-metadata.json.gz",
+      "pin": {
+        "bytes": 790,
+        "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a",
+        "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.metadata_final_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.metadata_final_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/APPROVED_MAINTENANCE_CONFIG.json",
+      "pin": {
+        "bytes": 13693,
+        "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+        "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.config",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.config.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 952,
+        "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+        "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+      },
+      "producer_job_id": "1a1d468462a-392-3bb",
+      "role": "materialization.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.supervisor.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/V8_RESTORATION_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 950,
+        "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+        "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+      },
+      "producer_job_id": "1a1d38b82e9-392-160",
+      "role": "archive.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.supervisor.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/driver-maintenance.py",
+      "pin": {
+        "bytes": 68520,
+        "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+        "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.driver",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.driver.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 53526,
+        "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+        "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.artifacts",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.artifacts.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/INPUT_IDENTITIES.json",
+      "pin": {
+        "bytes": 6256,
+        "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+        "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.inputs",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.inputs.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 12532,
+        "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+        "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.result",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.result.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.metadata_after_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.metadata_after_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.before.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.metadata_before_gzip",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.metadata_before_gzip.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_STATE.before.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+        "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.git_state_before",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.git_state_before.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/final.git-state.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+        "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+      },
+      "producer_job_id": "1a1d47cebc8-392-41e",
+      "role": "maintenance.git_state_final",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.git_state_final.original"
+    },
+    {
+      "capture_evidence": "content_pin_known_no_original_path_read_in_finite_input_set",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+      "pin": {
+        "bytes": 21724,
+        "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+        "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+      },
+      "producer_job_id": "1a1d0fcb212-2564-1bf4",
+      "role": "runtime.environment_ready",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.environment_ready.original"
+    },
+    {
+      "capture_evidence": "content_pin_known_no_original_path_read_in_finite_input_set",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json",
+      "pin": {
+        "bytes": 21366,
+        "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+        "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+      },
+      "producer_job_id": "1a1d0fcb212-2564-1bf4",
+      "role": "runtime.result",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.result.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARCHIVE_READBACK.json",
+      "pin": {
+        "bytes": 496,
+        "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+        "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+      },
+      "producer_job_id": "1a1d38b82e9-392-160",
+      "role": "archive.readback",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.readback.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 28169,
+        "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+        "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+      },
+      "producer_job_id": "1a1d38b82e9-392-160",
+      "role": "archive.artifacts",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.artifacts.original"
+    },
+    {
+      "capture_evidence": "actual_complete_binary_read",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/RESULT.json",
+      "pin": {
+        "bytes": 17615,
+        "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+        "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+      },
+      "producer_job_id": "1a1d38b82e9-392-160",
+      "role": "archive.result",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.result.original"
+    },
+    {
+      "capture_evidence": "content_pin_known_no_original_path_read_in_finite_input_set",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/MAINTENANCE_STARTED.original.json",
+      "pin": {
+        "bytes": 1154,
+        "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+        "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1"
+      },
+      "producer_job_id": null,
+      "role": "historical_environment.started",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/historical_environment.started.original"
+    }
+  ],
+  "durability": "This report has a local computed identity only; no Git object was created by this reviewer.",
+  "execution": {
+    "Git_writes": 0,
+    "H_calls": 0,
+    "author_preparation_script_executed": false,
+    "native_probes": 0,
+    "project_code_or_tests": 0,
+    "source_ref_writes": 0
+  },
+  "format": "hepta-source65a-transport-data-independent-review-v1",
+  "inputs": {
+    "additional_v5_record": {
+      "bytes": 902,
+      "git_blob": "f6ff7909a0a41e8478d1f58a6066c03e2ce65346",
+      "sha256": "68c85e72d21e0d6dd5c626b7c385b1e8637aa9b2f250c408828ddb99aa99b4b2"
+    },
+    "manifest": {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    "matrix": {
+      "bytes": 128105,
+      "git_blob": "290142d50173071ea888fbfacdead1a2b37944e2",
+      "sha256": "77e3a7848eef9a6ed63ba66ecb20a04129775c07a68caf5922cff0a3dc6333d2"
+    },
+    "write_manifest": {
+      "bytes": 18420,
+      "git_blob": "582e37b222144d30093e12164174eb814d287443",
+      "sha256": "8c21286c2690012442e9025f6672c6825c3900788bcfa21c4b990da71691482c"
+    }
+  },
+  "local_inspection_error": {
+    "classification": "local reviewer inspection only, not source or H failure",
+    "correction": "Full independent check requires the actual list schema explicitly; no input source or control changed.",
+    "error": "AttributeError: 'list' object has no attribute 'items'",
+    "file": "ORIGINAL_RECOVERY_LEDGER.json",
+    "kind": "read-only summary script assumed all JSON roots were dictionaries"
+  },
+  "remaining_runtime_conditions": [
+    "The future h successor may replace exactly the four fixed historical read call sites; current m V5 and all live source/Git/index/metadata/ownership/tools/materials/environment/target/coordination-lock checks remain original.",
+    "The closed data mapping itself does not prove historical receipt reads are selected only for historical roles at runtime; the exact consumer code still needs review.",
+    "Absent-only typed writes, parent/directory state, create-only extraction, strict manifest pin and every transported original full readback must be checked by separately reviewed staging/launcher controls; none has run.",
+    "No old-path aliases, overwrite, source changes, restored failure claims, generic missing-path fallback, runtime callback/monkeypatch or unbounded retry is permitted.",
+    "Historical source, Git and metadata snapshot bytes are evidence receipts only; they do not substitute for current live reads.",
+    "The manifest still states HOLD/qualification false. Any executing request needs separate exact Root approval."
+  ],
+  "status": "FIXED_DATA_AND_REQUEST_BYTES_RECONCILED; SUCCESSOR_RUNTIME_CODE_NOT_REVIEWED_OR_APPROVED",
+  "transport": {
+    "gzip": {
+      "bytes": 4994854,
+      "git_blob": "0f8ff1e10bfbe418c11ff9f3f6844b02817c98b6",
+      "sha256": "0fd09793b264476ac6ffda53fa89e38c28e973af32758ce7e2e0932f63275794"
+    },
+    "max_decoded_bytes": 307200,
+    "max_typed_bytes": 409807,
+    "packet": {
+      "bytes": 10637954,
+      "git_blob": "3282998b8de39cc0bcd2c44d40dfd5f9c5b1d57f",
+      "sha256": "da51b174555e0396a524f5f7da2e08e9849039f614efd0e5c7998b11a5fc6cbb"
+    },
+    "part_evidence_limit": 512000,
+    "typed_limit": 1048576,
+    "write_count": 17,
+    "writes": [
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "31ab8fbbcd7cc205a6cd1de87d13aecc3b5a4e4e",
+          "sha256": "6b86b0391ad498a0a33819ccf3d1f7df85086f7e8c9ee1e7adfbd274e7b0d845"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-001",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "6ff9185f227fc91549e67ae29dc9aeb58e0d80d3",
+          "sha256": "46a9b20b357d8292a6a77d66f49ea05bc0d4b8e888729354a40e125568adf5c0"
+        },
+        "sequence": 1
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "f4b6cfcffb988b79d20e2cb2cdfae9011291e69d",
+          "sha256": "c4380979846fdd7dcbffedc2b31d77afca0ad421ad4e56e5b7482255dc4c25dc"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-002",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "664bc2571bf1cbe09f4d70cb529b5650b0536fdb",
+          "sha256": "94dc1cf4f18d624c263759a846e22db8d606e916c688702ba19b4ca0a598ef52"
+        },
+        "sequence": 2
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "bebb09eefd45b58dce8e8ee5733cfa7b72f4b867",
+          "sha256": "cb4c9818bf745863633d8facec323ad17ab9a79a5174bbc803206d66cb27e088"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-003",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "07c2c87287ee5dcedd2fb7c99d971212c21df9b3",
+          "sha256": "0b69871fd9e6cec09f055dbf5326b05964f4fab792ee4b4bb260132de0c530ad"
+        },
+        "sequence": 3
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "9038f83a3d3749c13eb103d73709ba94627d826f",
+          "sha256": "b9c1c04f9729389996cf2ea77481823b9a0c13b55fc64a280139835fdee6fce1"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-004",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "f9ed4e208e141f777515b9fc1b610e4408960794",
+          "sha256": "17fe8ac9a32801fbe24bbaa22386e11c46f7068a2b423d22e416d4b0739cd3af"
+        },
+        "sequence": 4
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "117500db05eb47a4ed5fa15348c2badaf90e8eb9",
+          "sha256": "57de91373607f18e1bb495835784555a8c20fed3c35c18568d2f28f25563db6d"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-005",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "8ff32cf235785f1f172592bcaaa6fb3af3b68266",
+          "sha256": "ac15862227b7febc9edaae1fde8dbd1327ac3bd6ff307e632453fe33362f343f"
+        },
+        "sequence": 5
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "2bd9985ea771c0a4820461f928019545d5f432e8",
+          "sha256": "2c0b8661579fdfc073c934cb6536ac975f0979cf20bbaf6673c8968e4ed73093"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-006",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "57c6fddafb01a43d9b17ac46682daf6ce08283ac",
+          "sha256": "034e97bc3dc8d205ce48767514c0c5dc1c21939e52c8a5cb68ed5d4c549f7947"
+        },
+        "sequence": 6
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "53b7395b2c06fe97d530300551407dcf93d64a9d",
+          "sha256": "d591844926bf2b70a1c4b1687646e58fed36e5e48e02feb9739fee8306f87ad1"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-007",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "f0f2e60e92f23f3319ab06ae5e2afe5d378b6972",
+          "sha256": "67fd2c424424d45932c08d35e6de97cbe70d3458aabfc85d515058fcff210717"
+        },
+        "sequence": 7
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "da75e3a2f3f8734a6f75294a94d22da86f851d33",
+          "sha256": "d31c9f29880e7b3f4661a32a2d075252a29e9419940aee6d60690107b2e57ff1"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-008",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "5525bc41c745fa865ada121de54f13a76d2a7c8b",
+          "sha256": "8148e30a77b4e013aabcba31a6a865fb7cdf0c8ccabc5cb5d62a2aaded7c0b27"
+        },
+        "sequence": 8
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "cddcaabf900a5914be150d4932e04a367722ee79",
+          "sha256": "f86dc62e47e9f24bbd9a06cf17eb624a64cce23eca2d89645fd894eba4d44a44"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-009",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "0c785e3e8a036bd6614950913d2d500d64938fa2",
+          "sha256": "0edee992a0ac2a4263b1169a600ff4a0d84918260cf38507f1e5fcd1c7466c9a"
+        },
+        "sequence": 9
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "e17216d2dcc28bd08d5290ef1dc3652f685cbb2b",
+          "sha256": "3dfa4e0a1a42e0d517e1deed0471b63ab9580dd628d84af1b892b2366215595a"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-010",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "71cf99eac3bccb01ac4618792d88db636861ab1b",
+          "sha256": "09a6bfe5ea2ebdcaf0acc9f4905aba48d5687892f58053e30ee7cce3444c425d"
+        },
+        "sequence": 10
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "021f4f922769f4ed583608695e1ebeaf2e42e5af",
+          "sha256": "55db7199ca7b9d776ac22f5546ce9a8c791c639a9a53eeb0ac9d7dc6ee290248"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-011",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "73bebd0c2ce334249759e6117d43f341db4ab847",
+          "sha256": "a800564925b6b9d903fcf0c9c545b3b90abc33ef55d5c0b96ae58caf020d0666"
+        },
+        "sequence": 11
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "db8238ca9f3a20f7782b4cbe471373f26a60bf1b",
+          "sha256": "ec2b2887b33fe891fdb18596724ca3e6c8899b2e30159021bea5f2afa4df1d72"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-012",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "726b5f840f300ed73361bc63be1be744dac886cc",
+          "sha256": "764bc1df77967ef3d16b6d41374734bc9da8428715e93c42d48e2f982275ed0b"
+        },
+        "sequence": 12
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "b24d04d8212983127a63401c05e6937ecdc6cd00",
+          "sha256": "f7c316582236168bbc1ff6fb14c04d4090d0259e103bc51dbf49256bf73e1bcf"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-013",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "0df7df0be94b5ea27c7c99346b712c890e2df797",
+          "sha256": "5fe8880b34e66091545d2b1cdbe664c87c330d8450476aa9dc92a6019c8291a8"
+        },
+        "sequence": 13
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "9e365c121528367edf62cad17251117900cd81a5",
+          "sha256": "e46da201c7353d917a18314e34fcac53ecf20d509ea095fe432d9a36eaf2f1ad"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-014",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "52058d587a194306a9dc26d7386728430595ff58",
+          "sha256": "8d6e0a3cf9f37b4ac3f0c6b02804afb8328f72652ed5649ee3f63911f564b1b1"
+        },
+        "sequence": 14
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "355e5c9355e63c7ea23e7ffcd36a424f4dcb810f",
+          "sha256": "3059a5c2580412437680096e6068a835e381a0c94e039621e12b6afefd9c5c0f"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-015",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "87a08b24d8088640005b8e74af7537648e469a33",
+          "sha256": "79cc0b98bfeed62f557da0ab282c24f131a7ed65b7bcd192d51492bebc65559f"
+        },
+        "sequence": 15
+      },
+      {
+        "decoded": {
+          "bytes": 307200,
+          "git_blob": "101e78c002ed67a46f597d5cee48c92bb05002bd",
+          "sha256": "42dfe642346ff861f9cbb6c3269ae841821dfc8c795f67243444da53e3115dd8"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-016",
+        "request": {
+          "bytes": 409807,
+          "git_blob": "28a7257961686eb45cde2513e1b63defc04008ed",
+          "sha256": "396bf5247ecb0b45e2bd40109c6005d62e13bb890828cdf2018dfd4358447a34"
+        },
+        "sequence": 16
+      },
+      {
+        "decoded": {
+          "bytes": 79654,
+          "git_blob": "aadf21d52a68d116c3c9d022c1b08f7ef827db04",
+          "sha256": "2073b0f1f10f06d0b884ac2ab25aad6f0b200c904be1585bc8b38f537bac51d8"
+        },
+        "expected_version": "absent",
+        "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-017",
+        "request": {
+          "bytes": 106415,
+          "git_blob": "1aa987645e4d49e01e619f4c4e86b816a111b707",
+          "sha256": "cb04d2685e27dbede6202dff8658c33584d9d9f15e45343783cbb0f38f36c18e"
+        },
+        "sequence": 17
+      }
+    ]
+  }
+}

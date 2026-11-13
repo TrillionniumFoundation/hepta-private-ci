@@ -1,0 +1,565 @@
+{
+  "Admission_constructor_called": false,
+  "H_calls": 0,
+  "actual_old65a_result_rewritten": false,
+  "after": {
+    "bytes": 111588,
+    "git_blob": "fd67cb043f7b6cb8cf042104ac202cb5f0842196",
+    "sha256": "15d28bcd74c93ea3e2e6f9ea58bf95baca81c65ab75e4b3539c5a6e9e788ba5d"
+  },
+  "all_other_original_function_bytes_unchanged": true,
+  "before": {
+    "bytes": 111119,
+    "git_blob": "299c3d79987abcde03e83c271bee91c568e0a5ab",
+    "sha256": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767"
+  },
+  "changed_original_functions": [
+    "Admission.finish"
+  ],
+  "current_stage_contract_changed": false,
+  "exact_full_inverse_equal": true,
+  "filesystem_or_lock_methods_executed": false,
+  "first_reviewer_attempt": "Retained exit 1: the selector initially recognized dictionary string keys only; the unchanged native wrapper uses a keyword argument. The review selector was expanded to those two exact AST spellings. Candidate and wrappers were not modified.",
+  "format": "hepta-unestablished-baseline-classification-independent-peer-v1",
+  "limitation": "Only exact source bytes and memory-only branch outcomes were reviewed. No live source/Git/environment, staging or gate behavior was observed.",
+  "native_or_source_main_called": false,
+  "new_error_is_not_a_SourceChanged_subclass": true,
+  "not_an_execution_approval": true,
+  "original_wrapper_handler_cases": [
+    {
+      "after_status": "unknown",
+      "error_class": "InitialBaselineUnavailable",
+      "initial_status": "unknown",
+      "qualification": false,
+      "wrapper": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3"
+    },
+    {
+      "after_status": "failed",
+      "error_class": "InitialBaselineUnavailable",
+      "initial_status": "failed",
+      "qualification": false,
+      "wrapper": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3"
+    },
+    {
+      "after_status": "unknown",
+      "error_class": "InitialBaselineUnavailable",
+      "initial_status": "passed",
+      "qualification": false,
+      "wrapper": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3"
+    },
+    {
+      "after_status": "unknown",
+      "error_class": "InitialBaselineUnavailable",
+      "initial_status": "unknown",
+      "qualification": false,
+      "wrapper": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae"
+    },
+    {
+      "after_status": "failed",
+      "error_class": "InitialBaselineUnavailable",
+      "initial_status": "failed",
+      "qualification": false,
+      "wrapper": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae"
+    },
+    {
+      "after_status": "unknown",
+      "error_class": "InitialBaselineUnavailable",
+      "initial_status": "passed",
+      "qualification": false,
+      "wrapper": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae"
+    }
+  ],
+  "patch": {
+    "bytes": 1486,
+    "git_blob": "4c090f53fd4b057930d79cdb663c203e3f66a1b0",
+    "sha256": "c97dbfcef120600f3244126c9c1526170acb249cdb8602cb889a3752243f39f6"
+  },
+  "qualification": false,
+  "qualified_original_functions": 51,
+  "remaining_gate": "Future source exact control must explicitly select and pin this successor; the historical 299c candidate and 65a failure remain unchanged.",
+  "replacement_count": 3,
+  "status": "NO_CONCRETE_STATIC_BLOCKER_WITHIN_THIS_EXACT_DELTA",
+  "synthetic_control_flow_cases": [
+    {
+      "name": "known full baseline and unchanged current data still returns the identical complete result",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz",
+          "m.jwrite:FULL_PHYSICAL_COMPARISON.json",
+          "m.jwrite:INPUTS.final.json",
+          "m.jwrite:READONLY_COMMANDS.json"
+        ],
+        "outcome": {
+          "return": {
+            "extra_physical_entries": 0,
+            "full_physical_bytes_equal": true,
+            "original_source_rows_unchanged": true
+          }
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/FULL_PHYSICAL_COMPARISON.json": {
+            "additional_physical_entries": [],
+            "full_bytes_equal": true,
+            "original_rows_identical": true,
+            "scope": "Original native snapshot equality is a separate required gate; actual generated outputs remain visible."
+          },
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/INPUTS.final.json": {},
+          "m/READONLY_COMMANDS.json": [],
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "known Git inequality remains SourceChanged",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "actual raw Git state changed during qualification"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "different"
+          }
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "empty known Git object is not treated as an unavailable None baseline",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "actual raw Git state changed during qualification"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          }
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "known final identity mismatch remains SourceChanged even when initial_raw is None",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "final source identity changed"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022646966666572656e74222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "a changed physical row remains SourceChanged",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "source-controlled full inventory row changed: a.rs"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a2022646966666572656e74220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "a missing original physical row remains SourceChanged",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "source-controlled full inventory row changed: a.rs"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b5d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "duplicate current paths remain SourceChanged",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "duplicate physical source inventory path"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d2c0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "existing additional-physical-entry reporting stays unchanged",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz",
+          "m.jwrite:FULL_PHYSICAL_COMPARISON.json",
+          "m.jwrite:INPUTS.final.json",
+          "m.jwrite:READONLY_COMMANDS.json"
+        ],
+        "outcome": {
+          "return": {
+            "extra_physical_entries": 1,
+            "full_physical_bytes_equal": false,
+            "original_source_rows_unchanged": true
+          }
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/FULL_PHYSICAL_COMPARISON.json": {
+            "additional_physical_entries": [
+              {
+                "mode": 420,
+                "path": "ignored-output",
+                "sha256": "extra"
+              }
+            ],
+            "full_bytes_equal": false,
+            "original_rows_identical": true,
+            "scope": "Original native snapshot equality is a separate required gate; actual generated outputs remain visible."
+          },
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/INPUTS.final.json": {},
+          "m/READONLY_COMMANDS.json": [],
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d2c0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a202269676e6f7265642d6f7574707574222c0a20202020202022736861323536223a20226578747261220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "earlier original-input rejection stays prior to both new classifications",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs"
+        ],
+        "outcome": {
+          "error_type": "RuntimeError",
+          "message": "original input drift"
+        },
+        "records": {}
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "complete live metadata rejection remains unchanged",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after"
+        ],
+        "outcome": {
+          "error_type": "RuntimeError",
+          "message": "complete metadata differs"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          }
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "non-None malformed baseline remains a JSON parse rejection",
+      "observed": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "JSONDecodeError",
+          "message": "Expecting value: line 1 column 1 (char 0)"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old_equals_new": true,
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "unestablished Git baseline retains actual-after record then refuses equality as Unknown",
+      "new": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json"
+        ],
+        "outcome": {
+          "error_type": "InitialBaselineUnavailable",
+          "message": "initial Git baseline was not established; source equality is Unknown"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          }
+        }
+      },
+      "old": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json"
+        ],
+        "outcome": {
+          "error_type": "SourceChanged",
+          "message": "actual raw Git state changed during qualification"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          }
+        }
+      },
+      "scope": "synthetic memory-only fixture"
+    },
+    {
+      "name": "unestablished physical baseline retains final inventory and rejects before parsing None",
+      "new": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "InitialBaselineUnavailable",
+          "message": "initial full inventory baseline was not established; source equality is Unknown"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "old": {
+        "events": [
+          "current_lock",
+          "transport_stability",
+          "m.verify_original_inputs",
+          "h.verify_original_inputs",
+          "h.jwrite:INPUTS.final.json",
+          "h.jwrite:READONLY_COMMANDS.json",
+          "m.git_state",
+          "m.jwrite:GIT_STATE.after.json",
+          "live_metadata:GIT_METADATA.after",
+          "full_inventory_memory_only",
+          "m.gzrecord:SOURCE_FINAL.complete.inventory.json.gz"
+        ],
+        "outcome": {
+          "error_type": "TypeError",
+          "message": "the JSON object must be str, bytes or bytearray, not NoneType"
+        },
+        "records": {
+          "h/INPUTS.final.json": {},
+          "h/READONLY_COMMANDS.json": [],
+          "m/GIT_STATE.after.json": {
+            "head": "synthetic-current-head",
+            "index_sha256": "synthetic-current-index"
+          },
+          "m/SOURCE_FINAL.complete.inventory.json.gz": "7b0a20202266696c6573223a205b0a202020207b0a202020202020226d6f6465223a203432302c0a2020202020202270617468223a2022612e7273222c0a20202020202022736861323536223a202273796e7468657469632d626f6479220a202020207d0a20205d2c0a202022736f75726365223a207b0a202020202268656164223a2022636f6d6d69742d646174612d6f6e6c79222c0a2020202022737461747573223a2022222c0a202020202274726565223a2022747265652d646174612d6f6e6c79220a20207d0a7d0a"
+        }
+      },
+      "scope": "synthetic memory-only fixture"
+    }
+  ]
+}

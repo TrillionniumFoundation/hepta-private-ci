@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.evaluation-audit.original-run-start-boundary-review.v1",
+  "status": "NARROW_SOURCE_REVIEW_COMPLETE_NOT_E2_IMPLEMENTATION_OR_EXECUTION",
+  "baseline": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+    "captured_inventory": {
+      "bytes": 5631947,
+      "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e",
+      "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998"
+    },
+    "live_read": false
+  },
+  "scope": "Original AgentdState::require_current_run_start authority source and exact relevant mutex scopes; no AutomationStore/Driver ownership re-audit and no repository-wide caller inventory.",
+  "entry": {
+    "path": "codex-rs/hepta-agentd/src/state.rs",
+    "git_blob": "8de64259fdf7a5d8cdfcee41f7a92bd859f2c217",
+    "line": 795,
+    "signature": "pub(crate) fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError>",
+    "visibility": "AgentdState and method both crate-private",
+    "output": "current observation time only; no grant/receipt/owner construction"
+  },
+  "authority_chain": [
+    {
+      "step": 1,
+      "source": "state_control.rs::AgentdState::response",
+      "behavior": "ObjectiveStart calls configured ObjectiveRuntimeHost::submit after original spawn/Fleet generation checks. The separate raw RunStart lifecycle arm is not the signed Circuit execution ingress and does not replace it."
+    },
+    {
+      "step": 2,
+      "source": "objective_submission.rs::ObjectiveRuntimeHost::submit_for",
+      "behavior": "Require current Objective readiness; enforce original five-minute request bound; load current owner-controlled AuthBus trust; authenticate the full serialized original objective body; decode original structured source; preserve original Notes/Desktop source validation and selected profile context."
+    },
+    {
+      "step": 3,
+      "source": "objective_submission.rs::ObjectiveRuntimeHost::submit_for and objective_runtime.rs",
+      "behavior": "Under original ObjectiveHostState mutex, require replay admission, invoke original compile_and_publish_objective_run_v1 with exact profile/source/context/authentication/generation/fence/journal head, reload/clone the durable record, advance the exact highest-sequence map. Drop this guard before trust revalidation and selected owner execution."
+    },
+    {
+      "step": 4,
+      "source": "objective_submission.rs::FullObjectiveExecution::execute",
+      "behavior": "For Compiled records, call original execute_circuit_task_record first when configured. Preserve actual sealed receipt outcome classification. ExplicitAbstain and original other profiles remain separate."
+    },
+    {
+      "step": 5,
+      "source": "state.rs::AgentdState::require_current_run_start",
+      "behavior": "Original readiness refresh, current runtime generation and domain-separated fence comparison, then current AuthBus trust reload. Reconstruct original SignedMessage claims from retained record authentication and original Agent identity, preserving issuer/key epoch/message/scope/body digest/sequence/expiry/signature. Authenticate original issuer, objective scope, retained signed body digest and current time."
+    },
+    {
+      "step": 6,
+      "source": "state_circuit_task.rs::execute_circuit_task_record",
+      "behavior": "Preserve before-submit, CommitUncertain readback-before, before/after result publication and final current checks. CommitUncertain invokes readback only, never recomputation. No unresolved/missing outcome can become successful receipt; completion outbox only accepts explicitly registered original source run IDs."
+    }
+  ],
+  "trust_input": {
+    "source": "authbus_ingress.rs::TextIngress::trust -> authbus_trust.rs::TextTrust::load/read_private_owner_file",
+    "rules": [
+      "Direct child of canonical Agent home",
+      "Private home and regular private one-link file owned by home uid",
+      "16 KiB trust-file limit",
+      "Open/read identity and size stability",
+      "Schema/Agent identity/registered key and bounded thread list validated",
+      "No trust file/key/registration creation on the read path"
+    ],
+    "signature": "authbus signed.rs::SignedMessage::authenticate checks actual issuer/key epoch, Ed25519 verify_strict over all claims, then original structural/revocation/scope/expiry checks. Its temporary ReplayWindow is explicitly not durable replay protection; the original objective journal supplies that."
+  },
+  "lock_scopes": [
+    {
+      "site": "require_objective_ready -> notes_organ_state.rs::objective_admission_ready",
+      "order": "refresh_generation first; then a short runtime lock checks Running, actual AppServer or finite Notes readiness, critical stores, revocation baseline, required ports, admission_open and not fenced."
+    },
+    {
+      "site": "state.rs::refresh_generation",
+      "order": "Original FleetRegistry.load_agent completes before runtime lock. Preserve layout/resources and Starting/Running/Draining generation relation. On transitions the existing code may take events and then runs while runtime is held; runtime is explicitly dropped before close_neuron_generation_admission. This is a local call-path observation, not a universal lock-order proof."
+    },
+    {
+      "site": "state.rs::require_current_run_start",
+      "order": "Temporary runtime mutex access to copy current_generation ends before AuthBus trust-file I/O. There is no lock spanning the full Fleet/trust revalidation."
+    },
+    {
+      "site": "state_circuit_task.rs::execute_circuit_task_record",
+      "order": "Runtime admission lock covers Running/open/fence/generation checks and admitted counter increment. It ends before provider.build and handle.submit/readback awaits. Pending/admission guards cover execution and result publication; the worker pending guard survives a cancelled caller as described by original code."
+    },
+    {
+      "site": "objective_submission.rs::submit_for",
+      "order": "ObjectiveHostState journal/replay mutex is released before P::execute await. Original durable append/ACK failure is not converted to NotApplied."
+    },
+    {
+      "site": "state.rs::start_current_run_start_record",
+      "order": "Both require_current_run_start calls complete before acquiring runs mutex for original start_revalidated_run_start. The run mutex is not held through owner execution."
+    }
+  ],
+  "required_e2_boundaries": [
+    "Do not expose AgentdState or treat require_current_run_start as a public arbitrary-record grant service. Its retained body digest authentication depends on the original journal/compiler record provenance; it does not reconstruct and independently authenticate every record field from an arbitrary transport DTO.",
+    "Retain original owner-controlled AuthBus trust, replay checkpoint and objective profile in the daemon. config_circuit_task.rs::take_circuit_task_bootstrap expressly requires all three and one compatible complete execution profile.",
+    "Original circuit_q24_task_channel_v1 already accepts identity/profile without AgentdConfig, constructs the actual Source and same published task Cell, and returns process-local runtime. Its install method later consumes daemon Config. That code separation alone does not transfer Arc/mpsc or same-Arc retirement across processes.",
+    "Existing Root production handoff has fixed exact marker, two ordered rights, actual UID0 creator, pidfd/SO_PEERCRED/lifetime checks. It is not an arbitrary transport for a new Cell/RunStart purpose.",
+    "Any new process boundary must retain signed ObjectiveStart admission and current revalidation before/after actual work, original uncertainty/readback semantics, complete durable record provenance, same original task/Cell/Source ownership and actual drain. No new grantor/callback or synthetic completed receipt follows from this review."
+  ],
+  "limitations": [
+    "No H or live target files read",
+    "No candidate source writes, builds, formatter, Rust/QA/tests or control execution",
+    "No proof of all global lock orders or atomic Fleet/trust lease across I/O",
+    "No E2 cross-UID implementation or completed ordinary task",
+    "Production launcher was captured earlier but is not covered by this narrow run-start report"
+  ],
+  "source_references": [
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/state.rs",
+      "bytes": 37444,
+      "sha256": "4e09b3a4d754512ae7794526b29d185654526226eb1af94e9f618eeb4338b3e7",
+      "git_blob": "8de64259fdf7a5d8cdfcee41f7a92bd859f2c217",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/state_control.rs",
+      "bytes": 59419,
+      "sha256": "f75869d195143344c052a639877efbd7d477895c8d6ec58787fb7c499be3155b",
+      "git_blob": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/state_circuit_task.rs",
+      "bytes": 9070,
+      "sha256": "7a83409184049573fed417e4d400f1c6a71b15f699bb5068bcc133b4a4aee466",
+      "git_blob": "453f78e8db84caa0ba20a9a5cc50ccf47e3b5c71",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_organ_state.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/notes_organ_state.rs",
+      "bytes": 9715,
+      "sha256": "e304270cc274f8fc299e94e6226bd42c12515bf78403440ba7249eba0888dca9",
+      "git_blob": "e8e3a435df790ef04421703cd297d5efeebc166d",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/authbus_ingress.rs",
+      "bytes": 10684,
+      "sha256": "60c3ecd266b9213855c088e657d297d15313152a0ca7c7b5da1afde5ca8f6eb0",
+      "git_blob": "938b7dd7592d9e54746f40ab9841411cdbe9745b",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/authbus_trust.rs",
+      "bytes": 5156,
+      "sha256": "a6d71f68d7c0b34dfc8e122cb9378f54555ddd193d54b5d8fe3f80487e358531",
+      "git_blob": "efbe883077bbbcca8ae1c88cce1f351286f53cd3",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/objective_runtime.rs",
+      "bytes": 16233,
+      "sha256": "3c31985cf94bf030ffd859472c20ae451c2ac3ec5a0d5cb2d045df0d8a62a652",
+      "git_blob": "5d3b9bebac8d2ca47b43eb93be4b6452c6605cfb",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_submission.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/objective_submission.rs",
+      "bytes": 12827,
+      "sha256": "ba5cf5ea75bd0a9362066b1e3f563dba52c5fa407e923f1f45122004e515ae45",
+      "git_blob": "37ca20950ed899189f0d059b297270036a8466a8",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/signed.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/authbus_signed.rs",
+      "bytes": 5069,
+      "sha256": "0eca94c9df0c9af855502b9758825efd910fbd76b1ff3664ac21969ffa5f1fed",
+      "git_blob": "ea5bcf2e5cce2c17421728474194b3e3907cc3bb",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/config_circuit_task.rs",
+      "bytes": 3366,
+      "sha256": "a50914c8572bfbabbf652505b8dc586b30054e9d0e8690c2e9d3e77098209895",
+      "git_blob": "2c2869dcfa739364ce50ab22c13cd079cedfc0e1",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/circuit_q24_task_profile.rs",
+      "bytes": 7595,
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78",
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "matches_actual_b608_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "local_path": "/tmp/hepta-36fa-e2-custody-transport-interface-review-v1/inputs/root_production_handoff.rs",
+      "bytes": 9613,
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f",
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+      "matches_actual_b608_inventory": true
+    }
+  ],
+  "storage": "Local computed artifact only; no Git create/ref mutation by reviewer"
+}

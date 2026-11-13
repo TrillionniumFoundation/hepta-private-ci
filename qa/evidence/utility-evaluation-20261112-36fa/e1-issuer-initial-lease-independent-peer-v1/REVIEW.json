@@ -1,0 +1,268 @@
+{
+  "concrete_implementation_boundary": "A fixed typed local method on the retained PreparedHostAuthoritySession/service can consume actual Artifact/FinalUse/selected/target inputs and delegate original prepare/publish/cold custody. The method must retain original session clock/Root/Registry/issuer ownership and use the original full binding. No generic callback, serialized authority, duplicate issuer, relaxed root store, or alternate Current implementation is needed or authorized.",
+  "execution_status": {
+    "H": false,
+    "Rust_compile": false,
+    "formatter": false,
+    "production_candidate_reviewed": false,
+    "production_complete": false,
+    "tests": false
+  },
+  "external_actual_requirements": [
+    "A legitimately provisioned original protected issuer lease whose exact principal/operation_class/destination/scope/payload matches this actual Initial operation; an unrelated Notes/Device lease cannot be broadened by the new API.",
+    "The existing real Artifact service and independently verified selected material, real target file/witness, and actual FinalUse consumer with retained nonce/frontier/trust continuity.",
+    "Original Root bind/private directory and current authorized registration/pidfd. Root and non-Root daemon process ownership do not merge through these local APIs.",
+    "A real complete product chain and independent external B/utility evidence remain separate from this code feasibility review."
+  ],
+  "findings": [
+    {
+      "evidence": [
+        {
+          "functions": [
+            "PreparedHostAuthoritySession via open_registered_service",
+            "open_registered_writer",
+            "open_original_issuer_custody"
+          ],
+          "lines": [
+            244,
+            287,
+            359,
+            416
+          ],
+          "path": "authority_host_runtime.rs"
+        },
+        {
+          "function": "PreparedHostAuthoritySession::open",
+          "lines": [
+            111,
+            130
+          ],
+          "path": "authority_host_session.rs"
+        },
+        {
+          "lines": [
+            73,
+            113,
+            149,
+            165
+          ],
+          "path": "authority_host_service.rs"
+        }
+      ],
+      "finding": "Use the actual retained original Root session, not a new reconstructed service.",
+      "id": "E01",
+      "meaning": "The private original factory verifies required bind, opens actual Root directory/clock/frontier and existing lease files, checks signer id+public key, and retains these same objects in HostAuthorityService. from_registered_owner alone leaves root_registry and resident_store_root None. A new E1 fixed local entry can be a private service child reached through the non-Clone prepared session; it must refuse absent retained original fields and may not create replacement owners or expose raw Current/issuer getters."
+    },
+    {
+      "evidence": [
+        {
+          "function": "InitialIntent::binding",
+          "lines": [
+            44,
+            61
+          ],
+          "path": "neuron_generation_current_initial_types.rs"
+        },
+        {
+          "function": "ProtectedLease::with_binding",
+          "lines": [
+            39,
+            76
+          ],
+          "path": "deployment_issuer_root.rs"
+        }
+      ],
+      "finding": "The original Initial binding has five complete fields; the protected lease is a different five-field projection.",
+      "id": "E02",
+      "lease_mapping": {
+        "destination_id": "same binding.destination_id",
+        "operation_class": "runtime.agentd.production_operation",
+        "payload_sha256": "same binding.payload_sha256",
+        "principal_id": "same binding.subject_id and original registered agent identity",
+        "scope_sha256": "same binding.scope_sha256"
+      },
+      "limit": "AuthorityLeaseBinding has no request_sha256 field. Full operation/request identity still must be compared in the complete SignedFinalUseGrant binding and original Prepared/CURRENT record. Do not describe lease projection alone as full operation authorization.",
+      "mapping": {
+        "destination_id": "agentd.cell-generation.initialize",
+        "payload_sha256": "target.digest()",
+        "request_sha256": "digest of full original InitialIntent, including operation id, supersedes, target, genesis checkpoint and actual selection observation",
+        "scope_sha256": "original scope_digest(target.scope())",
+        "subject_id": "target.scope().agent_id"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "function": "initial_head_and_prepared",
+          "lines": [
+            240,
+            271
+          ],
+          "path": "neuron_generation_current_initial.rs"
+        },
+        {
+          "function": "revalidate",
+          "lines": [
+            172,
+            205
+          ],
+          "path": "neuron_generation_update_selection.rs"
+        },
+        {
+          "function": "prepare_agentd_generation_initial_v1",
+          "lines": [
+            60,
+            103
+          ],
+          "path": "neuron_generation_initial.rs"
+        }
+      ],
+      "finding": "A narrow metadata preview can reuse the original pure InitialIntent builder but cannot substitute for Prepared.",
+      "id": "E03",
+      "meaning": "The existing pure builder checks selected manifest and constructs the exact original intent/head. A crate-private wrapper returning only FinalUseBinding is metadata, not a Ready/Current capability. Selection revalidate updates observed_at but preserves the frozen observation digest. The subsequent original prepare must still revalidate actual Artifact, check empty file/witness, initialize concrete CURRENT, open original guarded journal, and compare its actual full binding with the preview. No preview is a durable publication."
+    },
+    {
+      "evidence": [
+        {
+          "function": "DeploymentFinalUseIssuer::with_live_lease",
+          "lines": [
+            92,
+            128
+          ],
+          "path": "deployment_issuer_root.rs"
+        },
+        {
+          "function": "with_dispatch_boundary_witness",
+          "lines": [
+            689,
+            724
+          ],
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs"
+        }
+      ],
+      "finding": "Two with_live_lease observations do not hold one issuer-lease fence across publication.",
+      "id": "E04",
+      "meaning": "Each call verifies pinned id/revision/current binding/epoch/revocation/time and holds its registry mutex only through that call's bounded callback. Releasing it, doing publication, then reacquiring supplies two checked observations. It does not atomically cover the interval or roll back an effect if the later check fails. Expiry may also occur during callback I/O, so the original post-I/O clock/lease-time check remains necessary."
+    },
+    {
+      "evidence": [
+        {
+          "functions": [
+            "Inner",
+            "claim",
+            "with_dispatch_boundary_witness"
+          ],
+          "lines": [
+            232,
+            245,
+            554,
+            636,
+            775,
+            803
+          ],
+          "path": "codex-rs/hepta-contracts/src/final_use.rs"
+        },
+        {
+          "function": "publish_initial",
+          "lines": [
+            49,
+            119
+          ],
+          "path": "neuron_generation_current_initial.rs"
+        },
+        {
+          "function": "check_live",
+          "lines": [
+            153,
+            183
+          ],
+          "path": "neuron_generation_update_live.rs"
+        }
+      ],
+      "finding": "Original FinalUse atomically protects its own nonce/revocation owner, not automatically the separate issuer lease Registry.",
+      "id": "E05",
+      "meaning": "Original claim binds signer/key/full binding and consumes the original nonce with the independent frontier. dispatch rechecks same token-owner Arc and holds the consumer state mutex through the bounded CURRENT publication. This is a different state owner from AuthorityLeaseRegistry. Keep original Artifact→FinalUse→CURRENT and live Artifact→selected→FinalUse ordering; do not wrap the whole call under a Registry callback that may reenter the same retained Registry through external owner I/O. Extra continuous issuer-lease atomicity is unproven and must not be claimed."
+    },
+    {
+      "evidence": [
+        {
+          "function": "verify_original_artifact",
+          "lines": [
+            27,
+            69
+          ],
+          "path": "deployment_signed_grant.rs"
+        },
+        {
+          "function": "verify_retained_use",
+          "lines": [
+            41,
+            101
+          ],
+          "path": "codex-rs/hepta-contracts/src/final_use_retained.rs"
+        }
+      ],
+      "finding": "verify_original_signed_grant returns the current issuer head; a successful return alone does not reject a revoked grant.",
+      "id": "E06",
+      "meaning": "The existing issuer helper verifies original signature, issuer id, epoch, canonical sequence and time, and returns state.head. It does not itself test revoked_grant_ids membership. The caller must use the returned head, and must not assume an explicitly supplied actual FinalUse consumer has automatically applied that issuer head. Original consumer claim/retained verification checks its own actual head and frontier."
+    },
+    {
+      "finding": "The proposed full-head/consumer-frontier observation is a useful narrow read-only relation, with explicit temporal limits.",
+      "id": "E07",
+      "meaning": "No concrete contradiction with the original APIs was found in this sequence. It detects changes across this observation interval; it does not prevent a later issuer change before claim. Run independent pre- and post-operation observations: a normal claim intentionally changes the nonce frontier, so do not demand equality across the actual claim. Do not update revocations, reopen consumers or manufacture an empty nonce journal within this check. The actual successor implementation still needs independent review.",
+      "proposed_sequence": [
+        "same issuer verify/observe existing signed grant",
+        "explicitly reject grant id in returned revoked set",
+        "actual consumer.current_external_frontier before",
+        "actual consumer.revocation_head equals complete issuer head",
+        "actual consumer.current_external_frontier after equals before including nonce digest",
+        "same issuer verify/observe again returns same complete head"
+      ]
+    },
+    {
+      "evidence": [
+        {
+          "function": "publish",
+          "lines": [
+            127,
+            143
+          ],
+          "path": "neuron_generation_initial_root_custody.rs"
+        },
+        {
+          "function": "recover_agentd_generation_initial_v1",
+          "lines": [
+            162,
+            217
+          ],
+          "path": "neuron_generation_initial.rs"
+        },
+        {
+          "lines": [
+            20,
+            57
+          ],
+          "path": "neuron_generation_initial_root_cold.rs"
+        }
+      ],
+      "finding": "Any post-publication failure leaves only same-operation readback/recovery; it is not NotApplied.",
+      "id": "E08",
+      "meaning": "Original custody moves Prepared to ReadbackRequired before original publish. A claim/CAS may have happened when later lease/head/deadline/output validation fails. Preserve the concrete same operation and original authority objects in the error/readback path; do not restore Prepared or retry a grant. Cold recovery needs actual existing CURRENT plus original selected/journal/authorities, only accepts Published, and rechecks full protected readback. Retained-grant observation permits an old expiry for historical recovery but supplies no new dispatch permission."
+    }
+  ],
+  "format": "e1-protected-issuer-initial-custody-independent-boundary-review-v1",
+  "local_transport_error": "LOCAL_SAVE_FIRST_ERROR.json records an argument-list-size failure while saving already fetched SDK bytes. Only local transport was retried with bounded writes; no H/source/test execution was affected.",
+  "references": {
+    "bytes": 9291,
+    "git_blob": "ac1c1814a03b2705e8f48c21b12c6a7425826312",
+    "path": "/tmp/hepta-36fa-e1-issuer-initial-lease-independent-peer-v1/SOURCE_REFERENCES.json",
+    "sha256": "d7656a099d21c1f0c877461dc3421eb12e05bd33a8c6b014cc4869221c628f6d",
+    "storage": "local-only, computed identity; no Git write"
+  },
+  "scope": "Read-only original API/authority/binding/lock-order review for ordinary sole-writer E1 proposal. No production or test code written; no H, project execution, Git writes or authority minting.",
+  "source": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "status": "ORIGINAL_TYPED_COMPOSITION_FEASIBLE_WITH_EXPLICIT_LEASE_AND_REVOCATION_LIMITS; NO_CANDIDATE_CODE_APPROVED"
+}

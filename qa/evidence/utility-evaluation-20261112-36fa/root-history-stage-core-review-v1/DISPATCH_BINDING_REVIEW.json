@@ -1,0 +1,54 @@
+{
+  "H_calls": 0,
+  "actual_admission_env_keys": [],
+  "actual_request_digest": "abfe3cadc513a9814398be06f3f98d4097009cbf6b38f23171463d87ab16a752",
+  "actual_request_fingerprint_decimal": "12393409941603592577",
+  "admission": {
+    "bytes": 19840,
+    "git_blob": "97d700fa05cc4c6b9a7455376cc35878fe37dfaf",
+    "sha256": "6e740e5572e6b6bee08e6958a80bdf94f7e2c85279a4a0774931f113bdc26661"
+  },
+  "approved_request": {
+    "bytes": 168712,
+    "git_blob": "e944fa3dd289d28901cc216e4e05cce26e636a38",
+    "sha256": "4e9fc5f534ba18ad30ef73efa4c25aa65f11e48bad7f26fcedb2d3db1d3ace4f"
+  },
+  "args_include_exact_approved_17939_byte_program": true,
+  "echoed_fields_equal": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "idempotency_key"
+  ],
+  "format": "hepta-root-stage-dispatch-binding-review-v1",
+  "full_61_file_readback_verified_by_this_review": false,
+  "intent": {
+    "bytes": 894,
+    "git_blob": "27696a998b71d7671338f8b8943becf45d4f47a8",
+    "sha256": "48ecf36604b2cefc56baa85c9e4e88b67f5960b1884f846f79ca8e2169f239fb"
+  },
+  "job_id": "1a1d52e0d88-392-784",
+  "limits": [
+    "The admission record echoes command, arguments, cwd, key and host, not the full stdin or timeout. The exact saved typed request retains those two fields; actual payload-file readback is part of the separate 61-file closure.",
+    "The worker request digest and fingerprint are preserved as observed. Prefix correspondence is checked; the worker canonical request-digest algorithm is not reconstructed here.",
+    "The pre-dispatch intent records 17 writes and 82 successful chunks plus one retained helper read failure. This report does not independently replay all part SDKs.",
+    "This is no source/native gate approval or deployed utility outcome."
+  ],
+  "normal_success": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "reused": false,
+  "saved_request_stdin": {
+    "bytes": 150166,
+    "git_blob": "f8efb445171e1eb74dc289cd5c15ab89f8940e4f",
+    "sha256": "d8c222937adb01eb371695641e3a4219e0b8eebd7a9300f0afe618d4c620f657"
+  },
+  "saved_request_timeout_seconds": 900,
+  "status": "EXACT_SAVED_REQUEST_AND_ALL_ECHOED_ADMISSION_FIELDS_BOUND_TO_ACTUAL_NORMAL_JOB",
+  "supervisor": {
+    "bytes": 950,
+    "git_blob": "af805a3230601013eb94afd5e40e9ea3e83c61d4",
+    "sha256": "4cb0bd6d2286ff49130f1504d3f4e2868abeab961a84038d095dddc3e6e87190"
+  }
+}

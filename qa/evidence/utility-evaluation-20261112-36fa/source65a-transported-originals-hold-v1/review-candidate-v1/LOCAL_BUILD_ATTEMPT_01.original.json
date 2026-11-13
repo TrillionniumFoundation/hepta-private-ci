@@ -1,0 +1,7 @@
+{
+  "chunk_id": "32e688",
+  "wall_time_seconds": 0.000031768,
+  "exit_code": 1,
+  "original_token_count": 177,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-source65a-transported-originals-hold-v1/build_successor.py\", line 272, in <module>\n    main()\n  File \"/tmp/hepta-36fa-source65a-transported-originals-hold-v1/build_successor.py\", line 94, in main\n    hguard = replace_once(hguard, before, after)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-source65a-transported-originals-hold-v1/build_successor.py\", line 34, in replace_once\n    assert source.count(before) == 1, ('one exact replacement', before[:120], source.count(before))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('one exact replacement', '    raw=read_input(proof[\"result_path\"],proof[\"result\"])', 2)\n"
+}

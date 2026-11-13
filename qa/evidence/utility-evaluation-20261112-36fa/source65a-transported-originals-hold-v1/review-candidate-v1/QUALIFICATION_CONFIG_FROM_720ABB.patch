@@ -1,0 +1,105 @@
+--- original
++++ HOLD-successor
+@@ -42,11 +42,11 @@
+     },
+     "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/MAINTENANCE_NORMAL.original.json"
+   },
+-  "admission_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/qualification-admission.py",
++  "admission_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/qualification-admission.py",
+   "admission_pin": {
+-    "bytes": 87654,
+-    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+-    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
++    "bytes": 111119,
++    "git_blob": "299c3d79987abcde03e83c271bee91c568e0a5ab",
++    "sha256": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767"
+   },
+   "archive_restoration": {
+     "archive_actual": {
+@@ -260,7 +260,28 @@
+     "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+     "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+   },
++  "historical_runtime_guard_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/historical-runtime-guard.py",
++  "historical_runtime_guard_pin": {
++    "bytes": 70306,
++    "git_blob": "917f5b669ce5e4b926c7131a42423a0f069e46a4",
++    "sha256": "503aaa202bd40ea54526e11b2e299630b7b888e5afe14a3ce5bfb8a3c1c0f556"
++  },
+   "historical_source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
++  "history_transport": {
++    "control": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1",
++    "manifest": {
++      "bytes": 42163,
++      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
++      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
++    },
++    "manifest_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
++    "staging_job_id": null,
++    "staging_payload": null,
++    "staging_result": null,
++    "staging_result_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/STAGING_READBACK.json",
++    "staging_supervisor": null,
++    "staging_supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/TRANSPORT_SUPERVISOR.original.json"
++  },
+   "inventory_driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py",
+   "isolated_materialization": {
+     "git_metadata": {
+@@ -345,7 +366,7 @@
+     ],
+     "tree": "a489b394666b8141840275128a780605b024cde0"
+   },
+-  "native_driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/native-driver.original.py",
++  "native_driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/native-driver.original.py",
+   "native_driver_pin": {
+     "bytes": 14986,
+     "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+@@ -356,7 +377,7 @@
+   "parents": [
+     "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+   ],
+-  "plan_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/PLAN.original.json",
++  "plan_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/PLAN.original.json",
+   "plan_pin": {
+     "bytes": 32246,
+     "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+@@ -371,13 +392,13 @@
+   "prepared_canonical_commit_is_not_actual_alignment": true,
+   "provenance_donor_repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+   "qualification_execution_dispatched": false,
+-  "records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/native-records",
++  "records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/native-records",
+   "records_parent": "/home/qian-qi/hepta-utility-36fa-evidence",
+   "repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+   "reviewed_formatter_changed_paths": [],
+-  "root_execution_approved": true,
+-  "root_parent": "/run/hepta-utility-36fa-final-b608-v1",
+-  "run_identity": "hepta-utility-36fa-final-b608-v1",
++  "root_execution_approved": false,
++  "root_parent": "/run/hepta-utility-36fa-final-b608-v2",
++  "run_identity": "hepta-utility-36fa-final-b608-v2",
+   "runtime_guard": {
+     "create_target_if_absent": false,
+     "environment": {
+@@ -527,14 +548,14 @@
+       }
+     }
+   ],
+-  "source_gates_config_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/SOURCE_GATES_CONFIG.json",
++  "source_gates_config_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/SOURCE_GATES_CONFIG.json",
+   "source_gates_config_pin": {
+-    "bytes": 831,
+-    "git_blob": "b97682c5a95bb7f09241e54f0b3d13bf7fa791a4",
+-    "sha256": "f08beb0e1a0c87117bd7a091ec3c7b4390285cf47a291c0d7569fd0f1d2e197c"
+-  },
+-  "source_gates_handoff_records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/source-handoff",
+-  "state": "READY_FOR_FINAL_SOURCE_QUALIFICATION",
++    "bytes": 843,
++    "git_blob": "acfa7c86f4202d6e7f15399514dc739f4bc33f82",
++    "sha256": "fddbf0087814c873cf0d23c9e1419a8856c50cd4578d5f6d52c7a80edbad4acc"
++  },
++  "source_gates_handoff_records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/source-handoff",
++  "state": "HOLD_ROOT_EXACT_SOURCE_REVIEW_REQUIRED",
+   "target": "/data/hepta-utility-36fa-final-native-target-v1",
+   "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+ }

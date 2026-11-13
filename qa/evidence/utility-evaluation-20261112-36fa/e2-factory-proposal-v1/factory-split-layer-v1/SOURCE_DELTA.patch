@@ -1,0 +1,336 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_root_task_tests.rs
+@@ -0,0 +1,66 @@
++//! Config-free factory custody mechanisms. These do not run a cross-process
++//! task lane or count a published generation as completed task evidence.
++
++use super::*;
++use crate::PreparedRootHostCircuitTaskV1;
++
++#[tokio::test]
++#[ignore = "requires original Root host bind and actual signed owner fixtures"]
++async fn root_host_task_factory_keeps_unstarted_source_incomplete() -> anyhow::Result<()> {
++    let mut fixture = HostFixture::new("root-host-task-source-incomplete", OriginalHeadCase::Current).await?;
++    let body: anyhow::Result<()> = (|| {
++        let mut generation = fixture.bind()?;
++        PreparedRootHostInitialGenerationV1::publish_original_generation(&mut generation)?;
++        let published = PreparedRootHostInitialGenerationV1::read_original_generation(&generation)?;
++        let (config, inputs, runtime, _request) = fixture.original.take_task_inputs(4)?;
++        let task = PreparedRootHostInitialGenerationV1::prepare_original_root_task(generation, inputs)
++            .map_err(|error| anyhow::anyhow!("{error}"))?;
++        anyhow::ensure!(PreparedRootHostCircuitTaskV1::read_original_root_task_generation(&task)? == published,
++            "the Root factory changed the actual protected operation");
++        anyhow::ensure!(PreparedRootHostCircuitTaskV1::pending_original_root_task_operations(&task)? == 0,
++            "the factory submitted work without the original signed ingress");
++        anyhow::ensure!(PreparedRootHostCircuitTaskV1::drain_completed_original_root_task(&task).is_err(),
++            "an unstarted Source was accepted as original task completion");
++        anyhow::ensure!(config.identity() == &runtime.identity,
++            "the original daemon Config identity changed");
++        drop(task);
++        drop(config);
++        drop(runtime);
++        Ok(())
++    })();
++    let cleanup = fixture.finish();
++    body?;
++    cleanup
++}
++
++#[tokio::test]
++#[ignore = "requires original Root host bind and actual signed owner fixtures"]
++async fn root_host_task_factory_refusal_retains_only_the_same_operation() -> anyhow::Result<()> {
++    let mut fixture = HostFixture::new("root-host-task-factory-refusal", OriginalHeadCase::Current).await?;
++    let body: anyhow::Result<()> = (|| {
++        let mut generation = fixture.bind()?;
++        PreparedRootHostInitialGenerationV1::publish_original_generation(&mut generation)?;
++        let published = PreparedRootHostInitialGenerationV1::read_original_generation(&generation)?;
++        let journal = fixture.original.generation_bytes()?;
++        let (config, mut inputs, runtime, _request) = fixture.original.take_task_inputs(4)?;
++        inputs.fence.generation = inputs.fence.generation.checked_add(1)
++            .ok_or_else(|| anyhow::anyhow!("fixture generation overflow"))?;
++        let error = match PreparedRootHostInitialGenerationV1::prepare_original_root_task(generation, inputs) {
++            Ok(_) => anyhow::bail!("another generation entered the original task factory"),
++            Err(error) => error,
++        };
++        anyhow::ensure!(error.generation_error().to_string().contains("invalid original owner or capacity"),
++            "unexpected factory refusal: {error}");
++        anyhow::ensure!(error.read_original_generation_after_installation_failure()? == published,
++            "failed installation changed the retained original operation");
++        anyhow::ensure!(fixture.original.generation_bytes()? == journal,
++            "rejected task fence changed the published generation journal");
++        drop(error);
++        drop(config);
++        drop(runtime);
++        Ok(())
++    })();
++    let cleanup = fixture.finish();
++    body?;
++    cleanup
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_support_tests.rs
+@@ -252,3 +252,6 @@
+ 
+ #[path = "authority_host_generation_tests.rs"]
+ mod tests;
++
++#[path = "authority_host_generation_root_task_tests.rs"]
++mod root_task_tests;
+--- a/codex-rs/hepta-agentd/src/authority_host_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_runtime.rs
+@@ -42,6 +42,7 @@
+ mod session;
+ pub use session::PreparedHostAuthoritySession;
+ pub use session::PreparedRootHostInitialGenerationV1;
++pub use session::PreparedRootHostCircuitTaskV1;
+ pub use session::RootHostInitialTaskInstallationErrorV1;
+ pub use session::RootNotesPolicyPredecessor;
+ 
+--- a/codex-rs/hepta-agentd/src/authority_host_session.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session.rs
+@@ -21,6 +21,7 @@
+ #[path = "authority_host_session_generation.rs"]
+ mod generation;
+ pub use generation::PreparedRootHostInitialGenerationV1;
++pub use generation::PreparedRootHostCircuitTaskV1;
+ pub use generation::RootHostInitialTaskInstallationErrorV1;
+ 
+ /// One Root session's immutable registration, retained actual process handle
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation.rs
+@@ -21,6 +21,7 @@
+ #[path = "authority_host_session_generation_task.rs"]
+ mod task;
+ pub use task::RootHostInitialTaskInstallationErrorV1;
++pub use task::PreparedRootHostCircuitTaskV1;
+ 
+ enum InitialHostPhase<W: AnchorWitnessStore> {
+     Fresh(RootHostInitialGenerationInputsV1<W>),
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
+@@ -0,0 +1,117 @@
++//! The original Root host retains its one actual task factory and retirement
++//! custody. Config, daemon state and AutomationStore are not created or moved.
++
++use codex_hepta_neuron::AnchorWitnessStore;
++
++use super::InitialHostPhase;
++use super::OriginalInstallationFailure;
++use super::PreparedRootHostInitialGenerationV1;
++use super::RootHostInitialTaskInstallationErrorV1;
++use super::invalid;
++use super::require_original_session;
++use crate::AgentdError;
++use crate::CircuitQ24TaskRuntimeV1;
++use crate::OriginalRootCircuitTaskCustodyV1;
++use crate::OriginalRootCircuitTaskInputsV1;
++use crate::OriginalRootInitialGenerationCustodyV1;
++use crate::PreparedHostAuthoritySession;
++use crate::PublishedCircuitFeatureCompletionV1;
++use crate::authority_host_service::OriginalHostInitialOperation;
++use crate::neuron_generation_current::NeuronGenerationInitialReadbackV1;
++
++/// Non-Clone Root custody for the factory's same task, Cell and Source. It is
++/// not a daemon bootstrap descriptor and does not make the in-memory lane a
++/// cross-process connection. Only the later purpose-fixed service may consume
++/// the private runtime; callers receive no owner, Config or writer getter.
++pub struct PreparedRootHostCircuitTaskV1<SW: AnchorWitnessStore, CW: AnchorWitnessStore> {
++    session: PreparedHostAuthoritySession,
++    operation: OriginalHostInitialOperation,
++    runtime: CircuitQ24TaskRuntimeV1<SW, CW>,
++    custody: OriginalRootCircuitTaskCustodyV1<SW, CW>,
++    end: std::time::Instant,
++}
++
++impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>
++where
++    SW: AnchorWitnessStore + Send + 'static,
++    CW: AnchorWitnessStore + Send + 'static,
++{
++    /// Read the actual published operation through the same Current and live
++    /// original host checks. This does not imply that any task has run.
++    pub fn read_original_root_task_generation(
++        &self,
++    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {
++        require_original_session(&self.session, self.end)?;
++        let observed = OriginalRootCircuitTaskCustodyV1::read_original_operation(&self.custody)?;
++        OriginalHostInitialOperation::require_observed(&self.operation, &observed)?;
++        require_original_session(&self.session, self.end)?;
++        Ok(observed)
++    }
++
++    /// Count the original in-memory lane only. Zero is not a readiness,
++    /// completion, durable drain or process-termination assertion.
++    pub fn pending_original_root_task_operations(&self) -> Result<usize, AgentdError> {
++        self.read_original_root_task_generation()?;
++        let pending = self.runtime.bootstrap.handle().pending_count();
++        require_original_session(&self.session, self.end)?;
++        Ok(pending)
++    }
++
++    /// Call the original same-Arc retirement path. The original Source must
++    /// already contain a real completed task. A post-drain failure remains
++    /// Unknown; it neither restores execution nor proves that drain did nothing.
++    pub fn drain_completed_original_root_task(
++        &self,
++    ) -> Result<PublishedCircuitFeatureCompletionV1, AgentdError> {
++        self.read_original_root_task_generation()?;
++        let completion = OriginalRootCircuitTaskCustodyV1::drain_completed_task(&self.custody)?;
++        self.read_original_root_task_generation()?;
++        Ok(completion)
++    }
++}
++
++impl<W: AnchorWitnessStore + Send + 'static> PreparedRootHostInitialGenerationV1<W> {
++    /// Consume the actual Ready into the existing Config-free Q24 factory.
++    /// The registered identity supplies the scope; no caller profile can replace
++    /// the sealed PublishedTask. Source and Cell creation may precede a later
++    /// refusal, so errors retain only same-operation readback, never Create retry.
++    pub fn prepare_original_root_task<SW, CW>(
++        self,
++        inputs: OriginalRootCircuitTaskInputsV1<SW, CW>,
++    ) -> Result<PreparedRootHostCircuitTaskV1<SW, CW>, RootHostInitialTaskInstallationErrorV1>
++    where
++        SW: AnchorWitnessStore + Send + 'static,
++        CW: AnchorWitnessStore + Send + 'static,
++    {
++        let Self { session, operation, phase, end } = self;
++        let install = (|| -> Result<_, OriginalInstallationFailure> {
++            require_original_session(&session, end)?;
++            let identity = session.registration.registered_identity.identity()
++                .map_err(AgentdError::from)?;
++            let InitialHostPhase::Ready(custody) = phase else {
++                return Err(invalid("the original host generation is not Ready").into());
++            };
++            OriginalHostInitialOperation::require_observed(
++                &operation,
++                &OriginalRootInitialGenerationCustodyV1::read_original_operation(&custody)?,
++            )?;
++            let (runtime, custody) = OriginalRootInitialGenerationCustodyV1::into_original_root_task_channel(
++                custody, &identity, inputs,
++            ).map_err(OriginalInstallationFailure::Factory)?;
++            OriginalHostInitialOperation::require_observed(
++                &operation,
++                &OriginalRootCircuitTaskCustodyV1::read_original_operation(&custody)?,
++            )?;
++            require_original_session(&session, end)?;
++            Ok((runtime, custody))
++        })();
++        match install {
++            Ok((runtime, custody)) => Ok(PreparedRootHostCircuitTaskV1 {
++                session, operation, runtime, custody, end,
++            }),
++            Err(failure) => Err(RootHostInitialTaskInstallationErrorV1 {
++                session, operation, end, failure,
++            }),
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs
+@@ -135,3 +135,7 @@
+         }
+     }
+ }
++
++#[path = "authority_host_session_generation_root_task.rs"]
++mod root_task;
++pub use root_task::PreparedRootHostCircuitTaskV1;
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -150,6 +150,8 @@
+ pub use authority_host_runtime::PreparedHostAuthoritySession;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::PreparedRootHostInitialGenerationV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::PreparedRootHostCircuitTaskV1;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootHostInitialTaskInstallationErrorV1;
+ #[cfg(target_os = "linux")]
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs
+@@ -175,3 +175,6 @@
+         }
+     }
+ }
++
++#[path = "neuron_generation_initial_root_task_channel.rs"]
++mod original_channel;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs
+@@ -0,0 +1,75 @@
++//! Root keeps the original factory's one task/Cell/Source without consuming
++//! the daemon Config. This internal constructor is not a cross-process lane.
++
++use codex_hepta_neuron::AnchorWitnessStore;
++
++use super::InitialPhase;
++use super::OriginalRootCircuitTaskCustodyV1;
++use super::OriginalRootCircuitTaskInputsV1;
++use super::OriginalRootInitialGenerationCustodyV1;
++use super::OriginalRootInitialInstallationErrorV1;
++use super::invalid;
++use super::require_root;
++use crate::AgentdIdentity;
++use crate::CircuitQ24TaskProfileV1;
++use crate::CircuitQ24TaskRuntimeV1;
++use crate::circuit_q24_task_channel_v1;
++
++impl<W: AnchorWitnessStore + Send + 'static> OriginalRootInitialGenerationCustodyV1<W> {
++    /// Only the concrete protected host consumes these parts. No public getter
++    /// returns the task, writer, bootstrap or Ready value, and the caller cannot
++    /// replace the task with a supplied profile. Factory failure may have effects.
++    pub(crate) fn into_original_root_task_channel<SW, CW>(
++        self,
++        identity: &AgentdIdentity,
++        inputs: OriginalRootCircuitTaskInputsV1<SW, CW>,
++    ) -> Result<
++        (CircuitQ24TaskRuntimeV1<SW, CW>, OriginalRootCircuitTaskCustodyV1<SW, CW>),
++        OriginalRootInitialInstallationErrorV1,
++    >
++    where
++        SW: AnchorWitnessStore + Send + 'static,
++        CW: AnchorWitnessStore + Send + 'static,
++    {
++        let Self { operation, phase } = self;
++        let installed = (|| {
++            require_root()?;
++            let InitialPhase::Ready(ready) = phase else {
++                return Err(invalid("original initial publication is not ready"));
++            };
++            let task = (*ready).into_circuit_feature_task(inputs.definition, inputs.source)?;
++            let retirement = task.clone();
++            let profile = CircuitQ24TaskProfileV1 {
++                files: inputs.files,
++                source_mode: inputs.source_mode,
++                published_task: task,
++                fence: inputs.fence,
++                circuit: inputs.circuit,
++                routes: inputs.routes,
++                bundle: inputs.bundle,
++                model: inputs.model,
++                worker_generation: inputs.worker_generation,
++                maximum_cell_records: inputs.maximum_cell_records,
++                queue_capacity: inputs.queue_capacity,
++                clock: inputs.clock,
++            };
++            let runtime = circuit_q24_task_channel_v1(identity, profile)?;
++            Ok((runtime, retirement))
++        })();
++        match installed {
++            Ok((runtime, task)) => {
++                // These are the actual factory outputs. Opening another Cell
++                // or another Source here would break the original drain identity.
++                let custody = OriginalRootCircuitTaskCustodyV1 {
++                    operation,
++                    task,
++                    cell: runtime.cell(),
++                    source: runtime.source(),
++                    identity: identity.clone(),
++                };
++                Ok((runtime, custody))
++            }
++            Err(error) => Err(OriginalRootInitialInstallationErrorV1 { operation, error }),
++        }
++    }
++}

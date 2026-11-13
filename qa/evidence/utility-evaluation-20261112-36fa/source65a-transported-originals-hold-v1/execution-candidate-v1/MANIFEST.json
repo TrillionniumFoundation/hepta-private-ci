@@ -1,0 +1,56 @@
+{
+  "H_calls": 0,
+  "actual_stage_fields": {
+    "staging_job_id": null,
+    "staging_payload": null,
+    "staging_result": null,
+    "staging_supervisor": null
+  },
+  "files": [
+    {
+      "bytes": 150166,
+      "git_blob": "f8efb445171e1eb74dc289cd5c15ab89f8940e4f",
+      "name": "STAGING_INPUT.execution-candidate.json",
+      "sha256": "d8c222937adb01eb371695641e3a4219e0b8eebd7a9300f0afe618d4c620f657"
+    },
+    {
+      "bytes": 168712,
+      "git_blob": "e944fa3dd289d28901cc216e4e05cce26e636a38",
+      "name": "STAGING_PROCESS_INPUT.execution-candidate.json",
+      "sha256": "4e9fc5f534ba18ad30ef73efa4c25aa65f11e48bad7f26fcedb2d3db1d3ace4f"
+    },
+    {
+      "bytes": 150329,
+      "git_blob": "3cad8f33e196990ee10f3480d6ac707db5dc3c54",
+      "name": "FROM_HOLD_STAGING_INPUT.patch",
+      "sha256": "f13b802946d1ed1682097f7524a5e30ceca0dbe78b833c2e2969b00f02e76356"
+    },
+    {
+      "bytes": 300670,
+      "git_blob": "9c18503de97fa73123d797bb9c255257f8ab245e",
+      "name": "FROM_HOLD_REQUEST.patch",
+      "sha256": "36cb18d6ab463917ae60af6e4cf0d9542b2f4766984e98752944b505f653a80a"
+    },
+    {
+      "bytes": 7849,
+      "git_blob": "70f18583d41c60f695b263e9668948770e5ef7ba",
+      "name": "STATIC_EXACT_REVIEW.json",
+      "sha256": "a1fd9d114ed87637c83e3379ac1628cda3245fdf6c06bcffd2b50de7d1c3c9dc"
+    },
+    {
+      "bytes": 6918,
+      "git_blob": "cf692f966ef5ffd058650eb478c08a5b2ec79a63",
+      "name": "build_execution_candidate_v1.py",
+      "sha256": "e95edcddf28baf69e80befef04dee03f2263889afa9b9df57b4d8dcee01211bf"
+    }
+  ],
+  "format": "hepta-transport-stage-execution-candidate-manifest-v1",
+  "immutable_hold_manifest": {
+    "bytes": 21322,
+    "git_blob": "7b7aa021cdc0f75f9a18edc210f7e540e55663c4",
+    "sha256": "a31b8609d0487c88da5b15355fd480dd6026d47591c131c549a3a3b2dba9f365"
+  },
+  "native_request": null,
+  "not_an_execution_approval": true,
+  "source_request": null
+}

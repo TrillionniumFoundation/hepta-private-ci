@@ -1,0 +1,167 @@
+{
+  "H_calls": 0,
+  "QA_or_Rust_execution": 0,
+  "baseline": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "byte_proof": {
+    "bytes": 36491,
+    "git_blob": "b24aa50c0125330223f4bba192fd327ee75587e4",
+    "path": "/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/BYTE_PROOF.json",
+    "sha256": "85f305ebb4637c632343a4121d617d49fe8eae5ec7c42e4830d9064a45ea9d17"
+  },
+  "decision": "MISSING_IMPORT_BLOCKER_RESOLVED_BY_EXACT_SEPARATE_INCREMENT; NO_OTHER_CONCRETE_STATIC_BLOCKER_FOUND_IN_REVIEWED_SCOPE",
+  "exact_inputs": [
+    {
+      "bytes": 252586,
+      "git_blob": "310bf506994b66c2314067ba753c01070054cbd8",
+      "path": "/tmp/hepta-36fa-root-product-e1-proposal-v1/task-factory-layer-v1/SOURCE_PACKET.json",
+      "sha256": "71bec510460c70e1ba3ad0beb5f6e979a12b93d249f55c49eaf0962f67ed69e7"
+    },
+    {
+      "bytes": 55293,
+      "git_blob": "41009a14374163a10dd7e63feb5b3250ae82b243",
+      "path": "/tmp/hepta-36fa-root-product-e1-proposal-v1/protected-host-tests-layer-v1/SOURCE_PACKET.json",
+      "sha256": "101d7a89b2609cc06900eba5443e07c7549bf4b96928dcb25a1cdd1b036b1500"
+    },
+    {
+      "bytes": 72602,
+      "git_blob": "9b6e948ca33d3d6f76476d345a93b5f5c802ba79",
+      "path": "/tmp/hepta-36fa-root-product-e1-proposal-v1/binding-request-increment-v1/SOURCE_PACKET.json",
+      "sha256": "55f132b47102ee2381adecfd8761005f3843e16b4dfb6d5530cdcd154aa6ea91"
+    },
+    {
+      "bytes": 394492,
+      "git_blob": "1ca7a06948fcae69bf7c8e4c7823627a872c0c62",
+      "path": "/tmp/hepta-36fa-root-product-e1-proposal-v1/assembled-source-v1/SOURCE_PACKET.json",
+      "sha256": "9522578d13634ff7189fb6f0de2eb1d7dd9a61d2e16f83a28c5b06d85306fec7"
+    },
+    {
+      "bytes": 17991,
+      "git_blob": "36cd9a693ce75070e1225a978575ca6dea5f72c2",
+      "path": "/tmp/hepta-36fa-root-product-e1-proposal-v1/request-type-import-increment-v1/SOURCE_PACKET.json",
+      "sha256": "104d64d9e7ba23521546b411516449bac5af6879fdef34fbc2f5e803bbd0ce3b"
+    }
+  ],
+  "findings": [
+    {
+      "classification": "RESOLVED_IN_SEPARATE_INCREMENT",
+      "finding": "1ca7/75d56 的 Session child 使用 AgentdGenerationUpdateRequestV1 却没有显式 import；外置 child 不继承父 use。36cd 后继只插入原类型 import，完整删除即恢复原 8,349 B 后像。正确后像为 8,419 B /1254c569aed6554782d21ff23653d95e7f7f3835，新增行实际 70 B。未执行编译。",
+      "id": "E01",
+      "source": "request-type-import-increment-v1/SOURCE_PACKET.json; authority_host_session_generation.rs",
+      "title": "确定的类型作用域遗漏已修"
+    },
+    {
+      "classification": "STATIC_BYTE_CLOSURE",
+      "finding": "5 个原冻结层正向组成 1ca7 的全部 13 Rust 后像；6 个已有路径前像逐 bytes/SHA-256/Git identity 与实际 b608 全库存相等，7 路径为新增。所有 6 个旧文件只插入接线/纯 preview，删除对应插入完整恢复原字节。每层和 assembled 全 patch 由完整 images 独立再生成相等。import 修复为独立第六层，没有覆盖旧稿。",
+      "id": "E02",
+      "source": "BYTE_PROOF.json; 457adb actual inventory; assembled manifest e4ea5d",
+      "title": "完整源层与原前像"
+    },
+    {
+      "classification": "STATIC_SCOPE",
+      "finding": "bind/recover/request 都在原 non-Clone PreparedHostAuthoritySession 上，先后沿原 pidfd/登记 peer UID/GID/boot/start 与同绝对 end 核查。新 operation 持具体 Root directory/Registry/issuer/clock/Artifact/FinalUse，字段私有；无 public owner/Current/grant/writer getter、无 JSON authority 参数、无任意 owner callback。fresh 输入要求实际 pre-held signed grant，不能由 wrapper 返回值推出外部授权已取得。",
+      "id": "E03",
+      "source": "authority_host_session_generation.rs; authority_host_generation.rs; original authority_host_runtime.rs verify_pinned_process",
+      "title": "真实 Session 的固定 typed 接口"
+    },
+    {
+      "classification": "STATIC_GUARD_PRESERVATION",
+      "finding": "继承已审 publication+4行后继。每次原操作保持目的固定的 lease binding，比较原 issuer 完整签名验证/观察返回 head、显式 revoked grant membership、consumer frontier/head/frontier（包含 nonce frontier）、再 issuer head 与 lease。Registry read 后补同 HostClock expiry 及原 Instant end。锁只覆盖各自真实读取，不跨 Artifact/FinalUse claim/dispatch；不声称统一原子 lease 事务。",
+      "id": "E04",
+      "source": "authority_host_generation.rs require_original/read_original_lease; prior independent 0a8d4d review",
+      "title": "lease 与完整 issuer/consumer 观察"
+    },
+    {
+      "classification": "STATIC_STATE_MACHINE",
+      "finding": "Fresh 在任何 prepare/CURRENT 写入之前即置 ReadbackRequired；原 prepare 的完整 binding/digest 再核后才调用原 custody.publish。后置 grant/head/lease/peer/deadline 错误不恢复 Fresh/Prepared，不重发 grant。warm recovery 保留原 end，cold 仅原 protected Current::open/recover_initial_operation + 原 Published signed/readback + 原 recovery，无 initialize/prepare fallback。cold 场景仍需真实 existing files 与实际 authorities。",
+      "id": "E05",
+      "source": "authority_host_session_generation.rs publish_original_generation/recover_original_generation; authority_host_generation.rs recover_original_initial_operation; original CurrentStore::open",
+      "title": "一次 publish 与同 operation recovery"
+    },
+    {
+      "classification": "STATIC_FACTORY_CONNECTION",
+      "finding": "into_original_q24_task 消耗 wrapper、同注册 identity 的唯一 Config 和原 typed inputs，仅 Ready 可进入。前后 require_observed 后直接调用原 OriginalRootInitialGenerationCustodyV1::into_q24_task。该原函数由 Ready 取得 task、克隆同 task 的 Arc 作 retirement，再把原 task 送 with_q24_circuit_task_profile，保存 factory 返回的真实 Cell 与 Source；新层没有另建 Cell/Task 或替代 drain。成功返回原 Session + 原 runtime。",
+      "id": "E06",
+      "source": "authority_host_session_generation_task.rs; original neuron_generation_initial_root_task.rs; config_q24_circuit_task.rs; circuit_q24_task_profile.rs",
+      "title": "真实原 factory 与 same-Arc custody"
+    },
+    {
+      "classification": "STATIC_FAILURE_SEMANTICS",
+      "finding": "Config/factory/后置检查失败可在 Source/Cell 文件已创建或恢复之后发生。新的 non-Clone 安装错误只保留原 Session、固定 operation、end 与原错误；只读方法再核 Session+原 operation。不会返回可重派的 Ready、Config 或 Create 重试能力；成功构造 runtime 后再失败会丢弃该返回值，错误不是 NotApplied。后续原 cold generation recovery 也不能自行推定 Source 安装未发生。",
+      "id": "E07",
+      "source": "RootHostInitialTaskInstallationErrorV1; into_original_q24_task",
+      "title": "安装错误不伪称无副作用"
+    },
+    {
+      "classification": "STATIC_READONLY_REQUEST",
+      "finding": "original_initial_generation_request 借用实际 selected/target/request，走原 validate_initial_target 与纯 initial intent preview，返回原 FinalUseBinding 数据。验证同 identity/destination 与原 lease 的 principal/opclass/destination/scope/payload，并在 Registry read 后复核 expiry/end。没有 CURRENT open/prepare、target 写、nonce claim、issuer.issue 或任何 owner 导出。原 prepare/publication 之后仍负责真正 Artifact/FinalUse/目标与完整签名检查。",
+      "id": "E08",
+      "source": "authority_host_generation_request.rs; Session original_initial_generation_request; original_initial_publication_binding",
+      "title": "只读完整 binding 请求补齐"
+    },
+    {
+      "classification": "UNEXECUTED_MECHANISM_CASES",
+      "finding": "6 个 ignored tokio case 覆盖实际 protected host publish→原 task factory→签名 ingress→same-Arc drain、同 issuer revoked、stale consumer head、不同 complete intent、丢旧 Session 后 existing protected owner 重开、readonly request 不创建 CURRENT/不写 target/不消耗 consumer。第六个 case 只追加，原五个方法和 helper 全文保留。fixture 明确由实际 Root bind/原 initialize_host_authority 创建测试 issuer/Registry/consumer；Artifact/model/AuthBus 仍原工程 fixture，不是实际用户 A/B/C 或独立 B。",
+      "id": "E09",
+      "source": "authority_host_generation_tests.rs; authority_host_generation_support_tests.rs; BYTE_PROOF new_ignored_tests",
+      "title": "六个真实 owner 机制用例"
+    },
+    {
+      "classification": "LIFECYCLE_LIMIT",
+      "finding": "真实 setpriv UID/GID 60001 cat 只提供原 peer/pidfd 身份，没有 owner 协议或任务结果。正常 finish 关闭 stdin 并在 5 秒内 try_wait 观察 status；错误 Drop 关闭/kill/有限等待，超时仍 Unknown，不证明已 wait/reap。原 RootSession finish 的 5秒 timeout 返回 Err、Drop 仅 cancel，不能声称 blocking worker 已终止。正常 body Result 后会分别进行 task 与 peer cleanup，再传播错误；异步取消不能推成已完成 join。",
+      "id": "E10",
+      "source": "authority_host_generation_peer_support_tests.rs; original RootSession::finish/Drop; normal case cleanup",
+      "title": "实际子进程与有限回收"
+    },
+    {
+      "classification": "SCOPE_LIMIT",
+      "finding": "已从只有 generation wrapper 扩展到真实 Session→原 factory 返回值，但没有把 Rust Arc/Cell/Source/Config 传入非 Root 进程。未更改原 hepta-authority-host CLI 或普通 daemon main 调用；正常启动的外部 material/Artifact/FinalUse/独立 B 供应及 E2 跨进程 handoff 不由本层完成。现有机制 tests 直接启动原本地 runtime，不能冒称普通产品任务跨 UID 闭环。",
+      "id": "E11",
+      "source": "assembled 13-path scope; original bin/hepta-authority-host.rs; task-layer API return type",
+      "title": "E1 仍是 Root 本地产品接口"
+    },
+    {
+      "classification": "VALIDATION_LIMIT",
+      "finding": "本次没有运行 Rust、fmt、QA、collector、Root cases 或 H。没有 post-CAS ACK 丢失、安装后 lease/head 改变、处理中跨截止、异步取消/进程重启的已执行注入结果；六个 case 不提供这些结论。新 caller/protection/workflow 注册是作者另一候选层，不在本报告审核范围；原 b608 资格源和预算不变。",
+      "id": "E12",
+      "source": "this review scope; supplied layers; no execution",
+      "title": "未覆盖的故障与实际门禁"
+    }
+  ],
+  "format": "hepta-root-product-e1-task-request-tests-independent-review-v1",
+  "local_review_observations": {
+    "bytes": 1248,
+    "git_blob": "4eac2c7420519f5f94e6b3091c23b818c9fe8743",
+    "path": "/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/LOCAL_REVIEW_OBSERVATIONS.json",
+    "sha256": "50fa97ee3a3b41a88bc1f1d0eb2a2f358a3cd6034628acbd9e1ae2ae56d67fb6"
+  },
+  "method": "Full static reading of new source/tests; finite exact b608 source/API references; whole packet/patch and predecessor inversion; no Rust compiler/formatter/project test or candidate execution.",
+  "new_artifact_storage": "Local computed identities only; no new Git objects created by reviewer.",
+  "no_compile_or_qualification_pass_claim": true,
+  "prior_independent_review": {
+    "original_api_report_computed": "c4b7f2425b26761eee03b6fb014a5b6565583793",
+    "publication_lease_report_computed": "0a8d4d1f947e7c4c59f0301e113bcf64e48aef17"
+  },
+  "qualification": false,
+  "real_ordinary_process_task_chain_completed": false,
+  "script": {
+    "bytes": 11793,
+    "git_blob": "a0f845b892f663b0db23bdf90475542b13b3ee63",
+    "path": "/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/review_layers.py",
+    "sha256": "28b4f35775ac13aa11dd97223801f8b8d0bbfc69f78ac662631de49e60975115"
+  },
+  "source_git_writes": 0,
+  "source_ref_updates": 0,
+  "source_status": "LOCAL_COMPUTED_PROPOSAL_NOT_FORMATTED_COMPILED_OR_EXECUTED",
+  "source_worktree_updates": 0,
+  "test_inventory": [
+    "root_host_initial_publication_enters_original_task_factory_and_drain",
+    "root_host_initial_binding_refuses_same_issuer_revoked_grant",
+    "root_host_initial_binding_refuses_stale_original_consumer_head",
+    "root_host_initial_binding_refuses_another_complete_intent",
+    "root_host_initial_existing_state_reopens_after_old_session_is_dropped",
+    "root_host_initial_request_reads_the_exact_binding_without_preparing"
+  ]
+}

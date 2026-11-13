@@ -1,0 +1,209 @@
+{
+  "H_calls": 0,
+  "actual_staging_fields": {
+    "staging_job_id": null,
+    "staging_payload": null,
+    "staging_result": null,
+    "staging_supervisor": null
+  },
+  "candidate_code_executed": false,
+  "decision": "NO_NEW_CONCRETE_STATIC_BLOCKER_IN_FROZEN_PREPARATION; EXECUTION_AND_QUALIFICATION_NOT_APPROVED",
+  "findings": [
+    {
+      "conclusion": "固定 HOLD 59 文件全部独立重算 bytes/SHA-256/Git blob 相等。所用 13 个 HOLD 核心/manifest 以及 7 个 stage-only 后继件的现存 actual Git GET SDK，完整 content 均与冻结 UTF-8 字节相等。其余 46 个 HOLD 文件只在本次核实本地 frozen 身份；不以这次审核声称新执行或全部重新远端 GET。",
+      "evidence": "MANIFEST.json; BYTE_AND_MAPPING_PROOF.json",
+      "id": "T01",
+      "topic": "frozen_scope"
+    },
+    {
+      "conclusion": "旧 6632 的 53 个函数定义中 51 个逐字保留。另两函数严格只将 4 个原 read_input 表达式替换成固定 role 入口；逐一删回 role 参数、恢复函数名即完整恢复原函数。全部旧顶层赋值全文相等；两个 h patch hunk 全文正逆变换均相等。3 个新 helper 不覆盖 read_input/regular_read/verify_original_inputs，不修改 builtin/open 或调用回退。",
+      "evidence": "historical-runtime-guard.HOLD.py: validate_runtime_restoration, environment_preflight, read_transported_historical_input",
+      "id": "T02",
+      "topic": "historical_v5_delta"
+    },
+    {
+      "conclusion": "当前 m 实例仍加载原 63,007 B V5 6632，只有 h 加载明确 917f 历史后继。m/h 原历史 REPO/TARGET 原值核对后，仅 m.REPO/HEAD/TREE 取当前 b608/8ebb。原 current Git/index、完整源库存、含 UID/GID 的实时 metadata、源控制、工具/V8/formatter、环境、target/free-space、活进程及同一 SH coordination inode 检查没有迁到历史映射。配置 runtime_guard 与旧 READY 完整相等。",
+      "evidence": "qualification-admission.HOLD.py: __init__, acquire_and_validate, _validate_canonical, _require_live_metadata, _validate_source_controls, current_lock; old constants preserved",
+      "id": "T03",
+      "topic": "current_v5_and_live_subjects"
+    },
+    {
+      "conclusion": "55 roles 由 56 条精确消费者映射覆盖：5 result/supervisor pairs、17 fixed inputs、18 artifacts、7 canonical controls、4 historical V5 reads；ENV_READY 是两个真实消费者的同一 role。每个 original path 与完整 pin 对固定 manifest 核对，无漏项或额外 role。当前 .git/index 保留原实时 read_input，历史 metadata 文件只是原运行的收据。55 原件的 producer/job/嵌入路径/旧 stat 原字节不改。",
+      "evidence": "HISTORY_PROOF_ROLES; HISTORY_FIXED_ROLES; HISTORY_ARTIFACT_ROLES; HISTORY_RUNTIME_ROLES; role_mapping",
+      "id": "T04",
+      "topic": "closed_provenance_map"
+    },
+    {
+      "conclusion": "c77e 的 43 个原函数中 35 个全文相等；仅 __init__/observed_proof/acquire_and_validate/before_native_stage/finish/_fixed/_artifact/_validate_canonical 8 个入口改变。全部原顶层赋值相等，11 个 diff hunk 完整正逆恢复 c77e。新增 8 个 helper 只处理封闭运输读取/实际 stage 证明/重复输入稳定性，不新增 Git/source 扫描命令，不改变原 guard 或批准预算。",
+      "evidence": "definition_preservation.admission; ADMISSION_FROM_C77E.patch",
+      "id": "T05",
+      "topic": "admission_preservation"
+    },
+    {
+      "conclusion": "17 个四字段请求均为 desktop、精确新 part path、expected_version=absent、完整 data_base64。各 decoded <=307,200 B、最大 typed 409,807 B，1 MiB 限值不变。按完整 offset 顺序拼成 4,994,854 B gzip，解开为 10,637,954 B packet；55 个原件合计 7,976,106 B，全部三 pin 精确。stager 将 gzip 与完整 decoded pin 验证完成后才创建新控制目录。",
+      "evidence": "STAGING_WRITE_MANIFEST.HOLD.json; TRANSPORT_STAGER.HOLD.py: decode_packet, top-level try",
+      "id": "T06",
+      "topic": "bounded_transport"
+    },
+    {
+      "conclusion": "stager 没有 exec/subprocess/Git/源入口，也没有删除、rename、替换、link 或重试。唯一正常写域是固定新 BASE 及 originals，两级固定 basename；55 原件名和 7 个控制/结果/失败名有显式 allowlist。旧 provenance path 仅作记录，不用作写入目的地；不建立旧目录 alias。现存 BASE（含 dangling symlink）直接拒绝。",
+      "evidence": "TRANSPORT_STAGER.HOLD.py: retain, top-level try, exception handler",
+      "id": "T07",
+      "topic": "write_authority"
+    },
+    {
+      "conclusion": "读取 17 个 part 前逐级检查 real ancestry，叶用 O_NOFOLLOW、完整 lstat/fstat/fstat/lstat 九字段、单链接、UID 1000、0600、长度上限及全 pin。新目录要求 UID 1000/0700；新文件 O_CREAT|O_EXCL|O_NOFOLLOW/0600，flush/fsync 后完整读回并校验同九字段与原 raw。两个目录 fsync 后才打印完成。结论是这些明确逐次检查；不扩称持有整个 ancestry 的原子目录租约。",
+      "evidence": "TRANSPORT_STAGER.HOLD.py: real_parents, read_part, retain; lines 268-301",
+      "id": "T08",
+      "topic": "file_identity"
+    },
+    {
+      "conclusion": "admission 的 transport helper 仅接受 manifest + 55 个精确 path，保原 40 MB 上限及原 read_input full pin/NOFOLLOW，补 UID/mode/nlink/九字段稳定性。首次 stamp 缓存后，before_native_stage 与 finish 均重读完整 55 + manifest 并比同 stamp。h 的四 read 还分别核完整 manifest 与固定原 provenance path/pin，沿原 input_pins 重读机制。",
+      "evidence": "_read_transport_file; _load_transport_manifest; _read_historical; _verify_transport_stability; historical _read_historical_transport_file",
+      "id": "T09",
+      "topic": "admission_input_stability"
+    },
+    {
+      "conclusion": "新 admission 在加载模块/创建 output 之前要求 stage result/supervisor/payload 三个完整 pin 及非空 job ID；随后在原 SH 锁内核原 normal supervisor 成功完整终态、job 相等、原 stage 完整固定 schema/17 part pins，60 个文件 exact path/pin 集合，并重新完整读 55 原件与原 staging controls。当前四项实际绑定均 null，因此即使 source state 被翻转，也仍无法完成 constructor。stage-only READY 两叶不能填这些实际证明。",
+      "evidence": "_require_transport_bindings; __init__; _require_transport_staging",
+      "id": "T10",
+      "topic": "actual_stage_gate"
+    },
+    {
+      "conclusion": "stage 的 60 行 files 是 55 原件加 manifest、h guard、actual bootstrap、actual argv、actual payload；STAGING_READBACK 自身另由 future cfg pin 绑定。消费者还要原 normal supervisor 的 observed succeeded/exit 0/no timeout/cancel/retry/complete durable flags。receipt 内容或 JSON 中 approved=true 均不是独立执行许可，不能替代实际终态与 Root 的 exact 操作决定。",
+      "evidence": "_require_transport_staging; original parse_supervisor; stage receipt construction",
+      "id": "T11",
+      "topic": "stage_receipt_limit"
+    },
+    {
+      "conclusion": "HOLD payload 的许可检查先于任何文件系统写入。stage 中途失败保留已创建的原目录/文件，尽力另留 STAGING_FAILURE 并重新抛原错误；失败前未创建目录时依赖原 supervisor/流保存。无 reset、删除、自动重试或换身份路径。严重中断不能保证失败文件已落盘；Unknown 只能原 path/version/job 对账，不代表可再发写入或 source main。",
+      "evidence": "TRANSPORT_STAGER.HOLD.py: top-level try/except; PLAN.HOLD.md",
+      "id": "T12",
+      "topic": "failure_and_unknown"
+    },
+    {
+      "conclusion": "原 source/native 控制 pins、14 phases、48 Root parents、原流程预算与当前 source/lock 基线均保留。额外 stage-only 是原计划独立 900 秒 envelope、7 字段/no env，argv 为 /usr/bin/python3 -B -c 精确 stager，stdin 完整相等。e944 后继相对 89e8 只改 stdin；stdin 相对 b60e 只改 status 与 root_execution_approved 两叶，完整反向 JSON 字节恢复原件；17 part writes 和 stager 原字节未变。",
+      "evidence": "STAGING_PROCESS_INPUT.HOLD.json; execution-candidate-v1/MANIFEST.json; execution_candidate inverse",
+      "id": "T13",
+      "topic": "budgets_and_execution_variant"
+    },
+    {
+      "conclusion": "65a 的 FileNotFoundError 仍是正确原历史路径在该次读取不可用；本包不把它改写成 typo/删除/source change/fraud。新 provenance 仍明确 origin_path_availability=Unknown。原 c77e finish 在 initial_git 未建立时可能产生次生 SourceChanged 的边界未被改成物理变化证明；后续失败仍须按实际主/次错误分别解释。E1/E2 产品稿未纳入本控制候选。",
+      "evidence": "old 65a records; TRANSPORTED_ORIGINAL_PROVENANCE construction; finish",
+      "id": "T14",
+      "topic": "historical_failure_preserved"
+    }
+  ],
+  "format": "hepta-independent-transported-original-control-semantic-review-v1",
+  "frozen_inputs": [
+    {
+      "bytes": 21322,
+      "git_blob": "7b7aa021cdc0f75f9a18edc210f7e540e55663c4",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/MANIFEST.json",
+      "sha256": "a31b8609d0487c88da5b15355fd480dd6026d47591c131c549a3a3b2dba9f365"
+    },
+    {
+      "bytes": 70306,
+      "git_blob": "917f5b669ce5e4b926c7131a42423a0f069e46a4",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/historical-runtime-guard.HOLD.py",
+      "sha256": "503aaa202bd40ea54526e11b2e299630b7b888e5afe14a3ce5bfb8a3c1c0f556"
+    },
+    {
+      "bytes": 111119,
+      "git_blob": "299c3d79987abcde03e83c271bee91c568e0a5ab",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/qualification-admission.HOLD.py",
+      "sha256": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767"
+    },
+    {
+      "bytes": 17939,
+      "git_blob": "0837bd70dd0e20a208fd8f59eec6017910cb9076",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/TRANSPORT_STAGER.HOLD.py",
+      "sha256": "cef85f5a2768e11c48303ee3dfffbd41c3393f12b498bba6ad7b6faad4c85763"
+    },
+    {
+      "bytes": 25390,
+      "git_blob": "09cc978923c1d0a3d6f920b0e1754025107d7825",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/QUALIFICATION_CONFIG.HOLD.json",
+      "sha256": "8df1a4d0a31139cafea4fcf44a3daa26304c41adc52eb4e9b3ed61c4dc3235b5"
+    },
+    {
+      "bytes": 843,
+      "git_blob": "acfa7c86f4202d6e7f15399514dc739f4bc33f82",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/SOURCE_GATES_CONFIG.HOLD.json",
+      "sha256": "fddbf0087814c873cf0d23c9e1419a8856c50cd4578d5f6d52c7a80edbad4acc"
+    },
+    {
+      "bytes": 168717,
+      "git_blob": "89e82163a4cd531138cb71fd97cc379e32e83d17",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/review-candidate-v1/STAGING_PROCESS_INPUT.HOLD.json",
+      "sha256": "2f694b55a2439fe6bc5fd157a45a4959422048c17bb2ef8266bc475ce90af03e"
+    },
+    {
+      "bytes": 1920,
+      "git_blob": "e93ec3d768b01726db403511a2ea347dcec8c157",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/execution-candidate-v1/MANIFEST.json",
+      "sha256": "3db47b3aa8137cdbc49574be089712ce8a248aaac6ee77b25002e468b454927b"
+    },
+    {
+      "bytes": 168712,
+      "git_blob": "e944fa3dd289d28901cc216e4e05cce26e636a38",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/execution-candidate-v1/STAGING_PROCESS_INPUT.execution-candidate.json",
+      "sha256": "4e9fc5f534ba18ad30ef73efa4c25aa65f11e48bad7f26fcedb2d3db1d3ace4f"
+    },
+    {
+      "bytes": 150166,
+      "git_blob": "f8efb445171e1eb74dc289cd5c15ab89f8940e4f",
+      "path": "/tmp/hepta-36fa-source65a-transported-originals-hold-v1/execution-candidate-v1/STAGING_INPUT.execution-candidate.json",
+      "sha256": "d8c222937adb01eb371695641e3a4219e0b8eebd7a9300f0afe618d4c620f657"
+    }
+  ],
+  "git_writes": 0,
+  "independent_proof": {
+    "bytes": 120594,
+    "git_blob": "e470287b4ae75b6347f56761ad7206df4b5dfdc4",
+    "path": "/tmp/hepta-36fa-source65a-transport-control-independent-peer-v1/BYTE_AND_MAPPING_PROOF.json",
+    "sha256": "da3d10ddd4aeb5fbaa5947c42cd2860f99825bf4d97d95d3e238aaf93842b7dd"
+  },
+  "independent_script": {
+    "bytes": 24696,
+    "git_blob": "921c150bbd7cba39c1f09e361f97f95cdfcad469",
+    "path": "/tmp/hepta-36fa-source65a-transport-control-independent-peer-v1/review_fixed_controls.py",
+    "sha256": "12314a06aaa5f9f9e483a6e1137acb3253286339cd0106380f73ff6e969edc53"
+  },
+  "method": "Read every new/changed function and complete stager; independently parse AST without execution; compare exact original definition bytes; strictly apply each patch forward and reverse in memory; decode frozen bytes and all 55 role mappings; compare complete saved actual Git GET body to each used frozen core. No author scripts or candidate functions were invoked.",
+  "native_request": null,
+  "observed_local_audit": {
+    "attempt": {
+      "bytes": 2997,
+      "git_blob": "5beffeeb801351f6a0631b96212cf423839670b2",
+      "path": "/tmp/hepta-36fa-source65a-transport-control-independent-peer-v1/LOCAL_AUDIT_ATTEMPT_01.original.json",
+      "sha256": "b8080d251484dab645fcc8aea63d1551d3d975f858bcbaafe3c3008e15c82f96"
+    },
+    "candidate_functions_run": 0,
+    "exit_code": 0
+  },
+  "qualification": false,
+  "root_execution_approved_by_this_review": false,
+  "source_request": null,
+  "source_subject": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "source_writes": 0,
+  "stage_order_boundary": [
+    "Future exact Root decision is required before any of the 17 fixed absent writes.",
+    "Unknown in an individual write stops dependent action; reconcile only its original frozen path/version.",
+    "A stage-only process is a distinct one-shot operation after all 17 complete parts are established.",
+    "Source/native remain HOLD until actual normal stage and 60-file complete readback are collected and the four actual cfg bindings are separately frozen/reviewed.",
+    "No source/native request exists in this reviewed layer."
+  ],
+  "static_limits": [
+    "The no-blocker judgment is a source/byte/schema review, not successful staging or qualification.",
+    "This review does not assert current original-path availability or current native source/tool/lock availability.",
+    "No adversarial same-UID pathname race, process kill, power-loss or runtime performance behavior was executed; file checks are the exact observed code conditions.",
+    "The fixed parent ancestry check is a pathname observation, not an atomic capability pin for every ancestor during the whole stage.",
+    "New reports and this index are local computed identities only; this reviewer did not create Git objects.",
+    "Future failures, missing paths, incomplete normal receipts, or unknown outcomes remain failures/Unknown; no retry permission follows from this report."
+  ],
+  "tests_or_gates_executed": 0
+}

@@ -1,0 +1,32 @@
+--- qualification-admission.299c.original.py
++++ qualification-admission.baseline-unavailable.proposal.py
+@@ -508,6 +508,11 @@
+     pass
+ 
+ 
++class InitialBaselineUnavailable(RuntimeError):
++    """Failed preflight left no complete comparison baseline; never a mutation finding."""
++    pass
++
++
+ def check(value, reason):
+     if not value:
+         raise RuntimeError(reason)
+@@ -890,6 +895,8 @@
+         self.h.jwrite('READONLY_COMMANDS.json', self.h.commands)
+         current_git = self.m.git_state()
+         self.m.jwrite('GIT_STATE.after.json', current_git)
++        if self.initial_git is None:
++            raise InitialBaselineUnavailable('initial Git baseline was not established; source equality is Unknown')
+         if current_git != self.initial_git:
+             raise SourceChanged('actual raw Git state changed during qualification')
+         self._require_live_metadata('GIT_METADATA.after')
+@@ -898,6 +905,8 @@
+         value = json.loads(raw)
+         if value['source'] != {'head': self.cfg['source'], 'tree': self.cfg['tree'], 'status': ''}:
+             raise SourceChanged('final source identity changed')
++        if self.initial_raw is None:
++            raise InitialBaselineUnavailable('initial full inventory baseline was not established; source equality is Unknown')
+         original = {r['path']: r for r in json.loads(self.initial_raw)['files']}
+         actual = {r['path']: r for r in value['files']}
+         if len(actual) != len(value['files']):

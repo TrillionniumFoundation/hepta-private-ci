@@ -1,0 +1,50 @@
+{
+  "H_calls": 0,
+  "all_four_actual_staging_fields_null": {
+    "staging_job_id": null,
+    "staging_payload": null,
+    "staging_result": null,
+    "staging_supervisor": null
+  },
+  "all_primary_files_actual_complete_Git_GET_equal": true,
+  "archive_error_observations": 1,
+  "closed_HOLD_manifest": {
+    "bytes": 21322,
+    "git_blob": "7b7aa021cdc0f75f9a18edc210f7e540e55663c4",
+    "sha256": "a31b8609d0487c88da5b15355fd480dd6026d47591c131c549a3a3b2dba9f365"
+  },
+  "complete_ledger": {
+    "bytes": 89807,
+    "git_blob": "1e5687336e6f588b3f41cda92d63986c329e01d3",
+    "name": "COMPLETE_PRIMARY_FULL_GET_LEDGER.json",
+    "sha256": "06b70390c37afeb152ac4c8dd285cf175220db94255e50b17570d36287929530"
+  },
+  "create_response_not_retained_count": 2,
+  "execution_candidate_files_with_manifest": 7,
+  "execution_candidate_manifest": {
+    "bytes": 1920,
+    "git_blob": "e93ec3d768b01726db403511a2ea347dcec8c157",
+    "sha256": "3db47b3aa8137cdbc49574be089712ce8a248aaac6ee77b25002e468b454927b"
+  },
+  "format": "hepta-transported-original-primary-archive-completion-v1",
+  "immutable_HOLD_full_GET_equal": 59,
+  "immutable_HOLD_payloads": 59,
+  "large_packet_representation": "The 17 exact parts reconstruct the complete gzip and JSON packet pinned in STAGING_WRITE_MANIFEST.HOLD.json.",
+  "largest_primary_payload": 409807,
+  "leaf_limit_bytes": 512000,
+  "native_request": null,
+  "not_an_execution_approval": true,
+  "primary_files_including_two_manifests": 70,
+  "qualification": false,
+  "raw_packet_or_gzip_uploaded_as_an_oversized_leaf": false,
+  "separate_pure_dataflow_files": 2,
+  "source_request": null,
+  "source_tree_commit_refs_modified": false,
+  "success_GET_SDK_wrappers": "Retained locally and fully revalidated here. Any oversized wrappers require a separate bounded archival representation; they are not falsely listed as published primary leaves.",
+  "unretained_create_names": [
+    "review-candidate-v1/parts/PART_001.b64",
+    "review-candidate-v1/parts/PART_002.b64"
+  ],
+  "unretained_create_scope": "Local archive saver rejected a relative path after the create API returned. Original create response statuses remain Unknown; subsequent complete GET responses are retained and equal to the exact frozen bytes.",
+  "verified_create_response_count": 68
+}

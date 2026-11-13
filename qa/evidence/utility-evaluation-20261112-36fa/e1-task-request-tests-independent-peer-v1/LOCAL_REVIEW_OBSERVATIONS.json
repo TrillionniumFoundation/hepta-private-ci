@@ -1,0 +1,19 @@
+{
+  "Rust_or_QA_or_H_executed": false,
+  "candidate_modified": false,
+  "format": "hepta-reviewer-local-observations-v1",
+  "observations": [
+    {
+      "detail": "The first display request assumed assembled-source-v1/after existed and received FileNotFoundError for new test/task files. The assembled layer actually stores all images in SOURCE_PACKET.json; subsequent reads used its complete embedded strings. This is not a native/source failure.",
+      "kind": "local_reader_path_assumption"
+    },
+    {
+      "detail": "Attempt 01 incorrectly used the author message estimate 67 B for the added import line. Complete before/after bytes show 70 B (8349 to 8419). The audit now compares the exact inserted line and full inverse, with the first script/result retained. No candidate source was changed by this correction.",
+      "kind": "pure_audit_literal_assumption"
+    },
+    {
+      "detail": "Whole-file insertion inversion changed from character to line sequences to avoid unnecessary work on repetitive Rust text. Both still compare the complete resulting bytes; final attempt exits 0. A local exact-argv process stop search found no matching running audit process and terminated none.",
+      "kind": "pure_audit_algorithm"
+    }
+  ]
+}

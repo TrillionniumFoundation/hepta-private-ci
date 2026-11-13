@@ -1,0 +1,21 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_root_task_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_root_task_tests.rs
+@@ -19,8 +19,16 @@
+             "the Root factory changed the actual protected operation");
+         anyhow::ensure!(PreparedRootHostCircuitTaskV1::pending_original_root_task_operations(&task)? == 0,
+             "the factory submitted work without the original signed ingress");
+-        anyhow::ensure!(PreparedRootHostCircuitTaskV1::drain_completed_original_root_task(&task).is_err(),
+-            "an unstarted Source was accepted as original task completion");
++        let journal = fixture.original.generation_bytes()?;
++        match PreparedRootHostCircuitTaskV1::drain_completed_original_root_task(&task) {
++            Err(crate::AgentdError::Invalid(message)) if message == crate::CircuitTaskErrorV1::ReconciliationRequired.to_string() => {},
++            Err(error) => anyhow::bail!("unrelated error did not prove missing original Source completion: {error}"),
++            Ok(_) => anyhow::bail!("an unstarted Source was accepted as original task completion"),
++        }
++        anyhow::ensure!(PreparedRootHostCircuitTaskV1::read_original_root_task_generation(&task)? == published,
++            "the Source refusal did not retain the same current original generation");
++        anyhow::ensure!(fixture.original.generation_bytes()? == journal,
++            "the Source refusal changed the original generation journal");
+         anyhow::ensure!(config.identity() == &runtime.identity,
+             "the original daemon Config identity changed");
+         drop(task);

@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/review_layers.py"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"output\": \"/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/BYTE_PROOF.json\",\n  \"bytes\": 36491,\n  \"sha256\": \"85f305ebb4637c632343a4121d617d49fe8eae5ec7c42e4830d9064a45ea9d17\",\n  \"git_blob\": \"b24aa50c0125330223f4bba192fd327ee75587e4\",\n  \"paths\": 13,\n  \"references\": 24,\n  \"tests\": [\n    \"root_host_initial_publication_enters_original_task_factory_and_drain\",\n    \"root_host_initial_binding_refuses_same_issuer_revoked_grant\",\n    \"root_host_initial_binding_refuses_stale_original_consumer_head\",\n    \"root_host_initial_binding_refuses_another_complete_intent\",\n    \"root_host_initial_existing_state_reopens_after_old_session_is_dropped\",\n    \"root_host_initial_request_reads_the_exact_binding_without_preparing\"\n  ],\n  \"fixed_session_image\": {\n    \"bytes\": 8419,\n    \"sha256\": \"d65a1f5e67802dfc0a2f523c305dd78b9868eaa1c81271eedb4da98f113a1d5b\",\n    \"git_blob\": \"1254c569aed6554782d21ff23653d95e7f7f3835\"\n  }\n}\n",
+  "stderr": "",
+  "Rust_or_QA_executed": false,
+  "H_calls": 0
+}

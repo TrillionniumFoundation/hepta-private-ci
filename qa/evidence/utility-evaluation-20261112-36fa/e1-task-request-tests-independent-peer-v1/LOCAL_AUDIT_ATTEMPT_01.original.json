@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/review_layers.py"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-e1-task-request-tests-independent-peer-v1/review_layers.py\", line 131, in <module>\n    assert len(image['after'].encode())-len(image['before'].encode())==67\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "Rust_or_QA_executed": false,
+  "H_calls": 0
+}

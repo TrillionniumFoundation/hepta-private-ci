@@ -1,3 +1,43 @@
+# Current checkpoint: E1 source candidate and successful history-stage process
+
+As of 2026-11-13 14:05:54 UTC, real qualified task chains remain **0**, with **qualification=false**.
+
+## Exact product source prepared for review
+
+E1 is retained as candidate [`99fada80470f175ba14004ea9fcb006853c7d98f`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/99fada80470f175ba14004ea9fcb006853c7d98f), tree `3778225f2d49dcd4729d05c02ae9805b43df87d8`, parent b608. Its separate review branch is `codex/utility-root-assembly-proposal-20261113-36fa`. The original PR source branch remains at cc57; the actual H qualification subject remains b608/8ebb.
+
+This candidate binds the original protected host Session, issuer, Registry lease, Artifact and FinalUse owners to a single initial generation operation. It preserves the original once-state, full signed grant, current-head observations, publication and same-operation recovery. A readonly complete binding request supplies request data, not authorization. The task route consumes the original Ready through the existing factory and retains the same Task/Cell/Source custody. The pre/post lease observations do not claim an atomic lease across effects.
+
+Root verified all 19 actual source blobs, all eight changed tree objects with exact typed hashes, and the actual commit parent/tree and review ref. Eleven original files change, eight are added and the other 15,232 files and their modes remain unchanged. The full 76-file layered proposal archive preserves 10,379,348 original bytes. Independent review identified one missing import, repaired in a separate exact 70-byte increment. The registration proposal preserves all original 633 boundaries and 442 protections, permits only nine explicit old caller additions, and adds 17 boundaries/nine protections. The first 48 Root parents retain their original order, with six E1 parents appended.
+
+**E1 has not been formatted, compiled, run through the typed collector, source/native-qualified or executed as Root tests.** E2's Config-free factory split and two mechanism cases are separately frozen and independently reviewed; its refusal increment now checks the exact reconciliation error and same generation/journal. Actual IPC and E3 normal late enrollment are being implemented. The daemon retains its original driver, AutomationStore, opaque admission, committed trace and private receipt; Root retains actual Cell computation and same Task/Cell/Source custody. No wire JSON or ACK can create those original authority objects.
+
+- [E1 source publication closure](e1-source-candidate-v1/PUBLICATION_CLOSURE.json).
+- [E1 complete proposal archive](e1-frozen-proposal-archive-v1/MANIFEST.json), [task/request/tests review](e1-task-request-tests-independent-peer-v1/REVIEW.json), and [registration review](e1-registration-independent-peer-v1/REVIEW.json).
+- [E2 factory proposal](e2-factory-proposal-v1/factory-split-layer-v1/MANIFEST.json), [precise refusal increment](e2-factory-proposal-v1/factory-test-refusal-increment-v1/MANIFEST.json), and [independent factory review](e2-factory-split-independent-peer-v1/REVIEW.json).
+
+## Historical material transport: successful process, file closure pending
+
+Issued engineering approval `75003db540da7000de0b350b5fa53ac0b61c6644` supersedes the unissued timestamp draft `5f502e10ad34d05f42d005969be69ea6003a7d62`. Its scope is the exact 17 create-only part writes with fixed-version readbacks and one stage-only request `e944fa3dd289d28901cc216e4e05cce26e636a38`, using the unchanged 900-second limit. It is not Hepta runtime authority or source/native execution approval.
+
+Actual job `1a1d52e0d88-392-784` has a normal succeeded / exit-0 supervisor, complete durable streams and confirmed terminal publication, without timeout, cancellation or retry. Root independently fetched and checked the supervisor, complete streams, full native STAGING_READBACK and original dispatch records. The receipt's 60-file declaration matches the exact 55 originals plus five fixed controls; the receipt itself is required file 61. The admission echoes the approved host, executable, complete program, cwd and idempotency key, with `reused=false`. Full stdin-file readback is part of the ongoing fixed 61-file closure. The worker request digest/fingerprint remain exact observed values; this review does not invent their complete canonicalization.
+
+The executor preserved a helper-255 connection-closed read attempt on part 8 and reconciled only its missing block at the same path/version/offset. It did not rewrite that part. The fixed dispatch intent records 17 writes, 82 successful chunks and the retained failed read. Root's current core review does not replay all part SDKs or certify all 61 file readbacks. **No new source/native main has been authorized or dispatched at this cutoff.** The prior 65a failed attempt remains failed, with zero source/native gates started.
+
+See [dispatch originals](b608-history-transport-dispatch-proof-v1/PLACEMENT.json), [Root core review](root-history-stage-core-review-v1/REVIEW.json), [dispatch binding review](root-history-stage-core-review-v1/DISPATCH_BINDING_REVIEW.json) and [frozen transport candidate](source65a-transported-originals-hold-v1/PLACEMENT.json).
+
+The separate admission successor `fd67cb043f7b6cb8cf042104ac202cb5f0842196` returns Unknown for an unestablished initial baseline while preserving actual final observations. Only Admission.finish changes among 51 qualified original definitions; the complete inverse restores 299c, and known mismatch/input/live/metadata guards remain. Its [increment](admission-baseline-unavailable-increment-v1/MANIFEST.json) and [independent review](admission-baseline-unavailable-independent-peer-v1/REVIEW.json) are prepared for a future exact source request after actual transport closure. Neither the old 65a failure nor its consumed approval is rewritten.
+
+## Real utility remains unproved
+
+Adopt, complete NoUpdate/Ineligible, InsufficientEvidence/Unknown and objective fraud remain distinct. The bounded [objective-fraud source review](section6-objective-fraud-production-boundary-v1/E5_OBJECTIVE_FRAUD_PRODUCTION_BOUNDARY_REVIEW.json) does not certify a production challenge/disposition route and does not assert repository-wide absence. Missing owners, causal outcomes, full cost coverage, lawful materials or independent evidence cannot become a complete comparison. Model roots alone do not establish continued availability or actual consumer adoption.
+
+The required chain remains authorized A → original Training owner → independent B → Adopt or complete NoUpdate → real new C → daemon and Root process-cold recovery. Engineering source, mechanism cases and transport receipts do not establish that chain.
+
+---
+
+## Historical README at c3eb33, preserved verbatim
+
 # 当前检查点：65a 原验收预检失败已完整保留；真实合格任务链仍为 0
 
 本区段固定实际 canonical 对齐之后的精确 source 请求、唯一原执行及完整失败读回。**qualification=false；source driver main 未进入，三个 source gates 和 native phases 均未开始。** 原失败不被静态准备、归档成功或另一个阶段的通过改写。

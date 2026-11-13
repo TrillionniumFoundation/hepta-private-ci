@@ -1,0 +1,14 @@
+[
+  {
+    "old": "class SourceChanged(RuntimeError):\n    pass\n",
+    "new": "class SourceChanged(RuntimeError):\n    pass\n\n\nclass InitialBaselineUnavailable(RuntimeError):\n    \"\"\"Failed preflight left no complete comparison baseline; never a mutation finding.\"\"\"\n    pass\n"
+  },
+  {
+    "old": "        self.m.jwrite('GIT_STATE.after.json', current_git)\n        if current_git != self.initial_git:",
+    "new": "        self.m.jwrite('GIT_STATE.after.json', current_git)\n        if self.initial_git is None:\n            raise InitialBaselineUnavailable('initial Git baseline was not established; source equality is Unknown')\n        if current_git != self.initial_git:"
+  },
+  {
+    "old": "        original = {r['path']: r for r in json.loads(self.initial_raw)['files']}\n",
+    "new": "        if self.initial_raw is None:\n            raise InitialBaselineUnavailable('initial full inventory baseline was not established; source equality is Unknown')\n        original = {r['path']: r for r in json.loads(self.initial_raw)['files']}\n"
+  }
+]

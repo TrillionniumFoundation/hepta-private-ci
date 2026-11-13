@@ -1,0 +1,35 @@
+{
+  "format": "hepta-admission-unestablished-baseline-classification-increment-v1",
+  "before": {
+    "git_blob": "299c3d79987abcde03e83c271bee91c568e0a5ab",
+    "bytes": 111119,
+    "sha256": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767"
+  },
+  "after": {
+    "git_blob": "fd67cb043f7b6cb8cf042104ac202cb5f0842196",
+    "bytes": 111588,
+    "sha256": "15d28bcd74c93ea3e2e6f9ea58bf95baca81c65ab75e4b3539c5a6e9e788ba5d"
+  },
+  "status": "LOCAL_EXACT_PROPOSAL_REQUIRES_INDEPENDENT_REVIEW",
+  "changes": [
+    {
+      "area": "error type",
+      "effect": "Add InitialBaselineUnavailable; no privilege, success or qualification state."
+    },
+    {
+      "area": "finish after actual Git-state record",
+      "effect": "Reject missing initial_git as Unknown before the original inequality check; existing inequality and all other checks preserved."
+    },
+    {
+      "area": "finish before full-inventory comparison",
+      "effect": "Reject missing initial_raw as Unknown before parsing it; known Git/source identity failures still retain original SourceChanged."
+    }
+  ],
+  "inverse_restores_complete_before_bytes": true,
+  "old65a_original_failure_unchanged": true,
+  "current_stage_contract_unchanged": true,
+  "source_request": null,
+  "native_request": null,
+  "H_calls": 0,
+  "qualification": false
+}

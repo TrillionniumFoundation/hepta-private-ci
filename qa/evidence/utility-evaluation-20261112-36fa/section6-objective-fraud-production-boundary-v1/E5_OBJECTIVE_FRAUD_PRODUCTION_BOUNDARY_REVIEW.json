@@ -1,0 +1,84 @@
+{
+  "format": "hepta-section6-objective-fraud-production-boundary-read-review-v1",
+  "source": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+  "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "status": "BOUNDED_ORIGINAL_PRODUCTION_BOUNDARY_IDENTIFIED_NO_FRAUD_ENDPOINT_CERTIFIED",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "git_blob": "124be43c3440b99cb9b6f6d0e30d25ffbb533352",
+      "bytes": 16039,
+      "sha256": "ab3ed5f9ca91763563e64e8db5594c97b703f337cc446f68320aedea2330cf7b",
+      "actual_full_git_get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "git_blob": "97d6c9cbc151cb5373ca900a7915f8f38ff941aa",
+      "bytes": 40741,
+      "sha256": "12d566a0dc2f7f658db30b7ff39699e956722bd3a63c5539ef932c771b29ec95",
+      "actual_full_git_get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "git_blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+      "bytes": 39047,
+      "sha256": "19d794ead41cbf3d230255a2bfdd96c5e793f1f86600d4404d8c6ca8b97350af",
+      "actual_full_git_get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "git_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+      "bytes": 28577,
+      "sha256": "2e63e67176879d232cec2de9f806917613324ae5356140fa8cce777254440910",
+      "actual_full_git_get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+      "git_blob": "35237acc5fa429dcd0eb5e8641a2dad33fa77667",
+      "bytes": 6281,
+      "sha256": "49d66ee1a8dc06608746f2a1016ef60c277be0852346289f50e6a752eb2f45b8",
+      "actual_full_git_get_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "git_blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "bytes": 15660,
+      "sha256": "6b8f65d3324cd4531c0a5f94ac321068b4a2661132944472b8176838b335590a",
+      "actual_full_git_get_verified": true
+    }
+  ],
+  "observed": {
+    "signed_evidence": "Host-owned verifier pins trust/scope/objective/epoch, credential/principal/controller/role, time/revocation, payload and strict Ed25519 signature. Its documented result authenticates an attestation, not scientific truth, organizational independence or promotion permission.",
+    "evaluation": "Product runner and signed evaluation preserve complete qualification and signer checks. The independent decision has EligibleForIndependentSelection, Ineligible and InsufficientEvidence. Eligibility does not itself promote.",
+    "selection": "Original selector admission independently verifies signed selection and original role separation. Qualification, evaluation and binding errors are returned as refusal; no ObjectiveFraud mapping is established in this finite set.",
+    "fraud": "No deterministic prohibited-act proof plus challenge/disposition entry was certified from these six original files. This is not a repository-wide nonexistence claim.",
+    "engineering_failure": "65a Python FileNotFound/SourceChanged is outside these runtime proof semantics and cannot be promoted into ObjectiveFraud."
+  },
+  "search_limit": {
+    "queries": [
+      "ObjectiveFraud",
+      "deterministic fraud",
+      "fraud",
+      "欺诈",
+      "equivocation"
+    ],
+    "default_branch_index_only": true,
+    "no_matches_returned": true,
+    "scope": "Search results locate possible files only. They are not proof about all b608 contents or absence of a differently named endpoint."
+  },
+  "required_before_any_fraud_result": [
+    "A frozen original contract defining the exact prohibited fact and challenge/disposition authority.",
+    "Complete authenticated original evidence sufficient for deterministic reproduction of that fact, distinct from malformed or unavailable input.",
+    "A concrete normal output route and preserved challenge/readback, without converting Unknown or ordinary rejection into punishment."
+  ],
+  "changes": {
+    "source_writes": 0,
+    "new_public_fraud_constructor": 0,
+    "new_signers_or_grants": 0,
+    "automatic_penalties": 0,
+    "H_calls": 0,
+    "Rust_or_QA": 0
+  },
+  "qualification": false,
+  "qualified_real_task_chains": 0
+}

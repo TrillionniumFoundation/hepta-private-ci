@@ -1,0 +1,61 @@
+{
+  "H_calls": 0,
+  "actual_request_to_job_admission_binding_verified_by_this_review": false,
+  "approved_payload": {
+    "bytes": 150166,
+    "git_blob": "f8efb445171e1eb74dc289cd5c15ab89f8940e4f",
+    "sha256": "d8c222937adb01eb371695641e3a4219e0b8eebd7a9300f0afe618d4c620f657"
+  },
+  "complete_durable_streams": true,
+  "declared_files_match_frozen_exact_map": 60,
+  "declared_originals": 55,
+  "declared_parts_match": 17,
+  "format": "hepta-root-history-stage-core-review-v1",
+  "full_61_file_readback_verified_by_this_review": false,
+  "inputs": {
+    "STAGING_READBACK.BINARY_READ.original.json": {
+      "bytes": 35929,
+      "git_blob": "b41b0af4a506c67049358a0b6a44cfa78cabdbda",
+      "sha256": "66b375a72b34e0200d05efa33d3426d7b5287aefad2aa6c295db4acbb78bf869"
+    },
+    "STAGING_READBACK.original.json": {
+      "bytes": 26573,
+      "git_blob": "17d4ea78bc34facc9129c6a634fe750105d75bc4",
+      "sha256": "0a6d1f4cfacbba484ab99eb1f70632d146a96d652030cf2f89d923b8d0286b54"
+    },
+    "STREAMS.original.json": {
+      "bytes": 1357,
+      "git_blob": "6589454e33ed79a198a144220a0d8afe251c42da",
+      "sha256": "b9df046fdee340f38c6a4b54e26e39e79072bbdad3cfc562e80a2ec5003a8e4b"
+    },
+    "SUPERVISOR.original.json": {
+      "bytes": 950,
+      "git_blob": "af805a3230601013eb94afd5e40e9ea3e83c61d4",
+      "sha256": "4cb0bd6d2286ff49130f1504d3f4e2868abeab961a84038d095dddc3e6e87190"
+    }
+  },
+  "job_id": "1a1d52e0d88-392-784",
+  "limits": [
+    "This checks supervisor, streams and one complete native receipt readback. It does not certify the other 60 file readbacks.",
+    "Receipt source/old-path/main flags are the exact approved stager receipt; this review is not a fresh source inventory.",
+    "The job admission and actual request original SDK remain a separate required binding.",
+    "Native version nanosecond fields are parsed and compared as exact Python integers; raw originals remain unchanged."
+  ],
+  "normal_success": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "receipt_binary_full_native_readback": true,
+  "receipt_native_version_exact": "2050:51120153:26573:1794577930394483386:1794577930394483386",
+  "source_or_native_main_dispatched_by_this_review": false,
+  "status": "NORMAL_SUPERVISOR_AND_COMPLETE_DECLARED_RECEIPT_VERIFIED_FILE_READBACK_STILL_PENDING",
+  "stderr": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 268,
+    "git_blob": "3d352672f201c247d49d8808d44b76f767d38686",
+    "sha256": "0cf044c204774c597a0c4af67fc155a33677add0bd7ceb3036013bd225107dbe"
+  }
+}

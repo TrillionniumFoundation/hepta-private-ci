@@ -1,0 +1,729 @@
+{
+  "schema": "hepta.evaluation-audit.e1-registration-captured-byte-proof.v1",
+  "status": "STATIC_DATA_AND_AST_EQUALITIES_ONLY_NO_QA_COLLECTOR_RUST_OR_H_EXECUTION",
+  "source_packet": {
+    "bytes": 4355684,
+    "sha256": "081134eeaadc6ec8c1f321341a355d771fe4d1a8f673063120f273a79adc31b9",
+    "git_blob": "805b284073ae0ed88207edcd2c87144e9597d8c5"
+  },
+  "manifest": {
+    "bytes": 2926,
+    "sha256": "39be0111b8a292b9ae08ab303d345bcb0b958acc672f4b40e25038b5b6375607",
+    "git_blob": "be7ca52a22448ea36ff8f756d7f038a8a8b82bdc"
+  },
+  "author_review": {
+    "bytes": 23457,
+    "sha256": "252140d6971299c51dd6837eff200780d72968b988b2d49a0ec91ade1c98da9d",
+    "git_blob": "839809e79435d212b21a489433e865b09bd36813"
+  },
+  "patch": {
+    "bytes": 149327,
+    "sha256": "4110f3c5e0511b58c94132b296f7f2d99d30f969eb2eae1b6ffb48ea95d32cea",
+    "git_blob": "301fe72f1ccc93e8c8f9f19a9e591ec87941649d"
+  },
+  "actual_baseline_inventory": {
+    "bytes": 5631947,
+    "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e",
+    "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998"
+  },
+  "six_paths": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before": {
+        "bytes": 13480,
+        "git_blob": "19241ceb6ee0c0122ab8c6e9c5b47ccb5d079add",
+        "sha256": "264c0216a90b471c692a86cf98f1a596f70b85f77d8cddb410110d912a4cf1be"
+      },
+      "after": {
+        "bytes": 13640,
+        "git_blob": "1d66a6491b51bff9015ca08b5a82b77312053519",
+        "sha256": "5abdc36185e94baa0cb4c3804d7ccdfa5bec9692b18d5cea1b7feab07aedf5ce"
+      },
+      "actual_baseline_equal": true,
+      "new_absent_in_actual_inventory": false
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "before": {
+        "bytes": 30745,
+        "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+        "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+      },
+      "after": {
+        "bytes": 31859,
+        "git_blob": "a0bec30999e6c4db87682312685dfc7f474349f1",
+        "sha256": "50b8c216d016d1d5006497219a2ab824a2e023194fb3a70795ea15bf0e95bc10"
+      },
+      "actual_baseline_equal": true,
+      "new_absent_in_actual_inventory": false
+    },
+    {
+      "path": "CALLERS.toml",
+      "before": {
+        "bytes": 1855908,
+        "git_blob": "7123126e368a9e7f65c95b8eb29b0c469e2fa893",
+        "sha256": "62fc6814e2f24ecbf37a83583f526d215870cf2ab5202f524f34de46b77273fa"
+      },
+      "after": {
+        "bytes": 1902614,
+        "git_blob": "8875892749c45665abdce90310a7a47d90308b9b",
+        "sha256": "4032c99e77d9aa7c36f987e927962be470eb469ee30911ef16d577f257ec56ac"
+      },
+      "actual_baseline_equal": true,
+      "new_absent_in_actual_inventory": false
+    },
+    {
+      "path": "qa/b4-no-bypass/ROOT_HOST_INITIAL_PRODUCT_SOURCE_CONTRACT.json",
+      "before": null,
+      "after": {
+        "bytes": 24089,
+        "git_blob": "e13f932f605cc21a5b2e042bed07a4e4fbc38221",
+        "sha256": "459bebbd0b0f7bdb6057e30fed598a133ea7b4ce39507bd221e6766190e5c8ca"
+      },
+      "actual_baseline_equal": false,
+      "new_absent_in_actual_inventory": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "before": {
+        "bytes": 102696,
+        "git_blob": "03ca2b5de52c6982cfe1623885a1675fd3ed74fd",
+        "sha256": "caba0dc645261cb5ecb2ae8eb92e10bab92683f6fb9bb399b62a26eabe5360d3"
+      },
+      "after": {
+        "bytes": 102696,
+        "git_blob": "7dccad723474327be22ba0ecf1905c34648ce0d9",
+        "sha256": "0db587196a1c860c6a3627f3d3970ad12e22765937b1a36f3f31399ea0866acf"
+      },
+      "actual_baseline_equal": true,
+      "new_absent_in_actual_inventory": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "before": {
+        "bytes": 33253,
+        "git_blob": "5a6f9372830e4eee584484b88e53e4ffbf5127d9",
+        "sha256": "019a8988beea067db2d71784f5cc4a8516d8830f749c6f6cf47cd7084adb2129"
+      },
+      "after": {
+        "bytes": 36942,
+        "git_blob": "8d64d3059e4ffaf5e38fe484685a85560cf7ed31",
+        "sha256": "c9e4663474f4ed44d238c677ee0f8f19a3302e3107071e4d96975de71ccc5011"
+      },
+      "actual_baseline_equal": true,
+      "new_absent_in_actual_inventory": false
+    }
+  ],
+  "boundary_counts": [
+    633,
+    650
+  ],
+  "unchanged_old_boundary_rows": 624,
+  "changed_old_rows": [
+    {
+      "index": 125,
+      "id": "root_live_admin_signed_artifact_verify",
+      "symbol": "DeploymentFinalUseIssuer::verify_original_signed_grant",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 134,
+      "id": "root_live_admin_retained_artifact_observe",
+      "symbol": "DeploymentFinalUseIssuer::observe_original_signed_grant",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 621,
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_from_original_prepared",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::from_original_prepared",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 624,
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 625,
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_publish",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::publish",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 627,
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_into_q24_task",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::into_q24_task",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 628,
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_from_original_current",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::recover_from_original_current",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 629,
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "old_fields_preserved": true
+    },
+    {
+      "index": 631,
+      "id": "root_initial_custody_original_root_initial_installation_error_v1_original_error",
+      "symbol": "OriginalRootInitialInstallationErrorV1::original_error",
+      "appended_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "old_fields_preserved": true
+    }
+  ],
+  "new_boundaries": [
+    {
+      "id": "root_host_initial_neuron_generation_current_owner_v1_original_initial_publication_binding",
+      "symbol": "NeuronGenerationCurrentOwnerV1::original_initial_publication_binding",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "definition_markers": [
+        "fn original_initial_publication_binding("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_request.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "NeuronGenerationCurrentOwnerV1"
+    },
+    {
+      "id": "root_host_initial_host_authority_service_bind_original_initial_operation",
+      "symbol": "HostAuthorityService::bind_original_initial_operation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "definition_markers": [
+        "fn bind_original_initial_operation<"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "HostAuthorityService"
+    },
+    {
+      "id": "root_host_initial_host_authority_service_recover_original_initial_operation",
+      "symbol": "HostAuthorityService::recover_original_initial_operation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "definition_markers": [
+        "fn recover_original_initial_operation<"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "HostAuthorityService"
+    },
+    {
+      "id": "root_host_initial_host_authority_service_read_original_initial_request",
+      "symbol": "HostAuthorityService::read_original_initial_request",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation_request.rs",
+      "definition_markers": [
+        "fn read_original_initial_request<"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "HostAuthorityService"
+    },
+    {
+      "id": "root_host_initial_original_host_initial_operation_publish",
+      "symbol": "OriginalHostInitialOperation::publish",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "definition_markers": [
+        "fn publish<"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalHostInitialOperation"
+    },
+    {
+      "id": "root_host_initial_original_host_initial_operation_read_original",
+      "symbol": "OriginalHostInitialOperation::read_original",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "definition_markers": [
+        "fn read_original("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalHostInitialOperation"
+    },
+    {
+      "id": "root_host_initial_original_host_initial_operation_recover",
+      "symbol": "OriginalHostInitialOperation::recover",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "definition_markers": [
+        "fn recover<"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalHostInitialOperation"
+    },
+    {
+      "id": "root_host_initial_original_host_initial_operation_require_observed",
+      "symbol": "OriginalHostInitialOperation::require_observed",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "definition_markers": [
+        "fn require_observed("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalHostInitialOperation"
+    },
+    {
+      "id": "root_host_initial_prepared_host_authority_session_bind_original_initial_generation",
+      "symbol": "PreparedHostAuthoritySession::bind_original_initial_generation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "definition_markers": [
+        "fn bind_original_initial_generation<"
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedHostAuthoritySession"
+    },
+    {
+      "id": "root_host_initial_prepared_host_authority_session_recover_original_initial_generation",
+      "symbol": "PreparedHostAuthoritySession::recover_original_initial_generation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "definition_markers": [
+        "fn recover_original_initial_generation<"
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedHostAuthoritySession"
+    },
+    {
+      "id": "root_host_initial_prepared_host_authority_session_original_initial_generation_request",
+      "symbol": "PreparedHostAuthoritySession::original_initial_generation_request",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "definition_markers": [
+        "fn original_initial_generation_request<"
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedHostAuthoritySession"
+    },
+    {
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_publish_original_generation",
+      "symbol": "PreparedRootHostInitialGenerationV1::publish_original_generation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "definition_markers": [
+        "fn publish_original_generation("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1"
+    },
+    {
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_read_original_generation",
+      "symbol": "PreparedRootHostInitialGenerationV1::read_original_generation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "definition_markers": [
+        "fn read_original_generation("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1"
+    },
+    {
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_recover_original_generation",
+      "symbol": "PreparedRootHostInitialGenerationV1::recover_original_generation",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "definition_markers": [
+        "fn recover_original_generation("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1"
+    },
+    {
+      "id": "root_host_initial_prepared_root_host_initial_generation_v1_into_original_q24_task",
+      "symbol": "PreparedRootHostInitialGenerationV1::into_original_q24_task",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "definition_markers": [
+        "fn into_original_q24_task<"
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "PreparedRootHostInitialGenerationV1"
+    },
+    {
+      "id": "root_host_initial_root_host_initial_task_installation_error_v1_generation_error",
+      "symbol": "RootHostInitialTaskInstallationErrorV1::generation_error",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "definition_markers": [
+        "fn generation_error("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "RootHostInitialTaskInstallationErrorV1"
+    },
+    {
+      "id": "root_host_initial_root_host_initial_task_installation_error_v1_read_original_generation_after_installation_failure",
+      "symbol": "RootHostInitialTaskInstallationErrorV1::read_original_generation_after_installation_failure",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "definition_markers": [
+        "fn read_original_generation_after_installation_failure("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "RootHostInitialTaskInstallationErrorV1"
+    }
+  ],
+  "unchanged_top_fields": [
+    "schema_version",
+    "plan_id",
+    "plan_version",
+    "source_roots",
+    "ignored_path_fragments",
+    "rule",
+    "authority"
+  ],
+  "privileged_required_ids_exact_append": true,
+  "all_original_forbidden_and_extra_protection_constraints_equal": true,
+  "protected_counts": [
+    442,
+    451
+  ],
+  "row411": {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+    "complete_object_sha256": "fe7331e7a1f6f158fdcd0892fd57083670e9e7a86a7eff271dba20c9c7a6c820",
+    "unchanged": true
+  },
+  "old28ordinary_slice_equal": true,
+  "new_guards": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "required_count": 1,
+      "required_bytes": [
+        15263
+      ],
+      "new_product_full_body_required": true,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier",
+        "Deref",
+        "into_inner",
+        "#[derive(Clone)]",
+        "UnixStream::connect",
+        "TcpStream::connect"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_request.rs",
+      "required_count": 1,
+      "required_bytes": [
+        3448
+      ],
+      "new_product_full_body_required": true,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier",
+        "Deref",
+        "into_inner",
+        "#[derive(Clone)]",
+        "UnixStream::connect",
+        "TcpStream::connect"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "required_count": 1,
+      "required_bytes": [
+        111
+      ],
+      "new_product_full_body_required": false,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "required_count": 1,
+      "required_bytes": [
+        227
+      ],
+      "new_product_full_body_required": false,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "required_count": 1,
+      "required_bytes": [
+        183
+      ],
+      "new_product_full_body_required": false,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "required_count": 1,
+      "required_bytes": [
+        8419
+      ],
+      "new_product_full_body_required": true,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier",
+        "Deref",
+        "into_inner",
+        "#[derive(Clone)]",
+        "UnixStream::connect",
+        "TcpStream::connect"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "required_count": 1,
+      "required_bytes": [
+        5610
+      ],
+      "new_product_full_body_required": true,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier",
+        "Deref",
+        "into_inner",
+        "#[derive(Clone)]",
+        "UnixStream::connect",
+        "TcpStream::connect"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "required_count": 2,
+      "required_bytes": [
+        197,
+        192
+      ],
+      "new_product_full_body_required": false,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "raw_forbidden_hits": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "required_count": 1,
+      "required_bytes": [
+        548
+      ],
+      "new_product_full_body_required": false,
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "permit_all",
+        "AllowVerifier"
+      ],
+      "raw_forbidden_hits": []
+    }
+  ],
+  "contract": {
+    "bytes": 24089,
+    "sha256": "459bebbd0b0f7bdb6057e30fed598a133ea7b4ce39507bd221e6766190e5c8ca",
+    "git_blob": "e13f932f605cc21a5b2e042bed07a4e4fbc38221"
+  },
+  "whole_product_pins_equal": {
+    "codex-rs/hepta-agentd/src/authority_host_generation.rs": {
+      "bytes": 15263,
+      "git_blob": "8ca53769c20627fd9e204c0a0a5b4e77771bebac",
+      "sha256": "3fe84b8d8f29e5e4554ab69f4b81b6a91884a03732020223b32b12c9070e3a72"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_generation_request.rs": {
+      "bytes": 3448,
+      "git_blob": "0ba3ec80ea9c4cd04acf157bb3a894d21d29b96b",
+      "sha256": "47bde0c769254a9d1e61d8093d4111fb235ca3adf772e919b340bd15d5b60acd"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs": {
+      "bytes": 20116,
+      "git_blob": "035be6b6128a6a9f8861e1ba7c6ac95b45f71b4d",
+      "sha256": "15748f1c212d7f967b960133cb0c0e84586666893b38ac1601dab2f931d07cf2"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_service.rs": {
+      "bytes": 23062,
+      "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff",
+      "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_session.rs": {
+      "bytes": 17780,
+      "git_blob": "d1a06f714d3805636bb52ea00096a567ade99348",
+      "sha256": "26c1430f5241d4a717190bd2a7bd7400723605b5bda1eea7c9306c9dc6b7724e"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_session_generation.rs": {
+      "bytes": 8419,
+      "git_blob": "1254c569aed6554782d21ff23653d95e7f7f3835",
+      "sha256": "d65a1f5e67802dfc0a2f523c305dd78b9868eaa1c81271eedb4da98f113a1d5b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs": {
+      "bytes": 5610,
+      "git_blob": "70003ef39ef45c372077d09d2416a1c289848ebc",
+      "sha256": "882dff00964b095cd34568a360bf387a3fa8ed4be4e591820505feca03598d72"
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "bytes": 72778,
+      "git_blob": "ab0c56c89de7a895bf0211b78fc19fdb42299387",
+      "sha256": "7b80ff46fff73939eee289a89492184e27ba4154b6a92448af6cc6843038d166"
+    },
+    "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs": {
+      "bytes": 11650,
+      "git_blob": "b08cbd6409a08be631d40d923801b98708600db5",
+      "sha256": "e029827da3eb19eba7f97ddeba0e81c1070e60b5e7cc262bb5277d07fd800b4d"
+    }
+  },
+  "root_parents": {
+    "old_count": 48,
+    "new_count": 54,
+    "original_order_prefix_equal": true,
+    "added_actual_method_names": [
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_publication_enters_original_task_factory_and_drain",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_same_issuer_revoked_grant",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_stale_original_consumer_head",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_binding_refuses_another_complete_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_existing_state_reopens_after_old_session_is_dropped",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::host_generation::tests::root_host_initial_request_reads_the_exact_binding_without_preparing"
+    ],
+    "all_other_workflow_bytes_exact_inverse": true
+  },
+  "qa": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "old_functions": 57,
+      "new_functions": [],
+      "old_test_methods": 34,
+      "new_test_methods": 34,
+      "unchanged_old_functions": 56,
+      "changed_old_functions": {
+        "EvaluatedOrdinaryRetainedClosureTests.test_new_typed_edges_and_old_boundary_inventory_are_exact": {
+          "before": {
+            "bytes": 1183,
+            "sha256": "6db3fb937e12785574a027162959d4fd4005c05a1df746ed83f0af527a61f8ed",
+            "git_blob": "cc436384189ff765bd242a546e1c4d3acace2060"
+          },
+          "after": {
+            "bytes": 1183,
+            "sha256": "5675a438b5705b8d09121bd820ed21007c930b5ecc4505da3df996e59a3b449c",
+            "git_blob": "5650aa83babbb0451e6f94ea44cfed5d4109049f"
+          }
+        }
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old_functions": 12,
+      "new_functions": [
+        "ResidentRootSourceClosureTests.test_root_host_initial_product_exact_source_and_original_guards",
+        "ResidentRootSourceClosureTests.test_root_host_initial_product_parents_keep_the_original_privileged_lane"
+      ],
+      "old_test_methods": 10,
+      "new_test_methods": 12,
+      "unchanged_old_functions": 11,
+      "changed_old_functions": {
+        "ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof": {
+          "before": {
+            "bytes": 5096,
+            "sha256": "675ca4fbf87d085bec32e937b38d4f1a079e99ffb1c5a8fda40740ace03c86a4",
+            "git_blob": "eaf194f7e3d8b38adae1197474529947b6e86bb0"
+          },
+          "after": {
+            "bytes": 5205,
+            "sha256": "f98ae8b0a005fddbca950d99e1987e23f23daae29686cd7f928a56e1868ea1b2",
+            "git_blob": "a8199823bec6e3e3f3bf5e9825341e57b97d1331"
+          }
+        }
+      }
+    }
+  ],
+  "complete_boundary_digest": "5f357f92112725cd9c232d5067208b9f32c6a528f532de725e03d99ed8d67e48",
+  "all_existing_qa_mutation_functions_except_two_exact_inverse_count_selection_methods_equal": true,
+  "allowlist_only_fixed_new_callers_sha256": true,
+  "collector_original": {
+    "bytes": 38402,
+    "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+    "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+  },
+  "b92_original": {
+    "bytes": 14986,
+    "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+    "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+  },
+  "not_claimed": [
+    "No imported or executed original collector, QA or authored preparation scripts",
+    "No full Rust typed caller enumeration",
+    "No static direct-link evidence of normal daemon caller added",
+    "No Rust compilation, formatting, native mechanisms or source-gate result",
+    "No Git objects/refs/source mutation by reviewer"
+  ]
+}

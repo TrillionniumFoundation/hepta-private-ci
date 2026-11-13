@@ -1,0 +1,19 @@
+{
+  "format": "hepta-local-git-archive-basename-error-v1",
+  "not_an_execution_approval": true,
+  "H_calls": 0,
+  "code_context": "Existing publication helper creates an immutable Git blob, then passes the publication name to a local create-only saver that accepts a basename only.",
+  "observation_cell": "g2:877",
+  "exact_observed_error": "Error: fixed basename/raw string required",
+  "affected_relative_names": [
+    "parts/PART_001.b64",
+    "parts/PART_002.b64"
+  ],
+  "candidate_files_changed": false,
+  "all_prior_frozen_pins_unchanged": true,
+  "response_retention_gap": "Both create tool calls returned before the local save rejected the slash-containing name. Their returned SDK objects were not retained. Their status is not reconstructed or claimed from a later GET.",
+  "planned_reconciliation": "GET the two exact precomputed Git blob IDs and compare complete contents, saving new original GET responses under each existing part directory. No new H or repeated process operation. The other 32 parts/requests are still unpublished in this pass.",
+  "completed_candidate_files_actual_full_get": 25,
+  "candidate_file_total": 59,
+  "failure_scope": "Local immutable Git evidence publication only; no H staging, source gate or native process was called."
+}

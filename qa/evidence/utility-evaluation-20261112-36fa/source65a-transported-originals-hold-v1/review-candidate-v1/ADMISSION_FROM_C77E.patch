@@ -1,0 +1,463 @@
+--- original
++++ HOLD-successor
+@@ -316,6 +316,194 @@
+ CANONICAL_CONTROL = Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1')
+ 
+ 
++HISTORY_EVIDENCE_PARENT = '/home/qian-qi/hepta-utility-36fa-evidence'
++HISTORY_TRANSPORT_CONTROL = '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1'
++SOURCE_TRANSPORT_CONTROL = '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2'
++HISTORY_MANIFEST_PATH = '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json'
++HISTORY_MANIFEST_PIN = {'bytes': 42163,
++ 'git_blob': '5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a',
++ 'sha256': '9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117'}
++HISTORY_ROLES = ['canonical.supervisor',
++ 'runtime.supervisor',
++ 'canonical.config',
++ 'canonical.packet',
++ 'final_format.supervisor',
++ 'canonical.driver',
++ 'canonical.artifacts',
++ 'canonical.commands',
++ 'canonical.metadata_delta',
++ 'canonical.metadata_before_gzip',
++ 'canonical.metadata_final_gzip',
++ 'canonical.git_state_final',
++ 'canonical.index_delta_gzip',
++ 'canonical.index_audit_gzip',
++ 'canonical.index_raw_gzip',
++ 'canonical.inputs',
++ 'canonical.progress',
++ 'canonical.result',
++ 'final_format.config',
++ 'maintenance.supervisor',
++ 'final_format.driver',
++ 'final_format.artifacts',
++ 'final_format.inputs',
++ 'final_format.result',
++ 'final_format.metadata_after_gzip',
++ 'final_format.metadata_before_gzip',
++ 'final_format.git_state_final',
++ 'final_format.inventory_final_gzip',
++ 'final_format.empty_transition_gzip',
++ 'materialization.config',
++ 'materialization.packet',
++ 'materialization.driver',
++ 'materialization.artifacts',
++ 'materialization.commands',
++ 'materialization.inputs',
++ 'materialization.mutations',
++ 'materialization.result',
++ 'materialization.metadata_final_gzip',
++ 'maintenance.config',
++ 'materialization.supervisor',
++ 'archive.supervisor',
++ 'maintenance.driver',
++ 'maintenance.artifacts',
++ 'maintenance.inputs',
++ 'maintenance.result',
++ 'maintenance.metadata_after_gzip',
++ 'maintenance.metadata_before_gzip',
++ 'maintenance.git_state_before',
++ 'maintenance.git_state_final',
++ 'runtime.environment_ready',
++ 'runtime.result',
++ 'archive.readback',
++ 'archive.artifacts',
++ 'archive.result',
++ 'historical_environment.started']
++HISTORY_RUNTIME_GUARD_PATH = '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/historical-runtime-guard.py'
++HISTORY_RUNTIME_GUARD_PIN = {'bytes': 70306,
++ 'git_blob': '917f5b669ce5e4b926c7131a42423a0f069e46a4',
++ 'sha256': '503aaa202bd40ea54526e11b2e299630b7b888e5afe14a3ce5bfb8a3c1c0f556'}
++HISTORY_STAGER_PIN = {'bytes': 17939,
++ 'git_blob': '0837bd70dd0e20a208fd8f59eec6017910cb9076',
++ 'sha256': 'cef85f5a2768e11c48303ee3dfffbd41c3393f12b498bba6ad7b6faad4c85763'}
++HISTORY_STAGER_ARGV_PIN = {'bytes': 18310,
++ 'git_blob': 'a85299a968c337037069930c00c66430ec3dc58d',
++ 'sha256': '1b10521850c52c094d45989095912b5fcfe0687c8bd1119401d7766f4eb5fbfd'}
++HISTORY_PACKET_PIN = {'bytes': 10637954,
++ 'git_blob': '3282998b8de39cc0bcd2c44d40dfd5f9c5b1d57f',
++ 'sha256': 'da51b174555e0396a524f5f7da2e08e9849039f614efd0e5c7998b11a5fc6cbb'}
++HISTORY_GZIP_PIN = {'bytes': 4994854,
++ 'git_blob': '0f8ff1e10bfbe418c11ff9f3f6844b02817c98b6',
++ 'sha256': '0fd09793b264476ac6ffda53fa89e38c28e973af32758ce7e2e0932f63275794'}
++HISTORY_PART_INPUTS = [{'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-001',
++  'pin': {'bytes': 307200,
++          'git_blob': '31ab8fbbcd7cc205a6cd1de87d13aecc3b5a4e4e',
++          'sha256': '6b86b0391ad498a0a33819ccf3d1f7df85086f7e8c9ee1e7adfbd274e7b0d845'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-002',
++  'pin': {'bytes': 307200,
++          'git_blob': 'f4b6cfcffb988b79d20e2cb2cdfae9011291e69d',
++          'sha256': 'c4380979846fdd7dcbffedc2b31d77afca0ad421ad4e56e5b7482255dc4c25dc'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-003',
++  'pin': {'bytes': 307200,
++          'git_blob': 'bebb09eefd45b58dce8e8ee5733cfa7b72f4b867',
++          'sha256': 'cb4c9818bf745863633d8facec323ad17ab9a79a5174bbc803206d66cb27e088'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-004',
++  'pin': {'bytes': 307200,
++          'git_blob': '9038f83a3d3749c13eb103d73709ba94627d826f',
++          'sha256': 'b9c1c04f9729389996cf2ea77481823b9a0c13b55fc64a280139835fdee6fce1'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-005',
++  'pin': {'bytes': 307200,
++          'git_blob': '117500db05eb47a4ed5fa15348c2badaf90e8eb9',
++          'sha256': '57de91373607f18e1bb495835784555a8c20fed3c35c18568d2f28f25563db6d'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-006',
++  'pin': {'bytes': 307200,
++          'git_blob': '2bd9985ea771c0a4820461f928019545d5f432e8',
++          'sha256': '2c0b8661579fdfc073c934cb6536ac975f0979cf20bbaf6673c8968e4ed73093'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-007',
++  'pin': {'bytes': 307200,
++          'git_blob': '53b7395b2c06fe97d530300551407dcf93d64a9d',
++          'sha256': 'd591844926bf2b70a1c4b1687646e58fed36e5e48e02feb9739fee8306f87ad1'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-008',
++  'pin': {'bytes': 307200,
++          'git_blob': 'da75e3a2f3f8734a6f75294a94d22da86f851d33',
++          'sha256': 'd31c9f29880e7b3f4661a32a2d075252a29e9419940aee6d60690107b2e57ff1'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-009',
++  'pin': {'bytes': 307200,
++          'git_blob': 'cddcaabf900a5914be150d4932e04a367722ee79',
++          'sha256': 'f86dc62e47e9f24bbd9a06cf17eb624a64cce23eca2d89645fd894eba4d44a44'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-010',
++  'pin': {'bytes': 307200,
++          'git_blob': 'e17216d2dcc28bd08d5290ef1dc3652f685cbb2b',
++          'sha256': '3dfa4e0a1a42e0d517e1deed0471b63ab9580dd628d84af1b892b2366215595a'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-011',
++  'pin': {'bytes': 307200,
++          'git_blob': '021f4f922769f4ed583608695e1ebeaf2e42e5af',
++          'sha256': '55db7199ca7b9d776ac22f5546ce9a8c791c639a9a53eeb0ac9d7dc6ee290248'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-012',
++  'pin': {'bytes': 307200,
++          'git_blob': 'db8238ca9f3a20f7782b4cbe471373f26a60bf1b',
++          'sha256': 'ec2b2887b33fe891fdb18596724ca3e6c8899b2e30159021bea5f2afa4df1d72'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-013',
++  'pin': {'bytes': 307200,
++          'git_blob': 'b24d04d8212983127a63401c05e6937ecdc6cd00',
++          'sha256': 'f7c316582236168bbc1ff6fb14c04d4090d0259e103bc51dbf49256bf73e1bcf'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-014',
++  'pin': {'bytes': 307200,
++          'git_blob': '9e365c121528367edf62cad17251117900cd81a5',
++          'sha256': 'e46da201c7353d917a18314e34fcac53ecf20d509ea095fe432d9a36eaf2f1ad'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-015',
++  'pin': {'bytes': 307200,
++          'git_blob': '355e5c9355e63c7ea23e7ffcd36a424f4dcb810f',
++          'sha256': '3059a5c2580412437680096e6068a835e381a0c94e039621e12b6afefd9c5c0f'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-016',
++  'pin': {'bytes': 307200,
++          'git_blob': '101e78c002ed67a46f597d5cee48c92bb05002bd',
++          'sha256': '42dfe642346ff861f9cbb6c3269ae841821dfc8c795f67243444da53e3115dd8'}},
++ {'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1.payload.json.gz.part-017',
++  'pin': {'bytes': 79654,
++          'git_blob': 'aadf21d52a68d116c3c9d022c1b08f7ef827db04',
++          'sha256': '2073b0f1f10f06d0b884ac2ab25aad6f0b200c904be1585bc8b38f537bac51d8'}}]
++HISTORY_PROOF_ROLES = {'ARCHIVE_V3': ['archive.result', 'archive.supervisor'],
++ 'CANONICAL_ALIGNMENT': ['canonical.result', 'canonical.supervisor'],
++ 'FINAL_FORMAT': ['final_format.result', 'final_format.supervisor'],
++ 'ISOLATED_MATERIALIZATION': ['materialization.result', 'materialization.supervisor'],
++ 'MAINTENANCE_41E': ['maintenance.result', 'maintenance.supervisor']}
++HISTORY_FIXED_ROLES = {'ARCHIVE_V3_ARTIFACTS': 'archive.artifacts',
++ 'ARCHIVE_V3_READBACK': 'archive.readback',
++ 'FINAL_FORMAT_ARTIFACTS': 'final_format.artifacts',
++ 'FINAL_FORMAT_CONFIG': 'final_format.config',
++ 'FINAL_FORMAT_DRIVER': 'final_format.driver',
++ 'HISTORICAL_ENVIRONMENT_READY': 'runtime.environment_ready',
++ 'MAINTENANCE_41E_ARTIFACTS': 'maintenance.artifacts',
++ 'MAINTENANCE_41E_CONFIG': 'maintenance.config',
++ 'MAINTENANCE_41E_DRIVER': 'maintenance.driver',
++ 'MAINTENANCE_41E_INPUT_IDENTITIES': 'maintenance.inputs',
++ 'MATERIALIZATION_3BB_ARTIFACTS': 'materialization.artifacts',
++ 'MATERIALIZATION_3BB_COMMANDS': 'materialization.commands',
++ 'MATERIALIZATION_3BB_CONFIG': 'materialization.config',
++ 'MATERIALIZATION_3BB_INPUT_IDENTITIES': 'materialization.inputs',
++ 'MATERIALIZATION_3BB_MUTATION_INTENTS': 'materialization.mutations',
++ 'MATERIALIZATION_3BB_PACKET': 'materialization.packet',
++ 'MATERIALIZER_3BB': 'materialization.driver'}
++HISTORY_ARTIFACT_ROLES = {'/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.allowed-actual-delta.json': 'canonical.metadata_delta',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.before.json.gz': 'canonical.metadata_before_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.final.json.gz': 'canonical.metadata_final_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_STATE.final.json': 'canonical.git_state_final',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.complete-entry-delta.json.gz': 'canonical.index_delta_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.audit.json.gz': 'canonical.index_audit_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz': 'canonical.index_raw_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/INPUT_IDENTITIES.json': 'final_format.inputs',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.after.json.gz': 'final_format.metadata_after_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.before.json.gz': 'final_format.metadata_before_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.git-state.json': 'final_format.git_state_final',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.inventory.json.gz': 'final_format.inventory_final_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/fmt.after.postimages.json.gz': 'final_format.empty_transition_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/final.git-metadata.json.gz': 'materialization.metadata_final_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz': 'maintenance.metadata_after_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.before.json.gz': 'maintenance.metadata_before_gzip',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_STATE.before.json': 'maintenance.git_state_before',
++ '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/final.git-state.json': 'maintenance.git_state_final'}
++
++
+ class SourceChanged(RuntimeError):
+     pass
+ 
+@@ -539,20 +727,22 @@
+         check(cfg.get('state') == 'READY_FOR_FINAL_SOURCE_QUALIFICATION'
+               and cfg.get('root_execution_approved') is True, 'final source input remains HOLD')
+         self._require_complete_bindings(cfg)
++        self._require_transport_bindings(cfg)
+         self.cfg = cfg
+         self.output = Path(output)
+         self.lease = None
+         self.runtime = runtime
+         self._fixed_raw = {}
++        self._transport_stats = {}
+         os.environ['GIT_OPTIONAL_LOCKS'] = '0'
+         os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+         sys.dont_write_bytecode = True
+-        self.h = load(cfg['maintenance_guard_path'], V5_PIN, 'original_v5_historical_runtime_environment')
++        self.h = load(cfg['historical_runtime_guard_path'], HISTORY_RUNTIME_GUARD_PIN, 'fixed_history_transport_v5_historical_runtime_environment')
+         self.m = load(cfg['maintenance_guard_path'], V5_PIN, 'original_v5_current_source_observation')
+         m = self.m
+         check(str(m.REPO) == str(self.h.REPO) == HISTORICAL_REPO
+               and str(m.TARGET) == str(self.h.TARGET) == cfg['target'], 'original V5 historical source/target constants')
+-        # Keep the historical module, including its 86dd SEED, completely original.
++        # Keep all historical subjects and guard statements; only four closed historical read locations differ.
+         m.REPO = Path(cfg['repo']); m.HEAD = cfg['source']; m.TREE = cfg['tree']
+         m.OUT = self.output
+         m.cfg = cfg['runtime_guard']
+@@ -571,6 +761,8 @@
+         m.read_input(cfg['maintenance_guard_path'], V5_PIN)
+         m.read_input(cfg['inventory_driver_path'], INVENTORY_PIN)
+         self.h.read_input(cfg['maintenance_guard_path'], V5_PIN)
++        self.h.read_input(cfg['historical_runtime_guard_path'], HISTORY_RUNTIME_GUARD_PIN)
++        self._history_rows = self._load_transport_manifest()
+ 
+     def read(self, path, expected, name):
+         raw = self.m.read_input(path, expected)
+@@ -578,8 +770,10 @@
+         return self.m.parse(raw)
+ 
+     def observed_proof(self, value, prefix):
+-        original = self.read(value['result_path'], value['result'], prefix + '.RESULT.original.json')
+-        raw = self.m.read_input(value['supervisor_path'], value['supervisor'])
++        check(prefix in HISTORY_PROOF_ROLES, 'fixed historical result/supervisor role pair')
++        result_role, supervisor_role = HISTORY_PROOF_ROLES[prefix]
++        original = self.read_historical(result_role, value['result_path'], value['result'], prefix + '.RESULT.original.json')
++        raw = self._read_historical(supervisor_role, value['supervisor_path'], value['supervisor'])
+         terminal = self.m.parse_supervisor(raw)
+         check(terminal['job_id'] == value['job_id'], prefix + ' exact actual job')
+         self.m.write(prefix + '.SUPERVISOR.original.json', raw)
+@@ -604,6 +798,7 @@
+         m.jwrite('SOURCE_COORDINATION_SH.json', {'path': cfg['coordination_lock']['path'],
+                  **self.current_lock(), 'at': m.now(), 'pid': os.getpid(), 'fd': self.lease,
+                  'scope': 'Only cooperative source writers; complete actual source checks remain required.'})
++        self._require_transport_staging()
+         plan = self.read(cfg['plan_path'], PLAN_PIN, 'PLAN.original.json')
+         check(plan['schema'] == 'hepta.utility.exact-source-qualification-plan.v2', 'original reviewed qualification plan')
+         aligned = self.observed_proof(cfg['canonical_alignment'], 'CANONICAL_ALIGNMENT')
+@@ -684,9 +879,11 @@
+         check(self.m.verify_original_inputs()['unchanged'] is True, 'original inputs before native stage')
+         check(self.h.verify_original_inputs()['unchanged'] is True, 'historical runtime proof inputs before native stage')
+         self.current_lock()
++        self._verify_transport_stability()
+ 
+     def finish(self):
+         self.current_lock()
++        self._verify_transport_stability()
+         self.m.verify_original_inputs()
+         self.h.verify_original_inputs()
+         self.h.jwrite('INPUTS.final.json', self.h.input_pins)
+@@ -765,7 +962,7 @@
+     def _fixed(self, name):
+         if name not in self._fixed_raw:
+             spec = FIXED_INPUTS[name]
+-            raw = self.m.read_input(spec['path'], spec['pin'])
++            raw = self._read_historical(HISTORY_FIXED_ROLES[name], spec['path'], spec['pin'])
+             self._fixed_raw[name] = raw
+         return self._fixed_raw[name]
+ 
+@@ -784,7 +981,9 @@
+     def _artifact(self, catalog, root, name, output, raw_pin=None):
+         check(name in catalog, 'complete original artifact: ' + name)
+         row = catalog[name]
+-        raw = self.m.read_input(Path(root) / name, pin_fields(row))
++        original_path = str(Path(root) / name)
++        check(original_path in HISTORY_ARTIFACT_ROLES, 'one fixed original artifact role')
++        raw = self._read_historical(HISTORY_ARTIFACT_ROLES[original_path], original_path, pin_fields(row))
+         if name.endswith('.gz'):
+             expected = {'bytes': row['raw_bytes'], 'sha256': row['raw_sha256'], 'git_blob': row['raw_git_blob']}
+             exact_pin(expected, 'original gzip full raw identity')
+@@ -1062,10 +1261,10 @@
+     def _validate_canonical(self, aligned, final_format, final_raw, final_metadata, clean):
+         cfg, m = self.cfg, self.m
+         proof = cfg['canonical_alignment']
+-        m.read_input(CANONICAL_CONTROL / 'driver.py', CANONICAL_DRIVER_PIN)
+-        control = self.read(CANONICAL_CONTROL / 'APPROVED_CONFIG.json', proof['approved_config'], 'CANONICAL_CONFIG.original.json')
+-        m.read_input(CANONICAL_CONTROL / 'CANONICAL_PACKET.json', proof['canonical_packet'])
+-        artifacts = self.read(CANONICAL_CONTROL / 'run' / 'ARTIFACTS.json', proof['artifacts'], 'CANONICAL_ARTIFACTS.original.json')
++        self._read_historical('canonical.driver', CANONICAL_CONTROL / 'driver.py', CANONICAL_DRIVER_PIN)
++        control = self.read_historical('canonical.config', CANONICAL_CONTROL / 'APPROVED_CONFIG.json', proof['approved_config'], 'CANONICAL_CONFIG.original.json')
++        self._read_historical('canonical.packet', CANONICAL_CONTROL / 'CANONICAL_PACKET.json', proof['canonical_packet'])
++        artifacts = self.read_historical('canonical.artifacts', CANONICAL_CONTROL / 'run' / 'ARTIFACTS.json', proof['artifacts'], 'CANONICAL_ARTIFACTS.original.json')
+         catalog = artifact_catalog(artifacts, False)
+         check(artifacts == aligned['artifacts'] + [dict(proof['result'], name='RESULT.json')],
+               'original canonical artifact ordering includes RESULT only after its retained list')
+@@ -1106,11 +1305,11 @@
+               'actual original final index is the current canonical index')
+         m.read_input(Path(CURRENT_REPO) / '.git' / 'index', proof['final_index_raw'])
+         self._validate_index_audit(audit, clean)
+-        commands = self.read(root / 'COMMANDS.json', proof['commands'], 'CANONICAL_COMMANDS.original.json')
+-        progress = self.read(root / 'MUTATION_PROGRESS.json', proof['progress'], 'CANONICAL_PROGRESS.original.json')
++        commands = self.read_historical('canonical.commands', root / 'COMMANDS.json', proof['commands'], 'CANONICAL_COMMANDS.original.json')
++        progress = self.read_historical('canonical.progress', root / 'MUTATION_PROGRESS.json', proof['progress'], 'CANONICAL_PROGRESS.original.json')
+         check(commands == aligned['commands'] and progress == aligned['mutation_intents'],
+               'all original canonical command and mutation records retained')
+-        original_inputs = self.read(root / 'INPUTS.final.json', proof['inputs'], 'CANONICAL_INPUTS.original.json')
++        original_inputs = self.read_historical('canonical.inputs', root / 'INPUTS.final.json', proof['inputs'], 'CANONICAL_INPUTS.original.json')
+         for path, expected in [(CANONICAL_CONTROL / 'driver.py', CANONICAL_DRIVER_PIN),
+                                (CANONICAL_CONTROL / 'APPROVED_CONFIG.json', proof['approved_config']),
+                                (CANONICAL_CONTROL / 'CANONICAL_PACKET.json', proof['canonical_packet'])]:
+@@ -1244,3 +1443,148 @@
+             'actual_root_parents': constants['parents'], 'actual_packages': constants['packages'],
+             'original_driver_and_filters_unchanged': True, 'test_execution_observed': False})
+ 
++
++
++    @staticmethod
++    def _require_transport_bindings(cfg):
++        check(cfg.get('historical_runtime_guard_path') == HISTORY_RUNTIME_GUARD_PATH
++              and cfg.get('historical_runtime_guard_pin') == HISTORY_RUNTIME_GUARD_PIN,
++              'one explicitly reviewed historical-only V5 successor')
++        spec = cfg.get('history_transport')
++        check(isinstance(spec, dict) and set(spec) == {
++            'control', 'manifest_path', 'manifest', 'staging_result_path', 'staging_result',
++            'staging_supervisor_path', 'staging_supervisor', 'staging_job_id', 'staging_payload'},
++              'complete closed history transport binding schema')
++        check(spec['control'] == HISTORY_TRANSPORT_CONTROL
++              and spec['manifest_path'] == HISTORY_MANIFEST_PATH
++              and spec['manifest'] == HISTORY_MANIFEST_PIN
++              and spec['staging_result_path'] == HISTORY_TRANSPORT_CONTROL + '/STAGING_READBACK.json'
++              and spec['staging_supervisor_path'] == SOURCE_TRANSPORT_CONTROL + '/TRANSPORT_SUPERVISOR.original.json',
++              'only the fixed new transport and source-control paths')
++        for name in ('staging_result', 'staging_supervisor', 'staging_payload'):
++            exact_pin(spec[name], 'actual complete transport ' + name + ' remains required')
++        check(isinstance(spec['staging_job_id'], str) and bool(spec['staging_job_id']),
++              'actual successful transport job remains required')
++
++    @staticmethod
++    def _transport_stat(info):
++        return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
++                info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
++
++    def _read_transport_file(self, path, expected, maximum=40000000):
++        path = Path(path)
++        allowed = {HISTORY_MANIFEST_PATH} | {
++            HISTORY_TRANSPORT_CONTROL + '/originals/' + role + '.original' for role in HISTORY_ROLES}
++        check(str(path) in allowed, 'closed historical transport file; no live-path resolver')
++        check(type(maximum) is int and 0 <= maximum <= 40000000, 'original bounded input limit')
++        self.m.real_directory(HISTORY_TRANSPORT_CONTROL)
++        self.m.real_directory(path.parent)
++        for directory in {Path(HISTORY_TRANSPORT_CONTROL), path.parent}:
++            info = directory.lstat()
++            check(stat.S_ISDIR(info.st_mode) and info.st_uid == 1000
++                  and stat.S_IMODE(info.st_mode) == 0o700, 'owned private history transport directory')
++        before = path.lstat()
++        check(stat.S_ISREG(before.st_mode) and before.st_uid == 1000 and before.st_nlink == 1
++              and stat.S_IMODE(before.st_mode) == 0o600, 'owned single-link history transport file')
++        raw = self.m.read_input(path, expected, maximum)
++        stamp = self._transport_stat(before)
++        check(stamp == self._transport_stat(path.lstat()),
++              'full history transport ownership/stat stable during original full read')
++        key = str(path)
++        if key in self._transport_stats:
++            check(self._transport_stats[key] == stamp, 'immutable transport metadata remains unchanged')
++        else:
++            self._transport_stats[key] = stamp
++        return raw
++
++    def _load_transport_manifest(self):
++        raw = self._read_transport_file(HISTORY_MANIFEST_PATH, HISTORY_MANIFEST_PIN, 100000)
++        manifest = self.m.parse(raw)
++        check(manifest['format'] == 'hepta-closed-transported-originals-manifest-v1'
++              and manifest['control'] == HISTORY_TRANSPORT_CONTROL
++              and manifest['source_control'] == SOURCE_TRANSPORT_CONTROL
++              and manifest['qualification'] is False and manifest['root_execution_approved'] is False
++              and manifest['historical_original_count'] == 55 and manifest['raw_original_bytes'] == 7976106,
++              'fixed history-only manifest; not an execution grant')
++        rows = manifest['rows']
++        check(isinstance(rows, list) and [row['role'] for row in rows] == HISTORY_ROLES,
++              'exact complete ordered historical role closure')
++        result = {}
++        for row in rows:
++            role, original = row['role'], row['original_path']
++            exact_pin(row['pin'], 'exact historical original content')
++            check(original.startswith(HISTORY_EVIDENCE_PARENT + '/')
++                  and '/.git/' not in original and not original.endswith('.lock')
++                  and row['transport_path'] == HISTORY_TRANSPORT_CONTROL + '/originals/' + role + '.original',
++                  'fixed historical origin and isolated exact transport destination')
++            result[role] = row
++        check(len(result) == len({row['original_path'] for row in rows}) == 55,
++              'unique historical role and origin; no wildcard or fallback')
++        return result
++
++    def _read_historical(self, role, original_path, expected, maximum=40000000):
++        check(role in self._history_rows, 'explicit closed historical role')
++        row = self._history_rows[role]
++        check(str(original_path) == row['original_path'] and pin_fields(expected) == row['pin'],
++              'historical provenance path and full original pin remain unchanged')
++        return self._read_transport_file(row['transport_path'], expected, maximum)
++
++    def read_historical(self, role, original_path, expected, name):
++        raw = self._read_historical(role, original_path, expected)
++        self.m.write(name, raw)
++        return self.m.parse(raw)
++
++    def _require_transport_staging(self):
++        """A future actual normal stage and complete readback are mandatory, never inferred."""
++        spec = self.cfg['history_transport']
++        stage = self.read(spec['staging_result_path'], spec['staging_result'],
++                          'TRANSPORT_STAGING.original.json')
++        normal_raw = self.m.read_input(spec['staging_supervisor_path'], spec['staging_supervisor'])
++        normal = self.m.parse_supervisor(normal_raw)
++        check(normal['job_id'] == spec['staging_job_id'], 'actual successful transport job identity')
++        self.m.write('TRANSPORT_SUPERVISOR.original.json', normal_raw)
++        check(set(stage) == {'format', 'control', 'historical_original_count', 'manifest',
++              'packet', 'compressed_packet', 'part_inputs', 'files', 'source_writes',
++              'old_path_writes', 'main_dispatched', 'qualification', 'automatic_retry'}
++              and stage['format'] == 'hepta-closed-history-transport-readback-v1'
++              and stage['control'] == HISTORY_TRANSPORT_CONTROL
++              and stage['historical_original_count'] == 55
++              and stage['manifest'] == HISTORY_MANIFEST_PIN
++              and stage['packet'] == HISTORY_PACKET_PIN
++              and stage['compressed_packet'] == HISTORY_GZIP_PIN
++              and stage['part_inputs'] == HISTORY_PART_INPUTS
++              and all(stage[key] is False for key in ('source_writes', 'old_path_writes',
++                                                     'main_dispatched', 'qualification', 'automatic_retry')),
++              'complete original history transport receipt, no gate or source action')
++        expected = {row['transport_path']: row['pin'] for row in self._history_rows.values()}
++        expected.update({HISTORY_MANIFEST_PATH: HISTORY_MANIFEST_PIN,
++                         HISTORY_RUNTIME_GUARD_PATH: HISTORY_RUNTIME_GUARD_PIN,
++                         HISTORY_TRANSPORT_CONTROL + '/ACTUAL_TRANSPORT_BOOTSTRAP.py': HISTORY_STAGER_PIN,
++                         HISTORY_TRANSPORT_CONTROL + '/ACTUAL_TRANSPORT_ARGV.json': HISTORY_STAGER_ARGV_PIN,
++                         HISTORY_TRANSPORT_CONTROL + '/ACTUAL_TRANSPORT_PAYLOAD.json': spec['staging_payload']})
++        rows = stage['files']
++        check(isinstance(rows, list) and len(rows) == 60
++              and all(set(row) == {'path', 'bytes', 'sha256', 'git_blob'} for row in rows)
++              and len({row['path'] for row in rows}) == 60
++              and {row['path']: pin_fields(row) for row in rows} == expected,
++              'all 55 originals, manifest, historical guard and three exact staging controls fully read back')
++        for row in self._history_rows.values():
++            self._read_historical(row['role'], row['original_path'], row['pin'])
++        self.m.read_input(HISTORY_RUNTIME_GUARD_PATH, HISTORY_RUNTIME_GUARD_PIN)
++        for path, expected_pin in expected.items():
++            if path not in {row['transport_path'] for row in self._history_rows.values()} | {HISTORY_MANIFEST_PATH, HISTORY_RUNTIME_GUARD_PATH}:
++                self.m.read_input(path, expected_pin)
++        self.m.jwrite('TRANSPORTED_ORIGINAL_PROVENANCE.json', {
++            'format': 'hepta-closed-transported-original-provenance-v1',
++            'manifest': HISTORY_MANIFEST_PIN, 'rows': list(self._history_rows.values()),
++            'transport_stage_job': spec['staging_job_id'], 'transport_stage_result': spec['staging_result'],
++            'all_55_complete_actual_transport_reads': True, 'origin_path_availability': 'Unknown',
++            'old_paths_recreated': False, 'historical_stat_records_rewritten': False,
++            'current_live_checks_replaced': False, 'qualification': False})
++
++    def _verify_transport_stability(self):
++        self._read_transport_file(HISTORY_MANIFEST_PATH, HISTORY_MANIFEST_PIN, 100000)
++        for row in self._history_rows.values():
++            self._read_historical(row['role'], row['original_path'], row['pin'])
++        return {'historical_original_count': 55, 'complete_current_transport_bytes_and_metadata_stable': True,
++                'original_location_availability': 'Unknown'}

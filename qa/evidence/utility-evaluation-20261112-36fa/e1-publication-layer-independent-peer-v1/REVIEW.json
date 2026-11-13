@@ -1,0 +1,165 @@
+{
+  "baseline": {
+    "actual_captured_inventory": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "byte_proof": {
+    "bytes": 8090,
+    "git_blob": "badaf499745014c40d9c65ec1e05cde18357efed",
+    "path": "/tmp/hepta-36fa-e1-publication-layer-independent-peer-v1/BYTE_PROOF.json",
+    "sha256": "10d7c548c74fc852c279da64832eb691d79c08ab22b7d41e2e0a176532eab722"
+  },
+  "findings": [
+    {
+      "after": "91858e5a71da15d40548e1467b6e3dc388d1ebd3",
+      "before": "4a89fdbff31df56847862cf34db2d0c3fd300870",
+      "classification": "addressed_concrete_defect",
+      "file": "authority_host_generation.rs",
+      "finding": "The publication layer checked lease expiry inside with_live_lease, then performed another original Registry read and could return after that read crossed expiry. Its last require_before checked only the operation Instant. The separate exact four-line increment checks the same HostClock against the same expires_at after that read and the same absolute end before returning. Full inverse recovers the first layer. Neither layer claims a continuous Registry/consumer transaction.",
+      "id": "P01"
+    },
+    {
+      "classification": "preserved_original_bytes",
+      "finding": "Seven covered paths contain two new modules and five existing files. All five actual-b608 preimages match the complete captured clean inventory. Every old-file change is an exact insertion (mount/export or pure binding preview); deleting those insertions restores each entire original file. No old function body, UID check, original owner constructor, CURRENT journal/claim/CAS implementation, or original error branch is changed.",
+      "id": "P02"
+    },
+    {
+      "classification": "actual_call_connectivity",
+      "finding": "The new public session bind consumes the original non-Clone PreparedHostAuthoritySession and reaches a private child of its actual HostAuthorityService. The private operation retains clones of that same original Root directory, lease Registry, issuer and clock; missing retained Root/Registry are refused. The actual open_registered_writer/open_original_issuer_custody path already establishes these objects with existing state/key/process checks. No caller-supplied Current implementation, permissive callback, new signer, lease, grant or consumer is created.",
+      "id": "P03"
+    },
+    {
+      "classification": "original_binding",
+      "finding": "The new crate-private Current preview invokes the original pure initial_head_and_prepared and returns only FinalUseBinding metadata. Original validate_initial_target is already pub(crate), so that import is legal. Initial full request digest includes operation/target/selected genesis; registered agent, fixed initialize destination and full signed grant binding are compared. publish then calls the unchanged original prepare and compares its actual complete binding and intent digest before consumption by original custody. Lease principal/opclass/destination/scope/payload is checked separately; it is not misrepresented as carrying request identity.",
+      "id": "P04"
+    },
+    {
+      "classification": "revocation_and_frontier",
+      "finding": "require_original uses only the same issuer verify/retained-observe methods, explicitly rejects revoked_grant_ids membership, reads the actual existing consumer frontier before/head/frontier after, compares full head to issuer head, and rereads issuer head and exact original lease. The consumer method requires an independent frontier and compares its live owner. No update_revocations, replacement consumer or nonce journal is used. These are bounded observations; they do not prevent a new issuer change after the last observation and before the original claim.",
+      "id": "P05"
+    },
+    {
+      "classification": "side_effect_state_order",
+      "finding": "publish_original_generation checks Fresh and replaces it with ReadbackRequired before any original prepare call. Every propagated error afterwards leaves that phase, including session refusal, actual prepare/journal mutation, binding mismatch, original claim/CAS error, post-publication lease/head/deadline refusal, or final session check. It never restores Fresh or Prepared. Success alone installs the original returned Ready custody. There is no automatic reissue or retry.",
+      "id": "P06"
+    },
+    {
+      "classification": "same_operation_recovery",
+      "finding": "Warm recovery is allowed only from ReadbackRequired and retains the immutable operation id, intent digest, signed grant, original authority Arcs and absolute end. Cold entry opens the actual retained Root CURRENT, recovers the requested original operation, requires Published, obtains the signed grant from that protected publication, then invokes the unchanged original recover_from_original_current. That original chain validates actual selection/target, nonempty journal, consumed FinalUse witness/current frontier and final protected readback. Missing or Prepared has no prepare fallback. Failure can follow original journal recovery; it is not NotApplied.",
+      "id": "P07"
+    },
+    {
+      "classification": "session_and_locks",
+      "finding": "Public methods require real/effective UID 0, retain and reverify the original registered peer PIDFD/UID/GID/boot/start identity through verify_pinned_process, and keep one end. Issuer Registry callbacks do not wrap Artifact/FinalUse/CURRENT publication. Existing Artifact-to-FinalUse-to-CURRENT and live-current checks remain inside original implementations. New same-operation recovery does not reset its end. An expired wrapper refuses further calls; a separate trusted cold session is not claimed to be the same elapsed budget or a new effect grant.",
+      "id": "P08"
+    },
+    {
+      "classification": "static_type_scope_only",
+      "finding": "Reviewed original pub(crate) target validator, Current child visibility, private operation fields, crate-private reexports, public sealed session wrapper and per-export Linux guards. No concrete type/visibility contradiction was identified in these fixed bodies. This is not compilation, borrow-checking, formatting, trait resolution or execution evidence.",
+      "id": "P09"
+    },
+    {
+      "classification": "product_gap",
+      "finding": "This fixed layer ends at original publication/Ready custody. It has no task installation/Cell/Source output, no daemon writer handoff, no same-Arc task retirement integration and no tests. Its five new public entry methods occur only as definitions within this seven-file layer; the exact original hepta-authority-host CLI still opens/prepares and serves the old session and does not call them. Later factory and transport work is outside this review, not silently counted as complete.",
+      "id": "P10"
+    },
+    {
+      "classification": "explicit_input_dependency",
+      "finding": "Fresh entry requires an already issued complete signed grant plus actual Artifact, selected generation, target journal/witness and an existing FinalUse consumer. The only new initial-binding preview in this layer is crate-private. This review does not establish a complete ordinary caller path obtaining that original binding and preissued grant before preparation; tests signing a fixture binding would not establish that product path. No inference that a new grantor or key is authorized is made.",
+      "id": "P11"
+    },
+    {
+      "classification": "unexecuted_validation_gap",
+      "finding": "No new mechanism tests are included in this fixed layer. Actual lease expiry during the final read, revoked full head, consumer frontier disagreement, pre-/post-CAS error and retained same-operation recovery, actual Root/pidfd rejection and future same-Arc task lifecycle still require the author's separately reviewed mechanism cases and authorized gates. No Rust, QA, formatter, H or source reference action was executed here.",
+      "id": "P12"
+    }
+  ],
+  "finite_api_occurrences": {
+    "bind_original_initial_generation": [
+      {
+        "line": 41,
+        "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "text": "pub fn bind_original_initial_generation<W: AnchorWitnessStore>("
+      }
+    ],
+    "publish_original_generation": [
+      {
+        "line": 88,
+        "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "text": "pub fn publish_original_generation(&mut self) -> Result<(), AgentdError> {"
+      }
+    ],
+    "read_original_generation": [
+      {
+        "line": 105,
+        "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "text": "pub fn read_original_generation(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {"
+      }
+    ],
+    "recover_original_generation": [
+      {
+        "line": 122,
+        "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "text": "pub fn recover_original_generation("
+      }
+    ],
+    "recover_original_initial_generation": [
+      {
+        "line": 63,
+        "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+        "text": "pub fn recover_original_initial_generation<W: AnchorWitnessStore>("
+      }
+    ]
+  },
+  "format": "hepta-e1-publication-layer-independent-static-review-v1",
+  "inputs": {
+    "lease_increment_manifest": {
+      "bytes": 869,
+      "git_blob": "a1d7ce87f8c972c7b202672d3fa7a44893a34c29",
+      "sha256": "c0ffe128566709015c039e6bb48d15fafa0b7237baeb724415dde9cf6e786810"
+    },
+    "lease_increment_patch": {
+      "bytes": 562,
+      "git_blob": "7f74ce3910a2afa25adbdd2580a378485dfabafd",
+      "sha256": "8c2476b321f61b37cda048d0a3cd49e522a18c9f841e3295e9a3718c3f57d490"
+    },
+    "original_api_review": {
+      "bytes": 12962,
+      "git_blob": "c4b7f2425b26761eee03b6fb014a5b6565583793",
+      "local": "/tmp/hepta-36fa-e1-issuer-initial-lease-independent-peer-v1/REVIEW.json",
+      "sha256": "a933c506747726c75ed13f6740703d9679c6e2f0e93e85a287b23619b3bd5345"
+    },
+    "original_host_cli": {
+      "bytes": 13220,
+      "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+    },
+    "publication_manifest": {
+      "bytes": 3546,
+      "git_blob": "b6dfbe79deb2e4ba18e7815dc7e48e6c0678de5c",
+      "sha256": "cd5ff94b0c1c12a8249516f02ee4a9b874fd6cfed7031aafacd9237f338a14dd"
+    },
+    "publication_patch": {
+      "bytes": 26364,
+      "git_blob": "d78e4f2bb50ff2e5fc2101dbb0c21724f5a87f87",
+      "sha256": "975d9d0dcb6005ab0156773e4d61a0c0da7fef9762bfa6273875ec19c7558daf"
+    }
+  },
+  "limits": {
+    "Cargo_Rust_QA_formatter_calls": 0,
+    "Git_tree_commit_ref_writes": false,
+    "H_calls": 0,
+    "candidate_functions_executed": false,
+    "no_full_repository_scan": true,
+    "report_git_upload": "not attempted; local computed identities only",
+    "source_files_modified": false,
+    "source_objects_created": false
+  },
+  "local_audit_error": {
+    "classification": "reviewer used nonexistent git_blob inventory key once; corrected to explicit index_blob/working_blob checks; not a source/H/test failure",
+    "path": "/tmp/hepta-36fa-e1-publication-layer-independent-peer-v1/LOCAL_AUDIT_FIRST_ERROR.json"
+  },
+  "status": "FIXED_PUBLICATION_LAYER_REVIEWED_WITH_EXPLICIT_PARTIAL_PRODUCT_SCOPE; LEASE_EXPIRY_FINDING_FIXED_IN_SEPARATE_INCREMENT; NO_EXECUTION_APPROVAL"
+}

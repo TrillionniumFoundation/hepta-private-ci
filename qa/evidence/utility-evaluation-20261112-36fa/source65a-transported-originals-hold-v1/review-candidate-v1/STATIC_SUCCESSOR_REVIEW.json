@@ -1,0 +1,92 @@
+{
+  "H_calls": 0,
+  "actual_successful_stage_bindings": "four null fields; source successor cannot construct or execute",
+  "admission": {
+    "bytes": 111119,
+    "git_blob": "299c3d79987abcde03e83c271bee91c568e0a5ab",
+    "sha256": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767"
+  },
+  "admission_all_other_original_definitions_byte_equal": true,
+  "admission_changed_original_definitions": [
+    "Admission.__init__",
+    "Admission.observed_proof",
+    "Admission.acquire_and_validate",
+    "Admission.before_native_stage",
+    "Admission.finish",
+    "Admission._fixed",
+    "Admission._artifact",
+    "Admission._validate_canonical"
+  ],
+  "admission_exact_inverse": true,
+  "admission_original": {
+    "bytes": 87654,
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "admission_original_definition_count": 43,
+  "admission_replacement_count": 18,
+  "current_repo_lock_inventory_git_and_runtime_contracts_unchanged": true,
+  "current_v5_load_and_live_reads_unchanged": true,
+  "current_v5_original_file_unmodified": true,
+  "format": "hepta-transported-original-successor-static-byte-review-v1",
+  "gate_or_guard_functions_executed": 0,
+  "historical_json_bytes_rewritten": false,
+  "historical_v5": {
+    "bytes": 70306,
+    "git_blob": "917f5b669ce5e4b926c7131a42423a0f069e46a4",
+    "sha256": "503aaa202bd40ea54526e11b2e299630b7b888e5afe14a3ce5bfb8a3c1c0f556"
+  },
+  "historical_v5_all_other_definitions_byte_equal": true,
+  "historical_v5_changed_original_definitions": [
+    "validate_runtime_restoration",
+    "environment_preflight"
+  ],
+  "historical_v5_exact_inverse": true,
+  "historical_v5_exact_read_site_count": 4,
+  "historical_v5_original": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "historical_v5_original_function_count": 53,
+  "limitations": [
+    "No live original path availability is asserted.",
+    "No historical receipt grants current tool/material/source/lock availability.",
+    "All original live guards remain mandatory before any source gate.",
+    "65a remains failed preflight with no source-driver entry."
+  ],
+  "max_typed_input_bytes": 1048576,
+  "native_typed_request": null,
+  "new_source_typed_request": null,
+  "no_env": true,
+  "original_14_phases_48_root_parents_and_all_budgets_unchanged": true,
+  "original_source_wrapper_driver_native_wrapper_driver_plan_unchanged": true,
+  "qualification": false,
+  "root_execution_approved": false,
+  "runtime_guard_cfg_unchanged": true,
+  "stage_HOLD_input": {
+    "bytes": 150171,
+    "git_blob": "b60ed319b3c683d7e2fb708e22a0a9adc8b79ab1",
+    "sha256": "d3ddda8ede293bdb965deeaad822b2163f4328f9ae8f193851fa301060ef0fd1"
+  },
+  "stage_HOLD_request": {
+    "bytes": 168717,
+    "git_blob": "89e82163a4cd531138cb71fd97cc379e32e83d17",
+    "sha256": "2f694b55a2439fe6bc5fd157a45a4959422048c17bb2ef8266bc475ce90af03e"
+  },
+  "stage_only_script": {
+    "bytes": 17939,
+    "git_blob": "0837bd70dd0e20a208fd8f59eec6017910cb9076",
+    "sha256": "cef85f5a2768e11c48303ee3dfffbd41c3393f12b498bba6ad7b6faad4c85763"
+  },
+  "stage_outer_seconds": 900,
+  "stage_typed_fields": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "stdin",
+    "idempotency_key",
+    "timeout_seconds"
+  ]
+}

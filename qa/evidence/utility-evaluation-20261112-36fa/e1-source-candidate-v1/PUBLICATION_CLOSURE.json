@@ -1,0 +1,267 @@
+{
+  "format": "hepta-e1-source-candidate-publication-closure-v1",
+  "observed_at": "2026-11-13 13:54:03 UTC",
+  "candidate_commit": "99fada80470f175ba14004ea9fcb006853c7d98f",
+  "candidate_tree": "3778225f2d49dcd4729d05c02ae9805b43df87d8",
+  "parent_commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+  "review_branch": "codex/utility-root-assembly-proposal-20261113-36fa",
+  "review_branch_created": true,
+  "original_PR_source_branch": "codex/utility-evidence-closure-20261112-36fa",
+  "original_PR_source_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "original_PR_source_branch_moved": false,
+  "H_source_directory_changed": false,
+  "source_blob_full_GET_verified": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "git_blob": "1d66a6491b51bff9015ca08b5a82b77312053519",
+      "bytes": 13640,
+      "sha256": "5abdc36185e94baa0cb4c3804d7ccdfa5bec9692b18d5cea1b7feab07aedf5ce"
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "git_blob": "a0bec30999e6c4db87682312685dfc7f474349f1",
+      "bytes": 31859,
+      "sha256": "50b8c216d016d1d5006497219a2ab824a2e023194fb3a70795ea15bf0e95bc10"
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "8875892749c45665abdce90310a7a47d90308b9b",
+      "bytes": 1902614,
+      "sha256": "4032c99e77d9aa7c36f987e927962be470eb469ee30911ef16d577f257ec56ac"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_peer_support_tests.rs",
+      "git_blob": "9b5a8a8ca1f54d16dd90cf27312263518e9f1b35",
+      "bytes": 4871,
+      "sha256": "c875322cbd436e9f9f4b1a85eaff2cbef8013074457c7be7efe9f599d751663c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_request.rs",
+      "git_blob": "0ba3ec80ea9c4cd04acf157bb3a894d21d29b96b",
+      "bytes": 3448,
+      "sha256": "47bde0c769254a9d1e61d8093d4111fb235ca3adf772e919b340bd15d5b60acd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_support_tests.rs",
+      "git_blob": "62f5d42663aaa183349df2e73464db267c4750e3",
+      "bytes": 12388,
+      "sha256": "dfe08cfccc6bc9d6ce1c8807fbfce9e45656ed66d1f7846ffd8e4c0f6d88f386"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_tests.rs",
+      "git_blob": "c5e96ad25bfa5a4a30b53f8812f5332ed717a8a3",
+      "bytes": 9943,
+      "sha256": "84a155c566d76c9c0dde019f8bc1fb2b56665bff67b8e897fb7389ef283caa37"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs",
+      "git_blob": "8ca53769c20627fd9e204c0a0a5b4e77771bebac",
+      "bytes": 15263,
+      "sha256": "3fe84b8d8f29e5e4554ab69f4b81b6a91884a03732020223b32b12c9070e3a72"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "git_blob": "035be6b6128a6a9f8861e1ba7c6ac95b45f71b4d",
+      "bytes": 20116,
+      "sha256": "15748f1c212d7f967b960133cb0c0e84586666893b38ac1601dab2f931d07cf2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff",
+      "bytes": 23062,
+      "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task.rs",
+      "git_blob": "70003ef39ef45c372077d09d2416a1c289848ebc",
+      "bytes": 5610,
+      "sha256": "882dff00964b095cd34568a360bf387a3fa8ed4be4e591820505feca03598d72"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs",
+      "git_blob": "1254c569aed6554782d21ff23653d95e7f7f3835",
+      "bytes": 8419,
+      "sha256": "d65a1f5e67802dfc0a2f523c305dd78b9868eaa1c81271eedb4da98f113a1d5b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "git_blob": "d1a06f714d3805636bb52ea00096a567ade99348",
+      "bytes": 17780,
+      "sha256": "26c1430f5241d4a717190bd2a7bd7400723605b5bda1eea7c9306c9dc6b7724e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "ab0c56c89de7a895bf0211b78fc19fdb42299387",
+      "bytes": 72778,
+      "sha256": "7b80ff46fff73939eee289a89492184e27ba4154b6a92448af6cc6843038d166"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "git_blob": "b08cbd6409a08be631d40d923801b98708600db5",
+      "bytes": 11650,
+      "sha256": "e029827da3eb19eba7f97ddeba0e81c1070e60b5e7cc262bb5277d07fd800b4d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "git_blob": "47b4aa6e1128d1a99efe14cb88b580907bb359cd",
+      "bytes": 12796,
+      "sha256": "b3301aaa876ca7e134cda17485881bf02a3eeeec9f41afd8957e970b75618e41"
+    },
+    {
+      "path": "qa/b4-no-bypass/ROOT_HOST_INITIAL_PRODUCT_SOURCE_CONTRACT.json",
+      "git_blob": "e13f932f605cc21a5b2e042bed07a4e4fbc38221",
+      "bytes": 24089,
+      "sha256": "459bebbd0b0f7bdb6057e30fed598a133ea7b4ce39507bd221e6766190e5c8ca"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "git_blob": "7dccad723474327be22ba0ecf1905c34648ce0d9",
+      "bytes": 102696,
+      "sha256": "0db587196a1c860c6a3627f3d3970ad12e22765937b1a36f3f31399ea0866acf"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "git_blob": "8d64d3059e4ffaf5e38fe484685a85560cf7ed31",
+      "bytes": 36942,
+      "sha256": "c9e4663474f4ed44d238c677ee0f8f19a3302e3107071e4d96975de71ccc5011"
+    }
+  ],
+  "changed_tree_full_GET_verified": [
+    {
+      "path": "",
+      "sha": "3778225f2d49dcd4729d05c02ae9805b43df87d8",
+      "entries": 56,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": ".github",
+      "sha": "d723daa14842c9cda9cc50519795e797b7e82b24",
+      "entries": 13,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": ".github/workflows",
+      "sha": "8eddd7204588d613d34e72c557b6102239709fe5",
+      "entries": 99,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": "codex-rs",
+      "sha": "2db76ce9caec225e72c22708acadcc5a0855cf98",
+      "entries": 165,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "sha": "0a4a1cdffed4a8cd1303d8fc34243d07182fdb27",
+      "entries": 37,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src",
+      "sha": "1d5c2cb2e97278cc38dd3b98a65b6c355823d42c",
+      "entries": 954,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": "qa",
+      "sha": "9ea4eba8c8bfff9dfd194fcc02bf7b11397db2b6",
+      "entries": 5,
+      "exact_map_and_typed_hash_equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass",
+      "sha": "4ac70c83944f9e9cdb0b1995cadbea53f1eb1dd5",
+      "entries": 67,
+      "exact_map_and_typed_hash_equal": true
+    }
+  ],
+  "changed_tree_records": [
+    {
+      "tree_path": "",
+      "name": "trees/root.full_GET.json",
+      "git_blob": "90cdb637abe7ed522d04b165a54e96a074db0897",
+      "bytes": 13466,
+      "sha256": "248c782956b34c6d3ef973ffe400436a5f8f6ddf6b8d758d0558cbc0fdfd8f42",
+      "tree_sha": "3778225f2d49dcd4729d05c02ae9805b43df87d8"
+    },
+    {
+      "tree_path": ".github",
+      "name": "trees/.github.full_GET.json",
+      "git_blob": "49f1b5d0c111a143646814a685ff9fe94202954e",
+      "bytes": 3339,
+      "sha256": "c9a73a50824ee5c6bab3fa086f4a118a684db72212ffb1a6b4797559e8cb1fb6",
+      "tree_sha": "d723daa14842c9cda9cc50519795e797b7e82b24"
+    },
+    {
+      "tree_path": ".github/workflows",
+      "name": "trees/.github__workflows.full_GET.json",
+      "git_blob": "bef68b93c06a519952cb7bff0eda162226160bec",
+      "bytes": 25737,
+      "sha256": "b4c9116d40ab402becf29a83d72ef7273844e57f9d158ec2671dd6ce58d7d4a3",
+      "tree_sha": "8eddd7204588d613d34e72c557b6102239709fe5"
+    },
+    {
+      "tree_path": "codex-rs",
+      "name": "trees/codex-rs.full_GET.json",
+      "git_blob": "e13b0d16c774dada66a5cdf7ca87b61a3ab59277",
+      "bytes": 38696,
+      "sha256": "7cf7cc5745ad9d134c41722105893d3b32b908041ea06e5e5db0b0abddb8adde",
+      "tree_sha": "2db76ce9caec225e72c22708acadcc5a0855cf98"
+    },
+    {
+      "tree_path": "codex-rs/hepta-agentd",
+      "name": "trees/codex-rs__hepta-agentd.full_GET.json",
+      "git_blob": "1878e00c5c520fa016246b58b796ac668ca71db6",
+      "bytes": 9451,
+      "sha256": "e6ddafefca689e7fa001088a90544c579ef2b0cbe7281a482d43a8acbde58bc9",
+      "tree_sha": "0a4a1cdffed4a8cd1303d8fc34243d07182fdb27"
+    },
+    {
+      "tree_path": "codex-rs/hepta-agentd/src",
+      "name": "trees/codex-rs__hepta-agentd__src.full_GET.json",
+      "git_blob": "7a1a3b1ea4837fff347fc31ebf3316dee853d208",
+      "bytes": 253234,
+      "sha256": "62ec1c267c6ca2a2eb790834e7aa642a70b9d56b870156a3bd6b9d00a565e6f9",
+      "tree_sha": "1d5c2cb2e97278cc38dd3b98a65b6c355823d42c"
+    },
+    {
+      "tree_path": "qa",
+      "name": "trees/qa.full_GET.json",
+      "git_blob": "84976f01bee9e43a712fb122de6dfb528eb20445",
+      "bytes": 1357,
+      "sha256": "d814d9c38537c2da899ed7db21c9d32cf5cc1758a2b5ef672a9480d1bd55b4b2",
+      "tree_sha": "9ea4eba8c8bfff9dfd194fcc02bf7b11397db2b6"
+    },
+    {
+      "tree_path": "qa/b4-no-bypass",
+      "name": "trees/qa__b4-no-bypass.full_GET.json",
+      "git_blob": "b34373961657ad6051f8f003b17d2a85d199519e",
+      "bytes": 18832,
+      "sha256": "73bf8bc488120a6a591917ce584295dd749d2cb03a7c7cb874c6e051f3f8e8f3",
+      "tree_sha": "4ac70c83944f9e9cdb0b1995cadbea53f1eb1dd5"
+    }
+  ],
+  "full_graph_result": {
+    "files_before": 15243,
+    "files_after": 15251,
+    "original_files_unchanged": 15232,
+    "original_files_modified": 11,
+    "new_files": 8,
+    "original_modes_unchanged": true
+  },
+  "peer_reviews": {
+    "E1_task_request_tests": "e7e2c4ab723b1cb83251e285dc3281cc4e04377e",
+    "E1_registration": "52e8d00f18e329a3268f79ef85125ac744ee0fa5"
+  },
+  "prepared_root_parents": 54,
+  "original_first_48_retained": true,
+  "formatter_executed": false,
+  "compiler_executed": false,
+  "typed_collector_executed": false,
+  "source_or_native_qualification": false,
+  "ordinary_cross_process_chain_complete": false,
+  "real_qualified_task_chains": 0,
+  "execution_request": null,
+  "original_b608_H_contract_unchanged": true
+}

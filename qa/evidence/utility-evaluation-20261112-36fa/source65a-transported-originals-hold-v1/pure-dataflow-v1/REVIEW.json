@@ -1,0 +1,1790 @@
+{
+  "H_calls": 0,
+  "accepted": 11,
+  "actual_producers_replayed_as_data": [
+    "historical runtime",
+    "archive-v3",
+    "3bb",
+    "41e",
+    "50f",
+    "5a9"
+  ],
+  "actual_transport_four_fields_remain_null": true,
+  "admission": {
+    "bytes": 111119,
+    "git_blob": "299c3d79987abcde03e83c271bee91c568e0a5ab",
+    "sha256": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767"
+  },
+  "checks": [
+    {
+      "name": "exact original 17-part package decoder restores 55 bodies / 50 distinct contents",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "truncated gzip",
+      "outcome": "rejected",
+      "reason": "complete compressed packet identity",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "appended gzip byte",
+      "outcome": "rejected",
+      "reason": "complete compressed packet identity",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "one changed gzip byte",
+      "outcome": "rejected",
+      "reason": "complete compressed packet identity",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "gzip parts reordered",
+      "outcome": "rejected",
+      "reason": "complete compressed packet identity",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "manifest bytes changed",
+      "outcome": "rejected",
+      "reason": "fixed complete closed manifest identity",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "duplicate JSON key",
+      "outcome": "rejected",
+      "reason": "duplicate JSON key",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "JSONDecodeError",
+      "name": "trailing JSON value",
+      "outcome": "rejected",
+      "reason": "Extra data: line 1 column 3 (char 2)",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "JSONDecodeError",
+      "name": "truncated JSON",
+      "outcome": "rejected",
+      "reason": "Expecting value: line 1 column 9 (char 8)",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "name": "exact pinned manifest closed role parser",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for runtime.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for runtime.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.packet",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.packet",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.commands",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.commands",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.metadata_delta",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.metadata_delta",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.metadata_before_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.metadata_before_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.metadata_final_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.metadata_final_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.git_state_final",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.git_state_final",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.index_delta_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.index_delta_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.index_audit_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.index_audit_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.index_raw_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.index_raw_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.progress",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.progress",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for canonical.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for canonical.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.metadata_after_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.metadata_after_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.metadata_before_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.metadata_before_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.git_state_final",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.git_state_final",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.inventory_final_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.inventory_final_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for final_format.empty_transition_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for final_format.empty_transition_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.packet",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.packet",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.commands",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.commands",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.mutations",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.mutations",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.metadata_final_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.metadata_final_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.config",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for materialization.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for materialization.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for archive.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for archive.supervisor",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.driver",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.inputs",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.metadata_after_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.metadata_after_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.metadata_before_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.metadata_before_gzip",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.git_state_before",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.git_state_before",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for maintenance.git_state_final",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for maintenance.git_state_final",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for runtime.environment_ready",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for runtime.environment_ready",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for runtime.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for runtime.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for archive.readback",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for archive.readback",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for archive.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for archive.artifacts",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for archive.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for archive.result",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong provenance path for historical_environment.started",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "wrong complete pin for historical_environment.started",
+      "outcome": "rejected",
+      "reason": "historical provenance path and full original pin remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "live source has no role mapping",
+      "outcome": "rejected",
+      "reason": "explicit closed historical role",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "live Git index has no role mapping",
+      "outcome": "rejected",
+      "reason": "explicit closed historical role",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "coordination lock has no role mapping",
+      "outcome": "rejected",
+      "reason": "explicit closed historical role",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "unknown historic role has no role mapping",
+      "outcome": "rejected",
+      "reason": "explicit closed historical role",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "AssertionError",
+      "name": "unmapped direct memory read cannot access a live index",
+      "outcome": "rejected",
+      "reason": "review cannot access a live or unmapped native path",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "name": "actual canonical normal/result pair preserves original job and provenance",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "actual 3bb result and four records through fixed historical mapping",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "actual archive restoration keeps original runtime content contract",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "actual 3bb to 41e source / metadata / original single fix-fmt records",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "actual 41e to 50f four non-Rust paths / original fmt terminal",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "actual 50f to 5a9 canonical pure schema and budget contract",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "all existing actual canonical binding leaves remain complete",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "four null actual transport fields keep the new contract on HOLD",
+      "outcome": "rejected",
+      "reason": "actual complete transport staging_result remains required",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "missing actual transport leaf: staging_result",
+      "outcome": "rejected",
+      "reason": "actual complete transport staging_result remains required",
+      "scope": "syntactic negative fixture; not a transport result or supervisor"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "missing actual transport leaf: staging_supervisor",
+      "outcome": "rejected",
+      "reason": "actual complete transport staging_supervisor remains required",
+      "scope": "syntactic negative fixture; not a transport result or supervisor"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "missing actual transport leaf: staging_payload",
+      "outcome": "rejected",
+      "reason": "actual complete transport staging_payload remains required",
+      "scope": "syntactic negative fixture; not a transport result or supervisor"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "missing actual transport leaf: staging_job_id",
+      "outcome": "rejected",
+      "reason": "actual successful transport job remains required",
+      "scope": "syntactic negative fixture; not a transport result or supervisor"
+    },
+    {
+      "name": "original historical runtime validator: seed, job, six commands, three audits",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "name": "original historical ENVIRONMENT_FILE role reads all 1154 retained bytes",
+      "outcome": "accepted",
+      "scope": "actual retained data, memory only"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "history runtime validator rejects a substituted producer job",
+      "outcome": "rejected",
+      "reason": "actual runtime restoration job identity",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "historical V5 wrong original path: historical_environment.started",
+      "outcome": "rejected",
+      "reason": "original runtime history path and exact bytes remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "historical V5 wrong original path: runtime.environment_ready",
+      "outcome": "rejected",
+      "reason": "original runtime history path and exact bytes remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "historical V5 wrong original path: runtime.result",
+      "outcome": "rejected",
+      "reason": "original runtime history path and exact bytes remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "historical V5 wrong original path: runtime.supervisor",
+      "outcome": "rejected",
+      "reason": "original runtime history path and exact bytes remain unchanged",
+      "scope": "negative memory-only fixture"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "historical V5 cannot map an extra live role",
+      "outcome": "rejected",
+      "reason": "one of four fixed runtime history roles",
+      "scope": "negative memory-only fixture"
+    }
+  ],
+  "complete_memory_retained_record_pins": {
+    "ARCHIVE_HISTORY_AND_CURRENT_CONTRACT.json": {
+      "bytes": 2436,
+      "git_blob": "55d5ea59451c34c632cfea1f68c639225f3211de",
+      "sha256": "910318c8de5bd27402f40d79a23d28a021b9999044a467282e7465e889c7ea6c"
+    },
+    "ARCHIVE_V3.RESULT.original.json": {
+      "bytes": 17615,
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+    },
+    "ARCHIVE_V3.SUPERVISOR.original.json": {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    },
+    "CANONICAL_ALIGNMENT.RESULT.original.json": {
+      "bytes": 224883,
+      "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+      "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+    },
+    "CANONICAL_ALIGNMENT.SUPERVISOR.original.json": {
+      "bytes": 950,
+      "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+      "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+    },
+    "FINAL_FORMAT.RESULT.original.json": {
+      "bytes": 7408,
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+    },
+    "FINAL_FORMAT.SUPERVISOR.original.json": {
+      "bytes": 952,
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+    },
+    "ISOLATED_MATERIALIZATION.RESULT.original.json": {
+      "bytes": 14663,
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    "ISOLATED_MATERIALIZATION.SUPERVISOR.original.json": {
+      "bytes": 952,
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+    },
+    "MAINTENANCE_41E.RESULT.original.json": {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    "MAINTENANCE_41E.SUPERVISOR.original.json": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    }
+  },
+  "compressed_packet": {
+    "bytes": 4994854,
+    "git_blob": "0f8ff1e10bfbe418c11ff9f3f6844b02817c98b6",
+    "sha256": "0fd09793b264476ac6ffda53fa89e38c28e973af32758ce7e2e0932f63275794"
+  },
+  "constructor_or_acquire_or_finish_called": false,
+  "current_V5_and_live_checks_unmodified": true,
+  "distinct_bodies": 50,
+  "environment_preflight_called": false,
+  "format": "hepta-transported-history-pure-dataflow-and-negative-boundaries-v1",
+  "full_canonical_live_validator_called": false,
+  "historical_roles": 55,
+  "historical_v5": {
+    "bytes": 70306,
+    "git_blob": "917f5b669ce5e4b926c7131a42423a0f069e46a4",
+    "sha256": "503aaa202bd40ea54526e11b2e299630b7b888e5afe14a3ce5bfb8a3c1c0f556"
+  },
+  "history_memory_retained_record_pins": {
+    "RUNTIME_ENVIRONMENT_READY.original.json": {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    "RUNTIME_RESTORATION_RESULT.original.json": {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    "RUNTIME_RESTORATION_SUPERVISOR.original.json": {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    }
+  },
+  "immutable_candidate_manifest": {
+    "bytes": 21322,
+    "git_blob": "7b7aa021cdc0f75f9a18edc210f7e540e55663c4",
+    "sha256": "a31b8609d0487c88da5b15355fd480dd6026d47591c131c549a3a3b2dba9f365"
+  },
+  "limitation": "Exact retained data and pure predicates only. No observation of future staging, file ownership/stability, lock, live source/Git/environment, source gates or native phases.",
+  "memory_read_ledger": [
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.supervisor.original",
+      "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+    },
+    {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.supervisor.original",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    },
+    {
+      "bytes": 3453,
+      "git_blob": "0f69f739486c1dc3506f61c0e8a6ef3737fbe17e",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.config.original",
+      "sha256": "a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db"
+    },
+    {
+      "bytes": 3428251,
+      "git_blob": "bb4b4abd809047be4c9402b95fa2a2dc30b2ab78",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.packet.original",
+      "sha256": "8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.supervisor.original",
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+    },
+    {
+      "bytes": 46159,
+      "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.driver.original",
+      "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+    },
+    {
+      "bytes": 108578,
+      "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.artifacts.original",
+      "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+    },
+    {
+      "bytes": 85193,
+      "git_blob": "42892d9ac0723d2db86f9f0bda89ad822311b06a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.commands.original",
+      "sha256": "f0519deb676f5112a03519eabd50046202db921069d245f35dfce5a3ef2ac4a7"
+    },
+    {
+      "bytes": 18995,
+      "git_blob": "898fef6b5d237a84f9ce89d20328f895166301e2",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.metadata_delta.original",
+      "sha256": "791f445db5745c68cfb03bf4e9a9c7c068732714933f96a8207d91fa96d05f7e"
+    },
+    {
+      "bytes": 772,
+      "git_blob": "b17f38eb110fe02a9fb084d24d330eedf0642d6e",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.metadata_before_gzip.original",
+      "sha256": "a85ee80c20bd7f3cec3646fa5000e84165517a40afa6ac7fd650ff3206b31768"
+    },
+    {
+      "bytes": 3742,
+      "git_blob": "cc6edb61dadf7d2c6fa8f7a88ec3795adf40f740",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.metadata_final_gzip.original",
+      "sha256": "2c13b9d1425fd6d15aec7c336821657ce6a117bf5af514bea523a6dc976a59fa"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "35c071ff79b5d932bd234c6e886ad8b18345e498",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.git_state_final.original",
+      "sha256": "1de2b67a144e21ef6ca48bbf31a3138e39de902d459ca10ff70e45dc97f21b9c"
+    },
+    {
+      "bytes": 4310,
+      "git_blob": "3deb21a26ae251da6ea0db485811cdcd5b6cd593",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.index_delta_gzip.original",
+      "sha256": "44129318730a270d3296f587ab6454410fabf6ff292e3b06a01e5b132eb997de"
+    },
+    {
+      "bytes": 1454307,
+      "git_blob": "306c40d8289428cf80e374261f97d139fd6d1747",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.index_audit_gzip.original",
+      "sha256": "c5cddf9d2f2e35517ba2ec0baa33a77c14f4e132b6a07da4c42a91dab66b46d2"
+    },
+    {
+      "bytes": 726723,
+      "git_blob": "afffd6a6d3175c4ea4a1c9818e3673d38fa15f27",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.index_raw_gzip.original",
+      "sha256": "dc3425b207c7cf08ab0ff624509aac2958848184127b31bde5b33816527188d7"
+    },
+    {
+      "bytes": 1955,
+      "git_blob": "47477f42fd23094aae63beca190bd42def89fd08",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.inputs.original",
+      "sha256": "e4059b53db565f763b4613490e1dcac80126ec7d091f91d78ecf428cf0be2983"
+    },
+    {
+      "bytes": 8111,
+      "git_blob": "530806cf0cbf1922c6e2c2dfea152a94967928f4",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.progress.original",
+      "sha256": "84d1c1965f1410f48f7b487973c504bbfd10f068c05c754fcc78daa4a1b79cd7"
+    },
+    {
+      "bytes": 224883,
+      "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.result.original",
+      "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+    },
+    {
+      "bytes": 2906,
+      "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.config.original",
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+    },
+    {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.supervisor.original",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.driver.original",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    },
+    {
+      "bytes": 67498,
+      "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.artifacts.original",
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+    },
+    {
+      "bytes": 7273,
+      "git_blob": "51ca8acea55f78b7323551f4288ab5ead2c8e233",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.inputs.original",
+      "sha256": "52946287f8b6f52d60acdcd70565622fe9c57ab8ba63eb0a5331f5cde8c3204e"
+    },
+    {
+      "bytes": 7408,
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.result.original",
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.metadata_after_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.metadata_before_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.git_state_final.original",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 1266970,
+      "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.inventory_final_gzip.original",
+      "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+    },
+    {
+      "bytes": 275,
+      "git_blob": "8e906c93044cff287759aa7f55d007a12a80ccb5",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.empty_transition_gzip.original",
+      "sha256": "37176043df90538c0485ca19f8365e890cffa77fe8d63bfbe0667a7c40aecfee"
+    },
+    {
+      "bytes": 666,
+      "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.config.original",
+      "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+    },
+    {
+      "bytes": 14404,
+      "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.packet.original",
+      "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+    },
+    {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.driver.original",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    {
+      "bytes": 84294,
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.artifacts.original",
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+    },
+    {
+      "bytes": 34319,
+      "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.commands.original",
+      "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2"
+    },
+    {
+      "bytes": 3326,
+      "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.inputs.original",
+      "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d"
+    },
+    {
+      "bytes": 744,
+      "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.mutations.original",
+      "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b"
+    },
+    {
+      "bytes": 14663,
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.result.original",
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    {
+      "bytes": 790,
+      "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.metadata_final_gzip.original",
+      "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6"
+    },
+    {
+      "bytes": 13693,
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.config.original",
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.supervisor.original",
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.supervisor.original",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    },
+    {
+      "bytes": 68520,
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.driver.original",
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+    },
+    {
+      "bytes": 53526,
+      "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.artifacts.original",
+      "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+    },
+    {
+      "bytes": 6256,
+      "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.inputs.original",
+      "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+    },
+    {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.result.original",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.metadata_after_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.metadata_before_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.git_state_before.original",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.git_state_final.original",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.environment_ready.original",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.result.original",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    {
+      "bytes": 496,
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.readback.original",
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+    },
+    {
+      "bytes": 28169,
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.artifacts.original",
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+    },
+    {
+      "bytes": 17615,
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.result.original",
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+    },
+    {
+      "bytes": 1154,
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/historical_environment.started.original",
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1"
+    },
+    {
+      "bytes": 224883,
+      "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.result.original",
+      "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.supervisor.original",
+      "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+    },
+    {
+      "bytes": 14663,
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.result.original",
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.supervisor.original",
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+    },
+    {
+      "bytes": 14404,
+      "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.packet.original",
+      "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+    },
+    {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.driver.original",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    {
+      "bytes": 666,
+      "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.config.original",
+      "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+    },
+    {
+      "bytes": 84294,
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.artifacts.original",
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+    },
+    {
+      "bytes": 34319,
+      "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.commands.original",
+      "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2"
+    },
+    {
+      "bytes": 3326,
+      "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.inputs.original",
+      "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d"
+    },
+    {
+      "bytes": 744,
+      "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.mutations.original",
+      "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b"
+    },
+    {
+      "bytes": 790,
+      "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/materialization.metadata_final_gzip.original",
+      "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6"
+    },
+    {
+      "bytes": 17615,
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.result.original",
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.supervisor.original",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    },
+    {
+      "bytes": 496,
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.readback.original",
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+    },
+    {
+      "bytes": 28169,
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/archive.artifacts.original",
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+    },
+    {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.environment_ready.original",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.result.original",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.supervisor.original",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    {
+      "bytes": 68520,
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.driver.original",
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+    },
+    {
+      "bytes": 13693,
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.config.original",
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+    },
+    {
+      "bytes": 6256,
+      "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.inputs.original",
+      "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+    },
+    {
+      "bytes": 53526,
+      "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.artifacts.original",
+      "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.metadata_before_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.metadata_after_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.git_state_before.original",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/maintenance.git_state_final.original",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 7408,
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.result.original",
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.supervisor.original",
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+    },
+    {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.driver.original",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    },
+    {
+      "bytes": 2906,
+      "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.config.original",
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+    },
+    {
+      "bytes": 67498,
+      "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.artifacts.original",
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+    },
+    {
+      "bytes": 7273,
+      "git_blob": "51ca8acea55f78b7323551f4288ab5ead2c8e233",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.inputs.original",
+      "sha256": "52946287f8b6f52d60acdcd70565622fe9c57ab8ba63eb0a5331f5cde8c3204e"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.metadata_before_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.metadata_after_gzip.original",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.git_state_final.original",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 1266970,
+      "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.inventory_final_gzip.original",
+      "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+    },
+    {
+      "bytes": 275,
+      "git_blob": "8e906c93044cff287759aa7f55d007a12a80ccb5",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/final_format.empty_transition_gzip.original",
+      "sha256": "37176043df90538c0485ca19f8365e890cffa77fe8d63bfbe0667a7c40aecfee"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.result.original",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.supervisor.original",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.environment_ready.original",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 1154,
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/historical_environment.started.original",
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.result.original",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.supervisor.original",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    },
+    {
+      "bytes": 42163,
+      "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json",
+      "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+    },
+    {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.environment_ready.original",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    }
+  ],
+  "native_source_git_or_material_paths_opened": false,
+  "new_candidate_sources_changed_by_review": false,
+  "not_an_execution_approval": true,
+  "original_bytes": 7976106,
+  "pure_adapters": [
+    "separate review-only dictionary input reader",
+    "memory-only evidence writes"
+  ],
+  "qualification": false,
+  "rejected": 134,
+  "source_and_native_typed_requests": null,
+  "source_subject": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "parents": [
+      "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+    ],
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "stage_decoder": {
+    "bytes": 17939,
+    "git_blob": "0837bd70dd0e20a208fd8f59eec6017910cb9076",
+    "sha256": "cef85f5a2768e11c48303ee3dfffbd41c3393f12b498bba6ad7b6faad4c85763"
+  },
+  "stage_or_supervisor_success_created": false,
+  "transport_files_actually_created": false,
+  "transport_manifest": {
+    "bytes": 42163,
+    "git_blob": "5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a",
+    "sha256": "9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117"
+  }
+}

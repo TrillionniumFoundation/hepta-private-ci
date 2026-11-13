@@ -1,0 +1,116 @@
+--- original
++++ HOLD-successor
+@@ -498,12 +498,101 @@
+     check(isinstance(pin,dict) and all(key in pin for key in fields),"complete actual runtime file identity")
+     return {key:pin[key] for key in fields}
+ 
++HISTORY_TRANSPORT_CONTROL = '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1'
++HISTORY_MANIFEST_PATH = '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/TRANSPORT_MANIFEST.json'
++HISTORY_MANIFEST_PIN = {'bytes': 42163,
++ 'git_blob': '5d2e19cadd569f9dd37f0f87997b115d7ed3ef2a',
++ 'sha256': '9a7076714a08a5d18094741236f4d5609946f4367d6532150a2d0e9d6c692117'}
++HISTORY_RUNTIME_ROLES = {'historical_environment.started': {'original_consumers': ['V5.environment_preflight.ENVIRONMENT_FILE'],
++                                    'original_path': '/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/MAINTENANCE_STARTED.original.json',
++                                    'original_path_evidence': 'content_pin_known_no_original_path_read_in_finite_input_set',
++                                    'pin': {'bytes': 1154,
++                                            'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223',
++                                            'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1'},
++                                    'producer_job_id': None,
++                                    'producer_job_scope': 'The supplied historical record does not establish '
++                                                          'a producer job ID; no job is invented.',
++                                    'role': 'historical_environment.started',
++                                    'transport_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/historical_environment.started.original'},
++ 'runtime.environment_ready': {'original_consumers': ['FIXED_INPUTS.HISTORICAL_ENVIRONMENT_READY'],
++                               'original_path': '/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json',
++                               'original_path_evidence': 'content_pin_known_no_original_path_read_in_finite_input_set',
++                               'pin': {'bytes': 21724,
++                                       'git_blob': '8b62ac16f554c1f34ee72974637752f5a3b58aec',
++                                       'sha256': 'd37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172'},
++                               'producer_job_id': '1a1d0fcb212-2564-1bf4',
++                               'role': 'runtime.environment_ready',
++                               'transport_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.environment_ready.original'},
++ 'runtime.result': {'original_consumers': ['ACTUAL_PROOFS.runtime.result'],
++                    'original_path': '/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json',
++                    'original_path_evidence': 'content_pin_known_no_original_path_read_in_finite_input_set',
++                    'pin': {'bytes': 21366,
++                            'git_blob': '7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09',
++                            'sha256': '272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90'},
++                    'producer_job_id': '1a1d0fcb212-2564-1bf4',
++                    'role': 'runtime.result',
++                    'transport_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.result.original'},
++ 'runtime.supervisor': {'original_consumers': ['ACTUAL_PROOFS.runtime.supervisor'],
++                        'original_path': '/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json',
++                        'original_path_evidence': 'content_pin_known_no_original_path_read_in_finite_input_set',
++                        'pin': {'bytes': 954,
++                                'git_blob': '3705e1ded34c017b57ee9eb13472f67df0da8e20',
++                                'sha256': '6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb'},
++                        'producer_job_id': '1a1d0fcb212-2564-1bf4',
++                        'role': 'runtime.supervisor',
++                        'transport_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/runtime.supervisor.original'}}
++
++def _historical_transport_stat(info):
++    return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
++            info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
++
++
++def _read_historical_transport_file(path, expected, maximum):
++    """Read only the fixed manifest or one of this instance's four history files."""
++    path = pathlib.Path(path)
++    allowed = {HISTORY_MANIFEST_PATH} | {row['transport_path'] for row in HISTORY_RUNTIME_ROLES.values()}
++    check(str(path) in allowed, 'closed historical-runtime transport file')
++    check(type(maximum) is int and 0 <= maximum <= 40000000, 'original historical input limit')
++    real_directory(HISTORY_TRANSPORT_CONTROL)
++    real_directory(path.parent)
++    for directory in {pathlib.Path(HISTORY_TRANSPORT_CONTROL), path.parent}:
++        current = directory.lstat()
++        check(stat.S_ISDIR(current.st_mode) and current.st_uid == 1000
++              and stat.S_IMODE(current.st_mode) == 0o700, 'owned private historical transport directory')
++    before = path.lstat()
++    check(stat.S_ISREG(before.st_mode) and before.st_uid == 1000 and before.st_nlink == 1
++          and stat.S_IMODE(before.st_mode) == 0o600, 'owned immutable historical transport file')
++    raw = read_input(path, expected, maximum)
++    check(_historical_transport_stat(before) == _historical_transport_stat(path.lstat()),
++          'historical transport full ownership/stat identity stable during original read')
++    return raw
++
++
++def read_transported_historical_input(role, original_path, expected, maximum=40000000):
++    """Separate the four original provenance identities from their transport locations."""
++    check(role in HISTORY_RUNTIME_ROLES, 'one of four fixed runtime history roles')
++    spec = HISTORY_RUNTIME_ROLES[role]
++    check(str(original_path) == spec['original_path']
++          and {key: expected[key] for key in ('bytes', 'sha256', 'git_blob')} == spec['pin'],
++          'original runtime history path and exact bytes remain unchanged')
++    manifest_raw = _read_historical_transport_file(HISTORY_MANIFEST_PATH, HISTORY_MANIFEST_PIN, 100000)
++    manifest = parse(manifest_raw)
++    check(manifest['format'] == 'hepta-closed-transported-originals-manifest-v1'
++          and manifest['control'] == HISTORY_TRANSPORT_CONTROL
++          and manifest['historical_original_count'] == 55 and len(manifest['rows']) == 55,
++          'complete fixed transported history manifest')
++    rows = {row['role']: row for row in manifest['rows']}
++    check(len(rows) == 55 and rows[role] == spec,
++          'the exact four runtime inputs belong to the complete reviewed closed map')
++    return _read_historical_transport_file(spec['transport_path'], expected, maximum)
++
++
+ def validate_runtime_restoration():
+     proof=cfg.get("runtime_restoration")
+     check(isinstance(proof,dict),"actual completed runtime restoration proof required")
+-    raw=read_input(proof["result_path"],proof["result"])
+-    terminal_raw=read_input(proof["supervisor_path"],proof["supervisor"])
+-    environment_raw=read_input(proof["environment_path"],proof["environment"])
++    raw=read_transported_historical_input("runtime.result",proof["result_path"],proof["result"])
++    terminal_raw=read_transported_historical_input("runtime.supervisor",proof["supervisor_path"],proof["supervisor"])
++    environment_raw=read_transported_historical_input("runtime.environment_ready",proof["environment_path"],proof["environment"])
+     observed=parse(raw);terminal=parse_supervisor(terminal_raw);environment=parse(environment_raw)
+     check(terminal.get("job_id")==proof.get("job_id") and isinstance(proof.get("job_id"),str)
+           and bool(proof["job_id"]),"actual runtime restoration job identity")
+@@ -549,7 +638,7 @@
+     return environment
+ 
+ def environment_preflight():
+-    historical=parse(read_input(ENVIRONMENT_FILE,HISTORICAL_ENV_PIN,100000))
++    historical=parse(read_transported_historical_input("historical_environment.started",ENVIRONMENT_FILE,HISTORICAL_ENV_PIN,100000))
+     check(historical["environment"]==ORIGINAL_ENVIRONMENT,"original historical environment bytes/fields")
+     restored=validate_runtime_restoration()
+     desired=dict(ORIGINAL_ENVIRONMENT)

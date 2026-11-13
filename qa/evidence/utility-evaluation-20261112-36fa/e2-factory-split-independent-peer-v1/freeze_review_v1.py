@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Serialize this independent static review; no candidate code execution."""
+from pathlib import Path
+import hashlib
+import json
+
+D = Path('/tmp/hepta-36fa-e2-factory-split-independent-peer-v1')
+
+def pin(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'git_blob': hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()}
+
+def save(name, obj):
+    body = (json.dumps(obj, ensure_ascii=False, indent=2) + '\n').encode()
+    path = D / name
+    if path.exists():
+        assert path.read_bytes() == body, 'frozen report differs'
+    else:
+        with path.open('xb') as f:
+            f.write(body)
+    return pin(body)
+
+p = json.loads((D / 'BYTE_PROOF.json').read_bytes())
+refs = {Path(x['path']).name: x for x in p['references']}
+findings = [
+ {'id': 'F01', 'status': 'verified_by_full_bytes', 'subject': 'Fixed source chain and preservation',
+  'detail': 'The fixed E2 packet has 10 Rust images: seven old files with insertion-only changes, two new production files and one new test file. All seven complete old images restore byte-for-byte after removing only the observed inserts. Six old preimages match E1 assembled 1ca7 plus the separate 70-byte import increment 36cd; the seventh is the actual b608 root-task implementation 6cd847. The entire patch was independently regenerated from the complete images. No original factory, Source, Current, task driver, retirement implementation, Config, State or Store file is changed.',
+  'evidence': ['BYTE_PROOF.json: images and insertion_inverses', '62ad5a5363ca91c335f2d599128f763c355b33bf', '7e8a5be256d8376cf1185f892c291af2718e4ed7']},
+ {'id': 'F02', 'status': 'no_concrete_static_blocker_found', 'subject': 'One consuming Ready-to-factory path',
+  'detail': 'The crate-private into_original_root_task_channel consumes OriginalRootInitialGenerationCustodyV1 by value, requires both original Root UID checks, accepts only its private Ready phase and calls the existing Ready.into_circuit_feature_task exactly once. It then calls unchanged circuit_q24_task_channel_v1 exactly once. The complete CircuitQ24TaskProfile literal and every input field are byte-identical to the old into_q24_task profile; only the Config-free factory entry and identity source differ. There is no caller-supplied PublishedTask or callback that substitutes Current. The source_mode and original typed files remain the existing trusted host inputs, with their original Create/Recover behavior.',
+  'evidence': ['neuron_generation_initial_root_task_channel.rs: into_original_root_task_channel', 'neuron_generation_initial_root_task.rs: into_q24_task', 'neuron_generation_initial_bootstrap.rs: ReadyAgentdGenerationInitialV1::into_circuit_feature_task', 'circuit_q24_task_profile.rs: circuit_q24_task_channel_v1']},
+ {'id': 'F03', 'status': 'no_concrete_static_blocker_found', 'subject': 'Same task, actual Cell and Source, original drain',
+  'detail': 'The retirement value is task.clone() before moving the task into the original factory. PublishedCircuitFeatureTaskV1 is a Clone over the same Arc<PublishedTask>, not a new writer. The new custody receives runtime.cell() and runtime.source() from that exact factory result; the original accessors clone the actual Cell and original Source Arc. The factory opens its Cell once and installs that Cell writer into the unchanged owner lane. New drain delegates to the original custody, whose unchanged retirement implementation requires Arc::ptr_eq(task, cell.task), reads the real Source publication, checks the private committed Cell receipt, rereads Source, drains the original journal under its original lock, verifies drained state, drops the lock, rereads Source and rechecks live Current. No completed-task DTO is accepted as authority.',
+  'evidence': ['circuit_feature_current.rs: PublishedCircuitFeatureTaskV1', 'circuit_q24_task_profile.rs: cell/source and factory', 'circuit_feature_current_retirement.rs: drain_completed_task', 'authority_host_session_generation_root_task.rs: drain_completed_original_root_task']},
+ {'id': 'F04', 'status': 'no_concrete_static_blocker_found', 'subject': 'Original session, operation and fixed expiry',
+  'detail': 'The public prepare_original_root_task consumes the existing non-Clone prepared host generation. Identity comes from the same registered identity, never from a supplied Config or profile. It checks the original session before Ready consumption, reads the concrete operation and calls OriginalHostInitialOperation::require_observed before the factory, then repeats the actual operation observation and session check afterward. The same original session, operation and end are stored in a private non-Clone holder. Its generation read and drain keep the same pre/post observations. The inherited E1 require_observed checks original issuer/head/lease/consumer observations and original operation binding; this layer neither changes those bodies nor claims an atomic lease across file I/O. Original UID, pinned peer and deadline predicates remain the same.',
+  'evidence': ['authority_host_session_generation_root_task.rs: prepare_original_root_task/read_original_root_task_generation', 'E1 authority_host_session_generation.rs: require_original_session', 'E1 authority_host_generation.rs: require_observed/require_original']},
+ {'id': 'F05', 'status': 'no_concrete_static_blocker_found', 'subject': 'Failure retains only same-operation observation',
+  'detail': 'Before and after the factory, any error propagates into the existing installation error types. The lower error retains only the concrete operation and AgentdError; the host error retains only the same session, operation, end and failure. Neither error returns Ready, Prepared, input files, Config, runtime or a Create retry method. If an error happens after factory effects, newly created/recovered Source or Cell effects can remain; the code and this review do not label the outcome NotApplied. Post-drain refusal likewise does not prove that durable drain did nothing. Cold recovery, if later required, must use the original existing owners and journal; this layer does not add such a retry.',
+  'evidence': ['neuron_generation_initial_root_task_channel.rs: installed match', 'authority_host_session_generation_root_task.rs: install match', 'unchanged authority_host_session_generation_task.rs: OriginalInstallationFailure/RootHostInitialTaskInstallationErrorV1']},
+ {'id': 'F06', 'status': 'verified_boundary_with_explicit_remaining_work', 'subject': 'Config, State and AutomationStore stay outside the new factory',
+  'detail': 'The two new production modules contain no implementation dependency on AgentdConfig, AgentdState or AutomationStore. The original runtime is retained privately and is not installed or run. The unchanged original bootstrap owner closure still requires a real AutomationStore plus Arc<AgentdState>; its run method obtains state.circuit_task_store(), checks the original owner identity and uses the original supervised blocking worker. No new database or owner is opened. This is a necessary Config-free construction seam only. It is not a working cross-process transport, daemon startup entry, durable Store loan or useful task execution.',
+  'evidence': ['authority_host_session_generation_root_task.rs: private fields', 'circuit_task_runtime.rs: OwnerLoop/circuit_task_channel_v1/CircuitTaskRuntimeBootstrapV1::run']},
+ {'id': 'F07', 'status': 'verified_limited_observation', 'subject': 'Pending counter is not completion or full drain',
+  'detail': 'The new pending method calls the existing crate-private bootstrap.handle() and public pending_count(). The former clones the same original handle and the latter performs an Acquire read on the same pending Arc. It does not submit, claim, run, synthesize a receipt or decrement the counter. Zero only describes that in-memory queue/active counter; original durable unresolved AutomationStore runs are additional blockers. This separate observation is not an atomic full-host drain predicate and must not be used as such by a later transport implementation.',
+  'evidence': ['authority_host_session_generation_root_task.rs: pending_original_root_task_operations', 'circuit_task_runtime.rs: pending_count/handle/PendingWork']},
+ {'id': 'F08', 'status': 'concrete_test_gap_fixed_by_separate_frozen_increment', 'subject': 'Unstarted Source negative case previously accepted unrelated errors',
+  'detail': 'Original 62ad test line 22 used is_err(), which could be satisfied by an expired/invalid session or other unrelated refusal. This was reported directly to the author. Independent increment 12459 keeps production and the original packet unchanged, and matches only AgentdError::Invalid whose message equals the existing CircuitTaskErrorV1::ReconciliationRequired Display. The precise original path is Source.read_run_publication -> owner.read(request) -> journal Missing -> ReconciliationRequired -> retirement invalid(error). The fresh original Source factory creates no request; the test does not submit its held signed ingress. The successor also rereads the same Published generation and compares the original generation journal/witness bytes. Other errors and success both fail the test. This is a static strengthening, not an executed test result.',
+  'evidence': ['12459a8255be0358c822a825d2445fa48828a7e1', '5ec921edab70750f2c378a07c219f3a9ddd34563', 'circuit_task_source.rs: create/read_run_publication', 'circuit_task_source_journal.rs: read/store_error', 'circuit_task.rs: ReconciliationRequired', 'circuit_feature_current_retirement.rs: map_err(invalid)']},
+ {'id': 'F09', 'status': 'prepared_test_semantics_only', 'subject': 'Actual failure fixture and test scope',
+  'detail': 'The second mechanism deliberately changes the actual input fence generation and requires the original factory owner/capacity refusal, then reads the same protected Published operation and compares the generation journal/witness bytes. Its entire method body is unchanged by 12459. Both methods use the inherited actual protected Host fixture and original Ready/factory/Source, rather than constructing a fake PublishedTask, Cell receipt or Source publication. Fixture signed ingress is retained but is not submitted by either method. These are two ignored Root mechanisms; they do not show ordinary UID execution, completed Circuit history, claim/ACK handling or same-Arc successful drain after a real useful task.',
+  'evidence': ['authority_host_generation_root_task_tests.rs: two methods', 'E1 HostFixture and take_task_inputs']},
+ {'id': 'F10', 'status': 'limited_cleanup_claim', 'subject': 'Error and cleanup paths',
+  'detail': 'Each test places assertions in a Result-returning body, then calls fixture.finish() before propagating the body result. On body errors, held local task/runtime/config values drop as Rust locals and peer cleanup is still attempted. The fixture cleanup implementation and time budgets are inherited unchanged. Its timeout/error or Drop cancellation is not evidence of a completed join/reap. These new methods never start the retained bootstrap owner loop, so they do not test cancellation of an active Circuit worker. No claim of runtime cleanup success is made without execution.',
+  'evidence': ['authority_host_generation_root_task_tests.rs: cleanup ordering', 'unchanged E1 HostFixture::finish and peer support']},
+ {'id': 'F11', 'status': 'source_level_visibility_review_only', 'subject': 'Rust visibility and API surface',
+  'detail': 'The new channel implementation is a private child of the original root_task module, so its direct access to original private phase/operation/custody fields is within the existing Rust module hierarchy. The host implementation is a private child of the existing generation_task module and uses its existing private error variants and imported parent types. Required SW/CW Send + static bounds match the unchanged factory. The crate-private bootstrap.handle accessor exists in the exact original runtime. Four public methods and one crate-private method are added; the new holder exposes no fields and has no Clone implementation. The seven old edits add only mounts/reexports, with the Linux lib export still gated. This inspection found no concrete visibility/type mismatch, but it is not compilation.',
+  'evidence': ['BYTE_PROOF.json: new_methods and insertion_inverses', 'circuit_task_runtime.rs: handle', 'two new production sources']},
+ {'id': 'F12', 'status': 'not_implemented_in_this_scope', 'subject': 'Opaque admission transport and daemon Store custody',
+  'detail': 'There is no admission wire format, Claim ACK decoder, Store adapter or IPC service in this fixed layer. Future E2 work must keep the original AutomationStore admission object on the daemon side as a single-operation loan. Root may hold a purpose-fixed private remote state/handle, but a decoded ACK/JSON cannot become a generally constructible original owner capability. The daemon must complete/read back through the same retained original object; full original record, request, nonce and peer must remain bound, and readback must not create a new claim. The current layer cannot be cited as proving any of those future interfaces.',
+  'evidence': ['scope of all ten fixed images', 'Root explicit follow-up boundary', 'circuit_task_runtime.rs: original owner closure and state Store acquisition']},
+ {'id': 'F13', 'status': 'qualification_and_integration_pending', 'subject': 'Registration and execution remain outstanding',
+  'detail': 'The author lists five new typed boundary obligations and two future Root parent methods. This layer contains no CALLERS, QA, allowlist or workflow changes and no collector result. It is not folded into E1 registration by this review. No H, Rust, formatter, QA, original collector, source gate or native run was performed. The two new tests, complete E1/E2 composition and any eventual ordinary caller still require the authorized original validation chain. No new source/ref or Git source object was created by this reviewer.',
+  'evidence': ['author REVIEW.json registration_obligations', 'BYTE_PROOF.json execution scope']}
+]
+
+report = {
+ 'format': 'hepta-e2-factory-split-independent-static-review-v1',
+ 'verdict': 'NO_CONCRETE_STATIC_PRODUCTION_BLOCKER_FOUND; ORIGINAL_TEST_GAP_FIXED_IN_SEPARATE_12459_INCREMENT',
+ 'publication': 'Local computed review artifacts only; not actual Git creation or durable full GET.',
+ 'scope': p['scope'],
+ 'reviewed_chain': p['fixed_inputs'],
+ 'baseline': {'commit': 'b6084394a4a38ab495c16eaba09e879f04a96f8e', 'tree': '8ebb37e523ad3932a58cf016af0a9f4e0eeb6638',
+              'E1_prerequisite': '1ca7a06948fcae69bf7c8e4c7823627a872c0c62 + 36cd9a693ce75070e1225a978575ca6dea5f72c2',
+              'basis': 'captured immutable source packets and actual inventory; no current native read'},
+ 'findings': findings,
+ 'reference_identities': refs,
+ 'independent_byte_proof': pin((D / 'BYTE_PROOF.json').read_bytes()),
+ 'own_script': pin((D / 'review_bytes_v1.py').read_bytes()),
+ 'execution_observation': pin((D / 'BYTE_REVIEW_EXECUTION_OBSERVATION.json').read_bytes()),
+ 'execution': p['execution'],
+ 'not_claimed': ['Rust type-check or test PASS', 'actual same-Arc successful retirement after ordinary task completion',
+                 'cross-process or cross-UID owner transport', 'daemon AutomationStore loan or new Claim authority',
+                 'production host/daemon startup closure', 'current source qualification', 'test timeout or Drop proves worker termination'],
+ 'next_review_boundary': 'Only frozen successor IPC/loan implementations, with original owner provenance and all readback/nonce/peer bindings retained.'
+}
+rpin = save('REVIEW.json', report)
+names = ['REVIEW.json', 'BYTE_PROOF.json', 'review_bytes_v1.py', 'freeze_review_v1.py', 'BYTE_REVIEW_EXECUTION_OBSERVATION.json']
+index = {'format': 'hepta-local-review-deliverable-index-v1', 'publication': 'computed only; no Git writes',
+         'directory': str(D), 'entries': [{'path': name, **pin((D / name).read_bytes())} for name in names],
+         'source_images': 'reviewed-source is a local review copy, not activated source or committed output',
+         'references': 'inputs includes exact captured originals; Git GET captures are read-only responses'}
+ipin = save('LOCAL_DELIVERABLE_INDEX.json', index)
+print(json.dumps({'review': rpin, 'byte_proof': report['independent_byte_proof'], 'index': ipin}, ensure_ascii=False))

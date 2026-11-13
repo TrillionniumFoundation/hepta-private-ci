@@ -1,0 +1,35 @@
+{
+  "format": "hepta-completed-dispatch-three-original-proof-v1",
+  "scope": "Only three completed, fixed staging dispatch originals. No H request, stage input mutation, or runtime read was performed by this archive.",
+  "job_id": "1a1d52e0d88-392-784",
+  "request": {
+    "bytes": 168712,
+    "sha256": "4e9fc5f534ba18ad30ef73efa4c25aa65f11e48bad7f26fcedb2d3db1d3ace4f",
+    "git_blob": "e944fa3dd289d28901cc216e4e05cce26e636a38"
+  },
+  "originals": [
+    {
+      "name": "STAGE_DISPATCH_INTENT.json",
+      "bytes": 894,
+      "sha256": "48ecf36604b2cefc56baa85c9e4e88b67f5960b1884f846f79ca8e2169f239fb",
+      "git_blob": "27696a998b71d7671338f8b8943becf45d4f47a8",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "name": "STAGE_PROCESS_INPUT.original.json",
+      "bytes": 168712,
+      "sha256": "4e9fc5f534ba18ad30ef73efa4c25aa65f11e48bad7f26fcedb2d3db1d3ace4f",
+      "git_blob": "e944fa3dd289d28901cc216e4e05cce26e636a38",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "name": "STAGE_ADMISSION.original.json",
+      "bytes": 19840,
+      "sha256": "6e740e5572e6b6bee08e6958a80bdf94f7e2c85279a4a0774931f113bdc26661",
+      "git_blob": "97d700fa05cc4c6b9a7455376cc35878fe37dfaf",
+      "actual_git_create_and_full_get_equal": true
+    }
+  ],
+  "source_directory": "/tmp/hepta-36fa-b608-history-transport-staging-runtime-v1",
+  "maximum_leaf_bytes": 512000
+}

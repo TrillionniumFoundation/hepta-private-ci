@@ -1,0 +1,12 @@
+{
+  "format": "hepta-e1-local-aggregate-read-limit-observation-v1",
+  "observed_at": "2026-11-13 13:50:26 UTC",
+  "attempt": "Aggregate read of manifest, changed trees and all 19 source text images through exec_command stdout",
+  "error": "SyntaxError: Bad control character in string literal in JSON at position 524288 (line 1 column 524289)",
+  "raw_original_tool_result_preserved": false,
+  "interpretation": "The aggregate stdout could not be decoded as complete JSON; the precise original returned wrapper is not retained. This is a local transfer limitation, not a source, Git or H execution outcome.",
+  "candidate_source_modified_by_failed_read": false,
+  "H_calls": 0,
+  "source_object_writes_in_failed_call": 0,
+  "next_action": "Read fixed local files in bounded chunks and verify complete SHA-1/SHA-256/length before any source blob creation."
+}

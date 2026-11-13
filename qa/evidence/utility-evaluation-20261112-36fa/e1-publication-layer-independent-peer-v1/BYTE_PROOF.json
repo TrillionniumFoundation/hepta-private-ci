@@ -1,0 +1,207 @@
+{
+  "H_calls": 0,
+  "Rust_compile_fmt_tests_QA": 0,
+  "baseline_inventory": {
+    "bytes": 5631947,
+    "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+    "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+  },
+  "counts": {
+    "covered_paths": 7,
+    "lease_delta_lines": 4,
+    "new_files": 2,
+    "old_files": 5,
+    "old_source_removals_or_replacements": 0
+  },
+  "format": "hepta-e1-publication-layer-independent-byte-proof-v1",
+  "lease_increment": {
+    "after": {
+      "bytes": 15200,
+      "git_blob": "91858e5a71da15d40548e1467b6e3dc388d1ebd3",
+      "sha256": "fa07091651ee3e2fde07adc64cac1902b9d57af544dfc0709af5fee9a932f63a"
+    },
+    "before": {
+      "bytes": 14988,
+      "git_blob": "4a89fdbff31df56847862cf34db2d0c3fd300870",
+      "sha256": "df71651bbcf002f1d9449094996ca9cb32e217b55f0b91639543ec402ce06055"
+    },
+    "inverse_full_bytes_equal": true,
+    "manifest": {
+      "bytes": 869,
+      "git_blob": "a1d7ce87f8c972c7b202672d3fa7a44893a34c29",
+      "sha256": "c0ffe128566709015c039e6bb48d15fafa0b7237baeb724415dde9cf6e786810"
+    },
+    "only_four_lines_added": true,
+    "patch": {
+      "bytes": 562,
+      "git_blob": "7f74ce3910a2afa25adbdd2580a378485dfabafd",
+      "sha256": "8c2476b321f61b37cda048d0a3cd49e522a18c9f841e3295e9a3718c3f57d490"
+    },
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+  },
+  "manifest": {
+    "bytes": 3546,
+    "git_blob": "b6dfbe79deb2e4ba18e7815dc7e48e6c0678de5c",
+    "sha256": "cd5ff94b0c1c12a8249516f02ee4a9b874fd6cfed7031aafacd9237f338a14dd"
+  },
+  "patch": {
+    "bytes": 26364,
+    "git_blob": "d78e4f2bb50ff2e5fc2101dbb0c21724f5a87f87",
+    "sha256": "975d9d0dcb6005ab0156773e4d61a0c0da7fef9762bfa6273875ec19c7558daf"
+  },
+  "source_objects_created": false,
+  "source_rows": [
+    {
+      "after": {
+        "bytes": 14988,
+        "git_blob": "4a89fdbff31df56847862cf34db2d0c3fd300870",
+        "sha256": "df71651bbcf002f1d9449094996ca9cb32e217b55f0b91639543ec402ce06055"
+      },
+      "baseline_match": true,
+      "before": null,
+      "insertions": [],
+      "old_bytes_preserved_by_removing_exact_insertions": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation.rs"
+    },
+    {
+      "after": {
+        "bytes": 20059,
+        "git_blob": "a84c9f4db2b2a2b0456adacd67e8bb409b3e6ed9",
+        "sha256": "ae792c22ae02c9aa1ea73fb942b23923c2d023342f413819191fa75133808fd5"
+      },
+      "baseline_match": true,
+      "before": {
+        "bytes": 20005,
+        "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+        "sha256": "97ceda651034181eda5e4c4951f5cf9ba567d6caeaa1b877937330d21bcb95ae"
+      },
+      "insertions": [
+        {
+          "added_bytes": 54,
+          "added_text": "pub use session::PreparedRootHostInitialGenerationV1;\n",
+          "after_line_offset": 43,
+          "before_line_offset": 43,
+          "kind": "insert"
+        }
+      ],
+      "old_bytes_preserved_by_removing_exact_insertions": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "after": {
+        "bytes": 23062,
+        "git_blob": "efab2bd464b7fbeacc76ea43a8d8c7bb970362ff",
+        "sha256": "30cbd469a43d16d9eff2095804366b23250cb150cb8ba776063067c241c8226b"
+      },
+      "baseline_match": true,
+      "before": {
+        "bytes": 22835,
+        "git_blob": "dbf7af0bfc0fef0351aa7f883128d4e7823cea88",
+        "sha256": "12b40dd7c917777b4d0bf49b822a48199982d3090664ffbdf0e2bba45204152f"
+      },
+      "insertions": [
+        {
+          "added_bytes": 227,
+          "added_text": "\n#[path = \"authority_host_generation.rs\"]\nmod generation;\npub(crate) use generation::OriginalHostInitialOperation;\npub use generation::RootHostInitialGenerationInputsV1;\npub use generation::RootHostInitialGenerationRecoveryV1;\n",
+          "after_line_offset": 58,
+          "before_line_offset": 58,
+          "kind": "insert"
+        }
+      ],
+      "old_bytes_preserved_by_removing_exact_insertions": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs"
+    },
+    {
+      "after": {
+        "bytes": 17720,
+        "git_blob": "e74497908c6f5ca3689103bffeae89641adf4624",
+        "sha256": "99c4648dfe7b792919e734d2b93d02d3e988e3c793f4da81d10981efc719c42a"
+      },
+      "baseline_match": true,
+      "before": {
+        "bytes": 17597,
+        "git_blob": "5c9f1927f9048310eff6d8469dacf1a0c4ee3b21",
+        "sha256": "a12b45a3cf61a4e7f9bd289733b19a624a7f6edda9c336f228e034f7d9dc966e"
+      },
+      "insertions": [
+        {
+          "added_bytes": 123,
+          "added_text": "\n#[path = \"authority_host_session_generation.rs\"]\nmod generation;\npub use generation::PreparedRootHostInitialGenerationV1;\n",
+          "after_line_offset": 19,
+          "before_line_offset": 19,
+          "kind": "insert"
+        }
+      ],
+      "old_bytes_preserved_by_removing_exact_insertions": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs"
+    },
+    {
+      "after": {
+        "bytes": 7229,
+        "git_blob": "db6563e93ddecbcc2f20cdfed9f16d1ac35a659c",
+        "sha256": "0250e1a6421c3eef18d6c3975edb37653a6967559b6ee0c2655cc761be4157bc"
+      },
+      "baseline_match": true,
+      "before": null,
+      "insertions": [],
+      "old_bytes_preserved_by_removing_exact_insertions": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation.rs"
+    },
+    {
+      "after": {
+        "bytes": 72678,
+        "git_blob": "86f44e641033b0764416e391705a22436781f6bf",
+        "sha256": "1de18e0676db0136f0d126c11239280480c7792f3683c48047efa3d806dc558c"
+      },
+      "baseline_match": true,
+      "before": {
+        "bytes": 72389,
+        "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+        "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+      },
+      "insertions": [
+        {
+          "added_bytes": 97,
+          "added_text": "pub use authority_host_runtime::PreparedRootHostInitialGenerationV1;\n#[cfg(target_os = \"linux\")]\n",
+          "after_line_offset": 151,
+          "before_line_offset": 151,
+          "kind": "insert"
+        },
+        {
+          "added_bytes": 192,
+          "added_text": "#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootHostInitialGenerationInputsV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootHostInitialGenerationRecoveryV1;\n",
+          "after_line_offset": 184,
+          "before_line_offset": 182,
+          "kind": "insert"
+        }
+      ],
+      "old_bytes_preserved_by_removing_exact_insertions": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after": {
+        "bytes": 11650,
+        "git_blob": "b08cbd6409a08be631d40d923801b98708600db5",
+        "sha256": "e029827da3eb19eba7f97ddeba0e81c1070e60b5e7cc262bb5277d07fd800b4d"
+      },
+      "baseline_match": true,
+      "before": {
+        "bytes": 11102,
+        "git_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+        "sha256": "834a70cca0d4a7c7487c94371e921cd6738f8e8a972cca192f92f9a2d048877e"
+      },
+      "insertions": [
+        {
+          "added_bytes": 548,
+          "added_text": "    /// Compare the exact original initial intent before any protected write.\n    /// This returns only binding data, not a prepared owner or permission.\n    pub(crate) fn original_initial_publication_binding(\n        operation_id: String,\n        target: CellGenerationOwnerBindingV1,\n        selected: &AgentdSelectedGenerationV1,\n    ) -> Result<codex_hepta_contracts::FinalUseBinding, AgentdError> {\n        let (_, prepared) = initial_head_and_prepared(operation_id, target, selected)?;\n        Ok(prepared.final_use_binding().clone())\n    }\n\n",
+          "after_line_offset": 30,
+          "before_line_offset": 30,
+          "kind": "insert"
+        }
+      ],
+      "old_bytes_preserved_by_removing_exact_insertions": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"
+    }
+  ],
+  "status": "captured bytes matched; not compile/runtime proof"
+}
