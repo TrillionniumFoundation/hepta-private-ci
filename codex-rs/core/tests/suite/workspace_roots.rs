@@ -401,14 +401,24 @@ async fn workspace_roots_allow_patches_but_protect_metadata_directories() -> Res
     let request = response_mock
         .last_request()
         .context("model should receive every workspace-root patch result")?;
-    let (_, patch_success) = request
+    let (patch_output, patch_success) = request
         .custom_tool_call_output_content_and_success(PATCH_CALL_ID)
         .context("workspace patch result should be present")?;
-    assert_ne!(patch_success, Some(false));
-    assert_eq!(
-        read_file(&test, &allowed_path).await?,
-        format!("{PATCH_CONTENTS}\n")
-    );
+    if cfg!(windows) {
+        assert_windows_patch_write_refused(patch_output.as_deref(), patch_success, &allowed_path);
+        let error = test
+            .fs()
+            .get_metadata(&allowed_path, Default::default(), /*sandbox*/ None)
+            .await
+            .expect_err("refused workspace-root patch must not create a file");
+        assert_eq!(error.kind(), std::io::ErrorKind::NotFound);
+    } else {
+        assert_ne!(patch_success, Some(false));
+        assert_eq!(
+            read_file(&test, &allowed_path).await?,
+            format!("{PATCH_CONTENTS}\n")
+        );
+    }
 
     for directory in PROTECTED_METADATA_DIRECTORIES {
         let call_id = format!("workspace-root-protected-{directory}");
@@ -478,15 +488,26 @@ async fn workspace_roots_deny_file_and_command_writes_outside_roots() -> Result<
         "patch should be denied outside the workspace roots, got {patch_output:?}"
     );
 
-    let (command_output, _) = request
+    let (command_output, command_success) = request
         .function_call_output_content_and_success(COMMAND_CALL_ID)
         .context("denied command result should be present")?;
     let command_output = command_output.context("denied command output should be present")?;
-    assert!(
-        command_output.contains("Access is denied")
-            || command_output.contains(&command_path_display),
-        "outside command should be denied, got {command_output:?}"
-    );
+    if cfg!(windows) {
+        assert_ne!(command_success, Some(true), "{command_output}");
+        #[cfg(windows)]
+        assert!(
+            command_output.contains(
+                &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+            ),
+            "{command_output}"
+        );
+    } else {
+        assert!(
+            command_output.contains("Access is denied")
+                || command_output.contains(&command_path_display),
+            "outside command should be denied, got {command_output:?}"
+        );
+    }
     assert!(
         test.fs()
             .read_file(&patch_path, Default::default(), /*sandbox*/ None)
