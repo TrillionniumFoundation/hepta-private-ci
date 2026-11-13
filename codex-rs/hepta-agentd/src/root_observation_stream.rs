@@ -138,12 +138,24 @@ impl RootObservationStream {
         let _exchange = self
             .exchange
             .try_acquire()
+            .inspect_err(|_| {
+                #[cfg(test)]
+                record_failure(b"owner_diag_v2 stage=root_stream class=exchange_permit\n");
+            })
             .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         let mut stream = {
             let mut slot = self
                 .stream
                 .try_lock()
+                .inspect_err(|_| {
+                    #[cfg(test)]
+                    record_failure(b"owner_diag_v2 stage=root_stream class=slot_lock\n");
+                })
                 .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            #[cfg(test)]
+            if slot.is_none() {
+                record_failure(b"owner_diag_v2 stage=root_stream class=slot_empty\n");
+            }
             slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?
         };
         // Cancellation, malformed replies and every uncertain I/O error leave
@@ -151,20 +163,34 @@ impl RootObservationStream {
         check_lifetime(self.root.get_ref())?;
         let deadline = (Instant::now() + self.timeout).min(self.end);
         if deadline <= Instant::now() {
+            #[cfg(test)]
+            record_failure(b"owner_diag_v2 stage=root_stream class=deadline_start\n");
             return Err(AgentdRootAuthorityError::Unavailable);
         }
         let response = tokio::select! {
             biased;
-            _ = self.root.readable() => return Err(AgentdRootAuthorityError::Unavailable),
+            _ = self.root.readable() => {
+                #[cfg(test)]
+                record_failure(b"owner_diag_v2 stage=root_stream class=pidfd_select\n");
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
             _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+                #[cfg(test)]
+                record_failure(b"owner_diag_v2 stage=root_stream class=deadline_wait\n");
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             response = framed_exchange(&mut stream, &request) => response?,
         };
         check_lifetime(self.root.get_ref())?;
-        let parsed =
-            serde_json::from_slice(&response).map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let parsed = serde_json::from_slice(&response)
+            .inspect_err(|_| {
+                #[cfg(test)]
+                record_failure(b"owner_diag_v2 stage=root_stream class=response_parse\n");
+            })
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if Instant::now() >= deadline {
+            #[cfg(test)]
+            record_failure(b"owner_diag_v2 stage=root_stream class=deadline_end\n");
             return Err(AgentdRootAuthorityError::Unavailable);
         }
         // The empty slot is the exclusive token for the complete exchange.
@@ -174,6 +200,10 @@ impl RootObservationStream {
         *self
             .stream
             .try_lock()
+            .inspect_err(|_| {
+                #[cfg(test)]
+                record_failure(b"owner_diag_v2 stage=root_stream class=restore_lock\n");
+            })
             .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
         Ok(parsed)
     }
@@ -186,18 +216,42 @@ async fn framed_exchange(
     stream
         .write_all(&(request.len() as u32).to_be_bytes())
         .await
+        .inspect_err(|_| {
+            #[cfg(test)]
+            record_failure(b"owner_diag_v2 stage=root_stream class=write_prefix\n");
+        })
         .map_err(unavailable)?;
-    stream.write_all(request).await.map_err(unavailable)?;
+    stream
+        .write_all(request)
+        .await
+        .inspect_err(|_| {
+            #[cfg(test)]
+            record_failure(b"owner_diag_v2 stage=root_stream class=write_body\n");
+        })
+        .map_err(unavailable)?;
     let mut prefix = [0; 4];
-    stream.read_exact(&mut prefix).await.map_err(unavailable)?;
+    stream
+        .read_exact(&mut prefix)
+        .await
+        .inspect_err(|_| {
+            #[cfg(test)]
+            record_failure(b"owner_diag_v2 stage=root_stream class=read_prefix\n");
+        })
+        .map_err(unavailable)?;
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > 16_384 {
+        #[cfg(test)]
+        record_failure(b"owner_diag_v2 stage=root_stream class=response_bound\n");
         return Err(AgentdRootAuthorityError::Unavailable);
     }
     let mut response = vec![0; length];
     stream
         .read_exact(&mut response)
         .await
+        .inspect_err(|_| {
+            #[cfg(test)]
+            record_failure(b"owner_diag_v2 stage=root_stream class=read_body\n");
+        })
         .map_err(unavailable)?;
     Ok(response)
 }
@@ -231,13 +285,23 @@ pub(crate) fn check_lifetime(pidfd: &OwnedFd) -> Result<(), AgentdRootAuthorityE
         if result < 0 && std::io::Error::last_os_error().kind() == std::io::ErrorKind::Interrupted {
             continue;
         }
+        #[cfg(test)]
+        record_failure(b"owner_diag_v2 stage=root_stream class=pidfd_sample\n");
         return Err(AgentdRootAuthorityError::Unavailable);
     }
+    #[cfg(test)]
+    record_failure(b"owner_diag_v2 stage=root_stream class=pidfd_sample_exhausted\n");
     Err(AgentdRootAuthorityError::Unavailable)
 }
 
 fn unavailable(_: std::io::Error) -> AgentdRootAuthorityError {
     AgentdRootAuthorityError::Unavailable
+}
+
+#[cfg(test)]
+fn record_failure(message: &'static [u8]) {
+    // Fixed test tags only; diagnostic I/O can perturb timing and never changes the error.
+    let _ = std::io::Write::write(&mut std::io::stderr().lock(), message);
 }
 
 #[cfg(test)]

@@ -171,4 +171,37 @@ fn record_readiness_failure(stage: ReadinessDiagnosticStage, error: &Error) {
     let mut stderr = std::io::stderr().lock();
     let _ = std::io::Write::write(&mut stderr, prefix);
     let _ = std::io::Write::write(&mut stderr, class);
+    if let Error::Publication(original) = error {
+        use crate::OriginalCircuitRetainedPublicationErrorV1 as PublicationError;
+
+        let nested: &[u8] = match original {
+            PublicationError::Binding(_) => {
+                b"owner_diag_v2 stage=version_publication class=binding\n"
+            }
+            PublicationError::DeadlineExceeded => {
+                b"owner_diag_v2 stage=version_publication class=deadline_exceeded\n"
+            }
+            PublicationError::Clock => b"owner_diag_v2 stage=version_publication class=clock\n",
+            PublicationError::Cancelled => {
+                b"owner_diag_v2 stage=version_publication class=cancelled\n"
+            }
+            PublicationError::CommitUncertain(_) => {
+                b"owner_diag_v2 stage=version_publication class=commit_uncertain\n"
+            }
+            PublicationError::Training(_) => {
+                b"owner_diag_v2 stage=version_publication class=training\n"
+            }
+            PublicationError::Evaluation(_) => {
+                b"owner_diag_v2 stage=version_publication class=evaluation\n"
+            }
+            PublicationError::Owner(_) => b"owner_diag_v2 stage=version_publication class=owner\n",
+            PublicationError::Iteration(_) => {
+                b"owner_diag_v2 stage=version_publication class=iteration\n"
+            }
+            PublicationError::Evidence(_) => {
+                b"owner_diag_v2 stage=version_publication class=evidence\n"
+            }
+        };
+        let _ = std::io::Write::write(&mut stderr, nested);
+    }
 }
