@@ -1,5 +1,6 @@
 //! Actual original registry and receipt checks; no actual-Root qualification.
 use super::*;
+use anyhow::Context;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
@@ -18,13 +19,15 @@ fn fixture()
 -> Result<(AuthorityLeaseRegistry, AuthorityLease, tempfile::TempDir), Box<dyn std::error::Error>> {
     let directory = tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))
-        .tempdir()?;
+        .tempdir()
+        .context("issuer fixture: create private directory")?;
     let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
         directory.path(),
         "original-root-issuer-revoke".into(),
         AuthorityLeaseFrontier::for_empty_epoch(1)?,
         Arc::new(Clock),
-    )?;
+    )
+    .context("issuer fixture: open registry")?;
     let original = AuthorityLease {
         schema_version: 1,
         lease_id: "original-root-issuer".into(),
@@ -40,7 +43,9 @@ fn fixture()
         issued_at_unix_ms: 1_000,
         expires_at_unix_ms: 30_000,
     };
-    registry.put_lease(original.clone(), 0)?;
+    registry
+        .put_lease(original.clone(), 0)
+        .context("issuer fixture: seed original lease")?;
     Ok((registry, original, directory))
 }
 
@@ -49,10 +54,15 @@ fn actual_issuer_receipt_matches_exact_retained_canonical_postimage()
 -> Result<(), Box<dyn std::error::Error>> {
     let (registry, original, _directory) = fixture()?;
     let end = Instant::now() + Duration::from_secs(1);
-    let receipt = registry.revoke_exact_before(&original, [9; 32], end)?;
-    let frontier = registry.frontier()?;
+    let receipt = registry
+        .revoke_exact_before(&original, [9; 32], end)
+        .context("exact receipt: revoke original issuer")?;
+    let frontier = registry
+        .frontier()
+        .context("exact receipt: read committed frontier")?;
     assert_eq!(
-        confirm_committed(&registry, &original, &receipt, end)?,
+        confirm_committed(&registry, &original, &receipt, end)
+            .context("exact receipt: confirm canonical postimage")?,
         frontier
     );
     for field in 0..7 {
@@ -68,12 +78,22 @@ fn actual_issuer_receipt_matches_exact_retained_canonical_postimage()
             _ => unreachable!(),
         }
         assert!(confirm_committed(&registry, &original, &changed, end).is_err());
-        assert_eq!(registry.frontier()?, frontier);
+        assert_eq!(
+            registry
+                .frontier()
+                .context("exact receipt: read frontier after changed receipt")?,
+            frontier
+        );
     }
     let mut changed_original = original;
     changed_original.binding.destination_id.push('x');
     assert!(confirm_committed(&registry, &changed_original, &receipt, end).is_err());
-    assert_eq!(registry.frontier()?, frontier);
+    assert_eq!(
+        registry
+            .frontier()
+            .context("exact receipt: read frontier after changed original")?,
+        frontier
+    );
     Ok(())
 }
 
@@ -81,18 +101,19 @@ fn actual_issuer_receipt_matches_exact_retained_canonical_postimage()
 fn late_client_confirmation_preserves_committed_revoke_and_refuses_renewal()
 -> Result<(), Box<dyn std::error::Error>> {
     let (registry, original, _directory) = fixture()?;
-    let receipt = registry.revoke_exact_before(
-        &original,
-        [7; 32],
-        Instant::now() + Duration::from_secs(1),
-    )?;
-    let frontier = registry.frontier()?;
+    let receipt = registry
+        .revoke_exact_before(&original, [7; 32], Instant::now() + Duration::from_secs(1))
+        .context("late confirmation: revoke original issuer")?;
+    let frontier = registry
+        .frontier()
+        .context("late confirmation: read committed frontier")?;
     let elapsed = Instant::now()
         .checked_sub(Duration::from_secs(1))
         .ok_or("clock range")?;
     assert!(confirm_committed(&registry, &original, &receipt, elapsed).is_err());
     let retained = registry
-        .read_revocation(&original.lease_id)?
+        .read_revocation(&original.lease_id)
+        .context("late confirmation: read retained revocation")?
         .ok_or("revocation absent")?;
     assert_eq!(retained.revocation.reason_sha256, [7; 32]);
     let mut renewed = original;
@@ -105,7 +126,12 @@ fn late_client_confirmation_preserves_committed_revoke_and_refuses_renewal()
         registry.put_lease(renewed, receipt.lease_revision),
         Err(AuthorityLeaseError::Revoked)
     );
-    assert_eq!(registry.frontier()?, frontier);
+    assert_eq!(
+        registry
+            .frontier()
+            .context("late confirmation: read frontier after refused renewal")?,
+        frontier
+    );
     Ok(())
 }
 
