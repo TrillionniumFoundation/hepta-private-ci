@@ -9,6 +9,7 @@ use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use pretty_assertions::assert_eq;
 
 use super::*;
+use crate::CellLearningEvaluationErrorV1;
 use crate::OriginalCellEvaluationReceiptConfigV1;
 use crate::OriginalCellEvaluationReceiptErrorV1;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
@@ -126,7 +127,46 @@ async fn current_signed_qualification_reads_original_stage_evidence_for_all_deci
             &fixture.receipt,
             &fixture.qualification,
             &fixture.request(now),
-        )?;
+        );
+        if disposition == IndependentEvaluationDispositionV1::InsufficientEvidence {
+            assert!(matches!(
+                prepared,
+                Err(CellLearningEvaluationErrorV1::InsufficientEvidence)
+            ));
+            let original = fixture.snapshot.clone();
+            let training = trainer_fixture(
+                &fixture,
+                fixture.snapshot.receipts.last().expect("original Training"),
+            )?;
+            let (trainer, mut trainer_server) = training.client()?;
+            let (mut evaluator, mut evaluator_server) = training.client()?;
+            // Configure the admitted evaluator channel without inventing an
+            // Evaluation receipt: incomplete evidence must contact neither owner.
+            evaluator.actor_id = fixture.snapshot.owners.evaluator.clone();
+            for server in [&mut trainer_server, &mut evaluator_server] {
+                server.set_nonblocking(true)?;
+            }
+            for _ in 0..2 {
+                assert!(matches!(
+                    read_cell_learning_evaluation_v1(request(&fixture), &trainer, &evaluator).await,
+                    Err(CellLearningEvaluationReadbackErrorV1::Preparation(
+                        CellLearningEvaluationErrorV1::InsufficientEvidence
+                    ))
+                ));
+            }
+            for server in [&mut trainer_server, &mut evaluator_server] {
+                assert_eq!(
+                    server
+                        .read(&mut [0])
+                        .expect_err("no original owner request")
+                        .kind(),
+                    ErrorKind::WouldBlock
+                );
+            }
+            assert_eq!(fixture.snapshot, original);
+            continue;
+        }
+        let prepared = prepared?;
         let (training, evaluation) = original_owners(&fixture, prepared.clone())?;
         let expected = evaluation.signature.clone();
         let (trainer, trainer_server) = training.client()?;
@@ -319,7 +359,47 @@ async fn original_evaluation_receipt_signs_actual_qualification_and_recovers_ori
         let genesis = std::fs::read(path.path().join("owner"))?;
         let training = config.training.receipts.last().expect("Training");
         let original_trainer = trainer_fixture(&fixture, training)?;
-        let (client, server) = original_trainer.client()?;
+        let (client, mut server) = original_trainer.client()?;
+        if disposition == IndependentEvaluationDispositionV1::InsufficientEvidence {
+            let witness_genesis = std::fs::read(path.path().join("witness"))?;
+            server.set_nonblocking(true)?;
+            assert!(matches!(
+                owner
+                    .attest_original_completion(fixture.receipt_owner_sources(&client))
+                    .await,
+                Err(OriginalCellEvaluationReceiptErrorV1::Preparation(
+                    CellLearningEvaluationErrorV1::InsufficientEvidence
+                ))
+            ));
+            assert_eq!(std::fs::read(path.path().join("owner"))?, genesis);
+            assert_eq!(std::fs::read(path.path().join("witness"))?, witness_genesis);
+            drop(owner);
+            let mut recovered = OriginalCellEvaluationReceiptOwnerV1::recover(
+                receipt_file(&path.path().join("owner"))?,
+                receipt_witness(path.path(), &config)?,
+                config.clone(),
+                SigningKey::from_bytes(&[42; 32]),
+            )?;
+            assert!(matches!(
+                recovered
+                    .readback(fixture.receipt_owner_sources(&client))
+                    .await,
+                Err(OriginalCellEvaluationReceiptErrorV1::Preparation(
+                    CellLearningEvaluationErrorV1::InsufficientEvidence
+                ))
+            ));
+            assert_eq!(std::fs::read(path.path().join("owner"))?, genesis);
+            assert_eq!(std::fs::read(path.path().join("witness"))?, witness_genesis);
+            assert_eq!(fixture.snapshot, config.training);
+            assert_eq!(
+                server
+                    .read(&mut [0])
+                    .expect_err("no original Trainer request")
+                    .kind(),
+                ErrorKind::WouldBlock
+            );
+            continue;
+        }
         let peer = serve(
             server,
             original_trainer,

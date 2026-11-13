@@ -8,6 +8,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
+use crate::CellLearningEvaluationErrorV1;
 use crate::CellQ24ModelProposalErrorV1 as ProposalError;
 use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
@@ -256,12 +257,28 @@ fn q24_model_proposal_evaluation_no_update_never_creates_a_proposal() -> anyhow:
         )?;
         fixture.clock_owner(&mut owner);
         let saved = fs::read(directory.path().join("proposal"))?;
+        let saved_witness = fs::read(directory.path().join("witness"))?;
+        let training = fixture.evaluation.snapshot.clone();
         let now = fixture.now;
-        assert!(matches!(
-            fixture.commit(&mut owner, now),
-            Err(ProposalError::Binding("NoUpdate has no model proposal"))
-        ));
+        let result = fixture.commit(&mut owner, now);
+        match disposition {
+            IndependentEvaluationDispositionV1::Ineligible => assert!(matches!(
+                result,
+                Err(ProposalError::Binding("NoUpdate has no model proposal"))
+            )),
+            IndependentEvaluationDispositionV1::InsufficientEvidence => assert!(matches!(
+                result,
+                Err(ProposalError::Evaluation(
+                    CellLearningEvaluationErrorV1::InsufficientEvidence
+                ))
+            )),
+            IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                unreachable!("this fixture exercises only non-proposable evaluations")
+            }
+        }
         assert_eq!(fs::read(directory.path().join("proposal"))?, saved);
+        assert_eq!(fs::read(directory.path().join("witness"))?, saved_witness);
+        assert_eq!(fixture.evaluation.snapshot, training);
     }
     Ok(())
 }
