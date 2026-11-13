@@ -1,0 +1,23 @@
+{
+  "format": "hepta-root-readonly-global-guard-v3-approval-v1",
+  "approved_at_utc": "2026-11-13 05:32 UTC",
+  "sole_executor": "/root/native_ci_audit",
+  "approved_exact_request": {
+    "git_blob": "5a37f8df273a698bb116d360e61c79f2ca86bae8",
+    "bytes": 1916,
+    "sha256": "70b00b8cf01c58ee615133d14e5e893a9aa7c579d8b4eac281ff6fdbee75fc73"
+  },
+  "predecessor_request": "48d99cb0c7407d6a95e5440068c87e75326e6b8d",
+  "only_change": "Unique v2 to v3 idempotency key; inverse restores every prior byte.",
+  "same_original_6_fields": true,
+  "same_original_script": true,
+  "same_original_15_second_timeout": true,
+  "reason": "A new source preparation checkpoint is ready and the last guard observation was a point-in-time busy sample at 04:40:03 UTC; re-observe original same-UID process-name guard once.",
+  "scope": "One read-only same-UID /proc comm/status observation. No environment/argv/credentials, no signals/writes/downloads/restoration/native dispatch.",
+  "execution_rule": "Reconcile uncertainty under the same exact key only; no replay or alternate key. Persist raw admission, normal terminal, complete stdout/stderr and placement.",
+  "quiet_is_not_lease": true,
+  "restoration_authorized": false,
+  "native_gates_authorized": false,
+  "source_ref_changed": false,
+  "qualification": false
+}

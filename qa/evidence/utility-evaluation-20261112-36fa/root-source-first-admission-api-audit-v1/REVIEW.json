@@ -1,0 +1,244 @@
+{
+  "findings": [
+    {
+      "finding": "CircuitTaskSourcePublicationV1 has private fields and public read-only getters. Its original Source constructs it only after reading the retained original request, configured input, result and current witness. CircuitTaskSourceReadbackV1 holds the same original Arc owner; it is not a cross-process decoder or transferable writer. Source Pending, missing, withdrawal or mismatched CURRENT cannot become a publication.",
+      "id": "opaque-source",
+      "implication": "A child report cannot manufacture this opaque original-owner observation. Recovering a second live writer is not a substitute.",
+      "sources": [
+        "68cf423686f24d192d015b0c06e86eea530dfc81",
+        "aaa5cdec33f71d30ba82313c5c46d1cdd137390a",
+        "0efe1917606802d2d47ed5ceda10e581a7c803c5"
+      ],
+      "status": "CONFIRMED_STATIC"
+    },
+    {
+      "finding": "The private Source codec retains and decodes the complete original RunStartRecordV1, including original signature and objective bytes, from its anchored request frame. original_record is pub(super), not a public AgentdClient API.",
+      "id": "source-original-record",
+      "implication": "Complete recorded bytes exist within original Source custody; no claim that the public daemon control response exports them.",
+      "sources": [
+        "59b25f0c4e38b192e8357e86ad06564ac3da7342"
+      ],
+      "status": "CONFIRMED_STATIC"
+    },
+    {
+      "finding": "AgentdClient::run_status returns AgentRunReceipt: run ID, revision, phase, context/compilation receipt, authority epoch, generation/fence/deadline, cancellation, terminal-observed and idempotent fields. It includes neither the Circuit history digest nor the full RunStart record. AgentdClient::run_start accepts lifecycle AgentRunSnapshot, not a signed ObjectiveStart or a task-result constructor.",
+      "id": "daemon-run-status",
+      "implication": "Succeeded/terminal-observed or compilation_receipt_digest cannot stand in for the Circuit completed_task_receipt.",
+      "sources": [
+        "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0",
+        "b1b72029b494073da34a762fef7e8a698b6699c7",
+        "7b9ca2d17d05822cc27fc651cacd9a173bd36acf"
+      ],
+      "status": "CONFIRMED_STATIC"
+    },
+    {
+      "finding": "objective_admission matches the exact retained signed ingress and original claims against the original journal and optional retained anchor. Its public result is a historical publication projection with objective disposition and record/chain digests. It does not include full RunStart or task-result bytes. Historical reading intentionally does not apply current issuer expiry/revocation as a history-erasure rule.",
+      "id": "daemon-objective-history",
+      "implication": "This proves the scoped history observation, not current authorization, completed Circuit output, or independent task utility.",
+      "sources": [
+        "992e066ba91f4660c6f3f287f22868254b13dc1d",
+        "ff46bab39e48f085bbe55b542641cfa4e618e3d2"
+      ],
+      "status": "CONFIRMED_STATIC"
+    },
+    {
+      "finding": "The original Learning Selection/NextUse read path operates on an Update publication and distinct successor task C, binding the prior learning cut and still-held original Source/Cell. It is not an A bootstrap publication exporter.",
+      "id": "existing-successor-read",
+      "implication": "Do not relabel a C completion channel as an original A Source read.",
+      "prepared_overlay": "3f7d40d4933669da33d2aef3491efb431c5771ae",
+      "sources": [
+        "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+        "92224a910d3c8050dde8bb079da36e02d73d3373"
+      ],
+      "status": "CONFIRMED_STATIC"
+    },
+    {
+      "finding": "CellQ24DatasetReaderV1::read_current_at_clock reads the original Source publication and compares agent, principal, cell, run, objective, original RunStart snapshot, completed_task_receipt against source.history_digest, and selected bundle. It reads the actual locked ledger, verifies the full signed freeze and exact source set, validates policy/terminal targets, rereads Source and ledger, checks fresh time, then reverifies the same freeze.",
+      "id": "actual-d-source-binding",
+      "implication": "The original D path can close the proposed receipt binding only when its actual Source/current checks succeed; a report alone does not.",
+      "sources": [
+        "ffb3b82e610f5d7d4905185a4f306ae49998e66b"
+      ],
+      "status": "CONFIRMED_STATIC"
+    },
+    {
+      "finding": "The original Material readback/source path requires existing completed E/D receipts. Fresh E/D must pass through original command roles. Experience Execute uses original attest_experience with actual Source/ledger. Dataset Execute first reads existing Experience, invokes original attest_dataset, and compares an immediate original Dataset readback. The original per-role admission bits, request bounds and bindings remain authoritative.",
+      "id": "fresh-material-order",
+      "implication": "A failed first readback must not be silently upgraded to Execute. A prospective Pending Material type may enter only an explicitly authorized original E\u2192D phase; T stays unavailable until the actual D checkpoint. This is a design condition, not an implemented or tested closure.",
+      "sources": [
+        "58afc356fff945a5377c3556fa0ba79139d3fad6",
+        "9b4db7d83af9ab11710710adc75279461c134fec",
+        "be5a1bd1507c93b8ef62f83fba4baf3770738ca7"
+      ],
+      "status": "CONFIRMED_STATIC"
+    }
+  ],
+  "format": "hepta-root-source-first-admission-api-audit-v1",
+  "implementation_status": "The new first-admission type/orchestrator is still being implemented and independently reviewed. This record supplies source facts and design constraints only.",
+  "observed_at": "2026-11-13T05:33:46.597494+00:00",
+  "original_sources": [
+    {
+      "bytes": 23883,
+      "git_blob": "ffb3b82e610f5d7d4905185a4f306ae49998e66b",
+      "local_name": "cell_q24_dataset.rs",
+      "sha256": "1ac1f1fef376155512418850822d38ebc41bdb194a26de7bab8c7eb46eb940b5"
+    },
+    {
+      "bytes": 13866,
+      "git_blob": "58afc356fff945a5377c3556fa0ba79139d3fad6",
+      "local_name": "cell_q24_material_command_service.rs",
+      "sha256": "aedb443b6bb07f497960ceedfb4889dac690511556c91452db1c3e3366a413c2"
+    },
+    {
+      "bytes": 20959,
+      "git_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+      "local_name": "cell_q24_material_receipt_owner.rs",
+      "sha256": "3acf8e3a56434b003fe68498f67ac1c93daaa98bfd23c5dc624736b8e2372e53"
+    },
+    {
+      "bytes": 12045,
+      "git_blob": "6152a6137874d726ced622353abb8bf172baf1a9",
+      "local_name": "cell_q24_material_source.rs",
+      "sha256": "7fc70bdd9c41548e7e823b03ad7594937b8dd8ce456409d23d93d7051ecf94b7"
+    },
+    {
+      "bytes": 4583,
+      "git_blob": "df63719d221d05dce9862d4a82af424043b71a61",
+      "local_name": "cell_q24_material_source_connection.rs",
+      "sha256": "e78fefad5f24b216d907aaf6d3344447b1afe60a1200420c089b843f08268643"
+    },
+    {
+      "bytes": 9142,
+      "git_blob": "9b4db7d83af9ab11710710adc75279461c134fec",
+      "local_name": "cell_q24_material_source_service.rs",
+      "sha256": "ab98b271ff5aa3f991c2b419dff480331883d31c156732ca09be9ffaabe3830d"
+    },
+    {
+      "bytes": 4962,
+      "git_blob": "781485715249d11c05609239a346ede033ccbdf3",
+      "local_name": "circuit_feature_current_control.rs",
+      "sha256": "204bc31e9162b6b52214a569d6fa926f3ece078d0fdc876087eeaf2f7c1142f8"
+    },
+    {
+      "bytes": 6502,
+      "git_blob": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+      "local_name": "circuit_feature_current_learning.rs",
+      "sha256": "f189f9e3a6ecc5e6cd68aae34c75cd7987528a2ad641ae45cfbd3171625c40c5"
+    },
+    {
+      "bytes": 8089,
+      "git_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "local_name": "circuit_feature_current_owner.rs",
+      "sha256": "361f177e3acefea380d63fc627dd3ab0d92ba14284a8ad41fcae01a63c6111d9"
+    },
+    {
+      "bytes": 5610,
+      "git_blob": "1f5b54fd7f2a69b4b07d96f122d21d195ba55f12",
+      "local_name": "circuit_feature_current_recovery.rs",
+      "sha256": "ab2b7413f4bfea9066dd5c4589060a020f1555ababb1fbc3cec873d42b558a39"
+    },
+    {
+      "bytes": 5159,
+      "git_blob": "adb6faefaead13bee99f4a5186114484fea09083",
+      "local_name": "circuit_task.rs",
+      "sha256": "320bad8e06995b93a7fbef76215f86900019afc566c9cf68650a46a7cc6af5b6"
+    },
+    {
+      "bytes": 16039,
+      "git_blob": "68cf423686f24d192d015b0c06e86eea530dfc81",
+      "local_name": "circuit_task_source.rs",
+      "sha256": "d5fee13397caa51a0f112962c46ad2a39426ac81c1fe65b70c7cee5e32edc232"
+    },
+    {
+      "bytes": 19107,
+      "git_blob": "59b25f0c4e38b192e8357e86ad06564ac3da7342",
+      "local_name": "circuit_task_source_codec.rs",
+      "sha256": "6fae0f458f10269dd44ac14128d314d851603d4abad2c6c3f8b7ef45a99a3904"
+    },
+    {
+      "bytes": 3661,
+      "git_blob": "ed6d984bff6bc8a476fc7d5f99af4603791b8f5f",
+      "local_name": "circuit_task_source_current_tests.rs",
+      "sha256": "cc1a01050e6c1f11b6ad9f281a87f33bdc1bae7f71de2f2918d285df30b010c9"
+    },
+    {
+      "bytes": 6682,
+      "git_blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "local_name": "circuit_task_source_journal.rs",
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852"
+    },
+    {
+      "bytes": 6384,
+      "git_blob": "06f4bf5f7a58a61bcf9e144ea132eaf88aadd87b",
+      "local_name": "circuit_task_source_policy.rs",
+      "sha256": "eceb051e77f6ced09491b5bc462518df3fe322339fdc6d461adcf119f9cca9ee"
+    },
+    {
+      "bytes": 2565,
+      "git_blob": "aaa5cdec33f71d30ba82313c5c46d1cdd137390a",
+      "local_name": "circuit_task_source_readback.rs",
+      "sha256": "dafc0ad870c3402605c42bd79ac5da4983b04be7603ff80bda073e94e60d7333"
+    },
+    {
+      "bytes": 28685,
+      "git_blob": "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0",
+      "local_name": "client.rs",
+      "sha256": "40b19090a621ed832d1a28d3439df8928dfe5153261d597a454edc0d833495b8"
+    },
+    {
+      "bytes": 11598,
+      "git_blob": "c9ab8c876cf487755360dc385262fb3dbc052097",
+      "local_name": "control.rs",
+      "sha256": "eaec3c465f2509ccce4ab3b5787f33a50ce4b29efa97e9328627f05fd0e4ed3e"
+    },
+    {
+      "bytes": 6315,
+      "git_blob": "992e066ba91f4660c6f3f287f22868254b13dc1d",
+      "local_name": "objective_history.rs",
+      "sha256": "ad34a605ae5cb096f60c4b694f812b683c778a1b4cb8cf746e583d005562a944"
+    },
+    {
+      "bytes": 23939,
+      "git_blob": "ec6440803a0f1284bbc1ef98b5121075fe74dbd4",
+      "local_name": "objective_ingress.rs",
+      "sha256": "990fc15c75a08aa36cfc54fcff7e31d76f4f3723d36000931fb806fdfd6fad5b"
+    },
+    {
+      "bytes": 16233,
+      "git_blob": "5d3b9bebac8d2ca47b43eb93be4b6452c6605cfb",
+      "local_name": "objective_runtime.rs",
+      "sha256": "3c31985cf94bf030ffd859472c20ae451c2ac3ec5a0d5cb2d045df0d8a62a652"
+    },
+    {
+      "bytes": 47501,
+      "git_blob": "b1b72029b494073da34a762fef7e8a698b6699c7",
+      "local_name": "protocol_lib.rs",
+      "sha256": "593e3aecadf254fb93e33c161e84c934a85fd728b591a03aaae478ff64ad013c"
+    },
+    {
+      "bytes": 2899,
+      "git_blob": "ff46bab39e48f085bbe55b542641cfa4e618e3d2",
+      "local_name": "protocol_objective_history.rs",
+      "sha256": "166b680eebf5ac99da848ad51aaa28cf0e1c703571a6dabab53669f974fdc7b5"
+    },
+    {
+      "bytes": 59419,
+      "git_blob": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf",
+      "local_name": "state_control.rs",
+      "sha256": "f75869d195143344c052a639877efbd7d477895c8d6ec58787fb7c499be3155b"
+    }
+  ],
+  "proposed_first_admission_state_machine": {
+    "admitted": "Expose inputs usable for T only after actual original D validates the same fixed request and Source/current cut.",
+    "failure": "Missing ownership, stale Source, absent result, bad signature, ambiguous effect or incomplete evidence remains Unknown/refusal; no fabricated NoUpdate or Fraud.",
+    "original_material": "Only the existing authorized E\u2192D commands may establish the first Material checkpoints; existing completed receipts may instead be read using original readonly interfaces.",
+    "pending": "Verify bounded complete report, ledger replay, original Generator/Observer payload signatures and original freeze. Derived completion fields remain unverified against live Source. No SourcePublication or training authority may be constructed from those bytes.",
+    "preheld": "Root owns the original full trust, allowed request/objective/cost/owners/rule/plan/signers and role/transport contract before receiving a report."
+  },
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "scope": "Actual Git full source retrieval, exact local byte identities, and static review of the named constructor/readback/admission methods. This is not a full crate audit, build, test, gate, real A or runtime qualification.",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_ref_changed": false,
+  "tests_run": 0
+}

@@ -1,0 +1,93 @@
+{
+  "format": "hepta-material-trainer-split-independent-byte-review-v1",
+  "status": "STATIC_TEXT_CHECKS_MATCH_NO_EXECUTION",
+  "packet": {
+    "bytes": 43806,
+    "git_blob": "a72dc791ed6026ae49b0500a52dc295f9b3622ad",
+    "sha256": "51f373721f7b2f2f0047d7bc68f1ebd24ba7e7eb850ecea053e6fb80059ad18a"
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 17765,
+        "sha256": "ca26ac1bbc6428daf5ae0453df86d37668f11559b1609d5f7e74991891014012",
+        "git_blob": "e54fe13095d93a559de5c2816a15f5171774f7cf"
+      },
+      "after": {
+        "bytes": 13141,
+        "sha256": "659aeb1b6e5c2c6029d7cff14d0d9e12b6f70619b31a671443534d3de86006b3",
+        "git_blob": "e2e108a17021f10e18ccd4c873beec6f5fc35e4e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 10619,
+        "sha256": "e98f7a2a9609fc820018974b0758a88629fb6a479c68f7bcfcf4c77ba0a5a98c",
+        "git_blob": "4eb88297be6a9707aa8e8d5fce8eda077f45ef71"
+      }
+    }
+  ],
+  "parent_inverse_after_only_constructor_and_single_mount": true,
+  "old_original_bytes_and_finish_entire_suffix_exact": true,
+  "provider_admission_material_peers_and_original_struct_exact": true,
+  "original_A_prelude_exact": {
+    "bytes": 1970,
+    "git_blob": "a49e08d3213467b12e065aa3e438d3ad475de578",
+    "sha256": "70e659135611e01f4a45e86cee7938cb3f4322a42a28a2cd59a50517ae11d609"
+  },
+  "original_actual_A_decision_outcome_material_body_exact": {
+    "bytes": 3204,
+    "git_blob": "76649c9f7ba619dba619a0d9ea847ae4381dc9f0",
+    "sha256": "cf903a6cf50fec2ea65e4df2f517373ded0e07199d1442bdbc2308b26f0c5049"
+  },
+  "trainer_subrange_equivalent_after_only_explicit_borrow_spelling": true,
+  "borrow_spelling_changes": [
+    [
+      "opened(&root,",
+      "opened(root,"
+    ],
+    [
+      "&root, \"positive-native-witness\"",
+      "root, \"positive-native-witness\""
+    ],
+    [
+      "&root, \"positive-training-receipt-witness\"",
+      "root, \"positive-training-receipt-witness\""
+    ],
+    [
+      "Arc::clone(&material_owner)",
+      "Arc::clone(material_owner)"
+    ],
+    [
+      "material.clone()",
+      "(*material).clone()"
+    ],
+    [
+      "&material,",
+      "material,"
+    ],
+    [
+      "into_original_dataset_readback(&material)",
+      "into_original_dataset_readback(material)"
+    ],
+    [
+      "Arc::clone(&baseline)",
+      "Arc::clone(baseline)"
+    ]
+  ],
+  "original_peer_calls_once": {
+    "commands_for_original(": 1,
+    "source_for_original(": 1,
+    "evidence_for_original(": 2
+  },
+  "material_only_trainer_or_test_port_construction": false,
+  "custody_files_before_first_old_transport": true,
+  "single_call_to_material_only_constructor": true,
+  "source_patch_complete_equal": true,
+  "rust_QA_gate_H_executed": false
+}

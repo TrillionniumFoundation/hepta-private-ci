@@ -1,0 +1,79 @@
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs
+@@ -189,10 +189,11 @@
+         let alias = cap.clone();
+         let mut gate = cap.fixture_pause_next_original_selection_read()?;
+         let mut request = Box::pin(cap.read_original_selection());
++        let first_poll = std::future::poll_fn(|cx| std::task::Poll::Ready(
++            std::future::Future::poll(request.as_mut(), cx)
++        )).await;
++        let pending = first_poll.is_pending();
+         let body: anyhow::Result<()> = async {
+-            let pending = std::future::poll_fn(|cx| std::task::Poll::Ready(
+-                std::future::Future::poll(request.as_mut(), cx).is_pending()
+-            )).await;
+             anyhow::ensure!(pending, "actual S read was dispatched before pausing");
+             gate.wait_for_actual_read().await?;
+             anyhow::ensure!(matches!(alias.read_original_selection().await,
+@@ -203,8 +204,17 @@
+         gate.release();
+         // Even if an assertion failed, observe the actual original operation,
+         // then observe its join result; never abandon it to make cleanup pass.
+-        let read = request.await;
++        let read = match first_poll {
++            std::task::Poll::Ready(read) => read,
++            std::task::Poll::Pending => request.await,
++        };
+         let terminal = gate.wait_for_operation_terminal().await;
++        if !pending {
++            // Preserve an early original rejection; a completed future must
++            // never be polled again, including during assertion cleanup.
++            read.context("the first original S poll completed before the pause")?;
++            return body.and(terminal);
++        }
+         body?;
+         terminal?;
+         let read = read?;
+@@ -227,10 +237,11 @@
+         let alias = cap.clone();
+         let mut gate = cap.fixture_pause_next_original_selection_read()?;
+         let mut request = Box::pin(cap.read_original_selection());
++        let first_poll = std::future::poll_fn(|cx| std::task::Poll::Ready(
++            std::future::Future::poll(request.as_mut(), cx)
++        )).await;
++        let pending = first_poll.is_pending();
+         let body: anyhow::Result<()> = async {
+-            let pending = std::future::poll_fn(|cx| std::task::Poll::Ready(
+-                std::future::Future::poll(request.as_mut(), cx).is_pending()
+-            )).await;
+             anyhow::ensure!(pending, "actual original S operation is pending");
+             gate.wait_for_actual_read().await?;
+             anyhow::ensure!(matches!(alias.read_original_selection().await,
+@@ -244,6 +255,12 @@
+         drop(request);
+         gate.release();
+         let terminal = gate.wait_for_operation_terminal().await;
++        if let std::task::Poll::Ready(read) = first_poll {
++            // An already returned result is not a cancelled delivery. Retain
++            // its actual error and still complete the original peer cleanup.
++            read.context("the first original S poll completed before cancellation")?;
++            return body.and(terminal);
++        }
+         body?;
+         terminal?;
+         anyhow::ensure!(matches!(alias.read_original_selection().await,
+@@ -288,12 +305,12 @@
+ async fn local_s_clone_keeps_the_original_absolute_expiry() -> anyhow::Result<()> {
+     let mut case = Box::pin(SameHostCase::completed_selection()).await?;
+     let result: anyhow::Result<()> = async {
+-        let started = std::time::Instant::now();
+         case.export_selection(Duration::from_secs(1)).await?;
++        let exported = std::time::Instant::now();
+         let before = case.original_bytes()?;
+         let cap = case.local_s.as_ref().context("actual finite S capability")?.clone();
+         tokio::time::sleep_until(tokio::time::Instant::from_std(
+-            started + Duration::from_millis(1100),
++            exported + Duration::from_millis(1100),
+         )).await;
+         let late_clone = cap.clone();
+         anyhow::ensure!(matches!(late_clone.read_original_selection().await,

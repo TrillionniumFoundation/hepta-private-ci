@@ -1,0 +1,73 @@
+{
+  "format": "hepta-original-ledger-snapshot-codec-author-review-v1",
+  "verdict": "STATIC_CANDIDATE_READY_FOR_INDEPENDENT_REVIEW",
+  "qualification": false,
+  "source_packet": {
+    "bytes": 44441,
+    "sha256": "d941bcc02a008899aa16ce4953be7d6a48ceb3287354046795e0e7ef2c5cd94f",
+    "git_blob": "3a7aee950bc6da48b4162f4f5215c4c5d18396b8"
+  },
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "bytes": 7777,
+      "sha256": "c37a190a9845030fd06f80a21d559e35344a11eb5d00c7eaebcf82d34852228c",
+      "git_blob": "0c6a5503ad35f235ff16d73a3242e7c29fb75400",
+      "actual_create_full_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "bytes": 16695,
+      "sha256": "812d88e15f2ceae8d5828a8e95255acb2b281c99b810d34ab2283690a2831209",
+      "git_blob": "3a444d399126d43ff8d1ddd69cb6302dd7a785ed",
+      "actual_create_full_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "bytes": 7384,
+      "sha256": "083b568492a9a22853bb13558243c9528a16d4a74dd6b2ea32e77c8e3f457d1d",
+      "git_blob": "c214632e288047e1aa39f67c2865f2bacaac6b6a",
+      "actual_create_full_readback_equal": true
+    }
+  ],
+  "observations": [
+    "Four required original sources and the existing durable replay implementation were fetched in full and independently checked by UTF8 byte length, SHA256 and canonical Git blob identity.",
+    "The original replay parser already verifies checksums, bounded canonical event decoding, prepare/apply and canonical-frame equality. This module uses that existing machinery over borrowed input without file recovery or tail repair.",
+    "Encoder additionally compares the complete original LedgerRecord with the replayed record, retaining explicit event_digest integrity even though it is derived rather than separately transmitted by the original frame format.",
+    "All ten current event variants are handled by an exhaustive pre-clone bounds match; scalar StableId representation and original decoder retain their original128-byte bound.",
+    "The existing pure ledger causal checks reject missing episodes, unsupported outcomes, duplicate identities, role self-labeling within content, and other original invariants. These checks do not authenticate the values or replace original signed trust/freeze validation.",
+    "No original ledger/model/durable/durable_codec body or Cargo file changes. The sole existing-file edit is private module registration plus four explicit public exports in lib.rs.",
+    "New production module199 lines and tests384 lines; fixed output capacity65536, borrowed frame slicing, no allocation derived from the untrusted record count."
+  ],
+  "test_source_obligations": [
+    "empty_and_complete_snapshots_roundtrip_all_records_and_head",
+    "encoder_rejects_changed_original_record_fields_and_head",
+    "every_truncation_trailing_byte_and_changed_domain_is_rejected",
+    "declared_counts_and_frame_lengths_cannot_expand_the_input_budget",
+    "checksums_do_not_replace_sequence_predecessor_chain_or_head_validation",
+    "checksum_valid_noncanonical_candidate_order_is_rejected_not_repaired",
+    "repeated_or_reordered_checksum_valid_frames_are_rejected",
+    "checksum_valid_event_cannot_bypass_original_causal_validation",
+    "oversized_in_memory_event_is_rejected_before_encoding_or_cloning_it",
+    "aggregate_output_cap_rejects_complete_history_without_truncation"
+  ],
+  "expected_test_strength": [
+    "The full fixture contains all10 LedgerEvent variants with normalization, causal predecessors, authenticated-role content, credit conservation, revocation and unlearning lineage; equality compares every event/record/head and original from_snapshot replay.",
+    "Malformed tests recompute valid original frame checksums so rejection cannot rely only on a checksum mismatch.",
+    "Every truncated prefix of a one-record snapshot, arbitrary tail, excessive count/length, missing record, aggregate overflow, duplicate/reordering, noncanonical candidate order and original causal failure are represented.",
+    "The aggregate boundary test grows an actual valid original ledger through the first overflowing complete frame and requires the last complete fitting snapshot to roundtrip; no truncation fallback exists."
+  ],
+  "limitations": [
+    "No Rust parser, compiler, formatter, Clippy, tests, native process, source gate or qualification was executed for this candidate.",
+    "Test source is authored coverage, not an observed pass; exact full fixture validity/typechecking remain subject to the original future pipeline.",
+    "Pure content validation intentionally permits arbitrary well-formed content that lacks authentic signatures; caller trust and signed freeze verification are mandatory.",
+    "The codec limit does not include external base64/JSON/control metadata. Existing parent complete-message64KiB enforcement must remain separate.",
+    "The three files are an independent proposal against the exact original lib, not a ref/source update or completed merge into the larger provider candidate."
+  ],
+  "execution": {
+    "h_calls": 0,
+    "rust_commands": 0,
+    "source_ref_writes": 0,
+    "source_worktree_mutation": false
+  }
+}

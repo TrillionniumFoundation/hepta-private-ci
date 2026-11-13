@@ -1,0 +1,82 @@
+{
+  "format": "hepta-static-qa-baseline-clarification-v1",
+  "status": "CORRECTION_OF_DESCRIPTION_ONLY",
+  "canonical_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "frozen_source_packet": "fab488b846bb1b1ef7a42b9b30be5773054e1a6a",
+  "frozen_main_placement": "a88a0a4ca78021bcd9f15706ffc1baf01bc9b2d8",
+  "unchanged_original_addendum": "527c4fdd3d439d614103faca3c2956ceb89e6d59",
+  "corrected_field": "later_prepared_preimage_exception.reason",
+  "withdrawn_sentence": "Root86 already prepared test inventory; original method bodies unchanged by that earlier layer",
+  "correction": "Root86 already changed one existing Root CI-selection method to read the provider/lifecycle modules and count their registered Root cases. The registration increment preserves that prepared method verbatim. Its 587 unchanged plus 3 changed statistic is relative to the Root86 preimage, not canonical cc57. Relative to cc57 there are 586 unchanged plus 4 changed existing methods.",
+  "comparisons": [
+    {
+      "before": "before",
+      "after": "view-root86",
+      "existing_methods": 590,
+      "byte_identical": 589,
+      "changed": 1,
+      "changed_methods": [
+        "qa/b4-no-bypass/test_resident_root_source_closure.py::test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+      ],
+      "added": 0,
+      "deleted": 0
+    },
+    {
+      "before": "view-root86",
+      "after": "candidate-registration-root86-final",
+      "existing_methods": 590,
+      "byte_identical": 587,
+      "changed": 3,
+      "changed_methods": [
+        "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py::test_both_live_predecessors_and_readonly_original_s_are_mandatory",
+        "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py::test_new_typed_edges_and_old_boundary_inventory_are_exact",
+        "qa/b4-no-bypass/test_original_next_use_command_source_closure.py::test_attestation_and_readback_use_live_original_owners_without_running_c"
+      ],
+      "added": 0,
+      "deleted": 0
+    },
+    {
+      "before": "before",
+      "after": "candidate-registration-root86-final",
+      "existing_methods": 590,
+      "byte_identical": 586,
+      "changed": 4,
+      "changed_methods": [
+        "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py::test_both_live_predecessors_and_readonly_original_s_are_mandatory",
+        "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py::test_new_typed_edges_and_old_boundary_inventory_are_exact",
+        "qa/b4-no-bypass/test_original_next_use_command_source_closure.py::test_attestation_and_readback_use_live_original_owners_without_running_c",
+        "qa/b4-no-bypass/test_resident_root_source_closure.py::test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+      ],
+      "added": 0,
+      "deleted": 0
+    }
+  ],
+  "prepared_root_method_pins": [
+    {
+      "view": "before",
+      "bytes": 28123,
+      "git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+      "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e"
+    },
+    {
+      "view": "view-root86",
+      "bytes": 29964,
+      "git_blob": "8223265bdcea271661fd46d448943484a28d5703",
+      "sha256": "713abd9c8cf645ff12dbf6e3be098ffcb5d61621784e1c3d54e16ff993c8c569"
+    },
+    {
+      "view": "candidate-registration-root86-final",
+      "bytes": 30108,
+      "git_blob": "0fa4bcb8368c30966a7d89cbedebabb09a67824c",
+      "sha256": "9fd094cd8cd40acaf46e7538db8d05325a399ef932a2af223192ecb9ef69b4ba"
+    }
+  ],
+  "earlier_layer_change": "Adds the actual provider and lifecycle mounts and corresponding source selection/counting while retaining the existing assertions. This note records the earlier prepared change, and does not newly approve or execute it.",
+  "scope": "Static bytes and AST only; no QA module import, QA method, gate, Rust command, H operation, source modification or ref update.",
+  "main_packet_and_original_addendum_unchanged": true,
+  "diff_identity": {
+    "bytes": 2207,
+    "git_blob": "b04945c358336cfc687d975f08361f2a09e8ea09",
+    "sha256": "b7c169c9e1a7412137899cfddcc1c5b0b03f755ab9f828720d16f45285585b21"
+  }
+}

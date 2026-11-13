@@ -1,0 +1,69 @@
+{
+  "format": "hepta-source-evidence-placement-v1",
+  "scope": "One actual approved readonly concurrency observation v3; no restoration/native gate or source/ref mutation",
+  "job_id": "1a1d365ddd0-392-11c",
+  "entries": [
+    {
+      "path": "post-material-concurrency-readonly-v3/control/REQUEST.json",
+      "bytes": 1916,
+      "sha256": "70b00b8cf01c58ee615133d14e5e893a9aa7c579d8b4eac281ff6fdbee75fc73",
+      "git_blob": "5a37f8df273a698bb116d360e61c79f2ca86bae8",
+      "existing_git_full_readback": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/control/ROOT_APPROVAL.json",
+      "bytes": 1308,
+      "sha256": "037d22ee41cd0da78d9e539d3d49e2a4795e330ca1efad0e13179c3d6571b2ac",
+      "git_blob": "0ae6e5b63650d0be6366d2f0d4fb8e970e69082d",
+      "existing_git_full_readback": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/actual/DISPATCH_INTENT.json",
+      "bytes": 1047,
+      "sha256": "627938e69db6b02680abe92aa01add1aef69f52b1d1c8d861ea85391ee1bb844",
+      "git_blob": "2a7b5ddcc92afc7a583cb1174e83a49c0b9551e0",
+      "actual_git_create": true,
+      "full_readback_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/actual/ADMISSION.original.json",
+      "bytes": 3063,
+      "sha256": "08e1fcd6bbeebf0863fd5da2e766686dc61e2e6c776854192615cebbe515f216",
+      "git_blob": "579043e00c6a08fb0174de3bad5e5ef5b5d6604b",
+      "actual_git_create": true,
+      "full_readback_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/actual/STATUS_01.original.json",
+      "bytes": 950,
+      "sha256": "33e8f5377e8bf0a80078bf936ff2adca0f851cfee198e7e6935cd7cd36f4c31a",
+      "git_blob": "505d0530088583cb2a18483f782a10cf088ef368",
+      "actual_git_create": true,
+      "full_readback_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/actual/STDOUT_READ_01.original.json",
+      "bytes": 2752,
+      "sha256": "08774e5967c0b71f68fa75377442c9545104eab42de123adebb44c7ea8019ff0",
+      "git_blob": "e575a004ff2a351845d79a9e319c2a4392e15b70",
+      "actual_git_create": true,
+      "full_readback_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/actual/STDOUT.complete.txt",
+      "bytes": 689,
+      "sha256": "ef913c0df31ab9504913c9ddf3748b4c3819cc1c73b42f70f6e60536721aa76d",
+      "git_blob": "d2c12c29213a31f68291665341e6543a789cc0b5",
+      "actual_git_create": true,
+      "full_readback_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v3/actual/READBACK_REVIEW.json",
+      "bytes": 3271,
+      "sha256": "f4c0b8b4a6b72a10aec72e7fd9cf0394520f38ed6a5035ab4fa236a931f5bad2",
+      "git_blob": "f6e6b7b0261233f08ea50813b381db64edead232",
+      "actual_git_create": true,
+      "full_readback_equal": true
+    }
+  ]
+}

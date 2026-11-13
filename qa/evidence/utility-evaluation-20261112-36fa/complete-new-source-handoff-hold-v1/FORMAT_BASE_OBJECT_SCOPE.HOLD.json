@@ -1,0 +1,89 @@
+{
+  "actual_current_repository_presence_rechecked": false,
+  "all_future_tests_build_scripts_history_audited": false,
+  "ancestry_or_merge_base_required_by_read_formatter_source": false,
+  "conclusion": "The old 16449-object closed pack does not supply c0f. A new maintenance source must explicitly include the authentic c0f commit and its full snapshot object closure before any original fmt --base invocation.",
+  "declared_commit_objects": [
+    "246d8cb614770252ee42029a5c014f2a4904176a",
+    "cc57c7198db6293ccca562253c42fffbe2a04633"
+  ],
+  "declared_scope": {
+    "blob_objects": 14615,
+    "commit_objects": 2,
+    "current_snapshot_objects": 16439,
+    "format": "two-complete-snapshots-not-full-ancestry",
+    "no_fsck": true,
+    "no_network": true,
+    "no_recursive_ancestor_walk": true,
+    "tree_objects": 1832,
+    "union_objects": 16449
+  },
+  "format": "hepta-new-source-format-base-object-scope-review-v1",
+  "formatter": {
+    "bytes": 16599,
+    "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+  },
+  "materialization_packet": {
+    "bytes": 13764,
+    "git_blob": "06503652a2895120daf8b66e42b3a01cefeaf4fb",
+    "sha256": "b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3"
+  },
+  "materializer": {
+    "bytes": 57607,
+    "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f",
+    "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436"
+  },
+  "new_H_or_git_command_executed_for_this_review": false,
+  "observed_static_calls": [
+    [
+      "git",
+      "rev-parse",
+      "--verify",
+      "--end-of-options",
+      "c0f78493f815780f68b9bf5e390a21314d79311f^{commit}"
+    ],
+    [
+      "git",
+      "diff",
+      "--name-only",
+      "--diff-filter=ACDMRT",
+      "--no-renames",
+      "-z",
+      "<resolved-base>",
+      "--"
+    ],
+    [
+      "git",
+      "ls-files",
+      "--others",
+      "--exclude-standard",
+      "-z"
+    ],
+    [
+      "git",
+      "show",
+      "c0f78493f815780f68b9bf5e390a21314d79311f:<changed-pyproject-path>"
+    ]
+  ],
+  "original_fmt_seconds": 900,
+  "preflight": "The new materializer must read back the complete declared object union and resolve the original c0f commit/tree. The maintenance control must reject a missing base rather than substitute HEAD, --all, a different base or a smaller file list.",
+  "required_base": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "required_base_commit_in_original_pack": false,
+  "required_frozen_input": "FORMAT_BASE_OBJECTS_PACKET.json",
+  "required_input_body": [
+    "authentic raw c0f commit with exact original Git object hash",
+    "complete original c0f tree graph rooted at 313ee34febc8ccc54c611ab56286e289518c63cb",
+    "complete required original blob bodies, deduplicated against current and candidate snapshots",
+    "every object type/size/SHA256/Git SHA plus raw data or a pinned local source",
+    "bounded pack union and explicit ancestor boundary"
+  ],
+  "source_strategy": "Reuse the previously retained exact c0f snapshot evidence; verify complete raw identities before import. Do not fetch recursively in the execution, create shallow/graft/replace refs, or repair the old source repository.",
+  "status": "STATIC_GAP_CONFIRMED_FUTURE_INPUT_REQUIRED",
+  "unmaterialized_parent_boundary": [
+    "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+  ]
+}

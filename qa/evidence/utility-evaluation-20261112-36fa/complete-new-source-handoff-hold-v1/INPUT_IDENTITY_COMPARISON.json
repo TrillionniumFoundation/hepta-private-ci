@@ -1,0 +1,148 @@
+{
+  "format": "hepta-handoff-local-input-full-identity-check-v1",
+  "previous_comparison_error": "The first reviewer check compared JSON.stringify dictionaries whose field insertion orders differed. It rejected equal-value pins; no source/input/prepared-control was changed.",
+  "corrected_method": "Compare bytes, sha256 and git_blob values explicitly for all ten inputs.",
+  "all_equal": true,
+  "rows": [
+    {
+      "name": "V5_ORIGINAL.txt",
+      "local_pin": {
+        "bytes": 63007,
+        "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+        "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+      },
+      "actual_git_pin": {
+        "bytes": 63007,
+        "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+        "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735"
+      },
+      "equal": true
+    },
+    {
+      "name": "ISOLATED_ADMISSION_ORIGINAL.txt",
+      "local_pin": {
+        "bytes": 26963,
+        "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+        "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d"
+      },
+      "actual_git_pin": {
+        "bytes": 26963,
+        "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d",
+        "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f"
+      },
+      "equal": true
+    },
+    {
+      "name": "MATERIALIZER_ORIGINAL.txt",
+      "local_pin": {
+        "bytes": 57607,
+        "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f",
+        "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436"
+      },
+      "actual_git_pin": {
+        "bytes": 57607,
+        "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436",
+        "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f"
+      },
+      "equal": true
+    },
+    {
+      "name": "MATERIALIZER_PACKET_ORIGINAL.txt",
+      "local_pin": {
+        "bytes": 13764,
+        "git_blob": "06503652a2895120daf8b66e42b3a01cefeaf4fb",
+        "sha256": "b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3"
+      },
+      "actual_git_pin": {
+        "bytes": 13764,
+        "sha256": "b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3",
+        "git_blob": "06503652a2895120daf8b66e42b3a01cefeaf4fb"
+      },
+      "equal": true
+    },
+    {
+      "name": "FORMAT_ORIGINAL.txt",
+      "local_pin": {
+        "bytes": 16599,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      "actual_git_pin": {
+        "bytes": 16599,
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+      },
+      "equal": true
+    },
+    {
+      "name": "HISTORICAL_ENVIRONMENT_READY.txt",
+      "local_pin": {
+        "bytes": 21724,
+        "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+        "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+      },
+      "actual_git_pin": {
+        "bytes": 21724,
+        "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172",
+        "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec"
+      },
+      "equal": true
+    },
+    {
+      "name": "PRIOR_QUALIFICATION_INPUT.txt",
+      "local_pin": {
+        "bytes": 11785,
+        "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+        "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f"
+      },
+      "actual_git_pin": {
+        "bytes": 11785,
+        "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f",
+        "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6"
+      },
+      "equal": true
+    },
+    {
+      "name": "PRIOR_SOURCE_REQUEST.txt",
+      "local_pin": {
+        "bytes": 131345,
+        "git_blob": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0",
+        "sha256": "55c9acefda3fe004b6b29e407256e89a1e99fd5e372b2ca04bf4b27a6f7687f4"
+      },
+      "actual_git_pin": {
+        "bytes": 131345,
+        "sha256": "55c9acefda3fe004b6b29e407256e89a1e99fd5e372b2ca04bf4b27a6f7687f4",
+        "git_blob": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0"
+      },
+      "equal": true
+    },
+    {
+      "name": "PRIOR_APPLYFMT_APPROVAL.txt",
+      "local_pin": {
+        "bytes": 4046,
+        "git_blob": "514dab614cad19edfd518bb09b2265df025064a2",
+        "sha256": "35f7062705ac130618822f61e99710e86c05ba29dc5acd93a114c4b63898764e"
+      },
+      "actual_git_pin": {
+        "bytes": 4046,
+        "sha256": "35f7062705ac130618822f61e99710e86c05ba29dc5acd93a114c4b63898764e",
+        "git_blob": "514dab614cad19edfd518bb09b2265df025064a2"
+      },
+      "equal": true
+    },
+    {
+      "name": "PRIOR_ALIGNMENT_APPROVAL.txt",
+      "local_pin": {
+        "bytes": 2948,
+        "git_blob": "2ff220f22924c279c7aea7286f2d8ba0ab408d6d",
+        "sha256": "ac2a5fd3668b378ad532fac7ecef706876471cfe4613e2241ba3fcab1ce30a55"
+      },
+      "actual_git_pin": {
+        "bytes": 2948,
+        "sha256": "ac2a5fd3668b378ad532fac7ecef706876471cfe4613e2241ba3fcab1ce30a55",
+        "git_blob": "2ff220f22924c279c7aea7286f2d8ba0ab408d6d"
+      },
+      "equal": true
+    }
+  ]
+}

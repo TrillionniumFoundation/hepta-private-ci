@@ -1,0 +1,853 @@
+{
+  "format": "hepta-new-provider-boundary-registration-preparation-v1",
+  "status": "CANDIDATE_NOT_FULL_SOURCE_VERIFIED",
+  "root_map": "3f7d40d4933669da33d2aef3491efb431c5771ae",
+  "new_boundaries": [
+    {
+      "id": "provider_root_resident_learning_registration_v3_into_candidate_service",
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_service",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "definition_markers": [
+        "fn into_candidate_service("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "RootResidentLearningRegistrationV3"
+    },
+    {
+      "id": "provider_root_resident_candidate_service_v1_run",
+      "symbol": "RootResidentCandidateServiceV1::run",
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "definition_markers": [
+        "fn run("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "RootResidentCandidateServiceV1"
+    },
+    {
+      "id": "provider_original_cell_q24_candidate_stage_owners_v1_restrict_original_handoff_deadline",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "definition_markers": [
+        "fn restrict_original_handoff_deadline("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1"
+    },
+    {
+      "id": "provider_original_cell_q24_training_command_client_v1_seal_original_completed_readback",
+      "symbol": "OriginalCellQ24TrainingCommandClientV1::seal_original_completed_readback",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "definition_markers": [
+        "fn seal_original_completed_readback("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCellQ24TrainingCommandClientV1"
+    },
+    {
+      "id": "provider_original_circuit_completion_readiness_client_v1_bind_original_evaluated_local_read",
+      "symbol": "OriginalCircuitCompletionReadinessClientV1::bind_original_evaluated_local_read",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "definition_markers": [
+        "fn bind_original_evaluated_local_read("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitCompletionReadinessClientV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_command_owner_v1_from_original_evaluated_shared_receipt_owner",
+      "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_shared_receipt_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_shared_receipt_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_receipt_owner_v1_attest_original_evaluated_local_completion",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_local_completion",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "definition_markers": [
+        "fn attest_original_evaluated_local_completion("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_receipt_owner_v1_readback_evaluated_local_completion",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_local_completion",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "definition_markers": [
+        "fn readback_evaluated_local_completion("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_receipt_owner_v1_into_evaluated_local_shared_command_owner",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::into_evaluated_local_shared_command_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "definition_markers": [
+        "fn into_evaluated_local_shared_command_owner("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_command_owner_v1_from_original_evaluated_local_shared_receipt_owner",
+      "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_local_shared_receipt_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_local_shared_receipt_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_command_owner_v1_observe_original_local",
+      "symbol": "OriginalCircuitNextUseCommandOwnerV1::observe_original_local",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "definition_markers": [
+        "fn observe_original_local("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_next_use_receipt_owner_v1_into_evaluated_shared_command_owner",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::into_evaluated_shared_command_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "definition_markers": [
+        "fn into_evaluated_shared_command_owner("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_evaluated_retention_context_v1_seal_original_readback_owners",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::seal_original_readback_owners",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "definition_markers": [
+        "fn seal_original_readback_owners("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitEvaluatedRetentionContextV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_command_owner_v1_read_original_evaluated_receipt",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::read_original_evaluated_receipt",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "definition_markers": [
+        "fn read_original_evaluated_receipt("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_command_owner_v1_read_original_evaluated_receipt_on_owner",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::read_original_evaluated_receipt_on_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "definition_markers": [
+        "fn read_original_evaluated_receipt_on_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_receipt_owner_v1_into_evaluated_shared_command_owner",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::into_evaluated_shared_command_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "definition_markers": [
+        "fn into_evaluated_shared_command_owner("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_receipt_owner_v1_into_evaluated_local_shared_command_owner",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::into_evaluated_local_shared_command_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "definition_markers": [
+        "fn into_evaluated_local_shared_command_owner("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_command_owner_v1_from_original_evaluated_shared_receipt_owner",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_shared_receipt_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_receipt_owner_v1_attest_original_evaluated_local_selection",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_local_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "definition_markers": [
+        "fn attest_original_evaluated_local_selection("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_receipt_owner_v1_readback_evaluated_local_selection",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_local_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "definition_markers": [
+        "fn readback_evaluated_local_selection("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_published_local_read_v1_from_original_version",
+      "symbol": "OriginalCircuitPublishedLocalReadV1::from_original_version",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn from_original_version("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitPublishedLocalReadV1"
+    },
+    {
+      "id": "provider_original_circuit_published_local_read_v1_read_current",
+      "symbol": "OriginalCircuitPublishedLocalReadV1::read_current",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn read_current("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitPublishedLocalReadV1"
+    },
+    {
+      "id": "provider_original_circuit_published_local_read_v1_read_completion_readiness",
+      "symbol": "OriginalCircuitPublishedLocalReadV1::read_completion_readiness",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn read_completion_readiness("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitPublishedLocalReadV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_client_v1_from_original_evaluated_local_selection",
+      "symbol": "OriginalCircuitLearningReadClientV1::from_original_evaluated_local_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_local_selection("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadClientV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_client_v1_from_original_evaluated_local_next_use",
+      "symbol": "OriginalCircuitLearningReadClientV1::from_original_evaluated_local_next_use",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_local_next_use("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadClientV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_client_v1_require_original_local_shared_readbacks",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn require_original_local_shared_readbacks("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadClientV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_client_v1_require_original_local_evaluated_selection",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn require_original_local_evaluated_selection("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadClientV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_client_v1_require_original_local_evaluated_next_use",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "definition_markers": [
+        "fn require_original_local_evaluated_next_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadClientV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_owner_v1_original_evaluated_selection_response",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::original_evaluated_selection_response",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "definition_markers": [
+        "fn original_evaluated_selection_response("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_owner_v1_original_evaluated_next_use_response",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_response",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "definition_markers": [
+        "fn original_evaluated_next_use_response("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_learning_read_owner_v1_original_evaluated_next_use_readiness_response",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_readiness_response",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "definition_markers": [
+        "fn original_evaluated_next_use_readiness_response("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitLearningReadOwnerV1"
+    },
+    {
+      "id": "provider_original_version_local_read_binding_v1_require_original_shared_readbacks",
+      "symbol": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "definition_markers": [
+        "fn require_original_shared_readbacks("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalVersionLocalReadBindingV1"
+    },
+    {
+      "id": "provider_original_version_local_read_binding_v1_respond",
+      "symbol": "OriginalVersionLocalReadBindingV1::respond",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "definition_markers": [
+        "fn respond("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalVersionLocalReadBindingV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_open_original_evaluated_selection_local_read",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::open_original_evaluated_selection_local_read",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "definition_markers": [
+        "fn open_original_evaluated_selection_local_read("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_open_original_evaluated_next_use_local_read",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::open_original_evaluated_next_use_local_read",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "definition_markers": [
+        "fn open_original_evaluated_next_use_local_read("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_serve_original_evaluated_next_use_readback",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::serve_original_evaluated_next_use_readback",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "definition_markers": [
+        "fn serve_original_evaluated_next_use_readback("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_serve_original_evaluated_completion_readiness",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::serve_original_evaluated_completion_readiness",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "definition_markers": [
+        "fn serve_original_evaluated_completion_readiness("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_original_evaluated_next_use_response",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::original_evaluated_next_use_response",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "definition_markers": [
+        "fn original_evaluated_next_use_response("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_build_original_evaluated_next_use_reader",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::build_original_evaluated_next_use_reader",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "definition_markers": [
+        "fn build_original_evaluated_next_use_reader("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_published_evidence_readback_v1_read_original_predecessors",
+      "symbol": "OriginalCircuitPublishedEvidenceReadbackV1::read_original_predecessors",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "definition_markers": [
+        "fn read_original_predecessors("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitPublishedEvidenceReadbackV1"
+    },
+    {
+      "id": "provider_original_circuit_published_evidence_readback_v1_require_original_context",
+      "symbol": "OriginalCircuitPublishedEvidenceReadbackV1::require_original_context",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "definition_markers": [
+        "fn require_original_context("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitPublishedEvidenceReadbackV1"
+    },
+    {
+      "id": "provider_original_circuit_published_evidence_readback_v1_original_clients",
+      "symbol": "OriginalCircuitPublishedEvidenceReadbackV1::original_clients",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "definition_markers": [
+        "fn original_clients("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitPublishedEvidenceReadbackV1"
+    },
+    {
+      "id": "provider_original_circuit_retained_version_host_v1_share_original_evaluated_readbacks",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::share_original_evaluated_readbacks",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "definition_markers": [
+        "fn share_original_evaluated_readbacks("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_local_readback_v1_read_original_selection",
+      "symbol": "OriginalCircuitSelectionLocalReadbackV1::read_original_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "definition_markers": [
+        "fn read_original_selection("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionLocalReadbackV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_local_readback_v1_require_original_shared_predecessors",
+      "symbol": "OriginalCircuitSelectionLocalReadbackV1::require_original_shared_predecessors",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "definition_markers": [
+        "fn require_original_shared_predecessors("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionLocalReadbackV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_local_readback_v1_require_original_selection",
+      "symbol": "OriginalCircuitSelectionLocalReadbackV1::require_original_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "definition_markers": [
+        "fn require_original_selection("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionLocalReadbackV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_command_owner_v1_open_original_evaluated_local_readback",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::open_original_evaluated_local_readback",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "definition_markers": [
+        "fn open_original_evaluated_local_readback("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_circuit_selection_command_owner_v1_from_original_evaluated_local_shared_receipt_owner",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_local_shared_receipt_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "definition_markers": [
+        "fn from_original_evaluated_local_shared_receipt_owner("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1"
+    },
+    {
+      "id": "provider_original_cell_evaluation_command_client_v1_seal_original_completed_readback",
+      "symbol": "OriginalCellEvaluationCommandClientV1::seal_original_completed_readback",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "definition_markers": [
+        "fn seal_original_completed_readback("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCellEvaluationCommandClientV1"
+    },
+    {
+      "id": "provider_send_root_candidate_stage_handoff",
+      "symbol": "send_root_candidate_stage_handoff",
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "definition_markers": [
+        "fn send_root_candidate_stage_handoff("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "provider_receive_root_candidate_stage_handoff",
+      "symbol": "receive_root_candidate_stage_handoff",
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "definition_markers": [
+        "fn receive_root_candidate_stage_handoff("
+      ],
+      "product_callers": [],
+      "caller_markers": []
+    },
+    {
+      "id": "provider_root_candidate_stage_handoff_v1_into_original_streams",
+      "symbol": "RootCandidateStageHandoffV1::into_original_streams",
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "definition_markers": [
+        "fn into_original_streams("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "RootCandidateStageHandoffV1"
+    }
+  ],
+  "observations_on_original_boundaries": [
+    {
+      "id": "learning_original_owner_command_channel",
+      "symbol": "original_owner_command_channel_v1",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_published_read_client_current",
+      "symbol": "OriginalCircuitLearningReadClientV1::read_current",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs"
+      ]
+    },
+    {
+      "id": "learning_original_material_dataset_context_check",
+      "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+      ]
+    },
+    {
+      "id": "learning_original_next_use_command_owner_profile",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_command_profile",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ]
+    },
+    {
+      "id": "root_resident_coordinator_run",
+      "symbol": "RootResidentLearningRuntimeV3::run",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "root_resident_original_stream_serve",
+      "symbol": "RootResidentLearningHandleV3::serve_original_stream",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_candidate_stage_create",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_candidate_stage_recover",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "root_resident_candidate_runtime_consume",
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_selection_context",
+      "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_next_use_context",
+      "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_owner_create",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_selection_binding",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_selection",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_next_use_binding",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_next_use",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_profile",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_evaluated_command_context",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_receipt",
+      "symbol": "OriginalCircuitEvaluatedSelectionReceiptV1::from_original_command_response",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_profile",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_evaluated_command_selection",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ]
+    }
+  ],
+  "excluded_non_boundary_private_projections": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "function": "remote",
+      "reason": "private fixed metadata/variant projection, full-scope protection; no new owner capability"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "function": "original_context",
+      "reason": "private fixed metadata/variant projection, full-scope protection; no new owner capability"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "function": "original_end",
+      "reason": "private fixed metadata/variant projection, full-scope protection; no new owner capability"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "function": "original_timeout",
+      "reason": "private fixed metadata/variant projection, full-scope protection; no new owner capability"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "function": "send",
+      "reason": "private wire module; exact full-scope and literal protection, no ambiguous global bare send/receive matcher"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "function": "receive",
+      "reason": "private wire module; exact full-scope and literal protection, no ambiguous global bare send/receive matcher"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "function": "socket_identity",
+      "reason": "private wire module; exact full-scope and literal protection, no ambiguous global bare send/receive matcher"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "function": "monotonic_ns",
+      "reason": "private wire module; exact full-scope and literal protection, no ambiguous global bare send/receive matcher"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "function": "fmt",
+      "reason": "pure bounded snapshot codec: no authority, signer, owner, IO or capability construction; pub is not itself a privileged boundary"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "function": "encode_original_ledger_snapshot_v1",
+      "reason": "pure bounded snapshot codec: no authority, signer, owner, IO or capability construction; pub is not itself a privileged boundary"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "function": "decode_original_ledger_snapshot_v1",
+      "reason": "pure bounded snapshot codec: no authority, signer, owner, IO or capability construction; pub is not itself a privileged boundary"
+    }
+  ],
+  "uncertainties": [],
+  "full_scanned": false,
+  "source_changed": false,
+  "scanner_or_ignore_changed": false
+}

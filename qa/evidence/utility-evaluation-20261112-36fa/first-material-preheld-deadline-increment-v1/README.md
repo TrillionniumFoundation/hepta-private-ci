@@ -1,0 +1,15 @@
+# Pre-held original work expiry
+
+Prepared, unformatted, uncompiled and unexecuted. This is a three-file test-only successor to the original-evidence retention and first Pending report packages; it does not change production timeouts, quotas, permissions or source refs.
+
+The first-report mechanism previously copied its expected envelope from the already built Material fixture. This successor lets the trusted parent choose the original absolute work expiry before actual A starts. The new named `UnstartedProvider::new_with_original_work_deadline` entry consumes that explicit choice. The original `new` entry delegates once with `AtOriginalFreeze`, preserving its original `now()? + 900` evaluation at the same original field.
+
+The original Material constructor likewise retains its existing entry and body. Its new named entry accepts only `OriginalMaterialWorkDeadline`. `PreheldExact` is checked at the first original freeze: it must be strictly in the future and no later than the unchanged original 900-second window. It is then placed in the initial request before the original freeze signing and all later scope/context derivation. The value is never renewed after the report, transport setup, Root registration or later reads.
+
+The Pending mechanism test now fixes `trust_time + 900` before A construction and builds its expected complete envelope from explicit parent-selected fixture constants and that fixed value. Its trust digest is derived from the parent's full trust. It no longer reads either the envelope or trust digest from Material to define the expected policy. The complete same-A original source configuration and selected model are still trusted local fixture inputs in this test; the public three-UID orchestrator must supply its own corresponding pre-held inputs. This change alone does not prove that cross-process path exists.
+
+`prepare.py` requires all three exact previous Git identities and reverses every named replacement back to the full original bytes. Original Decision/Outcome/freeze signer calls, actual Source reads, owner/file construction, cleanup bodies, budgets and transport parameters remain in their original bodies. No additional signing, append, fitting, B evaluation or Root operation occurs. The old wrappers still invoke their underlying body once.
+
+The mechanism assertions and full native qualification remain unexecuted. Existing original default behavior and the new exact deadline path both require the original formatter and tests under the sole native executor; no historical result is inherited.
+
+Root's independent review also found four `assert_eq!` calls inside the Result body of the new mechanism case. A panic would bypass its explicit `fixture.finish().await` and the original A worker join. This same successor preserves all four whole-value comparisons as `anyhow::ensure!` Results, with explicit labels, so failures reach the unchanged cleanup/result combination. The comparison is not weakened and no production behavior changes.

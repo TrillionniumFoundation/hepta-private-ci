@@ -1,0 +1,105 @@
+{
+  "format": "hepta-native-ci-evidence-placement-v1",
+  "prefix": "original-ledger-snapshot-codec-v1",
+  "status": "PREPARATION_ONLY_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "qualification": false,
+  "entries": [
+    {
+      "path": "after/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 7777,
+      "sha256": "c37a190a9845030fd06f80a21d559e35344a11eb5d00c7eaebcf82d34852228c",
+      "git_blob": "0c6a5503ad35f235ff16d73a3242e7c29fb75400",
+      "full_readback_equal": true
+    },
+    {
+      "path": "after/codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 16695,
+      "sha256": "812d88e15f2ceae8d5828a8e95255acb2b281c99b810d34ab2283690a2831209",
+      "git_blob": "3a444d399126d43ff8d1ddd69cb6302dd7a785ed",
+      "full_readback_equal": true
+    },
+    {
+      "path": "after/codex-rs/hepta-learning-ledger/src/lib.rs",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 7384,
+      "sha256": "083b568492a9a22853bb13558243c9528a16d4a74dd6b2ea32e77c8e3f457d1d",
+      "git_blob": "c214632e288047e1aa39f67c2865f2bacaac6b6a",
+      "full_readback_equal": true
+    },
+    {
+      "path": "SOURCE_PACKET.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 44441,
+      "sha256": "d941bcc02a008899aa16ce4953be7d6a48ceb3287354046795e0e7ef2c5cd94f",
+      "git_blob": "3a7aee950bc6da48b4162f4f5215c4c5d18396b8",
+      "full_readback_equal": true
+    },
+    {
+      "path": "changes.patch",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 38276,
+      "sha256": "ae645dd26639edd96eae3d17412c147b10ec928d0fdbe9f33cf186ca287a4058",
+      "git_blob": "a0f7d3ab39562b734e5985f672c40532b231597e",
+      "full_readback_equal": true
+    },
+    {
+      "path": "STATIC_BYTE_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 5474,
+      "sha256": "1e6ab1de274567d4c7dd4f891626c05921a4cba0f4128427ef71d9afde74b616",
+      "git_blob": "2fa5b76508089f73bfc8fa4e7b28553ab611af2d",
+      "full_readback_equal": true
+    },
+    {
+      "path": "INTERFACE_CONTRACT.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 6236,
+      "sha256": "39b8f1ce1ac6b6c38901d49093fb37f9b8be58fec74ac7fc073d08ec85869555",
+      "git_blob": "92f44944e64e454568455a15f7a5b922d5f32132",
+      "full_readback_equal": true
+    },
+    {
+      "path": "AUTHOR_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 5280,
+      "sha256": "0f4c1399d3523e613c033631eba03a4339bfb8422bce69659502ae8c944080b6",
+      "git_blob": "f39d7c96cf51e0cf43b63a884f8aeb0498a3284d",
+      "full_readback_equal": true
+    },
+    {
+      "path": "GITHUB_ORIGINALS.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 328367,
+      "sha256": "97186bae274981f1011b00781622faee372ce9bd9549dcabcef3005f82f3a9ff",
+      "git_blob": "e87e48cb92068be8af38061b70d2a35267393752",
+      "full_readback_equal": true
+    },
+    {
+      "path": "MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 5267,
+      "sha256": "bfeb31b56c0280074f57d7d2f8c1d650e56fec5a3fd966e8522ee64531d8044b",
+      "git_blob": "e96c20ee8019a474f27b62e117507a2cc4027316",
+      "full_readback_equal": true
+    }
+  ],
+  "execution": {
+    "h_calls": 0,
+    "tests_run": 0,
+    "compiled": false,
+    "formatted": false
+  },
+  "note": "Source proposal and exact original Git SDK readbacks only. No caller trust admission, native execution, source ref update or qualification claim."
+}

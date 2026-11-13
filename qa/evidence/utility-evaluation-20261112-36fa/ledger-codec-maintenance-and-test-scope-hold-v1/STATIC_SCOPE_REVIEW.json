@@ -1,0 +1,165 @@
+{
+  "format": "hepta-ledger-crate-original-scope-static-proof-v1",
+  "reviewed_at_utc": "2026-11-13 05:40:45 UTC",
+  "original_controls": [
+    {
+      "key": "ledger_scope_original_plan",
+      "bytes": 32246,
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619",
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+    },
+    {
+      "key": "ledger_scope_cargo",
+      "bytes": 676,
+      "sha256": "5cd9913ddcfc84c9b04e95c9a2e212d9f434b9a390e9695d48143496287e825c",
+      "git_blob": "1d76cad44498e9538cefff1e20202482520257ff"
+    },
+    {
+      "key": "ledger_scope_justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "key": "ledger_scope_b92",
+      "bytes": 14986,
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    {
+      "key": "ledger_scope_maintenance_v5",
+      "bytes": 63007,
+      "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+      "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735"
+    },
+    {
+      "key": "ledger_scope_run_nextest",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    },
+    {
+      "key": "ledger_scope_nextest_config",
+      "bytes": 6617,
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158",
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c"
+    },
+    {
+      "key": "ledger_scope_just_shell",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "key": "ledger_scope_workflow",
+      "bytes": 28133,
+      "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1",
+      "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed"
+    },
+    {
+      "key": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    }
+  ],
+  "facts": {
+    "package_name": "codex-hepta-learning-ledger",
+    "lib_name": "codex_hepta_learning_ledger",
+    "original_packages": [
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron"
+    ],
+    "original_ordinary_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "original_ordinary_timeout_seconds": 7200,
+    "phase_count": 14,
+    "new_codec_names": [
+      "snapshot_codec::tests::empty_and_complete_snapshots_roundtrip_all_records_and_head",
+      "snapshot_codec::tests::encoder_rejects_changed_original_record_fields_and_head",
+      "snapshot_codec::tests::every_truncation_trailing_byte_and_changed_domain_is_rejected",
+      "snapshot_codec::tests::declared_counts_and_frame_lengths_cannot_expand_the_input_budget",
+      "snapshot_codec::tests::checksums_do_not_replace_sequence_predecessor_chain_or_head_validation",
+      "snapshot_codec::tests::checksum_valid_noncanonical_candidate_order_is_rejected_not_repaired",
+      "snapshot_codec::tests::repeated_or_reordered_checksum_valid_frames_are_rejected",
+      "snapshot_codec::tests::checksum_valid_event_cannot_bypass_original_causal_validation",
+      "snapshot_codec::tests::oversized_in_memory_event_is_rejected_before_encoding_or_cloning_it",
+      "snapshot_codec::tests::aggregate_output_cap_rejects_complete_history_without_truncation"
+    ],
+    "codec_names_are_prepared_not_executed": true,
+    "old_scoped_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "proposed_scoped_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "only_fix_argv_addition": [
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "fix_seconds": 7200,
+    "fmt_seconds": 900,
+    "standalone_added_test_phase": false,
+    "standalone_added_fix_run": false
+  },
+  "extraction": {
+    "workflow": "The complete original workflow's packages list is a literal JSON-compatible Python list. Parsing the whole list yields exactly the five packages recorded here.",
+    "b92": "The original b92 AST-extracts packages/parents from that workflow, calls test('ordinary', [*packages, '--lib', '--test-threads', '2']), and the unmodified test() prefixes just test --locked --offline and appends --retries 0 and the original output options. The expanded argv equals PLAN V2's complete ordinary argv byte/value for value.",
+    "codec": "The prepared final lib mounts snapshot_codec. The production module mounts sibling snapshot_codec_tests.rs under cfg(test). Ten #[test] method declarations produce the ten listed module-qualified expected names; none of those methods is ignored.",
+    "maintenance": "The existing V5 FIX constant has only intelligence-eval and agentd. Appending exactly ['-p','codex-hepta-learning-ledger'] retains the full old argv as its prefix. FIX_SECONDS=7200 and FMT_SECONDS=900 are unchanged proposals.",
+    "assertions": {
+      "old_14_phase_plan_not_edited": true,
+      "old_b92_driver_not_edited": true,
+      "ordinary_argv_full_equality_to_original_plan": true,
+      "old_fix_full_prefix_retained": true,
+      "new_test_stage_count": 0,
+      "new_standalone_fix_run_count": 0,
+      "execution_count": 0
+    }
+  }
+}

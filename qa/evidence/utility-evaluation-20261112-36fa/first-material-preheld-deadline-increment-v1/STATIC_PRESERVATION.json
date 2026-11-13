@@ -1,0 +1,63 @@
+{
+  "format": "hepta-exact-preheld-work-deadline-increment-v1",
+  "all_three_inverse_transforms_restore_complete_preimages": true,
+  "old_material_constructor_delegates_once_to_same_body": true,
+  "old_provider_constructor_delegates_once_to_same_body": true,
+  "old_default_deadline_still_sampled_at_same_freeze_field": true,
+  "new_preheld_expiry_fixed_before_actual_A_and_never_renewed": true,
+  "original_window_seconds": 900,
+  "original_transport_limits_unchanged": true,
+  "no_parent_envelope_or_trust_digest_read_from_Material": true,
+  "four_whole_value_assertions_preserved_as_Result_before_explicit_cleanup": true,
+  "original_signature_and_append_calls_unchanged": true,
+  "rust_compilation": false,
+  "tests_run": 0,
+  "qualification": false,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 24380,
+        "sha256": "240739d4f5f195f2574a22a29eafd03c081e5d81ab2a0472603eb45a49d63780",
+        "git_blob": "149dcd8140f543e4da9a5d5b715963ed81e6fd0f"
+      },
+      "after": {
+        "bytes": 26241,
+        "sha256": "7a806f9a4c575a58fd0142007ee3302508204c3b65bacd73654ad260093dbd74",
+        "git_blob": "c97e922243a7833e7a46cf7aa9680196037fad8b"
+      },
+      "exact_inverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 17344,
+        "sha256": "67ce0523490280ae1a076c4e937f9a1e9a34b1642061705a2297ad38b53eadfb",
+        "git_blob": "f1f8add8a7d3055e64479d1fb0f239f127a15a84"
+      },
+      "after": {
+        "bytes": 17765,
+        "sha256": "ca26ac1bbc6428daf5ae0453df86d37668f11559b1609d5f7e74991891014012",
+        "git_blob": "e54fe13095d93a559de5c2816a15f5171774f7cf"
+      },
+      "exact_inverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 9269,
+        "sha256": "93295c90b33d744be2062ee954861ec693f1df06f73b19e919ee61a1ececc54f",
+        "git_blob": "f6b6ba838fa70a9d8175655a26574cfcbc78f916"
+      },
+      "after": {
+        "bytes": 10274,
+        "sha256": "4a56fd64e797de3c34c508c2df2c4f30bab5bf95eeaf829f65cf305d09ca0315",
+        "git_blob": "cffa9f294b84565d427be48c5ac099aec3872d9d"
+      },
+      "exact_inverse_equal": true
+    }
+  ]
+}

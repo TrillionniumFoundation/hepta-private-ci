@@ -1,0 +1,122 @@
+{
+  "format": "hepta-independent-original-decision-outcome-retention-review-v1",
+  "reviewer": "native_ci_audit",
+  "reviewed_at_utc": "2026-11-13 05:31:21 UTC",
+  "decision": "NO_CONCRETE_STATIC_BLOCKER_IN_REVIEWED_TWO_FILE_INCREMENT",
+  "status": "PREPARED_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "qualification": false,
+  "inputs": {
+    "packet": {
+      "bytes": 84823,
+      "sha256": "1ad051d0387e389c5df69cc2fd0bcbbc8cec18bcbd3a785fc1e40b946632e942",
+      "git_blob": "d656853ee0fb0e4bf7aedbd371916607d7dcb619"
+    },
+    "base_source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "base_overlay": "f4066cf562953650ae7a10129c9a90d496630fca",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+        "side": "before",
+        "bytes": 22411,
+        "sha256": "21c90f524011ed8c461e636ec4412d2c5f0b6534b76e66c68b1611a49145240c",
+        "git_blob": "e7e83057862baaba3c39c09ae4a3f9faa95753ee",
+        "complete_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+        "side": "after",
+        "bytes": 24380,
+        "sha256": "240739d4f5f195f2574a22a29eafd03c081e5d81ab2a0472603eb45a49d63780",
+        "git_blob": "149dcd8140f543e4da9a5d5b715963ed81e6fd0f",
+        "complete_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+        "side": "before",
+        "bytes": 16900,
+        "sha256": "7bf6652b9bd2847c0a484505dd98d845ef58853717ed3d700157fc85e06c17d4",
+        "git_blob": "fe5c07068d9ea1a59b05260f48d39ecfc22ebf96",
+        "complete_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+        "side": "after",
+        "bytes": 17344,
+        "sha256": "67ce0523490280ae1a076c4e937f9a1e9a34b1642061705a2297ad38b53eadfb",
+        "git_blob": "f1f8add8a7d3055e64479d1fb0f239f127a15a84",
+        "complete_get_equal": true
+      }
+    ]
+  },
+  "evidence": {
+    "full_byte_review": {
+      "bytes": 11605,
+      "sha256": "35c82d0ab5cbbefd706d062cf1eb6fc487ce18ccb1742466d6248df4efdf9c43",
+      "git_blob": "2b1a3eca7db7744bd388a3b0cafbad3741c0dc4c"
+    },
+    "actual_original_get_responses": {
+      "bytes": 173846,
+      "sha256": "4107341cf0897277f27cf7bdb6b4b324cec826c3b90cec9fafdfba8fddda0d6f",
+      "git_blob": "c87bff4c9e9c329e5b4be1e684f836c5d1806879"
+    },
+    "completeness": "Read both complete after files and their complete exact before/after edit lists. Independently fetched all four source blobs and compared every byte with the packet bodies; recomputed UTF-8 byte length, SHA-256 and Git blob identity."
+  },
+  "findings": [
+    {
+      "subject": "One Decision call retains the same original request, signature and admission time",
+      "source": "circuit_model_selection_material_support_tests.rs: decision_with_original_evidence",
+      "reasoning": "The original source policy, candidate order, completeness fields, selected candidate, objective, support digest and production request construction are unchanged. The helper obtains the same single at=now() value and signs the same decision_signing_payload_v2(&record) with the same existing generator and seed. It clones that complete record and complete SignedLearningEvidenceV1 into the return container with admitted_at=at, then passes the original record, the same evidence and the same at to the unchanged writer.append_decision(Digest32::ZERO,...). Ok(original) occurs only after that append's ? returns success. A failed append drops the local retention container and does not report successful admission."
+    },
+    {
+      "subject": "One Outcome call retains the same original outcome, signature and admission time",
+      "source": "circuit_model_selection_material_support_tests.rs: terminal_outcome_with_value_and_original_evidence",
+      "reasoning": "The original Source admission rounding, real-clock future-admission check, conditional one-second wait and subsequent at=now() remain byte-identical. Observed_at, watermark, terminality, finalization time and the independently fixed value remain original. The same complete outcome is signed once with the existing Observer and seed; the original outcome, same signed evidence and same at are supplied once to the unchanged append_outcome with the original current snapshot head. The return container holds clones of those exact objects and returns only after append success. No new timestamp sample, alternate signature, replacement terminal label or extra append was added."
+    },
+    {
+      "subject": "Legacy entry points preserve one signing/append operation per call",
+      "reasoning": "decision() delegates exactly once to decision_with_original_evidence and maps the returned metadata to (). terminal_outcome() itself remains byte-for-byte unchanged and calls terminal_outcome_with_value with the original 2Q constant. That legacy value helper now delegates once to the private retention helper and maps metadata to (). The new terminal_outcome_with_original_evidence also delegates only once with that same 2Q constant. Removing just the retention construction and normalizing the moved helper name/return type restores each original whole signing/append function exactly.",
+      "static_call_counts": {
+        "decision": {
+          "old_sign": 1,
+          "new_sign": 1,
+          "old_append": 1,
+          "new_append": 1,
+          "old_now": 1,
+          "new_now": 1
+        },
+        "outcome": {
+          "old_sign": 1,
+          "new_sign": 1,
+          "old_append": 1,
+          "new_append": 1,
+          "old_now": 2,
+          "new_now": 2
+        }
+      }
+    },
+    {
+      "subject": "Provider carries the actual returned objects rather than reproducing evidence",
+      "source": "circuit_resident_candidate_provider_material_support_tests.rs: UnstartedProvider::new",
+      "reasoning": "The two old helper calls after actual A execution are replaced, rather than supplemented, by the two retention calls. Each receives the same mutable ledger, existing credentials and actual previous publication. Their successful returned containers travel through the existing built tuple and into two new fields. The existing partial-construction Result handling and A/Material-peer cleanup remain unchanged. The later material freeze, source verification, original owner construction and four transport setup calls are not duplicated or modified by this increment."
+    },
+    {
+      "subject": "No new production authorization surface",
+      "reasoning": "The delta touches two existing test-support files only. Its new structs and callable retention wrappers use pub(super), and the value-retention worker is private. No production module, lib export, signer implementation, trust activation, ledger algorithm, acceptance check or public service/transport command changes. Returning a clone of an already supplied signature is data retention; it does not mint a new signer, durable writer, authority capability, successful receipt or protocol response."
+    }
+  ],
+  "limits": [
+    "This review establishes source data flow and exact legacy-body preservation. It does not claim that a new Decision, Outcome or durable append has actually occurred.",
+    "The retained fields are test-fixture data. A future Root admission still must use its own preheld trust and request/objective/model contract, recompute the complete original payloads, verify signatures and admission windows, and link them to the full ledger. Merely transporting these objects is not authentication or replay authority.",
+    "The complete Source publication/ObjectiveStart admission and bounded control transport remain separate work. This increment does not implement or prove the complete Fresh three-UID/Root path.",
+    "There is no formatting, compiler/type-check, runtime test, gate, H/native operation, source mutation or ref update in this review.",
+    "Original 8 MiB stack, protocol request counts, timeout/deadline limits and all native gate budgets are unchanged. The two files remain prepared source to integrate with the final actual overlay and its required formatter, tests and protections."
+  ],
+  "actual_execution": {
+    "H": 0,
+    "format": 0,
+    "compile": 0,
+    "tests": 0,
+    "source_mutations": 0,
+    "refs": 0
+  }
+}

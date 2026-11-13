@@ -1,0 +1,38 @@
+--- cc57/qa/b4-no-bypass/test_resident_root_source_closure.py::test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof
++++ Root86/qa/b4-no-bypass/test_resident_root_source_closure.py::test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof
+@@ -23,14 +23,33 @@
+             '#[path = "authority_host_learning_resident_retention_auth_tests.rs"]\nmod retention_auth;',
+             roots,
+         )
++        provider = (ROOT / (AGENT + "authority_host_learning_resident_provider_transport_tests.rs")).read_text()
++        lifecycle = (ROOT / (AGENT + "authority_host_learning_resident_provider_lifecycle_tests.rs")).read_text()
++        self.assertIn(
++            '#[path = "authority_host_learning_resident_provider_transport_tests.rs"]\nmod provider_transport;',
++            roots,
++        )
++        self.assertIn(
++            '#[path = "authority_host_learning_resident_provider_lifecycle_tests.rs"]\nmod lifecycle;',
++            provider,
++        )
+         for name in ROOT_CASES:
+-            source = retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
++            source = (
++                lifecycle if "::provider_transport::lifecycle::" in name
++                else provider if "::provider_transport::" in name
++                else retention if "::retention_auth::" in name
++                else model if "::original_model::" in name
++                else evaluation if "::evaluation::" in name
++                else roots
++            )
+             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
+         self.assertEqual(
+             roots.count('#[ignore = "explicit actual Root')
+             + evaluation.count('#[ignore = "explicit actual Root')
+             + model.count('#[ignore = "explicit actual Root')
+-            + retention.count('#[ignore = "explicit actual Root'),
++            + retention.count('#[ignore = "explicit actual Root')
++            + provider.count('#[ignore = "explicit actual Root')
++            + lifecycle.count('#[ignore = "explicit actual Root'),
+             len(ROOT_CASES),
+         )
+         for marker in (

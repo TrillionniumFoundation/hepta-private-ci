@@ -1,0 +1,55 @@
+{
+  "format": "hepta-root-first-pending-material-static-review-v1",
+  "status": "Prepared only; narrow cleanup correction required before including this test in the final composed candidate",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "reviewed_packet": "641999aa0c288941e17d343c3fabeb48b93e0eae",
+  "reviewed_packet_bytes": 40640,
+  "reviewed_packet_sha256": "b2703b04ed1163542fd1843b7b09b790b242b886f8b2cb7112dbe80b449da467",
+  "prerequisite_original_evidence_retention_packet": "d656853ee0fb0e4bf7aedbd371916607d7dcb619",
+  "all_four_postimages_independently_fetched_in_full_and_local_bytes_matched": true,
+  "postimages": [
+    {"path":"codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs","git_blob":"ad0cf862eaba275e10287748bddd179a4def514d","bytes":18140},
+    {"path":"codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs","git_blob":"57c57a8dca65e231feac0481c4ba31f4a1407ed0","bytes":8572},
+    {"path":"codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs","git_blob":"f6b6ba838fa70a9d8175655a26574cfcbc78f916","bytes":9269},
+    {"path":"codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs","git_blob":"e1d0a0f608b8268ec039d7abdf0aab3bcb40a19c","bytes":891}
+  ],
+  "static_findings": [
+    "RootMaterialContract retains the complete parent task contract, seven owners, protocol, trust, full trusted signers including controller and role/window bindings, baseline, source input, NDU snapshot, dataset rule, optimizer and frozen update scope. It does not derive these authorities from Report.",
+    "The outer wire is bounded to 64 KiB before parsing. Initial-owner snapshot is bounded to 8 KiB; the ledger uses the original bounded snapshot codec. Unknown JSON fields, noncanonical base64, alternate JSON serialization and trailing bytes are rejected. Fixed role and purpose are reconstructed, not selected by a report field.",
+    "The verifier requires exactly the fixture's original Decision then Outcome. It reconstructs complete original signing payloads, verifies the original full signatures at admitted time and current time, requires exact authenticated ledger rows and original controller/causal separation, and rejects a canonical replay with different Source-support bytes.",
+    "The original freeze plan is reconstructed from parent-held rule and initial contract, authenticated against the full retained ledger, and checked through original freeze and dataset-receipt APIs. There must be no pending or censored outcome. The Q32 to Q24 label conversion, batch digest, optimizer and scope are rederived exactly.",
+    "PendingOriginalMaterial is a private non-Clone wrapper. It exports no raw Material, Source publication or Training getter. Admission binding and profile construction recheck current original evidence; the profile constructor still requires an externally supplied original signed intent and registered lease.",
+    "The only service conversion consumes the opaque Pending value plus an actual Root registration and handoff, and calls the prepared original candidate service. Original Root identity, initial/profile equivalence, current authority and subsequent E then D then T stage validation remain required.",
+    "The claimed completed-task digest remains only a pending claim at this cut. The original Source cannot be reconstructed from a JSON digest or ledger codec. Successful original Experience and Dataset execution/readback must independently validate it before Training and before a task chain can be claimed.",
+    "This local mechanism case fixes its trusted policy before encoding the report but obtains its envelope from an already constructed local fixture. It does not yet prove parent-held-before-child-A configuration or a three-UID first admission. A separate explicit-preheld-expiry successor is being prepared."
+  ],
+  "original_api_cross_checks": [
+    "freeze_dataset_from_ledger(snapshot, DatasetFreezePlanV2, AuthenticatedPrincipalV1, now)",
+    "verify_dataset_snapshot_receipt_against_ledger_v3(receipt, snapshot, now)",
+    "verify_signed_role_separation(generator, observer, now)",
+    "validate_authenticated_outcome(generator principal, outcome, now)",
+    "LearningEvidenceVerifierV1::require_signer_binding compares the entire canonical trusted signer, including controller, key, roles, time window and revocation",
+    "CellQ24DatasetRuleV1 is Copy; the reviewed field accesses do not establish a move error"
+  ],
+  "concrete_cleanup_finding": {
+    "severity": "New test failure cleanup gap; no production-authority relaxation identified",
+    "location": "first_pending_material_uses_full_original_signatures_and_preheld_policy: four assert_eq! expressions in the synchronous Result closure",
+    "reason": "A failed equality panics and bypasses the explicit fixture.finish().await and combined body/cleanup error handling. MaterialPeers Drop does synchronously finish its peers, so this is not a claim of no cleanup. The original Session Drop only cancels; Session::stop is the path that takes and awaits the worker JoinHandle with the original five-second bound.",
+    "original_session_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+    "original_session_full_git_get_observed": true,
+    "requested_correction": "Replace only the four equality assertions with equivalent anyhow::ensure! comparisons and descriptive messages so failures reach the existing explicit async finish and error combination. Preserve all compared values, cleanup bounds and original packet.",
+    "author_acknowledged_narrow_successor_in_progress": true,
+    "correction_verified_here": false
+  },
+  "limits": {
+    "source_ref_changed": false,
+    "formatter_run": false,
+    "rust_compile_or_test_run": false,
+    "full_repository_source_gate_run": false,
+    "three_uid_or_root_execution_observed": false,
+    "actual_independent_B_or_new_C_observed": false,
+    "daemon_or_root_cold_recovery_observed": false,
+    "qualification": false,
+    "real_qualified_task_chains": 0
+  }
+}

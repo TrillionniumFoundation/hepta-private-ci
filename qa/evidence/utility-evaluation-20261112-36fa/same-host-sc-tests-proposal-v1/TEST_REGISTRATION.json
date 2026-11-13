@@ -1,0 +1,38 @@
+{
+  "format": "hepta-same-host-sc-test-registration-v1",
+  "qualification": false,
+  "parent": {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+    "before": {
+      "bytes": 7437,
+      "sha256": "2b11261faf896f7fa6ff588b641bde2bedeb537fd6e196c428dd0a0999801dcb",
+      "git_blob": "43976a78c4e4f380c9d97559006aed7d5e714cb7"
+    },
+    "after": {
+      "bytes": 7516,
+      "sha256": "69dc83b427aa78f1326319bd340175a73553134db0abb08b96fb72498a25cfa8",
+      "git_blob": "cbf9e717bda5ba469964cff7a399763c4f4e0bb9"
+    },
+    "append": "\n#[path = \"circuit_evaluated_same_host_sc_support_tests.rs\"]\nmod same_host_sc;\n"
+  },
+  "method_source": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+  "module_suffix": "version_recovery_tests::same_host_sc::tests",
+  "methods": [
+    "local_s_c_complete_same_actual_c_and_cold_observer_stays_readonly",
+    "identical_signed_cuts_cannot_substitute_other_actual_t_e_clients",
+    "missing_original_s_cannot_export_a_local_predecessor",
+    "local_s_aliases_refuse_real_overlapping_owner_reads",
+    "cancelling_local_s_read_fences_all_aliases_after_actual_work_terminates",
+    "local_s_revalidates_withdrawn_b_and_consumes_the_failed_slot",
+    "local_s_clone_keeps_the_original_absolute_expiry"
+  ],
+  "mode": "default tokio tests; no new ignored/root-parent item",
+  "original_test_methods_deleted": 0,
+  "final_fmt_protected_literals_and_full_collector": "pending",
+  "original_ignored_fragments": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "change_to_ignored_fragments": false
+}

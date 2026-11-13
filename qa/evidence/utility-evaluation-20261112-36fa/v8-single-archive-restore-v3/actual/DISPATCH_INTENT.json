@@ -1,0 +1,43 @@
+{
+  "format": "hepta-exact-material-restoration-dispatch-intent-v1",
+  "observed_at": "2026-11-13 06:14:40 UTC",
+  "request": {
+    "bytes": 39070,
+    "sha256": "fb68e651a551d9729ad76fd162de6205bced88be717e28ea496713cb17dbba0f",
+    "git_blob": "869d455ea5b5d524047a96ecc50c104687f77e74"
+  },
+  "approval": {
+    "bytes": 3345,
+    "sha256": "718fd0c26802955b391038889231ac5df6a888e68b3ff85c1213c54a90176d5e",
+    "git_blob": "cf11c67d7bdeeed38f368cdc62ced1e2a969fe86"
+  },
+  "script": {
+    "bytes": 37114,
+    "sha256": "5fdd01b515e2bdf1484b890a6747a2c8d26c3b60a066952b69fe399d5a7ddb9a",
+    "git_blob": "8b0d11f157018c0a59c7cdffc7d29ce6251f381c"
+  },
+  "stdin": {
+    "bytes": 807,
+    "sha256": "b2b406092f185cc9daa79b1921b9ee82cd9c79dbb3f4746e5b6343a30c57d285",
+    "git_blob": "8f5d0bfb39404676221eb541379fd4236f97b96a"
+  },
+  "key": "hepta-utility-36fa-v8-single-archive-restore-v3",
+  "initial_dispatches_planned": 1,
+  "complete_five_location_inverse_to_ae07_exact": true,
+  "no_env_override": true,
+  "preserved_limits": {
+    "archive_bytes": 29366352,
+    "archive_mode": "0600",
+    "archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "download_seconds": 120,
+    "evidence_seconds": 180,
+    "operation_seconds": 600,
+    "outer_seconds": 900,
+    "source_files": 15188,
+    "uid": 1000
+  },
+  "authorized_scope": "Once, under the original global guard and cooperative lock, validate actual complete 15188 source and raw detached HEAD/index/config/refs, original bindings and material parents; download the fixed original V8 payload into a fresh evidence spool; after repeated original guard and absence/current checks, create only the still-absent original archive with O_EXCL|O_NOFOLLOW and full byte/hash readback. Retain original full before/after evidence and failures.",
+  "not_authorized": "native/formatter/compiler/test/other download/source/index/ref changes",
+  "prior_quiet_observation_is_not_a_lease": true,
+  "unknown_rule": "exact same key/request reconciliation only"
+}

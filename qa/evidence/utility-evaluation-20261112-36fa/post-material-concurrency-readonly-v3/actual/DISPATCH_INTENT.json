@@ -1,0 +1,28 @@
+{
+  "format": "hepta-approved-native-dispatch-intent-v1",
+  "recorded_at_utc": "2026-11-13 05:32:56 UTC",
+  "executor": "native_ci_audit",
+  "scope": "Sole approved readonly global guard observation; no restoration/native gate authority",
+  "approval": {
+    "bytes": 1308,
+    "sha256": "037d22ee41cd0da78d9e539d3d49e2a4795e330ca1efad0e13179c3d6571b2ac",
+    "git_blob": "0ae6e5b63650d0be6366d2f0d4fb8e970e69082d"
+  },
+  "request": {
+    "bytes": 1916,
+    "sha256": "70b00b8cf01c58ee615133d14e5e893a9aa7c579d8b4eac281ff6fdbee75fc73",
+    "git_blob": "5a37f8df273a698bb116d360e61c79f2ca86bae8"
+  },
+  "script": {
+    "bytes": 1592,
+    "sha256": "cfa2459c1d6f4282cb28e9033fecf6884abfbc79bae1da7090aa21a11b92f9a2",
+    "git_blob": "45a3a8ff39967288f6449f25e3a9276edcaaf081"
+  },
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-post-material-concurrency-readonly-v3",
+  "timeout_seconds": 15,
+  "exact_six_fields": true,
+  "predecessor_inverse_equal": true,
+  "observed_admission": "not_yet_observed",
+  "dispatch_count_planned": 1
+}

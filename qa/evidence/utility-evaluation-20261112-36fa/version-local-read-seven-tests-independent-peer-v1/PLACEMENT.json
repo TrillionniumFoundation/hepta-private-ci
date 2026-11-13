@@ -1,0 +1,35 @@
+{
+  "format": "hepta-native-ci-evidence-placement-v1",
+  "prefix": "version-local-read-seven-tests-independent-peer-v1",
+  "qualification": false,
+  "status": "STATIC_REVIEW_ONLY_NOT_TEST_EXECUTION",
+  "entries": [
+    {
+      "path": "REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 8000,
+      "sha256": "1b3de12ecd9aa8a44808d0b77f514f7edb2cddff32432ba139fbd48764cc3ed2",
+      "git_blob": "09cf68dd52184cc503da8ff6891b73617074613d",
+      "full_readback_equal": true
+    },
+    {
+      "path": "FULL_BYTE_CHAIN_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 12414,
+      "sha256": "fdd0f178275b2c2e1c263fd3dbab629eaad87c45452a05dc6b86191e1238ae67",
+      "git_blob": "c11d682b860c762a998002380e69a4e0e3db99b9",
+      "full_readback_equal": true
+    },
+    {
+      "path": "ORIGINAL_GITHUB_READS.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 262944,
+      "sha256": "87c08cd566f16a9699ef53cbb10be8f2976b02aa797e2b4c601a678cd98524f7",
+      "git_blob": "762b06f6f9435619b7476237dc6cd4b47160a308",
+      "full_readback_equal": true
+    }
+  ]
+}

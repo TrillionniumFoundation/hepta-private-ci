@@ -1,0 +1,384 @@
+{
+  "format": "hepta-root-current-cross-uid-independent-peer-v1",
+  "status": "DESIGN_CORROBORATED_IMPLEMENTATION_REMAINS_HOLD",
+  "reviewed_at_utc": "2026-11-13 06:28:16 UTC",
+  "proposal": {
+    "git_blob": "c50a9352a3b3926385c1d741f7b7ecad63d2276f",
+    "bytes": 15329,
+    "sha256": "20f7dfae24cbf105d1ba4a5fd8443f16beca05f3a42e1af549b7bc5a9f1606c1",
+    "source_pins": "74274f95f31a40d7af91eeabdcf28925ab48257d",
+    "placement": "b430dcc565b7a7bad50be02c02ee79aba24e0937"
+  },
+  "canonical_source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "prepared_view": "3f7d40d4933669da33d2aef3491efb431c5771ae",
+  "conclusion": "The proposal accurately identifies a substantive production custody/type gap and covers the required initial/retained preparation, journals, Artifact, FinalUse, CAS, live checks and cold recovery. No specific false completion or authority claim was found. Existing APIs alone cannot construct the proposed cross-UID PublishedTask/Version path; this review is not implementation or launch approval.",
+  "evidence_scope": {
+    "original_proposal_sources": 22,
+    "additional_complete_source_GETs": 8,
+    "total_source_objects": 30,
+    "all_source_bytes_rehashed": true,
+    "additional_objects_are_canonical_and_not_overridden_in_Root86": true,
+    "proposal_and_pins_and_placement_independently_full_GET": true,
+    "original_GET_bundle": {
+      "file": "ADDITIONAL_SOURCE_GETS.original.json",
+      "git_blob": "f7a8c0b0b38f75bfce357596fe17260f7a8d9e4e",
+      "bytes": 187606,
+      "sha256": "df2e0848a56675df70e567f4a1383cb71bd847f97389ff848c0bef5e0facef2e"
+    },
+    "previous_custody_audit": "50a182e905aca1e388bafe4dffe28277a7c568d9"
+  },
+  "original_chain": [
+    {
+      "stage": "Root construction and concrete store",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+          "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+          "functions": [
+            "RootAuthorityDirectory::open",
+            "open_private"
+          ],
+          "detail": "Open requires actual euid 0, an absolute pre-existing Root-owned private directory and validated ancestors; private objects remain uid 0 / 0600 / single-link / NOFOLLOW."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+          "git_blob": "3b70b31993dfa18405848e3b99653aba6020821a",
+          "functions": [
+            "CurrentStore::{initialize,open,load,replace}"
+          ],
+          "detail": "Production storage is concrete HostAuthorityFrontierStore. The arbitrary AuthorityFrontierStore variant is cfg(test) only. A remote receipt or fixture FileCas cannot supply this owner."
+        }
+      ]
+    },
+    {
+      "stage": "Initial preparation and publication",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+          "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+          "functions": [
+            "prepare_agentd_generation_initial_v1",
+            "PreparedAgentdGenerationInitialV1::publish"
+          ],
+          "detail": "Validate selected full target, empty file and independent empty witness; revalidate Artifact; persist Preparing; open the actual header-only guarded journal; retain journal and selection through publish."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+          "git_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+          "functions": [
+            "prepare_initial",
+            "publish_initial",
+            "require_initial_genesis"
+          ],
+          "detail": "Check external FinalUse frontier and exact selection; claim and dispatch the exact independent grant; revalidate Artifact and actual genesis inside the dispatch; CAS and exact original-operation readback. No transient unsigned Active owner."
+        }
+      ]
+    },
+    {
+      "stage": "Retained A-to-C binding and cold preparation",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_binding.rs",
+          "git_blob": "cc6c0f569a48ae2b6e7220a250d9f1b40dff3bf1",
+          "functions": [
+            "require_inputs_for_request",
+            "require_previous"
+          ],
+          "detail": "Full completed A binding/history/run/agent/cell/principal/manifest/checkpoint and distinct C source/task are checked before mutation, not only a digest or drained flag."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+          "git_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f",
+          "functions": [
+            "prepare_original_circuit_evaluated_retention_v1",
+            "publish_and_retain_original_evidence"
+          ],
+          "detail": "Actual same T/E reads bracket preparation and publication; D is retained in the authenticated context/Version cut. Context freshness, cancellation and exact operation remain; publication returns those same T/E clients."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+          "git_blob": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673",
+          "functions": [
+            "prepare_agentd_generation_cold_same_model_task_v1",
+            "prepare_cold_with_completion"
+          ],
+          "detail": "Require an existing nonempty original predecessor and real durable drain; reopen under the concrete Control floor. Same-model retirement does not manufacture STOP and does not return an active old runtime."
+        }
+      ]
+    },
+    {
+      "stage": "Journal lock coverage, Artifact and CAS",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+          "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+          "functions": [
+            "prepare_with_completion",
+            "validate_reset",
+            "PreparedAgentdGenerationUpdateV1::publish"
+          ],
+          "detail": "Retain old/new exclusive journals. Validate reset; privately rebind old to concrete Control before locking Artifact to avoid a nested live-guard lock cycle. Keep Artifact through prepare/genesis; keep predecessor lock through actual CAS/readback, then drop old."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_prepare.rs",
+          "git_blob": "2a0f2efedd75afd2d865f788bec30a28016a833c",
+          "functions": [
+            "prepare_with_completion"
+          ],
+          "detail": "Exact old owner observation/checkpoint, durable drain, same scope, new task/run and generation/writer_epoch increments, exact selection and same-model mode enter the durable intent."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "git_blob": "36d3ae716003a4a6c499e005438ef176daab0826",
+          "functions": [
+            "publish",
+            "require_prepared_journals"
+          ],
+          "detail": "Inside actual FinalUse claim/dispatch, revalidate selected Artifact, exact old and new checkpoints and current prepared head, then original protected CAS and readback. Remote before/after booleans cannot replace this critical section."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+          "git_blob": "fb6bede5e306c62320c3a95e113dc60613c41e85",
+          "functions": [
+            "AgentdSelectedGenerationV1::{load,revalidate}"
+          ],
+          "detail": "Actual immutable registry/payload bytes, canonical full manifest, independent selection verifier, concrete Artifact CURRENT and fixed withdrawal cut remain required."
+        }
+      ]
+    },
+    {
+      "stage": "Live authority retained by published task",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+          "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+          "functions": [
+            "LiveGenerationCurrent::{new,new_initial,check_live}",
+            "CellGenerationCurrentV1::check_current"
+          ],
+          "detail": "The concrete guard retains Current, Artifact, selected payload, independent FinalUse authority, original signed grant and consumed witness. Each check is Current -> Artifact/selected/retained FinalUse -> Current; lock order is Artifact -> selected -> FinalUse."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs",
+          "git_blob": "c808361ee7a476fe8304fefb6f4f16e7af379043",
+          "functions": [
+            "ReadyAgentdGenerationInitialV1::{new,into_circuit_feature_task}"
+          ],
+          "detail": "Ready owns journal plus concrete Arc<LiveGenerationCurrent>; it rebinds the real journal before consuming it into the task."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+          "git_blob": "4256c5b8a17c8e523b6438191c582883025e2b92",
+          "functions": [
+            "ReadyAgentdGenerationUpdateV1::{new,into_circuit_feature_task}"
+          ],
+          "detail": "The update Ready owner likewise retains concrete live custody and consumes the original previous completion; no public remote-current adapter or journal getter exists."
+        }
+      ]
+    },
+    {
+      "stage": "Same-task retirement",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "git_blob": "542e4e532443ac2082bd0b8fa7649fcdb25deca9",
+          "functions": [
+            "PublishedTask",
+            "PublishedCircuitFeatureTaskV1::{from_parts,require_current,open_cell}"
+          ],
+          "detail": "Private PublishedTask fixes Mutex<Box<dyn OriginalVersion>> and Arc<LiveGenerationCurrent>. Clone retains the same task Arc/journal. Public Cell open uses that same task; arbitrary guard input is unavailable."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+          "git_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+          "functions": [
+            "PublishedCircuitCellOwnerV1::committed"
+          ],
+          "detail": "Actual Source must match original input/bundle/receipt, no pending inference, revision 1 and exact checkpoint/writer_epoch; current is checked before and after."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+          "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+          "functions": [
+            "drain_completed_task"
+          ],
+          "detail": "Requires Arc::ptr_eq(task, cell.task), Source read before and after committed lookup and after durable drain, actual journal drain/readback, then current again. An encoded completion or cloned file cannot meet this constructor boundary."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+          "git_blob": "781485715249d11c05609239a346ede033ccbdf3",
+          "functions": [
+            "PublishedCircuitFeatureTaskV1::control",
+            "PublishedCircuitFeatureControlV1"
+          ],
+          "detail": "Original admission, actual execution and readback are gated by the same task and current checks; a remote task bridge must preserve those call sites, including the guarded native entry clock."
+        }
+      ]
+    },
+    {
+      "stage": "C installation and ordinary execution",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+          "git_blob": "38be926458be8a3b1db0e5c22e1336dc1c8737f8",
+          "functions": [
+            "OriginalCircuitRetainedTaskInputsV1::{require_completed_a,install_original}",
+            "RetainedVersionInstalledTaskV1::observe"
+          ],
+          "detail": "Actual original_a Source is read repeatedly around completion validation and C factory creation; the original same-model publication/task/full cut enters with_q24_circuit_task_profile. Installed Cell/Source and original C config are concrete values, not a version receipt."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+          "git_blob": "915cf4bebe127e2f58b1be21c32b86f13263517d",
+          "functions": [
+            "prepare_original",
+            "publish_original_final_use",
+            "run_original_c"
+          ],
+          "detail": "Fresh one-use atomics and phase.take fence effects. Failure/cancellation does not refill phase. After actual publication and install, original config is consumed once into crate::run; signed C ingress/RunStart remains separate."
+        }
+      ]
+    },
+    {
+      "stage": "Version ongoing observations",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "git_blob": "943d1919c37b104c74d93b0f48329a38339bfbcc",
+          "functions": [
+            "RetainedVersionHostStateV1",
+            "from_original_profile",
+            "recover_original_profile"
+          ],
+          "detail": "Version still holds concrete control and concrete Artifact state. Fresh requires actual completed A before construction; cold consumes already-held actual C Cell/Source and cannot gain an issuer/fresh config."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "git_blob": "4f88e588c805271cf8954305bfe09fdfab777bf4",
+          "functions": [
+            "read_original",
+            "require_cut_current",
+            "observe_phase"
+          ],
+          "detail": "D/T/E are re-read around phase observation, Artifact before/after is compared, Prepared state uses exact Current recover/read, and a published Current record alone does not recreate C owner/factory."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs",
+          "git_blob": "fcda5d29d59ed46e2daa88acf3c75991de57849a",
+          "functions": [
+            "RetainedVersionArtifactOwnerV1::{new,read_current}",
+            "require_same"
+          ],
+          "detail": "Uses the real Artifact owner, checkpoint, signed selection/verifier and unchanged withdrawal scope/head. Checkpoint/current receipt/witness/trust and non-regressing observation time are compared. A copied registry cannot replace it."
+        }
+      ]
+    },
+    {
+      "stage": "Cold and uncertain result recovery",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+          "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+          "functions": [
+            "recover_agentd_generation_initial_v1"
+          ],
+          "detail": "Exact operation/intent and actual Published state only; existing nonempty target, Artifact/FinalUse/live checks, original journal reopen and a second Current read. Prepared is no redispatch."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+          "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+          "functions": [
+            "recover_agentd_generation_update_v1"
+          ],
+          "detail": "Same exact operation/intent; Prepared refuses; actual Published target is opened without fresh genesis/reset and confirmed by a second Current observation."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+          "git_blob": "1f5b54fd7f2a69b4b07d96f122d21d195ba55f12",
+          "functions": [
+            "recover_predecessor"
+          ],
+          "detail": "Historical completion reconstruction requires an already-published, live successor, real acknowledged predecessor Cell/Source history and no writer. It cannot bootstrap the first retained C publication."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_recovery.rs",
+          "git_blob": "c0e88737c9266116a7ced7879f96e9419289da73",
+          "functions": [
+            "recover_original_circuit_evaluated_retention_v1"
+          ],
+          "detail": "Original evaluated T/E readback and full context remain around same-operation recovery and the original historical predecessor reconstruction; no new grant/prepare."
+        }
+      ]
+    }
+  ],
+  "practical_boundary": [
+    {
+      "id": "I1",
+      "can_implement_without_relaxing_existing_checks": "A trusted-Root-local one-operation coordinator can own genuine pre-held Root directory/Current, original selected Artifact, actual FinalUse authority and original journal/witnesses; its internal state holds the existing non-Clone Prepared and Ready values. This can reuse original prepare/publish/recovery APIs unchanged.",
+      "not_established": "No production producer or authenticated peer-facing session implementation is supplied by the proposal. It is not permission to initialize an arbitrary caller-selected Current head or trust."
+    },
+    {
+      "id": "I2",
+      "required_new_sealed_interface": "If A/C tasks remain non-Root, Ready/PublishedTask/live-guard custody needs a concrete purpose-bound producer/receiver and an internal fixed representation that preserves every live check. Existing Arc<LiveGenerationCurrent> signatures cannot accept a remote check_current client.",
+      "not_allowed": "No externally implemented generic guard, callback, raw Current store or borrowed root directory getter; no constant/cached success token. A process cannot serialize an Arc and thereby preserve original owner identity."
+    },
+    {
+      "id": "I3",
+      "required_new_sealed_interface": "Retirement must occur in the process that actually retains the same task Arc and Cell together with the original Source readback, or all those actual owners must be deliberately co-located under a separately reviewed topology. A handoff must prove that actual result and exclusive journal/witness custody to the Root coordinator.",
+      "not_allowed": "No public constructor for completion from JSON/digests; no re-opened Source/ledger writer pretending to be the original. Existing recover_predecessor depends on Published C, so it is circular as a source of the completion required before first C prepare."
+    },
+    {
+      "id": "I4",
+      "required_new_sealed_interface": "Keeping Version non-Root also requires exact local-vs-remote internal custody for Prepared operation readback, Artifact/withdrawal observations, original_a Source checks, and installed C task/Cell/Source. All are concrete in the current host/state/c_task signatures.",
+      "not_allowed": "Adding one remote Current query or a C publication response does not satisfy Version construction/install. Keep original same-Arc T/E sharing, original phase consumption and full freshness checks; do not add another T connection."
+    },
+    {
+      "id": "I5",
+      "implementation_precondition": "New transport framing, peer identity, actual UID/pidfd/boot/start, operation binding, end and per-message limits must be explicitly reviewed. Original Current/Artifact critical sections are synchronous; do not release their original lock coverage around a remote await and call it the same CAS guarantee.",
+      "not_allowed": "No permission or timeout/4-permit/request-budget increase is approved here; no same-UID Root loopback exemption to f42. Whole-task relocation to Root is a topology change, not an already-available shortcut."
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "C1",
+      "detail": "PublishedCircuitFeatureTaskV1 and PublishedCircuitFeatureCompletionV1 are Clone. The first retains the same task Arc; the second is a historical fact with no fresh authority. Do not misdescribe all values as non-Clone or require a new Arc strong-count rule. The concrete preparation and C config are the consumed one-operation custody."
+    },
+    {
+      "id": "C2",
+      "detail": "Original code has prepare_forward_recovery and prepare_initial_forward_recovery. They require a different operation ID, the same actual prepared journals/genesis, and a new independent signature; no nonce refund. A minimal readback-only/lost-ACK service can deliberately exclude them, but should not claim the source has no such operator operation or silently auto-invoke them."
+    },
+    {
+      "id": "C3",
+      "detail": "Raw NeuronGenerationCurrentOwnerV1::initialize is trusted Root setup, not a substitute for the full first-A prepare_initial/FinalUse path. Do not expose arbitrary initialize/replacement heads through the proposed service."
+    },
+    {
+      "id": "C4",
+      "detail": "FinalUse consumer nonce-store euid and UID-0 Host issuer remain separate. Moving the coordinator does not authorize reopening a UID-60001 consumer store as UID 0 or fabricating a new authority from an issuer response."
+    },
+    {
+      "id": "C5",
+      "detail": "The proposal correctly remains design-only. The material-only split and B objective separation may proceed as test-only mechanisms, but neither solves production Root Current/CAS custody or proves a real three-UID task."
+    }
+  ],
+  "remaining_gaps": [
+    "No implemented cross-process published-task/live-guard capability",
+    "No implemented actual same-owner retirement handoff accepted by Root",
+    "No remote Version control+Artifact+OriginalA observation integration",
+    "No actual C factory/config/daemon and separate signed ingress completion across this topology",
+    "No fixed implementation-level wire/frame/deadline contract or runtime qualification for these proposed new services"
+  ],
+  "bounds": {
+    "author_files_modified": false,
+    "source_modified": false,
+    "B_Panel_code_written": false,
+    "Root_permission_exemption": false,
+    "generic_callback_added": false,
+    "H_calls": 0,
+    "Rust_compile": 0,
+    "Rust_fmt": 0,
+    "QA_or_gate_runs": 0,
+    "candidate_main_execution": 0,
+    "refs_updated": 0,
+    "real_qualified_chains": 0
+  }
+}

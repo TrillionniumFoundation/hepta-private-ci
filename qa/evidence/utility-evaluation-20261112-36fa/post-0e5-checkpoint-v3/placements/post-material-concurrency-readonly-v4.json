@@ -1,0 +1,66 @@
+{
+  "format": "hepta-qa-evidence-placement-v1",
+  "status": "COMPLETED_READONLY_OBSERVATION_NOT_QUALIFICATION",
+  "entries": [
+    {
+      "path": "post-material-concurrency-readonly-v4/DISPATCH_INTENT.json",
+      "bytes": 999,
+      "sha256": "3673661e96f2f02ebf8de6b0da73fe93c80408990147e7227614f9c73ca65d2b",
+      "git_blob": "0bcb75cabeaaa65cd6c9618c0bee9b48c037c992",
+      "actual_create_and_full_git_get_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v4/ADMISSION.original.json",
+      "bytes": 3063,
+      "sha256": "7448fd0d1f21fdeb2db5e3f347a44b32429207d45bacc020c41adf592faea6f1",
+      "git_blob": "a4a19241a3f60713172241b39735517c73ab0f58",
+      "actual_create_and_full_git_get_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v4/STATUS_01.original.json",
+      "bytes": 950,
+      "sha256": "52fa019158b5bf24725d22e5537c812ce056f2d5e3707799730be517da59fffc",
+      "git_blob": "abd7f8395d49c33f76b8d4d0eeb940bf64a32368",
+      "actual_create_and_full_git_get_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v4/STDOUT_READ_01.original.json",
+      "bytes": 2044,
+      "sha256": "6d81603e709d48dff0ee952ee1684f7ae922eb278e5dd8cc8a700af05bc1ed04",
+      "git_blob": "b5973afc2de6410979d22d800fe4ba16b8d70aaa",
+      "actual_create_and_full_git_get_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v4/STDOUT.complete.json",
+      "bytes": 485,
+      "sha256": "d737bd638ac91863afe55667be978423da282f4da68c64f0f7d807bd2678f986",
+      "git_blob": "c125be04ceeaac8bc269c7f578fa0b13693f361e",
+      "actual_create_and_full_git_get_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v4/STDERR.complete.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_create_and_full_git_get_equal": true
+    },
+    {
+      "path": "post-material-concurrency-readonly-v4/REVIEW.json",
+      "bytes": 2893,
+      "sha256": "d87cf7c2cf41bf0a68da3a88ecaebad8185fab527ec8b5e555c5f442052a4fcc",
+      "git_blob": "1924181eca2651051005ba47d40b57fbaecc7686",
+      "actual_create_and_full_git_get_equal": true
+    }
+  ],
+  "input_request": {
+    "bytes": 1916,
+    "sha256": "f968272305e441ea960386b475610a3b96b6ff1cbceaf12fd49f85774da3f152",
+    "git_blob": "332b30be04e955d13b063991ef1e7d10fb49f2e6"
+  },
+  "root_approval": {
+    "bytes": 1417,
+    "sha256": "072dd83b43dd76cd27e4d31636d4b69f1c76963f9d7f490f49ce44d656546883",
+    "git_blob": "4f4c650a20ac377b6512f2f78532c792b5c1d8eb"
+  },
+  "note": "Single authorized v4 point observation only; active/unreadable arrays empty at06:11:23 UTC. No lease, restoration, native main or source/ref mutation."
+}

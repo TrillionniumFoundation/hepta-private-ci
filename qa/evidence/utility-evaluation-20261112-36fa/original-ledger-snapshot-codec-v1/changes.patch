@@ -1,0 +1,878 @@
+diff --git a/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs b/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs
+@@ -0,0 +1,199 @@
++//! Pure, bounded transport of complete ledger content. No I/O or authority.
++
++use std::error::Error;
++use std::fmt;
++
++use codex_hepta_types::Digest32;
++
++use crate::AppendDisposition;
++use crate::LearningLedger;
++use crate::LedgerError;
++use crate::LedgerEvent;
++use crate::LedgerSnapshot;
++use crate::durable_codec::FRAME_OVERHEAD;
++use crate::durable_codec::MAX_EVENT;
++use crate::durable_codec::decode_event;
++use crate::durable_codec::encode_frame;
++
++/// Maximum complete encoded snapshot, including this codec's header.
++///
++/// Any containing control message must still enforce its own total byte limit,
++/// including encoding overhead and all other fields.
++pub const MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1: usize = 64 * 1024;
++
++const DOMAIN: &[u8] = b"hepta.learning-ledger.snapshot.v1";
++const HEADER_BYTES: usize = DOMAIN.len() + 4 + 32;
++const MAX_RECORDS: usize =
++    (MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1 - HEADER_BYTES) / FRAME_OVERHEAD;
++
++/// Invalid, oversized, or semantically inconsistent snapshot content.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub enum OriginalLedgerSnapshotCodecErrorV1 {
++    Capacity,
++    Corrupt,
++    Semantic(LedgerError),
++}
++
++impl fmt::Display for OriginalLedgerSnapshotCodecErrorV1 {
++    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
++        write!(f, "{self:?}")
++    }
++}
++
++impl Error for OriginalLedgerSnapshotCodecErrorV1 {}
++
++use OriginalLedgerSnapshotCodecErrorV1 as CodecError;
++
++/// Encode every original record and the head after exact ledger replay.
++///
++/// Frames use the existing durable canonical event/frame encoding, without
++/// changing or manufacturing a durable file header. This verifies content only:
++/// callers must independently authenticate the freeze signature, preheld trust,
++/// source, task, plan, and contract before admitting the returned content.
++pub fn encode_original_ledger_snapshot_v1(
++    snapshot: &LedgerSnapshot,
++) -> Result<Vec<u8>, OriginalLedgerSnapshotCodecErrorV1> {
++    if snapshot.records().len() > MAX_RECORDS {
++        return Err(CodecError::Capacity);
++    }
++    let count = u32::try_from(snapshot.records().len()).map_err(|_| CodecError::Capacity)?;
++    let mut output = Vec::with_capacity(MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1);
++    output.extend_from_slice(DOMAIN);
++    output.extend_from_slice(&count.to_be_bytes());
++    output.extend_from_slice(snapshot.head_digest.as_array());
++    let mut core = LearningLedger::new();
++    for record in snapshot.records() {
++        // Bound every variable collection before cloning or encoding an
++        // untrusted in-memory event. StableId itself bounds each scalar string.
++        let bounded = match &record.event {
++            LedgerEvent::Decision(value) => value.candidate_ids.len() <= 128,
++            LedgerEvent::AuthenticatedDecisionV2(value) => value.candidate_ids.len() <= 128,
++            LedgerEvent::RetrievalAssignment(value) => {
++                value.enumerated_candidate_digests.len() <= 512
++                    && value.legal_candidate_indices.len() <= 512
++                    && value.selected_candidate_indices.len() <= 16
++                    && value.delivered_candidate_indices.len() <= 16
++            }
++            LedgerEvent::CreditBatchV2(value) => value.allocations.len() <= 256,
++            LedgerEvent::Outcome(_)
++            | LedgerEvent::Credit(_)
++            | LedgerEvent::PromptDelivery(_)
++            | LedgerEvent::Revocation(_)
++            | LedgerEvent::AuthenticatedOutcomeV2(_)
++            | LedgerEvent::UnlearningLineageV1(_) => true,
++        };
++        if !bounded {
++            return Err(CodecError::Capacity);
++        }
++        let prepared = core
++            .prepare(record.event.clone())
++            .map_err(CodecError::Semantic)?;
++        if prepared.disposition != AppendDisposition::Appended || &prepared.record != record {
++            return Err(CodecError::Corrupt);
++        }
++        let frame = encode_frame(&prepared.record).map_err(|_| CodecError::Capacity)?;
++        let next_length = output
++            .len()
++            .checked_add(frame.len())
++            .ok_or(CodecError::Capacity)?;
++        if next_length > MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1 {
++            return Err(CodecError::Capacity);
++        }
++        core.apply(prepared).map_err(CodecError::Semantic)?;
++        output.extend_from_slice(&frame);
++    }
++    if core.snapshot().head_digest != snapshot.head_digest {
++        return Err(CodecError::Corrupt);
++    }
++    Ok(output)
++}
++
++/// Decode a complete snapshot by bounded canonical parsing and ledger replay.
++///
++/// No tail recovery, normalization of the wire representation, partial history,
++/// or duplicate record is accepted. The result contains all original records;
++/// it does not authenticate their signatures or confer any writer or execution
++/// authority. A containing control message retains its separate aggregate cap.
++pub fn decode_original_ledger_snapshot_v1(
++    input: &[u8],
++) -> Result<LedgerSnapshot, OriginalLedgerSnapshotCodecErrorV1> {
++    if input.len() > MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1 {
++        return Err(CodecError::Capacity);
++    }
++    let (header, mut remaining) = input
++        .split_at_checked(HEADER_BYTES)
++        .ok_or(CodecError::Corrupt)?;
++    if &header[..DOMAIN.len()] != DOMAIN {
++        return Err(CodecError::Corrupt);
++    }
++    let count = u32::from_be_bytes(
++        header[DOMAIN.len()..DOMAIN.len() + 4]
++            .try_into()
++            .map_err(|_| CodecError::Corrupt)?,
++    );
++    let count = usize::try_from(count).map_err(|_| CodecError::Capacity)?;
++    if count > MAX_RECORDS {
++        return Err(CodecError::Capacity);
++    }
++    if count > remaining.len() / FRAME_OVERHEAD {
++        return Err(CodecError::Corrupt);
++    }
++    let head = Digest32::from_array(
++        header[DOMAIN.len() + 4..]
++            .try_into()
++            .map_err(|_| CodecError::Corrupt)?,
++    );
++    // Never reserve storage using the claimed record count.
++    let mut core = LearningLedger::new();
++    for _ in 0..count {
++        let prefix = remaining.get(..8).ok_or(CodecError::Corrupt)?;
++        let size = u32::from_be_bytes(
++            prefix[..4]
++                .try_into()
++                .map_err(|_| CodecError::Corrupt)?,
++        );
++        let complement = u32::from_be_bytes(
++            prefix[4..]
++                .try_into()
++                .map_err(|_| CodecError::Corrupt)?,
++        );
++        if size != !complement || size == 0 {
++            return Err(CodecError::Corrupt);
++        }
++        let size = usize::try_from(size).map_err(|_| CodecError::Capacity)?;
++        if size > MAX_EVENT {
++            return Err(CodecError::Capacity);
++        }
++        let total = size.checked_add(FRAME_OVERHEAD).ok_or(CodecError::Capacity)?;
++        let (frame, tail) = remaining
++            .split_at_checked(total)
++            .ok_or(CodecError::Corrupt)?;
++        if Digest32::of_bytes(&frame[..total - 32]).as_array() != &frame[total - 32..] {
++            return Err(CodecError::Corrupt);
++        }
++        let event = decode_event(&frame[48..48 + size]).map_err(|_| CodecError::Corrupt)?;
++        let prepared = core.prepare(event).map_err(CodecError::Semantic)?;
++        if prepared.disposition != AppendDisposition::Appended
++            || encode_frame(&prepared.record)
++                .map_err(|_| CodecError::Corrupt)?
++                .as_slice()
++                != frame
++        {
++            return Err(CodecError::Corrupt);
++        }
++        core.apply(prepared).map_err(CodecError::Semantic)?;
++        remaining = tail;
++    }
++    if !remaining.is_empty() {
++        return Err(CodecError::Corrupt);
++    }
++    let snapshot = core.snapshot();
++    if snapshot.head_digest != head {
++        return Err(CodecError::Corrupt);
++    }
++    Ok(snapshot)
++}
++
++#[cfg(test)]
++#[path = "snapshot_codec_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs b/codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs
+@@ -0,0 +1,384 @@
++use super::*;
++use codex_hepta_types::FixedQ32;
++use codex_hepta_types::LogicalSequence;
++use codex_hepta_types::ProbabilityQ32;
++use codex_hepta_types::StableId;
++use pretty_assertions::assert_eq;
++
++use crate::AuthenticatedDecisionRecordV2;
++use crate::AuthenticatedOutcomeRecordV2;
++use crate::AuthenticatedOutcomeTerminality;
++use crate::CandidateSetCompleteness;
++use crate::CreditAllocationBatchRecordV2;
++use crate::CreditAllocationRecordV2;
++use crate::CreditAssignment;
++use crate::EpisodeDecision;
++use crate::OutcomeFinality;
++use crate::OutcomeObservation;
++use crate::PromptDeliveryObservation;
++use crate::RetrievalAssignmentFact;
++use crate::Revocation;
++use crate::UnlearningLineageEventV1;
++
++fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {
++    match result {
++        Ok(value) => value,
++        Err(error) => panic!("fixture failed: {error:?}"),
++    }
++}
++
++fn id(value: &str) -> StableId {
++    must(StableId::new(value))
++}
++
++fn decision(index: usize) -> LedgerEvent {
++    LedgerEvent::Decision(EpisodeDecision {
++        record_id: id(&format!("decision-{index}")),
++        episode_id: id(&format!("episode-{index}")),
++        objective_digest: Digest32::of_bytes(b"objective"),
++        policy_id: id("policy"),
++        candidate_ids: vec![id("choice"), id("abstain")],
++        selected_candidate_id: id("choice"),
++        selected_propensity: ProbabilityQ32::ONE,
++        completeness: CandidateSetCompleteness::Complete,
++        support_digest: Digest32::of_bytes(b"decision-support"),
++    })
++}
++
++fn single_snapshot() -> LedgerSnapshot {
++    let mut core = LearningLedger::new();
++    must(core.append(decision(/*index*/ 0)));
++    core.snapshot()
++}
++
++fn complete_snapshot() -> LedgerSnapshot {
++    let mut core = LearningLedger::new();
++    for event in [
++        decision(/*index*/ 0),
++        LedgerEvent::PromptDelivery(PromptDeliveryObservation {
++            record_id: id("delivery"),
++            episode_id: id("episode-0"),
++            compilation_id: id("compilation"),
++            observer_id: id("runtime-observer"),
++            portfolio_receipt_digest: Digest32::of_bytes(b"portfolio"),
++            provider_request_digest: Digest32::of_bytes(b"request"),
++            delivered: true,
++            rejected_reason_digest: None,
++            observed_token_positions_digest: Some(Digest32::of_bytes(b"positions")),
++            truncation_observed: false,
++            context_delivery_observation_digest: Digest32::of_bytes(b"context"),
++            support_digest: Digest32::of_bytes(b"delivery"),
++        }),
++        LedgerEvent::Outcome(OutcomeObservation {
++            record_id: id("observation"),
++            outcome_id: id("outcome"),
++            episode_id: id("episode-0"),
++            observer_id: id("observer"),
++            value: FixedQ32::ONE,
++            finality: OutcomeFinality::Terminal,
++            support_digest: Digest32::of_bytes(b"outcome"),
++        }),
++        LedgerEvent::Credit(CreditAssignment {
++            record_id: id("credit-record"),
++            credit_id: id("credit"),
++            episode_id: id("episode-0"),
++            outcome_id: id("outcome"),
++            target_artifact_id: id("artifact"),
++            allocator_id: id("allocator"),
++            credit: FixedQ32::ONE,
++            support_digest: Digest32::of_bytes(b"credit"),
++        }),
++        LedgerEvent::Revocation(Revocation {
++            record_id: id("revocation"),
++            target_record_id: id("decision-0"),
++            authority_id: id("privacy-owner"),
++            reason_digest: Digest32::of_bytes(b"revocation"),
++        }),
++        LedgerEvent::RetrievalAssignment(RetrievalAssignmentFact {
++            record_id: id("retrieval"),
++            episode_id: id("retrieval-episode"),
++            cue_digest: Digest32::of_bytes(b"cue"),
++            policy_digest: Digest32::of_bytes(b"retrieval-policy"),
++            source_completeness_digest: Digest32::of_bytes(b"source"),
++            candidate_union_digest: Digest32::of_bytes(b"union"),
++            recall_packet_digest: Digest32::of_bytes(b"recall"),
++            enumerated_candidate_digests: vec![
++                Digest32::of_bytes(b"candidate-b"),
++                Digest32::of_bytes(b"candidate-a"),
++            ],
++            legal_candidate_indices: vec![1, 0],
++            selected_candidate_indices: vec![1],
++            delivered_candidate_indices: vec![1],
++            context_exposed: true,
++            published_context_digest: Some(Digest32::of_bytes(b"published")),
++            omitted_by_policy_limits: 0,
++            assignment_propensity: ProbabilityQ32::ONE,
++            downstream_policy_digest: Some(Digest32::of_bytes(b"ranker")),
++            delivery_propensity: ProbabilityQ32::ONE,
++            completeness: CandidateSetCompleteness::Complete,
++            support_digest: Digest32::of_bytes(b"retrieval-support"),
++        }),
++        LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
++            record_id: id("authenticated-decision"),
++            episode_id: id("authenticated-episode"),
++            run_snapshot_digest: Digest32::of_bytes(b"run"),
++            objective_digest: Digest32::of_bytes(b"auth-objective"),
++            policy_digest: Digest32::of_bytes(b"auth-policy"),
++            generator_id: id("generator"),
++            generator_controller_id: id("generator-controller"),
++            generator_credential_chain_digest: Digest32::of_bytes(b"generator-credential"),
++            generator_signing_key_digest: Digest32::of_bytes(b"generator-key"),
++            generator_scope_digest: Digest32::of_bytes(b"generator-scope"),
++            generator_authority_epoch: 1,
++            candidate_ids: vec![id("choice"), id("abstain")],
++            selected_candidate_id: id("choice"),
++            selected_propensity: ProbabilityQ32::ONE,
++            candidate_completeness_digest: Digest32::of_bytes(b"candidate-completeness"),
++            support_digest: Digest32::of_bytes(b"auth-decision-support"),
++            authentication_digest: Digest32::of_bytes(b"auth-decision"),
++        }),
++        LedgerEvent::AuthenticatedOutcomeV2(AuthenticatedOutcomeRecordV2 {
++            record_id: id("authenticated-observation"),
++            outcome_id: id("authenticated-outcome"),
++            episode_id: id("authenticated-episode"),
++            observer_id: id("independent-observer"),
++            observer_controller_id: id("observer-controller"),
++            observer_credential_chain_digest: Digest32::of_bytes(b"observer-credential"),
++            observer_signing_key_digest: Digest32::of_bytes(b"observer-key"),
++            observer_scope_digest: Digest32::of_bytes(b"observer-scope"),
++            observer_authority_epoch: 1,
++            observed_at: Some(5),
++            value: Some(FixedQ32::ONE),
++            unit_profile_digest: Digest32::of_bytes(b"unit"),
++            support_digest: Digest32::of_bytes(b"auth-outcome-support"),
++            latest_observable_at: 10,
++            expected_delay_profile_digest: Digest32::of_bytes(b"delay"),
++            terminality: AuthenticatedOutcomeTerminality::Terminal,
++            censoring_reason: None,
++            correction_predecessor: None,
++            finalized_at: Some(6),
++            authentication_digest: Digest32::of_bytes(b"auth-outcome"),
++        }),
++        LedgerEvent::CreditBatchV2(CreditAllocationBatchRecordV2 {
++            record_id: id("batch-record"),
++            batch_id: id("batch"),
++            episode_id: id("authenticated-episode"),
++            outcome_id: id("authenticated-outcome"),
++            allocator_id: id("independent-allocator"),
++            allocator_controller_id: id("allocator-controller"),
++            allocator_credential_chain_digest: Digest32::of_bytes(b"allocator-credential"),
++            allocator_signing_key_digest: Digest32::of_bytes(b"allocator-key"),
++            allocator_scope_digest: Digest32::of_bytes(b"allocator-scope"),
++            allocator_authority_epoch: 1,
++            terminal_outcome: FixedQ32::ONE,
++            allocations: vec![CreditAllocationRecordV2 {
++                target_artifact_id: id("authenticated-artifact"),
++                credit: FixedQ32::ONE,
++            }],
++            conservation_residual: FixedQ32::ZERO,
++            support_digest: Digest32::of_bytes(b"batch-support"),
++            authentication_digest: Digest32::of_bytes(b"auth-batch"),
++        }),
++    ] {
++        must(core.append(event));
++    }
++    let source = core.records().last().expect("batch record");
++    let unlearning = UnlearningLineageEventV1 {
++        record_id: id("unlearning-record"),
++        lineage_id: id("unlearning"),
++        source_record_id: source.event.record_id().clone(),
++        source_event_digest: source.event_digest,
++        dataset_snapshot_id: id("dataset"),
++        dataset_digest: Digest32::of_bytes(b"dataset"),
++        artifact_id: id("authenticated-artifact"),
++        authority_id: id("privacy-owner"),
++        reason_digest: Digest32::of_bytes(b"unlearning-reason"),
++        authentication_digest: Digest32::of_bytes(b"auth-unlearning"),
++    };
++    must(core.append(LedgerEvent::UnlearningLineageV1(unlearning)));
++    core.snapshot()
++}
++
++// Build checksum-valid hostile fixtures without passing through the new encoder.
++fn unchecked_wire(snapshot: &LedgerSnapshot) -> Vec<u8> {
++    let mut bytes = DOMAIN.to_vec();
++    bytes.extend_from_slice(&must(u32::try_from(snapshot.records.len())).to_be_bytes());
++    bytes.extend_from_slice(snapshot.head_digest.as_array());
++    for record in &snapshot.records {
++        bytes.extend_from_slice(&must(encode_frame(record)));
++    }
++    bytes
++}
++
++#[test]
++fn empty_and_complete_snapshots_roundtrip_all_records_and_head() {
++    for expected in [LearningLedger::new().snapshot(), complete_snapshot()] {
++        let bytes = must(encode_original_ledger_snapshot_v1(&expected));
++        let actual = must(decode_original_ledger_snapshot_v1(&bytes));
++        assert_eq!(actual, expected);
++        assert_eq!(must(LearningLedger::from_snapshot(actual.clone())).snapshot(), expected);
++        assert_eq!(must(encode_original_ledger_snapshot_v1(&actual)), bytes);
++        assert_eq!(bytes, unchecked_wire(&expected));
++    }
++}
++
++#[test]
++fn encoder_rejects_changed_original_record_fields_and_head() {
++    let original = single_snapshot();
++    let changed_digest = Digest32::of_bytes(b"changed");
++    let mut sequence = original.clone();
++    sequence.records[0].sequence = must(LogicalSequence::new(/*value*/ 2));
++    let mut predecessor = original.clone();
++    predecessor.records[0].predecessor_chain_digest = changed_digest;
++    let mut event_digest = original.clone();
++    event_digest.records[0].event_digest = changed_digest;
++    let mut chain = original.clone();
++    chain.records[0].chain_digest = changed_digest;
++    let mut head = original;
++    head.head_digest = changed_digest;
++    for changed in [sequence, predecessor, event_digest, chain, head] {
++        assert_eq!(
++            encode_original_ledger_snapshot_v1(&changed),
++            Err(CodecError::Corrupt),
++        );
++    }
++}
++
++#[test]
++fn every_truncation_trailing_byte_and_changed_domain_is_rejected() {
++    let bytes = must(encode_original_ledger_snapshot_v1(&single_snapshot()));
++    for end in 0..bytes.len() {
++        assert!(decode_original_ledger_snapshot_v1(&bytes[..end]).is_err());
++    }
++    let mut trailing = bytes.clone();
++    trailing.push(0);
++    assert_eq!(decode_original_ledger_snapshot_v1(&trailing), Err(CodecError::Corrupt));
++    let mut domain = bytes;
++    domain[0] ^= 1;
++    assert_eq!(decode_original_ledger_snapshot_v1(&domain), Err(CodecError::Corrupt));
++}
++
++#[test]
++fn declared_counts_and_frame_lengths_cannot_expand_the_input_budget() {
++    let bytes = must(encode_original_ledger_snapshot_v1(&single_snapshot()));
++    let mut count = bytes.clone();
++    count[DOMAIN.len()..DOMAIN.len() + 4].copy_from_slice(&u32::MAX.to_be_bytes());
++    assert_eq!(decode_original_ledger_snapshot_v1(&count), Err(CodecError::Capacity));
++    let mut missing_record = bytes.clone();
++    missing_record[DOMAIN.len()..DOMAIN.len() + 4].copy_from_slice(&2_u32.to_be_bytes());
++    assert!(decode_original_ledger_snapshot_v1(&missing_record).is_err());
++    let mut length = bytes.clone();
++    length[HEADER_BYTES..HEADER_BYTES + 4].copy_from_slice(&u32::MAX.to_be_bytes());
++    length[HEADER_BYTES + 4..HEADER_BYTES + 8].copy_from_slice(&0_u32.to_be_bytes());
++    assert_eq!(decode_original_ledger_snapshot_v1(&length), Err(CodecError::Capacity));
++    let mut complement = bytes;
++    complement[HEADER_BYTES + 4] ^= 1;
++    assert_eq!(decode_original_ledger_snapshot_v1(&complement), Err(CodecError::Corrupt));
++    let oversized = vec![0; MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1 + 1];
++    assert_eq!(decode_original_ledger_snapshot_v1(&oversized), Err(CodecError::Capacity));
++}
++
++#[test]
++fn checksums_do_not_replace_sequence_predecessor_chain_or_head_validation() {
++    let bytes = must(encode_original_ledger_snapshot_v1(&single_snapshot()));
++    let mut bad_checksum = bytes.clone();
++    *bad_checksum.last_mut().expect("checksum") ^= 1;
++    assert_eq!(
++        decode_original_ledger_snapshot_v1(&bad_checksum),
++        Err(CodecError::Corrupt),
++    );
++    let checksum_at = bytes.len() - 32;
++    for offset in [HEADER_BYTES + 8, HEADER_BYTES + 16, bytes.len() - 64] {
++        let mut altered = bytes.clone();
++        altered[offset] ^= 1;
++        let checksum = Digest32::of_bytes(&altered[HEADER_BYTES..checksum_at]);
++        altered[checksum_at..].copy_from_slice(checksum.as_array());
++        assert_eq!(
++            decode_original_ledger_snapshot_v1(&altered),
++            Err(CodecError::Corrupt),
++        );
++    }
++    let mut head = bytes;
++    head[DOMAIN.len() + 4] ^= 1;
++    assert_eq!(decode_original_ledger_snapshot_v1(&head), Err(CodecError::Corrupt));
++}
++
++#[test]
++fn checksum_valid_noncanonical_candidate_order_is_rejected_not_repaired() {
++    let mut changed = single_snapshot();
++    let LedgerEvent::Decision(value) = &mut changed.records[0].event else {
++        panic!("decision fixture");
++    };
++    value.candidate_ids.reverse();
++    assert_eq!(encode_original_ledger_snapshot_v1(&changed), Err(CodecError::Corrupt));
++    assert_eq!(
++        decode_original_ledger_snapshot_v1(&unchecked_wire(&changed)),
++        Err(CodecError::Corrupt),
++    );
++}
++
++#[test]
++fn repeated_or_reordered_checksum_valid_frames_are_rejected() {
++    let original = complete_snapshot();
++    let mut repeated = original.clone();
++    repeated.records.insert(1, repeated.records[0].clone());
++    let mut reordered = original;
++    reordered.records.swap(0, 1);
++    for changed in [repeated, reordered] {
++        assert!(encode_original_ledger_snapshot_v1(&changed).is_err());
++        assert!(decode_original_ledger_snapshot_v1(&unchecked_wire(&changed)).is_err());
++    }
++}
++
++#[test]
++fn checksum_valid_event_cannot_bypass_original_causal_validation() {
++    let mut changed = complete_snapshot();
++    let LedgerEvent::Outcome(value) = &mut changed.records[2].event else {
++        panic!("outcome fixture");
++    };
++    value.episode_id = id("missing-episode");
++    let expected = CodecError::Semantic(LedgerError::EpisodeNotFound(
++        "missing-episode".to_string(),
++    ));
++    assert_eq!(encode_original_ledger_snapshot_v1(&changed), Err(expected.clone()));
++    assert_eq!(
++        decode_original_ledger_snapshot_v1(&unchecked_wire(&changed)),
++        Err(expected),
++    );
++}
++
++#[test]
++fn oversized_in_memory_event_is_rejected_before_encoding_or_cloning_it() {
++    let mut changed = single_snapshot();
++    let LedgerEvent::Decision(value) = &mut changed.records[0].event else {
++        panic!("decision fixture");
++    };
++    value.candidate_ids = vec![id("candidate"); 129];
++    assert_eq!(encode_original_ledger_snapshot_v1(&changed), Err(CodecError::Capacity));
++    assert_eq!(
++        decode_original_ledger_snapshot_v1(&unchecked_wire(&changed)),
++        Err(CodecError::Corrupt),
++    );
++}
++
++#[test]
++fn aggregate_output_cap_rejects_complete_history_without_truncation() {
++    let mut core = LearningLedger::new();
++    let mut expected_bytes = HEADER_BYTES;
++    let mut last_fitting = core.snapshot();
++    let mut index = 0;
++    while expected_bytes <= MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1 {
++        must(core.append(decision(index)));
++        index += 1;
++        expected_bytes += must(encode_frame(core.records().last().expect("record"))).len();
++        if expected_bytes <= MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1 {
++            last_fitting = core.snapshot();
++        }
++    }
++    let bytes = must(encode_original_ledger_snapshot_v1(&last_fitting));
++    assert_eq!(must(decode_original_ledger_snapshot_v1(&bytes)), last_fitting);
++    assert_eq!(
++        encode_original_ledger_snapshot_v1(&core.snapshot()),
++        Err(CodecError::Capacity),
++    );
++}
+diff --git a/codex-rs/hepta-learning-ledger/src/lib.rs b/codex-rs/hepta-learning-ledger/src/lib.rs
+--- a/codex-rs/hepta-learning-ledger/src/lib.rs
++++ b/codex-rs/hepta-learning-ledger/src/lib.rs
+@@ -25,141 +25,146 @@
+ mod segments;
+ mod shadow;
+ mod signed_evidence;
+-mod trust_distribution;
+-mod witness;
+-
+-pub use causal_v2::AuthenticatedOutcomeV1;
+-pub use causal_v2::AuthenticatedPrincipalV1;
+-pub use causal_v2::CandidateSetCompletenessReceiptV1;
+-pub use causal_v2::CausalV2Error;
+-pub use causal_v2::CreditAllocationBatchV1;
+-pub use causal_v2::CreditAllocationReceiptV1;
+-pub use causal_v2::CreditAllocationV1;
+-pub use causal_v2::DatasetFreezeRequestV1;
+-pub use causal_v2::DatasetSnapshotV2;
+-pub use causal_v2::OutcomeTerminalityV1;
+-pub use causal_v2::OutcomeWatermarkV1;
+-pub use causal_v2::finalize_credit_batch;
+-pub use causal_v2::freeze_dataset;
+-pub use causal_v2::validate_authenticated_outcome;
+-pub use causal_v2::validate_candidate_set_completeness;
+-pub use causal_v2::verify_independent_roles;
+-pub use checkpoint::LedgerCheckpointError;
+-pub use checkpoint::LedgerIndexCheckpointV1;
+-pub use checkpoint::LedgerIndexEntryV1;
+-pub use checkpoint::OutcomeHeadIndexV1;
+-pub use checkpoint::build_ledger_index_checkpoint;
+-pub use checkpoint::verify_ledger_index_checkpoint;
+-pub use dataset_receipt_v3::DatasetReceiptError;
+-pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
+-pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
+-pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_against_ledger_v3;
+-pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
+-pub use durable::DurableLedger;
+-pub use durable::DurableLedgerError;
+-pub use durable::LedgerAnchor;
+-pub use durable::LedgerRecovery;
+-pub use durable::inspect_ledger;
+-pub use error::LedgerError;
+-pub use journal::DurableLearningJournal;
+-pub use ledger::LearningLedger;
+-pub use model::AppendDisposition;
+-pub use model::AppendReceipt;
+-pub use model::AuthenticatedDecisionRecordV2;
+-pub use model::AuthenticatedOutcomeRecordV2;
+-pub use model::AuthenticatedOutcomeTerminality;
+-pub use model::CandidateSetCompleteness;
+-pub use model::CreditAllocationBatchRecordV2;
+-pub use model::CreditAllocationRecordV2;
+-pub use model::CreditAssignment;
+-pub use model::EpisodeDecision;
+-pub use model::LedgerEvent;
+-pub use model::LedgerRecord;
+-pub use model::LedgerSnapshot;
+-pub use model::OutcomeFinality;
+-pub use model::OutcomeObservation;
+-pub use model::PromptDeliveryLineageV1;
+-pub use model::PromptDeliveryObservation;
+-pub use model::RetrievalAssignmentFact;
+-pub use model::Revocation;
+-pub use model::UnlearningLineageEventV1;
+-pub use production::DatasetFreezePlanV2;
+-pub use production::LedgerWriter;
+-pub use production::ProductionDecisionV2;
+-pub use production::ProductionLedgerError;
+-pub use production::UnlearningLineageReceiptV1;
+-pub use production::UnlearningLineageRequestV1;
+-pub use production::candidate_ids_digest_v2;
+-pub use production::candidate_order_digest_v2;
+-pub use production::credit_batch_signing_payload_v2;
+-pub use production::dataset_freeze_signing_payload_v2;
+-pub use production::decision_signing_payload_v2;
+-pub use production::freeze_dataset_from_ledger;
+-pub use production::outcome_signing_payload_v2;
+-pub use production::sync_directory_handle;
+-pub use production::unlearning_signing_payload_v1;
+-pub use protocol::CreditAllocationV1 as CreditAllocationProtocolV1;
+-pub use protocol::CreditAssignmentReceiptV1;
+-pub use protocol::DatasetSnapshotV1;
+-pub use protocol::EpisodeTerminalityV1;
+-pub use protocol::LearningDecisionV1;
+-pub use protocol::LearningEpisodeV1;
+-pub use protocol::LearningProtocolError;
+-pub use protocol::OutcomeCensoringV1;
+-pub use protocol::OutcomeReceiptV1;
+-pub use protocol::OutcomeWatermarkProtocolV1;
+-pub use protocol::OutcomeWatermarkTerminalityV1;
+-pub use protocol::decode_credit_assignment_receipt_v1;
+-pub use protocol::decode_dataset_snapshot_v1;
+-pub use protocol::decode_learning_decision_v1;
+-pub use protocol::decode_learning_episode_v1;
+-pub use protocol::decode_outcome_receipt_v1;
+-pub use protocol::encode_credit_assignment_receipt_v1;
+-pub use protocol::encode_dataset_snapshot_v1;
+-pub use protocol::encode_learning_decision_v1;
+-pub use protocol::encode_learning_episode_v1;
+-pub use protocol::encode_outcome_receipt_v1;
+-pub use retrieval_assignment::RetrievalAssignmentBridgeError;
+-pub use retrieval_assignment::retrieval_assignment_event;
+-pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
+-pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
+-pub use run_start::DurableRunStartJournal;
+-pub use run_start::RunStartAdmissionBindingV1;
+-pub use run_start::RunStartAnchor;
+-pub use run_start::RunStartAppendDisposition;
+-pub use run_start::RunStartAppendReceipt;
+-pub use run_start::RunStartAuthenticationV1;
+-pub use run_start::RunStartConflictRecordV1;
+-pub use run_start::RunStartJournal;
+-pub use run_start::RunStartObjectiveDispositionV1;
+-pub use run_start::RunStartPublication;
+-pub use run_start::RunStartRecordV1;
+-pub use run_start::RunStartRecovery;
+-pub use run_start::RunStartSnapshotV1;
+-pub use run_start::RunStartStoreError;
+-pub use segments::LedgerSegmentCheckpoint;
+-pub use segments::LedgerSegmentLimits;
+-pub use segments::MAX_LEDGER_SEGMENTS;
+-pub use segments::SegmentedLedger;
+-pub use segments::inspect_ledger_segments;
+-pub use shadow::ShadowAppendReceipt;
+-pub use shadow::ShadowDecisionArtifact;
+-pub use shadow::ShadowDecisionError;
+-pub use shadow::ShadowDecisionRequest;
+-pub use shadow::append_shadow_decision;
+-pub use shadow::canonical_candidate_set_digest;
+-pub use shadow::prepare_shadow_decision;
+-pub use signed_evidence::LearningEvidenceRoleV1;
+-pub use signed_evidence::LearningEvidenceTrustV1;
+-pub use signed_evidence::LearningEvidenceVerifierV1;
+-pub use signed_evidence::SignedEvidenceError;
+-pub use signed_evidence::SignedLearningEvidenceV1;
+-pub use signed_evidence::TrustedLearningSignerV1;
+-pub use signed_evidence::VerifiedLearningEvidenceV1;
+-pub use signed_evidence::verify_signed_actor_separation;
+-pub use signed_evidence::verify_signed_independent_roles_v1;
+-pub use signed_evidence::verify_signed_role_separation;
+-pub use signed_evidence::verify_verified_role_separation;
++mod snapshot_codec;
++mod trust_distribution;
++mod witness;
++
++pub use causal_v2::AuthenticatedOutcomeV1;
++pub use causal_v2::AuthenticatedPrincipalV1;
++pub use causal_v2::CandidateSetCompletenessReceiptV1;
++pub use causal_v2::CausalV2Error;
++pub use causal_v2::CreditAllocationBatchV1;
++pub use causal_v2::CreditAllocationReceiptV1;
++pub use causal_v2::CreditAllocationV1;
++pub use causal_v2::DatasetFreezeRequestV1;
++pub use causal_v2::DatasetSnapshotV2;
++pub use causal_v2::OutcomeTerminalityV1;
++pub use causal_v2::OutcomeWatermarkV1;
++pub use causal_v2::finalize_credit_batch;
++pub use causal_v2::freeze_dataset;
++pub use causal_v2::validate_authenticated_outcome;
++pub use causal_v2::validate_candidate_set_completeness;
++pub use causal_v2::verify_independent_roles;
++pub use checkpoint::LedgerCheckpointError;
++pub use checkpoint::LedgerIndexCheckpointV1;
++pub use checkpoint::LedgerIndexEntryV1;
++pub use checkpoint::OutcomeHeadIndexV1;
++pub use checkpoint::build_ledger_index_checkpoint;
++pub use checkpoint::verify_ledger_index_checkpoint;
++pub use dataset_receipt_v3::DatasetReceiptError;
++pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
++pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
++pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_against_ledger_v3;
++pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
++pub use durable::DurableLedger;
++pub use durable::DurableLedgerError;
++pub use durable::LedgerAnchor;
++pub use durable::LedgerRecovery;
++pub use durable::inspect_ledger;
++pub use error::LedgerError;
++pub use journal::DurableLearningJournal;
++pub use ledger::LearningLedger;
++pub use model::AppendDisposition;
++pub use model::AppendReceipt;
++pub use model::AuthenticatedDecisionRecordV2;
++pub use model::AuthenticatedOutcomeRecordV2;
++pub use model::AuthenticatedOutcomeTerminality;
++pub use model::CandidateSetCompleteness;
++pub use model::CreditAllocationBatchRecordV2;
++pub use model::CreditAllocationRecordV2;
++pub use model::CreditAssignment;
++pub use model::EpisodeDecision;
++pub use model::LedgerEvent;
++pub use model::LedgerRecord;
++pub use model::LedgerSnapshot;
++pub use model::OutcomeFinality;
++pub use model::OutcomeObservation;
++pub use model::PromptDeliveryLineageV1;
++pub use model::PromptDeliveryObservation;
++pub use model::RetrievalAssignmentFact;
++pub use model::Revocation;
++pub use model::UnlearningLineageEventV1;
++pub use production::DatasetFreezePlanV2;
++pub use production::LedgerWriter;
++pub use production::ProductionDecisionV2;
++pub use production::ProductionLedgerError;
++pub use production::UnlearningLineageReceiptV1;
++pub use production::UnlearningLineageRequestV1;
++pub use production::candidate_ids_digest_v2;
++pub use production::candidate_order_digest_v2;
++pub use production::credit_batch_signing_payload_v2;
++pub use production::dataset_freeze_signing_payload_v2;
++pub use production::decision_signing_payload_v2;
++pub use production::freeze_dataset_from_ledger;
++pub use production::outcome_signing_payload_v2;
++pub use production::sync_directory_handle;
++pub use production::unlearning_signing_payload_v1;
++pub use protocol::CreditAllocationV1 as CreditAllocationProtocolV1;
++pub use protocol::CreditAssignmentReceiptV1;
++pub use protocol::DatasetSnapshotV1;
++pub use protocol::EpisodeTerminalityV1;
++pub use protocol::LearningDecisionV1;
++pub use protocol::LearningEpisodeV1;
++pub use protocol::LearningProtocolError;
++pub use protocol::OutcomeCensoringV1;
++pub use protocol::OutcomeReceiptV1;
++pub use protocol::OutcomeWatermarkProtocolV1;
++pub use protocol::OutcomeWatermarkTerminalityV1;
++pub use protocol::decode_credit_assignment_receipt_v1;
++pub use protocol::decode_dataset_snapshot_v1;
++pub use protocol::decode_learning_decision_v1;
++pub use protocol::decode_learning_episode_v1;
++pub use protocol::decode_outcome_receipt_v1;
++pub use protocol::encode_credit_assignment_receipt_v1;
++pub use protocol::encode_dataset_snapshot_v1;
++pub use protocol::encode_learning_decision_v1;
++pub use protocol::encode_learning_episode_v1;
++pub use protocol::encode_outcome_receipt_v1;
++pub use retrieval_assignment::RetrievalAssignmentBridgeError;
++pub use retrieval_assignment::retrieval_assignment_event;
++pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
++pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
++pub use run_start::DurableRunStartJournal;
++pub use run_start::RunStartAdmissionBindingV1;
++pub use run_start::RunStartAnchor;
++pub use run_start::RunStartAppendDisposition;
++pub use run_start::RunStartAppendReceipt;
++pub use run_start::RunStartAuthenticationV1;
++pub use run_start::RunStartConflictRecordV1;
++pub use run_start::RunStartJournal;
++pub use run_start::RunStartObjectiveDispositionV1;
++pub use run_start::RunStartPublication;
++pub use run_start::RunStartRecordV1;
++pub use run_start::RunStartRecovery;
++pub use run_start::RunStartSnapshotV1;
++pub use run_start::RunStartStoreError;
++pub use segments::LedgerSegmentCheckpoint;
++pub use segments::LedgerSegmentLimits;
++pub use segments::MAX_LEDGER_SEGMENTS;
++pub use segments::SegmentedLedger;
++pub use segments::inspect_ledger_segments;
++pub use shadow::ShadowAppendReceipt;
++pub use shadow::ShadowDecisionArtifact;
++pub use shadow::ShadowDecisionError;
++pub use shadow::ShadowDecisionRequest;
++pub use shadow::append_shadow_decision;
++pub use shadow::canonical_candidate_set_digest;
++pub use shadow::prepare_shadow_decision;
++pub use signed_evidence::LearningEvidenceRoleV1;
++pub use signed_evidence::LearningEvidenceTrustV1;
++pub use signed_evidence::LearningEvidenceVerifierV1;
++pub use signed_evidence::SignedEvidenceError;
++pub use signed_evidence::SignedLearningEvidenceV1;
++pub use signed_evidence::TrustedLearningSignerV1;
++pub use signed_evidence::VerifiedLearningEvidenceV1;
++pub use signed_evidence::verify_signed_actor_separation;
++pub use signed_evidence::verify_signed_independent_roles_v1;
++pub use signed_evidence::verify_signed_role_separation;
++pub use signed_evidence::verify_verified_role_separation;
++pub use snapshot_codec::MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1;
++pub use snapshot_codec::OriginalLedgerSnapshotCodecErrorV1;
++pub use snapshot_codec::decode_original_ledger_snapshot_v1;
++pub use snapshot_codec::encode_original_ledger_snapshot_v1;
+ pub use trust_distribution::ActivatedLearningTrustV1;
+ pub use trust_distribution::LearningTrustDistributionError;
+ pub use trust_distribution::LearningTrustDistributionV1;

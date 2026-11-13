@@ -1,0 +1,49 @@
+{
+  "format": "hepta-same-host-sc-first-poll-increment-v1",
+  "status": "PREPARED_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "base_packet": "60c3d1ba12fdf43fd3e06ae5b3c6965e636e84d9",
+  "base_test_source": "a75f2e9b6256a179f6307eab803a9301ef252683",
+  "source_writer": "ordinary_path",
+  "changed_source_files": 1,
+  "existing_test_methods": 7,
+  "tests_executed": 0,
+  "production_changes": 0,
+  "entries": [
+    {
+      "path": "after/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "bytes": 18314,
+      "sha256": "96864c596f1a1f4a68a93c9472989a9b2e7d71bfc6b6e5193106285f51b64414",
+      "git_blob": "ce0e5c05fac92930f9e2e9fbadf5473788088796",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "SOURCE_PACKET.json",
+      "bytes": 37457,
+      "sha256": "a4815351e8a42c73f252d7f536d7684cf77cfe15c61a43891e5d70c98a3fd081",
+      "git_blob": "2fb93c1cdb450cdcef445b5f02fa476e8f91d461",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "SOURCE_DELTA.patch",
+      "bytes": 4095,
+      "sha256": "12beeda576789780e7f56b3a4c22a875f650e1a3f1a572892d48365f3c7a8d52",
+      "git_blob": "6d9f122759cc8f7e27f7b7f37d772355fd9a512a",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "STATIC_REVIEW.json",
+      "bytes": 1569,
+      "sha256": "d74e3005fd1f8df148a6c15a926bc63f1b9e3c99625f8153b899ebbd1f3ac7b5",
+      "git_blob": "de3807865e96c71c7bab00b00e21a7c1dab405df",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "prepare.py",
+      "bytes": 5789,
+      "sha256": "50de42d6355fc0c0596e4635edf9bac855cee1967ec3335d9464cea1d29d9cff",
+      "git_blob": "47059965fc4d5fbcc18e5a0c21d2e3a91d1203c8",
+      "actual_git_create_and_full_get_equal": true
+    }
+  ],
+  "review_scope": "Preserve original first Poll::Ready result and avoid repeated completed-future polling; anchor the unchanged 1100ms expiry wait after successful export. Exact inverse restores full previous source."
+}

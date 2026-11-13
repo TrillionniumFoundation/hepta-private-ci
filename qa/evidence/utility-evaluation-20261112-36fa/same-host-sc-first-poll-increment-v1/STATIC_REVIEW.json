@@ -1,0 +1,40 @@
+{
+  "status": "PURE_BYTE_REVIEW_ONLY",
+  "base_packet": "60c3d1ba12fdf43fd3e06ae5b3c6965e636e84d9",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 17487,
+        "sha256": "4e149acdbe14fae599fe881d17bdf605670e941c447562bfbeb1001662240568",
+        "git_blob": "a75f2e9b6256a179f6307eab803a9301ef252683"
+      },
+      "after": {
+        "bytes": 18314,
+        "sha256": "96864c596f1a1f4a68a93c9472989a9b2e7d71bfc6b6e5193106285f51b64414",
+        "git_blob": "ce0e5c05fac92930f9e2e9fbadf5473788088796"
+      }
+    }
+  ],
+  "inverse_full_file_equal": true,
+  "changed_methods": [
+    "local_s_aliases_refuse_real_overlapping_owner_reads",
+    "cancelling_local_s_read_fences_all_aliases_after_actual_work_terminates",
+    "local_s_clone_keeps_the_original_absolute_expiry"
+  ],
+  "test_count_unchanged": 7,
+  "no_production_file_change": true,
+  "preserved": [
+    "all original assertion strings and normal-path checks",
+    "500ms actual read/expiry limits and five-second existing fixture observation",
+    "original full first Poll::Ready(Result), without polling completed future again",
+    "actual gate release and worker terminal observation before propagating failures",
+    "outer finish_case and all original peer cleanup",
+    "original one-second capability and 1100ms expiry wait; wait now starts after successful export"
+  ],
+  "executed_rust_formatter": false,
+  "executed_rust_compiler": false,
+  "executed_tests": false,
+  "H": false
+}

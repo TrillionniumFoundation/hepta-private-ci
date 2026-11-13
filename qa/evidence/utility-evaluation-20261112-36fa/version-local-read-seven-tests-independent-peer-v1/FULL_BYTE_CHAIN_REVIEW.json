@@ -1,0 +1,350 @@
+{
+  "format": "hepta-version-local-read-seven-tests-independent-byte-review-v1",
+  "primary_packets": [
+    {
+      "bytes": 93578,
+      "sha256": "22d21ca36f843f4a05ec6f28009b2ae56b51f4535e1ef07fb93d77d573c03bfd",
+      "git_blob": "00c44402b24c92e344f1bd29a5e578fdfadaf940"
+    },
+    {
+      "bytes": 53001,
+      "sha256": "9d86d7c4aba9da002d61378bf421395fd373116b5a6370fa0748fdf2a25d3b78",
+      "git_blob": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+    }
+  ],
+  "original_fixture": {
+    "bytes": 104393,
+    "sha256": "7e1921111ef9e0dc83db31a57b42723d8e255114360ce915ea2f0d9a005b987e",
+    "git_blob": "662c2d268b76df26ce1bed0b375e67043f4f91d6"
+  },
+  "full_raw_body_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "side": "before",
+      "bytes": 10945,
+      "sha256": "574cb770ed27a1271ba6718746fcd3136856770f020b07dd5d973c77b302d35e",
+      "git_blob": "11275f0c1daae3dfa60c40319d3a21c5e55ac2ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "side": "after",
+      "bytes": 11662,
+      "sha256": "2d27854f0b83ff0d58d08392745a57310e90e2ce7ded0668bbf9a39e0180416c",
+      "git_blob": "66f7d1d508de7c15b8fcd5be279ef29cfd62618f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "side": "after",
+      "bytes": 5093,
+      "sha256": "3ab9aa693eedb68ab1cb47cde01405d56ee4c651eb34e201045b2fbcb3c0e357",
+      "git_blob": "aa8ba42344c14662d4f2fdf1fbc37ff7d1b454b9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "side": "before",
+      "bytes": 23509,
+      "sha256": "3e2c5291240bfbf71f7bd255db88c30168bf8ec58e3ef4da655053bb01f5da38",
+      "git_blob": "24cb8874c78b64dca4174cd54aacd6a97e0723af"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "side": "after",
+      "bytes": 23735,
+      "sha256": "0180458874b25d1d7be5e0d7b3ebe8ba4bef8b5e4dc3ac92f1fb5b5a191ee533",
+      "git_blob": "07abfc03d0a7a77261cde6cc9a13ff40439bf218"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "side": "after",
+      "bytes": 13660,
+      "sha256": "4eb855bbf4fde795bf79f0fdd7f4e0a18a6815abb6e87f81483415e8e3a48a72",
+      "git_blob": "1bf74c7399da89dca3649c9065e774b56bf1553d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "side": "before",
+      "bytes": 13156,
+      "sha256": "8a3c4e1b6caca0ab1c1f3e8e9302d6d6aee734baf9447726e09d3804edbb480a",
+      "git_blob": "7af751d1a9ff78725d20bc20e0e29eb6b7c7a63b",
+      "packet": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "side": "after",
+      "bytes": 13212,
+      "sha256": "27b82847e4d9f7001dedec9a6d846d83d5a89e0ebac4e948ee57a3fecff49e58",
+      "git_blob": "52f35e689615144d7764acc189c11180c45600f7",
+      "packet": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "side": "before",
+      "bytes": 11662,
+      "sha256": "2d27854f0b83ff0d58d08392745a57310e90e2ce7ded0668bbf9a39e0180416c",
+      "git_blob": "66f7d1d508de7c15b8fcd5be279ef29cfd62618f",
+      "packet": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "side": "after",
+      "bytes": 11775,
+      "sha256": "254ed8de02036c54d54216b04a2393b2eff4cf4ccf161d59b6c11311f179a289",
+      "git_blob": "5abb8031d6b75a4ab2ab60b5393369664bf77284",
+      "packet": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+    }
+  ],
+  "exact_chain_comparisons": [
+    {
+      "label": "purpose enum final local -> test hook preimage",
+      "bytes": 10945,
+      "sha256": "574cb770ed27a1271ba6718746fcd3136856770f020b07dd5d973c77b302d35e",
+      "git_blob": "11275f0c1daae3dfa60c40319d3a21c5e55ac2ad",
+      "equal": true
+    },
+    {
+      "label": "actual original NextUse fixture -> test parent preimage",
+      "bytes": 23509,
+      "sha256": "3e2c5291240bfbf71f7bd255db88c30168bf8ec58e3ef4da655053bb01f5da38",
+      "git_blob": "24cb8874c78b64dca4174cd54aacd6a97e0723af",
+      "equal": true
+    },
+    {
+      "label": "exact UFCS preimage codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "bytes": 13156,
+      "sha256": "8a3c4e1b6caca0ab1c1f3e8e9302d6d6aee734baf9447726e09d3804edbb480a",
+      "git_blob": "7af751d1a9ff78725d20bc20e0e29eb6b7c7a63b",
+      "equal": true
+    },
+    {
+      "label": "exact UFCS preimage codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "bytes": 11662,
+      "sha256": "2d27854f0b83ff0d58d08392745a57310e90e2ce7ded0668bbf9a39e0180416c",
+      "git_blob": "66f7d1d508de7c15b8fcd5be279ef29cfd62618f",
+      "equal": true
+    }
+  ],
+  "test_hook_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "edits": [
+        {
+          "before_line": 34,
+          "after_line": 34,
+          "removed": [],
+          "added": [
+            "    #[cfg(test)]",
+            "    probe: Mutex<Option<Arc<fixture::OriginalLocalReadProbeState>>>,"
+          ]
+        },
+        {
+          "before_line": 68,
+          "after_line": 70,
+          "removed": [],
+          "added": [
+            "                #[cfg(test)]",
+            "                probe: Mutex::new(None),"
+          ]
+        },
+        {
+          "before_line": 154,
+          "after_line": 158,
+          "removed": [],
+          "added": [
+            "        #[cfg(test)]",
+            "        let terminal = original.fixture_original_read_submitted()?;"
+          ]
+        },
+        {
+          "before_line": 155,
+          "after_line": 161,
+          "removed": [
+            "            original.original.respond("
+          ],
+          "added": [
+            "            #[cfg(test)]",
+            "            if let Some(terminal) = &terminal {",
+            "                terminal.mark_original_started();",
+            "            }",
+            "            let response = original.original.respond("
+          ]
+        },
+        {
+          "before_line": 160,
+          "after_line": 170,
+          "removed": [
+            "            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))"
+          ],
+          "added": [
+            "            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));",
+            "            #[cfg(test)]",
+            "            if response.is_ok() {",
+            "                if let Some(terminal) = &terminal {",
+            "                    terminal.pause_after_original_response(deadline)?;",
+            "                }",
+            "            }",
+            "            response"
+          ]
+        },
+        {
+          "before_line": 283,
+          "after_line": 300,
+          "removed": [],
+          "added": [
+            "#[cfg(test)]",
+            "#[path = \"circuit_learning_local_read_support_tests.rs\"]",
+            "mod fixture;",
+            ""
+          ]
+        }
+      ],
+      "full_inverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "edits": [
+        {
+          "before_line": 32,
+          "after_line": 32,
+          "removed": [],
+          "added": [
+            "    dataset_receipt: Option<OriginalCellQ24MaterialCommandReceiptV1>,"
+          ]
+        },
+        {
+          "before_line": 49,
+          "after_line": 50,
+          "removed": [
+            "            fixture: Some(fixture), task: None, held: None, peers: None,"
+          ],
+          "added": [
+            "            fixture: Some(fixture), task: None, held: None, dataset_receipt: None, peers: None,"
+          ]
+        },
+        {
+          "before_line": 64,
+          "after_line": 65,
+          "removed": [],
+          "added": [
+            "        self.dataset_receipt = Some(dataset.clone());"
+          ]
+        },
+        {
+          "before_line": 461,
+          "after_line": 463,
+          "removed": [],
+          "added": [
+            "#[path = \"circuit_evaluated_version_local_readback_tests.rs\"]",
+            "mod local_read;",
+            ""
+          ]
+        }
+      ],
+      "full_inverse": true
+    }
+  ],
+  "ufcs_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "edits": [
+        {
+          "before_line": 113,
+          "after_line": 113,
+          "removed": [
+            "            Some(selection) => self.version.original_evaluated_next_use_response("
+          ],
+          "added": [
+            "            Some(selection) => OriginalCircuitRetainedVersionHostV1::original_evaluated_next_use_response(",
+            "                &self.version,"
+          ]
+        }
+      ],
+      "before": {
+        "bytes": 13156,
+        "sha256": "8a3c4e1b6caca0ab1c1f3e8e9302d6d6aee734baf9447726e09d3804edbb480a",
+        "git_blob": "7af751d1a9ff78725d20bc20e0e29eb6b7c7a63b"
+      },
+      "after": {
+        "bytes": 13212,
+        "sha256": "27b82847e4d9f7001dedec9a6d846d83d5a89e0ebac4e948ee57a3fecff49e58",
+        "git_blob": "52f35e689615144d7764acc189c11180c45600f7"
+      },
+      "full_inverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "edits": [
+        {
+          "before_line": 165,
+          "after_line": 165,
+          "removed": [
+            "            let response = original.original.respond("
+          ],
+          "added": [
+            "            let response = OriginalVersionLocalReadBindingV1::respond(",
+            "                &original.original,"
+          ]
+        },
+        {
+          "before_line": 276,
+          "after_line": 277,
+          "removed": [
+            "        local.original.original.require_original_shared_readbacks(shared)"
+          ],
+          "added": [
+            "        OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(",
+            "            &local.original.original, shared,",
+            "        )"
+          ]
+        }
+      ],
+      "before": {
+        "bytes": 11662,
+        "sha256": "2d27854f0b83ff0d58d08392745a57310e90e2ce7ded0668bbf9a39e0180416c",
+        "git_blob": "66f7d1d508de7c15b8fcd5be279ef29cfd62618f"
+      },
+      "after": {
+        "bytes": 11775,
+        "sha256": "254ed8de02036c54d54216b04a2393b2eff4cf4ccf161d59b6c11311f179a289",
+        "git_blob": "5abb8031d6b75a4ab2ab60b5393369664bf77284"
+      },
+      "full_inverse": true
+    }
+  ],
+  "new_test_methods": [
+    "local_readiness_and_current_reuse_one_actual_request_sequence",
+    "local_readiness_borrows_the_fourth_lane_without_a_fifth_permit",
+    "local_read_capabilities_reject_cross_purpose_conversions",
+    "local_readiness_rechecks_actual_b_and_fences_all_aliases",
+    "local_alias_contention_preserves_the_original_pending_response",
+    "local_cancelled_read_never_restores_any_alias",
+    "local_original_response_crossing_fixed_end_is_not_delivered"
+  ],
+  "original_test_methods": [
+    "version_owned_next_use_reads_same_c_after_real_completion",
+    "version_owned_next_use_rejects_another_actual_original_s_cut",
+    "version_owned_next_use_rechecks_actual_b_after_shared_export",
+    "version_owned_next_use_refuses_four_cut_selection_requests",
+    "version_owned_next_use_rejects_already_elapsed_absolute_end",
+    "version_owned_next_use_rejects_original_response_crossing_absolute_end",
+    "version_owned_readiness_rechecks_actual_b_after_channel_admission",
+    "version_owned_next_use_rechecks_actual_b_after_channel_admission"
+  ],
+  "observed_new_test_panic_assertions": [],
+  "helper_observed_no_response_or_budget_mutation": {
+    "no_response_return_value": true,
+    "no_response_input_argument": true,
+    "no_clock_override": true,
+    "no_counter_write": true,
+    "no_permit_write": true,
+    "only_deadline_input": true,
+    "observes_submitted_before_spawn": true,
+    "cleanup_waits_submitted_not_started": true
+  },
+  "execution": {
+    "h_calls": 0,
+    "rustfmt": false,
+    "compiled": false,
+    "tests_run": 0,
+    "source_writes": false
+  }
+}

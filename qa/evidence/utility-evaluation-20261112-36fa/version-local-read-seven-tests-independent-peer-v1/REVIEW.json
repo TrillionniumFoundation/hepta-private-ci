@@ -1,0 +1,102 @@
+{
+  "format": "hepta-version-local-read-seven-tests-independent-peer-review-v1",
+  "verdict": "NO_NEW_CONCRETE_STATIC_BLOCKER_WITHIN_REVIEWED_SCOPE",
+  "qualification": false,
+  "source_packets": [
+    {
+      "bytes": 93578,
+      "sha256": "22d21ca36f843f4a05ec6f28009b2ae56b51f4535e1ef07fb93d77d573c03bfd",
+      "git_blob": "00c44402b24c92e344f1bd29a5e578fdfadaf940"
+    },
+    {
+      "bytes": 53001,
+      "sha256": "9d86d7c4aba9da002d61378bf421395fd373116b5a6370fa0748fdf2a25d3b78",
+      "git_blob": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+    }
+  ],
+  "source_fixture": {
+    "bytes": 104393,
+    "sha256": "7e1921111ef9e0dc83db31a57b42723d8e255114360ce915ea2f0d9a005b987e",
+    "git_blob": "662c2d268b76df26ce1bed0b375e67043f4f91d6"
+  },
+  "author_ufcs_placement": {
+    "bytes": 1808,
+    "sha256": "8521d7d90448d7a746da6c4fc5d7563d7bcb5cc78264d0573b815ae6392859c8",
+    "git_blob": "fff007b6c0e02cd1a5531f376e53af8348125dcb"
+  },
+  "input_chain": [
+    "39f970 final local backend11275 -> 00c444 test-hook backend66f7 -> ebe3964 explicit receivers5abb.",
+    "39f970 final Version binding7af751 -> ebe3964 explicit owner receiver52f35.",
+    "662c2d original NextUse fixture24cb -> 00c444 dataset receipt retention/mount07ab; all8 original test bodies and assertions remain byte-identical.",
+    "New helperaa8b and seven-tests1bf7 are mounted through cfg(test)-only code; no source/gate result is inferred."
+  ],
+  "scope": {
+    "reviewed": "All4 before/after bodies in00c444, both UFCS before/after bodies inebe3964, original662c fixture chain, original retained Version binding and called response signatures from already verified production.",
+    "skipped": "No recompilation, formatter, runtime, broad owner re-audit or source-gate execution."
+  },
+  "findings": [
+    {
+      "topic": "Original result and limits",
+      "conclusion": "Test hooks cannot supply or edit an owner response, counter, permit or fixed end.",
+      "evidence": "The original respond call executes first. Only an actual Ok response enters pause_after_original_response(deadline). The helper receives one already computed Instant and has no response parameter, byte-return API, counter setter, permit constructor or time override. Its test-only pause is fail-closed on expiry/poison and may return Unavailable, never synthetic success. Original128 check, per-call timeout/end clamp, final authentication/window checks and restore ordering remain intact."
+    },
+    {
+      "topic": "Submission versus start",
+      "conclusion": "Cleanup covers a blocking closure that was submitted but has not begun.",
+      "evidence": "The terminal guard is created and submitted is set synchronously immediately before spawn_blocking, with no await in between. The guard is moved into the closure. mark_original_started is only an observation at closure entry. Common cleanup tests original_submitted, not original_started, before waiting for terminal. If work is queued, the waiter cannot call that state unsubmitted merely because start was not observed."
+    },
+    {
+      "topic": "Terminal semantics",
+      "conclusion": "The marker reports closure-scope completion or destruction, not an OS-thread exit or an independent Tokio JoinHandle success.",
+      "evidence": "OriginalLocalReadTerminal::drop sets the terminal atomic and notifies. This also runs on unwind and when a captured closure is dropped before starting. It does not synthesize a read result. The asynchronous awaiter Join is separately awaited or already consumed, and original fixture server/peer joins remain in finish_case. No actual terminal event has occurred for this unexecuted candidate."
+    },
+    {
+      "topic": "Normal, cancellation and deadline paths",
+      "conclusion": "Every new paused test retains the actual original outcome and waits for outstanding work before fixture teardown.",
+      "cases": [
+        "CompetingAlias: release the pause; await the original read Join and inner result; require actual None and request_id2; wait terminal.",
+        "CancelAwaiter: abort only the Tokio asynchronous awaiter and require its real JoinError to be cancelled; release; wait original blocking terminal; require slotNone and all aliasesUnavailable.",
+        "CrossFixedEnd: wait the same deadline-bound awaiter; require actual error and now>=the independently read fixed end; release; wait terminal; require slotNone and alias refusal.",
+        "Any Result assertion failure: release; abort/await any unconsumed asynchronous Join; if already polledReady avoid a second poll; then wait submitted blocking work and call finish_case.",
+        "Worker owner error or panic before the response gate makes the selected completed branch a test error; it cannot become a success at the gate. Error and cleanup error are combined rather than discarded."
+      ]
+    },
+    {
+      "topic": "No fabricated first admission",
+      "conclusion": "The new tests are explicit cold same-process Version mechanism tests, not Fresh Root/public cross-UID proof.",
+      "evidence": "NextUseCase retains the actual material receipt already emitted by held_predecessors; it does not construct one. Readiness binding uses that complete receipt and the same actual Selection. Normal C completion uses original execute/read_receipt and original journals. B withdrawal uses the real fixture owner, then verifies subsequent reads cannot repair it."
+    },
+    {
+      "topic": "Meaningful coverage and preserved failure handling",
+      "conclusion": "Seven new methods cover shared sequence, actual fourth permit/readiness borrowing, purpose mismatch, actual B withdrawal, contention, cancellation and final-window refusal.",
+      "evidence": "New value assertions return anyhow::Result instead of panicking; the async block result always flows to finish_case. All original8 test method bodies remain unchanged. The new helper is non-executable outside cfg(test)."
+    },
+    {
+      "topic": "UFCS exactness",
+      "conclusion": "Exactly3 call-site spellings name the existing concrete receivers; no arguments, outcomes, deadlines, fields, permissions or tests change.",
+      "evidence": "VersionArc dereferences to the same Version &self for original_evaluated_next_use_response; the binding respond and require_original_shared_readbacks receive the same references and remaining arguments. Reversing the3 textual changes restores the full original preimages exactly. Original verifier/typed collector is not changed."
+    }
+  ],
+  "constraints_and_limits": [
+    "No assertion or test has been observed passing. These are prepared Rust sources only.",
+    "The local128 request exhaustion edge is not directly exercised by these7 methods; the unchanged128 production bound is statically retained. Do not mislabel remote/B64 limits as a local128 test.",
+    "The helper terminal marker is narrower than proof that the OS blocking thread has exited. It must not be relabeled as such.",
+    "Unexpected outer test panic is not demonstrated to run every async cleanup; no new panic assertion is introduced, and such a panic remains a failing test rather than a synthetic successful teardown.",
+    "Common cleanup does not add a larger command or test budget. Any stuck original operation remains subject to the unchanged actual test runner deadline and cannot be reported as a pass.",
+    "First Root admission, three-UID process topology, public ordinary task, AppServer/C daemon and full Root utility remain separate unfinished integration/qualification.",
+    "Future source formatting, compiled tests, exact caller/fence registration and all original gate budgets remain required."
+  ],
+  "static_proof": {
+    "bytes": 12414,
+    "sha256": "fdd0f178275b2c2e1c263fd3dbab629eaad87c45452a05dc6b86191e1238ae67",
+    "git_blob": "c11d682b860c762a998002380e69a4e0e3db99b9"
+  },
+  "execution": {
+    "h_calls": 0,
+    "compiled": false,
+    "formatted": false,
+    "tests_run": 0,
+    "source_changes": false,
+    "ref_writes": false
+  }
+}

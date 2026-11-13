@@ -1,0 +1,91 @@
+{
+  "format": "hepta-actual-archive-runtime-successor-binding-proposal-v1",
+  "historical_archive_stat": {
+    "ctime_ns": 1794507618186768984,
+    "device": 2067,
+    "inode": 26738826,
+    "mode": 384,
+    "mtime_ns": 1794507618186768984,
+    "nlink": 1,
+    "uid": 1000
+  },
+  "historical_runtime_environment": {
+    "bytes": 21724,
+    "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+    "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+  },
+  "historical_runtime_environment_is_unchanged": true,
+  "minimal_integration": [
+    "Keep 6632 V5 original bytes and the original 8b62 runtime document unchanged.",
+    "Add a separately reviewed actual archive-restoration proof validator to the successor admission, binding the normal job, full result, artifact and exact archive record.",
+    "Require this proof to describe only the known original path and original content/mode identity, all three final audits verified, no source/env changes, no native/test qualification, and no retry.",
+    "Retain the new full archive stat from the repair as the latest observed restoration identity. Never label the old historical inode as current.",
+    "At a future approved run the unmodified original guard still performs its own full live read and before/after stat stability check. Historical five-field equality remains a content/path/mode check, not an inode-continuity assertion.",
+    "If a successor records another full current stat, it must be an actual new observation under that reviewed action. No current inode/stat is filled from prediction.",
+    "The original explicit environment, tool projections, formatter environment, target, 32 GiB check and global build guard stay unchanged. No target or dependency installation is implied."
+  ],
+  "new_archive_actual_stat": {
+    "st_ctime_ns": 1794550522509884679,
+    "st_dev": 2067,
+    "st_gid": 1000,
+    "st_ino": 26738823,
+    "st_mode": 33152,
+    "st_mtime_ns": 1794550522509884679,
+    "st_nlink": 1,
+    "st_size": 29366352,
+    "st_uid": 1000
+  },
+  "new_inode_equals_historical_inode": false,
+  "no_current_execution_permission": true,
+  "no_future_material_availability_guarantee": true,
+  "original_five_field_projection": {
+    "bytes": 29366352,
+    "mode": 384,
+    "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+  },
+  "original_functions": {
+    "environment_preflight": "lines 616-620: current V8 pair == approved cfg pair == historical content/path/mode projection",
+    "installed_file_observation": "lines 480-493: current full SHA read with current dev/inode/size/mtime/ctime equal before/after; returns five fields only",
+    "project_runtime_file": "lines 495-499: exact path/resolved/bytes/sha256/mode projection",
+    "validate_runtime_restoration": "lines 501-549: original 86dd restoration source identity and its six original commands remain historical"
+  },
+  "original_v5_guard": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "required_successor_evidence": {
+    "archive_record": {
+      "bytes": 496,
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+    },
+    "archive_record_path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARCHIVE_READBACK.json",
+    "artifact_index": {
+      "bytes": 28169,
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+    },
+    "job_id": "1a1d38b82e9-392-160",
+    "result": {
+      "bytes": 17615,
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+    },
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/RESULT.json",
+    "source_of_this_repair_remains": {
+      "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+      "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+    },
+    "supervisor": {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    },
+    "supervisor_staged_path": null
+  },
+  "status": "HOLD_NOT_AN_EXECUTABLE_CONTROL"
+}

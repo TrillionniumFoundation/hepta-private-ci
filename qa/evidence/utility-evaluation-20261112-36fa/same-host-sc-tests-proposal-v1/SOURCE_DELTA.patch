@@ -1,0 +1,1071 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..124aaacdaaee8d2d297d85e480e57c5eee94ead8
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs
+@@ -0,0 +1,128 @@
++//! Two independent sets of real read-only predecessor channels for one
++//! published original cut. Only the existing test transport differs from
++//! deployment. No sealed bundle is constructed or modified by this fixture.
++
++use super::*;
++use anyhow::Context as _;
++
++pub(super) async fn two_original_sets(
++    fixture: &PublicationFixture,
++) -> anyhow::Result<Vec<(HeldPredecessors, HeldPeers)>> {
++    let evaluator_host = fixture.host.host.as_ref().context("same original E host")?;
++    let original = &fixture.host.original;
++    let material = &original.command_config;
++    let objective = material.initial.request.envelope.objective_digest;
++    // Recover the original completed Material once. Both Dataset channels
++    // borrow this same actual host; never reopen a second active journal writer.
++    let owners = OriginalCellQ24MaterialReceiptOwnersV1::recover(
++        OriginalCellQ24MaterialReceiptFilesV1 {
++            experience: opened(&original.root, "positive-experience", /*create*/ false)?,
++            experience_witness: original_witness(
++                &original.root, "positive-experience-witness", &material.scope,
++                objective, /*create*/ false,
++            )?,
++            dataset: opened(&original.root, "positive-dataset", /*create*/ false)?,
++            dataset_witness: original_witness(
++                &original.root, "positive-dataset-witness", &material.scope,
++                objective, /*create*/ false,
++            )?,
++        },
++        material.clone(), SigningKey::from_bytes(&[44; 32]),
++        SigningKey::from_bytes(&[45; 32]),
++    )?;
++    let host = Arc::new(owners.into_command_owner(
++        fixture.original_source.as_ref().clone(), fixture.identity_a.clone(),
++        Arc::clone(&original.ledger), Arc::clone(&original.baseline),
++    )?);
++    let mut all = Vec::new();
++    for _ in 0..2 {
++        let one: anyhow::Result<(HeldPredecessors, HeldPeers)> = async {
++            let (connection, dataset_peer) = material_ports::commands_for_original(
++                Arc::clone(&host), material.clone(), OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
++            )?;
++            let dataset = match connection.into_original_dataset_readback(material) {
++                Ok(dataset) => dataset,
++                Err(error) => {
++                    let cleanup = material_ports::finish(dataset_peer);
++                    return Err(anyhow::Error::from(error)
++                        .context(format!("original Dataset conversion cleanup: {cleanup:?}")));
++                }
++            };
++            let dataset_receipt = match dataset.readback().await {
++                Ok(receipt) => receipt,
++                Err(error) => {
++                    drop(dataset);
++                    let cleanup = material_ports::finish(dataset_peer);
++                    return Err(anyhow::Error::from(error)
++                        .context(format!("original Dataset read cleanup: {cleanup:?}")));
++                }
++            };
++            if dataset_receipt.snapshot() != &fixture.trainer_context.dataset
++                || dataset_receipt.attestations() != original.material_evidence.as_slice()
++            {
++                drop(dataset);
++                let cleanup = material_ports::finish(dataset_peer);
++                anyhow::bail!("actual Dataset changed its complete original cut/signatures: {cleanup:?}");
++            }
++            let trainer_setup = training_ports::recovered_peer(
++                material.clone(),
++                Some((fixture.training.receipt().clone(), fixture.training.attestation().clone())),
++                Duration::from_secs(300),
++            );
++            let (trainer, channel) = match trainer_setup {
++                Ok(pair) => pair,
++                Err(error) => {
++                    drop(dataset);
++                    let cleanup = material_ports::finish(dataset_peer);
++                    return Err(anyhow::Error::from(error)
++                        .context(format!("original T channel cleanup: {cleanup:?}")));
++                }
++            };
++            let trainer_peer = commands::serve(Arc::clone(&fixture.trainer), channel);
++            let evaluator_setup = evaluator_host.fixture_original_readback_connection();
++            let (evaluator, evaluator_peer) = match evaluator_setup {
++                Ok(pair) => pair,
++                Err(error) => {
++                    drop(dataset);
++                    drop(trainer);
++                    let dataset_cleanup = material_ports::finish(dataset_peer);
++                    let trainer_cleanup = trainer_peer.join()
++                        .map_err(|_| anyhow::anyhow!("actual T peer panicked"));
++                    return Err(error.context(format!(
++                        "original E setup cleanup: {dataset_cleanup:?}; {trainer_cleanup:?}"
++                    )));
++                }
++            };
++            let actual = HeldPredecessors { dataset, dataset_receipt, trainer, evaluator };
++            let peers = HeldPeers {
++                dataset: dataset_peer, trainer: trainer_peer, evaluator: evaluator_peer,
++            };
++            Ok((actual, peers))
++        }.await;
++        match one {
++            Ok(value) => all.push(value),
++            Err(error) => {
++                let mut errors = Vec::new();
++                for (held, peers) in all {
++                    drop(held);
++                    collect_peer_cleanup(peers, &mut errors);
++                }
++                return Err(error.context(format!("original duplicate-channel cleanup: {errors:?}")));
++            }
++        }
++    }
++    Ok(all)
++}
++
++pub(super) fn collect_peer_cleanup(peers: HeldPeers, errors: &mut Vec<String>) {
++    let dataset = material_ports::finish(peers.dataset);
++    let trainer = peers.trainer.join()
++        .map_err(|_| anyhow::anyhow!("original T peer panicked"))
++        .and_then(|result| result.map_err(anyhow::Error::from));
++    let evaluator = peers.evaluator.join()
++        .map_err(|_| anyhow::anyhow!("original E peer panicked"))
++        .and_then(|result| result);
++    for result in [dataset, trainer, evaluator] {
++        if let Err(error) = result { errors.push(error.to_string()); }
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..ce32cd8e8df97319823035a41e3c1096a591ced5
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs
+@@ -0,0 +1,424 @@
++//! Same-owner S/C mechanism fixture. Every successful receipt comes from the
++//! original Material/T/E/S/C owners and existing enrolled fixture keys.
++//! The original same-process transports are explicit; this is not a public
++//! three-UID admission, Fresh Root run, or evidence of useful independent B.
++
++use super::*;
++use anyhow::Context as _;
++
++use crate::OriginalCircuitCompletionReadinessClientV1;
++use crate::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++use crate::OriginalCircuitLearningReadClientV1;
++use crate::OriginalCircuitNextUseCommandClientV1;
++use crate::OriginalCircuitNextUseCommandContextV1;
++use crate::OriginalCircuitNextUseCommandErrorV1;
++use crate::OriginalCircuitNextUseCommandOwnerV1;
++use crate::OriginalCircuitNextUseReceiptOwnerV1;
++use crate::OriginalCircuitPublishedEvidenceReadbackV1;
++use crate::OriginalCircuitPublishedLocalReadV1;
++use crate::OriginalCircuitSelectionCommandErrorV1;
++use crate::OriginalCircuitSelectionCommandOwnerV1;
++use crate::OriginalCircuitSelectionLocalReadbackV1;
++use crate::OriginalCircuitSelectionReceiptOwnerV1;
++use crate::learning_iteration_evidence_client::next_use_command_test_support as completion_commands;
++
++type Selector = OriginalCircuitSelectionReceiptOwnerV1<FileAnchorWitnessStore>;
++type SelectorHost = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
++type Observer = OriginalCircuitNextUseReceiptOwnerV1<FileAnchorWitnessStore>;
++type ObserverHost = OriginalCircuitNextUseCommandOwnerV1<FileAnchorWitnessStore>;
++type CompletionPeer = std::thread::JoinHandle<Result<u64, OriginalCircuitNextUseCommandErrorV1>>;
++
++enum OriginalConnectionSets {
++    One,
++    Two,
++}
++
++enum OriginalSelectionState {
++    Completed,
++    Missing,
++}
++
++pub(super) struct SameHostCase {
++    pub(super) fixture: Option<Box<PublicationFixture>>,
++    task: Option<support::Session>,
++    held: Option<HeldPredecessors>,
++    peers: Option<HeldPeers>,
++    alternate_held: Option<HeldPredecessors>,
++    alternate_peers: Option<HeldPeers>,
++    alternate_version: Option<Arc<Version>>,
++    pub(super) alternate_shared: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
++    pub(super) dataset: Option<OriginalCellQ24MaterialCommandReceiptV1>,
++    version: Option<Arc<Version>>,
++    shared: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
++    selector_home: Option<tempfile::TempDir>,
++    selector: Option<Selector>,
++    selector_host: Option<Arc<SelectorHost>>,
++    selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++    pub(super) local_s: Option<OriginalCircuitSelectionLocalReadbackV1>,
++    pub(super) local_c: Option<OriginalCircuitPublishedLocalReadV1>,
++    pub(super) readiness: Option<OriginalCircuitCompletionReadinessClientV1>,
++    observer_home: Option<tempfile::TempDir>,
++    observer_host: Option<Arc<ObserverHost>>,
++    pub(super) completion: Option<OriginalCircuitNextUseCommandClientV1>,
++    completion_peer: Option<CompletionPeer>,
++}
++
++impl SameHostCase {
++    pub(super) async fn completed_selection() -> anyhow::Result<Self> {
++        Self::initialize(OriginalSelectionState::Completed, OriginalConnectionSets::One).await
++    }
++
++    pub(super) async fn missing_selection() -> anyhow::Result<Self> {
++        Self::initialize(OriginalSelectionState::Missing, OriginalConnectionSets::One).await
++    }
++
++    pub(super) async fn with_distinct_original_connections() -> anyhow::Result<Self> {
++        Self::initialize(OriginalSelectionState::Completed, OriginalConnectionSets::Two).await
++    }
++
++    async fn initialize(
++        selection: OriginalSelectionState,
++        connections: OriginalConnectionSets,
++    ) -> anyhow::Result<Self> {
++        let fixture = Box::new(Box::pin(PublicationFixture::ready()).await?);
++        let mut case = Self {
++            fixture: Some(fixture), task: None, held: None, peers: None, dataset: None,
++            alternate_held: None, alternate_peers: None, alternate_version: None,
++            alternate_shared: None,
++            version: None, shared: None, selector_home: None, selector: None,
++            selector_host: None, selection: None, local_s: None, local_c: None,
++            readiness: None, observer_home: None, observer_host: None,
++            completion: None, completion_peer: None,
++        };
++        let initialized = Box::pin(case.initialize_originals(selection, connections)).await;
++        if let Err(error) = initialized {
++            let cleanup = case.finish().await;
++            return Err(error.context(format!("same-owner S/C setup cleanup: {cleanup:?}")));
++        }
++        Ok(case)
++    }
++
++    async fn initialize_originals(
++        &mut self,
++        selection_state: OriginalSelectionState,
++        connections: OriginalConnectionSets,
++    ) -> anyhow::Result<()> {
++        let (held, peers) = match connections {
++            OriginalConnectionSets::One => Box::pin(held_predecessors(self.fixture()?)).await?,
++            OriginalConnectionSets::Two => {
++                let mut sets = Box::pin(connections::two_original_sets(self.fixture()?)).await?;
++                let (held, peers) = sets.pop().context("second actual original connection set")?;
++                self.alternate_held = Some(held);
++                self.alternate_peers = Some(peers);
++                sets.pop().context("first actual original connection set")?
++            }
++        };
++        let dataset = held.dataset_receipt.clone();
++        self.dataset = Some(dataset.clone());
++        self.held = Some(held);
++        self.peers = Some(peers);
++        let (task, recovery) = Box::pin(publish_for_recovery(
++            self.fixture.as_deref_mut().context("same original fixture")?, &dataset,
++        )).await?;
++        self.task = Some(task);
++
++        let home = tempfile::tempdir()?;
++        let selector = self.create_selector(&home)?;
++        self.selector_home = Some(home);
++        self.selector = Some(selector);
++        if matches!(selection_state, OriginalSelectionState::Completed) {
++            // This uses real current owner reads and the original S journal.
++            // It never supplies a success DTO as a transport response.
++            let fixture = self.fixture.as_deref().context("original fixture")?;
++            let task = self.task.as_ref().context("original C Session")?;
++            let selector = self.selector.as_mut().context("original S custody")?;
++            let (trainer, evaluator, peers) = fixture.clients()?;
++            let selected = selector.attest_original_evaluated_selection(
++                OriginalCircuitEvaluatedSelectionReceiptSourcesV1 {
++                    snapshot: fixture.evaluation.snapshot(),
++                    cell: &task.cell,
++                    trainer: &trainer,
++                    evaluator: &evaluator,
++                },
++            ).await;
++            drop(trainer);
++            drop(evaluator);
++            let trainer_done = peers.trainer.join()
++                .map_err(|_| anyhow::anyhow!("original S Trainer peer panicked"))
++                .and_then(|result| result.map_err(anyhow::Error::from));
++            let evaluator_done = peers.evaluator.join()
++                .map_err(|_| anyhow::anyhow!("original S Evaluator peer panicked"))
++                .and_then(|result| result);
++            trainer_done?;
++            evaluator_done?;
++            self.selection = Some(selected?);
++        }
++
++        let alternate_recovery = self.alternate_held.as_ref().map(|_| {
++            OriginalCircuitRetainedVersionRecoveryV1 {
++                training: recovery.training.clone(),
++                attestations: recovery.attestations.clone(),
++                intent_digest: recovery.intent_digest,
++                cell: recovery.cell.clone(),
++                source: Arc::clone(&recovery.source),
++                identity: recovery.identity.clone(),
++                current: Arc::clone(&recovery.current),
++                artifacts: Arc::clone(&recovery.artifacts),
++                artifact_checkpoint: crate::OriginalCircuitRetainedArtifactCheckpointV1 {
++                    operation_id: recovery.artifact_checkpoint.operation_id.clone(),
++                    intent_digest: recovery.artifact_checkpoint.intent_digest,
++                },
++                artifact_selection: recovery.artifact_selection.clone(),
++                artifact_verifier: recovery.artifact_verifier.clone(),
++            }
++        });
++        let held = self.held.take().context("one original predecessor connection set")?;
++        let host = cold_version(self.fixture()?, held, recovery)?;
++        self.version = Some(Arc::clone(&host));
++        let shared = Version::share_original_evaluated_readbacks(Arc::clone(&host)).await?;
++        self.shared = Some(shared.clone());
++        if let Some(recovery) = alternate_recovery {
++            let held = self.alternate_held.take().context("second actual original predecessor set")?;
++            let other = cold_version(self.fixture()?, held, recovery)?;
++            self.alternate_version = Some(Arc::clone(&other));
++            self.alternate_shared = Some(
++                Version::share_original_evaluated_readbacks(other).await?,
++            );
++        }
++        let local = Version::open_original_evaluated_selection_local_read(
++            host, Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        let live = OriginalCircuitLearningReadClientV1::from_original_evaluated_local_selection(
++            local, self.fixture()?.context()?,
++        )?;
++        let selector = self.selector.take().context("one original S owner")?;
++        self.selector_host = Some(Arc::new(
++            Selector::into_evaluated_local_shared_command_owner(selector, live, shared)?,
++        ));
++        Ok(())
++    }
++
++    pub(super) fn fixture(&self) -> anyhow::Result<&PublicationFixture> {
++        self.fixture.as_deref().context("same original fixture")
++    }
++
++    pub(super) fn task(&self) -> anyhow::Result<&support::Session> {
++        self.task.as_ref().context("same actual C Session")
++    }
++
++    pub(super) fn host(&self) -> anyhow::Result<Arc<Version>> {
++        Ok(Arc::clone(self.version.as_ref().context("same original Version")?))
++    }
++
++    pub(super) fn selector_host(&self) -> anyhow::Result<Arc<SelectorHost>> {
++        Ok(Arc::clone(self.selector_host.as_ref().context("same original S command owner")?))
++    }
++
++    pub(super) fn selection(&self) -> anyhow::Result<OriginalCircuitEvaluatedSelectionReceiptV1> {
++        Ok(self.selection.as_ref().context("actually completed original S")?.clone())
++    }
++
++    pub(super) fn shared(&self) -> anyhow::Result<OriginalCircuitPublishedEvidenceReadbackV1> {
++        Ok(self.shared.as_ref().context("same sealed original T/E")?.clone())
++    }
++
++    pub(super) async fn export_selection(
++        &mut self,
++        lifetime: Duration,
++    ) -> anyhow::Result<()> {
++        self.local_s = Some(SelectorHost::open_original_evaluated_local_readback(
++            self.selector_host()?, Duration::from_millis(500), lifetime,
++        ).await?);
++        Ok(())
++    }
++
++    pub(super) fn create_selector(&self, home: &tempfile::TempDir) -> anyhow::Result<Selector> {
++        Ok(Selector::create_evaluated(
++            opened(home.path(), "selector.journal", /*create*/ true)?,
++            receipt_witness(home, "selector.witness", self.fixture()?, WitnessOrigin::New)?,
++            OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
++                context: self.fixture()?.context()?,
++                signer: self.fixture()?.host.original.credentials.selector.clone(),
++                maximum_signature_lifetime_seconds: 300,
++            },
++            SigningKey::from_bytes(&[46; 32]),
++        )?)
++    }
++
++    pub(super) async fn install_completion(&mut self) -> anyhow::Result<()> {
++        let selected = self.selection()?;
++        let local = Version::open_original_evaluated_next_use_local_read(
++            self.host()?, selected.clone(), Duration::from_millis(500),
++            Duration::from_secs(300),
++        ).await?;
++        self.local_c = Some(local.clone());
++        let live = OriginalCircuitLearningReadClientV1::from_original_evaluated_local_next_use(
++            local, selected.clone(),
++        )?;
++        self.readiness = Some(
++            OriginalCircuitCompletionReadinessClientV1::bind_original_evaluated_local_read(
++                &live, &self.fixture()?.host.original.command_config,
++                self.dataset.as_ref().context("actual original D")?, &selected,
++            )?,
++        );
++        let home = tempfile::tempdir()?;
++        let observer = Observer::create_evaluated(
++            opened(home.path(), "observer.journal", /*create*/ true)?,
++            receipt_witness(&home, "observer.witness", self.fixture()?, WitnessOrigin::New)?,
++            OriginalCircuitEvaluatedNextUseReceiptConfigV1 {
++                selection: selected,
++                signer: self.fixture()?.host.original.credentials.observer.clone(),
++                maximum_signature_lifetime_seconds: 300,
++            },
++            SigningKey::from_bytes(&[43; 32]),
++        )?;
++        self.observer_home = Some(home);
++        self.install_observer(observer, live, CompletionOrigin::Fresh)?;
++        Ok(())
++    }
++
++    fn install_observer(
++        &mut self,
++        observer: Observer,
++        live: OriginalCircuitLearningReadClientV1,
++        origin: CompletionOrigin,
++    ) -> anyhow::Result<()> {
++        let host = Arc::new(Observer::into_evaluated_local_shared_command_owner(
++            observer, live, self.shared()?,
++            self.local_s.as_ref().context("same completed S local capability")?.clone(),
++        )?);
++        self.observer_host = Some(Arc::clone(&host));
++        let context = OriginalCircuitNextUseCommandContextV1::from_original_evaluated_selection(
++            &self.selection()?,
++        )?;
++        let (client, channel) = completion_commands::client(
++            context, matches!(origin, CompletionOrigin::Recovered), /*retained*/ None,
++        )?;
++        self.completion = Some(client);
++        self.completion_peer = Some(completion_commands::serve(host, channel));
++        Ok(())
++    }
++
++    pub(super) async fn recover_completed_observer(&mut self) -> anyhow::Result<()> {
++        self.close_completion()?;
++        drop(self.observer_host.take());
++        let selected = self.selection()?;
++        let home = self.observer_home.as_ref().context("same original C Observer files")?;
++        let observer = Observer::recover_evaluated(
++            opened(home.path(), "observer.journal", /*create*/ false)?,
++            receipt_witness(home, "observer.witness", self.fixture()?, WitnessOrigin::Existing)?,
++            OriginalCircuitEvaluatedNextUseReceiptConfigV1 {
++                selection: selected.clone(),
++                signer: self.fixture()?.host.original.credentials.observer.clone(),
++                maximum_signature_lifetime_seconds: 300,
++            },
++            SigningKey::from_bytes(&[43; 32]),
++        )?;
++        let live = OriginalCircuitLearningReadClientV1::from_original_evaluated_local_next_use(
++            self.local_c.as_ref().context("same original local C backend")?.clone(),
++            selected,
++        )?;
++        self.install_observer(observer, live, CompletionOrigin::Recovered)
++    }
++
++    pub(super) fn original_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
++        let f = self.fixture()?;
++        let mut bytes = f.publication_bytes()?;
++        bytes.extend(f.host.original.predecessor_bytes()?);
++        bytes.extend(f.host.upstream_files()?);
++        bytes.extend(f.host.original_files()?);
++        for (home, names) in [
++            (self.selector_home.as_ref(), ["selector.journal", "selector.witness"]),
++            (self.observer_home.as_ref(), ["observer.journal", "observer.witness"]),
++        ] {
++            if let Some(home) = home {
++                for name in names { bytes.push(std::fs::read(home.path().join(name))?); }
++            }
++        }
++        Ok(bytes)
++    }
++
++    fn close_completion(&mut self) -> anyhow::Result<()> {
++        drop(self.completion.take());
++        if let Some(peer) = self.completion_peer.take() {
++            peer.join().map_err(|_| anyhow::anyhow!("actual Observer peer panicked"))??;
++        }
++        Ok(())
++    }
++
++    pub(super) async fn finish(mut self) -> anyhow::Result<()> {
++        let mut errors = Vec::new();
++        if let Err(error) = self.close_completion() { errors.push(error.to_string()); }
++        drop(self.observer_host.take());
++        drop(self.readiness.take());
++        drop(self.local_c.take());
++        drop(self.local_s.take());
++        drop(self.selector_host.take());
++        drop(self.shared.take());
++        drop(self.alternate_shared.take());
++        drop(self.version.take());
++        drop(self.alternate_version.take());
++        drop(self.held.take());
++        drop(self.alternate_held.take());
++        drop(self.selector.take());
++        for peers in [self.peers.take(), self.alternate_peers.take()].into_iter().flatten() {
++            connections::collect_peer_cleanup(peers, &mut errors);
++        }
++        if let Some(mut task) = self.task.take() {
++            if let Err(error) = task.stop().await { errors.push(error.to_string()); }
++        }
++        if let Some(fixture) = self.fixture.take() {
++            if let Err(error) = (*fixture).finish().await { errors.push(error.to_string()); }
++        }
++        anyhow::ensure!(errors.is_empty(), "same-owner S/C cleanup: {errors:?}");
++        Ok(())
++    }
++}
++
++enum WitnessOrigin {
++    New,
++    Existing,
++}
++
++fn receipt_witness(
++    home: &tempfile::TempDir,
++    name: &str,
++    fixture: &PublicationFixture,
++    origin: WitnessOrigin,
++) -> anyhow::Result<FileAnchorWitnessStore> {
++    Ok(FileAnchorWitnessStore::open(
++        opened(home.path(), name, matches!(origin, WitnessOrigin::New))?,
++        codex_hepta_neuron::JournalScope {
++            scope_digest: fixture.host.config.scope.binding(),
++            objective_digest: fixture.host.config.signing.verifier.objective_digest(),
++        },
++        codex_hepta_types::Generation::new(1)?,
++        16,
++    )?)
++}
++
++enum CompletionOrigin {
++    Fresh,
++    Recovered,
++}
++
++pub(super) async fn finish_case(
++    result: anyhow::Result<()>,
++    case: SameHostCase,
++) -> anyhow::Result<()> {
++    let cleanup = case.finish().await;
++    match (result, cleanup) {
++        (Ok(()), Ok(())) => Ok(()),
++        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
++        (Err(error), Err(cleanup)) => Err(error.context(format!("original cleanup: {cleanup:#}"))),
++    }
++}
++
++#[path = "circuit_evaluated_same_host_sc_connections_tests.rs"]
++mod connections;
++
++#[path = "circuit_evaluated_same_host_sc_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..a75f2e9b6256a179f6307eab803a9301ef252683
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs
+@@ -0,0 +1,309 @@
++//! Same-host capability behavior using actual owner/journal reads. These
++//! mechanisms do not claim a Fresh Root or public three-UID task completed.
++
++use super::*;
++use anyhow::Context as _;
++use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
++use codex_hepta_learning_artifacts::LearningIterationObservationV1;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_s_c_complete_same_actual_c_and_cold_observer_stays_readonly() -> anyhow::Result<()> {
++    let mut case = Box::pin(SameHostCase::completed_selection()).await?;
++    let result: anyhow::Result<()> = async {
++        let before = case.original_bytes()?;
++        case.export_selection(Duration::from_secs(300)).await?;
++        anyhow::ensure!(case.original_bytes()? == before,
++            "export reads the same completed S without a new signature or journal write");
++        case.install_completion().await?;
++        anyhow::ensure!(case.readiness.as_ref().context("same local C readiness")?
++            .read_current().await?.is_none(), "unexecuted actual C remains NotReady");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "capability construction and readiness do not dispatch C");
++
++        // This is the existing actual Session mechanism, not the new daemon
++        // state or a claim of a public Root/UID lifecycle.
++        let publication = execute(case.task()?, 1).await?;
++        let original_c = read_receipt(case.task()?, &case.fixture()?.definition, &publication)?;
++        anyhow::ensure!(original_c.bundle_digest == case.fixture()?.bundle.digest()?,
++            "actual C ran the retained original baseline");
++        let observed = case.readiness.as_ref().context("same C readiness backend")?
++            .read_current().await?.context("actual C must now be completed")?;
++        anyhow::ensure!(matches!(observed.observation(),
++            LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, .. }
++            if *retained_bundle == case.fixture()?.bundle.digest()?),
++            "same original C observation");
++
++        let completed = case.completion.as_ref().context("actual Observer command client")?
++            .attest_completed_task().await?;
++        let whole = LearningIterationCoordinatorV1::from_snapshot(completed.snapshot().clone())?;
++        anyhow::ensure!(completed.snapshot().receipts.len() == 6 && whole.next_stage().is_none(),
++            "the actual original evaluated chain has all six receipts");
++        let selected = case.selection()?;
++        anyhow::ensure!(&completed.snapshot().receipts[..5] == selected.snapshot().receipts.as_slice()
++            && completed.selection_attestation() == selected.attestation(),
++            "C keeps the entire same original five-cut and S signature");
++        anyhow::ensure!(matches!(
++            case.completion.as_ref().context("same original command client")?
++                .attest_completed_task().await,
++            Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
++        ), "completed command cannot dispatch twice");
++        let after = case.original_bytes()?;
++
++        case.recover_completed_observer().await?;
++        // Do not let a read-only client mask a missing recovered-owner guard:
++        // this separate actual channel sends Execute from a fresh client.
++        let recovered_host = Arc::clone(case.observer_host.as_ref()
++            .context("same recovered original Observer host")?);
++        let context = OriginalCircuitNextUseCommandContextV1::from_original_evaluated_selection(
++            &case.selection()?,
++        )?;
++        let (fresh_client, channel) = completion_commands::client(
++            context, /*readback_only*/ false, /*retained*/ None,
++        )?;
++        let peer = completion_commands::serve(recovered_host, channel);
++        let attempted = fresh_client.attest_completed_task().await;
++        drop(fresh_client);
++        let served = peer.join().map_err(|_| anyhow::anyhow!("recovered Observer rejection peer panicked"));
++        anyhow::ensure!(matches!(attempted,
++            Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)),
++            "the recovered original owner itself refuses a real fresh Execute request");
++        served??;
++        anyhow::ensure!(matches!(
++            case.completion.as_ref().context("same recovered original Observer")?
++                .attest_completed_task().await,
++            Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
++        ), "recovered original custody remains permanently read-only");
++        let recovered = case.completion.as_ref().context("recovered readback client")?
++            .readback().await?;
++        anyhow::ensure!(recovered == completed,
++            "cold read preserves the entire original completed command result and opaque binding");
++        anyhow::ensure!(case.original_bytes()? == after,
++            "cold readback neither repeats C nor rewrites the enumerated original evidence");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn identical_signed_cuts_cannot_substitute_other_actual_t_e_clients() -> anyhow::Result<()> {
++    let mut case = Box::pin(SameHostCase::with_distinct_original_connections()).await?;
++    let result: anyhow::Result<()> = async {
++        let shared = case.shared()?;
++        let other = case.alternate_shared.as_ref()
++            .context("other actual Version's independently bound original clients")?.clone();
++        let context = case.fixture()?.context()?;
++        OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(&shared, &context)?;
++        OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(&other, &context)?;
++        anyhow::ensure!(!shared.fixture_same_original_clients(&other),
++            "the full original signed cut is identical but both retained clients are not the same objects");
++        let before = case.original_bytes()?;
++        let local = Version::open_original_evaluated_selection_local_read(
++            case.host()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        let live = OriginalCircuitLearningReadClientV1::from_original_evaluated_local_selection(
++            local, context,
++        )?;
++        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(&live, &shared)?;
++        let rejected = OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
++            &live, &other,
++        );
++        anyhow::ensure!(matches!(rejected,
++            Err(crate::OriginalCircuitLearningReadErrorV1::Owner(crate::AgentdError::Invalid(message)))
++            if message.ends_with("same Version local T/E readback owners")
++        ), "Version rejects actual client substitution independently of the identical signatures");
++        let extra_s_home = tempfile::tempdir()?;
++        let extra_s = case.create_selector(&extra_s_home)?;
++        let attempted_s = Selector::into_evaluated_local_shared_command_owner(extra_s, live, other.clone());
++        anyhow::ensure!(attempted_s.is_err(),
++            "the concrete S factory cannot bypass the Version's actual client identity");
++
++        case.export_selection(Duration::from_secs(300)).await?;
++        let local_s = case.local_s.as_ref().context("first Version's actual S capability")?.clone();
++        OriginalCircuitSelectionLocalReadbackV1::require_original_shared_predecessors(
++            &local_s, &shared,
++        )?;
++        anyhow::ensure!(matches!(
++            OriginalCircuitSelectionLocalReadbackV1::require_original_shared_predecessors(&local_s, &other),
++            Err(OriginalCircuitSelectionCommandErrorV1::Binding("same original local Selector T/E clients"))
++        ), "C cannot substitute a distinct but authentic T/E pair for this S");
++
++        let selected = case.selection()?;
++        let local_c = Version::open_original_evaluated_next_use_local_read(
++            case.host()?, selected.clone(), Duration::from_millis(500), Duration::from_secs(300),
++        ).await?;
++        let live_c = OriginalCircuitLearningReadClientV1::from_original_evaluated_local_next_use(
++            local_c, selected.clone(),
++        )?;
++        let extra_c_home = tempfile::tempdir()?;
++        let extra_c = Observer::create_evaluated(
++            opened(extra_c_home.path(), "observer.journal", /*create*/ true)?,
++            receipt_witness(&extra_c_home, "observer.witness", case.fixture()?, WitnessOrigin::New)?,
++            OriginalCircuitEvaluatedNextUseReceiptConfigV1 {
++                selection: selected,
++                signer: case.fixture()?.host.original.credentials.observer.clone(),
++                maximum_signature_lifetime_seconds: 300,
++            },
++            SigningKey::from_bytes(&[43; 32]),
++        )?;
++        let attempted_c = Observer::into_evaluated_local_shared_command_owner(
++            extra_c, live_c, other, local_s,
++        );
++        anyhow::ensure!(attempted_c.is_err(),
++            "the concrete C factory also requires the same Version/S T/E instances");
++        anyhow::ensure!(case.original_bytes()? == before,
++            "all identity checks leave existing original receipts and evidence unchanged");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "a rejected authentic foreign client set does not dispatch C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn missing_original_s_cannot_export_a_local_predecessor() -> anyhow::Result<()> {
++    let case = Box::pin(SameHostCase::missing_selection()).await?;
++    let result: anyhow::Result<()> = async {
++        let before = case.original_bytes()?;
++        let attempted = SelectorHost::open_original_evaluated_local_readback(
++            case.selector_host()?, Duration::from_millis(500), Duration::from_secs(300),
++        ).await;
++        anyhow::ensure!(attempted.is_err(),
++            "a valid original context and published Version do not fabricate a missing S");
++        anyhow::ensure!(case.original_bytes()? == before,
++            "failed S export never signs, executes or initializes a replacement receipt");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "missing S cannot start C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_s_aliases_refuse_real_overlapping_owner_reads() -> anyhow::Result<()> {
++    let mut case = Box::pin(SameHostCase::completed_selection()).await?;
++    let result: anyhow::Result<()> = async {
++        case.export_selection(Duration::from_secs(300)).await?;
++        let before = case.original_bytes()?;
++        let original = case.selection()?;
++        let cap = case.local_s.as_ref().context("actual local S")?.clone();
++        let alias = cap.clone();
++        let mut gate = cap.fixture_pause_next_original_selection_read()?;
++        let mut request = Box::pin(cap.read_original_selection());
++        let body: anyhow::Result<()> = async {
++            let pending = std::future::poll_fn(|cx| std::task::Poll::Ready(
++                std::future::Future::poll(request.as_mut(), cx).is_pending()
++            )).await;
++            anyhow::ensure!(pending, "actual S read was dispatched before pausing");
++            gate.wait_for_actual_read().await?;
++            anyhow::ensure!(matches!(alias.read_original_selection().await,
++                Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++                "an alias cannot dispatch a second S read while the same original slot is absent");
++            Ok(())
++        }.await;
++        gate.release();
++        // Even if an assertion failed, observe the actual original operation,
++        // then observe its join result; never abandon it to make cleanup pass.
++        let read = request.await;
++        let terminal = gate.wait_for_operation_terminal().await;
++        body?;
++        terminal?;
++        let read = read?;
++        anyhow::ensure!((read.snapshot(), read.receipt(), read.attestation())
++            == (original.snapshot(), original.receipt(), original.attestation()),
++            "the winning original operation returns the complete same S");
++        anyhow::ensure!(case.original_bytes()? == before, "both aliases are read-only");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn cancelling_local_s_read_fences_all_aliases_after_actual_work_terminates() -> anyhow::Result<()> {
++    let mut case = Box::pin(SameHostCase::completed_selection()).await?;
++    let result: anyhow::Result<()> = async {
++        case.export_selection(Duration::from_secs(300)).await?;
++        let before = case.original_bytes()?;
++        let cap = case.local_s.as_ref().context("actual local S")?.clone();
++        let alias = cap.clone();
++        let mut gate = cap.fixture_pause_next_original_selection_read()?;
++        let mut request = Box::pin(cap.read_original_selection());
++        let body: anyhow::Result<()> = async {
++            let pending = std::future::poll_fn(|cx| std::task::Poll::Ready(
++                std::future::Future::poll(request.as_mut(), cx).is_pending()
++            )).await;
++            anyhow::ensure!(pending, "actual original S operation is pending");
++            gate.wait_for_actual_read().await?;
++            anyhow::ensure!(matches!(alias.read_original_selection().await,
++                Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++                "all aliases see the absent original slot before cancellation");
++            Ok(())
++        }.await;
++        // The actual blocking owner read has returned but the original async
++        // delivery is deliberately dropped. Its result is Unknown to this
++        // caller, not a claim that already dispatched owner I/O was cancelled.
++        drop(request);
++        gate.release();
++        let terminal = gate.wait_for_operation_terminal().await;
++        body?;
++        terminal?;
++        anyhow::ensure!(matches!(alias.read_original_selection().await,
++            Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++            "observing the old work's terminal cannot restore a cancelled slot");
++        anyhow::ensure!(matches!(cap.read_original_selection().await,
++            Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++            "the original alias cannot reopen or retry the cancelled capability");
++        anyhow::ensure!(case.original_bytes()? == before,
++            "completed read-only work does not grant a replacement S or C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_s_revalidates_withdrawn_b_and_consumes_the_failed_slot() -> anyhow::Result<()> {
++    let mut case = Box::pin(SameHostCase::completed_selection()).await?;
++    let result: anyhow::Result<()> = async {
++        case.export_selection(Duration::from_secs(300)).await?;
++        let cap = case.local_s.as_ref().context("already admitted local S")?.clone();
++        let alias = cap.clone();
++        case.fixture.as_deref_mut().context("same original B owner")?
++            .host.retention_b.withdraw_target()?;
++        let before = case.original_bytes()?;
++        let read = cap.read_original_selection().await;
++        anyhow::ensure!(read.is_err(),
++            "an earlier authentic S is not a substitute for a current independent B read");
++        anyhow::ensure!(matches!(alias.read_original_selection().await,
++            Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++            "failed original current validation consumes the same shared S slot");
++        anyhow::ensure!(case.original_bytes()? == before,
++            "withdrawal rejection does not rewrite original receipts");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "failed S cannot dispatch the actual C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn local_s_clone_keeps_the_original_absolute_expiry() -> anyhow::Result<()> {
++    let mut case = Box::pin(SameHostCase::completed_selection()).await?;
++    let result: anyhow::Result<()> = async {
++        let started = std::time::Instant::now();
++        case.export_selection(Duration::from_secs(1)).await?;
++        let before = case.original_bytes()?;
++        let cap = case.local_s.as_ref().context("actual finite S capability")?.clone();
++        tokio::time::sleep_until(tokio::time::Instant::from_std(
++            started + Duration::from_millis(1100),
++        )).await;
++        let late_clone = cap.clone();
++        anyhow::ensure!(matches!(late_clone.read_original_selection().await,
++            Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++            "a late clone cannot renew the original absolute lifetime");
++        anyhow::ensure!(matches!(cap.read_original_selection().await,
++            Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)),
++            "expiry is shared and no alias can reopen the original capability");
++        anyhow::ensure!(case.original_bytes()? == before, "expiry issues no original evidence");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
+index 43976a78c4e4f380c9d97559006aed7d5e714cb7..cbf9e717bda5ba469964cff7a399763c4f4e0bb9 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
+@@ -200,3 +200,6 @@
+ 
+ #[path = "circuit_evaluated_version_next_use_readback_tests.rs"]
+ mod next_use_readback_tests;
++
++#[path = "circuit_evaluated_same_host_sc_support_tests.rs"]
++mod same_host_sc;
+diff --git a/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs b/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
+index 1a00dc794e3cd7e33fccbb63f1f08276c5361ddf..1d4d4f96ba098e5889bdc09832314f1baf973ef9 100644
+--- a/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs
+@@ -47,6 +47,8 @@
+     slot: Mutex<Option<Slot>>,
+     timeout: Duration,
+     end: Instant,
++    #[cfg(test)]
++    fixture: test_support::State,
+ }
+ 
+ /// A read-only capability exported by the same completed original S owner.
+@@ -89,8 +91,12 @@
+             .ok_or(Error::Unavailable)?
+             .min(self.original.end);
+         let owner = Arc::clone(&self.original.owner);
++        #[cfg(test)]
++        let fixture_operation = test_support::take_next(&self.original.fixture);
+         let work = tokio::task::spawn_blocking(move || {
+             let value = OriginalSelectionOwner::read_original_receipt(owner.as_ref())?;
++            #[cfg(test)]
++            test_support::after_actual_read(&fixture_operation, deadline);
+             Ok::<_, Error>((slot, value))
+         });
+         let (slot, value) = tokio::time::timeout_at(
+@@ -225,6 +231,8 @@
+                 })),
+                 timeout,
+                 end,
++                #[cfg(test)]
++                fixture: test_support::State::default(),
+             }),
+         };
+         if Instant::now() >= deadline {
+@@ -261,3 +269,7 @@
+         Ok(command)
+     }
+ }
++
++#[cfg(test)]
++#[path = "circuit_selection_local_readback_support_tests.rs"]
++mod test_support;
+diff --git a/codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..f218ca52852867b7e01dd8b383217ea2540bf1c0
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs
+@@ -0,0 +1,132 @@
++//! Scheduling-only observation for the actual local S read. The hook accepts
++//! no receipt, context, counter or deadline and returns no replacement result.
++//! It pauses only after the concrete original owner read has really returned.
++
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++use std::sync::mpsc;
++use std::time::Duration;
++use std::time::Instant;
++
++use tokio::sync::Notify;
++
++use super::OriginalCircuitSelectionLocalReadbackV1;
++
++#[derive(Default)]
++pub(super) struct State {
++    next: Mutex<Option<Operation>>,
++}
++
++struct Signals {
++    actual_read_returned: AtomicBool,
++    operation_finished: AtomicBool,
++    pause_expired: AtomicBool,
++    changed: Notify,
++    end: Instant,
++}
++
++pub(super) struct Operation {
++    signals: Arc<Signals>,
++    release: mpsc::Receiver<()>,
++}
++
++impl Drop for Operation {
++    fn drop(&mut self) {
++        // This runs at the actual blocking closure's exit, including an owner
++        // error before the pause. No original owner I/O follows this point.
++        self.signals.operation_finished.store(true, Ordering::Release);
++        self.signals.changed.notify_one();
++    }
++}
++
++pub(crate) struct OriginalSelectionReadGate {
++    signals: Arc<Signals>,
++    release: Option<mpsc::Sender<()>>,
++}
++
++impl OriginalSelectionReadGate {
++    pub(crate) async fn wait_for_actual_read(&self) -> anyhow::Result<()> {
++        loop {
++            if self.signals.actual_read_returned.load(Ordering::Acquire) {
++                return Ok(());
++            }
++            anyhow::ensure!(
++                !self.signals.operation_finished.load(Ordering::Acquire),
++                "the actual original S operation failed before its completion pause"
++            );
++            tokio::time::timeout_at(
++                tokio::time::Instant::from_std(self.signals.end),
++                self.signals.changed.notified(),
++            ).await.map_err(|_| anyhow::anyhow!("actual S completion observation deadline"))?;
++        }
++    }
++
++    pub(crate) fn release(&mut self) {
++        if let Some(release) = self.release.take() {
++            let _ = release.send(());
++        }
++    }
++
++    pub(crate) async fn wait_for_operation_terminal(&self) -> anyhow::Result<()> {
++        while !self.signals.operation_finished.load(Ordering::Acquire) {
++            tokio::time::timeout_at(
++                tokio::time::Instant::from_std(self.signals.end),
++                self.signals.changed.notified(),
++            ).await.map_err(|_| anyhow::anyhow!("actual S operation terminal was not observed"))?;
++        }
++        anyhow::ensure!(
++            !self.signals.pause_expired.load(Ordering::Acquire),
++            "the test did not release the original S operation within its fixed fixture window"
++        );
++        Ok(())
++    }
++}
++
++impl Drop for OriginalSelectionReadGate {
++    fn drop(&mut self) {
++        self.release();
++    }
++}
++
++impl OriginalCircuitSelectionLocalReadbackV1 {
++    pub(crate) fn fixture_pause_next_original_selection_read(
++        &self,
++    ) -> anyhow::Result<OriginalSelectionReadGate> {
++        let mut next = self.original.fixture.next.lock()
++            .map_err(|_| anyhow::anyhow!("original S observation slot poisoned"))?;
++        anyhow::ensure!(next.is_none(), "one armed original S observation");
++        let (release, waiting) = mpsc::channel();
++        let signals = Arc::new(Signals {
++            actual_read_returned: AtomicBool::new(false),
++            operation_finished: AtomicBool::new(false),
++            pause_expired: AtomicBool::new(false),
++            changed: Notify::new(),
++            end: Instant::now().checked_add(Duration::from_secs(5))
++                .ok_or_else(|| anyhow::anyhow!("bounded original S observation"))?,
++        });
++        *next = Some(Operation {
++            signals: Arc::clone(&signals),
++            release: waiting,
++        });
++        Ok(OriginalSelectionReadGate { signals, release: Some(release) })
++    }
++}
++
++pub(super) fn take_next(state: &State) -> Option<Operation> {
++    // A poisoned test observation cannot produce a fake owner result. The
++    // owning test will not observe a pause and must fail its bounded wait.
++    state.next.lock().ok()?.take()
++}
++
++pub(super) fn after_actual_read(operation: &Option<Operation>, original_deadline: Instant) {
++    let Some(operation) = operation else { return; };
++    operation.signals.actual_read_returned.store(true, Ordering::Release);
++    operation.signals.changed.notify_one();
++    // The pause cannot run beyond this actual operation's original deadline.
++    let remaining = original_deadline.saturating_duration_since(Instant::now());
++    if operation.release.recv_timeout(remaining).is_err() {
++        operation.signals.pause_expired.store(true, Ordering::Release);
++    }
++}

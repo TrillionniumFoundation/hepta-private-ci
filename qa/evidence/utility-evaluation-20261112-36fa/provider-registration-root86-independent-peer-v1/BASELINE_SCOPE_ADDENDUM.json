@@ -1,0 +1,99 @@
+{
+  "status": "PREEXISTING_PREPARED_BASELINE_SCOPE_CLARIFICATION_NOT_NEW_SOURCE_CHANGE",
+  "canonical_old_qa_methods": 590,
+  "final_unchanged_relative_canonical_cc57": 586,
+  "final_changed_relative_canonical_cc57": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "method": [
+        "EvaluatedNextUseClosureTests",
+        "test_both_live_predecessors_and_readonly_original_s_are_mandatory"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "method": [
+        "EvaluatedOrdinaryRetainedClosureTests",
+        "test_new_typed_edges_and_old_boundary_inventory_are_exact"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "method": [
+        "OriginalNextUseCommandClosureTests",
+        "test_attestation_and_readback_use_live_original_owners_without_running_c"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "method": [
+        "ResidentRootSourceClosureTests",
+        "test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+      ]
+    }
+  ],
+  "unchanged_relative_this_packet_preimage": 587,
+  "changed_relative_this_packet_preimage": 3,
+  "canonical_root_qa": {
+    "bytes": 28123,
+    "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e",
+    "git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f"
+  },
+  "prepared_root_qa_preimage": {
+    "bytes": 29964,
+    "sha256": "713abd9c8cf645ff12dbf6e3be098ffcb5d61621784e1c3d54e16ff993c8c569",
+    "git_blob": "8223265bdcea271661fd46d448943484a28d5703"
+  },
+  "existing_layer_method": [
+    "ResidentRootSourceClosureTests",
+    "test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+  ],
+  "root_qa_specific_constant_counts": {
+    "before": 19,
+    "after": 25,
+    "old19_preserved_exact_prefix": true,
+    "new6": [
+      "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+      "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+      "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+      "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+      "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+      "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins"
+    ],
+    "scope": "This QA file subset; not the total original33 Root gate inventory."
+  },
+  "prior_layer_exact_method_diff": "--- canonical_cc57\n+++ prepared822326\n@@ -23,14 +23,33 @@\n             '#[path = \"authority_host_learning_resident_retention_auth_tests.rs\"]\\nmod retention_auth;',\n             roots,\n         )\n+        provider = (ROOT / (AGENT + \"authority_host_learning_resident_provider_transport_tests.rs\")).read_text()\n+        lifecycle = (ROOT / (AGENT + \"authority_host_learning_resident_provider_lifecycle_tests.rs\")).read_text()\n+        self.assertIn(\n+            '#[path = \"authority_host_learning_resident_provider_transport_tests.rs\"]\\nmod provider_transport;',\n+            roots,\n+        )\n+        self.assertIn(\n+            '#[path = \"authority_host_learning_resident_provider_lifecycle_tests.rs\"]\\nmod lifecycle;',\n+            provider,\n+        )\n         for name in ROOT_CASES:\n-            source = retention if \"::retention_auth::\" in name else model if \"::original_model::\" in name else evaluation if \"::evaluation::\" in name else roots\n+            source = (\n+                lifecycle if \"::provider_transport::lifecycle::\" in name\n+                else provider if \"::provider_transport::\" in name\n+                else retention if \"::retention_auth::\" in name\n+                else model if \"::original_model::\" in name\n+                else evaluation if \"::evaluation::\" in name\n+                else roots\n+            )\n             self.assertIn(\"fn \" + name.rsplit(\"::\", 1)[-1] + \"(\", source)\n         self.assertEqual(\n             roots.count('#[ignore = \"explicit actual Root')\n             + evaluation.count('#[ignore = \"explicit actual Root')\n             + model.count('#[ignore = \"explicit actual Root')\n-            + retention.count('#[ignore = \"explicit actual Root'),\n+            + retention.count('#[ignore = \"explicit actual Root')\n+            + provider.count('#[ignore = \"explicit actual Root')\n+            + lifecycle.count('#[ignore = \"explicit actual Root'),\n             len(ROOT_CASES),\n         )\n         for marker in (\n",
+  "author_addendum_reason_requiring_correction": "Root86 earlier layer did change one method body; this is already in prepared822326 and unchanged by this registration packet.",
+  "reviewer_failed_assumptions_preserved": [
+    "Initially assumed canonical RootQA method bodies unchanged; exact diff disproved this.",
+    "Initially treated this QA ROOT_CASES subset as full33/39 gate inventory; actual constants19/25 retain all19 plus6. No source or gate changed."
+  ],
+  "source_changed": false,
+  "qa_executed": 0,
+  "unchanged_original_helpers_fullpins": [
+    {
+      "path": "scripts/hepta_main_protection.py",
+      "bytes": 16789,
+      "sha256": "c53258ed1d60b172025d5f75576e87762dbebac0351bc804a634043a15f778f5",
+      "git_blob": "5ca963280441d6b84a37929c2b1a6d5ed6abec7b"
+    },
+    {
+      "path": "scripts/hepta_source_registry_closure.py",
+      "bytes": 23642,
+      "sha256": "b3f8fc15ff7787f5ff1cc7a2a688e244524ce7810715b03e6818a50bba46ab2c",
+      "git_blob": "abedc01f9fc04c5eb793075836281b015b23e268"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "bytes": 7759,
+      "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2",
+      "git_blob": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4"
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    }
+  ]
+}

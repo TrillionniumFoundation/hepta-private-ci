@@ -1,0 +1,52 @@
+{
+  "design_constraint": "A private Pending report may supply bounded verified data for the existing original Root authorization binding and subsequent existing E\u2192D sequence. It must not manufacture Root intent, registered lease, SourcePublication, successful D, or a direct generic Training entry. The full type-level wiring remains a prepared implementation task, not established by this review.",
+  "exact_inputs": [
+    {
+      "bytes": 6290,
+      "git_blob": "f171d6eda0b8673f3c39566368025ad18dbaf19c",
+      "name": "authority_host_learning_resident_stages.rs",
+      "sha256": "6fa6a899af0c1883b6c36c2b52cef9be192d7ca3a22eae70d5d3f6b13e36aeeb"
+    },
+    {
+      "bytes": 14991,
+      "git_blob": "3deaa319c779c5121e6e66ea94af14c77363c7d7",
+      "name": "authority_host_learning_resident_runtime.rs",
+      "sha256": "5a96d731ff911cfa277069e4eee075b04a9f77d95cd1475c982fa7a81e663ae3"
+    },
+    {
+      "bytes": 8359,
+      "git_blob": "42e016338303d25de72c5b2fa4bfb16b87a6e877",
+      "name": "authority_host_learning_resident_model.rs",
+      "sha256": "00104bd11941e820996a66ed276dd115639cd820601e5903b87f81b7c1ad9a6a"
+    },
+    {
+      "bytes": 11164,
+      "git_blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+      "name": "authority_host_learning_resident_profile.rs",
+      "sha256": "71fc4129fb952dd3b1034ef306bbaf91fac2511d6e8d764f5f7e184b5e0282bf"
+    }
+  ],
+  "extends_review": "2dfea484b9cb17751771d53fcc9f2ad7fcf1ffa2",
+  "facts": [
+    "Profile admission_binding validates the empty initial cut and full verifier context to derive an exact authorization binding. It does not sign an intent, register a lease, initialize storage or admit effects.",
+    "Profile::new additionally requires an already signed original Root FinalUse intent and already registered exact-purpose lease that cover the work deadline. Source/profile bytes cannot supply those capabilities.",
+    "Runtime::admit treats empty recovery as no Source evidence. Only actual fresh admission CAS installs the original resident gate and starts the continuation at Experience.",
+    "continue_original gets the next stage from the exact coordinator cut, checks the original stage bundle, commits gate.begin intent, invokes the actual original stage, checks the gate, records the receipt, reads and verifies original role attestations, and only then proceeds to the next stage. The existing Dataset material path reaches original Source/current reads before Training becomes next.",
+    "Recovery readback obtains original attestations around the original registered state and verifies unchanged snapshot/dispatch state; an initial admission response is explicitly an incomplete cut and cannot ACK/retire the A outbox."
+  ],
+  "format": "hepta-root-original-resident-first-material-order-addendum-v1",
+  "observed_at": "2026-11-13T05:39:27.030794+00:00",
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "reviewed_methods": [
+    "RootResidentLearningProfileV3::admission_binding",
+    "RootResidentLearningProfileV3::new",
+    "RootResidentLearningRuntimeV3::admit",
+    "RootResidentLearningRuntimeV3::readback",
+    "continue_original",
+    "ResidentOriginalStageOwnersV3::require_stage"
+  ],
+  "runtime_or_tests_executed": false,
+  "source_changed": false,
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633"
+}

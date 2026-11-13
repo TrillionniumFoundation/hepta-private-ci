@@ -1,0 +1,105 @@
+{
+  "format": "hepta-fresh-material-trainer-split-independent-peer-v1",
+  "status": "NO_SPECIFIC_STATIC_BLOCKER_FOUND",
+  "reviewed_packet": "a72dc791ed6026ae49b0500a52dc295f9b3622ad",
+  "exact_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "before": "e54fe13095d93a559de5c2816a15f5171774f7cf",
+      "after": "e2e108a17021f10e18ccd4c873beec6f5fc35e4e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "before": null,
+      "after": "4eb88297be6a9707aa8e8d5fce8eda077f45ef71"
+    }
+  ],
+  "bound_inputs": "Packet and all three before/after source objects were independently fetched in full and verified using Git raw blob identities; local packet/text fields match all bytes.",
+  "static_byte_evidence": {
+    "byte_review": "3eaf9218d1f8b15d513231e4f1c80e4ad92f19b3",
+    "original_A_prelude_bytes": 1970,
+    "original_A_through_Material_body_bytes": 3204,
+    "old_original_bytes_and_finish_suffix_bytes": 2299
+  },
+  "findings": [
+    {
+      "id": "P1",
+      "result": "preserved",
+      "topic": "Old construction order and authority",
+      "detail": "The old public-to-parent new wrapper still delegates once to new_with_original_work_deadline. That method now awaits one Material-only constructor and attaches the same original Trainer once. The extracted original admission, run binding before signing, Version test initial publication, actual A execution, original Decision/Outcome, observer, evaluation profile, original work deadline, empty receipt cut, ledger and Material-owner subranges remain byte-identical. No source, signature, append or A execution is repeated."
+    },
+    {
+      "id": "P2",
+      "result": "preserved",
+      "topic": "Original Trainer transport branch",
+      "detail": "After the Material-only return, all four original custody files are opened before the first original test transport. The original Dataset command, source, Experience evidence and Dataset evidence calls each occur in the same order. The subrange is identical after eight explicit reference-spelling substitutions. The exact original 300-second lifetime and 300 signature lifetime remain; this branch uses the old same-UID test ports and is not a public cross-UID proof."
+    },
+    {
+      "id": "P3",
+      "result": "absent_by_complete_source_inspection",
+      "topic": "Material-only side effects",
+      "detail": "The new module contains no Trainer construction, BootstrapCustody literal or material_ports call. Its retained fields contain the original A session, actual Material owner, original ledger/credentials/source/config/Version fixture, optimizer and files, but no Trainer or MaterialPeers. It returns after original Material construction without executing Material D/E, Training, Evaluation or Model work. It still actually executes ordinary A as in the original constructor."
+    },
+    {
+      "id": "P4",
+      "result": "preserved",
+      "topic": "original_bytes and successful cleanup",
+      "detail": "The old parent original_bytes and entire finish suffix are byte-identical. Old original_bytes still reads all 13 fixture files and the two retained Source paths, failing on absence. The new Material-only original_bytes reads the nine files that exist before Trainer custody plus those same two Source paths; omission of the four uncreated Trainer files is deliberate. Material-only finish stops/joins a retained A, drops its own Material owner and validates that external clones were already closed."
+    },
+    {
+      "id": "P5",
+      "result": "preserved_result_failure_semantics",
+      "topic": "Error cleanup",
+      "detail": "An error after A starts but before Material-only construction returns drops partial local construction and explicitly awaits the same A.stop, returning the original error with cleanup context. No peers exist on that path. An error while attaching Trainer drops partial clients, awaits the same retained A.stop and calls MaterialPeers::finish to reap every already-started original peer; it returns an error even when cleanup also failed. MaterialPeers and its Drop implementation are unchanged."
+    },
+    {
+      "id": "P6",
+      "result": "no_specific_scope_or_import_error_found",
+      "topic": "Rust module privacy/imports",
+      "detail": "The new child is original_material::unstarted_material under the existing test-only resident_provider module. pub(in super::super) reaches resident_provider; the parent re-export pub(super) does not exceed that visibility. Descendants can access the parent's private imports and ProviderAdmission fields. The Rust Reference states that glob imports also import unnameable as-underscore imports, so child use super::* does not by itself lose the parent's anyhow::Context as _. This is static language-rule review, not a compiler result."
+    },
+    {
+      "id": "P7",
+      "result": "no_partial_move_obstacle_from_optimizer",
+      "topic": "Concrete optimizer type",
+      "detail": "Canonical cell_composed_q24_training.rs a88c6f4254a660d94f5f3bef55011101d38e7221 declares CellQ24SgdRuleV1 with Clone and Copy. Copying original.optimizer before the final struct destructure therefore does not move that field out of the owner. Reference spellings such as (*material).clone() explicitly clone the same owned config; no new owner/client is opened."
+    },
+    {
+      "id": "P8",
+      "result": "production_constraint_retained",
+      "topic": "Root custody boundary",
+      "detail": "VersionFixture::new_initial remains explicitly test-only. This split does not create RootAuthorityDirectory, a production Current owner, a Root lease/issuer, or cross-UID endpoint admission. The outstanding production Current/CAS placement requirement in peer 50a182e905aca1e388bafe4dffe28277a7c568d9 is unchanged."
+    }
+  ],
+  "cleanup_limits": [
+    "Explicit Result error and finish paths were reviewed. Cancellation of the async construction future was not executed or proven to join the original A worker.",
+    "The original Session Drop cancels its token; explicit Session.stop awaits the worker with its original five-second bound. That original distinction is unchanged.",
+    "External public service tasks/clones must be stopped and joined by their caller before Material-only finish. If the caller has taken A, it owns A.stop/join and original-home retention. This package does not create or join those future services."
+  ],
+  "rejected_false_alarms": [
+    "An underscore trait import is not automatically lost through a glob import.",
+    "The actual optimizer is Copy; this is not an unproven move of a non-Copy field.",
+    "The local auxiliary training.rs identity 5490544923eaeaaf0a64a78ebb2ecd7440237440 returned Git 404 and was not used as the canonical type proof. The complete canonical a88c6f4254a660d94f5f3bef55011101d38e7221 body was independently fetched and verified."
+  ],
+  "primary_language_sources": [
+    {
+      "url": "https://doc.rust-lang.org/reference/items/use-declarations.html#underscore-imports",
+      "claim": "Glob imports import unnameable underscore imports."
+    },
+    {
+      "url": "https://doc.rust-lang.org/reference/visibility-and-privacy.html",
+      "claim": "Private items are accessible in descendants; pub(in path) is limited to an ancestor module."
+    }
+  ],
+  "bounds": {
+    "source_or_author_files_modified": false,
+    "frozen_51_path_registration_package_changed": false,
+    "frozen_89_window_changed": false,
+    "Rust_compiled": false,
+    "Rust_formatted": false,
+    "test_or_QA_method_executed": false,
+    "H_or_native_run": false,
+    "public_cross_UID_execution_proved": false,
+    "real_qualified_task_chains": 0
+  }
+}

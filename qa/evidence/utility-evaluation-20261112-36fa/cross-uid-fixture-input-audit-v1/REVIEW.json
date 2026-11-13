@@ -1,0 +1,247 @@
+{
+  "format": "hepta-cross-uid-fixture-input-static-review-v1",
+  "status": "READ_ONLY_AUDIT_PRODUCTION_CUSTODY_BLOCKER_IDENTIFIED",
+  "baseline": {
+    "canonical_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "canonical_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "prepared_root86_overlay": "3f7d40d4933669da33d2aef3491efb431c5771ae"
+  },
+  "actions": {
+    "native_or_H": 0,
+    "rust_build": 0,
+    "formatter": 0,
+    "test_or_QA_method": 0,
+    "source_or_control_mutations": 0,
+    "ref_updates": 0,
+    "read_source_bytes_and_hashes": true,
+    "create_review_blobs_only": true
+  },
+  "central_conclusion": "A UID-60001 VersionFixture can create test-only private file owners, but this is not construction of the production root-owned CURRENT/control authority. The public production Current factories require an already validated RootAuthorityDirectory. A valid UID-0 issuer lane does not turn a test Current backend or copied path/digest into that owner.",
+  "distinctions": [
+    {
+      "component": "VersionFixture::new_initial",
+      "finding": "This is crate-private cfg(test) fixture construction. It uses FileCas and CurrentStore::from_test_store, a fixed test issuer key and test/research clocks. Its initial Control is genuinely Prepared in the test store but expressly not a production RootAuthorityDirectory.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_initial_test_support.rs",
+          "git_blob": "3d8040204911925a9c847bb4bbae2fa52b059214"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+          "git_blob": "24b7907d7bbd635352da19503e78aa71de710c64"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+          "git_blob": "3b70b31993dfa18405848e3b99653aba6020821a"
+        }
+      ]
+    },
+    {
+      "component": "Production RootAuthorityDirectory and Current",
+      "finding": "RootAuthorityDirectory::open requires effective UID 0, an absolute path, root-owned non-writable ancestors, and a root-owned private final directory. Private records require exact mode 0600, root ownership, single link and NOFOLLOW. Current::initialize/open/prepare_initial accept Arc<RootAuthorityDirectory>; the Host backend has no caller-supplied generic production store. UID 60001 cannot open this production custody through those factories.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+          "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "git_blob": "36d3ae716003a4a6c499e005438ef176daab0826"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+          "git_blob": "07092ccebbb5642fc42121187f57e842a9073b2a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+          "git_blob": "3b70b31993dfa18405848e3b99653aba6020821a"
+        }
+      ]
+    },
+    {
+      "component": "FinalUse consumer versus Root issuer",
+      "finding": "FinalUseAuthority is a consumer/nonce-store owner. Its generic factory is not restricted to UID 0; its private directory and files must belong to the current effective UID, and production trust still needs protected clock/frontier plus the pinned issuer keys. Therefore an existing UID-60001 nonce store is not accepted when reopened as UID 0. This does not prohibit a properly trusted non-Root consumer from using a grant issued by a separate Root service.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "git_blob": "84d55caf39b1746285f42c2777ddd410854fb7c9"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+          "git_blob": "d014fce0c1396b094d4497c58ef905c53e80669f"
+        }
+      ]
+    },
+    {
+      "component": "Actual Root grant service",
+      "finding": "HostFinalUseIssuer::initialize/open is separately rooted in RootAuthorityDirectory. Initialization creates fresh protected key custody. issue reads an already existing lease at the exact revision, verifies the full derived binding, then signs within the lease dispatch boundary. HostIssuerSession authenticates the original peer/pidfd; the retained-Version client requires the original UID-0 protected channel and the fixed same-model destination. No fixture private key, JSON owner claim, request digest or generic from_stream grants those conditions.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+          "git_blob": "cbd5eb1ed0ea67fc20dcff244d1e637a5a73fff9"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_host_issuer_transport.rs",
+          "git_blob": "83acf4c92c2d6192454508d57f4998dbd1eac2f3"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+          "git_blob": "b6c67474c34e13fad46b7d2907935afedda95b9e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+          "git_blob": "39b1c57ccfcddc4ad41fe1246d24b90b2b65b4b5"
+        }
+      ]
+    }
+  ],
+  "current_consumers": [
+    {
+      "phase": "Input type",
+      "operation": "OriginalCircuitRetainedPublicationInputsV1.current is Arc<NeuronGenerationCurrentOwnerV1>, not a serialized snapshot or generic CellGenerationCurrentV1 callback. The adjacent authorities, predecessor/target files, completed-A receipt and independent artifact selection are real typed owners.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication.rs",
+          "git_blob": "4cf197df6841af9d5f99d9d1d608b427f9753c25"
+        }
+      ]
+    },
+    {
+      "phase": "Fresh retained preparation",
+      "operation": "prepare_original_circuit_evaluated_retention_v1 moves inputs.current into prepare_agentd_generation_cold_same_model_task_v1. The cold predecessor is opened with this Current guard. prepare_with_completion calls current.prepare_same_model_task; that original method loads CURRENT, checks the exact drained predecessor, CASes the retained intent only if no different pending intent exists, then reads it back.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+          "git_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+          "git_blob": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+          "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_prepare.rs",
+          "git_blob": "2a0f2efedd75afd2d865f788bec30a28016a833c"
+        }
+      ]
+    },
+    {
+      "phase": "Publication",
+      "operation": "PreparedAgentdGenerationUpdateV1::publish invokes the same Current.publish. It checks external FinalUse frontier and artifacts, claims the exact grant, and performs the CURRENT CAS inside the original dispatch-with-witness boundary, then reads the original operation. This is a state-changing authority operation, not read-only snapshot construction.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+          "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "git_blob": "36d3ae716003a4a6c499e005438ef176daab0826"
+        }
+      ]
+    },
+    {
+      "phase": "Retained/recovery currentness",
+      "operation": "Version keeps control = Arc::clone(inputs.current). Its Prepared phase uses recover_operation/read_operation. Published LiveGenerationCurrent checks the same Current owner, artifact selection and retained FinalUse witness, then rechecks Current. A detached copy of the original head cannot satisfy the live-owner semantics merely by having the same initial bytes.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "git_blob": "943d1919c37b104c74d93b0f48329a38339bfbcc"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+          "git_blob": "4f88e588c805271cf8954305bfe09fdfab777bf4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+          "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_recovery.rs",
+          "git_blob": "77b54207e81ed460945448503a50c430a3546b02"
+        }
+      ]
+    }
+  ],
+  "b_fixture": {
+    "status": "NARROW_TEST_ONLY_INPUT_SEPARATION_RECOMMENDED_NOT_IMPLEMENTED",
+    "current_coupling": "CompletedTrainingInputs::from_original_completion accepts &CircuitTaskSourcePublicationV1; that opaque type has private fields and is not serde-derived. Its original_record() is &RunStartRecordV1.",
+    "objective_fields": [
+      {
+        "field": "snapshot.objective_digest",
+        "type": "Digest32",
+        "use": "Compare with the B preregistered rule's objective digest and set the independent B record's objective digest."
+      },
+      {
+        "field": "objective_semantic_bytes",
+        "type": "Vec<u8>",
+        "use": "Copy the complete original compiled objective identity into the independently admitted B record."
+      },
+      {
+        "field": "objective_function_v1_digest",
+        "type": "Digest32",
+        "use": "Retain the exact original registered canonical function identity."
+      },
+      {
+        "field": "objective_function_v1_bytes",
+        "type": "Vec<u8>",
+        "use": "Copy the complete original function bytes; a digest-only replacement is insufficient."
+      }
+    ],
+    "existing_A_binding_checks": [
+      "previous.input() == source_a",
+      "source_a.scope.run_id == material.initial.request.source_run_id",
+      "source_a.objective_digest == material.initial.request.envelope.objective_digest",
+      "parse(previous.history_digest()) == material.initial.request.completed_task_receipt"
+    ],
+    "separate_actual_DT_checks": [
+      "The actual opaque Dataset receipt must pass require_original_dataset_context against the trusted original Material config.",
+      "Dataset snapshot has exactly the two original receipts and Material initial has none.",
+      "Actual Candidate receipt and signature equal the actual Training readback; Candidate authority is DENY_ALL.",
+      "The original Dataset prefix plus the original Training receipt advances the same coordinator to Evaluation with exactly three receipts.",
+      "Original baseline components and exact baseline manifest are preserved; the candidate manifest comes from the actual Candidate model/bundle."
+    ],
+    "material_binding_detail": "The existing Material context binding includes the complete initial head, scope, rule/policy, original freeze signature and verifier trust/scope/objective. authenticate_cut compares exact request and owners, enforces the role-fixed 1/2 receipt count, and verifies each actual original Observer signature. This authenticates the D prefix against the supplied original Material config; it does not independently legitimize a Material config invented by an untrusted child.",
+    "smallest_recommendation": "Split only the test-fixture data coupling: the B populate/execute helper can borrow a Root-preheld and originally validated RunStartRecordV1 (or a private borrowed view of these four fields), while the old wrapper still delegates previous.original_record(). Keep all actual B source/Cell execution, independent B admission/run/time, seven actual sources, evidence/qualification reads and original assertions. The new cross-UID path must separately bind source_a and completed-A history to the Root-established original Material request and its actually authenticated D/T readbacks. Do not manufacture a SourcePublication or substitute a comparison of a Material digest with itself.",
+    "restrictions": [
+      "No public production source-receipt constructor or serde conversion is proposed.",
+      "Do not copy A's admission/run/time into B; B's independent original record and owners remain distinct.",
+      "Do not omit the actual original A-to-Material provenance prerequisite merely because D/T authentication succeeds.",
+      "No candidate code was modified or executed by this audit."
+    ],
+    "sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+        "git_blob": "6c3438d982449daf16e5ed3aec829f3b616a3ff3"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "git_blob": "9528b169dd57d71dd30d087d8732eeaec90c6d02"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+        "git_blob": "68cf423686f24d192d015b0c06e86eea530dfc81"
+      },
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+        "git_blob": "cb387137df02044221c2b2caa0bc8db0ccde3fd7"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+        "git_blob": "8cbfa41153ddc401ca7cc5aace42592be909de2f"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_wire.rs",
+        "git_blob": "2319720bc255c2a12ab551092bb944b5a95f917f"
+      }
+    ]
+  },
+  "decision": {
+    "parent_root_custody_required": "The production Root directory/CURRENT/issuer must be established and retained by the legitimate Root host through the original factories. Creating test private files at UID 60001 is not a substitute.",
+    "cross_uid_service_limits": "The examined Version factory consumes the concrete Current Arc in-process. An issuer channel supplies grants; it is not a Current read/CAS proxy. No existing public transport conversion in this examined chain transfers the Current owner or completed-A opaque owner to another UID. This is a bounded finding about the audited factory chain, not a claim that every repository API was searched.",
+    "allowed_next_preparation": "A/T/B fixture data separation can proceed in its own test-only increment with the stated original-provenance checks. A full production Root/Version/C composition must resolve the real placement/custody problem explicitly; it cannot be declared complete from test-key reuse, copied CURRENT bytes, chmod/chown, a newly opened Source/Cell, or a synthetic success callback.",
+    "qualification": "Static review only. No cross-UID scenario, owner lifecycle, compiler, formatter, source gate or native qualification was run. No real task utility result is claimed."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "status": "PREPARATION_STATIC_ONLY",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa",
+  "entries": [
+    {
+      "path": "version-local-read-ufcs-increment-v1/SOURCE_PACKET.json",
+      "local_path": "/tmp/hepta-36fa-version-local-read-ufcs-increment-v1/SOURCE_PACKET.json",
+      "bytes": 53001,
+      "sha256": "9d86d7c4aba9da002d61378bf421395fd373116b5a6370fa0748fdf2a25d3b78",
+      "git_blob": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2",
+      "full_readback_equal": true
+    },
+    {
+      "path": "version-local-read-ufcs-increment-v1/MANIFEST.json",
+      "local_path": "/tmp/hepta-36fa-version-local-read-ufcs-increment-v1/MANIFEST.json",
+      "bytes": 1991,
+      "sha256": "381378e34c62300a8aa7d16af6fedc01c10fa108d4abae38000ed837d20eff20",
+      "git_blob": "4fcc35d7c12fe91211e6afd2a984af23263f8c4f",
+      "full_readback_equal": true
+    },
+    {
+      "path": "version-local-read-ufcs-increment-v1/EXACT_DELTA.patch",
+      "local_path": "/tmp/hepta-36fa-version-local-read-ufcs-increment-v1/EXACT_DELTA.patch",
+      "bytes": 1631,
+      "sha256": "c57560675027403d70019c3e10c1f96c55001dd1cf75ba5f404b8fccb89a3901",
+      "git_blob": "77a9e7c93987956051d5561ad1386620c258f4bb",
+      "full_readback_equal": true
+    },
+    {
+      "path": "version-local-read-ufcs-increment-v1/REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-version-local-read-ufcs-increment-v1/REVIEW.json",
+      "bytes": 1810,
+      "sha256": "58bfd93547688948a136ee76bc400aa3b787a996336d0b1d373b962e3f2da4a1",
+      "git_blob": "dd625fe5ec6ea1285fdcca88a71666159713571c",
+      "full_readback_equal": true
+    }
+  ],
+  "placement_self_reference": "Stored separately after actual full readback; no self hash cycle.",
+  "source_ref_changed": false
+}

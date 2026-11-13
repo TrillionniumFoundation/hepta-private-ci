@@ -1,0 +1,12 @@
+diff --git a/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs b/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs
+--- a/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs
++++ b/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs
+@@ -42,7 +42,7 @@
+ 
+ impl Error for OriginalLedgerSnapshotCodecErrorV1 {}
+ 
+-use OriginalLedgerSnapshotCodecErrorV1 as CodecError;
++use self::OriginalLedgerSnapshotCodecErrorV1 as CodecError;
+ 
+ /// Encode every original record and the head after exact ledger replay.
+ ///

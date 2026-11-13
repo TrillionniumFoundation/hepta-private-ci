@@ -1,0 +1,70 @@
+{
+  "checked_files": [
+    {
+      "after": {
+        "bytes": 26241,
+        "git_blob": "c97e922243a7833e7a46cf7aa9680196037fad8b",
+        "sha256": "7a806f9a4c575a58fd0142007ee3302508204c3b65bacd73654ad260093dbd74"
+      },
+      "before": {
+        "bytes": 24380,
+        "git_blob": "149dcd8140f543e4da9a5d5b715963ed81e6fd0f",
+        "sha256": "240739d4f5f195f2574a22a29eafd03c081e5d81ab2a0472603eb45a49d63780"
+      },
+      "full_git_postimage_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "reverse_patch_exact_before": true
+    },
+    {
+      "after": {
+        "bytes": 17765,
+        "git_blob": "e54fe13095d93a559de5c2816a15f5171774f7cf",
+        "sha256": "ca26ac1bbc6428daf5ae0453df86d37668f11559b1609d5f7e74991891014012"
+      },
+      "before": {
+        "bytes": 17344,
+        "git_blob": "f1f8add8a7d3055e64479d1fb0f239f127a15a84",
+        "sha256": "67ce0523490280ae1a076c4e937f9a1e9a34b1642061705a2297ad38b53eadfb"
+      },
+      "full_git_postimage_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "reverse_patch_exact_before": true
+    },
+    {
+      "after": {
+        "bytes": 10274,
+        "git_blob": "cffa9f294b84565d427be48c5ac099aec3872d9d",
+        "sha256": "4a56fd64e797de3c34c508c2df2c4f30bab5bf95eeaf829f65cf305d09ca0315"
+      },
+      "before": {
+        "bytes": 9269,
+        "git_blob": "f6b6ba838fa70a9d8175655a26574cfcbc78f916",
+        "sha256": "93295c90b33d744be2062ee954861ec693f1df06f73b19e919ee61a1ececc54f"
+      },
+      "full_git_postimage_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "reverse_patch_exact_before": true
+    }
+  ],
+  "cleanup_finding_resolved_statically": true,
+  "exact_patch": "fa3d42937b7b0d0a90d123409adbd8eaf518431e",
+  "findings": [
+    "All four original whole-value equality comparisons are retained through anyhow::ensure!, making failures return to the existing explicit fixture.finish().await and combined error handling. No cleanup branch or timeout changes.",
+    "The old public fixture entry delegates exactly once to the original body with AtOriginalFreeze. The old literal now()? + 900 remains at the original freeze field evaluation point.",
+    "The explicit PreheldExact variant accepts only a future absolute expiry no later than current time plus the original 900-second bound, using checked addition. It cannot renew the supplied parent expiry when a report arrives.",
+    "The mechanism case fixes the expiry from admission.trust_time before constructing A, and derives the complete envelope from explicit fixture constants and original source identity. It no longer copies its envelope or trust digest from fixture.material.",
+    "This is a local fixture mechanism case. Other task inputs still originate from trusted fixture construction; the full pre-held-before-child three-UID task contract, original Root registration, E/D/T execution, actual B/C and cold recovery are separate unfinished work."
+  ],
+  "format": "hepta-root-first-pending-material-preheld-deadline-successor-review-v1",
+  "formatter_compile_or_behavioral_test_run": false,
+  "full_packet_and_all_three_postimages_independently_git_fetched": true,
+  "independent_reverse_patch_check_and_application_on_private_copies": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "remaining_concrete_static_block_found_in_this_narrow_diff": false,
+  "source_packet": "7e7469819f3729305d6da386d6ae000e157b5925",
+  "source_ref_changed": false,
+  "superseded_review": "02803f7e63be9ae0bb8b55d4ebd6c986bf6406c9",
+  "three_uid_execution_observed": false,
+  "verification_written_at": "2026-11-13T06:06:07.454585+00:00"
+}

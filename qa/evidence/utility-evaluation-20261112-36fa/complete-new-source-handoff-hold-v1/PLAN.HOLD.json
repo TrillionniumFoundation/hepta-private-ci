@@ -1,0 +1,148 @@
+{
+  "H_actions_by_this_preparation": 0,
+  "approval_rules": [
+    "Each executable successor requires exact immutable driver/config/input/typed request pins and concrete Root approval.",
+    "No placeholder or HOLD file is installed as an approved config.",
+    "An unknown admission reconciles only the same exact bytes/key, without a new key or automatic main retry.",
+    "Actual failures and partial state are retained; no source/reset/ref cleanup or budget/filter/stack relaxation."
+  ],
+  "archive_runtime_binding_document": "RUNTIME_ARCHIVE_BINDING.HOLD.json",
+  "created_at": "2026-11-13T06:28:22.231207+00:00",
+  "current_prepared_map_is_not_final": true,
+  "existing_runner_interfaces_document": "ORIGINAL_RUNNER_INTERFACES.json",
+  "format": "hepta-complete-new-source-maintenance-qualification-handoff-v1",
+  "format_base_scope_document": "FORMAT_BASE_OBJECT_SCOPE.HOLD.json",
+  "future_subject": {
+    "complete_inventory": null,
+    "control_directories": null,
+    "final_overlay_map": null,
+    "leaf_count": null,
+    "native_inventory": null,
+    "rust_count": null,
+    "source_commit": null,
+    "source_packet": null,
+    "source_repo": null,
+    "source_tree": null
+  },
+  "historical_source": {
+    "actual_inventory_sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "new_source_requirement": "Root must freeze the complete final overlay, registration and all source/QA paths and raw pre/post identities, including any final A/T/B and first-admission increments. Numbers from the 89-Rust/20-nonRust preparation are not observed source counts or frozen qualification arguments.",
+  "no_old_cc57_native_rerun_planned_before_new_source": true,
+  "original_global_conditions": {
+    "cargo_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "cooperative_EX_for_mutations_SH_for_captures": true,
+    "create_target_if_absent": false,
+    "full_source_and_raw_Git_audits": true,
+    "minimum_target_free_bytes": 34359738368,
+    "same_uid_global_guard": true
+  },
+  "root_execution_approved": false,
+  "scope": "Reviewable continuation plan only. No new native request, source mutation, runner implementation, material installation, source/ref publication or qualification is authorized or performed.",
+  "stages": [
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "driver-materialize.py",
+        "COMPLETE_SOURCE_PACKET.json",
+        "FORMAT_BASE_OBJECTS_PACKET.json",
+        "APPROVED_MATERIALIZATION_CONFIG.json",
+        "MATERIALIZATION_BOOTSTRAP.py",
+        "MATERIALIZATION_STDIN.json",
+        "MATERIALIZATION_PROCESS_INPUT.json"
+      ],
+      "name": "isolated_materialization",
+      "required_behavior": "Create only a new approved repository/control directory under the existing cooperative EX protocol and original live guard. Verify every preserved cc57 source leaf plus the exact complete candidate delta, retain deletions and original symlinks/modes, import only the full declared current/candidate/c0f object union, create normal index stat/flags, no refs/alternates/shallow/grafts, and record complete actual physical/raw Git/input audits plus normal terminal. Never alter the damaged old source or reuse its index/refs."
+    },
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "driver-maintenance.py",
+        "ACTUAL_MATERIALIZATION_RESULT.original.json",
+        "ACTUAL_MATERIALIZATION_NORMAL.original.json",
+        "ARCHIVE_RESTORATION_RESULT.original.json",
+        "ARCHIVE_RESTORATION_NORMAL.original.json",
+        "ARCHIVE_READBACK.original.json",
+        "APPROVED_MAINTENANCE_CONFIG.json",
+        "MAINTENANCE_BOOTSTRAP.py",
+        "MAINTENANCE_STDIN.json",
+        "MAINTENANCE_PROCESS_INPUT.json"
+      ],
+      "name": "single_original_scoped_fix_and_fmt",
+      "required_behavior": "Reuse reviewed V5 recorders/environment/guards with separately reviewed new current-source identity bindings; never call its old main/initial_preflight with historical 9c4/c006 constants as if they described the new tree. One original7200 fix appends only ledger to the original two-package argv, then original900 fmt --base c0f. Nonzero/timeout/output-limit stops the next step and preserves every postimage and original log."
+    },
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "POSTFORMAT_CAPTURE_CONFIG.json",
+        "POSTFORMAT_PROCESS_INPUT.json",
+        "ACTUAL_PROTECTED_SOURCE_PACKET.json",
+        "REVIEWED_NONRUST_PACKET.json"
+      ],
+      "name": "bind_actual_formatter_bytes",
+      "required_behavior": "Obtain actual final inventory and protected working bytes under the same SH coordination protocol. Review all formatter changes. Rebind CALLERS/allowlist/protected scopes and QA to the observed exact source, preserving all legacy guard/assertion semantics and the separate canonical and layer-local method counts."
+    },
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "driver-final-fmt.py",
+        "NONRUST_PACKET.json",
+        "APPROVED_FINAL_FMT_CONFIG.json",
+        "FINAL_FMT_BOOTSTRAP.py",
+        "FINAL_FMT_STDIN.json",
+        "FINAL_FMT_PROCESS_INPUT.json"
+      ],
+      "name": "last_nonrust_apply_and_original_fmt",
+      "required_behavior": "Reuse the reviewed thin apply+fmt-only control with exact new before/after leaves and normal preceding proof, EX guard, full current audits and original900 fmt. No repeated fix/tests. Any further protected Rust changes require fresh actual rebind before canonical freeze; no automatic retry or unbounded loop."
+    },
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "driver-canonical.py",
+        "CANONICAL_PACKET.json",
+        "FINAL_FORMAT_NORMAL.original.json",
+        "APPROVED_CANONICAL_CONFIG.json",
+        "CANONICAL_BOOTSTRAP.py",
+        "CANONICAL_STDIN.json",
+        "CANONICAL_PROCESS_INPUT.json"
+      ],
+      "name": "canonical_alignment",
+      "required_behavior": "Root constructs the exact approved canonical objects only after actual formatter output. Import the exact objects and align normal index/HEAD by existing read-tree-without-worktree-update, refresh, write-tree and detached CAS logic. No physical-source overwrite, reset or rollback. Freeze actual complete clean inventory/raw Git and normal terminal."
+    },
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "qualification-admission.py",
+        "source-gates-wrapper.py",
+        "native-wrapper.py",
+        "native-driver.original.py",
+        "PLAN.original.json",
+        "APPROVED_QUALIFICATION_INPUT.json",
+        "APPROVED_SOURCE_GATES_CONFIG.json",
+        "CANONICAL_ALIGNMENT_NORMAL.original.json",
+        "SOURCE_BOOTSTRAP.py",
+        "SOURCE_STDIN.json",
+        "SOURCE_PROCESS_INPUT.json"
+      ],
+      "name": "new_exact_source_gates",
+      "required_behavior": "Use the existing original5118 shared/no-hardlinks exact clone/freeze then original600/300/4800 source stages and7200 outer. Bind new actual source/format/alignment/materialization evidence; retain historical cc57 source PASS as a different execution, never transfer it. Finish and recover original gate receipts/full logs/clone and origin audits before native."
+    },
+    {
+      "actual_proofs": null,
+      "input_files_to_freeze": [
+        "SOURCE_WRAPPER_RESULT.original.json",
+        "SOURCE_RUN_RESULT.original.json",
+        "SOURCE_NORMAL.original.json",
+        "APPROVED_QUALIFICATION_INPUT.json",
+        "NATIVE_BOOTSTRAP.py",
+        "NATIVE_STDIN.json",
+        "NATIVE_PROCESS_INPUT.json"
+      ],
+      "name": "new_exact_native_gates",
+      "required_behavior": "After Root independently verifies complete new source PASS, freeze one exact seven-field/no-env request reusing originalde3 wrapper/b92 driver/14 phases and45000 outer. Native JUnit/source-local artifacts must not contaminate the earlier source-clone baseline. Root authorization remains separate."
+    }
+  ],
+  "status": "HOLD_FINAL_SOURCE_AND_EXACT_CONTROLS_NOT_FROZEN"
+}

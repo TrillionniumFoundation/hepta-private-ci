@@ -1,0 +1,249 @@
+{
+  "format": "hepta-root86-registration-independent-static-peer-v1",
+  "status": "NO_REMAINING_CONCRETE_STATIC_BLOCKER_PREPARATION_ONLY",
+  "reviewer": "native_ci_audit",
+  "scope": "Exact fab488 Root86 registration package, its fixed 86-path Rust overlay and canonical/prepared QA baselines. This is not execution approval or source qualification.",
+  "source": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "overlay_map": {
+      "bytes": 40842,
+      "sha256": "927c26d9d4412c6aaf989a6c65cbb3243b6d0c38a77e2a0d2f2f3e36a85af949",
+      "git_blob": "3f7d40d4933669da33d2aef3491efb431c5771ae"
+    },
+    "packet": {
+      "bytes": 4741504,
+      "sha256": "51ddeb15401455365e8f7f6fd63391b7a6b59a9a7f663ec7004417c45a35ebdb",
+      "git_blob": "fab488b846bb1b1ef7a42b9b30be5773054e1a6a"
+    },
+    "source_change_count": 19,
+    "manifest": {
+      "bytes": 16738,
+      "sha256": "0755ba8fe0421cd878c1d750f2eeb570ebcbccdb5d17ca5e566c5f4a2510122d",
+      "git_blob": "0465f9e2161f1cf8c425460e90c0c615f293d901"
+    },
+    "author_review": {
+      "bytes": 26981,
+      "sha256": "83bf7c9e658d3e28fd05681e545d934538026169ac872270fe3f1963c79e8b58",
+      "git_blob": "f3e406316be1f04aaba875a469409433273afdd4"
+    }
+  },
+  "actual_readback": {
+    "encoding_manifest": {
+      "bytes": 4996,
+      "sha256": "d769dfad5430f29583ba0c629a6c43e11d8ca6d4a0002c6160f2d306e5712a0f",
+      "git_blob": "3a34227fd9af96f99f4dd81cd24793cadca2ec95"
+    },
+    "three_ascii_parts": [
+      {
+        "bytes": 320001,
+        "sha256": "f73930d2d2e39eade0c80bcc83202f90d8ad3780c39afcef080f87d2fb1653ca",
+        "git_blob": "2e61323fb90ae3d6c6426b872b9a0cfa7570ce04"
+      },
+      {
+        "bytes": 320001,
+        "sha256": "10d0edbdf830be805c71789f94c64953a9c989fcd132c5a9747ed4cae0c15ba4",
+        "git_blob": "b600006aaf18922a06025539301a8f1961cb9242"
+      },
+      {
+        "bytes": 194373,
+        "sha256": "0f9a79cd321542d1581562c8521f4d2a7dc945c2b0d3f2f7e21e9ac19eeffb0e",
+        "git_blob": "16470755bde5b9d3f62e57478e768d67ca952bf6"
+      }
+    ],
+    "all_three_parts_independently_full_git_get_and_hashed": true,
+    "strict_single_LF_base64_gzip_reconstruction_equals_complete_local_packet": true,
+    "raw_packet_direct_GET_not_claimed": true,
+    "canonical_qa_directory_original": {
+      "bytes": 188832,
+      "sha256": "9797928c8034bc4fff5439afeedd3f67487ea8772c822a706dd6b6c4943394e9",
+      "git_blob": "c3f0a395046a4cdb77eec358fae07b75f5b76852"
+    },
+    "canonical_qa_binding": {
+      "bytes": 29722,
+      "sha256": "b1565d732e832d0a310aacd8949734a4e2b20a3f474e4b97047442f8da8b6571",
+      "git_blob": "527c4fdd3d439d614103faca3c2956ceb89e6d59"
+    },
+    "all_63_local_before_git_hashes_and_sizes_match_fixed_cc57_directory_entries": true
+  },
+  "boundary_findings": {
+    "old569_retained_in_place": true,
+    "new52_appended_for_total621": true,
+    "old17_changed_rows_only_append_product_callers": true,
+    "all_other_old_boundary_fields_equal": true,
+    "required_id_old_prefix_unchanged_new_suffix_exact_and_complete_set_unique621": true,
+    "required_ids_not_required_to_share_boundary_row_order": "The historical 569 list already has a different order from rows starting at446. Our first review assertion incorrectly equated the orders; the failure and correction are retained. No candidate was changed.",
+    "old7_authority_values_and_other_top_level_fields_unchanged": true,
+    "full_source_collector_and_all_four_original_verify_boundary_arguments_preserved": true,
+    "qualification_limit": "Partial overlay call-edge preparation is not a full repository closure run. New methods use the original full source collector when actually executed."
+  },
+  "protected_findings": {
+    "old_count": 422,
+    "new_count": 437,
+    "all_422_forbidden_arrays_equal": true,
+    "all_old_required_raw_prefixes_equal": true,
+    "old_raw_blocks_byte_identical": 401,
+    "migrated_old_indices": [
+      71,
+      245,
+      267,
+      270,
+      279,
+      281,
+      300,
+      309,
+      339,
+      347,
+      351,
+      362,
+      364,
+      370,
+      373,
+      381,
+      383,
+      416,
+      417,
+      419,
+      420
+    ],
+    "old_function_guard_names_removed": 0,
+    "new_rows": 15,
+    "row411": {
+      "index_basis": "zero-based",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "entire_raw_block_equal": true,
+      "restored_source_equal_to_canonical_before": true,
+      "separate_same_path_rows_not_deduplicated": true
+    },
+    "new_handoff_forbidden_note": "Only the new handoff row omits File::open because its original real-peer observation reads boot_id/proc stat; no original forbidden entry is removed."
+  },
+  "qa_preservation": {
+    "old_files": 63,
+    "old_test_methods": 590,
+    "this_packet_preimages": {
+      "unchanged_method_text": 587,
+      "changed_methods": 3,
+      "added_or_removed_old_methods": 0,
+      "root_qa_preimage": "8223265bdcea271661fd46d448943484a28d5703"
+    },
+    "cumulative_relative_cc57": {
+      "unchanged_method_text": 586,
+      "changed_methods": 4,
+      "reason": "The already-approved prepared822326 Root QA layer changed one existing inventory method to mount/count six provider/lifecycle cases. This packet retains it. Do not describe layer-local587+3 as canonical-wide preservation."
+    },
+    "prior_root_qa_diff": {
+      "bytes": 6561,
+      "sha256": "1628f27d821bed0e1dd868f8e66b4940222d52f089a606a4929828fb1e4bf8d3",
+      "git_blob": "9308752a015fbdde9754da38d98038180e6a0eaf"
+    },
+    "two_attack_methods": {
+      "changed_string_constants": 3,
+      "all_other_AST_equal": true,
+      "purpose": "Preserve the same original C predecessor/readback checks after the selector becomes an explicit remote/local enum; remote branch still uses the original typed readback, same snapshot and Selection prior, after original T/E authentication."
+    },
+    "inventory_method": {
+      "only_text_edits": [
+        "len(boundaries):569 to621",
+        "original28 slice: [-28:] to [541:569]"
+      ],
+      "same28_boundary_ids_and_order": true,
+      "original_full_inventory_hash_and_root_scope_iteration_retained": true
+    },
+    "caller_constant_updates": 26,
+    "all_update_values_match_exact_before_after_CALLERS_rows": true,
+    "old_scope_hash_updates": 5,
+    "selectors_unchanged_and_before_after_masks_recomputed": true
+  },
+  "new_qa_findings": {
+    "methods": 14,
+    "source_paths": 41,
+    "full_scopes": 264,
+    "all_full_masked_and_literal_source_hashes_match_fixed_overlay": true,
+    "all41_module_shapes_match": true,
+    "root_body_or_constant_scope_gaps": 0,
+    "unscoped_non_import_declarations": 0,
+    "nonempty_module_tails": 0,
+    "shape_effect": "Root declarations/imports/visibility prefixes and complete raw attributes are fixed, and the final tail is fixed. Each root body omitted from shape identity is covered by a full masked+literal scope. An added impl/getter changes shape or an existing full scope; comments and nested dead functions cannot replace live checks.",
+    "deletion_specs": 83,
+    "each_marker_exists_in_its_actual_original_function_and_full_scope_covers_it": true,
+    "groups": {
+      "sealed_clones": 2,
+      "original_identity": 8,
+      "local_budget": 19,
+      "readiness": 9,
+      "version_current": 9,
+      "root_handoff": 14,
+      "root_service": 10,
+      "shared_seals": 12
+    },
+    "no_candidate_functions_or_tests_executed": true
+  },
+  "unchanged_original_helpers": [
+    {
+      "bytes": 16789,
+      "sha256": "c53258ed1d60b172025d5f75576e87762dbebac0351bc804a634043a15f778f5",
+      "git_blob": "5ca963280441d6b84a37929c2b1a6d5ed6abec7b"
+    },
+    {
+      "bytes": 23642,
+      "sha256": "b3f8fc15ff7787f5ff1cc7a2a688e244524ce7810715b03e6818a50bba46ab2c",
+      "git_blob": "abedc01f9fc04c5eb793075836281b015b23e268"
+    },
+    {
+      "bytes": 7759,
+      "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2",
+      "git_blob": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4"
+    },
+    {
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    }
+  ],
+  "allowlist": {
+    "only_append": "sha256:46d643ab8634a6a2a995f5623b6295bc3ea41f61177d31bd7c0689c324974e03 CALLERS.toml",
+    "old_lines_preserved": true
+  },
+  "proofs": [
+    {
+      "name": "STATIC_BYTE_AST_TOML_REVIEW.json",
+      "bytes": 213038,
+      "sha256": "88e7858573962757463cff5ebfb859b378afb579612c1815a046e1e202e33101",
+      "git_blob": "939900d940f439b6358d3fbd4c7d92a61c53c9d8"
+    },
+    {
+      "name": "STATIC_SCOPE_CLOSURE_REVIEW.json",
+      "bytes": 331739,
+      "sha256": "4cfdcbf8be25264f3025cd162f415d9e1dd8465847470a0e9b02e36670b7954b",
+      "git_blob": "6f582e0d0b5e84d191986f15fdf02364734b62bc"
+    },
+    {
+      "name": "LEGACY_MIGRATION_AND_SOURCE_BINDING_REVIEW.json",
+      "bytes": 75397,
+      "sha256": "f8ec7caf18d0836a7f4a7d0bcfd8895e32941f41dc5af157e44725df39e5fd95",
+      "git_blob": "50569119cdbbbf01ea00bfd3a57c04d676643279"
+    },
+    {
+      "name": "BASELINE_SCOPE_ADDENDUM.json",
+      "bytes": 6561,
+      "sha256": "1628f27d821bed0e1dd868f8e66b4940222d52f089a606a4929828fb1e4bf8d3",
+      "git_blob": "9308752a015fbdde9754da38d98038180e6a0eaf"
+    }
+  ],
+  "reviewer_observation_limits": [
+    "No H/native process, source mutation, index/ref operation, formatter, Rust compiler, test or complete source gate was run.",
+    "Only Python AST/TOML/JSON parsing and the unchanged original pure lexical/scope definitions were used on fixed partial source bytes. Candidate code and QA classes/methods were never imported or invoked.",
+    "The first raw packet direct GET transport failure remains the author's retained original. This review uses exact complete three-part ASCII reads and strict reconstruction, not a claim of direct raw payload GET.",
+    "Initial reviewer order/tuple-list/Root-QA baseline/count assertions and truncated read outputs are retained with concrete corrections; they are not candidate failures and were not silently replaced.",
+    "The complete final source still needs actual original maintenance and formatting, protection/literal hashes rebound to actual postimages, and all original source/native gates. Prepared counts and old cc57 PASS do not qualify the new overlay.",
+    "Full Fresh/first-admission/orchestration and later independently prepared changes are outside this fixed Root86 package; no future source tree or counts are frozen here."
+  ],
+  "candidate_imports": 0,
+  "candidate_functions_executed": 0,
+  "qa_methods_executed": 0,
+  "full_source_gate_executions": 0,
+  "formatter_runs": 0,
+  "rust_compiles_or_tests": 0,
+  "h_requests": 0,
+  "source_or_refs_changed": false
+}

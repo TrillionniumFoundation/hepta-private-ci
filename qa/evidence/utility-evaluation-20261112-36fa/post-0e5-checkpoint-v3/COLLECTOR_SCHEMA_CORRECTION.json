@@ -1,0 +1,10 @@
+{
+  "format": "hepta-checkpoint-collector-schema-correction-v1",
+  "scope": "Evidence packaging only; no candidate source or test execution",
+  "observed_refusal": "The original collector required git_blob or sha. The new source-handoff and archive-restoration placements use the scalar field blob. It refused at complete-new-source-handoff-hold-v1/MANIFEST.json before writing a new plan or any Git tree/ref.",
+  "original_collector_retained": "post-0e5-checkpoint-v3/collect_post_0e5_checkpoint.py",
+  "stale_followup_link_check": "The subsequent local README link check read the previous 307-entry plan after that refusal and correctly reported the newly added paths absent. No README or tree was published from that stale plan.",
+  "correction": "A separate v2 collector accepts the three observed scalar identity field names, and rejects disagreement when more than one is supplied. It preserves byte count, SHA256, mode, relative path, original-source preservation and 512000-byte assertions. Its output uses a new STAGE3 filename.",
+  "full_git_content_check_still_required": true,
+  "qualification": false
+}

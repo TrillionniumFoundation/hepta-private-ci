@@ -1,0 +1,43 @@
+{
+  "format": "hepta-canonical-versus-preparation-helper-removal-correction-v1",
+  "status": "Withdraw incorrect conditional whole-source arithmetic; preserve exact source windows and all original records",
+  "canonical_source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "canonical_agentd_source_tree": "96627f0124b7513a7b928f26cb2ee8dd3ed39a94",
+  "original_agentd_map": "a27a9ae3949b8632bbcdbe59189081b200dc5165",
+  "root_independent_directory_check": "CANONICAL_HELPER_REMOVAL_DIRECTORY_CHECK.json",
+  "directory_entries": 896,
+  "original_map_file_entries": 894,
+  "subdirectories": 2,
+  "old_preparation_helper": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs",
+  "retained_preparation_helper": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+  "canonical_source_contains_either_helper": false,
+  "finding": "The old helper name belongs to an earlier prepared layer. Its exclusion is necessary when composing that proposal history, but it is not a deletion from canonical cc57. The previous arithmetic incorrectly subtracted it from the full canonical source inventory.",
+  "corrections": [
+    {
+      "artifact": "1b1a9ec632eea5fea0844646419aef2e1f84fa62",
+      "fields": ["removed_original_rust_paths", "conditional_source_only_counts"],
+      "withdrawn_counts": {"tracked_files": 15230, "rust_files": 6661},
+      "replacement_scope": "Candidate-history exclusion only; no canonical deletion is established. Full-source arithmetic is not reused."
+    },
+    {
+      "artifact": "23d710dbda6f7d88ef6b693c1e77933d168b0177",
+      "fields": ["explicit_removals interpretation", "conditional_inventory_arithmetic_only"],
+      "withdrawn_counts": {"tracked_or_physical_full_source_files": 15235, "rust_source_files": 6664},
+      "replacement_scope": "Retain the historical exclusion, emit no sha:null deletion for this absent canonical path, and derive the complete candidate inventory from the full original tree plus the exact actual delta."
+    }
+  ],
+  "unchanged_facts": [
+    "The frozen 86 and 89 source maps and every original/postimage byte remain unchanged.",
+    "The 86 Rust classification is still 43 new, 42 modified and one unchanged original coverage path.",
+    "The 89 Rust classification is still 46 new, 42 modified and one unchanged original coverage path; its 20 non-Rust paths remain two new and 18 modified.",
+    "Complete content readback and layer preimage comparisons remain valid.",
+    "No prepared whole-source arithmetic was an observed materialization, source-gate result or native pass."
+  ],
+  "prepublication_readme": {
+    "git_blob": "82a7ce43e50c965ddc7002a0282b011d9acf4571",
+    "archived_path": "post-0e5-checkpoint-v3/README.pre-canonical-deletion-scope-correction.md",
+    "was_published_to_a_ref": false
+  },
+  "source_or_ref_mutations_by_this_correction": false,
+  "qualification": false
+}

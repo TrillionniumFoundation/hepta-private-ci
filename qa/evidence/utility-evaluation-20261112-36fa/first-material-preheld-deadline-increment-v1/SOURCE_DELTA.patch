@@ -1,0 +1,183 @@
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+@@ -430,6 +430,30 @@
+     pub(super) freeze_payload: Vec<u8>,
+ }
+ 
++/// The old fixture samples its deadline at the original freeze point. A
++/// first-admission parent can instead fix the same bounded work window before
++/// A starts; the child cannot renew it when creating Material.
++#[derive(Clone, Copy)]
++pub(super) enum OriginalMaterialWorkDeadline {
++    AtOriginalFreeze,
++    PreheldExact(u64),
++}
++
++impl OriginalMaterialWorkDeadline {
++    fn at_original_freeze(self) -> anyhow::Result<u64> {
++        match self {
++            Self::AtOriginalFreeze => Ok(now()? + 900),
++            Self::PreheldExact(expiry) => {
++                let at = now()?;
++                let original_limit = at.checked_add(900).ok_or_else(|| anyhow::anyhow!("original work deadline overflow"))?;
++                anyhow::ensure!(at < expiry && expiry <= original_limit,
++                    "pre-held absolute work expiry is current and does not extend the original window");
++                Ok(expiry)
++            }
++        }
++    }
++}
++
+ pub(super) fn unstarted_material_with_original_inputs(
+     _root: &std::path::Path,
+     writer: &mut LedgerWriter,
+@@ -441,6 +465,29 @@
+     publication: &CircuitTaskSourcePublicationV1,
+     evaluation_profile: Digest32,
+     next_use_observer: StableId,
++) -> anyhow::Result<(
++    crate::OriginalCellQ24MaterialReceiptConfigV1,
++    crate::CellQ24SgdRuleV1,
++    OriginalMaterialConstructorInputs,
++)> {
++    unstarted_material_with_original_work_deadline(
++        _root, writer, credentials, source, identity, baseline, bundle, publication,
++        evaluation_profile, next_use_observer, OriginalMaterialWorkDeadline::AtOriginalFreeze,
++    )
++}
++
++pub(super) fn unstarted_material_with_original_work_deadline(
++    _root: &std::path::Path,
++    writer: &mut LedgerWriter,
++    credentials: &Credentials,
++    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
++    identity: &crate::AgentdIdentity,
++    baseline: &LoadedCellQ24ModelV1,
++    bundle: &CellCompatibilityBundleV1,
++    publication: &CircuitTaskSourcePublicationV1,
++    evaluation_profile: Digest32,
++    next_use_observer: StableId,
++    work_deadline: OriginalMaterialWorkDeadline,
+ ) -> anyhow::Result<(
+     crate::OriginalCellQ24MaterialReceiptConfigV1,
+     crate::CellQ24SgdRuleV1,
+@@ -468,7 +515,7 @@
+                 maximum_diff_bytes: 4_096,
+                 maximum_candidates: 1,
+                 maximum_parallel_sandboxes: 1,
+-                expiry_unix_seconds: now()? + 900,
++                expiry_unix_seconds: work_deadline.at_original_freeze()?,
+             },
+             budget: LearningIterationBudgetV1 {
+                 maximum_dataset_rows: 1,
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs
+@@ -127,6 +127,16 @@
+     pub(super) async fn new(
+         admission: ProviderAdmission,
+         evaluation_profile: Digest32,
++    ) -> anyhow::Result<Self> {
++        Self::new_with_original_work_deadline(
++            admission, evaluation_profile, material::OriginalMaterialWorkDeadline::AtOriginalFreeze,
++        ).await
++    }
++
++    pub(super) async fn new_with_original_work_deadline(
++        admission: ProviderAdmission,
++        evaluation_profile: Digest32,
++        work_deadline: material::OriginalMaterialWorkDeadline,
+     ) -> anyhow::Result<Self> {
+         let ProviderAdmission {
+             mut a, c, objective, trust_time, source_c,
+@@ -182,10 +192,10 @@
+             // must use this same signer/key (the original fixture seed is 43).
+             // SourceInput has no independent observer-identity getter.
+             let next_use_observer = credentials.observer.principal.principal_id.clone();
+-            let (material, optimizer, original_material_inputs) = material::unstarted_material_with_original_inputs(
++            let (material, optimizer, original_material_inputs) = material::unstarted_material_with_original_work_deadline(
+                 &root, &mut ledger, &credentials, a.source.as_ref(), &a.runtime.identity,
+                 &baseline, &bundle, &previous, evaluation_profile,
+-                next_use_observer.clone(),
++                next_use_observer.clone(), work_deadline,
+             )?;
+             anyhow::ensure!(material.initial.receipts.is_empty(),
+                             "no Material/Training/Evaluation/Model receipt prefilled");
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs
+@@ -12,10 +12,12 @@
+     fixture: &UnstartedProvider,
+     protocol: crate::OriginalCellEvaluationPanelRegistrationV1,
+     trust: LearningEvidenceTrustV1,
+-) -> PreheldMaterialInputs {
++    original_expiry: u64,
++) -> anyhow::Result<PreheldMaterialInputs> {
+     let source = &fixture.source_a;
+     let [experience, dataset, generator, evaluator] = fixture.credentials.resident_checkpoint_signers();
+-    PreheldMaterialInputs {
++    let trust_digest = LearningEvidenceVerifierV1::new(trust.clone())?.trust_digest();
++    Ok(PreheldMaterialInputs {
+         // These are trusted local fixture inputs, never parsed out of Report.
+         // The cross-UID orchestrator must supply its own pre-held equivalents.
+         task: PreheldTask {
+@@ -23,14 +25,21 @@
+             principal_id: id(&source.scope.principal_digest.to_string()),
+             agent_id: source.scope.agent_id.clone(), cell_id: source.scope.cell_id.clone(),
+             source_run_id: source.scope.run_id.clone(), selected_artifact_digest: fixture.bundle.components.base,
+-            selected_bundle: fixture.bundle.clone(), envelope: fixture.material.initial.request.envelope.clone(),
++            selected_bundle: fixture.bundle.clone(), envelope: IterationEnvelopeV1 {
++                envelope_id: id("positive-original-envelope"),
++                base_commit: d("0bfe47e53bae47977c4423362e4d3823edac99fd"),
++                base_tree: d("8663f89daca111ba7f681d2c36442f6f4ded97f5"),
++                objective_digest: source.objective_digest, grammar_digest: d("explicit-positive-single-head-grammar"),
++                maximum_files: 1, maximum_diff_bytes: 4_096, maximum_candidates: 1,
++                maximum_parallel_sandboxes: 1, expiry_unix_seconds: original_expiry,
++            },
+             budget: LearningIterationBudgetV1 {
+                 maximum_dataset_rows: 1, maximum_dataset_bytes: 128, maximum_training_steps: 2,
+                 maximum_training_milliseconds: 10_000, maximum_artifact_bytes: 4_096,
+             },
+         },
+         owners: LearningIterationOwnersV1 {
+-            evidence_trust_digest: fixture.material.verifier.trust_digest(),
++            evidence_trust_digest: trust_digest,
+             experience: experience.principal.principal_id.clone(), dataset: dataset.principal.principal_id.clone(),
+             trainer: generator.principal.principal_id.clone(), evaluator: evaluator.principal.principal_id.clone(),
+             proposal: id("positive-original-model"), selector: fixture.credentials.selector.principal.principal_id.clone(),
+@@ -44,7 +53,7 @@
+         optimizer: crate::CellQ24SgdRuleV1 { epochs: 2, learning_rate_q24: Q / 2 },
+         update_scope: LearningUpdateScopeV2::Cell, freeze_snapshot_id: id("positive-original-dataset"),
+         maximum_signature_lifetime_seconds: 600,
+-    }
++    })
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+@@ -53,18 +62,21 @@
+     let (_, _, trust) = material::original_fixture_trust_at(admission.objective, admission.trust_time)?;
+     let panel = PreparedBPanel::new(admission.objective, admission.trust_time)?;
+     let protocol = panel.registration().clone();
+-    let fixture = Box::pin(UnstartedProvider::new(admission, protocol.evaluation_profile())).await?;
++    let original_expiry = admission.trust_time.checked_add(900).context("original absolute work expiry")?;
++    let fixture = Box::pin(UnstartedProvider::new_with_original_work_deadline(
++        admission, protocol.evaluation_profile(), material::OriginalMaterialWorkDeadline::PreheldExact(original_expiry),
++    )).await?;
+     let result: anyhow::Result<()> = (|| {
+         let before = fixture.original_bytes()?;
+-        let held = held_fixture_policy(&fixture, protocol, trust);
++        let held = held_fixture_policy(&fixture, protocol, trust, original_expiry)?;
+         let ledger = fixture.ledger.lock().map_err(|_| anyhow::anyhow!("original Ledger poisoned"))?.snapshot()?;
+         let raw = encode_original_report(&fixture.material, &ledger, &fixture.original_decision, &fixture.original_outcome)?;
+         let pending = RootMaterialContract::from_preheld(held.clone())?.verify_report(&raw)?;
+-        assert_eq!(pending.admission_binding()?, crate::RootResidentLearningProfileV3::admission_binding(
+-            &fixture.material.initial, &fixture.material.scope, &fixture.material.verifier)?);
+-        assert_eq!(pending.material.initial, fixture.material.initial);
+-        assert_eq!(pending.material.scope, fixture.material.scope);
+-        assert_eq!(pending.material.freeze_evidence, fixture.material.freeze_evidence);
++        anyhow::ensure!(pending.admission_binding()? == crate::RootResidentLearningProfileV3::admission_binding(
++            &fixture.material.initial, &fixture.material.scope, &fixture.material.verifier)?, "same original Root binding");
++        anyhow::ensure!(pending.material.initial == fixture.material.initial, "same full original initial cut");
++        anyhow::ensure!(pending.material.scope == fixture.material.scope, "same complete original frozen scope");
++        anyhow::ensure!(pending.material.freeze_evidence == fixture.material.freeze_evidence, "same complete original freeze signature");
+         anyhow::ensure!(pending.material.initial.receipts.is_empty(), "Pending contains no completed E, D or T claim");
+         drop(pending);
+         let base: serde_json::Value = serde_json::from_slice(&raw)?;

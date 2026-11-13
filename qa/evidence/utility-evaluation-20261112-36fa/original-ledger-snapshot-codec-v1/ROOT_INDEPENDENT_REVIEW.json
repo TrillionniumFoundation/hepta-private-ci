@@ -1,0 +1,29 @@
+# Root independent review: bounded original ledger snapshot codec
+
+Status: STATIC_SOURCE_REVIEW_ONLY. No formatter, compiler, Rust test, full caller gate, native execution or actual first admission is asserted.
+
+## Exact scope
+
+Original production: 0c6a5503ad35f235ff16d73a3242e7c29fb75400 (7,777 bytes). Final explicit-local-use successor: 7ba6a2daa094bba330ea1ca8b7212a85e5e34273 (7,783 bytes). Test source: 3a444d399126d43ff8d1ddd69cb6302dd7a785ed (16,695 bytes; ten test methods). Library export successor: c214632e288047e1aa39f67c2865f2bacaac6b6a, from original c9bfc876390e1c7e5fea4b3f3af535f2c56fd245. Full packet: 3a7aee950bc6da48b4162f4f5215c4c5d18396b8. One-line successor packet: 487e202226d32f9b7e98238703f66015fec59aae.
+
+Root fetched the complete production/test originals and inspected their code, the original durable frame encoder/event decoder 29773833806142d8c6967cd2ac94d48958d90b2e, original LearningLedger d043d06c49312f75a023f8d0766ea088fbdc60db, model ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d and both full library files. Removing exactly the new private module declaration and four exports restores the entire original lib.rs. The explicit self:: use successor has an exact one-line inverse; it is not evidence that the former source failed to compile.
+
+## Content validation and limits
+
+The complete encoded snapshot has a fixed 64 KiB wire limit, including its new snapshot domain/count/head header. This is distinct from, and cannot enlarge, the parent's existing aggregate 64 KiB control-message limit after base64 and other fields. The claimed count is bounded by the fixed frame overhead and actual remaining bytes. The decoder does not reserve a vector using the claimed count.
+
+The encoder bounds record count and every variable event collection before cloning or encoding an in-memory event. These per-event limits match the existing bounded event reader. It replays each event through the original prepare/apply path, requires Appended and full LedgerRecord equality, checks the cumulative encoded size before accepting the next frame, and finally compares the head. It emits no truncated prefix as a successful snapshot.
+
+The decoder checks the exact domain, count, size/complement, maximum event size, checked complete frame length and checksum. It decodes through the original event parser, calls the original semantic preparation, rejects a duplicate/idempotent disposition, and compares the entire re-encoded original canonical frame with the received frame before applying the event. This also checks original sequence, predecessor, canonical payload and chain instead of treating a checksum as authority. It rejects trailing content and mismatched final head. The existing durable file header, writer locking, recovery, event encoding and ledger algorithms are unchanged.
+
+Both entry points perform pure memory operations. No File, socket, trust loader, signer, writer, source, permission or action capability is created. An empty, valid pure ledger snapshot can roundtrip; the existing Material freeze derivation still rejects an empty ledger. Successfully decoding content does not turn it into authorized or independently observed evidence.
+
+## Proposed tests inspected
+
+The separate sibling test file proposes full-object roundtrip of the empty ledger and a causal fixture covering all ten original event variants. Its other cases exercise mutations of every stored record identity/head, truncations, trailing bytes, domain changes, hostile counts/lengths, checksum-valid changes to chain/sequence/predecessor, noncanonical candidate order, duplicate/reordered frames, an invalid causal episode, excessive in-memory candidates, and aggregate output overflow. Hostile wire fixtures use the existing frame encoder independently of the new snapshot encoder. Positive and negative assertions remain test source only; none has run.
+
+## First-admission implication
+
+No new concrete static blocker was found within this narrow review. The codec may be integrated into the prepared first-admission path, subject to the original gates and an explicit test scope for the changed learning-ledger crate. It cannot replace first admission: Root must retain its own objective/profile/components/budget/protocol/full trusted signer state, reconstruct the exact original freeze payload from the complete decoded ledger, verify the original signature and binding, and authenticate the original A/source. Snapshot semantic replay cannot choose a new trust state or prove continuing revocation status, legitimate task authorization, independent B, deployment, adoption or original-owner execution. Do not open a second active writer or re-sign a child report as the original A.
+
+Qualification remains false. Real qualified task chains remain zero.

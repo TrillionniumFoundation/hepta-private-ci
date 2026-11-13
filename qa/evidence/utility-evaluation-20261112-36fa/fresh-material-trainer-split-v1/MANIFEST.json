@@ -1,0 +1,68 @@
+{
+  "format": "hepta-material-trainer-split-preparation-manifest-v1",
+  "status": "PREPARED_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "exact_preimage": "e54fe13095d93a559de5c2816a15f5171774f7cf",
+  "dependency": "7e7469819f3729305d6da386d6ae000e157b5925",
+  "source_packet": {
+    "name": "SOURCE_PACKET.json",
+    "bytes": 43806,
+    "sha256": "51f373721f7b2f2f0047d7bc68f1ebd24ba7e7eb850ecea053e6fb80059ad18a",
+    "git_blob": "a72dc791ed6026ae49b0500a52dc295f9b3622ad",
+    "actual_create_full_get_equal": true
+  },
+  "files": [
+    {
+      "name": "after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "bytes": 13141,
+      "sha256": "659aeb1b6e5c2c6029d7cff14d0d9e12b6f70619b31a671443534d3de86006b3",
+      "git_blob": "e2e108a17021f10e18ccd4c873beec6f5fc35e4e",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "name": "after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "bytes": 10619,
+      "sha256": "e98f7a2a9609fc820018974b0758a88629fb6a479c68f7bcfcf4c77ba0a5a98c",
+      "git_blob": "4eb88297be6a9707aa8e8d5fce8eda077f45ef71",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "name": "SOURCE_PACKET.json",
+      "bytes": 43806,
+      "sha256": "51f373721f7b2f2f0047d7bc68f1ebd24ba7e7eb850ecea053e6fb80059ad18a",
+      "git_blob": "a72dc791ed6026ae49b0500a52dc295f9b3622ad",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "name": "SOURCE_DELTA.patch",
+      "bytes": 23686,
+      "sha256": "b1e4b1054f0edcd6505159fc8be42b107b7503d76fa25d459c5423e0f24ca588",
+      "git_blob": "340e6d73d0860c6c428d16effe99a0839cd1b1c4",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "name": "STATIC_PRESERVATION.json",
+      "bytes": 2216,
+      "sha256": "bdb1e2fda87316c3cad3148c4bb76123117591e100e1254b0bb68735adb86f4d",
+      "git_blob": "9475ac183e3c4b12d24c7b2ca7b8ed64592add84",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "name": "README.md",
+      "bytes": 4966,
+      "sha256": "c1a777d1c416b0f36c3329a196f10960ea80c7f923ea08b1f58b07cbbf031007",
+      "git_blob": "bd765c9178f260b0bc009ad9bcd3302dabf75c71",
+      "actual_create_full_get_equal": true
+    },
+    {
+      "name": "prepare.py",
+      "bytes": 13840,
+      "sha256": "330ac9e3f7d8dad7faacee23bc4dbbdbd99f90cfe53d199750faebbdd132c5b7",
+      "git_blob": "eb0ec487c7f43a26032336355a3281e370c641ed",
+      "actual_create_full_get_equal": true
+    }
+  ],
+  "actual_create_full_get_equal_for_all_payloads": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0
+}

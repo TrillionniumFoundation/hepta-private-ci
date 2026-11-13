@@ -1,0 +1,291 @@
+{
+  "format": "hepta-learning-ledger-codec-maintenance-and-test-scope-proposal-v1",
+  "status": "HOLD_SCOPE_ONLY_NOT_EXECUTABLE",
+  "prepared_at_utc": "2026-11-13 05:40:45 UTC",
+  "author": "native_ci_audit",
+  "root_execution_approved": false,
+  "native_execution_authorized": false,
+  "material_restoration_authorized": false,
+  "qualification": false,
+  "requested_scope_interpretation": "Root requested that the newly changed ledger crate's own maintenance/test scope be made explicit; Root did not assert that a new phase was necessarily required. The original actual driver/workflow now verify that full ledger library testing is already in ordinary. This proposal therefore makes the coverage explicit without adding or repeating a test phase.",
+  "source_status": {
+    "canonical_base": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "codec_base_packet": "3a7aee950bc6da48b4162f4f5215c4c5d18396b8",
+    "codec_self_use_increment": "487e202226d32f9b7e98238703f66015fec59aae",
+    "source_files": [
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+        "git_blob": "c214632e288047e1aa39f67c2865f2bacaac6b6a"
+      },
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+        "git_blob": "7ba6a2daa094bba330ea1ca8b7212a85e5e34273"
+      },
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+        "git_blob": "3a444d399126d43ff8d1ddd69cb6302dd7a785ed"
+      }
+    ],
+    "root_static_peer": "ea3f33acd3239cdd5b328b852d297aeabac37586",
+    "final_formatted_commit": null,
+    "final_formatted_tree": null,
+    "actual_final_complete_inventory": null,
+    "actual_materialization_result": null,
+    "actual_maintenance_result": null,
+    "actual_native_result": null,
+    "statement": "Prepared source identities only. The old cc57 runs cannot prove coverage of this new source. Final owner/caller/protection integration, formatting and actual exact-source materialization remain outstanding."
+  },
+  "maintenance_proposal": {
+    "package": "codex-hepta-learning-ledger",
+    "owning_directory": "codex-rs/hepta-learning-ledger",
+    "original_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "proposed_future_combined_fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "exact_added_tokens": [
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "cwd": "${FINAL_REPO}/codex-rs",
+    "fix_seconds": 7200,
+    "interpretation": "Add this one changed crate to the next newly reviewed scoped maintenance command. Retain the existing two package arguments, use one original 7200-second fix operation, and do not add a second 7200-second standalone run. This scope is a proposal, not a new executable config or a change to any already frozen attempt.",
+    "original_recipe": "cargo clippy --fix --tests --allow-dirty {args}",
+    "forwarding": "The original just-shell replaces {args} with quoted \"$@\" and preserves package arguments.",
+    "formatter": {
+      "entrypoint": "Original just fmt workflow",
+      "original_final_argv": [
+        "just",
+        "fmt",
+        "--base",
+        "c0f78493f815780f68b9bf5e390a21314d79311f"
+      ],
+      "seconds": 900,
+      "scope": "The final existing formatter pass covers the actual changed ledger Rust files through the owning Cargo.toml. This proposal adds no duplicate formatting invocation and no new time budget."
+    },
+    "control_requirement": "Do not edit or replay the existing V5 driver. A future source-bound maintenance successor must explicitly bind the proposed FIX argv in its reviewed driver/config; the unmodified V5 guard correctly rejects a different argv. Actual final source, dependencies, full source/index/Git/input audits, EX coordination and current global guard must be satisfied before any authorized execution."
+  },
+  "test_scope": {
+    "new_test_phase": false,
+    "new_test_retry": false,
+    "new_filter": false,
+    "existing_phase": "ordinary",
+    "original_phase_count": 14,
+    "original_plan": {
+      "bytes": 32246,
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619",
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+    },
+    "original_driver": {
+      "bytes": 14986,
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    "original_workflow": {
+      "bytes": 28133,
+      "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1",
+      "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed"
+    },
+    "exact_original_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "timeout_seconds": 7200,
+    "test_threads": 2,
+    "retries": 0,
+    "rust_min_stack_bytes": 8388608,
+    "nextest_profile": "local",
+    "no_fail_fast": true,
+    "ordinary_packages_unchanged": [
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron"
+    ],
+    "rule": "Use the same future complete unfiltered ordinary library run. Do not launch a separate ledger test command and do not add -E for the codec. The existing --lib scope includes the cfg(test) sibling module when the final exact source mounts it.",
+    "evidence_for_new_codec": {
+      "package": "codex-hepta-learning-ledger",
+      "lib_binary": "codex_hepta_learning_ledger",
+      "prepared_expected_method_names": [
+        "snapshot_codec::tests::empty_and_complete_snapshots_roundtrip_all_records_and_head",
+        "snapshot_codec::tests::encoder_rejects_changed_original_record_fields_and_head",
+        "snapshot_codec::tests::every_truncation_trailing_byte_and_changed_domain_is_rejected",
+        "snapshot_codec::tests::declared_counts_and_frame_lengths_cannot_expand_the_input_budget",
+        "snapshot_codec::tests::checksums_do_not_replace_sequence_predecessor_chain_or_head_validation",
+        "snapshot_codec::tests::checksum_valid_noncanonical_candidate_order_is_rejected_not_repaired",
+        "snapshot_codec::tests::repeated_or_reordered_checksum_valid_frames_are_rejected",
+        "snapshot_codec::tests::checksum_valid_event_cannot_bypass_original_causal_validation",
+        "snapshot_codec::tests::oversized_in_memory_event_is_rejected_before_encoding_or_cloning_it",
+        "snapshot_codec::tests::aggregate_output_cap_rejects_complete_history_without_truncation"
+      ],
+      "expected_methods_are_not_actual_inventory": true,
+      "actual_observed_names": null,
+      "actual_passed": null,
+      "actual_failed": null,
+      "actual_skipped": null,
+      "required": "From that same run's fresh full original raw logs, original runner record and retained JUnit, identify all ten final-source names in the ledger package/binary, non-skipped and passed. Keep all other existing ledger and ordinary cases. All ten passing is necessary for the new codec coverage but does not replace the original suite, owner coverage or complete qualification requirements.",
+      "missing_or_earlier_stop": "A missing/ignored/failed method or any stop before ordinary leaves this new source unqualified. Do not borrow historical cc57 PASS or count mere dependency compilation as its tests.",
+      "counting": "Ten is the prepared new-method subset, not an expected total, ceiling or filter for the ledger crate or ordinary suite. Observe the actual complete inventory and counts."
+    },
+    "original_nextest_limits": {
+      "config": {
+        "bytes": 6617,
+        "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158",
+        "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c"
+      },
+      "default_slow_timeout": {
+        "period_seconds": 30,
+        "terminate_after": 2
+      },
+      "existing_ledger_history_override": {
+        "test": "history_exceeds_v1_record_capacity_without_resetting_chain_or_limits",
+        "period_seconds": 30,
+        "terminate_after": 6
+      },
+      "existing_ledger_signed_curve_override": {
+        "test": "signed_product_history_curve_append_lookup_reopen_and_exact_retry",
+        "period_seconds": 30,
+        "terminate_after": 20,
+        "retries": 0
+      },
+      "preservation": "Preserve the entire original config, not only these excerpts. Command-line --retries 0 remains exact despite profile.default retries=1. No new per-codec timeout or extra stack is added."
+    }
+  },
+  "frozen_14_phase_boundaries": {
+    "unchanged_original_plan": {
+      "bytes": 32246,
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619",
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+    },
+    "phases": [
+      {
+        "id": "eval-lib",
+        "timeout_seconds": 3600
+      },
+      {
+        "id": "native-toolchain",
+        "timeout_seconds": 120
+      },
+      {
+        "id": "helper-build",
+        "timeout_seconds": 3600
+      },
+      {
+        "id": "helper-verify-before",
+        "timeout_seconds": 120
+      },
+      {
+        "id": "focused",
+        "timeout_seconds": 7200,
+        "outer_driver_budget_seconds": 12000
+      },
+      {
+        "id": "ordinary",
+        "timeout_seconds": 7200
+      },
+      {
+        "id": "root-setup",
+        "timeout_seconds": 60
+      },
+      {
+        "id": "root",
+        "timeout_seconds": 7200
+      },
+      {
+        "id": "all-native-driver",
+        "outer_driver_budget_seconds": 21000
+      },
+      {
+        "id": "helper-verify-after",
+        "timeout_seconds": 120
+      },
+      {
+        "id": "root-cleanup",
+        "timeout_seconds": 60
+      },
+      {
+        "id": "source-closure",
+        "timeout_seconds": 600
+      },
+      {
+        "id": "caller-self-test",
+        "timeout_seconds": 300
+      },
+      {
+        "id": "caller-verify",
+        "timeout_seconds": 4800
+      }
+    ],
+    "ordering": "Retain the reviewed source-first/native ordering and all original stop rules; this scope-only document neither dispatches nor reschedules those phases.",
+    "native_outer_seconds": 45000,
+    "historical_source_outer_seconds": 7200,
+    "additional_native_wall_budget_seconds": 0,
+    "no_new_runtime_request": true
+  },
+  "live_prerequisites": {
+    "global_guard": "Must be observed again at any future authorized dispatch by its original control. The readonly sample at 2026-11-13T05:33:54Z was busy with four matches; it authorizes no follow-on operation.",
+    "last_readonly_observation_placement": "7a186d7ba03ad337f4340f728cf5eb66f1776234",
+    "source_and_environment": "Require actual final source and tool/material identities, original external target, no path/environment substitution, source-before/after equality and complete retained evidence. Do not infer V8 availability from earlier restoration or bypass the present guard.",
+    "repeat_policy": "No rerun merely because fix/fmt occurred. The proposed coverage is the already scheduled future exact-final-source ordinary execution; no extra execution is introduced."
+  },
+  "proof": {
+    "bytes": 6300,
+    "sha256": "9d2ec3ebbb03be73e712055073494b1f204e3be7d36e35a82507a7ea92f4fb0b",
+    "git_blob": "a336b0e7d6fc0425bcffaf7b6b15b35561eec4d7"
+  },
+  "original_primary_reads": {
+    "bytes": 202541,
+    "sha256": "238a5898c778f7dd627301b5b53aba0fc4c56c1a6dd3c5d177fb7ae6d60d4efb",
+    "git_blob": "a09340b13bdad0b10ce7ad6dab4df4528c383eda"
+  },
+  "actual_operations": {
+    "H": 0,
+    "format": 0,
+    "compile": 0,
+    "test": 0,
+    "source_mutation": 0,
+    "ref_update": 0
+  }
+}

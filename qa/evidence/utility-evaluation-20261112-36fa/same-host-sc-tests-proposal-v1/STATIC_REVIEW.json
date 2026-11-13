@@ -1,0 +1,44 @@
+{
+  "format": "hepta-same-host-sc-tests-static-byte-review-v1",
+  "qualification": false,
+  "kind": "pure_byte_and_source_structure_only",
+  "source_packet": {
+    "bytes": 90367,
+    "sha256": "a226fd3d18ce76b237552cf01d76819fe210f495ccfe30d613feb4ec5c1b8e06",
+    "git_blob": "60c3d1ba12fdf43fd3e06ae5b3c6965e636e84d9"
+  },
+  "source_delta": {
+    "bytes": 51864,
+    "sha256": "bef511ed48ac9ba7eb9ce013f48e3ffa4ae86a5aaa22e061b9e47fc7e4d28615",
+    "git_blob": "61b0b4167177c86f58e020638a701658af0072fc"
+  },
+  "paths": 6,
+  "new_paths": 4,
+  "changed_paths": 2,
+  "cap_exact_inverse_to_documented_preimage": true,
+  "cap_cfg_test_insertions": 5,
+  "recovery_parent_exact_append_only": true,
+  "all_new_files_match_original_tests_suffix": true,
+  "old_tests_removed": 0,
+  "old_tests_modified": 0,
+  "new_test_methods": [
+    "local_s_c_complete_same_actual_c_and_cold_observer_stays_readonly",
+    "identical_signed_cuts_cannot_substitute_other_actual_t_e_clients",
+    "missing_original_s_cannot_export_a_local_predecessor",
+    "local_s_aliases_refuse_real_overlapping_owner_reads",
+    "cancelling_local_s_read_fences_all_aliases_after_actual_work_terminates",
+    "local_s_revalidates_withdrawn_b_and_consumes_the_failed_slot",
+    "local_s_clone_keeps_the_original_absolute_expiry"
+  ],
+  "new_tests_ignored": false,
+  "helper_observation": "Unit-only pause after actual concrete owner read; same operation deadline received by value, no response/counter/permit/deadline replacement. Drop of the captured operation records actual blocking read closure exit. The cancelled async caller does not join its discarded handle; delivery remains Unknown.",
+  "actual_origin": "Original Material recover once; original Dataset/Trainer/Evaluator channels; both real Version recoveries validate the same C and full signatures before actual share. No sealed bundle is constructed directly by a test.",
+  "normal_case_limit": "Existing PublicationFixture and support::Session execution, not Fresh three-UID Root/daemon qualification. The original B fixture 64 bound and T/E 128 bounds are unchanged; aggregate costs remain unmeasured.",
+  "execution": {
+    "rustfmt": false,
+    "compile": false,
+    "rust_tests": false,
+    "full_source_collector": false,
+    "H": false
+  }
+}

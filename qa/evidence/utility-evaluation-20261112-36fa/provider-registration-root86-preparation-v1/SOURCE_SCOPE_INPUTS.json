@@ -1,0 +1,4238 @@
+{
+  "raw": {
+    "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs": {
+      "bytes": 7038,
+      "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef",
+      "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs": {
+      "bytes": 8197,
+      "sha256": "6b9f30ad0e65aa584e6fb5bf5892edfce7cbb4dedbded013b079c2b68bdb54b2",
+      "git_blob": "41ad5a933ad6a169b62ae216bde159e56800ed3c"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": {
+      "bytes": 12663,
+      "sha256": "1f4b7658e0bb6f8bc59932cf00c9d2b80056af389d1433b3790ecf866ab4ef6a",
+      "git_blob": "76aaefe1917059fd4004ac938357ce4aed8d8320"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_command.rs": {
+      "bytes": 16041,
+      "sha256": "b6ada6b2e9654f9e670a42aa099d49abb73f6f0b90a81361cedbeb0b212702ef",
+      "git_blob": "94cdad47f9564d1521a7216c8d8d62c422202b85"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs": {
+      "bytes": 1668,
+      "sha256": "d110fa42980857036d83bdc0cc2b9319b7749346d52ea1e4fdf6601c60435b30",
+      "git_blob": "fab5600f505aa7c8c039aa0990ec38ca01d15c83"
+    },
+    "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs": {
+      "bytes": 3514,
+      "sha256": "6ce304f8cd01c8e9e534c9433a992cba57a9e49cccf89ffcc1ee7e650c9aac6f",
+      "git_blob": "1030175ebab83b61c966acf8f35cd7e682bfb819"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs": {
+      "bytes": 9035,
+      "sha256": "c08b4199d31c58303d44e7b8a2bfc37e4dfba18406150a7ebba63dbda3c9c8df",
+      "git_blob": "86a5fbec4ce07b9b6193b0181e979bbf33467541"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs": {
+      "bytes": 4745,
+      "sha256": "30ac4ed80bcd6f0209e8204ba59cab4e981701187db7d0ae5248dc1e46b9f5da",
+      "git_blob": "2a3c444f6e2d3816ecc49c22162b5a42b0c2431d"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs": {
+      "bytes": 4966,
+      "sha256": "bbee41be22ee71b4ecb08cfe4d790b77b069381604fb6975789a9c255729e258",
+      "git_blob": "408a068ce11174a962d5878cb706b7233b628514"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs": {
+      "bytes": 12401,
+      "sha256": "4dfd606597e1a7e4fed5a9d51773a945c6dc3655944247ea654660079dc12cab",
+      "git_blob": "f6560fe4b5989a6961c9064628441775c15baeed"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs": {
+      "bytes": 4659,
+      "sha256": "405174c6cf29894569e260b2535d3ea03bf3dac5de13cd4f1804f703c9a09b27",
+      "git_blob": "272a6aba53c515af0b5ec5c5d8d046ccc40dbe2f"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs": {
+      "bytes": 12126,
+      "sha256": "820ba4a5c67ff649fd1ae4cf36786d156a310fd3e91e23ca24a423f26503a16f",
+      "git_blob": "5e6221196cb26ce6120040f5b7cd6df5b4f94f1a"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs": {
+      "bytes": 3147,
+      "sha256": "862c5b9bdd71019fbc510b51b1cee7119810b6a9fa60c3b2e3b85f9590f6eead",
+      "git_blob": "1756083c7bd47e34d5bb2d8f7178a2271ff1e121"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs": {
+      "bytes": 3817,
+      "sha256": "bf51dc2737fe1bd4a3d3e3bbad29f6f0dc45dc8281c538ea8bc83262d1531391",
+      "git_blob": "1db1cb54cbeb0601f5d63121e7ecc8cb11bd546a"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs": {
+      "bytes": 9065,
+      "sha256": "1aa3d1697f825e3249641e8fa4ad7470a7f19ff873904725859ce87668b096fe",
+      "git_blob": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs": {
+      "bytes": 3419,
+      "sha256": "47981925d9bf8c4dd4e15cccbda45404d0e5f0a41db5898a88fd53a641055dbd",
+      "git_blob": "189f28ef8a8cebf02f122cab6a30dadae8471c41"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs": {
+      "bytes": 14980,
+      "sha256": "b8fc407f8dec8cd43b02faa2ee9e182dccd30ed7789aa73994975745511f03e1",
+      "git_blob": "49243f911ab7f7edd13e1aceb2a5f6477d161980"
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs": {
+      "bytes": 2870,
+      "sha256": "9487d5e9fa45f3b1d37ae0470990152741e427a812697afc08718cae9af41e33",
+      "git_blob": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee"
+    },
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs": {
+      "bytes": 16457,
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7"
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs": {
+      "bytes": 10845,
+      "sha256": "85fcb670e9b0e7f0d420e1282ecc9ed4596fc941d50d169c098a157588157158",
+      "git_blob": "fc98ce9ee4c3c51a575abed19124c1292641ac73"
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs": {
+      "bytes": 11775,
+      "sha256": "254ed8de02036c54d54216b04a2393b2eff4cf4ccf161d59b6c11311f179a289",
+      "git_blob": "5abb8031d6b75a4ab2ab60b5393369664bf77284"
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs": {
+      "bytes": 10265,
+      "sha256": "f6ee338a20e9ce145e629722a2c9d22cd97d1bbf751db41cf8b5cdf504e6c7f4",
+      "git_blob": "8fd54c3fcde5ee49fb330296a8651fc08f43273d"
+    },
+    "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": {
+      "bytes": 12361,
+      "sha256": "89eb1370bc59d579c2d4abc9da8c31dab65e59a63498def1109658005da9e570",
+      "git_blob": "9d370f1313023f289593b49bd3df90ff6623fd38"
+    },
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs": {
+      "bytes": 10468,
+      "sha256": "9beee92e4ffce2a3d27386fb002a79130fee42e6693986ed0c8c9503f3afce77",
+      "git_blob": "b5131bf54f28396737fe407a4aa3b925636f241b"
+    },
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": {
+      "bytes": 26099,
+      "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06",
+      "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version.rs": {
+      "bytes": 6072,
+      "sha256": "e043f03572a4e039429448bdf53f222a96ffc6000ee254e9ea774d05a79aa188",
+      "git_blob": "59fbd2f5dad223cf3a7ad661a28f45ba63bc5d95"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs": {
+      "bytes": 17756,
+      "sha256": "694ebe296c23a0e6935b71f346ebddd7af0169f41be40ccf8b8c847eb7275c5e",
+      "git_blob": "943d1919c37b104c74d93b0f48329a38339bfbcc"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs": {
+      "bytes": 13212,
+      "sha256": "27b82847e4d9f7001dedec9a6d846d83d5a89e0ebac4e948ee57a3fecff49e58",
+      "git_blob": "52f35e689615144d7764acc189c11180c45600f7"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs": {
+      "bytes": 13851,
+      "sha256": "70f7064e84686ac6db1805193ced65a9b35be30f5d899040d3e7c70f63225518",
+      "git_blob": "691c6f0e780c98fee377c482137b260650458d28"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs": {
+      "bytes": 5937,
+      "sha256": "9f72fbcb9796952555e93c433912f01ee6611c53782c5eecc39920ba54d3824a",
+      "git_blob": "0d52084d728eee8a62bce68b99780c12624242d7"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs": {
+      "bytes": 13031,
+      "sha256": "4d0dbed421c0d48b5577d9189166e04fdf1cfbed7acecb0efd11546f1ff4da92",
+      "git_blob": "4f88e588c805271cf8954305bfe09fdfab777bf4"
+    },
+    "codex-rs/hepta-agentd/src/circuit_selection_command.rs": {
+      "bytes": 19478,
+      "sha256": "8ce8a88dee4313fd0070731a28319c49e0239cd135a87b383bb357d3a0f0ee06",
+      "git_blob": "ece090eaaeed68f44fcca3e74bbcdcd1bc90857d"
+    },
+    "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs": {
+      "bytes": 9850,
+      "sha256": "5c4d2cc85158b4a076a8987c677b9c6419c2cceb5d14850d2b17441b50fa351b",
+      "git_blob": "01f598a8d6747dc2c7a4438bdcd1860471c5a8eb"
+    },
+    "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs": {
+      "bytes": 11517,
+      "sha256": "ea870ae5b1f0a8e1c3cecdc6edfb9a8c0647b02516efcab4606236ec7fb36992",
+      "git_blob": "1d4d4f96ba098e5889bdc09832314f1baf973ef9"
+    },
+    "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": {
+      "bytes": 29901,
+      "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a",
+      "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9"
+    },
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": {
+      "bytes": 14090,
+      "sha256": "60fa9f9bf92736a7ea4de72b6d4b78893f8486be43b5d835ed191c7648138705",
+      "git_blob": "566dbd6971d2fd11434fbf6408c95c9abeb143af"
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "bytes": 71893,
+      "sha256": "d0c43440859518c93592252411141dbec6579663530566a3d77663baab8677d8",
+      "git_blob": "9c77c4265aef5301d3e2f8a8c414847d0e718396"
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs": {
+      "bytes": 13903,
+      "sha256": "958a313138b394ebf86f9260bf01070d38f01a7bd8ee1d8683b94ab1d4585c3e",
+      "git_blob": "f7a57575bccb0de9d139a070e30bc26fcb8daf8d"
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs": {
+      "bytes": 1484,
+      "sha256": "0a4e8b4bf29d748fba86432243e83f7fcfdca07cf553927eb475bd556a5d1ba4",
+      "git_blob": "6e7b2e5e89ab0911193ca41d054f0633ba132767"
+    },
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs": {
+      "bytes": 12564,
+      "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a",
+      "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced"
+    },
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs": {
+      "bytes": 5029,
+      "sha256": "9ef39e5c43d879218df8ad98546c31e1a329f8ec55991f7a460a348392ea2254",
+      "git_blob": "955040ae66c1682ead7b7b8dda5379993eb59eb5"
+    },
+    "codex-rs/hepta-agentd/src/root_production_handoff.rs": {
+      "bytes": 9613,
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f",
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de"
+    },
+    "codex-rs/hepta-learning-ledger/src/lib.rs": {
+      "bytes": 7384,
+      "sha256": "083b568492a9a22853bb13558243c9528a16d4a74dd6b2ea32e77c8e3f457d1d",
+      "git_blob": "c214632e288047e1aa39f67c2865f2bacaac6b6a"
+    },
+    "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs": {
+      "bytes": 7783,
+      "sha256": "609ce5d7b8962af57c01364df64328141407553656196bb0a5771afaf9aecea2",
+      "git_blob": "7ba6a2daa094bba330ea1ca8b7212a85e5e34273"
+    }
+  },
+  "types": {
+    "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs": [
+      {
+        "start": 1091,
+        "end": 1345,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RootResidentCandidateInputsV1"
+        }
+      },
+      {
+        "start": 1508,
+        "end": 1735,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RootResidentLearningConsumerV3"
+        }
+      },
+      {
+        "start": 1811,
+        "end": 2006,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RootResidentCandidateServiceV1"
+        }
+      },
+      {
+        "start": 4437,
+        "end": 4476,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "CloseOriginalStream"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs": [
+      {
+        "start": 2108,
+        "end": 2200,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RootResidentLearningRegistrationV3"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": [
+      {
+        "start": 2116,
+        "end": 2397,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellQ24CandidateStageStreamsV1"
+        }
+      },
+      {
+        "start": 2547,
+        "end": 2914,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellQ24CandidateStageOwnersV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_training_command.rs": [
+      {
+        "start": 3040,
+        "end": 4395,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalCellQ24TrainingCommandErrorV1"
+        }
+      },
+      {
+        "start": 4608,
+        "end": 4792,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellQ24TrainingCommandContextV1"
+        }
+      },
+      {
+        "start": 6239,
+        "end": 6377,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellQ24TrainingCommandReceiptV1"
+        }
+      },
+      {
+        "start": 6610,
+        "end": 6721,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Channel"
+        }
+      },
+      {
+        "start": 6723,
+        "end": 6960,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellQ24TrainingCommandClientV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs": [
+      {
+        "start": 456,
+        "end": 830,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalPredecessors"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs": [
+      {
+        "start": 260,
+        "end": 680,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedNextUseLocalSourcesV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs": [
+      {
+        "start": 171,
+        "end": 313,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalSelector"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs": [
+      {
+        "start": 654,
+        "end": 868,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedNextUseReceiptConfigV1"
+        }
+      },
+      {
+        "start": 870,
+        "end": 1368,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1"
+        }
+      },
+      {
+        "start": 1447,
+        "end": 1688,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedNextUseReceiptV1"
+        }
+      },
+      {
+        "start": 2137,
+        "end": 2235,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Profile"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs": [
+      {
+        "start": 177,
+        "end": 595,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs": [
+      {
+        "start": 1596,
+        "end": 1860,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedRetentionContextV1"
+        }
+      },
+      {
+        "start": 1900,
+        "end": 1940,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Origin"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs": [
+      {
+        "start": 458,
+        "end": 832,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalPredecessors"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs": [
+      {
+        "start": 323,
+        "end": 553,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedSelectionLocalSourcesV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs": [
+      {
+        "start": 756,
+        "end": 970,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedSelectionReceiptConfigV1"
+        }
+      },
+      {
+        "start": 972,
+        "end": 1287,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedSelectionReceiptSourcesV1"
+        }
+      },
+      {
+        "start": 1440,
+        "end": 1681,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedSelectionReceiptV1"
+        }
+      },
+      {
+        "start": 4658,
+        "end": 4766,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Profile"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs": [
+      {
+        "start": 238,
+        "end": 534,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs": [
+      {
+        "start": 6104,
+        "end": 6301,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Publication"
+        }
+      },
+      {
+        "start": 6678,
+        "end": 7128,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "trait",
+          "name": "OriginalVersion"
+        }
+      },
+      {
+        "start": 8587,
+        "end": 8838,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "PublishedTask"
+        }
+      },
+      {
+        "start": 9012,
+        "end": 9073,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "PublishedCircuitFeatureTaskV1"
+        }
+      },
+      {
+        "start": 9330,
+        "end": 9560,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "PublishedCircuitFeatureCompletionV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs": [
+      {
+        "start": 1187,
+        "end": 1270,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Request"
+        }
+      },
+      {
+        "start": 3673,
+        "end": 3756,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Response"
+        }
+      },
+      {
+        "start": 3864,
+        "end": 3951,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Readiness"
+        }
+      },
+      {
+        "start": 4108,
+        "end": 4353,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitCompletionReadinessClientV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs": [
+      {
+        "start": 887,
+        "end": 977,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalLocalReadSlot"
+        }
+      },
+      {
+        "start": 979,
+        "end": 1244,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalLocalReadState"
+        }
+      },
+      {
+        "start": 1398,
+        "end": 1491,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitPublishedLocalReadV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs": [
+      {
+        "start": 2016,
+        "end": 2311,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitLearningReadContextV1"
+        }
+      },
+      {
+        "start": 2348,
+        "end": 3216,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalCircuitLearningReadErrorV1"
+        }
+      },
+      {
+        "start": 3452,
+        "end": 3646,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitLearningReadbackV1"
+        }
+      },
+      {
+        "start": 3791,
+        "end": 3871,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Channel"
+        }
+      },
+      {
+        "start": 4093,
+        "end": 4349,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitLearningReadClientV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": [
+      {
+        "start": 1128,
+        "end": 1416,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitLearningReadOwnerV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs": [
+      {
+        "start": 1582,
+        "end": 2029,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseCommandOwnerV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": [
+      {
+        "start": 2151,
+        "end": 3212,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalCircuitNextUseReceiptErrorV1"
+        }
+      },
+      {
+        "start": 4255,
+        "end": 4636,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseReceiptConfigV1"
+        }
+      },
+      {
+        "start": 4875,
+        "end": 5282,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseReceiptSourcesV1"
+        }
+      },
+      {
+        "start": 5512,
+        "end": 5787,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseRemoteSourcesV1"
+        }
+      },
+      {
+        "start": 5789,
+        "end": 5936,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalSelectorRead"
+        }
+      },
+      {
+        "start": 5938,
+        "end": 6626,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "trait",
+          "name": "NextUseSources"
+        }
+      },
+      {
+        "start": 6857,
+        "end": 6938,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "ObservationLocation"
+        }
+      },
+      {
+        "start": 9382,
+        "end": 9436,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "CommandOrigin"
+        }
+      },
+      {
+        "start": 9438,
+        "end": 9754,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseReceiptOwnerV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version.rs": [
+      {
+        "start": 1295,
+        "end": 3560,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalCircuitRetainedVersionErrorV1"
+        }
+      },
+      {
+        "start": 3799,
+        "end": 3992,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitRetainedVersionPublicationV1"
+        }
+      },
+      {
+        "start": 4757,
+        "end": 4904,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitRetainedVersionReadbackV1"
+        }
+      },
+      {
+        "start": 5285,
+        "end": 5363,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "RetainedVersionPurposeV1"
+        }
+      },
+      {
+        "start": 5708,
+        "end": 5766,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "RetainedVersionOriginV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs": [
+      {
+        "start": 2624,
+        "end": 2743,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "InitialVersionEvidence"
+        }
+      },
+      {
+        "start": 3544,
+        "end": 3667,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitRetainedArtifactCheckpointV1"
+        }
+      },
+      {
+        "start": 3894,
+        "end": 4557,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitRetainedVersionRecoveryV1"
+        }
+      },
+      {
+        "start": 4559,
+        "end": 4686,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RetainedVersionColdCutV1"
+        }
+      },
+      {
+        "start": 4687,
+        "end": 4990,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RetainedVersionArtifactOwnerV1"
+        }
+      },
+      {
+        "start": 4991,
+        "end": 5426,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "RetainedVersionHostPhaseV1"
+        }
+      },
+      {
+        "start": 5477,
+        "end": 5609,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "RetainedVersionFinalUseOutcomeV1"
+        }
+      },
+      {
+        "start": 5610,
+        "end": 6631,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RetainedVersionHostStateV1"
+        }
+      },
+      {
+        "start": 6632,
+        "end": 7190,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitRetainedVersionHostV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs": [
+      {
+        "start": 1033,
+        "end": 1127,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalVersionLocalReadOperationV1"
+        }
+      },
+      {
+        "start": 1129,
+        "end": 1241,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalVersionLocalReadPurpose"
+        }
+      },
+      {
+        "start": 1394,
+        "end": 1746,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalVersionLocalReadBindingV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs": [
+      {
+        "start": 1247,
+        "end": 1517,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "NextUseReadPurpose"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs": [
+      {
+        "start": 639,
+        "end": 870,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitPublishedEvidenceReadbackV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_selection_command.rs": [
+      {
+        "start": 2479,
+        "end": 3781,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalCircuitSelectionCommandErrorV1"
+        }
+      },
+      {
+        "start": 3996,
+        "end": 4286,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandContextV1"
+        }
+      },
+      {
+        "start": 8757,
+        "end": 9055,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandReceiptV1"
+        }
+      },
+      {
+        "start": 9647,
+        "end": 9708,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "QueuedExecuteFence"
+        }
+      },
+      {
+        "start": 9842,
+        "end": 9953,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Channel"
+        }
+      },
+      {
+        "start": 9954,
+        "end": 10194,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandClientV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs": [
+      {
+        "start": 1637,
+        "end": 2058,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandOwnerV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs": [
+      {
+        "start": 921,
+        "end": 1064,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "trait",
+          "name": "OriginalSelectionOwner"
+        }
+      },
+      {
+        "start": 1389,
+        "end": 1623,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Slot"
+        }
+      },
+      {
+        "start": 1625,
+        "end": 1938,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Original"
+        }
+      },
+      {
+        "start": 2174,
+        "end": 2257,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionLocalReadbackV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": [
+      {
+        "start": 2157,
+        "end": 2928,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalCircuitSelectionReceiptErrorV1"
+        }
+      },
+      {
+        "start": 3741,
+        "end": 4069,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionReceiptConfigV1"
+        }
+      },
+      {
+        "start": 4232,
+        "end": 4471,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionReceiptSourcesV1"
+        }
+      },
+      {
+        "start": 4711,
+        "end": 4931,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionRemoteSourcesV1"
+        }
+      },
+      {
+        "start": 5088,
+        "end": 5728,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "trait",
+          "name": "SelectionSources"
+        }
+      },
+      {
+        "start": 5957,
+        "end": 6038,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "ObservationLocation"
+        }
+      },
+      {
+        "start": 8137,
+        "end": 8191,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "CommandOrigin"
+        }
+      },
+      {
+        "start": 8193,
+        "end": 8513,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionReceiptOwnerV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": [
+      {
+        "start": 5517,
+        "end": 5686,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "LearningIterationEvidencePeerV1"
+        }
+      },
+      {
+        "start": 5688,
+        "end": 5770,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Channel"
+        }
+      },
+      {
+        "start": 6078,
+        "end": 6352,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "LearningIterationEvidenceClientV1"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/lib.rs": [],
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs": [
+      {
+        "start": 1380,
+        "end": 1424,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Origin"
+        }
+      },
+      {
+        "start": 1426,
+        "end": 1742,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellEvaluationCommandConnectionV1"
+        }
+      },
+      {
+        "start": 8339,
+        "end": 8450,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Channel"
+        }
+      },
+      {
+        "start": 8451,
+        "end": 8623,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCellEvaluationCommandClientV1"
+        }
+      },
+      {
+        "start": 8625,
+        "end": 8668,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "QueuedCancellation"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs": [],
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs": [
+      {
+        "start": 1191,
+        "end": 1274,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Process"
+        }
+      },
+      {
+        "start": 1340,
+        "end": 1447,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Lane"
+        }
+      },
+      {
+        "start": 1513,
+        "end": 1618,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Packet"
+        }
+      },
+      {
+        "start": 1779,
+        "end": 1893,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "RootCandidateStageHandoffV1"
+        }
+      },
+      {
+        "start": 1895,
+        "end": 1953,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "Input"
+        }
+      }
+    ],
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs": [],
+    "codex-rs/hepta-agentd/src/root_production_handoff.rs": [],
+    "codex-rs/hepta-learning-ledger/src/lib.rs": [],
+    "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs": [
+      {
+        "start": 1045,
+        "end": 1146,
+        "owner": null,
+        "kind": "root_type",
+        "selector": {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalLedgerSnapshotCodecErrorV1"
+        }
+      }
+    ]
+  },
+  "mounts": {
+    "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs": [],
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "child": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "path_literal": "\"authority_host_learning_candidate_service.rs\"",
+        "module_name": "candidate_service",
+        "start": 1119,
+        "end": 1198,
+        "raw": "#[path = \"authority_host_learning_candidate_service.rs\"]\nmod candidate_service;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": [],
+    "codex-rs/hepta-agentd/src/cell_q24_training_command.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "child": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+        "path_literal": "\"cell_q24_training_shared_readback.rs\"",
+        "module_name": "shared_readback",
+        "start": 1473,
+        "end": 1542,
+        "raw": "#[path = \"cell_q24_training_shared_readback.rs\"]\nmod shared_readback;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+        "path_literal": "\"circuit_evaluated_next_use_local.rs\"",
+        "module_name": "local",
+        "start": 525,
+        "end": 583,
+        "raw": "#[path = \"circuit_evaluated_next_use_local.rs\"]\nmod local;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+        "path_literal": "\"circuit_evaluated_selection_local.rs\"",
+        "module_name": "local",
+        "start": 624,
+        "end": 683,
+        "raw": "#[path = \"circuit_evaluated_selection_local.rs\"]\nmod local;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+        "path_literal": "\"circuit_completion_readiness_local.rs\"",
+        "module_name": "local",
+        "start": 10784,
+        "end": 10844,
+        "raw": "#[path = \"circuit_completion_readiness_local.rs\"]\nmod local;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "path_literal": "\"circuit_learning_local_read.rs\"",
+        "module_name": "local",
+        "start": 1389,
+        "end": 1442,
+        "raw": "#[path = \"circuit_learning_local_read.rs\"]\nmod local;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+        "path_literal": "\"circuit_evaluated_next_use_local_command.rs\"",
+        "module_name": "local",
+        "start": 1421,
+        "end": 1487,
+        "raw": "#[path = \"circuit_evaluated_next_use_local_command.rs\"]\nmod local;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_retained_version.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+        "path_literal": "\"circuit_retained_version_shared_readback.rs\"",
+        "module_name": "shared_readback",
+        "start": 2081,
+        "end": 2157,
+        "raw": "#[path = \"circuit_retained_version_shared_readback.rs\"]\nmod shared_readback;"
+      },
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+        "path_literal": "\"circuit_retained_version_next_use_readback.rs\"",
+        "module_name": "next_use_readback",
+        "start": 2228,
+        "end": 2308,
+        "raw": "#[path = \"circuit_retained_version_next_use_readback.rs\"]\nmod next_use_readback;"
+      },
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+        "path_literal": "\"circuit_retained_version_local_read.rs\"",
+        "module_name": "local_read",
+        "start": 2309,
+        "end": 2375,
+        "raw": "#[path = \"circuit_retained_version_local_read.rs\"]\nmod local_read;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_selection_command.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+        "path_literal": "\"circuit_evaluated_selection_command_local_readback.rs\"",
+        "module_name": "local_evaluated_readback",
+        "start": 1540,
+        "end": 1635,
+        "raw": "#[path = \"circuit_evaluated_selection_command_local_readback.rs\"]\nmod local_evaluated_readback;"
+      },
+      {
+        "parent": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "child": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+        "path_literal": "\"circuit_selection_local_predecessor.rs\"",
+        "module_name": "local_predecessor",
+        "start": 9708,
+        "end": 9781,
+        "raw": "#[path = \"circuit_selection_local_predecessor.rs\"]\nmod local_predecessor;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": [],
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": [],
+    "codex-rs/hepta-agentd/src/lib.rs": [],
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+        "child": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+        "path_literal": "\"neuron_cell_evaluation_shared_readback.rs\"",
+        "module_name": "shared_readback",
+        "start": 1266,
+        "end": 1340,
+        "raw": "#[path = \"neuron_cell_evaluation_shared_readback.rs\"]\nmod shared_readback;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs": [],
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+        "child": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+        "path_literal": "\"root_candidate_stage_handoff_wire.rs\"",
+        "module_name": "wire",
+        "start": 822,
+        "end": 880,
+        "raw": "#[path = \"root_candidate_stage_handoff_wire.rs\"]\nmod wire;"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs": [],
+    "codex-rs/hepta-agentd/src/root_production_handoff.rs": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+        "child": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+        "path_literal": "\"root_candidate_stage_handoff.rs\"",
+        "module_name": "candidate_stages",
+        "start": 1008,
+        "end": 1073,
+        "raw": "#[path = \"root_candidate_stage_handoff.rs\"]\nmod candidate_stages;"
+      }
+    ],
+    "codex-rs/hepta-learning-ledger/src/lib.rs": [],
+    "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs": []
+  },
+  "functions": {
+    "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs": [
+      {
+        "start": 2298,
+        "end": 4433,
+        "name": "into_candidate_service",
+        "owner": "impl RootResidentLearningRegistrationV3"
+      },
+      {
+        "start": 4518,
+        "end": 4593,
+        "name": "drop",
+        "owner": "impl Drop for CloseOriginalStream"
+      },
+      {
+        "start": 5119,
+        "end": 7035,
+        "name": "run",
+        "owner": "impl RootResidentCandidateServiceV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs": [
+      {
+        "start": 2466,
+        "end": 2701,
+        "name": "register_resident_learning_v3",
+        "owner": "impl HostAuthorityService"
+      },
+      {
+        "start": 2938,
+        "end": 3258,
+        "name": "recover_resident_learning_v3",
+        "owner": "impl HostAuthorityService"
+      },
+      {
+        "start": 3264,
+        "end": 4062,
+        "name": "resident_learning_v3",
+        "owner": "impl HostAuthorityService"
+      },
+      {
+        "start": 4281,
+        "end": 4765,
+        "name": "register_original_root",
+        "owner": "impl RootResidentLearningRegistrationV3"
+      },
+      {
+        "start": 4782,
+        "end": 5351,
+        "name": "recover_original_root",
+        "owner": "impl RootResidentLearningRegistrationV3"
+      },
+      {
+        "start": 5357,
+        "end": 6416,
+        "name": "from_original_root",
+        "owner": "impl RootResidentLearningRegistrationV3"
+      },
+      {
+        "start": 6781,
+        "end": 7256,
+        "name": "into_runtime",
+        "owner": "impl RootResidentLearningRegistrationV3"
+      },
+      {
+        "start": 7707,
+        "end": 8194,
+        "name": "into_candidate_runtime",
+        "owner": "impl RootResidentLearningRegistrationV3"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": [
+      {
+        "start": 2969,
+        "end": 3327,
+        "name": "from_original_streams",
+        "owner": "impl OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 3337,
+        "end": 3702,
+        "name": "recover_original_streams",
+        "owner": "impl OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 3719,
+        "end": 4377,
+        "name": "require_initial",
+        "owner": "impl OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 4383,
+        "end": 4557,
+        "name": "require_live_deadline",
+        "owner": "impl OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 4725,
+        "end": 4968,
+        "name": "restrict_original_handoff_deadline",
+        "owner": "impl OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 4985,
+        "end": 5221,
+        "name": "install_fresh_resident_gate",
+        "owner": "impl OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 5313,
+        "end": 7514,
+        "name": "validate_recovery",
+        "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 7520,
+        "end": 9220,
+        "name": "execute_stage",
+        "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 9226,
+        "end": 9596,
+        "name": "prepare_proposal",
+        "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1"
+      },
+      {
+        "start": 9602,
+        "end": 11694,
+        "name": "receipt_attestation",
+        "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_training_command.rs": [
+      {
+        "start": 4845,
+        "end": 5656,
+        "name": "validate",
+        "owner": "impl OriginalCellQ24TrainingCommandContextV1"
+      },
+      {
+        "start": 5662,
+        "end": 6115,
+        "name": "binding",
+        "owner": "impl OriginalCellQ24TrainingCommandContextV1"
+      },
+      {
+        "start": 6434,
+        "end": 6512,
+        "name": "receipt",
+        "owner": "impl OriginalCellQ24TrainingCommandReceiptV1"
+      },
+      {
+        "start": 6522,
+        "end": 6606,
+        "name": "attestation",
+        "owner": "impl OriginalCellQ24TrainingCommandReceiptV1"
+      },
+      {
+        "start": 7331,
+        "end": 7838,
+        "name": "from_original_stream",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 8085,
+        "end": 8886,
+        "name": "recover_from_original_stream",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 8892,
+        "end": 10120,
+        "name": "bind_original_stream",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 10590,
+        "end": 11126,
+        "name": "execute_training",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 11142,
+        "end": 11378,
+        "name": "readback",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 11540,
+        "end": 11932,
+        "name": "receipt_attestation",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 11944,
+        "end": 15677,
+        "name": "exchange",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      },
+      {
+        "start": 15681,
+        "end": 15891,
+        "name": "now",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs": [
+      {
+        "start": 395,
+        "end": 1561,
+        "name": "seal_original_completed_readback",
+        "owner": "impl OriginalCellQ24TrainingCommandClientV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs": [
+      {
+        "start": 784,
+        "end": 3511,
+        "name": "bind_original_evaluated_local_read",
+        "owner": "impl OriginalCircuitCompletionReadinessClientV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs": [
+      {
+        "start": 934,
+        "end": 2845,
+        "name": "from_original_evaluated_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 2862,
+        "end": 4912,
+        "name": "from_original_evaluated_shared_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 4929,
+        "end": 9032,
+        "name": "observe_original",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs": [
+      {
+        "start": 762,
+        "end": 842,
+        "name": "snapshot",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 848,
+        "end": 932,
+        "name": "trainer",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 938,
+        "end": 1043,
+        "name": "selector",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 1049,
+        "end": 1323,
+        "name": "evaluated_owners",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 1329,
+        "end": 1422,
+        "name": "location",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 1428,
+        "end": 2953,
+        "name": "require_profile",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 2965,
+        "end": 3246,
+        "name": "observe",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>"
+      },
+      {
+        "start": 3341,
+        "end": 3816,
+        "name": "attest_original_evaluated_local_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 3839,
+        "end": 4151,
+        "name": "readback_evaluated_local_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 4161,
+        "end": 4742,
+        "name": "into_evaluated_local_shared_command_owner",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs": [
+      {
+        "start": 354,
+        "end": 702,
+        "name": "remote",
+        "owner": "impl OriginalSelector"
+      },
+      {
+        "start": 808,
+        "end": 3207,
+        "name": "from_original_evaluated_local_shared_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 3224,
+        "end": 4963,
+        "name": "observe_original_local",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs": [
+      {
+        "start": 1746,
+        "end": 1827,
+        "name": "snapshot",
+        "owner": "impl OriginalCircuitEvaluatedNextUseReceiptV1"
+      },
+      {
+        "start": 1837,
+        "end": 1915,
+        "name": "receipt",
+        "owner": "impl OriginalCircuitEvaluatedNextUseReceiptV1"
+      },
+      {
+        "start": 1925,
+        "end": 2009,
+        "name": "attestation",
+        "owner": "impl OriginalCircuitEvaluatedNextUseReceiptV1"
+      },
+      {
+        "start": 2026,
+        "end": 2133,
+        "name": "original_selection",
+        "owner": "impl OriginalCircuitEvaluatedNextUseReceiptV1"
+      },
+      {
+        "start": 2267,
+        "end": 2615,
+        "name": "require_new",
+        "owner": "impl Profile"
+      },
+      {
+        "start": 2632,
+        "end": 3031,
+        "name": "require_signed_separation",
+        "owner": "impl Profile"
+      },
+      {
+        "start": 3173,
+        "end": 3253,
+        "name": "snapshot",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 3259,
+        "end": 3343,
+        "name": "trainer",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 3349,
+        "end": 3455,
+        "name": "selector",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 3461,
+        "end": 3671,
+        "name": "evaluated_owners",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 3677,
+        "end": 3770,
+        "name": "location",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 3782,
+        "end": 4141,
+        "name": "observe",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 4379,
+        "end": 4658,
+        "name": "create_evaluated",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 4747,
+        "end": 5025,
+        "name": "recover_evaluated",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 5031,
+        "end": 8046,
+        "name": "from_evaluated_custody",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 8062,
+        "end": 8630,
+        "name": "attest_original_evaluated_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 8646,
+        "end": 9051,
+        "name": "readback_evaluated_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 9057,
+        "end": 9864,
+        "name": "completed_evaluated_next_use",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 9879,
+        "end": 11642,
+        "name": "authenticate_predecessors",
+        "owner": null
+      },
+      {
+        "start": 11655,
+        "end": 12400,
+        "name": "receipt",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs": [
+      {
+        "start": 678,
+        "end": 758,
+        "name": "snapshot",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 763,
+        "end": 847,
+        "name": "trainer",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 852,
+        "end": 958,
+        "name": "selector",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 963,
+        "end": 1173,
+        "name": "evaluated_owners",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 1178,
+        "end": 1412,
+        "name": "location",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 1418,
+        "end": 2010,
+        "name": "require_profile",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 2022,
+        "end": 2303,
+        "name": "observe",
+        "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 2392,
+        "end": 2655,
+        "name": "original_evaluated_command_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 2671,
+        "end": 3148,
+        "name": "attest_original_evaluated_remote_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 3164,
+        "end": 3478,
+        "name": "readback_evaluated_remote_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 3488,
+        "end": 4044,
+        "name": "into_evaluated_shared_command_owner",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 4054,
+        "end": 4656,
+        "name": "into_evaluated_command_owner",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs": [
+      {
+        "start": 2000,
+        "end": 2557,
+        "name": "from_original_evaluation",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 2724,
+        "end": 3288,
+        "name": "recover_original_evaluation",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 3437,
+        "end": 3530,
+        "name": "snapshot",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 3547,
+        "end": 5939,
+        "name": "authenticate",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 5945,
+        "end": 7601,
+        "name": "verify_original_predecessors",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 7772,
+        "end": 8495,
+        "name": "seal_original_readback_owners",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 8666,
+        "end": 8954,
+        "name": "clone_for_original_receipt",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 8971,
+        "end": 9083,
+        "name": "into_original_receipt_readback",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 9100,
+        "end": 9402,
+        "name": "receipt_configuration",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 9419,
+        "end": 9526,
+        "name": "evaluation_attestation",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 9543,
+        "end": 10200,
+        "name": "receipt_context_binding",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 10217,
+        "end": 10453,
+        "name": "original_receipt_predecessors",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 10470,
+        "end": 10629,
+        "name": "require_new_original_receipt",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 10652,
+        "end": 10951,
+        "name": "require_original_receipt_owners",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      },
+      {
+        "start": 11130,
+        "end": 12123,
+        "name": "require_current",
+        "owner": "impl OriginalCircuitEvaluatedRetentionContextV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs": [
+      {
+        "start": 1158,
+        "end": 1659,
+        "name": "read_original_evaluated_receipt",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 1833,
+        "end": 3144,
+        "name": "read_original_evaluated_receipt_on_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs": [
+      {
+        "start": 259,
+        "end": 526,
+        "name": "original_evaluated_command_context",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 536,
+        "end": 1035,
+        "name": "into_evaluated_shared_command_owner",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 1045,
+        "end": 1590,
+        "name": "into_evaluated_command_owner",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 1819,
+        "end": 2434,
+        "name": "from_original_command_response",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2698,
+        "end": 3814,
+        "name": "into_evaluated_local_shared_command_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs": [
+      {
+        "start": 938,
+        "end": 2232,
+        "name": "from_original_evaluated_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 2249,
+        "end": 3665,
+        "name": "from_original_evaluated_shared_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 3682,
+        "end": 9062,
+        "name": "observe_original",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs": [
+      {
+        "start": 639,
+        "end": 748,
+        "name": "snapshot",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>"
+      },
+      {
+        "start": 754,
+        "end": 838,
+        "name": "trainer",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>"
+      },
+      {
+        "start": 844,
+        "end": 1068,
+        "name": "evaluated_owners",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>"
+      },
+      {
+        "start": 1074,
+        "end": 1167,
+        "name": "location",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>"
+      },
+      {
+        "start": 1173,
+        "end": 2278,
+        "name": "require_profile",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>"
+      },
+      {
+        "start": 2290,
+        "end": 2501,
+        "name": "observe",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>"
+      },
+      {
+        "start": 2598,
+        "end": 3077,
+        "name": "attest_original_evaluated_local_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 3100,
+        "end": 3416,
+        "name": "readback_evaluated_local_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs": [
+      {
+        "start": 1747,
+        "end": 2006,
+        "name": "clone",
+        "owner": "impl Clone for OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2068,
+        "end": 2149,
+        "name": "snapshot",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2159,
+        "end": 2237,
+        "name": "receipt",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2247,
+        "end": 2331,
+        "name": "attestation",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2348,
+        "end": 2451,
+        "name": "original_context",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2468,
+        "end": 2610,
+        "name": "into_original_receipt_readback",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 2627,
+        "end": 3002,
+        "name": "original_receipt_binding",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 3019,
+        "end": 4654,
+        "name": "original_receipt_predecessors",
+        "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1"
+      },
+      {
+        "start": 4798,
+        "end": 5108,
+        "name": "evidence_domain",
+        "owner": "impl Profile"
+      },
+      {
+        "start": 5125,
+        "end": 5441,
+        "name": "require_new",
+        "owner": "impl Profile"
+      },
+      {
+        "start": 5458,
+        "end": 5853,
+        "name": "require_signed_separation",
+        "owner": "impl Profile"
+      },
+      {
+        "start": 5973,
+        "end": 6053,
+        "name": "snapshot",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6059,
+        "end": 6143,
+        "name": "trainer",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6149,
+        "end": 6359,
+        "name": "evaluated_owners",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6365,
+        "end": 6458,
+        "name": "location",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6470,
+        "end": 6777,
+        "name": "observe",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 7015,
+        "end": 7296,
+        "name": "create_evaluated",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 7466,
+        "end": 7746,
+        "name": "recover_evaluated",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 7752,
+        "end": 10493,
+        "name": "from_evaluated_custody",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 10509,
+        "end": 11009,
+        "name": "attest_original_evaluated_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 11025,
+        "end": 11362,
+        "name": "readback_evaluated_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 11368,
+        "end": 12201,
+        "name": "completed_evaluated_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 12216,
+        "end": 13273,
+        "name": "authenticate_evaluated_training",
+        "owner": null
+      },
+      {
+        "start": 13527,
+        "end": 14977,
+        "name": "into_evaluated_readback_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs": [
+      {
+        "start": 621,
+        "end": 701,
+        "name": "snapshot",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 707,
+        "end": 791,
+        "name": "trainer",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 797,
+        "end": 1007,
+        "name": "evaluated_owners",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 1013,
+        "end": 1186,
+        "name": "location",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 1192,
+        "end": 1512,
+        "name": "require_profile",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 1524,
+        "end": 1807,
+        "name": "observe",
+        "owner": "impl SelectionSources for OriginalCircuitEvaluatedSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 2052,
+        "end": 2533,
+        "name": "attest_original_evaluated_remote_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 2549,
+        "end": 2867,
+        "name": "readback_evaluated_remote_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs": [
+      {
+        "start": 4641,
+        "end": 6102,
+        "name": "circuit_feature_task_digest_v1",
+        "owner": null
+      },
+      {
+        "start": 6326,
+        "end": 6522,
+        "name": "target",
+        "owner": "impl Publication"
+      },
+      {
+        "start": 7218,
+        "end": 7752,
+        "name": "require_current",
+        "owner": "impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W>"
+      },
+      {
+        "start": 7757,
+        "end": 7857,
+        "name": "is_drained",
+        "owner": "impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W>"
+      },
+      {
+        "start": 7862,
+        "end": 7954,
+        "name": "drain",
+        "owner": "impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W>"
+      },
+      {
+        "start": 7959,
+        "end": 8583,
+        "name": "selection",
+        "owner": "impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W>"
+      },
+      {
+        "start": 9613,
+        "end": 9705,
+        "name": "source_publication",
+        "owner": "impl PublishedCircuitFeatureCompletionV1"
+      },
+      {
+        "start": 9761,
+        "end": 10250,
+        "name": "from_initial",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 10267,
+        "end": 11408,
+        "name": "from_update",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 11414,
+        "end": 13263,
+        "name": "from_parts",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 13273,
+        "end": 13349,
+        "name": "definition",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 13358,
+        "end": 13434,
+        "name": "source",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 13444,
+        "end": 13860,
+        "name": "require_bundle",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 13870,
+        "end": 14936,
+        "name": "open_cell",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 14942,
+        "end": 15317,
+        "name": "require_current",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 15323,
+        "end": 15603,
+        "name": "require_active",
+        "owner": "impl PublishedCircuitFeatureTaskV1"
+      },
+      {
+        "start": 15607,
+        "end": 16144,
+        "name": "source_input",
+        "owner": null
+      },
+      {
+        "start": 16146,
+        "end": 16250,
+        "name": "invalid",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs": [
+      {
+        "start": 1302,
+        "end": 1724,
+        "name": "new",
+        "owner": "impl Request"
+      },
+      {
+        "start": 1741,
+        "end": 2137,
+        "name": "require_context",
+        "owner": "impl Request"
+      },
+      {
+        "start": 2154,
+        "end": 2871,
+        "name": "from_profile",
+        "owner": "impl Request"
+      },
+      {
+        "start": 2888,
+        "end": 3605,
+        "name": "require_profile",
+        "owner": "impl Request"
+      },
+      {
+        "start": 4420,
+        "end": 5188,
+        "name": "bind_original_stage_channel",
+        "owner": "impl OriginalCircuitCompletionReadinessClientV1"
+      },
+      {
+        "start": 5205,
+        "end": 6227,
+        "name": "bind_original_evaluated_stage_channel",
+        "owner": "impl OriginalCircuitCompletionReadinessClientV1"
+      },
+      {
+        "start": 6233,
+        "end": 8004,
+        "name": "bind_profile",
+        "owner": "impl OriginalCircuitCompletionReadinessClientV1"
+      },
+      {
+        "start": 8190,
+        "end": 10568,
+        "name": "read_current",
+        "owner": "impl OriginalCircuitCompletionReadinessClientV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs": [
+      {
+        "start": 1550,
+        "end": 1656,
+        "name": "clone",
+        "owner": "impl Clone for OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 1718,
+        "end": 2471,
+        "name": "from_original_version",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 2477,
+        "end": 2935,
+        "name": "require_original_selection",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 2941,
+        "end": 3395,
+        "name": "require_original_next_use",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 3401,
+        "end": 3688,
+        "name": "require_original_window",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 3711,
+        "end": 3922,
+        "name": "read_current",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 3945,
+        "end": 4258,
+        "name": "read_completion_readiness",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 4270,
+        "end": 8811,
+        "name": "read_original",
+        "owner": "impl OriginalCircuitPublishedLocalReadV1"
+      },
+      {
+        "start": 8866,
+        "end": 9309,
+        "name": "from_original_evaluated_local_selection",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 9319,
+        "end": 9765,
+        "name": "from_original_evaluated_local_next_use",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 9771,
+        "end": 10326,
+        "name": "from_original_local_profile",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 10343,
+        "end": 10927,
+        "name": "require_original_local_shared_readbacks",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 10944,
+        "end": 11310,
+        "name": "require_original_local_evaluated_selection",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 11327,
+        "end": 11688,
+        "name": "require_original_local_evaluated_next_use",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs": [
+      {
+        "start": 3697,
+        "end": 3787,
+        "name": "observation",
+        "owner": "impl OriginalCircuitLearningReadbackV1"
+      },
+      {
+        "start": 4402,
+        "end": 4988,
+        "name": "from_original_stream",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 4994,
+        "end": 6103,
+        "name": "from_original_profile",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 6279,
+        "end": 8351,
+        "name": "read_current",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 8575,
+        "end": 9487,
+        "name": "require_original_context",
+        "owner": "impl OriginalCircuitLearningReadClientV1"
+      },
+      {
+        "start": 9491,
+        "end": 9813,
+        "name": "require_timing",
+        "owner": null
+      },
+      {
+        "start": 9815,
+        "end": 10015,
+        "name": "now",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": [
+      {
+        "start": 1520,
+        "end": 1894,
+        "name": "from_original_owners",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 1911,
+        "end": 2940,
+        "name": "from_original_profile",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 3187,
+        "end": 3883,
+        "name": "serve_readback",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 4056,
+        "end": 4429,
+        "name": "serve_original_retained_channel",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 4602,
+        "end": 5055,
+        "name": "serve_original_evaluated_retained_channel",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 5072,
+        "end": 5780,
+        "name": "serve_channel",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 5950,
+        "end": 6580,
+        "name": "original_evaluated_selection_response",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 6830,
+        "end": 7074,
+        "name": "original_evaluated_next_use_response",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 7243,
+        "end": 7507,
+        "name": "original_evaluated_next_use_readiness_response",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 7513,
+        "end": 7839,
+        "name": "require_original_evaluated_next_use_profile",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 7856,
+        "end": 8896,
+        "name": "response",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 8902,
+        "end": 9730,
+        "name": "require_task_input_current",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 9736,
+        "end": 10169,
+        "name": "require_original_selection",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      },
+      {
+        "start": 10175,
+        "end": 12243,
+        "name": "read_original",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs": [
+      {
+        "start": 2366,
+        "end": 4944,
+        "name": "from_original_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 5193,
+        "end": 6049,
+        "name": "serve_commands",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 6230,
+        "end": 7295,
+        "name": "serve_evidence_readback",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 7301,
+        "end": 7734,
+        "name": "serve_command_channel",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 7740,
+        "end": 8910,
+        "name": "command_response",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 8916,
+        "end": 9722,
+        "name": "original_response",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>"
+      },
+      {
+        "start": 9726,
+        "end": 10362,
+        "name": "original_state",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": [
+      {
+        "start": 6142,
+        "end": 6334,
+        "name": "evaluated_owners",
+        "owner": "trait NextUseSources"
+      },
+      {
+        "start": 6386,
+        "end": 6475,
+        "name": "require_profile",
+        "owner": "trait NextUseSources"
+      },
+      {
+        "start": 7069,
+        "end": 7149,
+        "name": "snapshot",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 7154,
+        "end": 7252,
+        "name": "trainer",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 7257,
+        "end": 7363,
+        "name": "selector",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 7368,
+        "end": 7457,
+        "name": "location",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 7468,
+        "end": 7655,
+        "name": "observe",
+        "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>"
+      },
+      {
+        "start": 7731,
+        "end": 7811,
+        "name": "snapshot",
+        "owner": "impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 7816,
+        "end": 7914,
+        "name": "trainer",
+        "owner": "impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 7919,
+        "end": 8025,
+        "name": "selector",
+        "owner": "impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 8030,
+        "end": 8120,
+        "name": "location",
+        "owner": "impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 8131,
+        "end": 8325,
+        "name": "observe",
+        "owner": "impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 8329,
+        "end": 8837,
+        "name": "read_local_next_use",
+        "owner": null
+      },
+      {
+        "start": 8845,
+        "end": 9380,
+        "name": "read_remote_next_use",
+        "owner": null
+      },
+      {
+        "start": 9834,
+        "end": 10384,
+        "name": "create",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 10546,
+        "end": 11096,
+        "name": "recover",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 11337,
+        "end": 11845,
+        "name": "into_command_owner",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 11862,
+        "end": 12084,
+        "name": "original_command_profile",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 12336,
+        "end": 12670,
+        "name": "attest_original_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 12836,
+        "end": 13079,
+        "name": "attest_original_remote_completion",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 13091,
+        "end": 15922,
+        "name": "attest_source",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 16175,
+        "end": 16493,
+        "name": "readback",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 16665,
+        "end": 16892,
+        "name": "readback_remote",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 16904,
+        "end": 17904,
+        "name": "readback_source",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 17916,
+        "end": 19149,
+        "name": "prepare",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 19161,
+        "end": 22012,
+        "name": "predecessors",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 22024,
+        "end": 23522,
+        "name": "finish_original_readback",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 23528,
+        "end": 24422,
+        "name": "decode_completed",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      },
+      {
+        "start": 24428,
+        "end": 26019,
+        "name": "authenticate_completed",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version.rs": [
+      {
+        "start": 4052,
+        "end": 4115,
+        "name": "intent_digest",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4124,
+        "end": 4197,
+        "name": "publication_digest",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4206,
+        "end": 4265,
+        "name": "task_digest",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4274,
+        "end": 4343,
+        "name": "selection_digest",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4352,
+        "end": 4415,
+        "name": "bundle_digest",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4424,
+        "end": 4479,
+        "name": "run_id",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4488,
+        "end": 4570,
+        "name": "authority",
+        "owner": "impl OriginalCircuitRetainedVersionPublicationV1"
+      },
+      {
+        "start": 4961,
+        "end": 5024,
+        "name": "intent_digest",
+        "owner": "impl OriginalCircuitRetainedVersionReadbackV1"
+      },
+      {
+        "start": 5033,
+        "end": 5152,
+        "name": "publication",
+        "owner": "impl OriginalCircuitRetainedVersionReadbackV1"
+      },
+      {
+        "start": 5161,
+        "end": 5243,
+        "name": "authority",
+        "owner": "impl OriginalCircuitRetainedVersionReadbackV1"
+      },
+      {
+        "start": 5401,
+        "end": 5666,
+        "name": "operation",
+        "owner": "impl RetainedVersionPurposeV1"
+      },
+      {
+        "start": 5768,
+        "end": 5927,
+        "name": "now",
+        "owner": null
+      },
+      {
+        "start": 5928,
+        "end": 6071,
+        "name": "require_clock",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs": [
+      {
+        "start": 2778,
+        "end": 3031,
+        "name": "purpose",
+        "owner": "impl InitialVersionEvidence"
+      },
+      {
+        "start": 3036,
+        "end": 3262,
+        "name": "into_evaluator",
+        "owner": "impl InitialVersionEvidence"
+      },
+      {
+        "start": 7539,
+        "end": 8318,
+        "name": "from_original_owners",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 8483,
+        "end": 9346,
+        "name": "from_original_evaluated_owners",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 9352,
+        "end": 11595,
+        "name": "from_original_profile",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 11751,
+        "end": 12297,
+        "name": "recover_from_original_owners",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 12460,
+        "end": 13090,
+        "name": "recover_from_original_evaluated_owners",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 13096,
+        "end": 15505,
+        "name": "recover_original_profile",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 15511,
+        "end": 17118,
+        "name": "new",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 17124,
+        "end": 17288,
+        "name": "require_lifetime",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 17294,
+        "end": 17753,
+        "name": "original_final_use_outcome",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs": [
+      {
+        "start": 1804,
+        "end": 1916,
+        "name": "original_context",
+        "owner": "impl OriginalVersionLocalReadBindingV1"
+      },
+      {
+        "start": 1933,
+        "end": 1991,
+        "name": "original_end",
+        "owner": "impl OriginalVersionLocalReadBindingV1"
+      },
+      {
+        "start": 2008,
+        "end": 2075,
+        "name": "original_timeout",
+        "owner": "impl OriginalVersionLocalReadBindingV1"
+      },
+      {
+        "start": 2092,
+        "end": 3976,
+        "name": "require_original_shared_readbacks",
+        "owner": "impl OriginalVersionLocalReadBindingV1"
+      },
+      {
+        "start": 3993,
+        "end": 5436,
+        "name": "respond",
+        "owner": "impl OriginalVersionLocalReadBindingV1"
+      },
+      {
+        "start": 5646,
+        "end": 5959,
+        "name": "open_original_evaluated_selection_local_read",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 6128,
+        "end": 6512,
+        "name": "open_original_evaluated_next_use_local_read",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 6524,
+        "end": 8169,
+        "name": "open_original_evaluated_local_read",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 8175,
+        "end": 11573,
+        "name": "bind_original_evaluated_local_read",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 11579,
+        "end": 13209,
+        "name": "original_evaluated_local_selection_response",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs": [
+      {
+        "start": 1815,
+        "end": 2466,
+        "name": "serve_original_evaluated_next_use_readback",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 2634,
+        "end": 3299,
+        "name": "serve_original_evaluated_completion_readiness",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 3311,
+        "end": 4584,
+        "name": "serve_original_evaluated_next_use",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 4596,
+        "end": 5389,
+        "name": "serve_original_evaluated_next_use_channel",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 5395,
+        "end": 6954,
+        "name": "serve_original_evaluated_next_use_loop",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 6971,
+        "end": 10413,
+        "name": "original_evaluated_next_use_response",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 10430,
+        "end": 13748,
+        "name": "build_original_evaluated_next_use_reader",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs": [
+      {
+        "start": 936,
+        "end": 1156,
+        "name": "clone",
+        "owner": "impl Clone for OriginalCircuitPublishedEvidenceReadbackV1"
+      },
+      {
+        "start": 1451,
+        "end": 1666,
+        "name": "read_original_predecessors",
+        "owner": "impl OriginalCircuitPublishedEvidenceReadbackV1"
+      },
+      {
+        "start": 1683,
+        "end": 2347,
+        "name": "require_original_context",
+        "owner": "impl OriginalCircuitPublishedEvidenceReadbackV1"
+      },
+      {
+        "start": 2364,
+        "end": 2555,
+        "name": "original_clients",
+        "owner": "impl OriginalCircuitPublishedEvidenceReadbackV1"
+      },
+      {
+        "start": 2854,
+        "end": 5832,
+        "name": "share_original_evaluated_readbacks",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs": [
+      {
+        "start": 1058,
+        "end": 4069,
+        "name": "bind_original_predecessor",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 4393,
+        "end": 5485,
+        "name": "read_original_recovery",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 5502,
+        "end": 6552,
+        "name": "read_original",
+        "owner": "impl OriginalCircuitRetainedVersionHostV1"
+      },
+      {
+        "start": 6605,
+        "end": 6851,
+        "name": "install_original_selection_reader",
+        "owner": "impl RetainedVersionHostStateV1"
+      },
+      {
+        "start": 6857,
+        "end": 9156,
+        "name": "build_original_selection_reader",
+        "owner": "impl RetainedVersionHostStateV1"
+      },
+      {
+        "start": 9162,
+        "end": 9657,
+        "name": "original_trainer",
+        "owner": "impl RetainedVersionHostStateV1"
+      },
+      {
+        "start": 9663,
+        "end": 10216,
+        "name": "original_evaluator",
+        "owner": "impl RetainedVersionHostStateV1"
+      },
+      {
+        "start": 10233,
+        "end": 11394,
+        "name": "require_cut_current",
+        "owner": "impl RetainedVersionHostStateV1"
+      },
+      {
+        "start": 11400,
+        "end": 13028,
+        "name": "observe_phase",
+        "owner": "impl RetainedVersionHostStateV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_command.rs": [
+      {
+        "start": 4344,
+        "end": 5232,
+        "name": "from_original_training",
+        "owner": "impl OriginalCircuitSelectionCommandContextV1"
+      },
+      {
+        "start": 5238,
+        "end": 5700,
+        "name": "from_checkpoint",
+        "owner": "impl OriginalCircuitSelectionCommandContextV1"
+      },
+      {
+        "start": 5706,
+        "end": 7472,
+        "name": "authenticate",
+        "owner": "impl OriginalCircuitSelectionCommandContextV1"
+      },
+      {
+        "start": 7478,
+        "end": 7731,
+        "name": "initial",
+        "owner": "impl OriginalCircuitSelectionCommandContextV1"
+      },
+      {
+        "start": 7737,
+        "end": 8592,
+        "name": "binding",
+        "owner": "impl OriginalCircuitSelectionCommandContextV1"
+      },
+      {
+        "start": 9112,
+        "end": 9193,
+        "name": "snapshot",
+        "owner": "impl OriginalCircuitSelectionCommandReceiptV1"
+      },
+      {
+        "start": 9202,
+        "end": 9280,
+        "name": "receipt",
+        "owner": "impl OriginalCircuitSelectionCommandReceiptV1"
+      },
+      {
+        "start": 9289,
+        "end": 9373,
+        "name": "attestation",
+        "owner": "impl OriginalCircuitSelectionCommandReceiptV1"
+      },
+      {
+        "start": 9382,
+        "end": 9481,
+        "name": "training_attestation",
+        "owner": "impl OriginalCircuitSelectionCommandReceiptV1"
+      },
+      {
+        "start": 9749,
+        "end": 9838,
+        "name": "drop",
+        "owner": "impl Drop for QueuedExecuteFence"
+      },
+      {
+        "start": 10406,
+        "end": 10914,
+        "name": "from_original_stream",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 11168,
+        "end": 12277,
+        "name": "recover_from_original_stream",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 12283,
+        "end": 14022,
+        "name": "bind_original_stream",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 14194,
+        "end": 14741,
+        "name": "execute_selection",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 14757,
+        "end": 14894,
+        "name": "readback",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 14910,
+        "end": 15301,
+        "name": "receipt_attestation",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 15313,
+        "end": 18897,
+        "name": "exchange",
+        "owner": "impl OriginalCircuitSelectionCommandClientV1"
+      },
+      {
+        "start": 18901,
+        "end": 19130,
+        "name": "require_clock",
+        "owner": null
+      },
+      {
+        "start": 19131,
+        "end": 19332,
+        "name": "now",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs": [
+      {
+        "start": 2397,
+        "end": 4321,
+        "name": "from_original_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 4570,
+        "end": 5426,
+        "name": "serve_commands",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 5606,
+        "end": 6638,
+        "name": "serve_evidence_readback",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 6644,
+        "end": 7077,
+        "name": "serve_command_channel",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 7083,
+        "end": 8139,
+        "name": "command_response",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 8145,
+        "end": 8953,
+        "name": "original_response",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 8957,
+        "end": 9600,
+        "name": "original_state",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs": [
+      {
+        "start": 1190,
+        "end": 1385,
+        "name": "read_original_receipt",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalSelectionOwner for OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 2320,
+        "end": 2426,
+        "name": "clone",
+        "owner": "impl Clone for OriginalCircuitSelectionLocalReadbackV1"
+      },
+      {
+        "start": 2798,
+        "end": 4659,
+        "name": "read_original_selection",
+        "owner": "impl OriginalCircuitSelectionLocalReadbackV1"
+      },
+      {
+        "start": 4676,
+        "end": 5565,
+        "name": "require_original_shared_predecessors",
+        "owner": "impl OriginalCircuitSelectionLocalReadbackV1"
+      },
+      {
+        "start": 5582,
+        "end": 6549,
+        "name": "require_original_selection",
+        "owner": "impl OriginalCircuitSelectionLocalReadbackV1"
+      },
+      {
+        "start": 6895,
+        "end": 9947,
+        "name": "open_original_evaluated_local_readback",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      },
+      {
+        "start": 10055,
+        "end": 11420,
+        "name": "from_original_evaluated_local_shared_receipt_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": [
+      {
+        "start": 5242,
+        "end": 5434,
+        "name": "evaluated_owners",
+        "owner": "trait SelectionSources"
+      },
+      {
+        "start": 5486,
+        "end": 5575,
+        "name": "require_profile",
+        "owner": "trait SelectionSources"
+      },
+      {
+        "start": 6143,
+        "end": 6223,
+        "name": "snapshot",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6228,
+        "end": 6326,
+        "name": "trainer",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6331,
+        "end": 6420,
+        "name": "location",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6431,
+        "end": 6621,
+        "name": "observe",
+        "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceiptSourcesV1<'_, C>"
+      },
+      {
+        "start": 6701,
+        "end": 6781,
+        "name": "snapshot",
+        "owner": "impl SelectionSources for OriginalCircuitSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 6786,
+        "end": 6884,
+        "name": "trainer",
+        "owner": "impl SelectionSources for OriginalCircuitSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 6889,
+        "end": 6979,
+        "name": "location",
+        "owner": "impl SelectionSources for OriginalCircuitSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 6990,
+        "end": 7187,
+        "name": "observe",
+        "owner": "impl SelectionSources for OriginalCircuitSelectionRemoteSourcesV1<'_>"
+      },
+      {
+        "start": 7191,
+        "end": 7616,
+        "name": "read_local_selection",
+        "owner": null
+      },
+      {
+        "start": 7624,
+        "end": 8135,
+        "name": "read_remote_selection",
+        "owner": null
+      },
+      {
+        "start": 8759,
+        "end": 8983,
+        "name": "original_command_profile",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 8993,
+        "end": 9555,
+        "name": "create",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 9726,
+        "end": 10288,
+        "name": "recover",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 10552,
+        "end": 10815,
+        "name": "attest_original_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 10989,
+        "end": 11233,
+        "name": "attest_original_remote_selection",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 11245,
+        "end": 14188,
+        "name": "attest_source",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 14362,
+        "end": 14610,
+        "name": "readback",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 14778,
+        "end": 15007,
+        "name": "readback_remote",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 15019,
+        "end": 16011,
+        "name": "readback_source",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 16023,
+        "end": 16976,
+        "name": "prepare",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 16988,
+        "end": 17825,
+        "name": "training_evidence",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 17837,
+        "end": 19519,
+        "name": "finish_original_readback",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 19525,
+        "end": 20423,
+        "name": "decode_completed",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 20429,
+        "end": 21976,
+        "name": "authenticate_completed",
+        "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 22389,
+        "end": 22799,
+        "name": "into_command_owner",
+        "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W>"
+      },
+      {
+        "start": 22803,
+        "end": 24543,
+        "name": "validate_config",
+        "owner": null
+      },
+      {
+        "start": 24545,
+        "end": 25094,
+        "name": "training_receipt",
+        "owner": null
+      },
+      {
+        "start": 25096,
+        "end": 26410,
+        "name": "authenticate_training",
+        "owner": null
+      },
+      {
+        "start": 26412,
+        "end": 27771,
+        "name": "receipt",
+        "owner": null
+      },
+      {
+        "start": 27773,
+        "end": 28699,
+        "name": "sign_original",
+        "owner": null
+      },
+      {
+        "start": 28701,
+        "end": 29027,
+        "name": "signature_expiry",
+        "owner": null
+      },
+      {
+        "start": 29029,
+        "end": 29472,
+        "name": "require_new_attestation",
+        "owner": null
+      },
+      {
+        "start": 29474,
+        "end": 29688,
+        "name": "evidence_id",
+        "owner": null
+      },
+      {
+        "start": 29690,
+        "end": 29900,
+        "name": "now",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": [
+      {
+        "start": 6637,
+        "end": 8608,
+        "name": "from_owner_stream",
+        "owner": "impl LearningIterationEvidenceClientV1"
+      },
+      {
+        "start": 9018,
+        "end": 12186,
+        "name": "readback",
+        "owner": "impl LearningIterationEvidenceClientV1"
+      },
+      {
+        "start": 12190,
+        "end": 12861,
+        "name": "evidence_role",
+        "owner": null
+      },
+      {
+        "start": 12863,
+        "end": 12956,
+        "name": "unavailable",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/lib.rs": [],
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs": [
+      {
+        "start": 1801,
+        "end": 2494,
+        "name": "from_original_stream",
+        "owner": "impl OriginalCellEvaluationCommandConnectionV1"
+      },
+      {
+        "start": 2504,
+        "end": 3212,
+        "name": "recover_from_original_stream",
+        "owner": "impl OriginalCellEvaluationCommandConnectionV1"
+      },
+      {
+        "start": 3218,
+        "end": 4998,
+        "name": "bind_initial",
+        "owner": "impl OriginalCellEvaluationCommandConnectionV1"
+      },
+      {
+        "start": 5163,
+        "end": 5693,
+        "name": "bind_original_training",
+        "owner": "impl OriginalCellEvaluationCommandConnectionV1"
+      },
+      {
+        "start": 5856,
+        "end": 6633,
+        "name": "bind_recovered_training",
+        "owner": "impl OriginalCellEvaluationCommandConnectionV1"
+      },
+      {
+        "start": 6639,
+        "end": 8335,
+        "name": "finish_binding",
+        "owner": "impl OriginalCellEvaluationCommandConnectionV1"
+      },
+      {
+        "start": 8708,
+        "end": 8781,
+        "name": "drop",
+        "owner": "impl Drop for QueuedCancellation"
+      },
+      {
+        "start": 8844,
+        "end": 9098,
+        "name": "execute_evaluation",
+        "owner": "impl OriginalCellEvaluationCommandClientV1"
+      },
+      {
+        "start": 9114,
+        "end": 9218,
+        "name": "readback",
+        "owner": "impl OriginalCellEvaluationCommandClientV1"
+      },
+      {
+        "start": 9234,
+        "end": 9624,
+        "name": "receipt_attestation",
+        "owner": "impl OriginalCellEvaluationCommandClientV1"
+      },
+      {
+        "start": 9636,
+        "end": 13812,
+        "name": "exchange",
+        "owner": "impl OriginalCellEvaluationCommandClientV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs": [
+      {
+        "start": 389,
+        "end": 1481,
+        "name": "seal_original_completed_readback",
+        "owner": "impl OriginalCellEvaluationCommandClientV1"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs": [
+      {
+        "start": 2189,
+        "end": 5671,
+        "name": "send_root_candidate_stage_handoff",
+        "owner": null
+      },
+      {
+        "start": 5830,
+        "end": 6436,
+        "name": "receive_root_candidate_stage_handoff",
+        "owner": null
+      },
+      {
+        "start": 6488,
+        "end": 9580,
+        "name": "into_original_streams",
+        "owner": "impl RootCandidateStageHandoffV1"
+      },
+      {
+        "start": 9584,
+        "end": 10088,
+        "name": "actor",
+        "owner": null
+      },
+      {
+        "start": 10090,
+        "end": 10872,
+        "name": "validate_packet",
+        "owner": null
+      },
+      {
+        "start": 10874,
+        "end": 11212,
+        "name": "require_timing",
+        "owner": null
+      },
+      {
+        "start": 11214,
+        "end": 12082,
+        "name": "require_process",
+        "owner": null
+      },
+      {
+        "start": 12084,
+        "end": 12361,
+        "name": "require_root",
+        "owner": null
+      },
+      {
+        "start": 12363,
+        "end": 12488,
+        "name": "refused",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs": [
+      {
+        "start": 412,
+        "end": 2256,
+        "name": "send",
+        "owner": null
+      },
+      {
+        "start": 2269,
+        "end": 4054,
+        "name": "receive",
+        "owner": null
+      },
+      {
+        "start": 4067,
+        "end": 4445,
+        "name": "socket_identity",
+        "owner": null
+      },
+      {
+        "start": 4458,
+        "end": 5028,
+        "name": "monotonic_ns",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-agentd/src/root_production_handoff.rs": [
+      {
+        "start": 1569,
+        "end": 1917,
+        "name": "receive_root_production_handoff",
+        "owner": null
+      },
+      {
+        "start": 2154,
+        "end": 2930,
+        "name": "send_root_production_handoff",
+        "owner": null
+      },
+      {
+        "start": 2932,
+        "end": 3264,
+        "name": "validate_bootstrap",
+        "owner": null
+      },
+      {
+        "start": 3277,
+        "end": 4610,
+        "name": "root_pair",
+        "owner": null
+      },
+      {
+        "start": 4612,
+        "end": 5488,
+        "name": "require_root_pin",
+        "owner": null
+      },
+      {
+        "start": 5490,
+        "end": 7376,
+        "name": "receive_packet",
+        "owner": null
+      },
+      {
+        "start": 7378,
+        "end": 9414,
+        "name": "send_packet",
+        "owner": null
+      },
+      {
+        "start": 9416,
+        "end": 9542,
+        "name": "refused",
+        "owner": null
+      }
+    ],
+    "codex-rs/hepta-learning-ledger/src/lib.rs": [],
+    "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs": [
+      {
+        "start": 1211,
+        "end": 1305,
+        "name": "fmt",
+        "owner": "impl fmt::Display for OriginalLedgerSnapshotCodecErrorV1"
+      },
+      {
+        "start": 1819,
+        "end": 4438,
+        "name": "encode_original_ledger_snapshot_v1",
+        "owner": null
+      },
+      {
+        "start": 4847,
+        "end": 7721,
+        "name": "decode_original_ledger_snapshot_v1",
+        "owner": null
+      }
+    ]
+  }
+}

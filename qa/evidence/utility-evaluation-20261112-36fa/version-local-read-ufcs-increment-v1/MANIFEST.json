@@ -1,0 +1,48 @@
+{
+  "format": "hepta-reviewed-source-overlay-v1",
+  "identity": "version-local-read-explicit-receiver-increment-v1",
+  "status": "PREPARATION_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "dependencies": {
+    "production_map": "f4066cf562953650ae7a10129c9a90d496630fca",
+    "local_tests": "00c44402b24c92e344f1bd29a5e578fdfadaf940",
+    "original_verifier": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "original_typed_helper": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4"
+  },
+  "reason": "Three original typed collector uncertainties for nested fields or a homonymous method; name the actual receiver types without changing calls, permissions, arguments, timing, slots, assertions or the verifier.",
+  "source_packet": {
+    "bytes": 53001,
+    "sha256": "9d86d7c4aba9da002d61378bf421395fd373116b5a6370fa0748fdf2a25d3b78",
+    "git_blob": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 13156,
+        "sha256": "8a3c4e1b6caca0ab1c1f3e8e9302d6d6aee734baf9447726e09d3804edbb480a",
+        "git_blob": "7af751d1a9ff78725d20bc20e0e29eb6b7c7a63b"
+      },
+      "after": {
+        "bytes": 13212,
+        "sha256": "27b82847e4d9f7001dedec9a6d846d83d5a89e0ebac4e948ee57a3fecff49e58",
+        "git_blob": "52f35e689615144d7764acc189c11180c45600f7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 11662,
+        "sha256": "2d27854f0b83ff0d58d08392745a57310e90e2ce7ded0668bbf9a39e0180416c",
+        "git_blob": "66f7d1d508de7c15b8fcd5be279ef29cfd62618f"
+      },
+      "after": {
+        "bytes": 11775,
+        "sha256": "254ed8de02036c54d54216b04a2393b2eff4cf4ccf161d59b6c11311f179a289",
+        "git_blob": "5abb8031d6b75a4ab2ab60b5393369664bf77284"
+      }
+    }
+  ]
+}

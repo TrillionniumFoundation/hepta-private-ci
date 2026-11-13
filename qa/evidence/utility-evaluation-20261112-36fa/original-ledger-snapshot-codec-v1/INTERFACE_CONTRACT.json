@@ -1,0 +1,125 @@
+{
+  "format": "hepta-original-ledger-snapshot-codec-contract-v1",
+  "status": "PREPARATION_ONLY_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "source_packet": {
+    "bytes": 44441,
+    "sha256": "d941bcc02a008899aa16ce4953be7d6a48ceb3287354046795e0e7ef2c5cd94f",
+    "git_blob": "3a7aee950bc6da48b4162f4f5215c4c5d18396b8"
+  },
+  "interface": {
+    "crate": "codex-hepta-learning-ledger",
+    "constant": "MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1: usize = 64 * 1024",
+    "encode": "encode_original_ledger_snapshot_v1(&LedgerSnapshot) -> Result<Vec<u8>, OriginalLedgerSnapshotCodecErrorV1>",
+    "decode": "decode_original_ledger_snapshot_v1(&[u8]) -> Result<LedgerSnapshot, OriginalLedgerSnapshotCodecErrorV1>",
+    "error_variants": [
+      "Capacity",
+      "Corrupt",
+      "Semantic(LedgerError)"
+    ]
+  },
+  "wire": {
+    "domain_utf8": "hepta.learning-ledger.snapshot.v1",
+    "domain_bytes": 33,
+    "record_count": {
+      "bytes": 4,
+      "encoding": "u32 big endian"
+    },
+    "head_digest_bytes": 32,
+    "header_bytes": 69,
+    "frames": "Exactly existing durable_codec::encode_frame in record order; no durable file header or binding is synthesized.",
+    "frame_fields": [
+      "payload length u32",
+      "one's complement length u32",
+      "sequence u64",
+      "predecessor digest32",
+      "canonical event bytes",
+      "chain digest32",
+      "frame checksum32"
+    ],
+    "event_digest": "Reconstructed from the exact canonical event by the original ledger. Encoder rejects any original LedgerRecord whose event_digest or other field differs from replay.",
+    "input_and_output_max_bytes": 65536,
+    "effective_record_upper_bound": 584,
+    "limit_scope": "Whole encoded snapshot, not each frame.",
+    "parent_control_limit": "Whole parent control message stays 65536 bytes, including metadata and any JSON/base64 overhead; caller must enforce it after actual serialization. The codec does not authorize chunking, a larger message, or truncated history."
+  },
+  "validation": {
+    "encoder": [
+      "Reject snapshot record count beyond the byte-derived maximum before allocation.",
+      "Before event clone/encoding, borrowed exhaustive match bounds candidate vectors at128, retrieval enumerated/legal512 and selected/delivered16, credit allocations256; StableId itself is bounded128.",
+      "Replay each original event through unchanged LearningLedger::prepare. Require Appended and exact entire LedgerRecord equality.",
+      "Reuse original encode_frame, reject aggregate length above65536 before append, then unchanged LearningLedger::apply.",
+      "Require replay head equal to supplied full snapshot head."
+    ],
+    "decoder": [
+      "Reject input above65536 before parsing; require complete exact domain/header.",
+      "Validate record count against fixed byte-derived maximum and actual remaining length; never reserve a count-sized buffer.",
+      "Borrow each complete frame after checked length/complement/size validation; verify its original checksum.",
+      "Use original bounded decode_event; replay through original prepare and require Appended plus exact byte-for-byte original encode_frame equality.",
+      "Apply original prepared record; reject trailing bytes and require final replay head equal to header head."
+    ]
+  },
+  "authority": {
+    "provides": "Complete canonical content and causal ledger consistency only.",
+    "does_not_provide": [
+      "Signature or signer verification",
+      "Freshness, authenticity or permission to admit this ledger",
+      "Trust activation, a verified signed freeze, or source/task/plan/contract admission",
+      "Durable file, writer, lock, socket, process, execution, network or other authority"
+    ],
+    "required_caller_behavior": [
+      "Retain independently preheld full trust and the original exact freeze signature verification.",
+      "Bind original A/source/task/plan/contract context before first Root admission.",
+      "Do not substitute an already held caller-side replay for actual first-admission material or proof of provenance.",
+      "Reject any outer aggregate control overflow; do not drop records or relax the codec."
+    ]
+  },
+  "integration": {
+    "change_paths": [
+      "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/lib.rs"
+    ],
+    "original_lib": "c9bfc876390e1c7e5fea4b3f3af535f2c56fd245",
+    "unchanged_original_sources": [
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+        "bytes": 15598,
+        "sha256": "c5080c0dc99b9b6b9ca164a9efc6668f3a7a399115cfb00ef2c27231cda6a0af",
+        "git_blob": "29773833806142d8c6967cd2ac94d48958d90b2e"
+      },
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+        "bytes": 63708,
+        "sha256": "391374c52e45a583347225ac2aa690d4a6f99f90e158f7c71a0f2e0b0c13410f",
+        "git_blob": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+      },
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/model.rs",
+        "bytes": 12595,
+        "sha256": "fb5aa0c5716d1f75ec424dee4951a1f9b610225af6d0de2538ed4664cf7f2ad8",
+        "git_blob": "ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d"
+      },
+      {
+        "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+        "bytes": 16393,
+        "sha256": "800e09de21a479a524160a6c0c18fbf5d2148affc651fb576bd4247391ccaf82",
+        "git_blob": "eff97d826d794fdba519e862b96f644a41a61049"
+      }
+    ],
+    "dependency_changes": false,
+    "algorithm_changes": false,
+    "durable_header_changes": false,
+    "public_registration": "Two new public readonly codec functions require accurate caller/boundary registration when integrated; no final full-body fence is frozen before actual formatting.",
+    "exact_lib_inverse": "Deleting the single module mount and four exports restores original c9bfc bytes.",
+    "no_native_execution_permission": true
+  },
+  "verification": {
+    "author_static_byte_and_source_review": true,
+    "rust_syntax_or_typecheck_executed": false,
+    "rustfmt_executed": false,
+    "tests_declared": 10,
+    "tests_executed": 0,
+    "peer_review": "Pending Root/independent review.",
+    "h_calls": 0
+  }
+}

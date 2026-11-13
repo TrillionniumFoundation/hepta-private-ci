@@ -1,0 +1,35 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs
+@@ -110,7 +110,8 @@
+             return Err(Error::Unavailable);
+         }
+         let response = match &self.selection {
+-            Some(selection) => self.version.original_evaluated_next_use_response(
++            Some(selection) => OriginalCircuitRetainedVersionHostV1::original_evaluated_next_use_response(
++                &self.version,
+                 selection,
+                 self.reader.as_ref(),
+                 match operation {
+--- a/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs
+@@ -162,7 +162,8 @@
+             if let Some(terminal) = &terminal {
+                 terminal.mark_original_started();
+             }
+-            let response = original.original.respond(
++            let response = OriginalVersionLocalReadBindingV1::respond(
++                &original.original,
+                 operation,
+                 &bytes,
+                 request_id,
+@@ -273,7 +274,9 @@
+         let local = self.local.as_ref()
+             .ok_or(Error::Binding("local Version capability required"))?;
+         local.require_original_window()?;
+-        local.original.original.require_original_shared_readbacks(shared)
++        OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(
++            &local.original.original, shared,
++        )
+             .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
+         local.require_original_window()
+     }

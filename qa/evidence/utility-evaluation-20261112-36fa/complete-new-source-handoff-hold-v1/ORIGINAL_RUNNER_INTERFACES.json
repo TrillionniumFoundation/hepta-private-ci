@@ -1,0 +1,133 @@
+{
+  "budgets_seconds": {
+    "canonical_action": 600,
+    "canonical_outer": 900,
+    "canonical_records": 180,
+    "final_nonrust_apply": 600,
+    "final_nonrust_fmt": 900,
+    "final_nonrust_outer": 2100,
+    "final_nonrust_records": 300,
+    "fmt": 900,
+    "maintenance_outer": 9300,
+    "maintenance_preflight": 600,
+    "maintenance_records": 300,
+    "materialize_action": 600,
+    "materialize_outer": 900,
+    "materialize_records": 180,
+    "native_outer": 45000,
+    "single_fix": 7200,
+    "source_closure": 600,
+    "source_outer": 7200,
+    "source_self_test": 300,
+    "source_verify": 4800
+  },
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "format": "hepta-complete-new-source-existing-runner-interfaces-v1",
+  "isolated_native_admission_predecessor": {
+    "bytes": 26963,
+    "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+    "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d"
+  },
+  "native_driver": {
+    "bytes": 14986,
+    "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+    "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+  },
+  "native_wrapper": {
+    "bytes": 13360,
+    "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+    "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+  },
+  "new_ledger_assertion_scope": "Only a later actual final-source JUnit can establish the ten new codec methods ran and were not skipped; no historical pass is transferred.",
+  "original_canonical_alignment_bootstrap": {
+    "bytes": 5720,
+    "git_blob": "13963075b37d38b1ef88fd7d3e76201b2318dbbe",
+    "sha256": "e6dd088ef698449150d9a110bdbf10f2d15511ab4428c2379977348017dbefb9"
+  },
+  "original_canonical_alignment_driver": {
+    "bytes": 46102,
+    "git_blob": "4952e13c052d9e83d448d09897ff9c09c31552c5",
+    "sha256": "d2c9ad9ab7f0339853936d8138650bbf08978884051c976597fd82b7f3714f19"
+  },
+  "original_execute_logged_entry": {
+    "bytes": 12863,
+    "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "path": "scripts/hepta_ci_exec.py",
+    "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+  },
+  "original_final_nonrust_apply_fmt_bootstrap": {
+    "bytes": 5711,
+    "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+    "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+  },
+  "original_final_nonrust_apply_fmt_driver": {
+    "bytes": 28621,
+    "git_blob": "9101b44fb2ab24ae41a1344425dd74b536a40de4",
+    "sha256": "0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228"
+  },
+  "original_fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "original_formatter": {
+    "bytes": 16599,
+    "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+  },
+  "original_inventory_driver": {
+    "bytes": 22946,
+    "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+  },
+  "original_maintenance_driver": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "original_materializer_driver": {
+    "bytes": 57607,
+    "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f",
+    "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436"
+  },
+  "original_materializer_packet": {
+    "bytes": 13764,
+    "git_blob": "06503652a2895120daf8b66e42b3a01cefeaf4fb",
+    "sha256": "b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3"
+  },
+  "original_qualification_plan": {
+    "bytes": 32246,
+    "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+    "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+  },
+  "proposed_single_fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "scoped_ledger_maintenance_HOLD": "9549cfdac98061108d895441c8179981eb16b62f",
+  "source_request_predecessor": {
+    "bytes": 131345,
+    "git_blob": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0",
+    "sha256": "55c9acefda3fe004b6b29e407256e89a1e99fd5e372b2ca04bf4b27a6f7687f4"
+  },
+  "source_wrapper": {
+    "bytes": 5610,
+    "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+    "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+  },
+  "unchanged_native_contract": "All original 14 phases, argv, filters, per-phase budgets, original 8 MiB stack and existing nextest overrides; ordinary already includes ledger --lib, so no duplicate ledger phase."
+}

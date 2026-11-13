@@ -1,0 +1,3747 @@
+{
+  "format": "hepta-partial-overlay-call-edge-inspection-v1",
+  "status": "DISCOVERY_ONLY_NOT_A_GATE",
+  "root_map": "3f7d40d4933669da33d2aef3491efb431c5771ae",
+  "original_boundaries": 569,
+  "rust_paths": 86,
+  "product_paths": 44,
+  "ignored_path_fragments": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "old_boundary_additions": [
+    {
+      "id": "learning_original_owner_command_channel",
+      "symbol": "original_owner_command_channel_v1",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_published_read_client_current",
+      "symbol": "OriginalCircuitLearningReadClientV1::read_current",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs"
+      ]
+    },
+    {
+      "id": "learning_original_material_dataset_context_check",
+      "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+      ]
+    },
+    {
+      "id": "learning_original_next_use_command_owner_profile",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_command_profile",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ]
+    },
+    {
+      "id": "root_resident_coordinator_run",
+      "symbol": "RootResidentLearningRuntimeV3::run",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "root_resident_original_stream_serve",
+      "symbol": "RootResidentLearningHandleV3::serve_original_stream",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_candidate_stage_create",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_candidate_stage_recover",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "root_resident_candidate_runtime_consume",
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime",
+      "append": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_selection_context",
+      "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_next_use_context",
+      "symbol": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_owner_create",
+      "symbol": "OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_selection_binding",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_selection",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_read_next_use_binding",
+      "symbol": "OriginalCircuitLearningReadClientV1::require_original_evaluated_next_use",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_owner_profile",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::original_evaluated_command_context",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_selector_command_receipt",
+      "symbol": "OriginalCircuitEvaluatedSelectionReceiptV1::from_original_command_response",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs"
+      ]
+    },
+    {
+      "id": "learning_original_evaluated_next_use_command_owner_profile",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::original_evaluated_command_selection",
+      "append": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      ]
+    }
+  ],
+  "old_boundary_removed_in_view": [],
+  "uncertainties": [],
+  "protected_rows": [
+    {
+      "index": 71,
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 167,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 203,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 245,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 266,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 267,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs: required code order missing: ['pub struct OriginalCircuitLearningReadClientV1 {\\n    context: ReadProfile,\\n    binding: Digest32,\\n    channel: Mutex<Option<Channel>>,\\n    retained: Mutex<Option<OriginalCircuitLearningReadbackV1>>,\\n}', 'impl OriginalCircuitLearningReadClientV1 {']",
+        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs:fn from_original_profile(: required code order missing: ['fn ', 'from_original_profile(\\n        stream: UnixStream,\\n        original_task_process: AgentdRootAuthorityPeer,\\n        original_task_uid: u32,\\n        original_task_pidfd: OwnedFd,\\n        context: ReadProfile,\\n        timeout: Duration,\\n        lifetime: Duration,\\n    ) -> Result<Self, Error> {\\n        require_timing(timeout, lifetime)?;\\n        let started_at = now()?;\\n        let binding = context.binding(started_at)?;\\n        let channel = original_owner_command_channel_v1(\\n            stream,\\n            original_task_process,\\n            original_task_uid,\\n            original_task_pidfd,\\n            timeout,\\n            lifetime,\\n        )?;\\n        let fresh = now()?;\\n        if fresh < started_at || context.binding(fresh)? != binding {\\n            return Err(Error::Binding(                               ));\\n        }\\n        Ok(Self {\\n            context,\\n            binding,\\n            channel: Mutex::new(Some(Channel {\\n                peer: channel,\\n                next_request_id: 1,\\n            })),\\n            retained: Mutex::new(None),\\n        })\\n    }']"
+      ]
+    },
+    {
+      "index": 270,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 279,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs: required code order missing: ['trait ', 'NextUseSources {\\n    fn snapshot(&self) -> &LearningIterationSnapshotV1;\\n    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1>;\\n    fn selector(&self) -> &LearningIterationEvidenceClientV1;\\n    fn evaluated_owners(\\n        &self,\\n    ) -> Option<(\\n        &crate::OriginalCellQ24TrainingCommandClientV1,\\n        &crate::OriginalCellEvaluationCommandClientV1,\\n    )> {\\n        None\\n    }\\n    fn location(&self) -> ObservationLocation;\\n    fn require_profile(&self, _profile: &Profile) -> Result<(), Error> {\\n        Ok(())\\n    }\\n    async fn observe(\\n        &self,\\n        config: &OriginalCircuitNextUseReceiptConfigV1,\\n    ) -> Result<LearningIterationObservationV1, Error>;\\n}']",
+        "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs: unique top-level code marker required: let selector: &LearningIterationEvidenceClientV1 = source.selector();"
+      ]
+    },
+    {
+      "index": 281,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs: required code order missing: ['pub ', 'struct OriginalCircuitNextUseCommandOwnerV1<W: AnchorWitnessStore> {\\n    owner: Mutex<OriginalCircuitNextUseReceiptOwnerV1<W>>,\\n    live: OriginalCircuitLearningReadClientV1,\\n    predecessors: OriginalPredecessors,\\n    selector: LearningIterationEvidenceClientV1,\\n    context: OriginalCircuitNextUseCommandContextV1,\\n    initial_head: Digest32,\\n    binding: Digest32,\\n    execution_requested: AtomicBool,\\n    runtime: Handle,\\n    connections: Arc<Semaphore>,\\n}']",
+        "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs:fn from_original_receipt_owner(: required code order missing: ['fn ', 'from_original_receipt_owner(\\n        owner: OriginalCircuitNextUseReceiptOwnerV1<W>,\\n        live: OriginalCircuitLearningReadClientV1,\\n        trainer: LearningIterationEvidenceClientV1,\\n        selector: LearningIterationEvidenceClientV1,\\n    ) -> Result<Self, Error> {\\n        let (config, readback_only) =\\n            OriginalCircuitNextUseReceiptOwnerV1::original_command_profile(&owner);\\n        let context = OriginalCircuitNextUseCommandContextV1::from_checkpoint(\\n            config.selection.clone(),\\n            config.scope.clone(),\\n            config.verifier.clone(),\\n            config.training_evidence.clone(),\\n            config.selection_evidence.clone(),\\n        )?;\\n        OriginalCircuitLearningReadClientV1::require_original_context(\\n            &live,\\n            &context.selection,\\n            &context.scope,\\n            &context.verifier,\\n            &context.training_evidence,\\n            Some(&context.selection_evidence),\\n        )\\n        .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;\\n        let initial = context.initial()?;\\n        if trainer.initial != initial\\n            || trainer.actor_id != context.selection.owners.trainer\\n            || trainer.verifier.trust_digest() != context.verifier.trust_digest()\\n            || trainer.verifier.scope_digest() != context.verifier.scope_digest()\\n            || trainer.verifier.objective_digest() != context.verifier.objective_digest()\\n        {\\n            return Err(Error::Binding(                                           ));\\n        }\\n        if selector.initial != initial\\n            || selector.actor_id != context.selection.owners.selector\\n            || selector.verifier.trust_digest() != context.verifier.trust_digest()\\n            || selector.verifier.scope_digest() != context.verifier.scope_digest()\\n            || selector.verifier.objective_digest() != context.verifier.objective_digest()\\n        {\\n            return Err(Error::Binding(                                            ));\\n        }\\n        let binding = context.binding(now()?)?;\\n        let runtime = Handle::try_current().map_err(|_| Error::Unavailable)?;\\n        Ok(Self {\\n            owner: Mutex::new(owner),\\n            live,\\n            predecessors: OriginalPredecessors::Legacy(trainer),\\n            selector,\\n            context,\\n            initial_head: initial.head_digest,\\n            binding,\\n            execution_requested: AtomicBool::new(readback_only),\\n            runtime,\\n            connections: Arc::new(Semaphore::new(4)),\\n        })\\n    }']"
+      ]
+    },
+    {
+      "index": 293,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 300,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs: required code order missing: ['pub(crate) ', 'struct OriginalCircuitCompletionReadinessClientV1 {\\n    context: ReadProfile,\\n    binding: Digest32,\\n    channel: Mutex<Option<Channel>>,\\n    retained: Mutex<Option<Readback>>,\\n}']",
+        "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs:fn read_current(: required code order missing: ['fn ', 'read_current(&self) -> Result<Option<Readback>, Error> {\\n        let mut channel = self\\n            .channel\\n            .try_lock()\\n            .map_err(|_| Error::Unavailable)?\\n            .take()\\n            .ok_or(Error::Unavailable)?;\\n        let started_at = now()?;\\n        if self.context.binding(started_at)? != self.binding\\n            || !(1..=128).contains(&channel.next_request_id)\\n        {\\n            return Err(Error::Binding(                                   ));\\n        }\\n        let request_id = channel.next_request_id;\\n        let request = Request::from_profile(&self.context, self.binding, request_id)?;\\n        channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;\\n        let bytes = serde_json::to_vec(&request)?;\\n        let (channel, response) = tokio::task::spawn_blocking(move || {\\n            let response = channel.peer.request(&bytes)?;\\n            Ok::<_, Error>((channel, response))\\n        })\\n        .await\\n        .map_err(|_| Error::Unavailable)??;\\n        let response: Response = serde_json::from_slice(&response)?;\\n        response\\n            .request\\n            .require_profile(&self.context, self.binding, request_id)?;\\n        let current = match response.result {\\n            Readiness::NotReady => None,\\n            Readiness::Ready { read } => Some(self.context.decode(read)?),\\n        };\\n        channel.peer.check_peer_lifetime()?;\\n        let fresh = now()?;\\n        if fresh < started_at || self.context.binding(fresh)? != self.binding {\\n            return Err(Error::Binding(                                         ));\\n        }\\n        {\\n            let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;\\n            if retained\\n                .as_ref()\\n                .is_some_and(|prior| current.as_ref() != Some(prior))\\n            {\\n                return Err(Error::Binding(\\n                                                                          ,\\n                ));\\n            }\\n            if let Some(ready) = &current {\\n                *retained = Some(ready.clone());\\n            }\\n        }\\n        *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);\\n        Ok(current)\\n    }']"
+      ]
+    },
+    {
+      "index": 309,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 339,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 347,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 351,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 358,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 362,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs:fn from_original_profile(: required code order missing: ['fn ', 'from_original_profile(\\n        material: OriginalCellQ24MaterialReceiptConfigV1,\\n        dataset: OriginalCellQ24DatasetCommandReadbackV1,\\n        trainer: OriginalCellQ24TrainingCommandConnectionV1,\\n        evidence: InitialVersionEvidence,\\n        inputs: RetainedVersionInputsV1,\\n        task: OriginalCircuitRetainedTaskInputsV1,\\n        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,\\n        final_use_issuer: AgentdUnixFinalUseGrantProvider,\\n        lifetime: Duration,\\n    ) -> Result<Self, Error> {\\n        let purpose = evidence.purpose();\\n        let started = super::now()?;\\n        let (initial_binding, at) =\\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;\\n        super::require_clock(started, at)?;\\n        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;\\n        task.require_completed_a(&inputs.completed)?;\\n        let artifacts = RetainedVersionArtifactOwnerV1::new(\\n            Arc::clone(&inputs.authorities.artifacts),\\n            artifact_checkpoint,\\n            inputs.selection.signed.clone(),\\n            inputs.selection.verifier.clone(),\\n        )?;\\n        let control = Arc::clone(&inputs.current);\\n        let final_use_issuer =\\n            AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(\\n                final_use_issuer,\\n            )?;\\n        let phase = RetainedVersionHostPhaseV1::Awaiting {\\n            inputs: Box::new(inputs),\\n            task,\\n        };\\n        Self::new(\\n            material,\\n            initial_binding,\\n            RetainedVersionOriginV1::Fresh,\\n            purpose,\\n            RetainedVersionHostStateV1 {\\n                dataset,\\n                initial_trainer: Some(trainer),\\n                trainer: None,\\n                initial_evaluator: evidence.into_evaluator(),\\n                evaluator: None,\\n                cut: None,\\n                expected: None,\\n                control,\\n                artifacts,\\n                phase: Some(phase),\\n                selection_reader: None,\\n                final_use_issuer: Some(final_use_issuer),\\n            },\\n            lifetime,\\n        )\\n    }']"
+      ]
+    },
+    {
+      "index": 364,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs:fn original_trainer(: required code order missing: ['fn ', 'original_trainer(&self) -> Result<&OriginalCellQ24TrainingCommandClientV1, Error> {\\n        match self.phase.as_ref().ok_or(Error::CommitUncertain)? {\\n            RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(original.trainer()),\\n            _ => self.trainer.as_ref().ok_or(Error::Unavailable),\\n        }\\n    }']"
+      ]
+    },
+    {
+      "index": 370,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs:fn from_original_profile(: required code order missing: ['fn ', 'from_original_profile(\\n        material: OriginalCellQ24MaterialReceiptConfigV1,\\n        dataset: OriginalCellQ24DatasetCommandReadbackV1,\\n        trainer: OriginalCellQ24TrainingCommandConnectionV1,\\n        evidence: InitialVersionEvidence,\\n        inputs: RetainedVersionInputsV1,\\n        task: OriginalCircuitRetainedTaskInputsV1,\\n        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,\\n        final_use_issuer: AgentdUnixFinalUseGrantProvider,\\n        lifetime: Duration,\\n    ) -> Result<Self, Error> {\\n        let purpose = evidence.purpose();\\n        let started = super::now()?;\\n        let (initial_binding, at) =\\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;\\n        super::require_clock(started, at)?;\\n        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;\\n        task.require_completed_a(&inputs.completed)?;\\n        let artifacts = RetainedVersionArtifactOwnerV1::new(\\n            Arc::clone(&inputs.authorities.artifacts),\\n            artifact_checkpoint,\\n            inputs.selection.signed.clone(),\\n            inputs.selection.verifier.clone(),\\n        )?;\\n        let control = Arc::clone(&inputs.current);\\n        let final_use_issuer =\\n            AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(\\n                final_use_issuer,\\n            )?;\\n        let phase = RetainedVersionHostPhaseV1::Awaiting {\\n            inputs: Box::new(inputs),\\n            task,\\n        };\\n        Self::new(\\n            material,\\n            initial_binding,\\n            RetainedVersionOriginV1::Fresh,\\n            purpose,\\n            RetainedVersionHostStateV1 {\\n                dataset,\\n                initial_trainer: Some(trainer),\\n                trainer: None,\\n                initial_evaluator: evidence.into_evaluator(),\\n                evaluator: None,\\n                cut: None,\\n                expected: None,\\n                control,\\n                artifacts,\\n                phase: Some(phase),\\n                selection_reader: None,\\n                final_use_issuer: Some(final_use_issuer),\\n            },\\n            lifetime,\\n        )\\n    }']"
+      ]
+    },
+    {
+      "index": 373,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 381,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 383,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:fn selector(: required code order missing: ['fn ', 'selector(&self) -> &LearningIterationEvidenceClientV1 {\\n        self.selector\\n    }']"
+      ]
+    },
+    {
+      "index": 411,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 416,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": []
+    },
+    {
+      "index": 417,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs: required code order missing: ['pub(super) ', 'enum OriginalPredecessors {\\n    Legacy(LearningIterationEvidenceClientV1),\\n    Evaluated {\\n        trainer: OriginalCellQ24TrainingCommandClientV1,\\n        evaluator: OriginalCellEvaluationCommandClientV1,\\n    },\\n}']",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs:fn observe_original(: required code order missing: ['fn ', 'observe_original(\\n        &self,\\n        owner: &mut OriginalCircuitSelectionReceiptOwnerV1<W>,\\n        action: wire::Action,\\n    ) -> Result<\\n        (LearningIterationReceiptV1, SignedLearningEvidenceV1),\\n        OriginalCircuitSelectionReceiptErrorV1,\\n    > {\\n        match &self.predecessors {\\n            OriginalPredecessors::Legacy(trainer) => {\\n                let source = OriginalCircuitSelectionRemoteSourcesV1 {\\n                    snapshot: &self.context.training,\\n                    live: &self.live,\\n                    trainer,\\n                };\\n                match action {\\n                    wire::Action::Execute => self.runtime.block_on(\\n                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(\\n                            owner, source,\\n                        ),\\n                    ),\\n                    wire::Action::Readback => self.runtime.block_on(\\n                        OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner, source),\\n                    ),\\n                }\\n            }\\n            OriginalPredecessors::Evaluated { trainer, evaluator } => {\\n                self.context.evaluated.as_ref().ok_or(\\n                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(\\n                                                                     ,\\n                    ),\\n                )?;\\n                let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {\\n                    snapshot: &self.context.training,\\n                    live: &self.live,\\n                    trainer,\\n                    evaluator,\\n                };\\n                let original = match action {\\n                    wire::Action::Execute => self.runtime.block_on(\\n                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(owner, source)),\\n                    wire::Action::Readback => self.runtime.block_on(\\n                        OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection(owner, source)),\\n                }?;\\n                Ok((original.receipt().clone(), original.attestation().clone()))\\n            }\\n        }\\n    }']"
+      ]
+    },
+    {
+      "index": 419,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs: required code order missing: ['pub(super) ', 'enum OriginalPredecessors {\\n    Legacy(LearningIterationEvidenceClientV1),\\n    Evaluated {\\n        trainer: OriginalCellQ24TrainingCommandClientV1,\\n        evaluator: OriginalCellEvaluationCommandClientV1,\\n    },\\n}']",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs:fn from_original_evaluated_receipt_owner(: required code order missing: ['fn ', 'from_original_evaluated_receipt_owner(\\n        owner: OriginalCircuitNextUseReceiptOwnerV1<W>,\\n        live: OriginalCircuitLearningReadClientV1,\\n        trainer: OriginalCellQ24TrainingCommandClientV1,\\n        evaluator: OriginalCellEvaluationCommandClientV1,\\n        selector: LearningIterationEvidenceClientV1,\\n    ) -> Result<Self, Error> {\\n        let original = owner\\n            .original_evaluated_command_selection()\\n            .ok_or(Error::Binding(                                     ))?;\\n        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(original)?;\\n        live.require_original_evaluated_next_use(original)\\n            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;\\n        let (_, readback_only) = owner.original_command_profile();\\n        let initial = context.initial()?;\\n        if selector.initial != initial\\n            || selector.actor_id != context.selection.owners.selector\\n            || selector.verifier.trust_digest() != context.verifier.trust_digest()\\n            || selector.verifier.scope_digest() != context.verifier.scope_digest()\\n            || selector.verifier.objective_digest() != context.verifier.objective_digest()\\n        {\\n            return Err(Error::Binding(\\n                                                                  ,\\n            ));\\n        }\\n        let binding = context.binding(now()?)?;\\n        Ok(Self {\\n            owner: Mutex::new(owner),\\n            live,\\n            predecessors: OriginalPredecessors::Evaluated { trainer, evaluator },\\n            selector,\\n            context,\\n            initial_head: initial.head_digest,\\n            binding,\\n            execution_requested: AtomicBool::new(readback_only),\\n            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,\\n            connections: Arc::new(Semaphore::new(4)),\\n        })\\n    }']"
+      ]
+    },
+    {
+      "index": 420,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "missing_raw_required": [],
+      "present_old_forbidden": [],
+      "old_order_errors": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs:fn selector(: required code order missing: ['fn ', 'selector(&self) -> &LearningIterationEvidenceClientV1 {\\n        self.selector\\n    }']"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "name": "into_candidate_service",
+      "impl_owner": "RootResidentLearningRegistrationV3",
+      "start": 2298,
+      "end": 4432,
+      "line": 58
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "name": "drop",
+      "impl_owner": "CloseOriginalStream",
+      "start": 4518,
+      "end": 4592,
+      "line": 93
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "name": "run",
+      "impl_owner": "RootResidentCandidateServiceV1",
+      "start": 5119,
+      "end": 7034,
+      "line": 105
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "register_resident_learning_v3",
+      "impl_owner": "HostAuthorityService",
+      "start": 2466,
+      "end": 2700,
+      "line": 64
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "recover_resident_learning_v3",
+      "impl_owner": "HostAuthorityService",
+      "start": 2938,
+      "end": 3257,
+      "line": 74
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "resident_learning_v3",
+      "impl_owner": "HostAuthorityService",
+      "start": 3264,
+      "end": 4061,
+      "line": 82
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "register_original_root",
+      "impl_owner": "RootResidentLearningRegistrationV3",
+      "start": 4281,
+      "end": 4764,
+      "line": 110
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "recover_original_root",
+      "impl_owner": "RootResidentLearningRegistrationV3",
+      "start": 4782,
+      "end": 5350,
+      "line": 125
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "from_original_root",
+      "impl_owner": "RootResidentLearningRegistrationV3",
+      "start": 5357,
+      "end": 6415,
+      "line": 141
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "into_runtime",
+      "impl_owner": "RootResidentLearningRegistrationV3",
+      "start": 6781,
+      "end": 7255,
+      "line": 171
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "name": "into_candidate_runtime",
+      "impl_owner": "RootResidentLearningRegistrationV3",
+      "start": 7707,
+      "end": 8193,
+      "line": 193
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "from_original_streams",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 2969,
+      "end": 3326,
+      "line": 73
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "recover_original_streams",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 3337,
+      "end": 3701,
+      "line": 82
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "require_initial",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 3719,
+      "end": 4376,
+      "line": 91
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "require_live_deadline",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 4383,
+      "end": 4556,
+      "line": 112
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "restrict_original_handoff_deadline",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 4725,
+      "end": 4967,
+      "line": 121
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "install_fresh_resident_gate",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 4985,
+      "end": 5220,
+      "line": 128
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "validate_recovery",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 5313,
+      "end": 7513,
+      "line": 137
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "execute_stage",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 7520,
+      "end": 9219,
+      "line": 177
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "prepare_proposal",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 9226,
+      "end": 9595,
+      "line": 213
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "name": "receipt_attestation",
+      "impl_owner": "OriginalCellQ24CandidateStageOwnersV1",
+      "start": 9602,
+      "end": 11693,
+      "line": 224
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "validate",
+      "impl_owner": "OriginalCellQ24TrainingCommandContextV1",
+      "start": 4845,
+      "end": 5655,
+      "line": 120
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "binding",
+      "impl_owner": "OriginalCellQ24TrainingCommandContextV1",
+      "start": 5662,
+      "end": 6114,
+      "line": 138
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "receipt",
+      "impl_owner": "OriginalCellQ24TrainingCommandReceiptV1",
+      "start": 6434,
+      "end": 6511,
+      "line": 159
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "attestation",
+      "impl_owner": "OriginalCellQ24TrainingCommandReceiptV1",
+      "start": 6522,
+      "end": 6605,
+      "line": 163
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "from_original_stream",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 7331,
+      "end": 7837,
+      "line": 186
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "recover_from_original_stream",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 8085,
+      "end": 8885,
+      "line": 209
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "bind_original_stream",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 8892,
+      "end": 10119,
+      "line": 235
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "execute_training",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 10590,
+      "end": 11125,
+      "line": 279
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "readback",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 11142,
+      "end": 11377,
+      "line": 297
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "receipt_attestation",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 11540,
+      "end": 11931,
+      "line": 308
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "exchange",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 11944,
+      "end": 15676,
+      "line": 319
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "name": "now",
+      "impl_owner": null,
+      "start": 15681,
+      "end": 15890,
+      "line": 401
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "name": "seal_original_completed_readback",
+      "impl_owner": "OriginalCellQ24TrainingCommandClientV1",
+      "start": 395,
+      "end": 1560,
+      "line": 13
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "name": "bind_original_evaluated_local_read",
+      "impl_owner": "OriginalCircuitCompletionReadinessClientV1",
+      "start": 784,
+      "end": 3510,
+      "line": 21
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "name": "from_original_evaluated_receipt_owner",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 934,
+      "end": 2844,
+      "line": 22
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "name": "from_original_evaluated_shared_receipt_owner",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 2862,
+      "end": 4911,
+      "line": 62
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "name": "observe_original",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 4929,
+      "end": 9031,
+      "line": 103
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 762,
+      "end": 841,
+      "line": 16
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 848,
+      "end": 931,
+      "line": 20
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "selector",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 938,
+      "end": 1042,
+      "line": 24
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "evaluated_owners",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 1049,
+      "end": 1322,
+      "line": 28
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 1329,
+      "end": 1421,
+      "line": 37
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "require_profile",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 1428,
+      "end": 2952,
+      "line": 41
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseLocalSourcesV1",
+      "start": 2965,
+      "end": 3245,
+      "line": 75
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "attest_original_evaluated_local_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 3341,
+      "end": 3815,
+      "line": 85
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "readback_evaluated_local_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 3839,
+      "end": 4150,
+      "line": 96
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "name": "into_evaluated_local_shared_command_owner",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 4161,
+      "end": 4741,
+      "line": 104
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "name": "remote",
+      "impl_owner": "OriginalSelector",
+      "start": 354,
+      "end": 701,
+      "line": 12
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "name": "from_original_evaluated_local_shared_receipt_owner",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 808,
+      "end": 3206,
+      "line": 25
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "name": "observe_original_local",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 3224,
+      "end": 4962,
+      "line": 73
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptV1",
+      "start": 1746,
+      "end": 1826,
+      "line": 46
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "receipt",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptV1",
+      "start": 1837,
+      "end": 1914,
+      "line": 50
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "attestation",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptV1",
+      "start": 1925,
+      "end": 2008,
+      "line": 54
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "original_selection",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptV1",
+      "start": 2026,
+      "end": 2132,
+      "line": 58
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "require_new",
+      "impl_owner": "Profile",
+      "start": 2267,
+      "end": 2614,
+      "line": 69
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "require_signed_separation",
+      "impl_owner": "Profile",
+      "start": 2632,
+      "end": 3030,
+      "line": 79
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1",
+      "start": 3173,
+      "end": 3252,
+      "line": 96
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1",
+      "start": 3259,
+      "end": 3342,
+      "line": 100
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "selector",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1",
+      "start": 3349,
+      "end": 3454,
+      "line": 104
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "evaluated_owners",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1",
+      "start": 3461,
+      "end": 3670,
+      "line": 108
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1",
+      "start": 3677,
+      "end": 3769,
+      "line": 117
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseReceiptSourcesV1",
+      "start": 3782,
+      "end": 4140,
+      "line": 121
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "create_evaluated",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 4379,
+      "end": 4657,
+      "line": 135
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "recover_evaluated",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 4747,
+      "end": 5024,
+      "line": 145
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "from_evaluated_custody",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 5031,
+      "end": 8045,
+      "line": 154
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "attest_original_evaluated_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 8062,
+      "end": 8629,
+      "line": 230
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "readback_evaluated_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 8646,
+      "end": 9050,
+      "line": 245
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "completed_evaluated_next_use",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 9057,
+      "end": 9863,
+      "line": 257
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "authenticate_predecessors",
+      "impl_owner": null,
+      "start": 9879,
+      "end": 11641,
+      "line": 277
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "name": "receipt",
+      "impl_owner": null,
+      "start": 11655,
+      "end": 12399,
+      "line": 319
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 678,
+      "end": 757,
+      "line": 16
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 763,
+      "end": 846,
+      "line": 19
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "selector",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 852,
+      "end": 957,
+      "line": 22
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "evaluated_owners",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 963,
+      "end": 1172,
+      "line": 25
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 1178,
+      "end": 1411,
+      "line": 33
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "require_profile",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 1418,
+      "end": 2009,
+      "line": 39
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1",
+      "start": 2022,
+      "end": 2302,
+      "line": 52
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "original_evaluated_command_selection",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 2392,
+      "end": 2654,
+      "line": 62
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "attest_original_evaluated_remote_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 2671,
+      "end": 3147,
+      "line": 71
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "readback_evaluated_remote_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 3164,
+      "end": 3477,
+      "line": 82
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "into_evaluated_shared_command_owner",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 3488,
+      "end": 4043,
+      "line": 90
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "name": "into_evaluated_command_owner",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 4054,
+      "end": 4655,
+      "line": 107
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "from_original_evaluation",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 2000,
+      "end": 2556,
+      "line": 45
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "recover_original_evaluation",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 2724,
+      "end": 3287,
+      "line": 64
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 3437,
+      "end": 3529,
+      "line": 83
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "authenticate",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 3547,
+      "end": 5938,
+      "line": 87
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "verify_original_predecessors",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 5945,
+      "end": 7600,
+      "line": 143
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "seal_original_readback_owners",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 7772,
+      "end": 8494,
+      "line": 191
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "clone_for_original_receipt",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 8666,
+      "end": 8953,
+      "line": 211
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "into_original_receipt_readback",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 8971,
+      "end": 9082,
+      "line": 221
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "receipt_configuration",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 9100,
+      "end": 9401,
+      "line": 226
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "evaluation_attestation",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 9419,
+      "end": 9525,
+      "line": 240
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "receipt_context_binding",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 9543,
+      "end": 10199,
+      "line": 244
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "original_receipt_predecessors",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 10217,
+      "end": 10452,
+      "line": 259
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "require_new_original_receipt",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 10470,
+      "end": 10628,
+      "line": 267
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "require_original_receipt_owners",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 10652,
+      "end": 10950,
+      "line": 272
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "name": "require_current",
+      "impl_owner": "OriginalCircuitEvaluatedRetentionContextV1",
+      "start": 11130,
+      "end": 12122,
+      "line": 283
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "name": "read_original_evaluated_receipt",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 1158,
+      "end": 1658,
+      "line": 25
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "name": "read_original_evaluated_receipt_on_owner",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 1833,
+      "end": 3143,
+      "line": 39
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "name": "original_evaluated_command_context",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 259,
+      "end": 525,
+      "line": 7
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "name": "into_evaluated_shared_command_owner",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 536,
+      "end": 1034,
+      "line": 16
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "name": "into_evaluated_command_owner",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 1045,
+      "end": 1589,
+      "line": 32
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "name": "from_original_command_response",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 1819,
+      "end": 2433,
+      "line": 53
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "name": "into_evaluated_local_shared_command_owner",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 2698,
+      "end": 3813,
+      "line": 73
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "name": "from_original_evaluated_receipt_owner",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 938,
+      "end": 2231,
+      "line": 22
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "name": "from_original_evaluated_shared_receipt_owner",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 2249,
+      "end": 3664,
+      "line": 50
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "name": "observe_original",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 3682,
+      "end": 9061,
+      "line": 79
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionLocalSourcesV1",
+      "start": 639,
+      "end": 747,
+      "line": 14
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionLocalSourcesV1",
+      "start": 754,
+      "end": 837,
+      "line": 18
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "evaluated_owners",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionLocalSourcesV1",
+      "start": 844,
+      "end": 1067,
+      "line": 22
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionLocalSourcesV1",
+      "start": 1074,
+      "end": 1166,
+      "line": 31
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "require_profile",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionLocalSourcesV1",
+      "start": 1173,
+      "end": 2277,
+      "line": 35
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionLocalSourcesV1",
+      "start": 2290,
+      "end": 2500,
+      "line": 59
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "attest_original_evaluated_local_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 2598,
+      "end": 3076,
+      "line": 68
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "name": "readback_evaluated_local_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 3100,
+      "end": 3415,
+      "line": 79
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "clone",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 1747,
+      "end": 2005,
+      "line": 42
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 2068,
+      "end": 2148,
+      "line": 53
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "receipt",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 2159,
+      "end": 2236,
+      "line": 57
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "attestation",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 2247,
+      "end": 2330,
+      "line": 61
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "original_context",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 2348,
+      "end": 2450,
+      "line": 65
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "into_original_receipt_readback",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 2468,
+      "end": 2609,
+      "line": 69
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "original_receipt_binding",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 2627,
+      "end": 3001,
+      "line": 74
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "original_receipt_predecessors",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptV1",
+      "start": 3019,
+      "end": 4653,
+      "line": 84
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "evidence_domain",
+      "impl_owner": "Profile",
+      "start": 4798,
+      "end": 5107,
+      "line": 124
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "require_new",
+      "impl_owner": "Profile",
+      "start": 5125,
+      "end": 5440,
+      "line": 133
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "require_signed_separation",
+      "impl_owner": "Profile",
+      "start": 5458,
+      "end": 5852,
+      "line": 142
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptSourcesV1",
+      "start": 5973,
+      "end": 6052,
+      "line": 159
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptSourcesV1",
+      "start": 6059,
+      "end": 6142,
+      "line": 163
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "evaluated_owners",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptSourcesV1",
+      "start": 6149,
+      "end": 6358,
+      "line": 167
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptSourcesV1",
+      "start": 6365,
+      "end": 6457,
+      "line": 176
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionReceiptSourcesV1",
+      "start": 6470,
+      "end": 6776,
+      "line": 180
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "create_evaluated",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 7015,
+      "end": 7295,
+      "line": 192
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "recover_evaluated",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 7466,
+      "end": 7745,
+      "line": 203
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "from_evaluated_custody",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 7752,
+      "end": 10492,
+      "line": 212
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "attest_original_evaluated_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 10509,
+      "end": 11008,
+      "line": 276
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "readback_evaluated_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 11025,
+      "end": 11361,
+      "line": 287
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "completed_evaluated_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 11368,
+      "end": 12200,
+      "line": 295
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "authenticate_evaluated_training",
+      "impl_owner": null,
+      "start": 12216,
+      "end": 13272,
+      "line": 315
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "name": "into_evaluated_readback_owner",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 13527,
+      "end": 14976,
+      "line": 344
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1",
+      "start": 621,
+      "end": 700,
+      "line": 15
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1",
+      "start": 707,
+      "end": 790,
+      "line": 19
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "evaluated_owners",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1",
+      "start": 797,
+      "end": 1006,
+      "line": 23
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1",
+      "start": 1013,
+      "end": 1185,
+      "line": 32
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "require_profile",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1",
+      "start": 1192,
+      "end": 1511,
+      "line": 37
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitEvaluatedSelectionRemoteSourcesV1",
+      "start": 1524,
+      "end": 1806,
+      "line": 45
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "attest_original_evaluated_remote_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 2052,
+      "end": 2532,
+      "line": 57
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "name": "readback_evaluated_remote_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 2549,
+      "end": 2866,
+      "line": 68
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "circuit_feature_task_digest_v1",
+      "impl_owner": null,
+      "start": 4641,
+      "end": 6101,
+      "line": 90
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "target",
+      "impl_owner": "Publication",
+      "start": 6326,
+      "end": 6521,
+      "line": 135
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "require_current",
+      "impl_owner": null,
+      "start": 6712,
+      "end": 6764,
+      "line": 146
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "is_drained",
+      "impl_owner": null,
+      "start": 6770,
+      "end": 6819,
+      "line": 147
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "drain",
+      "impl_owner": null,
+      "start": 6825,
+      "end": 6871,
+      "line": 148
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "selection",
+      "impl_owner": null,
+      "start": 6877,
+      "end": 7125,
+      "line": 149
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "require_current",
+      "impl_owner": "CellGenerationJournalV2",
+      "start": 7218,
+      "end": 7751,
+      "line": 158
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "is_drained",
+      "impl_owner": "CellGenerationJournalV2",
+      "start": 7757,
+      "end": 7856,
+      "line": 170
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "drain",
+      "impl_owner": "CellGenerationJournalV2",
+      "start": 7862,
+      "end": 7953,
+      "line": 173
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "selection",
+      "impl_owner": "CellGenerationJournalV2",
+      "start": 7959,
+      "end": 8582,
+      "line": 176
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "source_publication",
+      "impl_owner": "PublishedCircuitFeatureCompletionV1",
+      "start": 9613,
+      "end": 9704,
+      "line": 220
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "from_initial",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 9761,
+      "end": 10249,
+      "line": 226
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "from_update",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 10267,
+      "end": 11407,
+      "line": 242
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "from_parts",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 11414,
+      "end": 13262,
+      "line": 269
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "definition",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 13273,
+      "end": 13348,
+      "line": 310
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "source",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 13358,
+      "end": 13433,
+      "line": 313
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "require_bundle",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 13444,
+      "end": 13859,
+      "line": 317
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "open_cell",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 13870,
+      "end": 14935,
+      "line": 326
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "require_current",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 14942,
+      "end": 15316,
+      "line": 356
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "require_active",
+      "impl_owner": "PublishedCircuitFeatureTaskV1",
+      "start": 15323,
+      "end": 15602,
+      "line": 368
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "source_input",
+      "impl_owner": null,
+      "start": 15607,
+      "end": 16143,
+      "line": 377
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "name": "invalid",
+      "impl_owner": null,
+      "start": 16146,
+      "end": 16249,
+      "line": 391
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "new",
+      "impl_owner": "Request",
+      "start": 1302,
+      "end": 1723,
+      "line": 38
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "require_context",
+      "impl_owner": "Request",
+      "start": 1741,
+      "end": 2136,
+      "line": 52
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "from_profile",
+      "impl_owner": "Request",
+      "start": 2154,
+      "end": 2870,
+      "line": 64
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "require_profile",
+      "impl_owner": "Request",
+      "start": 2888,
+      "end": 3604,
+      "line": 85
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "bind_original_stage_channel",
+      "impl_owner": "OriginalCircuitCompletionReadinessClientV1",
+      "start": 4420,
+      "end": 5187,
+      "line": 132
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "bind_original_evaluated_stage_channel",
+      "impl_owner": "OriginalCircuitCompletionReadinessClientV1",
+      "start": 5205,
+      "end": 6226,
+      "line": 153
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "bind_profile",
+      "impl_owner": "OriginalCircuitCompletionReadinessClientV1",
+      "start": 6233,
+      "end": 8003,
+      "line": 175
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "name": "read_current",
+      "impl_owner": "OriginalCircuitCompletionReadinessClientV1",
+      "start": 8190,
+      "end": 10567,
+      "line": 222
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "clone",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 1550,
+      "end": 1655,
+      "line": 45
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "from_original_version",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 1718,
+      "end": 2470,
+      "line": 53
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "require_original_selection",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 2477,
+      "end": 2934,
+      "line": 76
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "require_original_next_use",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 2941,
+      "end": 3394,
+      "line": 88
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "require_original_window",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 3401,
+      "end": 3687,
+      "line": 100
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "read_current",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 3711,
+      "end": 3921,
+      "line": 109
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "read_completion_readiness",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 3945,
+      "end": 4257,
+      "line": 115
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "read_original",
+      "impl_owner": "OriginalCircuitPublishedLocalReadV1",
+      "start": 4270,
+      "end": 8810,
+      "line": 122
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "from_original_evaluated_local_selection",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 8866,
+      "end": 9308,
+      "line": 232
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "from_original_evaluated_local_next_use",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 9319,
+      "end": 9764,
+      "line": 242
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "from_original_local_profile",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 9771,
+      "end": 10325,
+      "line": 252
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "require_original_local_shared_readbacks",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 10343,
+      "end": 10926,
+      "line": 270
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "require_original_local_evaluated_selection",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 10944,
+      "end": 11309,
+      "line": 284
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "name": "require_original_local_evaluated_next_use",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 11327,
+      "end": 11687,
+      "line": 293
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "observation",
+      "impl_owner": "OriginalCircuitLearningReadbackV1",
+      "start": 3697,
+      "end": 3786,
+      "line": 98
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "from_original_stream",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 4402,
+      "end": 4987,
+      "line": 120
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "from_original_profile",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 4994,
+      "end": 6102,
+      "line": 140
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "read_current",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 6279,
+      "end": 8350,
+      "line": 178
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "require_original_context",
+      "impl_owner": "OriginalCircuitLearningReadClientV1",
+      "start": 8575,
+      "end": 9486,
+      "line": 231
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "require_timing",
+      "impl_owner": null,
+      "start": 9491,
+      "end": 9812,
+      "line": 254
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "name": "now",
+      "impl_owner": null,
+      "start": 9815,
+      "end": 10014,
+      "line": 265
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "from_original_owners",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 1520,
+      "end": 1893,
+      "line": 43
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "from_original_profile",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 1911,
+      "end": 2939,
+      "line": 57
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "serve_readback",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 3187,
+      "end": 3882,
+      "line": 89
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "serve_original_retained_channel",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 4056,
+      "end": 4428,
+      "line": 116
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "serve_original_evaluated_retained_channel",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 4602,
+      "end": 5054,
+      "line": 130
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "serve_channel",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 5072,
+      "end": 5779,
+      "line": 144
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "original_evaluated_selection_response",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 5950,
+      "end": 6579,
+      "line": 167
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "original_evaluated_next_use_response",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 6830,
+      "end": 7073,
+      "line": 186
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "original_evaluated_next_use_readiness_response",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 7243,
+      "end": 7506,
+      "line": 197
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "require_original_evaluated_next_use_profile",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 7513,
+      "end": 7838,
+      "line": 206
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "response",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 7856,
+      "end": 8895,
+      "line": 215
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "require_task_input_current",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 8902,
+      "end": 9729,
+      "line": 237
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "require_original_selection",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 9736,
+      "end": 10168,
+      "line": 255
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "name": "read_original",
+      "impl_owner": "OriginalCircuitLearningReadOwnerV1",
+      "start": 10175,
+      "end": 12242,
+      "line": 266
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "from_original_receipt_owner",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 2366,
+      "end": 4943,
+      "line": 63
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "serve_commands",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 5193,
+      "end": 6048,
+      "line": 123
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "serve_evidence_readback",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 6230,
+      "end": 7294,
+      "line": 153
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "serve_command_channel",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 7301,
+      "end": 7733,
+      "line": 186
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "command_response",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 7740,
+      "end": 8909,
+      "line": 198
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "original_response",
+      "impl_owner": "OriginalCircuitNextUseCommandOwnerV1",
+      "start": 8916,
+      "end": 9721,
+      "line": 224
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "name": "original_state",
+      "impl_owner": null,
+      "start": 9726,
+      "end": 10361,
+      "line": 247
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "snapshot",
+      "impl_owner": null,
+      "start": 5965,
+      "end": 6015,
+      "line": 135
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "trainer",
+      "impl_owner": null,
+      "start": 6021,
+      "end": 6084,
+      "line": 136
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "selector",
+      "impl_owner": null,
+      "start": 6090,
+      "end": 6136,
+      "line": 137
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "evaluated_owners",
+      "impl_owner": null,
+      "start": 6142,
+      "end": 6333,
+      "line": 138
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "location",
+      "impl_owner": null,
+      "start": 6339,
+      "end": 6380,
+      "line": 146
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "require_profile",
+      "impl_owner": null,
+      "start": 6386,
+      "end": 6474,
+      "line": 147
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "observe",
+      "impl_owner": null,
+      "start": 6486,
+      "end": 6623,
+      "line": 150
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitNextUseReceiptSourcesV1",
+      "start": 7069,
+      "end": 7148,
+      "line": 168
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitNextUseReceiptSourcesV1",
+      "start": 7154,
+      "end": 7251,
+      "line": 171
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "selector",
+      "impl_owner": "OriginalCircuitNextUseReceiptSourcesV1",
+      "start": 7257,
+      "end": 7362,
+      "line": 174
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitNextUseReceiptSourcesV1",
+      "start": 7368,
+      "end": 7456,
+      "line": 177
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitNextUseReceiptSourcesV1",
+      "start": 7468,
+      "end": 7654,
+      "line": 180
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitNextUseRemoteSourcesV1",
+      "start": 7731,
+      "end": 7810,
+      "line": 189
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitNextUseRemoteSourcesV1",
+      "start": 7816,
+      "end": 7913,
+      "line": 192
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "selector",
+      "impl_owner": "OriginalCircuitNextUseRemoteSourcesV1",
+      "start": 7919,
+      "end": 8024,
+      "line": 195
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitNextUseRemoteSourcesV1",
+      "start": 8030,
+      "end": 8119,
+      "line": 198
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitNextUseRemoteSourcesV1",
+      "start": 8131,
+      "end": 8324,
+      "line": 201
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "read_local_next_use",
+      "impl_owner": null,
+      "start": 8329,
+      "end": 8836,
+      "line": 209
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "read_remote_next_use",
+      "impl_owner": null,
+      "start": 8845,
+      "end": 9379,
+      "line": 222
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "create",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 9834,
+      "end": 10383,
+      "line": 254
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "recover",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 10546,
+      "end": 11095,
+      "line": 275
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "into_command_owner",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 11337,
+      "end": 11844,
+      "line": 297
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "original_command_profile",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 11862,
+      "end": 12083,
+      "line": 314
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "attest_original_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 12336,
+      "end": 12669,
+      "line": 326
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "attest_original_remote_completion",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 12836,
+      "end": 13078,
+      "line": 339
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "attest_source",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 13091,
+      "end": 15921,
+      "line": 346
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "readback",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 16175,
+      "end": 16492,
+      "line": 410
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "readback_remote",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 16665,
+      "end": 16891,
+      "line": 423
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "readback_source",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 16904,
+      "end": 17903,
+      "line": 430
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "prepare",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 17916,
+      "end": 19148,
+      "line": 458
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "predecessors",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 19161,
+      "end": 22011,
+      "line": 487
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "finish_original_readback",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 22024,
+      "end": 23521,
+      "line": 551
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "decode_completed",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 23528,
+      "end": 24421,
+      "line": 585
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "name": "authenticate_completed",
+      "impl_owner": "OriginalCircuitNextUseReceiptOwnerV1",
+      "start": 24428,
+      "end": 26018,
+      "line": 612
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "intent_digest",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4052,
+      "end": 4114,
+      "line": 93
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "publication_digest",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4124,
+      "end": 4196,
+      "line": 96
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "task_digest",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4206,
+      "end": 4264,
+      "line": 99
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "selection_digest",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4274,
+      "end": 4342,
+      "line": 102
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "bundle_digest",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4352,
+      "end": 4414,
+      "line": 105
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "run_id",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4424,
+      "end": 4478,
+      "line": 108
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "authority",
+      "impl_owner": "OriginalCircuitRetainedVersionPublicationV1",
+      "start": 4488,
+      "end": 4569,
+      "line": 111
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "intent_digest",
+      "impl_owner": "OriginalCircuitRetainedVersionReadbackV1",
+      "start": 4961,
+      "end": 5023,
+      "line": 124
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "publication",
+      "impl_owner": "OriginalCircuitRetainedVersionReadbackV1",
+      "start": 5033,
+      "end": 5151,
+      "line": 127
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "authority",
+      "impl_owner": "OriginalCircuitRetainedVersionReadbackV1",
+      "start": 5161,
+      "end": 5242,
+      "line": 130
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "operation",
+      "impl_owner": "RetainedVersionPurposeV1",
+      "start": 5401,
+      "end": 5665,
+      "line": 142
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "now",
+      "impl_owner": null,
+      "start": 5768,
+      "end": 5926,
+      "line": 158
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "name": "require_clock",
+      "impl_owner": null,
+      "start": 5928,
+      "end": 6070,
+      "line": 164
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "purpose",
+      "impl_owner": "InitialVersionEvidence",
+      "start": 2778,
+      "end": 3030,
+      "line": 75
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "into_evaluator",
+      "impl_owner": "InitialVersionEvidence",
+      "start": 3036,
+      "end": 3261,
+      "line": 81
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "from_original_owners",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 7539,
+      "end": 8317,
+      "line": 192
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "from_original_evaluated_owners",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 8483,
+      "end": 9345,
+      "line": 217
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "from_original_profile",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 9352,
+      "end": 11594,
+      "line": 241
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "recover_from_original_owners",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 11751,
+      "end": 12296,
+      "line": 300
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "recover_from_original_evaluated_owners",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 12460,
+      "end": 13089,
+      "line": 319
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "recover_original_profile",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 13096,
+      "end": 15504,
+      "line": 337
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "new",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 15511,
+      "end": 17117,
+      "line": 398
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "require_lifetime",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 17124,
+      "end": 17287,
+      "line": 434
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "name": "original_final_use_outcome",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 17294,
+      "end": 17752,
+      "line": 441
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "original_context",
+      "impl_owner": "OriginalVersionLocalReadBindingV1",
+      "start": 1804,
+      "end": 1915,
+      "line": 51
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "original_end",
+      "impl_owner": "OriginalVersionLocalReadBindingV1",
+      "start": 1933,
+      "end": 1990,
+      "line": 55
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "original_timeout",
+      "impl_owner": "OriginalVersionLocalReadBindingV1",
+      "start": 2008,
+      "end": 2074,
+      "line": 59
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "require_original_shared_readbacks",
+      "impl_owner": "OriginalVersionLocalReadBindingV1",
+      "start": 2092,
+      "end": 3975,
+      "line": 63
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "respond",
+      "impl_owner": "OriginalVersionLocalReadBindingV1",
+      "start": 3993,
+      "end": 5435,
+      "line": 103
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "open_original_evaluated_selection_local_read",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 5646,
+      "end": 5958,
+      "line": 144
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "open_original_evaluated_next_use_local_read",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 6128,
+      "end": 6511,
+      "line": 154
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "open_original_evaluated_local_read",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 6524,
+      "end": 8168,
+      "line": 163
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "bind_original_evaluated_local_read",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 8175,
+      "end": 11572,
+      "line": 203
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "name": "original_evaluated_local_selection_response",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 11579,
+      "end": 13208,
+      "line": 280
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "serve_original_evaluated_next_use_readback",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 1815,
+      "end": 2465,
+      "line": 47
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "serve_original_evaluated_completion_readiness",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 2634,
+      "end": 3298,
+      "line": 72
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "serve_original_evaluated_next_use",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 3311,
+      "end": 4583,
+      "line": 95
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "serve_original_evaluated_next_use_channel",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 4596,
+      "end": 5388,
+      "line": 131
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "serve_original_evaluated_next_use_loop",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 5395,
+      "end": 6953,
+      "line": 152
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "original_evaluated_next_use_response",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 6971,
+      "end": 10412,
+      "line": 193
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "name": "build_original_evaluated_next_use_reader",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 10430,
+      "end": 13747,
+      "line": 262
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "name": "clone",
+      "impl_owner": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "start": 936,
+      "end": 1155,
+      "line": 24
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "name": "read_original_predecessors",
+      "impl_owner": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "start": 1451,
+      "end": 1665,
+      "line": 37
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "name": "require_original_context",
+      "impl_owner": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "start": 1683,
+      "end": 2346,
+      "line": 44
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "name": "original_clients",
+      "impl_owner": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "start": 2364,
+      "end": 2554,
+      "line": 61
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "name": "share_original_evaluated_readbacks",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 2854,
+      "end": 5831,
+      "line": 72
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "bind_original_predecessor",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 1058,
+      "end": 4068,
+      "line": 24
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "read_original_recovery",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 4393,
+      "end": 5484,
+      "line": 105
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "read_original",
+      "impl_owner": "OriginalCircuitRetainedVersionHostV1",
+      "start": 5502,
+      "end": 6551,
+      "line": 135
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "install_original_selection_reader",
+      "impl_owner": "RetainedVersionHostStateV1",
+      "start": 6605,
+      "end": 6850,
+      "line": 164
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "build_original_selection_reader",
+      "impl_owner": "RetainedVersionHostStateV1",
+      "start": 6857,
+      "end": 9155,
+      "line": 172
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "original_trainer",
+      "impl_owner": "RetainedVersionHostStateV1",
+      "start": 9162,
+      "end": 9656,
+      "line": 229
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "original_evaluator",
+      "impl_owner": "RetainedVersionHostStateV1",
+      "start": 9663,
+      "end": 10215,
+      "line": 238
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "require_cut_current",
+      "impl_owner": "RetainedVersionHostStateV1",
+      "start": 10233,
+      "end": 11393,
+      "line": 249
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "name": "observe_phase",
+      "impl_owner": "RetainedVersionHostStateV1",
+      "start": 11400,
+      "end": 13027,
+      "line": 280
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "from_original_training",
+      "impl_owner": "OriginalCircuitSelectionCommandContextV1",
+      "start": 4344,
+      "end": 5231,
+      "line": 103
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "from_checkpoint",
+      "impl_owner": "OriginalCircuitSelectionCommandContextV1",
+      "start": 5238,
+      "end": 5699,
+      "line": 127
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "authenticate",
+      "impl_owner": "OriginalCircuitSelectionCommandContextV1",
+      "start": 5706,
+      "end": 7471,
+      "line": 144
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "initial",
+      "impl_owner": "OriginalCircuitSelectionCommandContextV1",
+      "start": 7478,
+      "end": 7730,
+      "line": 183
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "binding",
+      "impl_owner": "OriginalCircuitSelectionCommandContextV1",
+      "start": 7737,
+      "end": 8591,
+      "line": 192
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitSelectionCommandReceiptV1",
+      "start": 9112,
+      "end": 9192,
+      "line": 223
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "receipt",
+      "impl_owner": "OriginalCircuitSelectionCommandReceiptV1",
+      "start": 9202,
+      "end": 9279,
+      "line": 226
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "attestation",
+      "impl_owner": "OriginalCircuitSelectionCommandReceiptV1",
+      "start": 9289,
+      "end": 9372,
+      "line": 229
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "training_attestation",
+      "impl_owner": "OriginalCircuitSelectionCommandReceiptV1",
+      "start": 9382,
+      "end": 9480,
+      "line": 232
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "drop",
+      "impl_owner": "QueuedExecuteFence",
+      "start": 9749,
+      "end": 9837,
+      "line": 244
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "from_original_stream",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 10406,
+      "end": 10913,
+      "line": 264
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "recover_from_original_stream",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 11168,
+      "end": 12276,
+      "line": 287
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "bind_original_stream",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 12283,
+      "end": 14021,
+      "line": 322
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "execute_selection",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 14194,
+      "end": 14740,
+      "line": 376
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "readback",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 14757,
+      "end": 14893,
+      "line": 391
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "receipt_attestation",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 14910,
+      "end": 15300,
+      "line": 395
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "exchange",
+      "impl_owner": "OriginalCircuitSelectionCommandClientV1",
+      "start": 15313,
+      "end": 18896,
+      "line": 406
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "require_clock",
+      "impl_owner": null,
+      "start": 18901,
+      "end": 19129,
+      "line": 485
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "name": "now",
+      "impl_owner": null,
+      "start": 19131,
+      "end": 19331,
+      "line": 493
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "from_original_receipt_owner",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 2397,
+      "end": 4320,
+      "line": 63
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "serve_commands",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 4570,
+      "end": 5425,
+      "line": 112
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "serve_evidence_readback",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 5606,
+      "end": 6637,
+      "line": 142
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "serve_command_channel",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 6644,
+      "end": 7076,
+      "line": 173
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "command_response",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 7083,
+      "end": 8138,
+      "line": 185
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "original_response",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 8145,
+      "end": 8952,
+      "line": 208
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "name": "original_state",
+      "impl_owner": null,
+      "start": 8957,
+      "end": 9599,
+      "line": 231
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "read_original_receipt",
+      "impl_owner": null,
+      "start": 969,
+      "end": 1061,
+      "line": 25
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "read_original_receipt",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 1190,
+      "end": 1384,
+      "line": 31
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "clone",
+      "impl_owner": "OriginalCircuitSelectionLocalReadbackV1",
+      "start": 2320,
+      "end": 2425,
+      "line": 62
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "read_original_selection",
+      "impl_owner": "OriginalCircuitSelectionLocalReadbackV1",
+      "start": 2798,
+      "end": 4658,
+      "line": 74
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "require_original_shared_predecessors",
+      "impl_owner": "OriginalCircuitSelectionLocalReadbackV1",
+      "start": 4676,
+      "end": 5564,
+      "line": 121
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "require_original_selection",
+      "impl_owner": "OriginalCircuitSelectionLocalReadbackV1",
+      "start": 5582,
+      "end": 6548,
+      "line": 141
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "open_original_evaluated_local_readback",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 6895,
+      "end": 9946,
+      "line": 167
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "name": "from_original_evaluated_local_shared_receipt_owner",
+      "impl_owner": "OriginalCircuitSelectionCommandOwnerV1",
+      "start": 10055,
+      "end": 11419,
+      "line": 246
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "snapshot",
+      "impl_owner": null,
+      "start": 5117,
+      "end": 5167,
+      "line": 108
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "trainer",
+      "impl_owner": null,
+      "start": 5173,
+      "end": 5236,
+      "line": 109
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "evaluated_owners",
+      "impl_owner": null,
+      "start": 5242,
+      "end": 5433,
+      "line": 110
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "location",
+      "impl_owner": null,
+      "start": 5439,
+      "end": 5480,
+      "line": 118
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "require_profile",
+      "impl_owner": null,
+      "start": 5486,
+      "end": 5574,
+      "line": 119
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "observe",
+      "impl_owner": null,
+      "start": 5586,
+      "end": 5725,
+      "line": 122
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitSelectionReceiptSourcesV1",
+      "start": 6143,
+      "end": 6222,
+      "line": 138
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitSelectionReceiptSourcesV1",
+      "start": 6228,
+      "end": 6325,
+      "line": 141
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitSelectionReceiptSourcesV1",
+      "start": 6331,
+      "end": 6419,
+      "line": 144
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitSelectionReceiptSourcesV1",
+      "start": 6431,
+      "end": 6620,
+      "line": 147
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "snapshot",
+      "impl_owner": "OriginalCircuitSelectionRemoteSourcesV1",
+      "start": 6701,
+      "end": 6780,
+      "line": 156
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "trainer",
+      "impl_owner": "OriginalCircuitSelectionRemoteSourcesV1",
+      "start": 6786,
+      "end": 6883,
+      "line": 159
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "location",
+      "impl_owner": "OriginalCircuitSelectionRemoteSourcesV1",
+      "start": 6889,
+      "end": 6978,
+      "line": 162
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "observe",
+      "impl_owner": "OriginalCircuitSelectionRemoteSourcesV1",
+      "start": 6990,
+      "end": 7186,
+      "line": 165
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "read_local_selection",
+      "impl_owner": null,
+      "start": 7191,
+      "end": 7615,
+      "line": 173
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "read_remote_selection",
+      "impl_owner": null,
+      "start": 7624,
+      "end": 8134,
+      "line": 182
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "original_command_profile",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 8759,
+      "end": 8982,
+      "line": 216
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "create",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 8993,
+      "end": 9554,
+      "line": 225
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "recover",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 9726,
+      "end": 10287,
+      "line": 246
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "attest_original_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 10552,
+      "end": 10814,
+      "line": 268
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "attest_original_remote_selection",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 10989,
+      "end": 11232,
+      "line": 277
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "attest_source",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 11245,
+      "end": 14187,
+      "line": 284
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "readback",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 14362,
+      "end": 14609,
+      "line": 348
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "readback_remote",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 14778,
+      "end": 15006,
+      "line": 357
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "readback_source",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 15019,
+      "end": 16010,
+      "line": 364
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "prepare",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 16023,
+      "end": 16975,
+      "line": 392
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "training_evidence",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 16988,
+      "end": 17824,
+      "line": 414
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "finish_original_readback",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 17837,
+      "end": 19518,
+      "line": 435
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "decode_completed",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 19525,
+      "end": 20422,
+      "line": 471
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "authenticate_completed",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 20429,
+      "end": 21975,
+      "line": 498
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "into_command_owner",
+      "impl_owner": "OriginalCircuitSelectionReceiptOwnerV1",
+      "start": 22389,
+      "end": 22798,
+      "line": 542
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "validate_config",
+      "impl_owner": null,
+      "start": 22803,
+      "end": 24542,
+      "line": 556
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "training_receipt",
+      "impl_owner": null,
+      "start": 24545,
+      "end": 25093,
+      "line": 594
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "authenticate_training",
+      "impl_owner": null,
+      "start": 25096,
+      "end": 26409,
+      "line": 613
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "receipt",
+      "impl_owner": null,
+      "start": 26412,
+      "end": 27770,
+      "line": 648
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "sign_original",
+      "impl_owner": null,
+      "start": 27773,
+      "end": 28698,
+      "line": 683
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "signature_expiry",
+      "impl_owner": null,
+      "start": 28701,
+      "end": 29026,
+      "line": 708
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "require_new_attestation",
+      "impl_owner": null,
+      "start": 29029,
+      "end": 29471,
+      "line": 718
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "evidence_id",
+      "impl_owner": null,
+      "start": 29474,
+      "end": 29687,
+      "line": 733
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "name": "now",
+      "impl_owner": null,
+      "start": 29690,
+      "end": 29899,
+      "line": 738
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "name": "from_owner_stream",
+      "impl_owner": "LearningIterationEvidenceClientV1",
+      "start": 6637,
+      "end": 8607,
+      "line": 140
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "name": "readback",
+      "impl_owner": "LearningIterationEvidenceClientV1",
+      "start": 9018,
+      "end": 12185,
+      "line": 201
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "name": "evidence_role",
+      "impl_owner": null,
+      "start": 12190,
+      "end": 12860,
+      "line": 278
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "name": "unavailable",
+      "impl_owner": null,
+      "start": 12863,
+      "end": 12955,
+      "line": 292
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "from_original_stream",
+      "impl_owner": "OriginalCellEvaluationCommandConnectionV1",
+      "start": 1801,
+      "end": 2493,
+      "line": 54
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "recover_from_original_stream",
+      "impl_owner": "OriginalCellEvaluationCommandConnectionV1",
+      "start": 2504,
+      "end": 3211,
+      "line": 79
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "bind_initial",
+      "impl_owner": "OriginalCellEvaluationCommandConnectionV1",
+      "start": 3218,
+      "end": 4997,
+      "line": 104
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "bind_original_training",
+      "impl_owner": "OriginalCellEvaluationCommandConnectionV1",
+      "start": 5163,
+      "end": 5692,
+      "line": 157
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "bind_recovered_training",
+      "impl_owner": "OriginalCellEvaluationCommandConnectionV1",
+      "start": 5856,
+      "end": 6632,
+      "line": 175
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "finish_binding",
+      "impl_owner": "OriginalCellEvaluationCommandConnectionV1",
+      "start": 6639,
+      "end": 8334,
+      "line": 196
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "drop",
+      "impl_owner": "QueuedCancellation",
+      "start": 8708,
+      "end": 8780,
+      "line": 255
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "execute_evaluation",
+      "impl_owner": "OriginalCellEvaluationCommandClientV1",
+      "start": 8844,
+      "end": 9097,
+      "line": 261
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "readback",
+      "impl_owner": "OriginalCellEvaluationCommandClientV1",
+      "start": 9114,
+      "end": 9217,
+      "line": 268
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "receipt_attestation",
+      "impl_owner": "OriginalCellEvaluationCommandClientV1",
+      "start": 9234,
+      "end": 9623,
+      "line": 272
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "name": "exchange",
+      "impl_owner": "OriginalCellEvaluationCommandClientV1",
+      "start": 9636,
+      "end": 13811,
+      "line": 283
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "name": "seal_original_completed_readback",
+      "impl_owner": "OriginalCellEvaluationCommandClientV1",
+      "start": 389,
+      "end": 1480,
+      "line": 13
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "send_root_candidate_stage_handoff",
+      "impl_owner": null,
+      "start": 2189,
+      "end": 5670,
+      "line": 74
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "receive_root_candidate_stage_handoff",
+      "impl_owner": null,
+      "start": 5830,
+      "end": 6435,
+      "line": 133
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "into_original_streams",
+      "impl_owner": "RootCandidateStageHandoffV1",
+      "start": 6488,
+      "end": 9579,
+      "line": 149
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "actor",
+      "impl_owner": null,
+      "start": 9584,
+      "end": 10087,
+      "line": 189
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "validate_packet",
+      "impl_owner": null,
+      "start": 10090,
+      "end": 10871,
+      "line": 200
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "require_timing",
+      "impl_owner": null,
+      "start": 10874,
+      "end": 11211,
+      "line": 218
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "require_process",
+      "impl_owner": null,
+      "start": 11214,
+      "end": 12081,
+      "line": 226
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "require_root",
+      "impl_owner": null,
+      "start": 12084,
+      "end": 12360,
+      "line": 243
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "name": "refused",
+      "impl_owner": null,
+      "start": 12363,
+      "end": 12487,
+      "line": 251
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "name": "send",
+      "impl_owner": null,
+      "start": 412,
+      "end": 2255,
+      "line": 16
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "name": "receive",
+      "impl_owner": null,
+      "start": 2269,
+      "end": 4053,
+      "line": 50
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "name": "socket_identity",
+      "impl_owner": null,
+      "start": 4067,
+      "end": 4444,
+      "line": 83
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "name": "monotonic_ns",
+      "impl_owner": null,
+      "start": 4458,
+      "end": 5027,
+      "line": 92
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "receive_root_production_handoff",
+      "impl_owner": null,
+      "start": 1569,
+      "end": 1916,
+      "line": 43
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "send_root_production_handoff",
+      "impl_owner": null,
+      "start": 2154,
+      "end": 2929,
+      "line": 57
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "validate_bootstrap",
+      "impl_owner": null,
+      "start": 2932,
+      "end": 3263,
+      "line": 83
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "root_pair",
+      "impl_owner": null,
+      "start": 3277,
+      "end": 4609,
+      "line": 92
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "require_root_pin",
+      "impl_owner": null,
+      "start": 4612,
+      "end": 5487,
+      "line": 131
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "receive_packet",
+      "impl_owner": null,
+      "start": 5490,
+      "end": 7375,
+      "line": 154
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "send_packet",
+      "impl_owner": null,
+      "start": 7378,
+      "end": 9413,
+      "line": 201
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "name": "refused",
+      "impl_owner": null,
+      "start": 9416,
+      "end": 9541,
+      "line": 253
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "name": "fmt",
+      "impl_owner": "OriginalLedgerSnapshotCodecErrorV1",
+      "start": 1211,
+      "end": 1304,
+      "line": 38
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "name": "encode_original_ledger_snapshot_v1",
+      "impl_owner": null,
+      "start": 1819,
+      "end": 4437,
+      "line": 53
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "name": "decode_original_ledger_snapshot_v1",
+      "impl_owner": null,
+      "start": 4847,
+      "end": 7720,
+      "line": 117
+    }
+  ],
+  "full_repository_scanned": false,
+  "qa_methods_or_main_or_tests_executed": false
+}

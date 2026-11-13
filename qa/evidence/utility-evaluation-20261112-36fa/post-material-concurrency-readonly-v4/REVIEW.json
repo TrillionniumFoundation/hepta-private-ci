@@ -1,0 +1,81 @@
+{
+  "format": "hepta-readonly-original-global-guard-result-v1",
+  "status": "COMPLETED_OBSERVATION_NOT_QUALIFICATION",
+  "request": {
+    "bytes": 1916,
+    "sha256": "f968272305e441ea960386b475610a3b96b6ff1cbceaf12fd49f85774da3f152",
+    "git_blob": "332b30be04e955d13b063991ef1e7d10fb49f2e6"
+  },
+  "approval": {
+    "bytes": 1417,
+    "sha256": "072dd83b43dd76cd27e4d31636d4b69f1c76963f9d7f490f49ce44d656546883",
+    "git_blob": "4f4c650a20ac377b6512f2f78532c792b5c1d8eb"
+  },
+  "actual_job": "1a1d3883290-392-15b",
+  "initial_dispatches": 1,
+  "reconciliations": 0,
+  "transport_errors": 0,
+  "admission": {
+    "original": {
+      "bytes": 3063,
+      "sha256": "7448fd0d1f21fdeb2db5e3f347a44b32429207d45bacc020c41adf592faea6f1",
+      "git_blob": "a4a19241a3f60713172241b39735517c73ab0f58"
+    },
+    "exact_args_cwd_executable_host_key": true,
+    "reused": false,
+    "launch_ok": true,
+    "env_keys": []
+  },
+  "authoritative_terminal": {
+    "original": {
+      "bytes": 950,
+      "sha256": "52fa019158b5bf24725d22e5537c812ce056f2d5e3707799730be517da59fffc",
+      "git_blob": "abd7f8395d49c33f76b8d4d0eeb940bf64a32368"
+    },
+    "state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "cancelled": false,
+    "automatic_retry": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "at_unix_ms": 1794550283273
+  },
+  "stdout": {
+    "bytes": 485,
+    "sha256": "d737bd638ac91863afe55667be978423da282f4da68c64f0f7d807bd2678f986",
+    "git_blob": "c125be04ceeaac8bc269c7f578fa0b13693f361e",
+    "offset": 0,
+    "next_offset": 485,
+    "eof": true,
+    "actual_hex_equals_text": true,
+    "authoritative_seen_and_stored_equal": true
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "offset": 0,
+    "next_offset": 0,
+    "eof": true,
+    "actual_hex_equals_text": true,
+    "authoritative_seen_and_stored_equal": true
+  },
+  "actual_observation": {
+    "commands_or_writes_or_signals": false,
+    "finished_at": "2026-11-13T06:11:23.135527+00:00",
+    "format": "hepta-original-global-concurrency-readonly-v1",
+    "native_or_restore_dispatched": false,
+    "original_guard_observation": {
+      "active_matching_processes": [],
+      "scope": "Same-UID process names only; no environment/argument values or credentials inspected; no processes killed.",
+      "unreadable_matching_processes": []
+    },
+    "qualification": false,
+    "started_at": "2026-11-13T06:11:23.080842+00:00"
+  },
+  "meaning": "Same-UID matching process name arrays were empty only during the recorded point observation. No lease, attribution, process control, materials restoration or native qualification is implied.",
+  "restoration_or_native_dispatched": false,
+  "source_or_refs_changed": false
+}

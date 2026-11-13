@@ -1,0 +1,24 @@
+{
+  "created": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "fab488b846bb1b1ef7a42b9b30be5773054e1a6a"
+    },
+    "isError": false
+  },
+  "fetch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/github.fetch`\n\nCaused by:\n    Transport closed"
+      }
+    ],
+    "isError": true
+  },
+  "fact": "Raw SOURCE_PACKET blob create returned the exact computed SHA; the first full GET returned Transport closed. This is not a content mismatch and is not a gate result."
+}

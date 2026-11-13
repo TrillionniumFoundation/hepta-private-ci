@@ -1,0 +1,81 @@
+{
+  "format": "hepta-first-material-static-preparation-v1",
+  "source_packet": {
+    "bytes": 40640,
+    "sha256": "b2703b04ed1163542fd1843b7b09b790b242b886f8b2cb7112dbe80b449da467",
+    "git_blob": "641999aa0c288941e17d343c3fabeb48b93e0eae"
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "after": {
+        "bytes": 18140,
+        "sha256": "3b326ff19abe6139a237d347961668adfc7215b40a94238bce7deb81096649ff",
+        "git_blob": "ad0cf862eaba275e10287748bddd179a4def514d"
+      },
+      "before": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "after": {
+        "bytes": 9269,
+        "sha256": "93295c90b33d744be2062ee954861ec693f1df06f73b19e919ee61a1ececc54f",
+        "git_blob": "f6b6ba838fa70a9d8175655a26574cfcbc78f916"
+      },
+      "before": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "after": {
+        "bytes": 8572,
+        "sha256": "e4a3a2cce89509c7f6ca1cf6595c6e5bc673b634852e3f7810311df9efeeb227",
+        "git_blob": "57c57a8dca65e231feac0481c4ba31f4a1407ed0"
+      },
+      "before": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "after": {
+        "bytes": 891,
+        "sha256": "4e7d77389168bc5bd418e455b1c73a1a686bfe970ba388326b44dc41a9b7fffd",
+        "git_blob": "e1d0a0f608b8268ec039d7abdf0aab3bcb40a19c"
+      },
+      "before": {
+        "bytes": 799,
+        "sha256": "695cf970ba5a6da35f9f6efa7f267dcbc17b01521f1e565d61ce3fa2a3512681",
+        "git_blob": "14fcc72c79ad76c40fa89e3bbd5f404b60ea9248"
+      }
+    }
+  ],
+  "before_mount_exact": true,
+  "actual_git_apply_check_and_byte_equal": true,
+  "root_overlay_parent_unchanged": true,
+  "new_methods": 1,
+  "rust_compilation": false,
+  "rust_tests": false,
+  "source_gates": false,
+  "native_commands": false,
+  "qualification": false,
+  "original_api_basis": {
+    "RootProfile": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+    "RootRuntime": "3deaa319c779c5121e6e66ea94af14c77363c7d7",
+    "RootService": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+    "Dataset": "ffb3b82e610f5d7d4905185a4f306ae49998e66b",
+    "Verifier": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+    "ProductionLedger": "af3990dfed96acafa7ea8a874c3d416c80a730c4",
+    "RootSourceAudit": "2dfea484b9cb17751771d53fcc9f2ad7fcf1ffa2"
+  },
+  "limits": {
+    "control_aggregate": 65536,
+    "original_snapshot": 8192,
+    "new_queue": false,
+    "new_writer": false,
+    "new_signing": false,
+    "timeout_or_budget_changes": false
+  },
+  "limitations": [
+    "Local mechanism is unexecuted.",
+    "The first three-UID orchestration is not yet implemented.",
+    "completed_task_receipt remains Pending until original Root CAS/E/D checks actual Source."
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "format": "hepta-reviewed-source-preparation-manifest-v1",
+  "identity": "same-host-sc-tests-proposal-v1",
+  "qualification": false,
+  "status": "UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "source_packet": {
+    "bytes": 90367,
+    "sha256": "a226fd3d18ce76b237552cf01d76819fe210f495ccfe30d613feb4ec5c1b8e06",
+    "git_blob": "60c3d1ba12fdf43fd3e06ae5b3c6965e636e84d9"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 6140,
+        "sha256": "a14281f3efbd98946b6ab6965297a101416f2dbf949ebf4b55a821d218b54d46",
+        "git_blob": "124aaacdaaee8d2d297d85e480e57c5eee94ead8"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 18702,
+        "sha256": "ba16b891fbbfabad7010fb3cd325f3cbe953702bfd91971fb4cb1f07e530f4fb",
+        "git_blob": "ce32cd8e8df97319823035a41e3c1096a591ced5"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 17487,
+        "sha256": "4e149acdbe14fae599fe881d17bdf605670e941c447562bfbeb1001662240568",
+        "git_blob": "a75f2e9b6256a179f6307eab803a9301ef252683"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 7437,
+        "sha256": "2b11261faf896f7fa6ff588b641bde2bedeb537fd6e196c428dd0a0999801dcb",
+        "git_blob": "43976a78c4e4f380c9d97559006aed7d5e714cb7"
+      },
+      "after": {
+        "bytes": 7516,
+        "sha256": "69dc83b427aa78f1326319bd340175a73553134db0abb08b96fb72498a25cfa8",
+        "git_blob": "cbf9e717bda5ba469964cff7a399763c4f4e0bb9"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 11084,
+        "sha256": "8aa7ffa35fd70d4a77349e0e3d5114351233536e3679de23902c8d4764d7ce55",
+        "git_blob": "1a00dc794e3cd7e33fccbb63f1f08276c5361ddf"
+      },
+      "after": {
+        "bytes": 11517,
+        "sha256": "ea870ae5b1f0a8e1c3cecdc6edfb9a8c0647b02516efcab4606236ec7fb36992",
+        "git_blob": "1d4d4f96ba098e5889bdc09832314f1baf973ef9"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 4749,
+        "sha256": "2913893d7f9f55ecf548d0403bef677475e21aacbe4cd16f778ee0db55af1842",
+        "git_blob": "f218ca52852867b7e01dd8b383217ea2540bf1c0"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "SOURCE_PACKET.json",
+      "bytes": 90367,
+      "sha256": "a226fd3d18ce76b237552cf01d76819fe210f495ccfe30d613feb4ec5c1b8e06",
+      "git_blob": "60c3d1ba12fdf43fd3e06ae5b3c6965e636e84d9",
+      "full_git_readback": true
+    },
+    {
+      "path": "SOURCE_DELTA.patch",
+      "bytes": 51864,
+      "sha256": "bef511ed48ac9ba7eb9ce013f48e3ffa4ae86a5aaa22e061b9e47fc7e4d28615",
+      "git_blob": "61b0b4167177c86f58e020638a701658af0072fc",
+      "full_git_readback": true
+    },
+    {
+      "path": "STATIC_REVIEW.json",
+      "bytes": 2276,
+      "sha256": "2930da75c6dd03b454f979cd28e66c10abc3ca72b35f07e2ee471f8f59b6b553",
+      "git_blob": "fbfca98f72b4c1fb9798f79f6c21278e5dec6473",
+      "full_git_readback": true
+    },
+    {
+      "path": "TEST_REGISTRATION.json",
+      "bytes": 1610,
+      "sha256": "944826da7985bce9802d11d694b0c69eefeaae7cbb46229423b55a0fed3cebb0",
+      "git_blob": "ec7539aa5379a4d0e9705cf74ee8b5c5a679f4c8",
+      "full_git_readback": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 5352,
+      "sha256": "3c7ceb29a001112026ecc58d47018325978b05509de0712b90acc90575d5c4bb",
+      "git_blob": "1207275aa3f5f33f93093378ed5a358d96ddc37a",
+      "full_git_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "bytes": 6140,
+      "sha256": "a14281f3efbd98946b6ab6965297a101416f2dbf949ebf4b55a821d218b54d46",
+      "git_blob": "124aaacdaaee8d2d297d85e480e57c5eee94ead8",
+      "full_git_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "bytes": 18702,
+      "sha256": "ba16b891fbbfabad7010fb3cd325f3cbe953702bfd91971fb4cb1f07e530f4fb",
+      "git_blob": "ce32cd8e8df97319823035a41e3c1096a591ced5",
+      "full_git_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "bytes": 17487,
+      "sha256": "4e149acdbe14fae599fe881d17bdf605670e941c447562bfbeb1001662240568",
+      "git_blob": "a75f2e9b6256a179f6307eab803a9301ef252683",
+      "full_git_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "bytes": 7516,
+      "sha256": "69dc83b427aa78f1326319bd340175a73553134db0abb08b96fb72498a25cfa8",
+      "git_blob": "cbf9e717bda5ba469964cff7a399763c4f4e0bb9",
+      "full_git_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "bytes": 11517,
+      "sha256": "ea870ae5b1f0a8e1c3cecdc6edfb9a8c0647b02516efcab4606236ec7fb36992",
+      "git_blob": "1d4d4f96ba098e5889bdc09832314f1baf973ef9",
+      "full_git_readback": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "bytes": 4749,
+      "sha256": "2913893d7f9f55ecf548d0403bef677475e21aacbe4cd16f778ee0db55af1842",
+      "git_blob": "f218ca52852867b7e01dd8b383217ea2540bf1c0",
+      "full_git_readback": true
+    }
+  ],
+  "integration": "Apply after 31e260 and the existing recovery parent43976. Compatible with the disjoint14966 split and Version00c444 tests. No old test changes.",
+  "actual_execution": {
+    "format": false,
+    "compile": false,
+    "tests": false,
+    "H": false
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "format": "hepta-original-ledger-snapshot-codec-static-byte-review-v1",
+  "source_packet": {
+    "bytes": 44441,
+    "sha256": "d941bcc02a008899aa16ce4953be7d6a48ceb3287354046795e0e7ef2c5cd94f",
+    "git_blob": "3a7aee950bc6da48b4162f4f5215c4c5d18396b8"
+  },
+  "patch": {
+    "bytes": 38276,
+    "sha256": "ae645dd26639edd96eae3d17412c147b10ec928d0fdbe9f33cf186ca287a4058",
+    "git_blob": "a0f7d3ab39562b734e5985f672c40532b231597e"
+  },
+  "full_patch_application": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "old_hunk_lines": 0,
+      "new_hunk_lines": 199,
+      "complete_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "old_hunk_lines": 0,
+      "new_hunk_lines": 384,
+      "complete_after_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "old_hunk_lines": 141,
+      "new_hunk_lines": 146,
+      "complete_after_bytes_equal": true
+    }
+  ],
+  "lib_inverse_exact": true,
+  "original_algorithm_files_changed": [],
+  "no_dependency_changes": true,
+  "production_functions": [
+    "encode_original_ledger_snapshot_v1",
+    "decode_original_ledger_snapshot_v1"
+  ],
+  "observed_production_token_absence": [
+    {
+      "token": "std::fs",
+      "absent": true
+    },
+    {
+      "token": "std::io",
+      "absent": true
+    },
+    {
+      "token": "std::process",
+      "absent": true
+    },
+    {
+      "token": "unsafe",
+      "absent": true
+    },
+    {
+      "token": "File::",
+      "absent": true
+    },
+    {
+      "token": "DurableLedger::",
+      "absent": true
+    },
+    {
+      "token": "LedgerWriter::",
+      "absent": true
+    },
+    {
+      "token": "verify_signed",
+      "absent": true
+    },
+    {
+      "token": "sign(",
+      "absent": true
+    }
+  ],
+  "expected_event_variants": [
+    "Decision",
+    "RetrievalAssignment",
+    "Outcome",
+    "Credit",
+    "PromptDelivery",
+    "Revocation",
+    "AuthenticatedDecisionV2",
+    "AuthenticatedOutcomeV2",
+    "CreditBatchV2",
+    "UnlearningLineageV1"
+  ],
+  "event_shape_match_exhaustive_has_all_ten": true,
+  "header_bytes": 69,
+  "max_wire_bytes": 65536,
+  "derived_max_records": 584,
+  "public_api_accepts_no_limit_or_authority_argument": true,
+  "original_sources": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+      "bytes": 15598,
+      "sha256": "c5080c0dc99b9b6b9ca164a9efc6668f3a7a399115cfb00ef2c27231cda6a0af",
+      "git_blob": "29773833806142d8c6967cd2ac94d48958d90b2e"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "bytes": 63708,
+      "sha256": "391374c52e45a583347225ac2aa690d4a6f99f90e158f7c71a0f2e0b0c13410f",
+      "git_blob": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/model.rs",
+      "bytes": 12595,
+      "sha256": "fb5aa0c5716d1f75ec424dee4951a1f9b610225af6d0de2538ed4664cf7f2ad8",
+      "git_blob": "ebdec3db9e6c28a7abacffc332d37c0fd6e2e22d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "bytes": 7121,
+      "sha256": "c4465e8aa84450940a3a32c4d1b2edd04e5155b4f171e750c724aefeef3c5b0b",
+      "git_blob": "c9bfc876390e1c7e5fea4b3f3af535f2c56fd245"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "bytes": 16393,
+      "sha256": "800e09de21a479a524160a6c0c18fbf5d2148affc651fb576bd4247391ccaf82",
+      "git_blob": "eff97d826d794fdba519e862b96f644a41a61049"
+    }
+  ],
+  "additional_original_reads": [
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "bytes": 13344,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+      "git_blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "bytes": 676,
+      "sha256": "5cd9913ddcfc84c9b04e95c9a2e212d9f434b9a390e9695d48143496287e825c",
+      "git_blob": "1d76cad44498e9538cefff1e20202482520257ff"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+      "bytes": 24573,
+      "sha256": "f354b14b7f5fef9b064c0de19bf99267fabd68afc53b460177558f54e2eb700b",
+      "git_blob": "8ebf64632db0897c7c192dea2236491cce867a96"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    }
+  ],
+  "tests_declared": [
+    "empty_and_complete_snapshots_roundtrip_all_records_and_head",
+    "encoder_rejects_changed_original_record_fields_and_head",
+    "every_truncation_trailing_byte_and_changed_domain_is_rejected",
+    "declared_counts_and_frame_lengths_cannot_expand_the_input_budget",
+    "checksums_do_not_replace_sequence_predecessor_chain_or_head_validation",
+    "checksum_valid_noncanonical_candidate_order_is_rejected_not_repaired",
+    "repeated_or_reordered_checksum_valid_frames_are_rejected",
+    "checksum_valid_event_cannot_bypass_original_causal_validation",
+    "oversized_in_memory_event_is_rejected_before_encoding_or_cloning_it",
+    "aggregate_output_cap_rejects_complete_history_without_truncation"
+  ],
+  "rust_execution": {
+    "format": false,
+    "clippy": false,
+    "compile": false,
+    "tests_run": 0,
+    "h_calls": 0
+  },
+  "scope": "Pure data/hash/diff/static source review only; does not execute or type-check Rust or claim peer approval."
+}

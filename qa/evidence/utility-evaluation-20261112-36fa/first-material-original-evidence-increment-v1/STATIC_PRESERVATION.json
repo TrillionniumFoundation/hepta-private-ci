@@ -1,0 +1,98 @@
+{
+  "format": "hepta-original-material-evidence-preservation-v1",
+  "status": "PURE_STATIC_BYTE_REVIEW_ONLY",
+  "inverse_full_files_equal": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 22411,
+        "sha256": "21c90f524011ed8c461e636ec4412d2c5f0b6534b76e66c68b1611a49145240c",
+        "git_blob": "e7e83057862baaba3c39c09ae4a3f9faa95753ee"
+      },
+      "after": {
+        "bytes": 24380,
+        "sha256": "240739d4f5f195f2574a22a29eafd03c081e5d81ab2a0472603eb45a49d63780",
+        "git_blob": "149dcd8140f543e4da9a5d5b715963ed81e6fd0f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 16900,
+        "sha256": "7bf6652b9bd2847c0a484505dd98d845ef58853717ed3d700157fc85e06c17d4",
+        "git_blob": "fe5c07068d9ea1a59b05260f48d39ecfc22ebf96"
+      },
+      "after": {
+        "bytes": 17344,
+        "sha256": "67ce0523490280ae1a076c4e937f9a1e9a34b1642061705a2297ad38b53eadfb",
+        "git_blob": "f1f8add8a7d3055e64479d1fb0f239f127a15a84"
+      }
+    }
+  ],
+  "substitutions": {
+    "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs": [
+      {
+        "before": "pub(super) fn decision(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n) -> anyhow::Result<()> {\n",
+        "after": "/// Exact inputs and signature admitted by one original Decision append.\n/// Retaining these bytes does not append, re-sign or authorize another event.\n#[derive(Clone)]\npub(super) struct OriginalDecisionEvidence {\n    pub(super) request: ProductionDecisionV2,\n    pub(super) evidence: SignedLearningEvidenceV1,\n    pub(super) admitted_at: u64,\n}\n\n/// Exact inputs and signature admitted by one original Outcome append.\n/// The independent fixture target and original credential windows are unchanged.\n#[derive(Clone)]\npub(super) struct OriginalOutcomeEvidence {\n    pub(super) outcome: AuthenticatedOutcomeV1,\n    pub(super) evidence: SignedLearningEvidenceV1,\n    pub(super) admitted_at: u64,\n}\n\npub(super) fn decision(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n) -> anyhow::Result<()> {\n    decision_with_original_evidence(writer, credentials, publication).map(|_| ())\n}\n\npub(super) fn decision_with_original_evidence(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n) -> anyhow::Result<OriginalDecisionEvidence> {\n"
+      },
+      {
+        "before": "    writer.append_decision(Digest32::ZERO, record, &evidence, at)?;\n    Ok(())\n",
+        "after": "    let original = OriginalDecisionEvidence {\n        request: record.clone(), evidence: evidence.clone(), admitted_at: at,\n    };\n    writer.append_decision(Digest32::ZERO, record, &evidence, at)?;\n    Ok(original)\n"
+      },
+      {
+        "before": "// The caller fixes this explicit test measurement before material or Training.\n// It is never computed from the model output or a subsequent training result.\npub(super) fn terminal_outcome_with_value(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n    value: FixedQ32,\n) -> anyhow::Result<()> {\n",
+        "after": "pub(super) fn terminal_outcome_with_original_evidence(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n) -> anyhow::Result<OriginalOutcomeEvidence> {\n    terminal_outcome_with_value_and_original_evidence(\n        writer, credentials, publication, FixedQ32::from_raw(2_i64 << 32),\n    )\n}\n\n// The caller fixes this explicit test measurement before material or Training.\n// It is never computed from the model output or a subsequent training result.\npub(super) fn terminal_outcome_with_value(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n    value: FixedQ32,\n) -> anyhow::Result<()> {\n    terminal_outcome_with_value_and_original_evidence(writer, credentials, publication, value)\n        .map(|_| ())\n}\n\nfn terminal_outcome_with_value_and_original_evidence(\n    writer: &mut LedgerWriter,\n    credentials: &Credentials,\n    publication: &CircuitTaskSourcePublicationV1,\n    value: FixedQ32,\n) -> anyhow::Result<OriginalOutcomeEvidence> {\n"
+      },
+      {
+        "before": "    writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;\n    Ok(())\n",
+        "after": "    let original = OriginalOutcomeEvidence {\n        outcome: outcome.clone(), evidence: evidence.clone(), admitted_at: at,\n    };\n    writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;\n    Ok(original)\n"
+      }
+    ],
+    "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs": [
+      {
+        "before": "    pub(super) original_material_inputs: material::OriginalMaterialConstructorInputs,\n",
+        "after": "    pub(super) original_material_inputs: material::OriginalMaterialConstructorInputs,\n    pub(super) original_decision: material::OriginalDecisionEvidence,\n    pub(super) original_outcome: material::OriginalOutcomeEvidence,\n"
+      },
+      {
+        "before": "            material::decision(&mut ledger, &credentials, &previous)?;\n",
+        "after": "            let original_decision = material::decision_with_original_evidence(\n                &mut ledger, &credentials, &previous,\n            )?;\n"
+      },
+      {
+        "before": "            material::terminal_outcome(&mut ledger, &credentials, &previous)?;\n",
+        "after": "            let original_outcome = material::terminal_outcome_with_original_evidence(\n                &mut ledger, &credentials, &previous,\n            )?;\n"
+      },
+      {
+        "before": "            Ok::<_, anyhow::Error>((material, material_owner, trainer, ledger, previous, original_material_inputs))\n",
+        "after": "            Ok::<_, anyhow::Error>((material, material_owner, trainer, ledger, previous,\n                original_material_inputs, original_decision, original_outcome))\n"
+      },
+      {
+        "before": "        let (material, material_owner, trainer, ledger, previous, original_material_inputs) = match built {\n",
+        "after": "        let (material, material_owner, trainer, ledger, previous, original_material_inputs,\n            original_decision, original_outcome) = match built {\n"
+      },
+      {
+        "before": "            trainer, material_owner, material, original_trust, original_material_inputs,\n",
+        "after": "            trainer, material_owner, material, original_trust, original_material_inputs,\n            original_decision, original_outcome,\n"
+      }
+    ]
+  },
+  "preserved": [
+    "one original sign and one original append for each Decision/Outcome call",
+    "same actual Source publication, independent fixed terminal value and wall-time samples",
+    "same original append validation and error propagation before evidence is returned",
+    "same old unit-returning helper interfaces and caller behavior",
+    "complete retained original request, signature and admission time; no reconstructed signature"
+  ],
+  "not_proved": [
+    "first Root admission from a child",
+    "public three-UID Fresh completion",
+    "Rust compile or test success",
+    "real user-authorized A or independent utility"
+  ],
+  "formatter": false,
+  "compiler": false,
+  "tests": false,
+  "H": false
+}

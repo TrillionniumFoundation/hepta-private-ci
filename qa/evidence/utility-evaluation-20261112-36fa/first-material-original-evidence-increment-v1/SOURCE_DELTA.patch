@@ -1,0 +1,151 @@
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+@@ -199,11 +199,37 @@
+     ))
+ }
+ 
++/// Exact inputs and signature admitted by one original Decision append.
++/// Retaining these bytes does not append, re-sign or authorize another event.
++#[derive(Clone)]
++pub(super) struct OriginalDecisionEvidence {
++    pub(super) request: ProductionDecisionV2,
++    pub(super) evidence: SignedLearningEvidenceV1,
++    pub(super) admitted_at: u64,
++}
++
++/// Exact inputs and signature admitted by one original Outcome append.
++/// The independent fixture target and original credential windows are unchanged.
++#[derive(Clone)]
++pub(super) struct OriginalOutcomeEvidence {
++    pub(super) outcome: AuthenticatedOutcomeV1,
++    pub(super) evidence: SignedLearningEvidenceV1,
++    pub(super) admitted_at: u64,
++}
++
+ pub(super) fn decision(
+     writer: &mut LedgerWriter,
+     credentials: &Credentials,
+     publication: &CircuitTaskSourcePublicationV1,
+ ) -> anyhow::Result<()> {
++    decision_with_original_evidence(writer, credentials, publication).map(|_| ())
++}
++
++pub(super) fn decision_with_original_evidence(
++    writer: &mut LedgerWriter,
++    credentials: &Credentials,
++    publication: &CircuitTaskSourcePublicationV1,
++) -> anyhow::Result<OriginalDecisionEvidence> {
+     let source = publication.input();
+     let policy = publication.original_policy()?;
+     let mut candidates = policy
+@@ -245,8 +271,11 @@
+         &decision_signing_payload_v2(&record)?,
+         at,
+     );
++    let original = OriginalDecisionEvidence {
++        request: record.clone(), evidence: evidence.clone(), admitted_at: at,
++    };
+     writer.append_decision(Digest32::ZERO, record, &evidence, at)?;
+-    Ok(())
++    Ok(original)
+ }
+ 
+ pub(super) fn terminal_outcome(
+@@ -262,6 +291,16 @@
+     )
+ }
+ 
++pub(super) fn terminal_outcome_with_original_evidence(
++    writer: &mut LedgerWriter,
++    credentials: &Credentials,
++    publication: &CircuitTaskSourcePublicationV1,
++) -> anyhow::Result<OriginalOutcomeEvidence> {
++    terminal_outcome_with_value_and_original_evidence(
++        writer, credentials, publication, FixedQ32::from_raw(2_i64 << 32),
++    )
++}
++
+ // The caller fixes this explicit test measurement before material or Training.
+ // It is never computed from the model output or a subsequent training result.
+ pub(super) fn terminal_outcome_with_value(
+@@ -270,6 +309,16 @@
+     publication: &CircuitTaskSourcePublicationV1,
+     value: FixedQ32,
+ ) -> anyhow::Result<()> {
++    terminal_outcome_with_value_and_original_evidence(writer, credentials, publication, value)
++        .map(|_| ())
++}
++
++fn terminal_outcome_with_value_and_original_evidence(
++    writer: &mut LedgerWriter,
++    credentials: &Credentials,
++    publication: &CircuitTaskSourcePublicationV1,
++    value: FixedQ32,
++) -> anyhow::Result<OriginalOutcomeEvidence> {
+     let admitted_at = publication
+         .original_record()
+         .admission
+@@ -313,8 +362,11 @@
+         &outcome_signing_payload_v2(&outcome),
+         at,
+     );
++    let original = OriginalOutcomeEvidence {
++        outcome: outcome.clone(), evidence: evidence.clone(), admitted_at: at,
++    };
+     writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;
+-    Ok(())
++    Ok(original)
+ }
+ 
+ pub(super) struct Material {
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs
+@@ -102,6 +102,8 @@
+     pub(super) material: OriginalCellQ24MaterialReceiptConfigV1,
+     pub(super) original_trust: codex_hepta_learning_ledger::LearningEvidenceTrustV1,
+     pub(super) original_material_inputs: material::OriginalMaterialConstructorInputs,
++    pub(super) original_decision: material::OriginalDecisionEvidence,
++    pub(super) original_outcome: material::OriginalOutcomeEvidence,
+     pub(super) baseline: Arc<LoadedCellQ24ModelV1>,
+     pub(super) bundle: CellCompatibilityBundleV1,
+     pub(super) definition: CellDefinitionV1,
+@@ -168,10 +170,14 @@
+             let before_training = read_receipt(&a, &definition, &previous)?;
+             anyhow::ensure!(before_training.representation.prediction_q24[0] == Q,
+                             "the actual baseline's original A prediction");
+-            material::decision(&mut ledger, &credentials, &previous)?;
++            let original_decision = material::decision_with_original_evidence(
++                &mut ledger, &credentials, &previous,
++            )?;
+             // The existing fixture fixes 2Q independently of all future model
+             // outputs. It is the positive Candidate input, not an inferred label.
+-            material::terminal_outcome(&mut ledger, &credentials, &previous)?;
++            let original_outcome = material::terminal_outcome_with_original_evidence(
++                &mut ledger, &credentials, &previous,
++            )?;
+             // Fix the already enrolled Observer now. The future actual C owner
+             // must use this same signer/key (the original fixture seed is 43).
+             // SourceInput has no independent observer-identity getter.
+@@ -262,10 +268,12 @@
+             )?);
+             anyhow::ensure!(peers.threads.len() == 4,
+                             "all four original internal Material peers retained");
+-            Ok::<_, anyhow::Error>((material, material_owner, trainer, ledger, previous, original_material_inputs))
++            Ok::<_, anyhow::Error>((material, material_owner, trainer, ledger, previous,
++                original_material_inputs, original_decision, original_outcome))
+         }.await;
+ 
+-        let (material, material_owner, trainer, ledger, previous, original_material_inputs) = match built {
++        let (material, material_owner, trainer, ledger, previous, original_material_inputs,
++            original_decision, original_outcome) = match built {
+             Ok(original) => original,
+             Err(error) => {
+                 let a_cleanup = a.stop().await;
+@@ -281,6 +289,7 @@
+         ];
+         Ok(Self {
+             trainer, material_owner, material, original_trust, original_material_inputs,
++            original_decision, original_outcome,
+             baseline, bundle, definition, ledger,
+             credentials, previous, source_a, config_a, a: Some(a), c: Some(c),
+             source_c, version, root, material_peers: peers, source_paths,

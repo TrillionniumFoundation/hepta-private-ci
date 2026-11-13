@@ -1,0 +1,27 @@
+{
+  "format": "hepta-verified-evidence-placement-v1",
+  "status": "READ_ONLY_BASELINE_BINDING_ADDENDUM",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa",
+  "base_placement_unchanged": "a88a0a4ca78021bcd9f15706ffc1baf01bc9b2d8",
+  "entries": [
+    {
+      "path": "provider-registration-root86-preparation-v1/baseline-addendum/CANONICAL_QA_DIRECTORY_GET.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-registration-root86-frozen-v3/baseline-addendum/CANONICAL_QA_DIRECTORY_GET.original.json",
+      "mode": "100644",
+      "sha": "c3f0a395046a4cdb77eec358fae07b75f5b76852",
+      "bytes": 188832,
+      "sha256": "9797928c8034bc4fff5439afeedd3f67487ea8772c822a706dd6b6c4943394e9",
+      "full_readback_equal": true
+    },
+    {
+      "path": "provider-registration-root86-preparation-v1/baseline-addendum/CANONICAL_QA_BASELINE_BINDING.json",
+      "local_path": "/tmp/hepta-36fa-provider-registration-root86-frozen-v3/baseline-addendum/CANONICAL_QA_BASELINE_BINDING.json",
+      "mode": "100644",
+      "sha": "527c4fdd3d439d614103faca3c2956ceb89e6d59",
+      "bytes": 29722,
+      "sha256": "b1565d732e832d0a310aacd8949734a4e2b20a3f474e4b97047442f8da8b6571",
+      "full_readback_equal": true
+    }
+  ],
+  "scope": "One exact canonical directory GET plus complete local SHA verification; no QA/gate/source/H mutation."
+}

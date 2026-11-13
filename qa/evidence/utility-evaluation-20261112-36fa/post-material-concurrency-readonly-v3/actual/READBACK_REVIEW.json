@@ -1,0 +1,101 @@
+{
+  "format": "hepta-readonly-global-concurrency-observation-review-v1",
+  "request": {
+    "bytes": 1916,
+    "sha256": "70b00b8cf01c58ee615133d14e5e893a9aa7c579d8b4eac281ff6fdbee75fc73",
+    "git_blob": "5a37f8df273a698bb116d360e61c79f2ca86bae8"
+  },
+  "approval": {
+    "bytes": 1308,
+    "sha256": "037d22ee41cd0da78d9e539d3d49e2a4795e330ca1efad0e13179c3d6571b2ac",
+    "git_blob": "0ae6e5b63650d0be6366d2f0d4fb8e970e69082d"
+  },
+  "intent": {
+    "bytes": 1047,
+    "sha256": "627938e69db6b02680abe92aa01add1aef69f52b1d1c8d861ea85391ee1bb844",
+    "git_blob": "2a7b5ddcc92afc7a583cb1174e83a49c0b9551e0"
+  },
+  "job_id": "1a1d365ddd0-392-11c",
+  "idempotency_key": "hepta-utility-36fa-post-material-concurrency-readonly-v3",
+  "first_admission": {
+    "launch_ok": true,
+    "reused": false,
+    "created_unix_ms": 1794548030928,
+    "exact_executable_cwd_args_host_key": true,
+    "env_keys": []
+  },
+  "terminal": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "cancelled": false,
+    "automatic_retry": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "at_unix_ms": 1794548034714
+  },
+  "full_stream_identity": {
+    "bytes": 689,
+    "sha256": "ef913c0df31ab9504913c9ddf3748b4c3819cc1c73b42f70f6e60536721aa76d",
+    "git_blob": "d2c12c29213a31f68291665341e6543a789cc0b5"
+  },
+  "full_stream_checks": {
+    "stdout_offset": 0,
+    "stdout_next_offset": 689,
+    "stdout_eof": true,
+    "bytes_hex_equals_complete_text": true,
+    "stderr_bytes": 0,
+    "stderr_eof": true,
+    "supervisor_stored_sizes_equal": true
+  },
+  "observed": {
+    "commands_or_writes_or_signals": false,
+    "finished_at": "2026-11-13T05:33:54.689996+00:00",
+    "format": "hepta-original-global-concurrency-readonly-v1",
+    "native_or_restore_dispatched": false,
+    "original_guard_observation": {
+      "active_matching_processes": [
+        {
+          "comm": "just",
+          "pid": 3409188,
+          "uid": 1000
+        },
+        {
+          "comm": "cargo-clippy",
+          "pid": 3409191,
+          "uid": 1000
+        },
+        {
+          "comm": "cargo",
+          "pid": 3409208,
+          "uid": 1000
+        },
+        {
+          "comm": "clippy-driver",
+          "pid": 3415438,
+          "uid": 1000
+        }
+      ],
+      "scope": "Same-UID process names only; no environment/argument values or credentials inspected; no processes killed.",
+      "unreadable_matching_processes": []
+    },
+    "qualification": false,
+    "started_at": "2026-11-13T05:33:54.633122+00:00"
+  },
+  "interpretation": "The original same-UID name guard observed four matching processes and no unreadable matches at the timestamps in stdout. This is one bounded point-in-time observation, not a lease. No arguments, environment, process ownership beyond UID, process start ticks or source-writing attribution were inspected.",
+  "followup": {
+    "additional_h_observation": false,
+    "restoration_authorized": false,
+    "native_gate_authorized": false,
+    "qualification": false,
+    "source_ref_changed": false
+  },
+  "transport": {
+    "main_dispatch_count": 1,
+    "same_key_reconciliations": 0,
+    "status_reads": 1,
+    "stream_reads": 1,
+    "transport_failures_observed": 0
+  }
+}

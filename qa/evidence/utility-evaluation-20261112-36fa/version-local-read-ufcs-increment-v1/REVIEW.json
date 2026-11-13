@@ -1,0 +1,33 @@
+{
+  "format": "hepta-version-local-ufcs-static-review-v1",
+  "status": "EXACT_THREE_CALLS_AND_PARTIAL_MATCHER_RESOLUTION_ONLY",
+  "source_packet": "ebe3964d9db89eb8949a1d58f7d86ef99e4808d2",
+  "complete_two_file_inverse_equal": true,
+  "original_verifier": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+  "original_typed_helper": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+  "before_uncertainties": [
+    {
+      "symbol": "OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_response",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "error": "unresolved possible OriginalCircuitLearningReadOwnerV1::original_evaluated_next_use_response receiver"
+    },
+    {
+      "symbol": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "error": "unresolved possible OriginalVersionLocalReadBindingV1::require_original_shared_readbacks receiver"
+    },
+    {
+      "symbol": "OriginalVersionLocalReadBindingV1::respond",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "error": "unresolved possible OriginalVersionLocalReadBindingV1::respond receiver"
+    }
+  ],
+  "after_uncertainties": [],
+  "partial_source_rust_paths": 78,
+  "product_paths": 41,
+  "new_boundary_candidates": 52,
+  "all_original_arguments_borrows_and_execution_order_preserved_by_exact_inverse": true,
+  "no_change_to_verifier_ignore_permissions_budgets_or_assertions": true,
+  "no_full_source_scan_or_qa_methods_or_formatter_compiler_native_tests": true,
+  "next_scope_change": "Root requested Ordinary to split the new S LocalSources implementation to keep all original Remote function-unique guards unchanged; that future packet is not included in this view."
+}

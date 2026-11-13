@@ -1,0 +1,133 @@
+{
+  "format": "hepta-independent-same-host-sc-seven-mechanism-tests-review-v1",
+  "reviewer": "native_ci_audit",
+  "reviewed_at_utc": "2026-11-13T05:26:42Z",
+  "decision": "NO_REMAINING_CONCRETE_STATIC_BLOCKER_IN_REVIEWED_SUCCESSOR",
+  "status": "PREPARED_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "qualification": false,
+  "scope": {
+    "base_packet": {
+      "bytes": 90367,
+      "sha256": "a226fd3d18ce76b237552cf01d76819fe210f495ccfe30d613feb4ec5c1b8e06",
+      "git_blob": "60c3d1ba12fdf43fd3e06ae5b3c6965e636e84d9"
+    },
+    "original_manifest": {
+      "bytes": 6165,
+      "sha256": "71d8cdc2e427652ea7ad937d686416513126bce50213683c5733154245e30d5a",
+      "git_blob": "691b2041b5c50a335331dd50d8b41b70a350020b"
+    },
+    "original_placement": {
+      "bytes": 3431,
+      "sha256": "8a0a18958187f8e721cc916f468fe477665927d403f0927a242a389cd6c9f8b2",
+      "git_blob": "23f8cc8d886b83ed7123a6c0ccfd26a8d19d3dc9"
+    },
+    "single_file_correction": {
+      "bytes": 37457,
+      "sha256": "a4815351e8a42c73f252d7f536d7684cf77cfe15c61a43891e5d70c98a3fd081",
+      "git_blob": "2fb93c1cdb450cdcef445b5f02fa476e8f91d461"
+    },
+    "exact_patch": {
+      "bytes": 4095,
+      "sha256": "12beeda576789780e7f56b3a4c22a875f650e1a3f1a572892d48365f3c7a8d52",
+      "git_blob": "6d9f122759cc8f7e27f7b7f37d772355fd9a512a"
+    },
+    "effective_test_source": {
+      "bytes": 18314,
+      "sha256": "96864c596f1a1f4a68a93c9472989a9b2e7d71bfc6b6e5193106285f51b64414",
+      "git_blob": "ce0e5c05fac92930f9e2e9fbadf5473788088796"
+    },
+    "previous_production_peer": "7b6eaca9ac24fbb70e64d56768689f58ed8ce119",
+    "complete_bodies_read": "All six before/after file pairs in the original packet, all three newly added fixture/test files, the cfg(test) hook implementation, and the complete corrected test file. No metadata-only inference of source behavior.",
+    "new_file_counts": {
+      "new": 4,
+      "modified": 2
+    },
+    "final_default_test_methods": 7
+  },
+  "byte_identity": {
+    "proof": {
+      "bytes": 10763,
+      "sha256": "27cb04a1bbea84abf143270cc3e07b5eaee450f626ab940195842b73133bbc96",
+      "git_blob": "9fd7ebc48ca43729b339b7ef2d4c64181baf7695"
+    },
+    "original_get_responses": {
+      "bytes": 168613,
+      "sha256": "5515846a7c98b8ea32d891e4a45ecac4bcbb195c956dfdd9a3afd5b306ce8498",
+      "git_blob": "8d433eeea612784eddf822e08760f72542ec680b"
+    },
+    "verification": "Every original and successor input was obtained through a complete Git blob GET. UTF-8 byte length, SHA-256 and Git blob SHA-1 were recomputed. Embedded bodies match their declared original identities. The successor's sole preimage equals the original test postimage byte for byte, and its postimage equals the separately retrieved ce0e5c05 blob.",
+    "inverse": "The pre-existing recovery test support file has only the additional private module mount. The production S capability file has five cfg(test) insertion groups; deleting those groups restores its exact previous 1a00dc79 body. The single-file successor has ten line-edit groups and preserves all 38 ensure invocations."
+  },
+  "resolved_findings": [
+    {
+      "id": "SC-TEST-FIRST-POLL-RESULT",
+      "classification": "Concrete cleanup correctness blocker in original 60c3",
+      "original": "The overlap test discarded Poll::Ready(Result) by retaining only is_pending(), then unconditionally awaited the same future during cleanup. A completed async future could consequently be polled twice and panic before finish_case. The cancellation test also discarded an already delivered first result.",
+      "successor": "The first poll is retained as Poll<Result>. The overlap test awaits request only for Pending, and carries the first Ready result directly otherwise. Cancellation preserves any Ready result instead of labeling it cancelled delivery. Both paths release the test gate, attempt to observe its operation terminal, and return through the outer result collection and finish_case. The original error is propagated with context. An early refusal or failed terminal observation remains a failed test, not a manufactured successful cleanup.",
+      "fixed_by": "2fb93c1cdb450cdcef445b5f02fa476e8f91d461"
+    },
+    {
+      "id": "SC-TEST-EXPIRY-ANCHOR",
+      "classification": "Scheduling-dependent false-negative risk in original test",
+      "original": "The caller recorded started before entering the asynchronous export and waited until started+1100 ms for a capability whose 1 s lifetime begins inside export. A sufficiently delayed entry could make that observation precede the real capability expiry.",
+      "successor": "The same 1100 ms wait is anchored after successful export returns. The capability's original one-second lifetime and the production deadline remain unchanged. This makes the observation later than the original capability expiry without a new production getter, clock change, extended lifetime or protocol budget.",
+      "fixed_by": "2fb93c1cdb450cdcef445b5f02fa476e8f91d461"
+    }
+  ],
+  "fixture_and_hook_review": [
+    "The test hook is cfg(test), defaults to no armed operation, and is only taken for an original S read. It does not provide a receipt, replace a Result, modify signing material, mint a client, change a request counter or change a production permission.",
+    "The pause occurs only after OriginalSelectionOwner::read_original_receipt actually returns successfully. The pause wait is bounded by the same original operation deadline supplied by production. Its separate five-second observation deadline is only for detecting a missing signal; it is not granted to the original request.",
+    "The operation token is taken before the blocking closure is submitted and is captured by that closure. Its Drop records completion when the captured operation is dropped, including closure error/unwind or nonexecution followed by disposal. That token is evidence about the closure capture lifetime, not proof that an operating-system worker thread has terminated.",
+    "If an original call rejects before the hook is taken, the hook cannot claim successful dispatch or successful terminal. The corrected tests preserve the original Ready result. A timeout or missing terminal remains an error; the review does not assume that every failed preflight dispatched work.",
+    "The cancellation test deliberately drops asynchronous delivery after actual owner readback has returned and the test pause has been reached. It then releases the pause and waits for the original operation token. It does not claim that dropping the future cancels already dispatched owner I/O, and it asserts that every alias remains unavailable.",
+    "The two-pair identity fixture recovers one actual existing Material owner and obtains two sets of original Dataset/T/E connections, authentic whole receipts and original signatures. It creates two actual Version recoveries and exports the two bundles through their real interfaces. It does not construct a private shared bundle or authenticate a child-supplied digest.",
+    "Initialization failure and ordinary completion use the existing fixture cleanup; partial connection setup closes clients and joins the collected original peer tasks. SameHostCase::finish closes C first, drops local capabilities/owners and held clients, joins both original peer groups, stops the original session, and runs the original publication-fixture cleanup. Errors are collected rather than reported as successful peer shutdown."
+  ],
+  "cases": [
+    {
+      "name": "local_s_c_complete_same_actual_c_and_cold_observer_stays_readonly",
+      "covered": "The actual S capability feeds the actual C owner. One real C execution yields the original six-part cut and exact original S signature. The second Execute is rejected. A cold Observer opened over the real journals refuses Execute from a fresh command client and still returns the complete same receipt cut; original journals remain equal.",
+      "limit": "A cold in-process mechanism test is not the complete public three-UID Fresh/Root fixture."
+    },
+    {
+      "name": "identical_signed_cuts_cannot_substitute_other_actual_t_e_clients",
+      "covered": "Equal signed context from the original owners is insufficient when the two real T/E Arc identities differ. Version's strict shared check, S construction, S capability and C construction reject the alternate pair; no replacement evidence or C revision is produced."
+    },
+    {
+      "name": "missing_original_s_cannot_export_a_local_predecessor",
+      "covered": "Valid context and published Version cannot fabricate absent original S evidence. Export fails and original evidence bytes and C revision remain unchanged."
+    },
+    {
+      "name": "local_s_aliases_refuse_real_overlapping_owner_reads",
+      "covered": "After an actual original read reaches the pause, another alias cannot start a second read while the slot is absent. After release, the winner returns the whole same S snapshot, receipt and signature. First-ready completion is now preserved without double polling."
+    },
+    {
+      "name": "cancelling_local_s_read_fences_all_aliases_after_actual_work_terminates",
+      "covered": "Dropping delivery after actual readback consumes the same capability slot. Waiting for the captured operation to finish does not restore it; both aliases continue to refuse and original journal bytes remain unchanged."
+    },
+    {
+      "name": "local_s_revalidates_withdrawn_b_and_consumes_the_failed_slot",
+      "covered": "A real independent B withdrawal invalidates an earlier authentic S read. The failed current-validation attempt consumes the shared slot without rewriting original receipts or starting C."
+    },
+    {
+      "name": "local_s_clone_keeps_the_original_absolute_expiry",
+      "covered": "Cloning after the original capability has expired does not renew it. Both original and cloned aliases remain unavailable, and no new original evidence is issued."
+    }
+  ],
+  "limits_and_execution": [
+    "This is complete source and byte-chain review, not formatting, compilation, a Rust type check, execution, a race stress test or qualification.",
+    "No H request, source/record mutation, target reset, dependency restoration, new native gate or ref update was performed for this review.",
+    "No new ignored Root methods are introduced by these seven default tokio tests. Final integration must still mount the exact final files and update its actual protection/caller inventories where required.",
+    "These seven tests do not independently exhaust the local 128-request limit or prove every production concurrency schedule succeeds. Original budgets, remote same-UID/PID rejection, sealed identity checks and failure semantics remain intact.",
+    "The existing default tests, production branches, old receipts, counters, original 500 ms operation bound, one-second expiry case, and all 38 assertion invocations are retained. The native gate budgets and 8 MiB stack contract are unchanged.",
+    "The original 60c3 packet is preserved as a prepared prior version with the two findings above. It must not be silently substituted for the reviewed 2fb93c1c successor."
+  ],
+  "actual_execution": {
+    "H": 0,
+    "format": 0,
+    "compile": 0,
+    "tests": 0,
+    "source_mutations": 0,
+    "refs": 0
+  }
+}

@@ -1,0 +1,420 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "status": "ACTUAL_MATERIAL_RESTORATION_ONLY",
+  "job_id": "1a1d38b82e9-392-160",
+  "idempotency_key": "hepta-utility-36fa-v8-single-archive-restore-v3",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "main_dispatch_count": 1,
+  "normal_exit_code": 0,
+  "behavioral_tests_started": false,
+  "qualification": false,
+  "source_writes": false,
+  "environment_changes": false,
+  "actual_result": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+  "actual_supervisor": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+  "verification": "d6330cfd1e23ab52d172b6f28d571d360d7d29bf",
+  "artifact_index": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+  "limits": [
+    "Material restoration does not authorize or prove native qualification.",
+    "Large source inventory raw/gzip/parts were not re-transferred; actual original before/after artifact pins match the known complete canonical inventory.",
+    "The new archive inode/stat is recorded in the exact actual result and ARCHIVE_READBACK; historical ENVIRONMENT_READY is unchanged.",
+    "No follow-up native or new-source maintenance was started."
+  ],
+  "entries": [
+    {
+      "path": "v8-single-archive-restore-v3/actual/REQUEST.json",
+      "blob": "869d455ea5b5d524047a96ecc50c104687f77e74",
+      "bytes": 39070,
+      "sha256": "fb68e651a551d9729ad76fd162de6205bced88be717e28ea496713cb17dbba0f",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/REQUEST.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/ROOT_APPROVAL.json",
+      "blob": "cf11c67d7bdeeed38f368cdc62ced1e2a969fe86",
+      "bytes": 3345,
+      "sha256": "718fd0c26802955b391038889231ac5df6a888e68b3ff85c1213c54a90176d5e",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/ROOT_APPROVAL.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/RESULT.json",
+      "blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "bytes": 17615,
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/RESULT.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/STATUS_01.original.json",
+      "blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/STATUS_01.original.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/DISPATCH_INTENT.json",
+      "blob": "e0a485978822d4398a705fe738245076853e1a3b",
+      "bytes": 2039,
+      "sha256": "5256784b3bf36568d8d1193d165c76858543c9b29d36c7d53892749f60a79a11",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/DISPATCH_INTENT.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/ADMISSION.original.json",
+      "blob": "03845fe333ef4038c51415b98e16fc8b1df8697c",
+      "bytes": 40088,
+      "sha256": "7b0ebc17e72dedb2caeedb5b5422cf82cf9d55fb4283c3260d7c4f1138d54cd6",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/ADMISSION.original.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/STDOUT_READ_01.original.json",
+      "blob": "bff656cedbdc55e724d5db2c039e56a5ecf7d309",
+      "bytes": 1518,
+      "sha256": "a0f3ebe0e8340f6c8d5e9f9e0345b14112809a0cd861442b6b7e2e5307f34775",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/STDOUT_READ_01.original.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/RESULT_READ_000000.original.json",
+      "blob": "ba8f64c5c1cccc8201b0bbd3416f9c4f337a0931",
+      "bytes": 23958,
+      "sha256": "87fbea67983b69bce583a3a660fe1646693a9670dfa2777474f35af52d088ef8",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/RESULT_READ_000000.original.json",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/STDOUT.complete.txt",
+      "blob": "02fb3215203212f01afd61fe1ea9149b2b936941",
+      "bytes": 311,
+      "sha256": "3a5823d2390dddbb08ebdac2809f6fa6c4fdb8c4ef415a53b4a051ae90740c39",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/STDOUT.complete.txt",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/STDERR.complete.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/STDERR.complete.txt",
+      "git_full_readback_equal": true
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/ARTIFACTS.json",
+      "blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+      "bytes": 28169,
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/ARTIFACTS.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "ARTIFACTS.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/ARCHIVE_READBACK.json",
+      "blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+      "bytes": 496,
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/ARCHIVE_READBACK.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/ARCHIVE_READBACK.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/SOURCE.before.git-state.json",
+      "blob": "0b42d258d307696a1e236f326521819e7a969ae6",
+      "bytes": 489,
+      "sha256": "6415236e0d5ca6d1fc0cf11a926dc8126811e4be5d5ffb0059dab0f77cf061f5",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/SOURCE.before.git-state.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/SOURCE.before.git-state.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/SOURCE.after.git-state.json",
+      "blob": "0b42d258d307696a1e236f326521819e7a969ae6",
+      "bytes": 489,
+      "sha256": "6415236e0d5ca6d1fc0cf11a926dc8126811e4be5d5ffb0059dab0f77cf061f5",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/SOURCE.after.git-state.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/SOURCE.before.git-state.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/SMALL_RECORDS_VERIFICATION.json",
+      "blob": "d6330cfd1e23ab52d172b6f28d571d360d7d29bf",
+      "bytes": 25809,
+      "sha256": "5c4d4e7fe1c43b4e7a9e07711f552867ff63c3ac2d757438f8df5c1e57b17a72",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/SMALL_RECORDS_VERIFICATION.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "SMALL_RECORDS_VERIFICATION.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/ARCHIVE.absent.before.json",
+      "blob": "7478f1f5102ff2abd2b40140d7c3d2e60c4f11d3",
+      "bytes": 215,
+      "sha256": "1be7e27d82dc0f2161c76960a20ecf9f302785b4f19613afb571b9dec594ef43",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/ARCHIVE.absent.before.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/ARCHIVE.absent.before.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/ARCHIVE.absent.before.json.READ.original.json",
+      "blob": "27d5ee37f8bda0af8b7843e532236f5e46123f3b",
+      "bytes": 767,
+      "sha256": "fefa0d727be83f8dcc032938bfa456161b7dadebd2a8c4df6c04d6af69be0922",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/ARCHIVE.absent.before.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/ARCHIVE.absent.before.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/ARCHIVE_PUBLICATION_INTENT.json",
+      "blob": "da42bd01b0c1f85a3b4bff141dcbcd22486f51eb",
+      "bytes": 1079,
+      "sha256": "f653b1f2306b3d40d1ce68053c5378ace16e921b567818de57a5e54506ae702d",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/ARCHIVE_PUBLICATION_INTENT.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/ARCHIVE_PUBLICATION_INTENT.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/ARCHIVE_PUBLICATION_INTENT.json.READ.original.json",
+      "blob": "6ea8d9d07603838042388619fac0b8c9b9112d15",
+      "bytes": 1927,
+      "sha256": "9a7d8b57370ccad7685d44e90d497f1dc08e3d08b40cadf39e117c31fdd00786",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/ARCHIVE_PUBLICATION_INTENT.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/ARCHIVE_PUBLICATION_INTENT.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/ARCHIVE_READBACK.json.READ.original.json",
+      "blob": "1e189c9c3224d8fc97930e3793aa3a9eb1779016",
+      "bytes": 1138,
+      "sha256": "d7b4ecab0e923549dc98d5b5b5b79753f9badf886d04b609b04fc6683b191a9a",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/ARCHIVE_READBACK.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/ARCHIVE_READBACK.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BINDINGS.after.json",
+      "blob": "805b8abb66ee26adf6c532e3ef5806b2cd337f44",
+      "bytes": 488,
+      "sha256": "ddd06290fde2f4860e67f6065e83652ac9767136aff2a4d3148fe9ec342f3812",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BINDINGS.after.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BINDINGS.after.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BINDINGS.after.json.READ.original.json",
+      "blob": "3967fe3863d3c8c3c530456f2f3e06ff1e6b9257",
+      "bytes": 1124,
+      "sha256": "e3e17db8734ccf52ba53bcbc7566c779bdad35b0350226f6057477087c3f3f68",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BINDINGS.after.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BINDINGS.after.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BINDINGS.before.json",
+      "blob": "805b8abb66ee26adf6c532e3ef5806b2cd337f44",
+      "bytes": 488,
+      "sha256": "ddd06290fde2f4860e67f6065e83652ac9767136aff2a4d3148fe9ec342f3812",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BINDINGS.before.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BINDINGS.after.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BINDINGS.before.json.READ.original.json",
+      "blob": "545bdb3a33ee103fb114fc1d680b1136adb7920e",
+      "bytes": 1125,
+      "sha256": "2443460827739b7ea8d98fb52f5f26fa4bb1cca19c9451951a5e6689207285c6",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BINDINGS.before.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BINDINGS.before.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BUILD_PROCESS_BEFORE_PUBLICATION.json",
+      "blob": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+      "bytes": 185,
+      "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BUILD_PROCESS_BEFORE_PUBLICATION.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BUILD_PROCESS_BEFORE_PUBLICATION.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BUILD_PROCESS_BEFORE_PUBLICATION.json.READ.original.json",
+      "blob": "4faa68e06d3c47dd99c44972f222efb9fa8ae8c7",
+      "bytes": 738,
+      "sha256": "fbf30d938eb12f5228bcf4d721626bed2d9d4ab403f5d0e959f4b397b0e98edf",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BUILD_PROCESS_BEFORE_PUBLICATION.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BUILD_PROCESS_BEFORE_PUBLICATION.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BUILD_PROCESS_PREFLIGHT.json",
+      "blob": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+      "bytes": 185,
+      "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BUILD_PROCESS_PREFLIGHT.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BUILD_PROCESS_BEFORE_PUBLICATION.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/BUILD_PROCESS_PREFLIGHT.json.READ.original.json",
+      "blob": "61eef535dbd3e265ee0bf2d523eeb22a746c5a57",
+      "bytes": 729,
+      "sha256": "e9971667ebc7d66963228e76555bc6e745155ddc5d554dcef2e73a7ec3f70cd5",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/BUILD_PROCESS_PREFLIGHT.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/BUILD_PROCESS_PREFLIGHT.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/COMMANDS.json",
+      "blob": "5fbe7fd76ebdc80b10920a05a59514e458947f1e",
+      "bytes": 8852,
+      "sha256": "94e0d839074cb2f2486b30bd39b08f0085928a12334250df24d76220a44a409d",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/COMMANDS.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/COMMANDS.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/COMMANDS.json.READ.original.json",
+      "blob": "83bb48876a63ad6fcdd3dc7e6169f954f39726a4",
+      "bytes": 12273,
+      "sha256": "390e07aa2737c2afbc8fefc1a5b61df913a6483862eeaa4a20626fad18a89913",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/COMMANDS.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/COMMANDS.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/DOWNLOADS.json",
+      "blob": "772ead2565bf9665d2661f1107da10d48afe1b6f",
+      "bytes": 2490,
+      "sha256": "e64cd782450dc46881ad02fa6057188c462dd19c96b891c2c70967de6b0089c8",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/DOWNLOADS.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/DOWNLOADS.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/DOWNLOADS.json.READ.original.json",
+      "blob": "b7929e5b1f2f8e28651d2c0619eb0aa87b5a3957",
+      "bytes": 3790,
+      "sha256": "2a7b8c7c6350242fabe502534c0777c77ebf925eb57ad4292b80f7e27de61cd7",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/DOWNLOADS.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/DOWNLOADS.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/INPUT_IDENTITIES.json",
+      "blob": "544934e371e8e544a33fd0ff56b5cd38e76c0e4d",
+      "bytes": 1729,
+      "sha256": "38c8f2474ee9fbceab75213653835946a78f4c5da9f259d9f26cf63d11e7b542",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/INPUT_IDENTITIES.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/INPUT_IDENTITIES.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/INPUT_IDENTITIES.json.READ.original.json",
+      "blob": "81fe63a75a1b38bf5f7a72856ed9f7a70aae6595",
+      "bytes": 2785,
+      "sha256": "ed664c404ec21b6fdee776a2fef7065b0a0551ab9c90441d6cc36019c2ded973",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/INPUT_IDENTITIES.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/INPUT_IDENTITIES.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/MATERIAL_PARENTS.after.json",
+      "blob": "bb4170568342716f9374858a80fdcb6c7ca872b6",
+      "bytes": 706,
+      "sha256": "102f09eec78976b0ecc50248d0d7954ec8a0952c20f1cb92548972ba7b816494",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/MATERIAL_PARENTS.after.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/MATERIAL_PARENTS.after.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/MATERIAL_PARENTS.after.json.READ.original.json",
+      "blob": "1d30f4700a65503cfecfaef33b32cbba6714468d",
+      "bytes": 1424,
+      "sha256": "dba4bc129aeac9b5a4a4269080e60ca53dac0f0efb527106aabea5f605d7664c",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/MATERIAL_PARENTS.after.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/MATERIAL_PARENTS.after.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/MATERIAL_PARENTS.before.json",
+      "blob": "7ca334c7bcb570a7b65fdc138dc7ef82024f6fe9",
+      "bytes": 706,
+      "sha256": "8ce4933abfc7a060b7cb9d65364d466e0fe736cc010cee646b99b0c5c2fe9c9e",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/MATERIAL_PARENTS.before.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/MATERIAL_PARENTS.before.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/MATERIAL_PARENTS.before.json.READ.original.json",
+      "blob": "f369b2b18325e053210b9d74a5ffc872ae06fe79",
+      "bytes": 1425,
+      "sha256": "bd66031c42f27f0cc49c3bcef400a74fa724694be45f27084cca39c6ecd74b0c",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/MATERIAL_PARENTS.before.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/MATERIAL_PARENTS.before.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/SOURCE.after.git-state.json.READ.original.json",
+      "blob": "eedd40206972557484b4766d46d084f8a456403c",
+      "bytes": 1132,
+      "sha256": "746d3e9c0b49c21313b65efe0104699cb72f68c216e813bbbb0fe81903dd8d87",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/SOURCE.after.git-state.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/SOURCE.after.git-state.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/SOURCE.before.git-state.json.READ.original.json",
+      "blob": "adb847d2909186944e98161da3efa00dcc2064f8",
+      "bytes": 1133,
+      "sha256": "0ccc1a35041cd41a9a5367c5eb455d1d4d7d947f7c857962fbc8605f2ac98411",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/SOURCE.before.git-state.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/SOURCE.before.git-state.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/SOURCE_COORDINATION_SH.json",
+      "blob": "a81858966cbc6a9b0311a2321f0232409ed7f59d",
+      "bytes": 299,
+      "sha256": "d483169c1002615dc4835bed3173b5c51e6d7b155b0ff5ebf7d531e589777034",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/SOURCE_COORDINATION_SH.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/SOURCE_COORDINATION_SH.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/SOURCE_COORDINATION_SH.json.READ.original.json",
+      "blob": "102703f12bab62ce9b9139311807d503a0a4a1aa",
+      "bytes": 880,
+      "sha256": "808c94fb8108f6050fb10d4151b7b0fa209de8504edf5f9ff4d7ed85cdad6bdc",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/SOURCE_COORDINATION_SH.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/SOURCE_COORDINATION_SH.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/VERIFIED_SPOOL.json",
+      "blob": "8009fe9b5d8f7131a15bb2ae2adf7c3a38471968",
+      "bytes": 544,
+      "sha256": "6052926b3610c8f9f4b5a1674b9c44a42ea08cfa19e4b2f08b7ffca38ab277ec",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/VERIFIED_SPOOL.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/VERIFIED_SPOOL.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/small/VERIFIED_SPOOL.json.READ.original.json",
+      "blob": "07e80a6e3e112ef7d710b64897fe5169cc0d6afd",
+      "bytes": 1200,
+      "sha256": "ef057a022753c9a8c1187272764a7c2ef566873dcb065fe66d9d9a5c1ad49109",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/small/VERIFIED_SPOOL.json.READ.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "small/VERIFIED_SPOOL.json.READ.original.json"
+    },
+    {
+      "path": "v8-single-archive-restore-v3/actual/ARTIFACTS_READ_000000.original.json",
+      "blob": "c429b3e2cf0bd884a911389737204d2449fcd3a1",
+      "bytes": 38033,
+      "sha256": "5019e2a4b8f8571e90623d30e2712f704bc5aa1737daa736fa7d159de3f2cc91",
+      "local_path": "/tmp/hepta-36fa-v8-single-archive-restore-v3-actual/ARTIFACTS_READ_000000.original.json",
+      "git_full_readback_equal": true,
+      "same_blob_readback_source": "ARTIFACTS_READ_000000.original.json"
+    }
+  ]
+}

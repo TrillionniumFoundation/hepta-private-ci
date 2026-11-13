@@ -1,0 +1,23 @@
+{
+  "format": "hepta-root-readonly-global-guard-v4-approval-v1",
+  "approved_at_utc": "2026-11-13T06:09:09.610741+00:00",
+  "sole_executor": "/root/native_ci_audit",
+  "approved_exact_request": {
+    "bytes": 1916,
+    "sha256": "f968272305e441ea960386b475610a3b96b6ff1cbceaf12fd49f85774da3f152",
+    "git_blob": "332b30be04e955d13b063991ef1e7d10fb49f2e6"
+  },
+  "predecessor_request": "5a37f8df273a698bb116d360e61c79f2ca86bae8",
+  "only_change": "Unique v3 to v4 idempotency key; inverse restores every predecessor byte.",
+  "same_original_6_fields": true,
+  "same_original_script": true,
+  "same_original_15_second_timeout": true,
+  "reason": "The complete frozen registration and independent review have reached a new source-preparation milestone. The last original guard observation was only the 05:33:54 UTC busy point sample. Re-observe the same original guard once.",
+  "scope": "One read-only same-UID /proc comm/status observation. No environment/argv/credentials, no signals/writes/downloads/restoration/native dispatch.",
+  "execution_rule": "Dispatch this one exact request once. Reconcile uncertainty under the same exact key only, without replay or alternate key. Persist raw admission, normal terminal, complete stdout/stderr and placement.",
+  "quiet_is_not_lease": true,
+  "restoration_authorized": false,
+  "native_gates_authorized": false,
+  "source_ref_changed": false,
+  "qualification": false
+}

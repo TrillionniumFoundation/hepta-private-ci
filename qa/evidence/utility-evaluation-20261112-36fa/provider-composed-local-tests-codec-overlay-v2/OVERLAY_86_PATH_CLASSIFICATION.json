@@ -1,0 +1,24 @@
+{
+  "conditional_source_only_counts": {
+    "excludes": "Later QA registration files and unfinished first-admission/Fresh orchestration increments.",
+    "formula": "Original 6619 Rust / 15188 tracked files plus 43 newly covered Rust paths minus one explicitly renamed helper path.",
+    "physical_measurement": false,
+    "rust_files": 6661,
+    "tracked_files": 15230
+  },
+  "format": "hepta-root-overlay86-exact-path-classification-v1",
+  "map_git_blob": "3f7d40d4933669da33d2aef3491efb431c5771ae",
+  "modified_original_rust_paths": 42,
+  "new_rust_paths": 43,
+  "non_rust_prepared_paths": 2,
+  "qualification": false,
+  "removed_original_rust_paths": [
+    "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs"
+  ],
+  "rust_overlay_paths": 86,
+  "source_ref_changed": false,
+  "unchanged_restored_original_paths": [
+    "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs"
+  ],
+  "wording_correction": "The original local verification scope described all 88 paths as changed. One covered Rust path is exactly the original cc57 Source Remote file after the LocalSources split. The exact 86 map, all listed SHA identities and its full 88-blob GET proof remain unchanged."
+}

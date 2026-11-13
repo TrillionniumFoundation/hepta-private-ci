@@ -1,0 +1,37 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "status": "STATIC_AUDIT_ONLY_NO_EXECUTION",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa",
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "prepared_overlay": "3f7d40d4933669da33d2aef3491efb431c5771ae",
+  "full_readback_verified": true,
+  "entries": [
+    {
+      "path": "cross-uid-fixture-input-audit-v1/SOURCE_INPUTS.json",
+      "local_path": "/tmp/hepta-36fa-cross-uid-fixture-input-audit-v1/SOURCE_INPUTS.json",
+      "git_blob": "57ded6119ec596f8a624a972e8fc4279f1d3ff75",
+      "bytes": 27977,
+      "sha256": "6af1ba6c4cd512f8111f18d195763c794cbf4d5a9213e6b3a4bfc7edb1137a47",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cross-uid-fixture-input-audit-v1/REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-cross-uid-fixture-input-audit-v1/REVIEW.json",
+      "git_blob": "50a182e905aca1e388bafe4dffe28277a7c568d9",
+      "bytes": 15092,
+      "sha256": "7b3e70b440c9cab5605fec13e5921cc6879164c22e1cfc5514aa018fd074c58e",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cross-uid-fixture-input-audit-v1/README.md",
+      "local_path": "/tmp/hepta-36fa-cross-uid-fixture-input-audit-v1/README.md",
+      "git_blob": "34644b7f093cd7af1f41243b8bb1d7fa738fccf0",
+      "bytes": 2666,
+      "sha256": "8eb089aaaad99a383687f09433e8a9d791758a1cb322954eefe7778eac027eca",
+      "full_readback_equal": true
+    }
+  ],
+  "original_sources": "Already existing immutable source Git blobs listed in SOURCE_INPUTS; no source copies added to this evidence package.",
+  "source_ref_changed": false,
+  "tests_or_gate_run": false
+}

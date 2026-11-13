@@ -1,0 +1,521 @@
+{
+  "status": "PREPARATION_HOLD_STATIC_BYTE_AND_SCOPE_CONSTRUCTION_ONLY",
+  "frozen_at_utc": "2026-11-13T05:50:14.749245+00:00",
+  "root86_map": {
+    "bytes": 40842,
+    "sha256": "927c26d9d4412c6aaf989a6c65cbb3243b6d0c38a77e2a0d2f2f3e36a85af949",
+    "git_blob": "3f7d40d4933669da33d2aef3491efb431c5771ae"
+  },
+  "canonical_source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "canonical_source_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "coverage_view": {
+    "rust_paths": 86,
+    "new_rust_paths": 43,
+    "changed_original_rust_paths": 42,
+    "restored_original_rust_paths": 1,
+    "prepared_non_rust_paths": 2,
+    "removed_old_helper_paths": 1
+  },
+  "boundaries": {
+    "before": 569,
+    "after": 621,
+    "old_product_caller_arrays_appended": [
+      295,
+      326,
+      361,
+      364,
+      403,
+      404,
+      429,
+      430,
+      434,
+      534,
+      535,
+      537,
+      538,
+      545,
+      548,
+      551,
+      556
+    ],
+    "new": 52,
+    "all_other_old_boundary_fields_equal": true
+  },
+  "protected": {
+    "before": 422,
+    "after": 437,
+    "old_raw_rows_identical": 401,
+    "changed_old_row_indices": [
+      71,
+      245,
+      267,
+      270,
+      279,
+      281,
+      300,
+      309,
+      339,
+      347,
+      351,
+      362,
+      364,
+      370,
+      373,
+      381,
+      383,
+      416,
+      417,
+      419,
+      420
+    ],
+    "new": 15,
+    "all_422_forbidden_arrays_equal": true,
+    "all_old_raw_required_prefixes_equal": true,
+    "row411_entire_block_and_source_equal": true,
+    "row411_is_not_deduplicated_by_path": true
+  },
+  "old_qa": {
+    "files": 63,
+    "methods": 590,
+    "method_text_unchanged": 587,
+    "changed_methods": [
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+        "class": "EvaluatedNextUseClosureTests",
+        "method": "test_both_live_predecessors_and_readonly_original_s_are_mandatory",
+        "before": "def test_both_live_predecessors_and_readonly_original_s_are_mandatory(self):\n        for marker in (\n            \"let training = match &self.profile\", \"Profile::Legacy =>\",\n            \"let trainer: &LearningIterationEvidenceClientV1 = source.trainer()\",\n            '.ok_or(OwnerError::Binding(\"original C Trainer source\"))?',\n            \"LearningIterationEvidenceClientV1::readback(trainer,\",\n            \"prior(&self.config, LearningIterationStageV1::Training)?\",\n            \"Profile::Evaluated(selection) =>\", \"source.evaluated_owners()\",\n            \".require_original_receipt_owners(trainer, evaluator)\",\n            \"let selector: &LearningIterationEvidenceClientV1 = source.selector();\",\n            \".readback(source.snapshot(), prior(&self.config, LearningIterationStageV1::Selection)?,)\",\n            \"Ok([training, selection])\",\n        ):\n            self.rejects(OWNER, \"fn predecessors(\", marker)\n        for marker in (\"OriginalCellQ24TrainingCommandClientV1::readback(trainer).await?\",\n                       \"if training != self.training\", \"OriginalCellEvaluationCommandClientV1::readback(evaluator).await?\",\n                       \"if evaluation != self.evaluation\"):\n            self.rejects(CONTEXT, \"fn require_current(\", marker)",
+        "after": "def test_both_live_predecessors_and_readonly_original_s_are_mandatory(self):\n        for marker in (\n            \"let training = match &self.profile\", \"Profile::Legacy =>\",\n            \"let trainer: &LearningIterationEvidenceClientV1 = source.trainer()\",\n            '.ok_or(OwnerError::Binding(\"original C Trainer source\"))?',\n            \"LearningIterationEvidenceClientV1::readback(trainer,\",\n            \"prior(&self.config, LearningIterationStageV1::Training)?\",\n            \"Profile::Evaluated(selection) =>\", \"source.evaluated_owners()\",\n            \".require_original_receipt_owners(trainer, evaluator)\",\n            \"let selection = match source.selector()\",\n            \"LearningIterationEvidenceClientV1::readback(\\n                    selector, source.snapshot(), prior(&self.config, LearningIterationStageV1::Selection)?,\\n                )\",\n            \"Ok([training, selection])\",\n        ):\n            self.rejects(OWNER, \"fn predecessors(\", marker)\n        for marker in (\"OriginalCellQ24TrainingCommandClientV1::readback(trainer).await?\",\n                       \"if training != self.training\", \"OriginalCellEvaluationCommandClientV1::readback(evaluator).await?\",\n                       \"if evaluation != self.evaluation\"):\n            self.rejects(CONTEXT, \"fn require_current(\", marker)",
+        "assertion_call_names_unchanged": []
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+        "class": "EvaluatedOrdinaryRetainedClosureTests",
+        "method": "test_new_typed_edges_and_old_boundary_inventory_are_exact",
+        "before": "def test_new_typed_edges_and_old_boundary_inventory_are_exact(self):\n        boundaries = PROOF._boundary_rows(self.manifest)\n        PROOF._verify_privileged_inventory(self.manifest, boundaries)\n        self.assertEqual(len(boundaries), 569)\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"source_roots\"), (\"codex-rs\",))\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"ignored_path_fragments\"),\n                         (\"/tests/\", \"/examples/\", \"_tests.rs\"))\n        checked = {key: self.manifest[key] for key in (\n            \"boundary\", \"privileged_inventory\", \"authority\", \"source_roots\", \"ignored_path_fragments\")}\n        observed = hashlib.sha256(json.dumps(checked, sort_keys=True, separators=(\",\", \":\")).encode()).hexdigest()\n        self.assertEqual(observed, ORDINARY_COMPLETE_BOUNDARY_SHA256)\n        self.assertEqual(self.manifest[\"boundary\"][-28:], ORDINARY_NEW_BOUNDARIES)\n        self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))\n        for path in ORDINARY_SCOPE_GUARDS:\n            with self.subTest(actual_root_scopes=path):\n                self.actual_scopes(path, (ROOT / path).read_text())",
+        "after": "def test_new_typed_edges_and_old_boundary_inventory_are_exact(self):\n        boundaries = PROOF._boundary_rows(self.manifest)\n        PROOF._verify_privileged_inventory(self.manifest, boundaries)\n        self.assertEqual(len(boundaries), 621)\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"source_roots\"), (\"codex-rs\",))\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"ignored_path_fragments\"),\n                         (\"/tests/\", \"/examples/\", \"_tests.rs\"))\n        checked = {key: self.manifest[key] for key in (\n            \"boundary\", \"privileged_inventory\", \"authority\", \"source_roots\", \"ignored_path_fragments\")}\n        observed = hashlib.sha256(json.dumps(checked, sort_keys=True, separators=(\",\", \":\")).encode()).hexdigest()\n        self.assertEqual(observed, ORDINARY_COMPLETE_BOUNDARY_SHA256)\n        self.assertEqual(self.manifest[\"boundary\"][541:569], ORDINARY_NEW_BOUNDARIES)\n        self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))\n        for path in ORDINARY_SCOPE_GUARDS:\n            with self.subTest(actual_root_scopes=path):\n                self.actual_scopes(path, (ROOT / path).read_text())",
+        "assertion_call_names_unchanged": [
+          "assertEqual",
+          "assertEqual",
+          "assertEqual",
+          "assertEqual",
+          "assertEqual",
+          "assertTrue"
+        ]
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "class": "OriginalNextUseCommandClosureTests",
+        "method": "test_attestation_and_readback_use_live_original_owners_without_running_c",
+        "before": "def test_attestation_and_readback_use_live_original_owners_without_running_c(self):\n        self.rejects(EVALUATED_SERVICE, \"fn observe_original(\",\n                     \"OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion(\")\n        self.rejects(EVALUATED_SERVICE, \"fn observe_original(\",\n                     \"OriginalCircuitNextUseReceiptOwnerV1::readback_remote(\")\n        self.rejects(EVALUATED_SERVICE, \"fn observe_original(\", \"selector: &self.selector\")\n        self.rejects(SERVICE, \"fn serve_commands(\", \"tokio::task::spawn_blocking(\")\n        self.rejects(SERVICE, \"fn serve_evidence_readback(\",\n                     \"timeout > Duration::from_millis(500)\")\n        self.rejects(SERVICE, \"fn command_response(\", \"let current = now()?\")\n        self.rejects(SERVICE, \"fn command_response(\", \"require_clock(started_at, current)?\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\",\n                     \"self.observe_original(original, wire::Action::Readback)?\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\",\n                     \"wire::authenticate_receipt(&self.context, receipt, signed, current)?\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\",\n                     \"request.receipt_digest != original.attestation.payload_digest.to_string()\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\", \"require_clock(started_at, current)?\")\n        self.rejects(SERVICE, \"fn original_response(\", \"self.observe_original(\")\n        self.rejects(SERVICE, \"fn original_response(\", \"wire::Action::Execute\", \"wire::Action::Readback\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\", \"wire::Action::Readback\", \"wire::Action::Execute\")\n        for marker in (\"OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(\",\n                       \"OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion(\"):\n            self.rejects(EVALUATED_SERVICE, \"fn observe_original(\", marker)",
+        "after": "def test_attestation_and_readback_use_live_original_owners_without_running_c(self):\n        self.rejects(EVALUATED_SERVICE, \"fn observe_original(\",\n                     \"OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion(\")\n        self.rejects(EVALUATED_SERVICE, \"fn observe_original(\",\n                     \"OriginalCircuitNextUseReceiptOwnerV1::readback_remote(\")\n        self.rejects(EVALUATED_SERVICE, \"fn observe_original(\", \"selector: OriginalSelector::remote(&self.selector)?\")\n        self.rejects(SERVICE, \"fn serve_commands(\", \"tokio::task::spawn_blocking(\")\n        self.rejects(SERVICE, \"fn serve_evidence_readback(\",\n                     \"timeout > Duration::from_millis(500)\")\n        self.rejects(SERVICE, \"fn command_response(\", \"let current = now()?\")\n        self.rejects(SERVICE, \"fn command_response(\", \"require_clock(started_at, current)?\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\",\n                     \"self.observe_original(original, wire::Action::Readback)?\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\",\n                     \"wire::authenticate_receipt(&self.context, receipt, signed, current)?\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\",\n                     \"request.receipt_digest != original.attestation.payload_digest.to_string()\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\", \"require_clock(started_at, current)?\")\n        self.rejects(SERVICE, \"fn original_response(\", \"self.observe_original(\")\n        self.rejects(SERVICE, \"fn original_response(\", \"wire::Action::Execute\", \"wire::Action::Readback\")\n        self.rejects(EVIDENCE, \"fn evidence_response(\", \"wire::Action::Readback\", \"wire::Action::Execute\")\n        for marker in (\"OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(\",\n                       \"OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion(\"):\n            self.rejects(EVALUATED_SERVICE, \"fn observe_original(\", marker)",
+        "assertion_call_names_unchanged": []
+      }
+    ],
+    "all_other_function_definitions_unchanged": true,
+    "methods_added_or_removed": 0,
+    "constant_updates": 26,
+    "scope_hash_updates": 5,
+    "original_28_boundary_slice": "[541:569]"
+  },
+  "new_qa": {
+    "methods": [
+      "test_exact_boundary_inventory_and_original_authority_are_preserved",
+      "test_every_scope_mount_and_public_export_is_checked",
+      "test_full_source_collector_rejects_extra_and_removed_new_callers",
+      "test_sealed_clones_keep_the_same_owner_slot_and_permit",
+      "test_original_t_e_and_v_s_c_identity_checks_cannot_be_removed",
+      "test_local_capacity_cancellation_and_final_deadlines_cannot_be_removed",
+      "test_readiness_reuses_the_same_next_use_lane",
+      "test_version_rechecks_current_around_each_actual_response",
+      "test_root_handoff_keeps_real_peers_rights_and_absolute_deadlines",
+      "test_root_registration_selects_fresh_or_readonly_without_wire_authority",
+      "test_shared_sealing_requires_completed_original_authenticated_clients",
+      "test_actual_protocol_literals_reject_same_length_changes_and_comment_bait",
+      "test_comments_and_nested_dead_scopes_cannot_supply_live_checks",
+      "test_an_additional_impl_or_raw_getter_cannot_bypass_fixed_scopes"
+    ],
+    "scope_paths": 41,
+    "scopes": 264,
+    "deletion_specs": 83,
+    "all_scope_paths_on_default_method": true,
+    "complete_original_source_collector_and_four_argument_calls": true,
+    "no_verdict_or_field_cache_added": true,
+    "fixed_root_module_imports_declarations_attributes_and_tail": true
+  },
+  "partial_scope_construction": {
+    "checked_rows": [
+      71,
+      167,
+      203,
+      245,
+      266,
+      267,
+      270,
+      279,
+      281,
+      293,
+      300,
+      309,
+      339,
+      347,
+      351,
+      358,
+      362,
+      364,
+      370,
+      373,
+      381,
+      383,
+      411,
+      416,
+      417,
+      419,
+      420,
+      422,
+      423,
+      424,
+      425,
+      426,
+      427,
+      428,
+      429,
+      430,
+      431,
+      432,
+      433,
+      434,
+      435,
+      436
+    ],
+    "errors": [],
+    "original_marker_functions_used": true,
+    "full_gate_executed": false
+  },
+  "allowlist": {
+    "before": {
+      "bytes": 13072,
+      "sha256": "5c9663a527f8d1d926546747a430b5d9b6cbe5102b696c2e81ddcbb1c1bb17b1",
+      "git_blob": "c3257329caece666950db2041a8e9f47acf5c129"
+    },
+    "after": {
+      "bytes": 13157,
+      "sha256": "58d757e6728edf65caefae940176a8e556ff8ddb1289e469e724c016f231d246",
+      "git_blob": "c85e10d6dd331b867ac8b35dbf7c1a7bb7f6a7df"
+    },
+    "single_appended_line": "sha256:46d643ab8634a6a2a995f5623b6295bc3ea41f61177d31bd7c0689c324974e03 CALLERS.toml\n"
+  },
+  "source_changes": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "before": {
+        "bytes": 1577765,
+        "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec",
+        "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1"
+      },
+      "after": {
+        "bytes": 1807129,
+        "sha256": "46d643ab8634a6a2a995f5623b6295bc3ea41f61177d31bd7c0689c324974e03",
+        "git_blob": "d96c7253857cd855c1f366e21eb78a52e6c9844c"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "before": {
+        "bytes": 13072,
+        "sha256": "5c9663a527f8d1d926546747a430b5d9b6cbe5102b696c2e81ddcbb1c1bb17b1",
+        "git_blob": "c3257329caece666950db2041a8e9f47acf5c129"
+      },
+      "after": {
+        "bytes": 13157,
+        "sha256": "58d757e6728edf65caefae940176a8e556ff8ddb1289e469e724c016f231d246",
+        "git_blob": "c85e10d6dd331b867ac8b35dbf7c1a7bb7f6a7df"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 321192,
+        "sha256": "2d2bc6b502d70b72ac07b27d6132bade55cf5874923c800ad33e24de993131d1",
+        "git_blob": "5be5932d2523a930c849d9ca300670773f74f6ad"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 33501,
+        "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+        "git_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234"
+      },
+      "after": {
+        "bytes": 33555,
+        "sha256": "778128c7b402eb91c3808b0d604eaa9ce548ef17b796df4dbc391334ad3545e7",
+        "git_blob": "0035bb4c3abfa424bc9c6d70dc20f592c6ad34ef"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 101717,
+        "sha256": "ba93d929b11eea543d7a726374081b00faf7e44fb791296a1f09380fb758dc88",
+        "git_blob": "b9d8241d3ade2189b36d4122f1175c500fd8a723"
+      },
+      "after": {
+        "bytes": 102696,
+        "sha256": "6054d35837c6f63e89e8d8bf40cc18ccd318c5e7e4a8a86ec825dce549eda279",
+        "git_blob": "242798559870fc4f569f5e163cd3ac10caf90505"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 14282,
+        "sha256": "c28f52a4525faae4bc81b77b30bc06afa9abe4d72b46a4473e120f2a4c5e2cf8",
+        "git_blob": "a8b366ff752ddd52f6bf2a06a60c0ca9b0529370"
+      },
+      "after": {
+        "bytes": 14428,
+        "sha256": "9a48ace43882afd56f255fb4935004db807dcc66db25f001fb1456e4e8d418f8",
+        "git_blob": "0fdee06b2c16978ba80f94a91df84cba810b4f9d"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 25886,
+        "sha256": "755c636d56b5fd16719dc6ae8e5ff987b1f594dae19873c5062287ce68689efe",
+        "git_blob": "e29b774f6a54229acf05d237c7d00b0bef5608fb"
+      },
+      "after": {
+        "bytes": 26069,
+        "sha256": "a8c94a9a186ad2f9926df48c4eb30216f5b38b0ade3199dcca435028f6c89327",
+        "git_blob": "235a56a06d3081f8da3816827b8c5447bd2e9dbd"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 18326,
+        "sha256": "03c35867cb6fd3e681eda655be822107fbf153d65e12ea37eb352b0b20ea364f",
+        "git_blob": "63c0ab0ff9e24bc96fe77a7559940dd6467d5748"
+      },
+      "after": {
+        "bytes": 18535,
+        "sha256": "5b9864f76b899c51832dbab8cc598ba909a842a6b75796e2c9d55715a8044714",
+        "git_blob": "05c122ebb59117b72a06d38c38c707db02c8e7bb"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 22707,
+        "sha256": "8b9250570e1fcdb51f10076da4d9f1fac8ac16824d6fde0157db5e08ed4e44cf",
+        "git_blob": "daf7be67eb98a2213b794e8c7d6fefee808fd322"
+      },
+      "after": {
+        "bytes": 22890,
+        "sha256": "87fddf091809d89eaaa664ed942896e9a4d84def971f2da8291f5fc3b94b759d",
+        "git_blob": "3466386cedd9c100f6e69869969995b9db42ea7d"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 14507,
+        "sha256": "ba60c6a3aa08bbc5a6ecbb1311a1483243dde3bf5022f65d94d6c9ba22d10027",
+        "git_blob": "e56bcaeea85ed4749c75898b2df3519a1cb18368"
+      },
+      "after": {
+        "bytes": 14576,
+        "sha256": "b519d4194e111a6dfbd38472ba288ae12c838dd2b10f06aa8eb0568d12cc4275",
+        "git_blob": "e6910112f1008cebb8bd6091c29943f84ef6009f"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 24713,
+        "sha256": "c9ee98b559be8f646b49d4408ed45345bb33b0f1e44116693dc3b7b82ccb0464",
+        "git_blob": "1901452c88fb7ad5df8b7950bc099c10835351e6"
+      },
+      "after": {
+        "bytes": 23106,
+        "sha256": "3f5b4940c4d9a2a47802c8882e130b7637d0c72e00bd34776de03ba223fb9e49",
+        "git_blob": "1b8f48048435401286d262244b86220cb0ad591f"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 17243,
+        "sha256": "f7c84642f2aa7c9ae015ddc88cd5b18c72a3636fe37f219e7b10f3ef9ccdeeb9",
+        "git_blob": "1e768e18b8e5471874d7a739a453cdd30f3e2346"
+      },
+      "after": {
+        "bytes": 17350,
+        "sha256": "9ecf24ab52298cde731538de4e43ef9fe3ff6c91e2955e1e8e832b3934a22c8d",
+        "git_blob": "db8d83692485ac542385405b48af77dc494e2e23"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 18845,
+        "sha256": "286b82aec687bc71ba6897870e9f5a0c20cbd03f1ef5366895bccc7a8175aeb7",
+        "git_blob": "037473646bab83b6baa296470ca402eea3f5fdbe"
+      },
+      "after": {
+        "bytes": 18952,
+        "sha256": "b453403e617921df28e85701fc0e13a6a2d387b4948af257a990ee401e6fcc06",
+        "git_blob": "31cdf5702a25daca3f56a19c0985c63c4b67e1b1"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 14974,
+        "sha256": "a55f752a2f0a3b425109cae7a23ec7bd39d7a32b2d8aa1d38f8ba3c127a8ee5a",
+        "git_blob": "76f0d48e9150ec50c64ad8a25b46b66bf8a4096b"
+      },
+      "after": {
+        "bytes": 15081,
+        "sha256": "0dde10e99ecdfc8a5ce02f6885980730d0fe959fc21ac6d85171a1f8bb04ff0d",
+        "git_blob": "0e77e6dd786a581c0c35e4c0f65c8bb9f7fea250"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 14189,
+        "sha256": "f3a2120f7b42c55d7002a507ed6e43ee93dd948ce6d78352a81cfdc67a9fb6f2",
+        "git_blob": "d5b602ec3fd1f212b7a5fa11d7481677440efe5b"
+      },
+      "after": {
+        "bytes": 14372,
+        "sha256": "66801f8c0d1306a3858939683d3e9c140d7e57e5a235b8f62f784198ff5e393b",
+        "git_blob": "f25361064292d56769a69c7c8e62cb9fab20dcbc"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 21451,
+        "sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e",
+        "git_blob": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b"
+      },
+      "after": {
+        "bytes": 20034,
+        "sha256": "6d0feaf2fa103a91832f5b986c7ff40cda3ad1c5ce8293448b29f62ea55672d9",
+        "git_blob": "7575a17220042c150b66cea9d06f1e7d87aa2d96"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 9934,
+        "sha256": "bdb5004adfe4cbaa7debee1fc28e65f2f7ec5b7c806042907d525accac67ba2e",
+        "git_blob": "bd4f03a6fbb9741fc05ff6d02fe9646a6e035cbc"
+      },
+      "after": {
+        "bytes": 10007,
+        "sha256": "6ce179a1abab4299cd2e3418269b06d71fc880f25d41b474efcc6698a8ee80b1",
+        "git_blob": "34e92714e309b0ffcb2fadeba4d5aa1458be6132"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 17569,
+        "sha256": "cbe982cc2b32b288eee829e2a4168615ae9de8070e9fcb4968beaaaa48024e29",
+        "git_blob": "1c7ea50bc954d9d930abf2d306e9e0cc0e256a14"
+      },
+      "preimage_scope": "cc57 canonical or new"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "mode": "100644",
+      "before": {
+        "bytes": 29964,
+        "sha256": "713abd9c8cf645ff12dbf6e3be098ffcb5d61621784e1c3d54e16ff993c8c569",
+        "git_blob": "8223265bdcea271661fd46d448943484a28d5703"
+      },
+      "after": {
+        "bytes": 30108,
+        "sha256": "9fd094cd8cd40acaf46e7538db8d05325a399ef932a2af223192ecb9ef69b4ba",
+        "git_blob": "0fa4bcb8368c30966a7d89cbedebabb09a67824c"
+      },
+      "preimage_scope": "root86 prepared input"
+    }
+  ],
+  "unchanged_controls": {
+    "scripts/hepta_main_protection.py": {
+      "bytes": 16789,
+      "sha256": "c53258ed1d60b172025d5f75576e87762dbebac0351bc804a634043a15f778f5",
+      "git_blob": "5ca963280441d6b84a37929c2b1a6d5ed6abec7b"
+    },
+    "scripts/hepta_source_registry_closure.py": {
+      "bytes": 23642,
+      "sha256": "b3f8fc15ff7787f5ff1cc7a2a688e244524ce7810715b03e6818a50bba46ab2c",
+      "git_blob": "abedc01f9fc04c5eb793075836281b015b23e268"
+    },
+    "scripts/hepta_typed_callers.py": {
+      "bytes": 7759,
+      "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2",
+      "git_blob": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4"
+    },
+    "scripts/verify_hepta_callers.py": {
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    }
+  },
+  "important_limits": [
+    "Only the fixed 86-path overlay was scanned for typed call edges; the complete repository has not been scanned.",
+    "No QA method, unittest runner, full source gate, formatter, Rust compiler or behavioral test was run.",
+    "Full-body markers and literal scopes are prepared against unformatted source and require exact rebinding after actual formatting.",
+    "The pure ledger codec is not registered as an authority boundary merely because its codec functions are public.",
+    "New root handoff protection omits File::open from its new forbidden list because the fixed real-peer check reads boot_id and process stat; no original forbidden entry was removed.",
+    "This package does not activate source or change any Git ref, tree, commit, PR or authorization."
+  ],
+  "qa_methods_executed": 0,
+  "full_source_scans": 0,
+  "formatter_runs": 0,
+  "rust_compiles_or_tests": 0,
+  "source_or_refs_changed": false
+}
