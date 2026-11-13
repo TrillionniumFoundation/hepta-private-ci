@@ -1,0 +1,319 @@
+{
+  "source_head": "5d77ecf2bb107d3431147330a5258d95d11ef348",
+  "archive_sha256": "ab8448fb14385779b2cd0090d405af322d76e22bd875324f2a2cfc4e1d55a8a5",
+  "scope": "Additional whitelist-only non-secret fields from already archived Root JSON. Retained a_protected aliases are represented under root-original/source by collector deduplication. No binary record decode, store API, or authority inference.",
+  "observations": [
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/checkpoint/frontier-v1-cd76d36f8dc417bd825648a1a1955c4a86c484500c449a415d5026ab30a0fe4f.json",
+      "bytes": 1287,
+      "sha256": "2f2d664383b2735e462a6a91f214752e6011695957e4b1d998db5e48f08e5366",
+      "fields": [
+        {
+          "field": "$.frontier.writer_binding.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/cognitive-material-v1/current-48c8679b467b2ae0bd2e446f76e98f5769b1d2b75e45fed3767f9eebc99e2635.json",
+      "bytes": 1307,
+      "sha256": "ffa066617af00183519ec36233861f4abbf0899bbf8103b31d90ba72f2f96832",
+      "fields": [
+        {
+          "field": "$.candidate.head.writer_binding.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-0b1afdf2f67648c25c282d0b7c209a8c2d6c230e4d79974aac75726cc2334397.json",
+      "bytes": 1218,
+      "sha256": "207821d6eaaa26fbcd264a888651f62abf785a8a616cb4e6dd7783d52bde23e3",
+      "fields": [
+        {
+          "field": "$.frontier.target.generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.phase",
+          "value": "ready"
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "bytes": 2384,
+      "sha256": "a89846b6951a88c49ba1502467cd4ec9a02da0025f19fa65c0e8dc92c62719c2",
+      "fields": [
+        {
+          "field": "$.frontier.original.spawn_generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.original.target.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-6cbdac954114f41737661edec3c32b964aa44caf655aa74855f83abc2f2e2e35.json",
+      "bytes": 1210,
+      "sha256": "866a81708dce0eff10ec56f46b8198d3c1becb29c76d53f5298df422537ff594",
+      "fields": [
+        {
+          "field": "$.frontier.target.generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.phase",
+          "value": "ready"
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-8a9859bd4c44f1db6918b672dc3d5bc1f1db28e8b9d4e93ee716e485b96d17ee.json",
+      "bytes": 2115,
+      "sha256": "0eef01d528e6e7a0e1b4fbe3aadc5cecb142385b2a417c6b3320044a0171e7f8",
+      "fields": [
+        {
+          "field": "$.frontier.target.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-ac48a050afe86916e8a03372f61805847590a984faa6db096f7a8787470802d6.json",
+      "bytes": 6229,
+      "sha256": "d8ac963f60bc00a7d55bd8dd77e588e7262802fa9e130bfdb1dc2a6e5a190576",
+      "fields": [
+        {
+          "field": "$.frontier.profile.deployment.target.generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.profile.prepared.current.generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.profile.prepared.initial.state",
+          "value": "prepared"
+        },
+        {
+          "field": "$.frontier.profile.prepared.initial.record.target.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-cf45d48d21a5fa2105f536fb76a15a9c147326635cf1a38c08ac423e56d0f4e6.json",
+      "bytes": 3072,
+      "sha256": "b6d921fa261fdef90b82c473b6e4cdb09fd7e83648c73452bfacdd130ec3380c",
+      "fields": [
+        {
+          "field": "$.frontier.target.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "bytes": 4132,
+      "sha256": "9d0aaf8b09e1e4bebac5802ef043bf4a2ac342bd14d96cfda61a0db3d4585ae3",
+      "fields": [
+        {
+          "field": "$.frontier.current.generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.initial.state",
+          "value": "published"
+        },
+        {
+          "field": "$.frontier.initial.record.intent.target.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/frontier-v1-fab3ce4690c59f6ace46aa92d26ffdee840851ad5f3a46c3868d1b01f022243b.json",
+      "bytes": 1226,
+      "sha256": "c6394a293fb2d4750f8c36fa5f18e46492aad445912b7f70f498baba42dd01cd",
+      "fields": [
+        {
+          "field": "$.frontier.target.generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.phase",
+          "value": "ready"
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/issuer/frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "bytes": 2144,
+      "sha256": "bce33e38df410ae3736f9d28e0e79653b5a9a43194a38eb83291fb7f3964f1f9",
+      "fields": [
+        {
+          "field": "$.frontier.head.revision",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.writer_authorization.claims.spawn_generation",
+          "value": 1
+        },
+        {
+          "field": "$.frontier.writer_authorization.claims.authority_lease.revision",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/authority/leases/authority-leases.json",
+      "bytes": 1395,
+      "sha256": "b43880e27f8822ecd8f1f1e416d58a4a2ee940a301f9cd0623b174248160ec95",
+      "fields": [
+        {
+          "field": "$.state.leases.ordinary-original-root.revision",
+          "value": 1
+        },
+        {
+          "field": "$.state.leases.ordinary-original-root-writer.revision",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/initial.json",
+      "bytes": 9251,
+      "sha256": "41bc9fbbe1f8278d3ec52bba3afae91aa22f15ee76fb509a0ab67a972ae3d287",
+      "fields": [
+        {
+          "field": "$.retained_current.generation",
+          "value": 1
+        },
+        {
+          "field": "$.target.generation.initial.generation",
+          "value": 1
+        },
+        {
+          "field": "$.target.generation.initial.revision",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/learning-trust.json",
+      "bytes": 1890,
+      "sha256": "744e4e1dfd8a31420668a73e385344b77cff3ec80471451ed60927635b9cdf6e",
+      "fields": [
+        {
+          "field": "$.deployment.target.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/ledger.json",
+      "bytes": 3117,
+      "sha256": "8ff39d8d0aa19b814a7237685ae7397ae488a7a9f62e4aa062d06e6ca379c8d1",
+      "fields": [
+        {
+          "field": "$.initial.target.generation",
+          "value": 1
+        },
+        {
+          "field": "$.ledger.signature_witness.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/observer-public-trust.json",
+      "bytes": 2751,
+      "sha256": "418743a6b1938f0b9657cddeeabd14c5c51b62faf11451dd50d5ea919f5e4d20",
+      "fields": [
+        {
+          "field": "$.distribution.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/original-spawn.json",
+      "bytes": 490,
+      "sha256": "d898e9500526df623732a8a8d0ce5fe55fa99aee9370120233a3bd2c507b6c94",
+      "fields": [
+        {
+          "field": "$.registered_identity.spawn_generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/original-writer-proof.json",
+      "bytes": 1105,
+      "sha256": "4d849a059129cf26059915b74fe9e631b91f3a0a62362516af581eaf3963ea46",
+      "fields": [
+        {
+          "field": "$.claims.spawn_generation",
+          "value": 1
+        },
+        {
+          "field": "$.claims.authority_lease.revision",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/service.json",
+      "bytes": 2100,
+      "sha256": "5b6e4d8550da2e26c950b46d8a1d2ba10a0f1f49d17e3c42301352b0dfe02435",
+      "fields": [
+        {
+          "field": "$.writer.spawn_generation",
+          "value": 1
+        },
+        {
+          "field": "$.writer.authority_lease.revision",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/signed-learning-distribution.json",
+      "bytes": 2186,
+      "sha256": "cba882459d468bbc85c6a997109a9c188aebd6f989340f2e3196a1ba3ebfc5bb",
+      "fields": [
+        {
+          "field": "$.generation",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "member": "root-original/source/ordinary-q24-JVmxWQ/source.json",
+      "bytes": 7411,
+      "sha256": "70131e083e0a668754ff977888ae7da3020c869b6d412b3c0919f81df7ddaad6",
+      "fields": [
+        {
+          "field": "$.definition.native.generation",
+          "value": 1
+        },
+        {
+          "field": "$.definition.runtime.calibration.generation",
+          "value": 1
+        },
+        {
+          "field": "$.definition.runtime.generation",
+          "value": 1
+        },
+        {
+          "field": "$.fence.generation",
+          "value": 2
+        }
+      ]
+    }
+  ],
+  "created": "2026-11-13T00:56:26.221764+00:00"
+}
