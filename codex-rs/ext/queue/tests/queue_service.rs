@@ -394,7 +394,7 @@ struct FailDeleteOnceQueueStore {
     block_complete_after_panic: AtomicBool,
     allow_blocked_complete: AtomicBool,
     complete_attempts: AtomicUsize,
-    short_dispatch_lease: bool,
+    short_authorized_dispatch_lease: bool,
     release_count: AtomicUsize,
 }
 
@@ -408,7 +408,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: false,
+            short_authorized_dispatch_lease: false,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -422,7 +422,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            short_authorized_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -436,7 +436,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            short_authorized_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -450,7 +450,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(true),
             allow_blocked_complete: AtomicBool::new(false),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            short_authorized_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -556,11 +556,8 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Preserve the production claim window for the persisted-rollout probe.
+        // Short-lease fixtures begin their 250ms window at authorization below.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,
@@ -577,7 +574,7 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchLease> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
+        let lease_expires_at_ms = if self.short_authorized_dispatch_lease {
             now_ms + 250
         } else {
             lease_expires_at_ms
