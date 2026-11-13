@@ -722,7 +722,9 @@ async fn remote_process_preserves_empty_workspace_roots() -> Result<()> {
         return Ok(());
     }
 
-    let context = create_process_context(/*use_remote*/ true).await?;
+    let mut context = create_process_context(/*use_remote*/ true)
+        .await
+        .context("empty workspace roots: create remote process context")?;
     let tmp = TempDir::new()?;
     let file = tmp.path().join("excluded.txt");
     std::fs::write(&file, b"excluded")?;
@@ -757,9 +759,18 @@ async fn remote_process_preserves_empty_workspace_roots() -> Result<()> {
             managed_network: None,
             network_proxy: None,
         })
-        .await?;
-    let (stdout, _stderr, exit_code, closed) =
-        collect_process_output_from_events(session.process).await?;
+        .await
+        .context("empty workspace roots: start remote process")?;
+    let (stdout, _stderr, exit_code, closed) = collect_process_output_from_events(session.process)
+        .await
+        .with_context(|| {
+            let server_status = context
+                ._server
+                .as_mut()
+                .map(ExecServerHarness::child_status)
+                .unwrap_or_else(|| "no remote server".to_string());
+            format!("empty workspace roots: collect process events; exec-server {server_status}")
+        })?;
 
     assert!(!stdout.contains("excluded"), "unexpected stdout: {stdout}");
     assert_ne!(exit_code, Some(0));
@@ -822,8 +833,29 @@ async fn collect_process_output_from_events(
     let mut stdout = String::new();
     let mut stderr = String::new();
     let mut exit_code = None;
+    let mut events_seen = 0_usize;
     loop {
-        match timeout(Duration::from_secs(2), events.recv()).await?? {
+        let event = timeout(Duration::from_secs(2), events.recv())
+            .await
+            .with_context(|| {
+                let phase = if exit_code.is_some() {
+                    "waiting for Closed after Exited"
+                } else if events_seen == 0 {
+                    "waiting for first event"
+                } else {
+                    "waiting for output or Exited"
+                };
+                let process_id = session.process_id();
+                let stdout_len = stdout.len();
+                let stderr_len = stderr.len();
+                let stderr_prefix: String = stderr.chars().take(/*n*/ 2048).collect();
+                format!(
+                    "process {process_id}: {phase}; events_seen={events_seen}; exit_code={exit_code:?}; stdout_len={stdout_len}; stderr_len={stderr_len}; stderr_prefix={stderr_prefix:?}"
+                )
+            })?
+            .context("process event subscription closed or lagged")?;
+        events_seen += 1;
+        match event {
             ExecProcessEvent::Output(chunk) => match chunk.stream {
                 ExecOutputStream::Stdout | ExecOutputStream::Pty => {
                     stdout.push_str(&String::from_utf8_lossy(&chunk.chunk.into_inner()));

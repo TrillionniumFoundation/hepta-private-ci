@@ -4052,7 +4052,7 @@ mod tests {
             }
 
             // A live blocking task inhibits Tokio's paused-clock auto-advance.
-            // Keep it alive through response consumption so GET's timer cannot
+            // Keep it alive through response consumption so the GET timer cannot
             // advance while real socket I/O is still pending.
             probe_finished_rx
                 .recv_timeout(remaining())

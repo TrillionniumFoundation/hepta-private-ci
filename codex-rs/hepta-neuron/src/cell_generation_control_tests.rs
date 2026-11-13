@@ -343,6 +343,8 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 0);
     release.store(true, Ordering::Release);
+    // End the reply-loss fault window before normal readback and shutdown.
+    Arc::make_mut(&mut port.config).rpc_timeout = normal_rpc_timeout;
     let proposal = terminal(&mut port, &fixture.request);
     assert_eq!(
         port.execute_generation(&fixture.config.manifest, &fixture.request),
