@@ -1,0 +1,451 @@
+{
+  "schema_version": 1,
+  "kind": "complete_git_tree_exact_diff",
+  "base_commit": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+  "base_tree": "64d37fd9f442a91fbb6c35a96e317dbd60b928f1",
+  "initial_tree": "790bc218ce0984fa3c4985db71f812fa054723ea",
+  "checked_paths": [
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "old": {
+        "sha": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "19950711aaa74c9d57fe821b54df998740fb8350",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "old": {
+        "sha": "8769b6ff6912729589bb86f835621387ff7fddf2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "f816d6cbb940a0781253278445b606251706fabc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "old": {
+        "sha": "025813e20504f31d12dae2092a0807a1a4066419",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "04cf97ad543fe1560943b55bd629a238de993911",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": {
+        "sha": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "old": {
+        "sha": "dce43c7f844f45036a7b58b307de500029f1f001",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "d6aae04306df38911602868cbed7536114307a90",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "old": {
+        "sha": "0c9e0370d897118ebcf59c8422c329cb2d8e48ba",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "2c5867859e5692a253992d5045f1606e940f8420",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "old": {
+        "sha": "5d54000ec5d0d66b0eb43c4da18528361307dd59",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "6ebd03a7def0a95ef22e52152633eecaec9f8da3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "old": {
+        "sha": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "05d301aab3c2bf2b515fe1c81ec163d6a481c935",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "old": {
+        "sha": "08a93401d52f34b860c4c302969f5d7c10ff5a99",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "old": {
+        "sha": "d45540fc4caa55836d097364a97f2342ea4d2644",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "5bfff889730384ea518405efc8b12e1f21f37e53",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "old": {
+        "sha": "c5e80dc4350d986167bd5727dc48e57522e7fdcc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "old": {
+        "sha": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "a2488297954907d01cc1b10b921b295d3aa9e631",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "old": {
+        "sha": "44ecd101f527cc1a65cdd62180942cb91a1baa1f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "0b332b21c124905a3930785cdfc7e47563ac8085",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "old": {
+        "sha": "4eb5b6068b6658315e8baf0a7342305718125fdc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "old": {
+        "sha": "10eed326857e3ef1359bf31c3cb7fb2de1984fba",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "1fcfdf460a80f83447eb954b187144968211549f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "old": {
+        "sha": "6a318dd7bb800d56939125055c37efb182e88fa4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": {
+        "sha": "227ba79e46743409c974835126f7a6b340efdb94",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": {
+        "sha": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "old": {
+        "sha": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/AGENTD_FUTURES_DEPENDENCY.json",
+      "old": null,
+      "new": {
+        "sha": "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/COMPONENT_UUID_LITERAL.json",
+      "old": null,
+      "new": {
+        "sha": "f9ed77785bf5fd60e75709bc6399bb09b257755f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/CORE_APPSERVER_SHARED.json",
+      "old": null,
+      "new": {
+        "sha": "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/CORE_LEGACY_COMPONENT_INITIALIZERS.json",
+      "old": null,
+      "new": {
+        "sha": "aa75dbfe13859ab649995256bfa021824300aaee",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/INDEX.json",
+      "old": null,
+      "new": {
+        "sha": "85c21327dc20e3792aecbbc8bb0169b074831c2e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/LEARNING_BOOTSTRAP_SIX_SITES.json",
+      "old": null,
+      "new": {
+        "sha": "38fd9c7a6cae56f2ded84ea58713a16c25f232f6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/MCP_FIVE_SITES.json",
+      "old": null,
+      "new": {
+        "sha": "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/METADATA_NINETEEN_SITE_SEMANTIC_RECIPE_NOT_FINAL.json",
+      "old": null,
+      "new": {
+        "sha": "84702e0f1f9f1354a7ab24447acc6027c7921adc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_CORE_APPSERVER.json",
+      "old": null,
+      "new": {
+        "sha": "3e6a0bfb343d57a1752eaf2720091990c64f43f5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_LEARNING_BOOTSTRAP_DETAIL.json",
+      "old": null,
+      "new": {
+        "sha": "f7772abc460fdff58f2ad3c7213601a0b7e440a3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_LEARNING_BOOTSTRAP_SUMMARY.json",
+      "old": null,
+      "new": {
+        "sha": "81b623393cee3eda5645d7571f9a11a6f3c646bd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_MCP_DETAIL.json",
+      "old": null,
+      "new": {
+        "sha": "2948308d8b590aad12eaf5e9154975b8239a02ef",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_MCP_SUMMARY.json",
+      "old": null,
+      "new": {
+        "sha": "18b613f4d7e0595db4288c56a56ba8c80e429bb5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_RECEIVER_AND_COMPONENT_UUID.json",
+      "old": null,
+      "new": {
+        "sha": "80e62dc8fad47b671a79201aef11a103b13b832b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/PEER_ROOT_SIX_AND_DEPENDENCY.json",
+      "old": null,
+      "new": {
+        "sha": "5b74b9398a820ed060b6ea879be068b3301e7468",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/README.md",
+      "old": null,
+      "new": {
+        "sha": "7f7b6b183f1bf6e1bcbbb512acb2d8322cb1f12f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/ROOT_EXACT_REPLAY.json",
+      "old": null,
+      "new": {
+        "sha": "a943ed68329848250e753391dd71eae1472a7766",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/ROOT_SIX_SITES.json",
+      "old": null,
+      "new": {
+        "sha": "6a316e96f1bae14ee565843e4ad838455fe77947",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/clippy-repairs-v10/WHOLE_RECEIVER_CAPTURE.json",
+      "old": null,
+      "new": {
+        "sha": "4a97b6b2dbfd160d49f8c8b7e29b65870ef2d98f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+      "old": {
+        "sha": "69dc1fc5c75298b37bb0c218254deb7967ccc101",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "378cde8a6caa50aebb8992128cd250e437844537",
+        "mode": "100644",
+        "type": "blob"
+      }
+    }
+  ],
+  "source_changes": 19,
+  "qualification_changes": 20,
+  "source_manifest": {
+    "blob": "378cde8a6caa50aebb8992128cd250e437844537",
+    "bytes": 58950,
+    "sha256": "acda80ddc41613add113a48818070ab7e9b8460ababb23840accbb433f771883"
+  },
+  "exact_source_replay": "a943ed68329848250e753391dd71eae1472a7766",
+  "all_changed_subtrees_complete": true,
+  "unexpected_paths": [],
+  "qualification_and_business_pass_claimed": false
+}

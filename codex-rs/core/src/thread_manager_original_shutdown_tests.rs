@@ -124,3 +124,43 @@ async fn an_admission_dropped_before_retaining_its_handle_permanently_refuses_st
         OriginalCoreTaskFailure::State(_)
     ));
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn concurrent_startup_waiters_keep_the_original_panic_after_one_is_cancelled() {
+    let original = enabled();
+    let (release, released) = tokio::sync::oneshot::channel();
+    {
+        let admission = original.reserve_original_startup().unwrap().unwrap();
+        let worker = tokio::spawn(async move {
+            released.await.unwrap();
+            panic!("actual shared startup panic");
+        });
+        admission.retain_original_thread_startup_handle(worker);
+    }
+    let plan = original.seal_original_startups().unwrap();
+    let job = Arc::clone(&plan.startups[0]);
+    let mut cancelled = Box::pin(job.join_original_startup());
+    let mut surviving = Box::pin(job.join_original_startup());
+    tokio::select! {
+        biased;
+        result = &mut cancelled => panic!("actual startup is still blocked: {result:?}"),
+        () = std::future::ready(()) => {},
+    }
+    tokio::select! {
+        biased;
+        result = &mut surviving => panic!("same actual startup is still blocked: {result:?}"),
+        () = std::future::ready(()) => {},
+    }
+    drop(cancelled);
+    release.send(()).unwrap();
+    let first = tokio::time::timeout(Duration::from_secs(2), surviving)
+        .await
+        .unwrap()
+        .unwrap_err();
+    assert!(matches!(
+        first.as_ref(),
+        OriginalCoreTaskFailure::Join(error) if error.is_panic()
+    ));
+    let again = job.join_original_startup().await.unwrap_err();
+    assert!(Arc::ptr_eq(&first, &again));
+}

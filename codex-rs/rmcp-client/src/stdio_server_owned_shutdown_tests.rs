@@ -36,30 +36,31 @@ async fn require_actual_handles_joined(custody: &OriginalStdioShutdownCustody) {
             state._termination_thread.clone().unwrap(),
         )
     };
-    let launch = launch.state.lock().await;
-    assert!(launch.joined);
-    assert!(launch.handle.is_none());
-    assert!(
-        launch.result.is_none(),
-        "actual transport must leave launch output"
-    );
-    drop(launch);
+    {
+        let state = launch.state.lock().await;
+        assert!(state.joined);
+        assert!(launch.completion.peek().is_some());
+        assert!(
+            state.result.is_none(),
+            "actual transport must leave launch output"
+        );
+    }
     assert_eq!(children.len(), 1);
     assert_eq!(stderr.len(), 1);
     for child in children {
         let state = child.state.lock().await;
         assert!(state.joined);
-        assert!(state.handle.is_none());
+        assert!(child.completion.peek().is_some());
         assert!(matches!(state.result.as_ref(), Some(Ok(_))));
     }
     for reader in stderr {
         let state = reader.state.lock().await;
         assert!(state.joined);
-        assert!(state.handle.is_none());
+        assert!(reader.completion.peek().is_some());
     }
     let state = termination.state.lock().await;
     assert!(state.joined);
-    assert!(state.handle.is_none());
+    assert!(termination.completion.peek().is_some());
     assert!(matches!(state.result.as_ref(), Some(Ok(()))));
     assert!(
         termination_thread.lock().unwrap().is_none(),
@@ -129,9 +130,10 @@ async fn abandoned_actual_launch_output_is_taken_and_its_child_reaped() {
             directory.path().to_path_buf(),
         )
         .unwrap();
-    let state = launch.join().await;
-    assert!(matches!(state.result.as_ref(), Some(Ok(_))));
-    drop(state);
+    {
+        let state = launch.join().await;
+        assert!(matches!(state.result.as_ref(), Some(Ok(_))));
+    }
     let original_pid = custody.state().process_id.unwrap();
 
     let observation = joined(&custody).await.unwrap();
@@ -189,11 +191,12 @@ async fn actual_stderr_error_is_preserved_after_child_and_helper_joins() {
         .await
         .unwrap();
     let reader = custody.state().stderr[0].clone();
-    let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())
-        .await
-        .expect("original invalid UTF-8 stderr was not read");
-    assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));
-    drop(actual_read);
+    {
+        let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())
+            .await
+            .expect("original invalid UTF-8 stderr was not read");
+        assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));
+    }
 
     drop(transport);
     let error = match joined(&custody).await {
@@ -227,4 +230,86 @@ async fn retained_sdk_send_future_cannot_keep_the_closed_actual_writer_live() {
     let error = pending_send.await.unwrap_err();
     assert_eq!(error.kind(), io::ErrorKind::NotConnected);
     require_actual_handles_joined(&custody).await;
+}
+
+#[tokio::test]
+async fn cancelled_shared_job_waiter_keeps_one_non_clone_fd_output_for_all_waiters() {
+    use std::io::Read;
+    use std::os::unix::net::UnixStream;
+
+    let (owner, mut peer) = UnixStream::pair().unwrap();
+    peer.set_nonblocking(true).unwrap();
+    let (release, released) = tokio::sync::oneshot::channel::<()>();
+    let job = OwnedJob::track(tokio::spawn(async move {
+        released
+            .await
+            .map_err(|_| io::Error::other("component release sender dropped"))?;
+        Ok(owner)
+    }));
+
+    let mut cancelled = Box::pin(job.join());
+    tokio::select! {
+        biased;
+        _ = &mut cancelled => panic!("actual handle cannot join before its release"),
+        () = async {} => {}
+    }
+    drop(cancelled);
+    assert!(job.completion.peek().is_none());
+    let mut byte = [0_u8; 1];
+    assert_eq!(
+        peer.read(&mut byte).unwrap_err().kind(),
+        io::ErrorKind::WouldBlock
+    );
+
+    release.send(()).unwrap();
+    tokio::join!(
+        async {
+            let state = job.join().await;
+            assert!(state.joined);
+            assert!(matches!(state.result.as_ref(), Some(Ok(_))));
+        },
+        async {
+            let state = job.join().await;
+            assert!(state.joined);
+            assert!(matches!(state.result.as_ref(), Some(Ok(_))));
+        },
+    );
+    assert!(job.completion.peek().is_some());
+    let actual = {
+        let mut state = job.state.lock().await;
+        state.result.take().unwrap().unwrap()
+    };
+    assert!(job.state.lock().await.result.is_none());
+    assert_eq!(
+        peer.read(&mut byte).unwrap_err().kind(),
+        io::ErrorKind::WouldBlock
+    );
+    drop(actual);
+    assert_eq!(peer.read(&mut byte).unwrap(), 0);
+}
+
+#[tokio::test]
+async fn shared_job_keeps_the_same_original_join_error_for_later_waiters() {
+    let job = OwnedJob::<()>::track(tokio::spawn(async {
+        panic!("original owned job component panic")
+    }));
+    let first = {
+        let state = job.join().await;
+        assert!(state.joined);
+        state.result.as_ref().unwrap().as_ref().unwrap_err().clone()
+    };
+    let second = {
+        let state = job.join().await;
+        assert!(state.joined);
+        state.result.as_ref().unwrap().as_ref().unwrap_err().clone()
+    };
+    assert!(Arc::ptr_eq(&first.error, &second.error));
+    assert!(
+        first
+            .error
+            .downcast_ref::<tokio::task::JoinError>()
+            .unwrap()
+            .is_panic()
+    );
+    assert!(job.completion.peek().is_some());
 }

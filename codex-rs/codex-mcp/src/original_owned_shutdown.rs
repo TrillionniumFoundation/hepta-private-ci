@@ -13,9 +13,10 @@ use anyhow::ensure;
 use codex_config::McpServerTransportConfig;
 use codex_rmcp_client::OriginalMcpClientShutdown;
 use codex_rmcp_client::OriginalMcpClientShutdownObservation;
-use tokio::sync::Mutex;
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use tokio::sync::Notify;
-use tokio::task::JoinHandle;
 use tokio::task::JoinSet;
 use tokio_util::sync::CancellationToken;
 
@@ -51,12 +52,7 @@ pub(crate) struct OriginalMcpConstructionGuard {
 }
 
 struct OriginalStartupJob {
-    state: Mutex<OriginalStartupJobState>,
-}
-
-struct OriginalStartupJobState {
-    handle: Option<JoinHandle<OriginalStartupJoined>>,
-    joined: Option<OriginalStartupJoined>,
+    completion: Shared<BoxFuture<'static, OriginalStartupJoined>>,
 }
 
 #[derive(Clone)]
@@ -66,12 +62,9 @@ struct OriginalStartupJoined {
 }
 
 struct OriginalCleanupJob {
-    state: Mutex<OriginalCleanupJobState>,
-}
-
-struct OriginalCleanupJobState {
-    handle: Option<JoinHandle<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,
-    result: Option<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,
+    completion: Shared<
+        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,
+    >,
 }
 
 /// Actual cleanup facts, not business completion or authority permission.
@@ -241,12 +234,20 @@ impl OriginalMcpRuntimeShutdown {
             }
             joined
         });
-        state.startup_jobs.push(Arc::new(OriginalStartupJob {
-            state: Mutex::new(OriginalStartupJobState {
-                handle: Some(handle),
-                joined: None,
-            }),
-        }));
+        let completion = async move {
+            match handle.await {
+                Ok(joined) => joined,
+                Err(error) => OriginalStartupJoined {
+                    ready: 0,
+                    errors: vec![format!("actual MCP startup join owner: {error}")],
+                },
+            }
+        }
+        .boxed()
+        .shared();
+        state
+            .startup_jobs
+            .push(Arc::new(OriginalStartupJob { completion }));
     }
 
     pub fn request_stop(&self) {
@@ -283,12 +284,15 @@ impl OriginalMcpRuntimeShutdown {
             } else {
                 let owner = Arc::clone(self);
                 let handle = tokio::spawn(async move { owner.join_original_resources().await });
-                let job = Arc::new(OriginalCleanupJob {
-                    state: Mutex::new(OriginalCleanupJobState {
-                        handle: Some(handle),
-                        result: None,
-                    }),
-                });
+                let completion = async move {
+                    match handle.await {
+                        Ok(result) => result,
+                        Err(error) => Err(format!("actual MCP cleanup owner failed: {error}")),
+                    }
+                }
+                .boxed()
+                .shared();
+                let job = Arc::new(OriginalCleanupJob { completion });
                 *slot = Some(Arc::clone(&job));
                 job
             }
@@ -381,26 +385,7 @@ impl Drop for OriginalMcpConstructionGuard {
 
 impl OriginalStartupJob {
     async fn join_original_startup(&self) -> OriginalStartupJoined {
-        let mut state = self.state.lock().await;
-        if let Some(joined) = &state.joined {
-            return joined.clone();
-        }
-        let joined = match state.handle.as_mut() {
-            Some(handle) => match handle.await {
-                Ok(joined) => joined,
-                Err(error) => OriginalStartupJoined {
-                    ready: 0,
-                    errors: vec![format!("actual MCP startup join owner: {error}")],
-                },
-            },
-            None => OriginalStartupJoined {
-                ready: 0,
-                errors: vec!["actual MCP startup handle is missing".into()],
-            },
-        };
-        state.handle.take();
-        state.joined = Some(joined.clone());
-        joined
+        self.completion.clone().await
     }
 }
 
@@ -408,20 +393,7 @@ impl OriginalCleanupJob {
     async fn receive_original_cleanup(
         &self,
     ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {
-        let mut state = self.state.lock().await;
-        if let Some(result) = &state.result {
-            return result.clone();
-        }
-        let result = match state.handle.as_mut() {
-            Some(handle) => match handle.await {
-                Ok(result) => result,
-                Err(error) => Err(format!("actual MCP cleanup owner failed: {error}")),
-            },
-            None => Err("actual MCP cleanup handle is missing".into()),
-        };
-        state.handle.take();
-        state.result = Some(result.clone());
-        result
+        self.completion.clone().await
     }
 }
 

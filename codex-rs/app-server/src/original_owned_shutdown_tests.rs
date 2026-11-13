@@ -38,7 +38,7 @@ async fn cancelled_job_waiter_retains_actual_task_and_fd_until_join() {
     }
     drop(waiting);
     assert!(job.terminal.get().is_none());
-    assert!(job.handle.lock().await.is_some());
+    assert!(job.completion.peek().is_none());
     release_tx
         .send(())
         .expect("same actual task still retained");
@@ -51,7 +51,7 @@ async fn cancelled_job_waiter_retains_actual_task_and_fd_until_join() {
     OriginalAppServerJob::join_original(&job)
         .await
         .expect("same terminal observation");
-    assert!(job.handle.lock().await.is_none());
+    assert!(job.completion.peek().is_some());
 }
 
 #[tokio::test]
@@ -74,7 +74,7 @@ async fn real_task_panic_keeps_the_original_join_error_after_reobservation() {
             .is_panic()
     );
     assert!(Arc::ptr_eq(&first.error, &second.error));
-    assert!(job.handle.lock().await.is_none());
+    assert!(job.completion.peek().is_some());
 }
 
 #[tokio::test]
@@ -261,4 +261,47 @@ async fn cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it() {
         0
     );
     assert!(first.terminal.get().is_some());
+}
+
+#[tokio::test]
+async fn concurrent_waiters_keep_the_original_io_error_after_one_is_cancelled() {
+    let (release, released) = oneshot::channel();
+    let job = OriginalAppServerJob::result(tokio::spawn(async move {
+        released.await.expect("release same actual task");
+        Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "actual shared App Server refusal",
+        ))
+    }));
+    let mut cancelled = Box::pin(OriginalAppServerJob::join_original(&job));
+    let mut surviving = Box::pin(OriginalAppServerJob::join_original(&job));
+    tokio::select! {
+        biased;
+        result = &mut cancelled => panic!("actual task is still blocked: {result:?}"),
+        () = std::future::ready(()) => {},
+    }
+    tokio::select! {
+        biased;
+        result = &mut surviving => panic!("same actual task is still blocked: {result:?}"),
+        () = std::future::ready(()) => {},
+    }
+    drop(cancelled);
+    assert!(job.terminal.get().is_none());
+    release.send(()).expect("same actual task retained");
+    let first = tokio::time::timeout(std::time::Duration::from_secs(2), surviving)
+        .await
+        .expect("remaining original waiter is woken")
+        .expect_err("original IO error");
+    let again = OriginalAppServerJob::join_original(&job)
+        .await
+        .expect_err("same terminal IO error");
+    assert!(Arc::ptr_eq(&first.error, &again.error));
+    let actual = first
+        .error
+        .as_ref()
+        .downcast_ref::<io::Error>()
+        .expect("original IO error object");
+    assert_eq!(actual.kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(actual.to_string(), "actual shared App Server refusal");
+    assert!(job.require_original_success().is_err());
 }

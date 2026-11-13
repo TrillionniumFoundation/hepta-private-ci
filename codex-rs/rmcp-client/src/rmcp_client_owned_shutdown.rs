@@ -16,11 +16,12 @@ use anyhow::Result;
 use anyhow::anyhow;
 use anyhow::ensure;
 use codex_config::types::McpServerEnvVar;
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use rmcp::service::QuitReason;
 use rmcp::service::RoleClient;
 use rmcp::service::RunningService;
-use tokio::sync::Mutex;
-use tokio::task::JoinHandle;
 
 use super::ClientState;
 use super::PendingTransport;
@@ -52,12 +53,7 @@ struct OriginalClientState {
 }
 
 struct OriginalDriverJob {
-    state: Mutex<OriginalDriverState>,
-}
-
-struct OriginalDriverState {
-    handle: Option<JoinHandle<Result<OriginalDriverJoined, String>>>,
-    result: Option<Result<OriginalDriverJoined, String>>,
+    completion: Shared<BoxFuture<'static, Result<OriginalDriverJoined, String>>>,
 }
 
 #[derive(Clone, Debug)]
@@ -209,12 +205,15 @@ impl OriginalMcpClientShutdown {
             }
             primary.ok_or_else(|| "original service join result missing".into())
         });
-        let job = Arc::new(OriginalDriverJob {
-            state: Mutex::new(OriginalDriverState {
-                handle: Some(handle),
-                result: None,
-            }),
-        });
+        let completion = async move {
+            match handle.await {
+                Ok(result) => result,
+                Err(error) => Err(format!("original MCP driver cleanup task failed: {error}")),
+            }
+        }
+        .boxed()
+        .shared();
+        let job = Arc::new(OriginalDriverJob { completion });
         state.driver = Some(Arc::clone(&job));
         Some(job)
     }
@@ -318,20 +317,9 @@ async fn join_actual_original_service(
 
 impl OriginalDriverJob {
     async fn join_original(&self) -> Result<OriginalDriverJoined, String> {
-        let mut state = self.state.lock().await;
-        if let Some(result) = &state.result {
-            return result.clone();
-        }
-        let result = match state.handle.as_mut() {
-            Some(handle) => match handle.await {
-                Ok(result) => result,
-                Err(error) => Err(format!("original MCP driver cleanup task failed: {error}")),
-            },
-            None => Err("original MCP driver join custody is unavailable".into()),
-        };
-        state.handle.take();
-        state.result = Some(result.clone());
-        result
+        // The registry retains the same handle-owning future if a waiter
+        // is cancelled. Concurrent observers share its original result.
+        self.completion.clone().await
     }
 }
 

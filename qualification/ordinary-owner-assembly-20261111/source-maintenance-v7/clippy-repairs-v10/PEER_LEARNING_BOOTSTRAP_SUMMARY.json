@@ -1,0 +1,53 @@
+# Independent review: Learning four and Bootstrap two actual v9 await sites
+
+## Conclusion
+
+No confirmed local static semantic blocker was found in 38fd9c7a6cae56f2ded84ea58713a16c25f232f6. The review independently GET/hash checked all six pre/post source blobs and replayed all 23 operations exactly once forward and reverse over each full file.
+
+Detailed evidence: f7772abc460fdff58f2ad3c7213601a0b7e440a3, 33066 bytes, SHA-256 2c3282f59181520f69640a1d691524bcff9ca0d2946cba0e0499801839ad69c5.
+
+| Path under codex-rs/hepta-agentd/src | Exact preimage | Exact postimage | Ops |
+|---|---|---|---:|
+| same_actor_q24_phase_learning_work.rs | 6a318dd7bb800d56939125055c37efb182e88fa4 | c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029 | 11 |
+| production_launcher_same_actor_consumer_custody.rs | 1be6c551fa0137cac0e6571d6b46cd5e5f934ef5 | a2488297954907d01cc1b10b921b295d3aa9e631 | 8 |
+| production_launcher_same_actor_consumer_custody_tests.rs | c5e80dc4350d986167bd5727dc48e57522e7fdcc | 8844102c2aff30fd80f844e8dbf685e41d9c37fc | 4 |
+
+This is source review of the six sites in the actual v9 diagnostic inventory f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda. No formatter, compiler, lint, component, native harness or original checker/helper was executed.
+
+## Ownership and cancellation
+
+Both admission methods move the exact actual JoinHandle into one Shared<BoxFuture<()>> before publishing the containing Job in the original registry and disarming the admission. The Shared future is retained by that registry through waiter cancellation. No new production task or replacement operation is spawned.
+
+The output is only unit completion. Original non-Clone business values, FinalUseAuthority, AgentdError and Learning's actual tokio JoinError remain singly owned in their real result slots. No new Clone or Sync requirement is imposed on those values. The completion captures the independent result cell plus the existing Gate/failure record, not its Job or registry. It therefore introduces no Job-to-completion-to-Job cycle.
+
+Each completion first awaits the original handle, then locks the result cell and records the original terminal result with no later await. Waiting methods hold no result guard while waiting for the real handle. Cancellation of one waiter leaves the same completion and output available to a later actual cleanup observer.
+
+## Learning failure and pending semantics
+
+The original OriginalJobReceiveError enum, Display implementation and Error::source are byte identical. receive_with_join_cause continues to prioritize the actual stored JoinError before unavailable or sticky failure, then original output, then the original Gate postcheck. Legacy receive preserves its old mapping. Actual E errors are returned in their original typed result with the same fail-close behavior.
+
+The original normal retirement still rejects any failed or undelivered original work; it cannot derive completion from an empty count. Fault cleanup waits and discards an actual undelivered owner as before. The final Job Drop still refuses to decrement pending if actual joining has not completed. Once genuinely joined, it takes the actual output, drops the new state guard, drops that output, and only then decrements pending and notifies. Moving output Drop outside the new mutex avoids invoking user destruction under that lock.
+
+The newly introduced synchronous cell poison path is conservative: it closes the same Gate and makes join failure sticky. It preserves a stored real JoinError and never fabricates success.
+
+## Bootstrap one-shot receipt and cleanup
+
+receive_original still creates the original closing guard before returning its future. Its receiving=true claim is made once, before waiting, inside a lexical lock scope. Cancellation does not reset that claim. After the shared join completes, a separate scope verifies joined and takes the exact original output once. The original output error still propagates before gate.require_open and closing.disarm, so no owner is delivered after Gate closure.
+
+join_and_release closes admission and awaits each actual completion. It drops an undelivered FinalUseAuthority after joining and preserves an original AgentdError through the existing save_original_failure ordering. Any new poisoned or absent-terminal refusal is added after the original output failure, without overwriting it. The original Bootstrap JoinError-to-Protocol mapping is byte preserved.
+
+These are representation and error-preservation changes, not merely formatting. The old optional-handle states and asynchronous join_locked helpers are removed because the actual handle is now mandatory inside the retained completion.
+
+## Bounded checks and tests
+
+The two product files contain 28 other function bodies that remain byte identical. All 16 existing boundary declaration marker sets remain present. This does not establish a full repository typed caller closure.
+
+The existing Work and normal Work component sources were independently read and hash checked: nine Work components and five normal-work components have no references to the removed handle fields or join_locked helper. Three old Bootstrap components retain all original assertions, with two added Shared terminal assertions. The added Bootstrap component uses a real spawn_blocking task, UnixStream FD, blocking release and the original GenerationFenced error. It cancels a cleanup waiter, verifies the same task and FD remain, resumes cleanup, observes one execution and actual EOF. These components have not run.
+
+The source requires Root-owned Agentd dependency packet b447430ce8f5b8f0107bf7a299341df7d7dcedea. Agentd did not previously have a direct futures dependency; this review does not silently assume it did, and it changes no manifest or lockfile.
+
+## Required metadata follow-up
+
+For both paths, preserve every original forbidden literal and every same-path conjunct. Replace the obsolete optional-handle/async-join helper obligations with the actual complete mandatory Shared registration, original result-cell fields, short locking helpers and complete receive/cleanup/Drop functions. Retain all original Gate, deadline, admission, failure-priority, pending and once-receive obligations. Do not delete old await markers without protecting the actual same-handle await inside the newly retained completion.
+
+This review certifies no broader SDK tail, process exit, daemon completion or business qualification. The remaining actual diagnostic sites and final semantic metadata union are separate review obligations.

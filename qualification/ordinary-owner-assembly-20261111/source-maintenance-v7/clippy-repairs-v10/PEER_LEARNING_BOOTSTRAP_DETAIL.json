@@ -1,0 +1,836 @@
+{
+  "schema_version": 1,
+  "kind": "bounded_independent_learning4_bootstrap2_actual_v9_review",
+  "reviewer": "runtime_access",
+  "author": "hepta_audit",
+  "source_packet": "38fd9c7a6cae56f2ded84ea58713a16c25f232f6",
+  "verdict": "No confirmed local static semantic blocker; no compiler/lint/native qualification claim.",
+  "source_receipts": [
+    {
+      "pin": "6a318dd7bb800d56939125055c37efb182e88fa4",
+      "bytes": 23007,
+      "sha256": "eaa5698ab16684be0c087698e31a44116d074a6229f8bf6c148262b56664de22"
+    },
+    {
+      "pin": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+      "bytes": 23886,
+      "sha256": "f8c33abea179cea3c414ab23f9e352ef1ad22a69fc147d639a9a46c35b1f52f8"
+    },
+    {
+      "pin": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5",
+      "bytes": 6544,
+      "sha256": "6f462c7b85ffecb6c8f2c17ae7aad192ada9006311f4e8c66baa1dbe835229b4"
+    },
+    {
+      "pin": "a2488297954907d01cc1b10b921b295d3aa9e631",
+      "bytes": 7788,
+      "sha256": "9449167c92b3b0e6787ea73048ca0384c8aa9c7f46acca1509d3ecff17f8aad1"
+    },
+    {
+      "pin": "c5e80dc4350d986167bd5727dc48e57522e7fdcc",
+      "bytes": 5010,
+      "sha256": "2c7ccba9a6238369eb4d790a5acb3b6375a464b378de51a043fd6428efe9b87f"
+    },
+    {
+      "pin": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+      "bytes": 7525,
+      "sha256": "ac10fa1daf66acdb8b2cd63f504697e842d8a297b3715a4e278352e67135477f"
+    }
+  ],
+  "exact_replay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "pre": "6a318dd7bb800d56939125055c37efb182e88fa4",
+      "post": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+      "ops": 11,
+      "full_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "pre": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5",
+      "post": "a2488297954907d01cc1b10b921b295d3aa9e631",
+      "ops": 8,
+      "full_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "pre": "c5e80dc4350d986167bd5727dc48e57522e7fdcc",
+      "post": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+      "ops": 4,
+      "full_forward_reverse": true
+    }
+  ],
+  "function_comparison": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "old": 31,
+      "new": 31,
+      "rows": [
+        {
+          "name": "fmt",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "0ee11183a983ab82bb892ce86cc0073a02355f15cdec328d1d8a834b4d6ea18b",
+          "post_sha": "0ee11183a983ab82bb892ce86cc0073a02355f15cdec328d1d8a834b4d6ea18b"
+        },
+        {
+          "name": "source",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "097244f1917197f704005701a2ff2dd197fc21771992e7ed0393f894bad0d877",
+          "post_sha": "097244f1917197f704005701a2ff2dd197fc21771992e7ed0393f894bad0d877"
+        },
+        {
+          "name": "from_original_scope",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "60737a5d743b68f277e40c97029db56464396b1b4e4c94406532dabfa659d050",
+          "post_sha": "60737a5d743b68f277e40c97029db56464396b1b4e4c94406532dabfa659d050"
+        },
+        {
+          "name": "cleanup",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "4aebc09a34aee4c3e6ad4c4c81dc341a55f5c1ecca92c92c98a23dd7288a4e10",
+          "post_sha": "4aebc09a34aee4c3e6ad4c4c81dc341a55f5c1ecca92c92c98a23dd7288a4e10"
+        },
+        {
+          "name": "gate",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "edf34acc418df51e73640d971bf243ceaa027d287df630231ab1b98205bad0a2",
+          "post_sha": "edf34acc418df51e73640d971bf243ceaa027d287df630231ab1b98205bad0a2"
+        },
+        {
+          "name": "pending_count",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "6dc03dd6a90b64c73737db1f58b0434d55d6eb4270d8d003205bc43817a4d4fa",
+          "post_sha": "6dc03dd6a90b64c73737db1f58b0434d55d6eb4270d8d003205bc43817a4d4fa"
+        },
+        {
+          "name": "require_identity_and_gate",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "0b86f12513d0f2db5d12be93d6ec2c758d1bfdf6d1235a21ff0507b21776bd69",
+          "post_sha": "0b86f12513d0f2db5d12be93d6ec2c758d1bfdf6d1235a21ff0507b21776bd69"
+        },
+        {
+          "name": "require_original_prepared",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "3c3b4f1ed59cbaff13264e0a9169de500550a1c1f2c79fbb76b027adddd71ded",
+          "post_sha": "3c3b4f1ed59cbaff13264e0a9169de500550a1c1f2c79fbb76b027adddd71ded"
+        },
+        {
+          "name": "require_training_context",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "40f6c35fa822eca3b1d3a22c6cc5adcb1b4dfc4b7b23461c6c688014c1b34afa",
+          "post_sha": "40f6c35fa822eca3b1d3a22c6cc5adcb1b4dfc4b7b23461c6c688014c1b34afa"
+        },
+        {
+          "name": "require_original_work_entry",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "2b941a93e82f7ff7dd50c6527390b6c44343b306ee73634175f135e538f415e1",
+          "post_sha": "2b941a93e82f7ff7dd50c6527390b6c44343b306ee73634175f135e538f415e1"
+        },
+        {
+          "name": "original_failure_scope",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "28d4b6e41c4d897e332189a085def0dbd810ea9f6a057a0191fbc5a3f30d68a5",
+          "post_sha": "28d4b6e41c4d897e332189a085def0dbd810ea9f6a057a0191fbc5a3f30d68a5"
+        },
+        {
+          "name": "reserve_original_blocking",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "a4537f7a6b7a296094f03848c991e24722511a65c08e1392ff10c2ff9a508c0a",
+          "post_sha": "a4537f7a6b7a296094f03848c991e24722511a65c08e1392ff10c2ff9a508c0a"
+        },
+        {
+          "name": "receive_original_job",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "b4ecf31c6d63432589ca0f95ae09f28551f044cd39f42c24a31f343b8bb9ff4e",
+          "post_sha": "b4ecf31c6d63432589ca0f95ae09f28551f044cd39f42c24a31f343b8bb9ff4e"
+        },
+        {
+          "name": "receive_original_job_with_join_cause",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "4f46cfc7d65bfee89ecb5b1222b0ceadabdd57cac12c265d3c59595d4fcd9d31",
+          "post_sha": "4f46cfc7d65bfee89ecb5b1222b0ceadabdd57cac12c265d3c59595d4fcd9d31"
+        },
+        {
+          "name": "close_and_join_original_work",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "842bd95e7dba652ce726ba2666819229d5655e024a1ebb97d5ca87a3f358a521",
+          "post_sha": "842bd95e7dba652ce726ba2666819229d5655e024a1ebb97d5ca87a3f358a521"
+        },
+        {
+          "name": "close_and_join_original_work",
+          "occurrence": 1,
+          "raw_equal": true,
+          "pre_sha": "99ec93847f5c398e5509fc9ab35960fd8e694d2a01443139d5726deeb8689633",
+          "post_sha": "99ec93847f5c398e5509fc9ab35960fd8e694d2a01443139d5726deeb8689633"
+        },
+        {
+          "name": "work",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "4a9adf4f885fa18fff081076d9a5ec70e724a1e3b53bcfd785370a4dcce8a22e",
+          "post_sha": "4a9adf4f885fa18fff081076d9a5ec70e724a1e3b53bcfd785370a4dcce8a22e"
+        },
+        {
+          "name": "receive_registered_job",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "419e7007fada95409b62f0a2133ad9ee442488395713d20f1c3ac73a73c1bba9",
+          "post_sha": "419e7007fada95409b62f0a2133ad9ee442488395713d20f1c3ac73a73c1bba9"
+        },
+        {
+          "name": "receive_registered_job_with_join_cause",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "db3dad5db364c509bc6927a0c8d1f4d9406932bea581f566cf0d38823254b764",
+          "post_sha": "db3dad5db364c509bc6927a0c8d1f4d9406932bea581f566cf0d38823254b764"
+        },
+        {
+          "name": "reserve",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "aac69ddac1c82cc7174d63d5fe5fb898b3fba03a61b1ef85cf11beb6b19e766f",
+          "post_sha": "aac69ddac1c82cc7174d63d5fe5fb898b3fba03a61b1ef85cf11beb6b19e766f"
+        },
+        {
+          "name": "release",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "281ce430725e4fd6bd9fd64c903406435368edac5c17730ab56bb34f9f22d720",
+          "post_sha": "281ce430725e4fd6bd9fd64c903406435368edac5c17730ab56bb34f9f22d720"
+        },
+        {
+          "name": "join_original_normal",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "a76d3ed1154606b60189fcbb17d07c9164a05fe8a97d37a931331c806e8a02aa",
+          "post_sha": "a76d3ed1154606b60189fcbb17d07c9164a05fe8a97d37a931331c806e8a02aa"
+        },
+        {
+          "name": "close_and_join",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "0e623e944ec553f4a32697120cef9ff0a0efbaff3c607dd2b2800b233cebd4df",
+          "post_sha": "0e623e944ec553f4a32697120cef9ff0a0efbaff3c607dd2b2800b233cebd4df"
+        },
+        {
+          "name": "retain_original_handle",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "5a5d64276585f59d2655783edb0b230431a44865e97f4a946ee20ff4e55908ba",
+          "post_sha": "691f7e6095ef77a00af14ca07b831ff72c9ee8f534d1b8d6ae23977ebbc164e8"
+        },
+        {
+          "name": "drop",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "0f6517e2685011f89ef90003c3b99426d614266bb0d50525dd7efd0f462bc918",
+          "post_sha": "0f6517e2685011f89ef90003c3b99426d614266bb0d50525dd7efd0f462bc918"
+        },
+        {
+          "name": "drop",
+          "occurrence": 1,
+          "raw_equal": false,
+          "pre_sha": "7470a22ea0de82a1c14b5a804b4a3595bb4aa9811e4b6e06620bb0f67a6dfec3",
+          "post_sha": "d886ab2dfc05b668de27d6ea49b26ac11fe59ce4f139261ef074b5d8d194976d"
+        },
+        {
+          "name": "join_locked",
+          "old": 1,
+          "new": 0
+        },
+        {
+          "name": "receive_with_join_cause",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "5c7b864e96d36f0c9483686c563bf438cde63373010c2099fad106e8b023becf",
+          "post_sha": "322671c938383636280009fedbe7181f80e201fb8922d9890d5ccf448dabdbf1"
+        },
+        {
+          "name": "receive",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "f2e1996f636c361acd877526870b44576b90f083d53cf93d03fa27a021bb7dc2",
+          "post_sha": "15c4bd7bb3426e700b26fcf2fc765591e603e83a1f3fc1a20b39bb106c75e383"
+        },
+        {
+          "name": "join_for_normal_retirement",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "07c3ef3a8f0cf2e8f108d081ff994319386fece8783eeea0aa5462177b918fac",
+          "post_sha": "b93c213fb6f3fb71f81d401bf1c3b9cc463605f37da04cfb9ff96134aaa8f10a"
+        },
+        {
+          "name": "join_and_discard",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "576f4f539105b541402af8852d5b9d4d2dded32599beadf23ef829dddabbd338",
+          "post_sha": "91269a315b793e1f30381776f9241788b2b6b958745ff1771002af52ed446ad8"
+        },
+        {
+          "name": "lock_original_learning_result",
+          "old": 0,
+          "new": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "old": 8,
+      "new": 8,
+      "rows": [
+        {
+          "name": "new",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "7a175cc38cc9787a9f518aaa114d52049eee3f346604007766dc154bb2d31e4d",
+          "post_sha": "7a175cc38cc9787a9f518aaa114d52049eee3f346604007766dc154bb2d31e4d"
+        },
+        {
+          "name": "reserve",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "e71403c4042c6fd30036151cc3d468e3be835f2916c4ac533d354f43b1e5a9a8",
+          "post_sha": "e71403c4042c6fd30036151cc3d468e3be835f2916c4ac533d354f43b1e5a9a8"
+        },
+        {
+          "name": "close",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "0cf4235842f058190800966387094cf3433f629ea7c83e37ae8e928147ada151",
+          "post_sha": "0cf4235842f058190800966387094cf3433f629ea7c83e37ae8e928147ada151"
+        },
+        {
+          "name": "join_and_release",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "0af0999bec7b4c4508c9ad88a2f173ceebe59ccda9dab294b661ecf1d428252a",
+          "post_sha": "a928fd90479b463dcd06fa1d3ff96a173edb13ecb0553fdf6b1a89cff422811b"
+        },
+        {
+          "name": "retain_original_bootstrap_consumer_handle",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "9d9f0fc6fd3315793c38c9e7a7b97d7d1c6cb66e49a7451da06d599568989530",
+          "post_sha": "270d867a342e7c07fbf2f9da1bc48fe81025f1a2a89fda1f627555e8ab111f36"
+        },
+        {
+          "name": "drop",
+          "occurrence": 0,
+          "raw_equal": true,
+          "pre_sha": "d6096e1f14bbca2afcc2fed6df94d17c65c53332eb77ce1f7e9cced3b338b1bd",
+          "post_sha": "d6096e1f14bbca2afcc2fed6df94d17c65c53332eb77ce1f7e9cced3b338b1bd"
+        },
+        {
+          "name": "join_locked",
+          "old": 1,
+          "new": 0
+        },
+        {
+          "name": "receive_original",
+          "occurrence": 0,
+          "raw_equal": false,
+          "pre_sha": "41af7bc5cc00ec3bc2be3201d2804ac5c4f9ac38a2590d2d03d5a220f452168a",
+          "post_sha": "92989971c93212150004e830a05c383059a88179157cf99a26f4a8fccfaa2372"
+        },
+        {
+          "name": "lock_original_bootstrap_result",
+          "old": 0,
+          "new": 1
+        }
+      ]
+    }
+  ],
+  "boundary_definitions": [
+    {
+      "id": "q24_same_actor_learning_work_construct",
+      "definition_markers": [
+        {
+          "marker": "pub(super) fn from_original_scope(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "OriginalSameActorRootContext::require_current(&context)?",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "CellQ24PreparedLearningV1::revalidate_source(&prepared)",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_work_binding",
+      "definition_markers": [
+        {
+          "marker": "fn require_identity_and_gate(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "!Arc::ptr_eq(self.gate(), gate)",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_prepared_binding",
+      "definition_markers": [
+        {
+          "marker": "fn require_original_prepared(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "!Arc::ptr_eq(&self.prepared, prepared)",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_training_binding",
+      "definition_markers": [
+        {
+          "marker": "fn require_training_context(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "dataset.request != self.prepared.initial().request",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "scope != self.prepared.scope()",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_local_decision_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_effect_entry",
+      "definition_markers": [
+        {
+          "marker": "fn require_original_work_entry(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": ".require_open()",
+          "pre": 7,
+          "post": 7
+        },
+        {
+          "marker": ".map_err(|_| Error::CommitUncertain)",
+          "pre": 3,
+          "post": 3
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_local_decision_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_blocking_reserve",
+      "definition_markers": [
+        {
+          "marker": "fn reserve_original_blocking(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "self.jobs.reserve()",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_blocking_handle",
+      "definition_markers": [
+        {
+          "marker": "fn retain_original_handle<",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "handle: JoinHandle<Result<T, E>>",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "self.retained.push(job.clone())",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_blocking_receive",
+      "definition_markers": [
+        {
+          "marker": "fn receive_original_job<",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "self.jobs.receive_registered_job(job).await",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+      ]
+    },
+    {
+      "id": "q24_same_actor_learning_terminal_join",
+      "definition_markers": [
+        {
+          "marker": "impl OriginalSameActorLearningWork {",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "impl OriginalSameActorLearningCleanup {",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "self.work.close_and_join_original_work().await",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "self.jobs\n            .close_and_join()\n            .await",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+      ]
+    },
+    {
+      "id": "q24_learning_original_job_with_join_cause",
+      "definition_markers": [
+        {
+          "marker": "fn receive_original_job_with_join_cause<",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "marker": "Result<Result<T, E>, OriginalJobReceiveError>",
+          "pre": 3,
+          "post": 3
+        },
+        {
+          "marker": "self.jobs.receive_registered_job_with_join_cause(job).await",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+      ]
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_new",
+      "definition_markers": [
+        {
+          "marker": "pub(super) fn new() -> Self {",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ]
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_reserve",
+      "definition_markers": [
+        {
+          "marker": "pub(super) fn reserve(\n        &self,\n        kind: OriginalBootstrapConsumerKind,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ]
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_close",
+      "definition_markers": [
+        {
+          "marker": "pub(super) fn close(&self) {",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ]
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_join_and_release",
+      "definition_markers": [
+        {
+          "marker": "pub(super) async fn join_and_release(&self) -> Result<(), AgentdError> {",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ]
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumer_admission_retain_original_bootstrap_consumer_handle",
+      "definition_markers": [
+        {
+          "marker": "pub(crate) fn retain_original_bootstrap_consumer_handle(\n        mut self,\n        handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,\n    ) -> Arc<OriginalBootstrapConsumerJob> {",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ]
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumer_job_receive_original",
+      "definition_markers": [
+        {
+          "marker": "pub(crate) fn receive_original(\n        self: &Arc<Self>,\n    ) -> impl Future<Output = Result<FinalUseAuthority, AgentdError>> + Send + 'static {",
+          "pre": 1,
+          "post": 1
+        }
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ]
+    }
+  ],
+  "original_error_spans": [
+    {
+      "selector": "pub(crate) enum OriginalJobReceiveError",
+      "found": true,
+      "raw_equal": true,
+      "sha": "da59eb5a53cffcaf26e73480d4c7e0e8d7391f551d76236cf539ccb59de1bf22"
+    },
+    {
+      "selector": "impl std::fmt::Display for OriginalJobReceiveError",
+      "found": true,
+      "raw_equal": true,
+      "sha": "049708358c6b4c264d05c8530ae5c9ca941a03f48e266521b4781ea6e296abd7"
+    },
+    {
+      "selector": "impl std::error::Error for OriginalJobReceiveError",
+      "found": true,
+      "raw_equal": true,
+      "sha": "f35778d6b77765ffe9fc041d3a7ac7f9d14e7bba22a4bad73ac276eab4a4b987"
+    }
+  ],
+  "test_proof": {
+    "old_names": [
+      "unpolled_receive_keeps_real_task_and_fd_until_cleanup_join",
+      "one_actual_consumer_kind_cannot_be_spawned_twice",
+      "panicked_consumer_does_not_skip_the_other_actual_join"
+    ],
+    "new_names": [
+      "unpolled_receive_keeps_real_task_and_fd_until_cleanup_join",
+      "one_actual_consumer_kind_cannot_be_spawned_twice",
+      "panicked_consumer_does_not_skip_the_other_actual_join",
+      "cancelled_cleanup_retains_one_original_consumer_and_its_error"
+    ],
+    "pre_macros": {
+      "assert": 16,
+      "assert_eq": 0,
+      "panic": 1,
+      "matches": 6
+    },
+    "original_post_macros": {
+      "assert": 18,
+      "assert_eq": 0,
+      "panic": 1,
+      "matches": 6
+    },
+    "new_assertions": 2,
+    "unexecuted": true
+  },
+  "unchanged_child_checks": [
+    {
+      "pin": "ea05156dca56687879a1e8a6614091abb49c2480",
+      "bytes": 13030,
+      "sha256": "2593e218045472420d009f2b261f3bcebb30e09b14b24ce1ccf82f28e820efdc",
+      "removed_state_refs": [],
+      "tests": [
+        "original_job_checks_gate_after_actual_owner_lock_wait",
+        "cancelled_waiter_retains_actual_blocking_handle_and_original_output",
+        "cancelled_cleanup_rejoins_same_handle_without_restarting_work",
+        "empty_registry_cannot_hide_outstanding_original_job_custody",
+        "original_join_panic_is_sticky_after_handle_has_been_consumed",
+        "original_owner_error_is_preserved_and_phase_closes",
+        "successful_original_job_releases_real_lane_before_returning_value",
+        "joined_c_job_preserves_the_actual_panic_and_sticky_cleanup_failure",
+        "joined_c_job_distinguishes_phase_refusal_and_drops_the_actual_owner"
+      ]
+    },
+    {
+      "pin": "d10964eda80f490bc36434cb1168d9af48e29a7f",
+      "bytes": 6216,
+      "sha256": "b29bcb3b78b8b6053e159fc738d27b6db570067812322db37b7d21806c6af728",
+      "removed_state_refs": [],
+      "tests": [
+        "normal_join_keeps_the_actual_delivered_owner_and_closes_new_admission",
+        "normal_join_refuses_and_drops_an_actual_undelivered_owner",
+        "cancelling_normal_join_retains_the_same_real_blocking_handle_for_cleanup",
+        "normal_join_waits_for_the_actual_last_job_holder_after_registry_release",
+        "admission_racing_normal_join_cannot_start_another_original_handle"
+      ]
+    },
+    {
+      "pin": "650bcbd51643c637d6fd6c9369a967a006802d68",
+      "bytes": 9902,
+      "sha256": "8b599185406b0c7a3e7d043e61f84e539565a9d339e873022319271c407a3dd6",
+      "removed_state_refs": [],
+      "tests": []
+    },
+    {
+      "pin": "93abf116dd22880973368fa2517d62455a5c58ca",
+      "bytes": 7872,
+      "sha256": "3cafcc3be44826aa18c512aed33f70be22d19286a19b19952f133c211df80d9a",
+      "removed_state_refs": [],
+      "tests": [
+        "original_notification_requires_installed_state_before_releasing_wait",
+        "cancelling_registered_installation_wait_closes_all_later_entries",
+        "cancelled_readonly_progress_preserves_phase_and_announced_state_is_not_lost"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "retained_same_handles",
+      "proof": "Both actual admission methods synchronously move the original JoinHandle into exactly one Shared<BoxFuture<()>>, register the Job in the original retained registry, then disarm admission. No new production spawn or extra task owns supervision. Output cells contain no backreference to the Job/completion."
+    },
+    {
+      "id": "nonclone_errors",
+      "proof": "Shared clones unit only. Learning stores original Result<T,E> and the exact tokio JoinError in separate original fields; Bootstrap stores Result<FinalUseAuthority,AgentdError>. No Clone/Sync bound was added to these original payloads. Original Learning Join/Phase/Custody/Release enum and Display/source impls are byte identical."
+    },
+    {
+      "id": "learning_actual_terminal",
+      "proof": "Each completion awaits the same actual handle before acquiring the short stdMutex guard, then writes joined and original output/error without another await. Four waiters await completion outside their result guards. Actual JoinError remains first in receive_with_join_cause, then sticky failure/unavailable, then original output and original Gate postcheck. Legacy receive retains its original public mapping."
+    },
+    {
+      "id": "learning_retirement_pending",
+      "proof": "Normal retirement still rejects failed or undelivered results; fault join still discards real undelivered owners. Actual Last Job Drop refuses to decrement pending before real joined. After actual join, it moves output out, releases the mutex, drops the actual output, and only then decrements pending and notifies. Output Drop occurs outside the new stdMutex to avoid reentrant user Drop under that lock."
+    },
+    {
+      "id": "bootstrap_once",
+      "proof": "receive_original retains the original one-shot receiving claim in its own lexical lock scope before the Shared await. Cancellation does not clear that claim. A separate post-join scope takes the same original output once; output? still precedes gate.require_open and closing.disarm. Fault cleanup joins all original jobs and preserves original failure before additional poisoned/absent-terminal refusal."
+    },
+    {
+      "id": "poison",
+      "proof": "The newly introduced stdMutex poison is explicitly custody-only recovery. It closes the original Gate and sets sticky failure/poisoned. Learning never clears a real JoinError; Bootstrap preserves actual original output error priority. No poison path constructs authority or turns unavailable terminal custody into success."
+    },
+    {
+      "id": "no_awaiting_guard",
+      "proof": "The six diagnosed wait functions now await only the completion clone before result locking, except Bootstrap's one-shot preclaim which has an explicit lexical scope ending before await. Completion futures acquire their output lock only after handle.await and have no later await."
+    },
+    {
+      "id": "components",
+      "proof": "Three old Bootstrap components keep every existing assertion, with two extra shared-terminal assertions. One added real blocking task + UnixFD component aborts only a cleanup waiter, verifies task/FD survival, resumes, observes the original GenerationFenced error and exactly one execution, then actual EOF. Existing Work nine and normal Work five component sources were GET/hash checked; none accesses removed handle fields/join_locked. No component executed."
+    },
+    {
+      "id": "dependency",
+      "proof": "This Agentd change requires Root-owned dependency packet b447430ce8f5b8f0107bf7a299341df7d7dcedea. This review does not describe futures as already a direct Agentd dependency in the original base and does not edit Cargo/lock."
+    }
+  ],
+  "metadata_obligations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "mapping": "Replace actual obsolete optional handle state/async join_locked protection by the same concrete retained Shared registration, original output cell, all four complete wait functions, new private lock helper, and actual Last Job Drop order. Preserve original Gate/deadline/admission/normal/pending/error guards and forbidden lists."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "mapping": "Replace obsolete optional-handle/async join_locked protection by actual completion registration, original receiving claim and result take, new lock helper and poison failure handling. Preserve original actual outcome/error precedence and all forbidden/same-path conjunctions."
+    }
+  ],
+  "limits": [
+    "Git GET/hash and pure V8 unique replay/source analysis only.",
+    "16 existing boundary declaration marker sets stay present; this is not full repository caller closure or original typed-helper execution.",
+    "28 unchanged product function bodies byte compared; only scoped source deltas reviewed, not a global task-join proof.",
+    "Other 13 actual await sites require their independently owned source deltas.",
+    "No h/native/PTY/ref/formatter/Cargo/test/original-checker execution by reviewer."
+  ]
+}

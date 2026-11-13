@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v9_Learning_and_Bootstrap_same_handle_Shared_completion",
+  "status": "FROZEN_SOURCE_PROPOSAL_FOR_PEER_REVIEW; uncompiled and unexecuted",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "14d377594626fcd8d2664aaf805436a818bec867",
+  "source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+  "actual_v9_post_manifest": "2f7d924178f222007d52394ae3d367beb3288eb1",
+  "failure_inventory": "f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda",
+  "original_log": {
+    "pin": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+    "bytes": 97371,
+    "sha256": "37b9622af630f061012c04a1e38f5f48f044a9f481256940bcf0cdad8c67d95c"
+  },
+  "log_scope": "Six assigned await_holding_invalid_type diagnostics; failed temporary Clippy edits are not source preimages.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "pre": "6a318dd7bb800d56939125055c37efb182e88fa4",
+      "post": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+      "preimage": {
+        "pin": "6a318dd7bb800d56939125055c37efb182e88fa4",
+        "bytes": 23007,
+        "sha256": "eaa5698ab16684be0c087698e31a44116d074a6229f8bf6c148262b56664de22"
+      },
+      "postimage": {
+        "pin": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+        "bytes": 23886,
+        "sha256": "f8c33abea179cea3c414ab23f9e352ef1ad22a69fc147d639a9a46c35b1f52f8"
+      },
+      "unique_operations": 11,
+      "full_forward_reverse_equal": true,
+      "source_CREATE_GET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "pre": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5",
+      "post": "a2488297954907d01cc1b10b921b295d3aa9e631",
+      "preimage": {
+        "pin": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5",
+        "bytes": 6544,
+        "sha256": "6f462c7b85ffecb6c8f2c17ae7aad192ada9006311f4e8c66baa1dbe835229b4"
+      },
+      "postimage": {
+        "pin": "a2488297954907d01cc1b10b921b295d3aa9e631",
+        "bytes": 7788,
+        "sha256": "9449167c92b3b0e6787ea73048ca0384c8aa9c7f46acca1509d3ecff17f8aad1"
+      },
+      "unique_operations": 8,
+      "full_forward_reverse_equal": true,
+      "source_CREATE_GET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "pre": "c5e80dc4350d986167bd5727dc48e57522e7fdcc",
+      "post": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+      "preimage": {
+        "pin": "c5e80dc4350d986167bd5727dc48e57522e7fdcc",
+        "bytes": 5010,
+        "sha256": "2c7ccba9a6238369eb4d790a5acb3b6375a464b378de51a043fd6428efe9b87f"
+      },
+      "postimage": {
+        "pin": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+        "bytes": 7525,
+        "sha256": "ac10fa1daf66acdb8b2cd63f504697e842d8a297b3715a4e278352e67135477f"
+      },
+      "unique_operations": 4,
+      "full_forward_reverse_equal": true,
+      "source_CREATE_GET_equal": true
+    }
+  ],
+  "ops": [
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "use std::future::Future;\n",
+      "after": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse std::future::Future;\n",
+      "reason": "existing futures Shared type"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "struct OriginalJobState<T, E> {\n    handle: Option<JoinHandle<Result<T, E>>>,\n",
+      "after": "struct OriginalJobState<T, E> {\n",
+      "reason": "one original handle is owned by registered Shared future"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "/// This object holds the real handle, even while another future borrows it\n/// through an async mutex and is subsequently cancelled.\npub(crate) struct OriginalLearningJob<T, E> {\n    state: tokio::sync::Mutex<OriginalJobState<T, E>>,",
+      "after": "/// The registry retains the one Shared future which owns the actual handle.\n/// Its unit completion is cloneable; the original result and JoinError are not.\npub(crate) struct OriginalLearningJob<T, E> {\n    state: Arc<Mutex<OriginalJobState<T, E>>>,\n    completion: Shared<BoxFuture<'static, ()>>,",
+      "reason": "separate cloneable completion from single owned result"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "        let job = Arc::new(OriginalLearningJob {\n            state: tokio::sync::Mutex::new(OriginalJobState {\n                handle: Some(handle),\n                joined: false,\n                join_failed: false,\n                join_error: None,\n                output: None,\n            }),",
+      "after": "        let state = Arc::new(Mutex::new(OriginalJobState::<T, E> {\n            joined: false,\n            join_failed: false,\n            join_error: None,\n            output: None,\n        }));\n        let recorded = Arc::clone(&state);\n        let failed = Arc::clone(&self.join_failed);\n        let gate = Arc::clone(&self.gate);\n        // This future owns the one real handle before any waiter can poll it.\n        // Registry custody of the job retains this Shared clone on cancellation.\n        let completion = async move {\n            let result = handle.await;\n            let mut state = recorded.lock().unwrap_or_else(|error| {\n                gate.close();\n                failed.store(true, Ordering::Release);\n                let mut state = error.into_inner();\n                state.join_failed = true;\n                state\n            });\n            // No await separates the actual join from its single terminal write.\n            state.joined = true;\n            match result {\n                Ok(output) => state.output = Some(output),\n                Err(error) => {\n                    state.join_failed = true;\n                    state.join_error = Some(error);\n                    failed.store(true, Ordering::Release);\n                }\n            }\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalLearningJob {\n            state,\n            completion,",
+      "reason": "register Shared ownership synchronously and retain original typed terminal result"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "    async fn join_locked(&self, state: &mut OriginalJobState<T, E>) {\n        if state.joined {\n            return;\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => handle.await,\n            None => {\n                state.join_failed = true;\n                self.join_failed.store(true, Ordering::Release);\n                state.joined = true;\n                return;\n            }\n        };\n        // No await separates completion from this terminal state transition.\n        // A later cleanup observes joined and never polls this handle again.\n        state.joined = true;\n        state.handle = None;\n        match result {\n            Ok(output) => state.output = Some(output),\n            Err(error) => {\n                state.join_failed = true;\n                state.join_error = Some(error);\n                self.join_failed.store(true, Ordering::Release);\n            }\n        }\n    }\n",
+      "after": "    fn lock_original_learning_result(&self) -> MutexGuard<'_, OriginalJobState<T, E>> {\n        self.state.lock().unwrap_or_else(|error| {\n            self.gate.close();\n            self.join_failed.store(true, Ordering::Release);\n            let mut state = error.into_inner();\n            state.join_failed = true;\n            state\n        })\n    }\n",
+      "reason": "terminal state is locked only after Shared await; poison remains fail closed"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await;\n        let failed = state.join_failed;\n        let join_error = state.join_error.take();",
+      "after": "        self.completion.clone().await;\n        let mut state = self.lock_original_learning_result();\n        let failed = state.join_failed;\n        let join_error = state.join_error.take();",
+      "reason": "actual JoinError receive without a guard across await"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await;\n        let failed = state.join_failed;\n        let output = state.output.take();",
+      "after": "        self.completion.clone().await;\n        let mut state = self.lock_original_learning_result();\n        let failed = state.join_failed;\n        let output = state.output.take();",
+      "reason": "legacy receive preserves original mapping and output single take"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "            let mut state = self.state.lock().await;\n            self.join_locked(&mut state).await;\n            let output = state.output.take();",
+      "after": "            self.completion.clone().await;\n            let mut state = self.lock_original_learning_result();\n            let output = state.output.take();",
+      "reason": "normal actual join no live state guard across await"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "            let mut state = self.state.lock().await;\n            self.join_locked(&mut state).await;\n            let succeeded = !state.join_failed;",
+      "after": "            self.completion.clone().await;\n            let mut state = self.lock_original_learning_result();\n            let succeeded = !state.join_failed;",
+      "reason": "fault actual join no live state guard across await"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "        let state = self.state.get_mut();\n        if !state.joined {",
+      "after": "        let mut state = self.state.lock().unwrap_or_else(|error| {\n            self.gate.close();\n            self.join_failed.store(true, Ordering::Release);\n            error.into_inner()\n        });\n        if !state.joined {",
+      "reason": "last Job Drop still distinguishes actual join from lost custody"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "before": "        drop(state.output.take());\n        self.pending.fetch_sub(1, Ordering::AcqRel);",
+      "after": "        let output = state.output.take();\n        drop(state);\n        drop(output);\n        self.pending.fetch_sub(1, Ordering::AcqRel);",
+      "reason": "release actual output before decrement and avoid user Drop under cell lock"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "use super::refused;\n",
+      "after": "use super::refused;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+      "reason": "Shared unit completion uses existing workspace futures"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "struct ConsumerJobState {\n    handle: Option<JoinHandle<Result<FinalUseAuthority, AgentdError>>>,\n    output: Option<Result<FinalUseAuthority, AgentdError>>,\n    joined: bool,\n    receiving: bool,\n}",
+      "after": "struct ConsumerJobState {\n    output: Option<Result<FinalUseAuthority, AgentdError>>,\n    joined: bool,\n    receiving: bool,\n    poisoned: bool,\n}",
+      "reason": "nonClone result remains singly owned; actual handle moves to completion future"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "pub(crate) struct OriginalBootstrapConsumerJob {\n    state: tokio::sync::Mutex<ConsumerJobState>,\n    gate: Arc<SameActorPhaseGate>,\n}",
+      "after": "pub(crate) struct OriginalBootstrapConsumerJob {\n    state: Arc<Mutex<ConsumerJobState>>,\n    completion: Shared<BoxFuture<'static, ()>>,\n    gate: Arc<SameActorPhaseGate>,\n}",
+      "reason": "registry holds original task join independently from any waiter"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "            let mut state = job.state.lock().await;\n            job.join_locked(&mut state).await;\n            if let Some(result) = state.output.take() {",
+      "after": "            job.completion.clone().await;\n            let (output, joined, poisoned) = {\n                let mut state = job.lock_original_bootstrap_result();\n                (state.output.take(), state.joined, state.poisoned)\n            };\n            if let Some(result) = output {",
+      "reason": "cleanup awaits clone of the original registered completion without a state guard"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "                    Err(error) => super::save_original_failure(&mut failure, error),\n                }\n            }\n        }\n        failure.map_or(Ok(()), Err)",
+      "after": "                    Err(error) => super::save_original_failure(&mut failure, error),\n                }\n            }\n            if !joined || poisoned {\n                super::save_original_failure(\n                    &mut failure,\n                    refused(\"original bootstrap consumer terminal custody unavailable\"),\n                );\n            }\n        }\n        failure.map_or(Ok(()), Err)",
+      "reason": "preserve actual original failure first; poisoned or absent terminal never becomes success"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "        let job = Arc::new(OriginalBootstrapConsumerJob {\n            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(handle),\n                output: None,\n                joined: false,\n                receiving: false,\n            }),\n            gate: Arc::clone(&self.gate),\n        });",
+      "after": "        let state = Arc::new(Mutex::new(ConsumerJobState {\n            output: None,\n            joined: false,\n            receiving: false,\n            poisoned: false,\n        }));\n        let recorded = Arc::clone(&state);\n        let gate = Arc::clone(&self.gate);\n        // Only this retained Shared future owns and awaits the actual handle.\n        // Its unit result is cloneable; the original authority/error is not.\n        let completion = async move {\n            let result = match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(AgentdError::Protocol(format!(\n                    \"original Root production inputs: {error}\"\n                ))),\n            };\n            let mut state = recorded.lock().unwrap_or_else(|error| {\n                gate.close();\n                let mut state = error.into_inner();\n                state.poisoned = true;\n                state\n            });\n            // No await separates the actual join and the unique result write.\n            state.output = Some(result);\n            state.joined = true;\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalBootstrapConsumerJob {\n            state,\n            completion,\n            gate: Arc::clone(&self.gate),\n        });",
+      "reason": "synchronous one-handle registration with original Protocol JoinError mapping"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "    async fn join_locked(&self, state: &mut ConsumerJobState) {\n        if state.joined {\n            return;\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(AgentdError::Protocol(format!(\n                    \"original Root production inputs: {error}\"\n                ))),\n            },\n            None => Err(refused(\"actual bootstrap consumer handle missing\")),\n        };\n        // Keep the real result in the retained slot, without an intervening\n        // await. No cancelled waiter removes or re-polls the original handle.\n        state.handle = None;\n        state.output = Some(result);\n        state.joined = true;\n    }\n",
+      "after": "    fn lock_original_bootstrap_result(&self) -> MutexGuard<'_, ConsumerJobState> {\n        self.state.lock().unwrap_or_else(|error| {\n            self.gate.close();\n            let mut state = error.into_inner();\n            state.poisoned = true;\n            state\n        })\n    }\n",
+      "reason": "short synchronous result-cell lock never held across await"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "before": "            let mut state = job.state.lock().await;\n            if state.receiving {\n                return Err(refused(\n                    \"original bootstrap consumer result was already received\",\n                ));\n            }\n            state.receiving = true;\n            job.join_locked(&mut state).await;\n            let output = state\n                .output\n                .take()\n                .ok_or_else(|| refused(\"original bootstrap consumer output missing\"))?;",
+      "after": "            {\n                let mut state = job.lock_original_bootstrap_result();\n                if state.receiving {\n                    return Err(refused(\n                        \"original bootstrap consumer result was already received\",\n                    ));\n                }\n                state.receiving = true;\n            }\n            job.completion.clone().await;\n            let output = {\n                let mut state = job.lock_original_bootstrap_result();\n                if !state.joined {\n                    return Err(refused(\"actual bootstrap consumer join missing\"));\n                }\n                state\n                    .output\n                    .take()\n                    .ok_or_else(|| refused(\"original bootstrap consumer output missing\"))?\n            };",
+      "reason": "claim once before await, retain same result through cancellation, take after actual join"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "before": "    let state = job.state.lock().await;\n    assert!(state.joined && state.handle.is_none() && state.output.is_none());",
+      "after": "    let state = job.state.lock().unwrap();\n    assert!(state.joined && job.completion.peek().is_some() && state.output.is_none());",
+      "reason": "actual Shared terminal replaces removed optional handle field; keep joined and released-output assertions"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "before": "    let state = job.state.lock().await;\n    assert!(state.joined && state.handle.is_none());",
+      "after": "    let state = job.state.lock().unwrap();\n    assert!(state.joined && job.completion.peek().is_some());",
+      "reason": "same actual join observation after permanent admission refusal"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "before": "    assert!(first.state.lock().await.joined);\n    assert!(second.state.lock().await.joined);",
+      "after": "    assert!(first.state.lock().unwrap().joined);\n    assert!(first.completion.peek().is_some());\n    assert!(second.state.lock().unwrap().joined);\n    assert!(second.completion.peek().is_some());",
+      "reason": "keep both real joins and additionally require both retained Shared completions"
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "before": "    assert!(second.completion.peek().is_some());\n}\n",
+      "after": "    assert!(second.completion.peek().is_some());\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn cancelled_cleanup_retains_one_original_consumer_and_its_error() {\n    let gate = gate();\n    let registry = Arc::new(OriginalBootstrapConsumers::new());\n    let (owner, mut peer) = UnixStream::pair().unwrap();\n    peer.set_nonblocking(true).unwrap();\n    let (entered, started) = mpsc::sync_channel(1);\n    let (release, released) = mpsc::sync_channel(1);\n    let executions = Arc::new(std::sync::atomic::AtomicUsize::new(0));\n    let calls = Arc::clone(&executions);\n    let admission = registry\n        .reserve(OriginalBootstrapConsumerKind::Device, &gate)\n        .unwrap();\n    let worker = tokio::task::spawn_blocking(move || {\n        let _owner = owner;\n        calls.fetch_add(1, std::sync::atomic::Ordering::AcqRel);\n        entered.send(()).unwrap();\n        let _ = released.recv();\n        Err(AgentdError::GenerationFenced(\n            \"same original consumer error after waiter cancellation\".into(),\n        ))\n    });\n    let job = admission.retain_original_bootstrap_consumer_handle(worker);\n    drop(job);\n    started.recv_timeout(Duration::from_secs(2)).unwrap();\n\n    let first_registry = Arc::clone(&registry);\n    let first = tokio::spawn(async move { first_registry.join_and_release().await });\n    tokio::time::timeout(Duration::from_secs(2), gate.cancelled())\n        .await\n        .unwrap();\n    first.abort();\n    assert!(first.await.unwrap_err().is_cancelled());\n\n    let mut byte = [0];\n    assert!(\n        matches!(peer.read(&mut byte), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)\n    );\n    assert!(executions.load(std::sync::atomic::Ordering::Acquire) == 1);\n\n    let second_registry = Arc::clone(&registry);\n    let mut second = tokio::spawn(async move { second_registry.join_and_release().await });\n    assert!(\n        tokio::time::timeout(Duration::from_millis(20), &mut second)\n            .await\n            .is_err()\n    );\n    release.send(()).unwrap();\n    let result = tokio::time::timeout(Duration::from_secs(2), second)\n        .await\n        .unwrap()\n        .unwrap();\n    assert!(matches!(result, Err(AgentdError::GenerationFenced(message))\n        if message == \"same original consumer error after waiter cancellation\"));\n    assert!(executions.load(std::sync::atomic::Ordering::Acquire) == 1);\n    assert!(matches!(peer.read(&mut byte), Ok(0)));\n}\n",
+      "reason": "add a real blocking/FD test for cancellation and resumption of cleanup"
+    }
+  ],
+  "actual_sites": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "line": 530,
+      "function": "receive_with_join_cause",
+      "owner": "OriginalLearningJob",
+      "pre": "6a318dd7bb800d56939125055c37efb182e88fa4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "line": 559,
+      "function": "receive",
+      "owner": "OriginalLearningJob",
+      "pre": "6a318dd7bb800d56939125055c37efb182e88fa4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "line": 585,
+      "function": "join_for_normal_retirement",
+      "owner": "OriginalLearningJob",
+      "pre": "6a318dd7bb800d56939125055c37efb182e88fa4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "line": 604,
+      "function": "join_and_discard",
+      "owner": "OriginalLearningJob",
+      "pre": "6a318dd7bb800d56939125055c37efb182e88fa4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "line": 108,
+      "function": "join_and_release",
+      "owner": "OriginalBootstrapConsumers",
+      "pre": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "line": 178,
+      "function": "receive_original",
+      "owner": "OriginalBootstrapConsumerJob",
+      "pre": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5"
+    }
+  ],
+  "dependency": {
+    "crate": "codex-hepta-agentd",
+    "required": "futures.workspace = true",
+    "source_pattern": "codex-rs/core/src/session/original_shutdown.rs",
+    "pattern_pin": "0da95a220ed5484f419f5feb814c921c395db5ba",
+    "owner": "Root explicitly owns the Cargo.toml and existing Cargo.lock dependency-edge change.",
+    "excluded": "This packet changes no Cargo manifest, lock file, package version, tool/environment or checker configuration."
+  },
+  "ownership_design": [
+    "Each admission synchronously moves its one actual JoinHandle into one lazy Shared<BoxFuture<'static, ()>> before registering the containing Job. No waiter owns the only join future and no new production task is spawned.",
+    "The registry retains the Job; the Job retains the Shared completion and the actual result cell. Waiters await only Shared clones. Cancelling or never polling a waiter cannot remove the registry's clone or detach the original task.",
+    "The completion awaits the real handle once. With no later await, it writes the original result and true joined state into its separate Arc<Mutex<State>>. The Shared output is only (), not T, E, FinalUseAuthority, AgentdError, or fabricated success.",
+    "Non-Clone business values/errors remain in Option<Result<T,E>> or Option<Result<FinalUseAuthority,AgentdError>> and are consumed once by take. No new Clone/Sync bound is placed on T/E and no error string conversion replaces the raw Learning JoinError.",
+    "All state mutex guards are synchronous short guards acquired after completion, except Bootstrap's original one-shot receive claim before completion; that claim is explicitly scoped and dropped before await.",
+    "The Shared closure captures only the cell plus existing Gate/failure records, never the Job or registry. There is no Job→completion→Job cycle. At actual completion its captured cell clone is released.",
+    "Result consumption remains a single cell arbitration among receive/cleanup paths. No first-waiter scheduling guarantee is asserted. The actual normal-retirement caller must continue to establish its existing quiescence and delivered-output conditions before normal Work join."
+  ],
+  "learning": {
+    "signatures": "All existing receive/retirement/custody public and crate-visible signatures and OriginalJobReceiveError variants remain unchanged.",
+    "typed_result": "Actual tokio JoinError is stored once and taken by receive_with_join_cause unchanged; legacy receive still maps actual join failure to CommitUncertain through its original wrapper.",
+    "failure_priority": "receive_with_join_cause still prioritizes the stored real JoinError, then unavailable/failed state, then original output, then actual Gate error. Original E values remain returned inside Ok(Err(E)) with fail-close as before.",
+    "pending": "The original joined flag is written only after real handle completion. Last Job Drop still refuses to advertise join if supervision is lost; after a real join it removes/drops the actual undelivered output before decrementing pending and notifying waiters.",
+    "normal": "Normal retirement still rejects any failed join or undelivered output and keeps the original Gate/deadline/quiescence tests. Pending count alone still cannot construct normal completion.",
+    "poison": "New synchronous cell poison is recovered only to preserve custody and original result; it closes Gate and makes join failure sticky. It never clears an actual JoinError or invents Ok."
+  },
+  "bootstrap": {
+    "signatures": "reserve/retain_original_bootstrap_consumer_handle/receive_original/join_and_release APIs unchanged.",
+    "receiving": "The existing receiving=true claim remains one-shot and is made before awaiting the retained completion. A cancelled receiver does not re-arm it.",
+    "real_join_error": "The old AgentdError::Protocol(format!(original Root production inputs: {error})) mapping is retained exactly; actual business AgentdError is stored unchanged.",
+    "cleanup": "close/admission order and fail-first save_original_failure are retained. For each actual completed job, original output is taken after join; undelivered FinalUseAuthority is dropped and original AgentdError remains observable. New terminal-cell poison/missing-join refusal is appended without overriding an already saved original failure.",
+    "normal_return": "Original output? still precedes Gate.require_open and closing.disarm; no authority is delivered after a closed Gate.",
+    "no_missing_handle_shortcut": "The previous Option<JoinHandle> slot is replaced by ownership in the retained completion itself; no bare local take-and-await or handle-less success branch exists."
+  },
+  "test_scope": {
+    "unchanged_work_tests": {
+      "pin": "ea05156dca56687879a1e8a6614091abb49c2480",
+      "bytes": 13030,
+      "sha256": "2593e218045472420d009f2b261f3bcebb30e09b14b24ce1ccf82f28e820efdc"
+    },
+    "unchanged_normal_work_tests": {
+      "pin": "d10964eda80f490bc36434cb1168d9af48e29a7f",
+      "bytes": 6216,
+      "sha256": "b29bcb3b78b8b6053e159fc738d27b6db570067812322db37b7d21806c6af728"
+    },
+    "existing_work_coverage": "Existing actual blocking/FD, receiver cancellation, cleanup cancellation/rejoin, last-Job pending, sticky panic/original panic payload, original owner error, and actual normal-retirement components are untouched.",
+    "bootstrap_existing": "Three existing components retain all original process/FD/error/admission assertions. Private async-lock access becomes short std lock; the removed handle.is_none assertion becomes actual Shared.peek().is_some together with original joined/output checks.",
+    "bootstrap_added": "One actual blocking consumer/UnixFD component cancels only the cleanup waiter, confirms the same task and descriptor remain, resumes cleanup, receives the same original failure, checks exactly one execution and real peer EOF. No FinalUseAuthority, Root grant, business receipt or success fixture is constructed.",
+    "executed": false
+  },
+  "child_inventory": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+      "pin": "650bcbd51643c637d6fd6c9369a967a006802d68",
+      "bytes": 9902,
+      "references": [],
+      "modules": [
+        "#[path = \"same_actor_q24_phase_learning_evaluation_tests.rs\"]",
+        "mod tests;"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation_tests.rs",
+      "pin": "93abf116dd22880973368fa2517d62455a5c58ca",
+      "bytes": 7872,
+      "references": [],
+      "modules": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_normal_work_tests.rs",
+      "pin": "d10964eda80f490bc36434cb1168d9af48e29a7f",
+      "bytes": 6216,
+      "references": []
+    }
+  ],
+  "metadata_impact": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "changed_functions": [
+        "retain_original_handle",
+        "lock_original_learning_result (new private helper)",
+        "receive_with_join_cause",
+        "receive",
+        "join_for_normal_retirement",
+        "join_and_discard",
+        "Drop for OriginalLearningJob"
+      ],
+      "removed_private_function": "join_locked",
+      "fields": "Job owns Shared completion + Arc result cell; original raw error enum unchanged",
+      "required_action": "Re-extract actual complete guards/struct/Drop spans; preserve every original forbidden, public boundary/caller and temporal/custody obligation. Do not merely delete old await markers."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "changed_functions": [
+        "join_and_release",
+        "retain_original_bootstrap_consumer_handle",
+        "lock_original_bootstrap_result (new private helper)",
+        "receive_original"
+      ],
+      "removed_private_function": "join_locked",
+      "fields": "Job owns Shared completion + Arc result cell; actual output/one-shot receiving/real joined retained",
+      "required_action": "Protect the single retained handle ownership and original result write/take plus fail-close; public definitions/caller sets unchanged."
+    }
+  ],
+  "bounded_static_checks": {
+    "unique_F_R_all_paths": true,
+    "production_handle_await_sites": {
+      "Learning": 1,
+      "Bootstrap": 1
+    },
+    "new_production_spawn_calls": 0,
+    "async_state_mutexes_remaining_in_two_products": 0,
+    "original_learning_error_enum_and_Error_source_impl_byte_equal": true,
+    "no_new_clock_deadline_retry_or_request_start": true,
+    "no_test_or_assertion_removal": true
+  },
+  "limits": [
+    "No native, h, shell, Python, Cargo, formatter, original checker, tests or refs executed.",
+    "Original maintenance failure remains failure; source shape is not compiler PASS.",
+    "This packet covers only the six assigned sites, not the other V9 diagnostics or whole normal completion.",
+    "Root must compose its actual futures dependency edge before compilation, and final guard literals must bind actual formatted postimages."
+  ]
+}

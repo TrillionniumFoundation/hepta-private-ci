@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "kind": "independent_static_peer_review",
+  "packet": "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+  "packet_bytes": 28794,
+  "packet_sha256": "6deadf2a395efc63a499a2f06f7cdc1abce40ae4b5d427b9917ccffcd9b330b8",
+  "reviewer": "hepta_audit",
+  "author": "runtime_access",
+  "verdict": "no_confirmed_local_blocker",
+  "scope": "Four-path / fourteen-operation source-only Core and App Server Shared-join repair, against the packet's fixed actual preimages. No compile, formatter, native, original checker, h, or ref operation.",
+  "evidence": {
+    "actual_v9_log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+    "fixed_candidate": "14d377594626fcd8d2664aaf805436a818bec867",
+    "fixed199_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a"
+  },
+  "replay": {
+    "source_paths": 4,
+    "exact_ops": 14,
+    "records": [
+      {
+        "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+        "pre": "5d54000ec5d0d66b0eb43c4da18528361307dd59",
+        "post": "6ebd03a7def0a95ef22e52152633eecaec9f8da3",
+        "pre_bytes": 13370,
+        "post_bytes": 13188,
+        "pre_sha256": "f7782a34c5842e0b23ca8e19c47a90cf62bb0227e47177e5273020213a68ca57",
+        "post_sha256": "5b3aca11d63086a0d9ecf80ea383a749c07dfabb91f71e1baf9a8eaf579345b7",
+        "exact_ops": 4,
+        "unique_forward_reverse": true,
+        "git_get_verified": true
+      },
+      {
+        "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "pre": "8769b6ff6912729589bb86f835621387ff7fddf2",
+        "post": "f816d6cbb940a0781253278445b606251706fabc",
+        "pre_bytes": 20134,
+        "post_bytes": 19810,
+        "pre_sha256": "905ddaf5f3ad2002a4137f6e9f60f4f6e96e3335c1384d0457c36703710324ab",
+        "post_sha256": "af7257555f68f85af4a215d119c5afc0e348781066220e3f4a94459dbdc24f71",
+        "exact_ops": 6,
+        "unique_forward_reverse": true,
+        "git_get_verified": true
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+        "pre": "0c9e0370d897118ebcf59c8422c329cb2d8e48ba",
+        "post": "2c5867859e5692a253992d5045f1606e940f8420",
+        "pre_bytes": 4934,
+        "post_bytes": 6472,
+        "pre_sha256": "45181e33a78de2cf090d8cb1ec21abff4b4382c6f310eb1220fb5f27e7125d15",
+        "post_sha256": "3ad7e7a9906b4600cdc7fc120e32fea0a91a29b114dac08e1c3f60a060d29150",
+        "exact_ops": 1,
+        "unique_forward_reverse": true,
+        "git_get_verified": true
+      },
+      {
+        "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+        "pre": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+        "post": "19950711aaa74c9d57fe821b54df998740fb8350",
+        "pre_bytes": 9750,
+        "post_bytes": 11486,
+        "pre_sha256": "1a3ffcea9279289bf0da5d09c3a05cdae2a2fa358e87a730fffbdeab47b8877c",
+        "post_sha256": "70fe7a425e4db41c6307a58acacaf0ef4d3f32e99d5a7c44acbdc53c5adb198d",
+        "exact_ops": 3,
+        "unique_forward_reverse": true,
+        "git_get_verified": true
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "core_single_actual_handle",
+      "status": "static_source_verified",
+      "detail": "The existing admission still holds the original startup mutex through actual spawn and immediate registration. retain_original_thread_startup_handle consumes the same JoinHandle<()> once into one async move future, boxes and shares that future, pushes its job into the original registry, then disarms the same admission. The new future introduces no spawn, retry, clock, deadline or independent completion claim. The registry job owns a Shared clone independently of current waiters."
+    },
+    {
+      "id": "core_original_error_and_cancellation",
+      "status": "static_source_verified",
+      "detail": "The existing mapping remains handle.await.map_err(error => Arc<OriginalCoreTaskFailure::Join(Arc<the same actual JoinError>)>). Shared caches the cloneable Result<(), Arc<OriginalCoreTaskFailure>>. Concurrent or resumed waiters receive clones of that same Arc-backed failure rather than a stringified or synthesized replacement. Dropping a polling waiter drops its clone; it does not take or remove the registry's actual future. This establishes a resumable join path while the registry is retained, not an implicit join on registry Drop."
+    },
+    {
+      "id": "core_nonoptional_construction",
+      "status": "static_source_verified",
+      "detail": "OriginalThreadStartupJob and its completion field remain private. The owning production file has one actual Job construction, in the real handle-admission method, and only a cfg(test) child module. Removal of OriginalThreadStartupState's handle/result Option pair removes the unreachable empty-handle-plus-no-terminal representation rather than accepting it as success. No Default or alternate empty/synthetic completion constructor is added. The pre-existing admission-poison, disabled custody, sealed startup, weak-origin disappearance and Session-loop missing-evidence refusals remain unchanged."
+    },
+    {
+      "id": "core_original_join_order",
+      "status": "exact_original_bytes",
+      "detail": "The actual sealed join still waits all startup jobs, only then snapshots and joins original Session loops, then retains admission-poison errors. The enabled/None selection and original delegate/default Session::spawn path are byte-identical. No startup Ok is substituted for the original Session-loop observation."
+    },
+    {
+      "id": "app_unit_and_result_inputs",
+      "status": "static_source_verified",
+      "detail": "Both private job constructors consume a real original handle. unit preserves JoinHandle<()> -> original from_join. result preserves JoinHandle<io::Result<()>> -> Ok(inner) mapped through original from_io, or actual JoinError through original from_join. Both share one real future. OriginalAppServerFailure's Arc<dyn Error + Send + Sync>, its derive Clone, source, Display, from_io, from_join and to_io behavior remain unchanged; raw IO/JoinError objects are not converted to strings."
+    },
+    {
+      "id": "app_once_lock_success_gate",
+      "status": "static_source_verified",
+      "detail": "join_original first awaits a clone of the actual Shared completion, then synchronously sets the same OnceLock with a clone of that exact terminal result. There is no suspension between observing Ready and recording it. Concurrent setters can only attempt the same clone-equivalent result. require_original_success is byte-identical: only recorded Ok succeeds, recorded Err is returned through original to_io, and absent terminal still refuses. Shared completion availability alone is never used as the production success predicate."
+    },
+    {
+      "id": "app_nonoptional_construction",
+      "status": "static_source_verified",
+      "detail": "The removed private ActualAppServerHandle enum and Option slot are replaced by a nonoptional completion field. OriginalAppServerJob is crate-visible but its fields and both constructors remain private in the owning module; its only child is cfg(test). Real constructors always require actual Unit or Result handles and initialize OnceLock empty. No exposed empty constructor, successful fallback, or generic supplied completion is introduced. Removal of the old private None-slot refusal therefore relies on this sealed construction invariant, which is visible in the full source."
+    },
+    {
+      "id": "app_registry_and_failure_order",
+      "status": "exact_original_bytes",
+      "detail": "The actual main/transport/background/processor registration and sealing, retained owners, failed-start cleanup, failure aggregation, required task-kind success checks and stop-on-drop bodies remain unchanged. OptionalAppServerTask::Ordinary and the None branch still use their original handle directly. Cancellation does not certify completion; later cleanup must still actually await the stored job and all existing owner requirements."
+    },
+    {
+      "id": "tests",
+      "status": "source_review_only_not_executed",
+      "detail": "All four old Core and eight old App components remain. Core adds one actual blocked-startup/panic test with two polled join waiters, cancellation of one, surviving wakeup and repeated Arc::ptr_eq observation. App adds the analogous real IO refusal test and asserts the original error kind/message/object plus require_original_success refusal. Three existing App private slot assertions become completion.peek assertions; their original terminal, real socket EOF, actual join and repeated-result assertions remain. These are necessary private representation adaptations and two new concurrency/error components, not execution evidence."
+    }
+  ],
+  "exact_original_functions": [
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "exact_original_functions": [
+        {
+          "function": "fmt",
+          "bytes": 328,
+          "sha256": "d122b8acf81cdeb502bccd00b81132f25781f57daa758fded459be3896c6faf8"
+        },
+        {
+          "function": "source",
+          "bytes": 137,
+          "sha256": "53d116cf15cbd5569f33108ab17e7f8c68cba1e50718f5505ecad36542f9ac69"
+        },
+        {
+          "function": "refused",
+          "bytes": 90,
+          "sha256": "cdbbe913fc8a5bd9eeead36ef0109ca8df821ce46055974525eb2e3ff3c7d71d"
+        },
+        {
+          "function": "enable",
+          "bytes": 945,
+          "sha256": "561760a819c2a785a9a41fa4c8a0c1e556f8c88de6e0bf2e90cdcee5a7392bdf"
+        },
+        {
+          "function": "reserve_original_startup",
+          "bytes": 599,
+          "sha256": "73ef2cb9fdc1c1cb7d8a4ee353416932ef64e13f8a635acfc59d85198390249f"
+        },
+        {
+          "function": "retain_original_session_loop",
+          "bytes": 616,
+          "sha256": "dd509ff9c9c91882aae598edbda6ce8c8233b96d65781a81a4e86a07218bc8c8"
+        },
+        {
+          "function": "seal_original_startups",
+          "bytes": 716,
+          "sha256": "bdd3a49d94f99f2fa2a97bf99d87a2b7eae19a974c4b21ae3481c76aabec51c0"
+        },
+        {
+          "function": "join_original_sealed",
+          "bytes": 1637,
+          "sha256": "15d59f3dce79a9a2c35980e3d66fc4b866747f1bc58df50363b02ccc10c1f221"
+        },
+        {
+          "function": "drop",
+          "bytes": 148,
+          "sha256": "4306a71ec5715e38afaf5f48daa2ff64382f3b4a1868b414c49e59f0c26cc556"
+        },
+        {
+          "function": "original_session_shutdown_origin",
+          "bytes": 262,
+          "sha256": "4a25aeb4efbd29e7162c8a6227ea155d1e31c3e09767b21b00f0176c08720490"
+        },
+        {
+          "function": "spawn_original_delegate",
+          "bytes": 2234,
+          "sha256": "97956461bb49aefc360c9bcd7f68ee7d823b5059c3654042f6155649b067cbc5"
+        },
+        {
+          "function": "enable_original_shutdown_custody",
+          "bytes": 190,
+          "sha256": "f7e3607cf3b2f4de8408d7c4ba95f1cd22db6e03b68f66524121e51130fb21e8"
+        },
+        {
+          "function": "shutdown_all_threads_original",
+          "bytes": 686,
+          "sha256": "9d5972e3c28542def23e8527dccff2a6cf66b253f1704d6f480e3b5b0022ee5b"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "exact_original_functions": [
+        {
+          "function": "from_io",
+          "bytes": 105,
+          "sha256": "ff98dc4be9c2b8599bddb1863db4b628be118c1e895d7942bc05ee50930cde83"
+        },
+        {
+          "function": "from_join",
+          "bytes": 120,
+          "sha256": "24899ca02e3268033b2043b3d50fe5a4bccbdbf487b88ea0624f5ac5af8a6bff"
+        },
+        {
+          "function": "to_io",
+          "bytes": 75,
+          "sha256": "cd8f15d549cf2051ac348893963a1d102be1679fa87a2aaf129c1bde7b0d583d"
+        },
+        {
+          "function": "require_original_success",
+          "bytes": 279,
+          "sha256": "c7e348a825e054ba123f08e067c5a8d6ddcfd9cb524f45e4235c43f15491bcc4"
+        },
+        {
+          "function": "into_future",
+          "bytes": 371,
+          "sha256": "822cae3555a0b60c75c20acafb3810b40255f87a8ed0793b9a0b5b0489276ed0"
+        },
+        {
+          "function": "require_original_custody",
+          "bytes": 1172,
+          "sha256": "03294d6c25225505412cbb34e5f2aa3c9b117ac72f2712abe96d0acf63bf9e4f"
+        },
+        {
+          "function": "new",
+          "bytes": 176,
+          "sha256": "9a1d218758a05ae39862d57b3212c9e9d22ee8e2baa461e69af2c6d36234d715"
+        },
+        {
+          "function": "state",
+          "bytes": 307,
+          "sha256": "6437fa937cbbaa98fbff9d80c866c033547e0c3fe6ef0daaf1f4cd55b319bc61"
+        },
+        {
+          "function": "request_stop",
+          "bytes": 439,
+          "sha256": "735333d0a3d5bdfda7211d87a06c561511f4786257a143911df51c57f6254c1f"
+        },
+        {
+          "function": "run_original_main",
+          "bytes": 1575,
+          "sha256": "283906ed088d6ab35dd31ce4bdf8de64a72154682464b3f4c257ba5cc17b222d"
+        },
+        {
+          "function": "retain_original_transport",
+          "bytes": 382,
+          "sha256": "2d385401d6641ec785a9e4f2eca06ed083e83271e7f58486e041292006ab43fa"
+        },
+        {
+          "function": "seal_original_background",
+          "bytes": 89,
+          "sha256": "1c6270841dc027c9220555e49eb4629b9c543d6ffde43e1f6d57a77ab0ba3948"
+        },
+        {
+          "function": "spawn_original_background",
+          "bytes": 575,
+          "sha256": "a231cb996b403288faf08e384c16765d5b5c46c965b4e6e76dcc391354da30ec"
+        },
+        {
+          "function": "retain_unreleased_original_processor",
+          "bytes": 210,
+          "sha256": "fafb7109bda3c710c18c20688d5a65395320110109bbbbe0ea43bf671c339d2a"
+        },
+        {
+          "function": "record_original_failure",
+          "bytes": 163,
+          "sha256": "ed899b795f143b93cf3e17c2d41c66358f69abe5fec88ae4e94a15a91230c14d"
+        },
+        {
+          "function": "retain_original_processor",
+          "bytes": 281,
+          "sha256": "c0b927daa52a4ab67f84f43783f0e55f963bfcf8183837d639f6af4c6abd0b8b"
+        },
+        {
+          "function": "retain_original_task",
+          "bytes": 539,
+          "sha256": "40df4a8e327c6c5dc9c7138b04caa0b4bd2cc1d82350a1506f4048afda60210f"
+        },
+        {
+          "function": "optional_original_task",
+          "bytes": 418,
+          "sha256": "bc6b8dbfbd873a7586fcf51a08619a279626559bfc4cf4c622584f0bc9d83a1b"
+        },
+        {
+          "function": "join_original_group",
+          "bytes": 713,
+          "sha256": "9ae09329c2c103175652cbad448218af04af2c6bfde1ef63c0717ef8633b63af"
+        },
+        {
+          "function": "finish_original_processor",
+          "bytes": 2056,
+          "sha256": "a5fb265782c7f44d3018d6a5d36e2d00aa14d5245268c80c1231d8b39eba97c4"
+        },
+        {
+          "function": "join_original_app_server",
+          "bytes": 3382,
+          "sha256": "6d081f61b4c17e353e0b805a5ef75e2c4b5a9248566a086e26f98b6fa55465d4"
+        },
+        {
+          "function": "drop",
+          "bytes": 145,
+          "sha256": "034d4e9d57b6f448e75ec76d57dc601bce7a552be3591af115873770cf0753e4"
+        },
+        {
+          "function": "finish_original_failures",
+          "bytes": 387,
+          "sha256": "c63f6466061129c17eba5d3e0a2503f5c119342e63fed45a4956817688dd5d83"
+        }
+      ]
+    }
+  ],
+  "exact_original_function_count": 36,
+  "test_inventory": [
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "old_functions": 4,
+      "new_functions": 5,
+      "added": [
+        "concurrent_startup_waiters_keep_the_original_panic_after_one_is_cancelled"
+      ],
+      "all_old_methods_retained": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "old_functions": 8,
+      "new_functions": 9,
+      "added": [
+        "concurrent_waiters_keep_the_original_io_error_after_one_is_cancelled"
+      ],
+      "all_old_methods_retained": true
+    }
+  ],
+  "metadata_obligations": [
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:5",
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "required": "Resample the actual whole Job structure, retained-handle constructor and join guard from post 6ebd03a7. Record this as author-semantic Shared custody adaptation, preserving all other required/forbidden and conjunction rows."
+    },
+    {
+      "origin": "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "required": "Replace the removed Option-enum/AsyncMutex representation guards with the full actual completion/OnceLock structure and both real constructors plus join. Preserve the unchanged require_original_success gate and all other required/forbidden, caller/boundary sets and conjunction rows; do not label this fmt-only."
+    }
+  ],
+  "dependencies_and_limits": {
+    "no_dependency_edits_in_packet": true,
+    "direct_existing_futures_dependency_claim": [
+      {
+        "crate": "codex-core",
+        "cargo": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+        "existing": "futures = { workspace = true }"
+      },
+      {
+        "crate": "codex-app-server",
+        "cargo": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+        "existing": "futures = { workspace = true }"
+      }
+    ],
+    "cargo_compile_still_required": true,
+    "no_new_product_methods_or_boundary_ids": true,
+    "no_native_or_checker_pass_inferred": true,
+    "no_full_repo_scan_claimed": true,
+    "no_business_or_process_exit_claim": true,
+    "registry_drop_is_not_physical_join": true,
+    "remaining_integration": "Root must compose the exact source and the semantic metadata successors, then obtain actual formatter/compiler/lint/test/original checker evidence. The review does not convert unchanged broader shutdown protocols or existing generic success into a new proof."
+  },
+  "execution": {
+    "pure_v8_only": true,
+    "git_get_create_only": true,
+    "compiled": false,
+    "tests_executed": 0,
+    "original_checker_executed": false,
+    "h": 0,
+    "native": 0,
+    "ref_mutations": 0
+  }
+}

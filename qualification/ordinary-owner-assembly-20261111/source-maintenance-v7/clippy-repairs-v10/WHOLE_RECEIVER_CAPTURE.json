@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "kind": "v9-circuit-receiver-whole-guard-capture-source-proposal",
+  "status": "FROZEN_SOURCE_AND_STATIC_EVIDENCE_NOT_INSTALLED_OR_EXECUTED",
+  "baseline": {
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+    "source_count": 199
+  },
+  "original_evidence": {
+    "full_log": {
+      "git_blob": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+      "bytes": 97371,
+      "sha256": "37b9622af630f061012c04a1e38f5f48f044a9f481256940bcf0cdad8c67d95c"
+    },
+    "result": {
+      "git_blob": "4f1856cd679163e205fad3a11cd554e4722acc38",
+      "bytes": 11652,
+      "sha256": "ad32d19a46e22b9a1b31d4214aeb6ce6873d54706dc293557ebd49b263b02052"
+    },
+    "first_chunk": {
+      "git_blob": "26222dda6911505f2ff78e1db17b1024ecd6323c",
+      "bytes": 17342,
+      "sha256": "d59d6d0c9a92dd92cb797ab6d50a7a19b55396cbedb823dccfeb16aa62ead12d"
+    },
+    "actual_fix_exit_code": 101,
+    "tests_run": false,
+    "final_dirty_source_only": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+    "scope": "The temporary Clippy receiver rename was rejected and is not a landed preimage. Separate Core SessionIo E0063 diagnostics remain outside this packet."
+  },
+  "diagnosis": {
+    "actual_warnings": [
+      {
+        "line": 663,
+        "text": "warning: value captured by `receiver.complete` is never read\n   --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:615:13\n    |\n615 |             receiver.complete = true;\n    |             ^^^^^^^^^^^^^^^^^\n    |\n    = help: did you mean to capture by reference instead?\n    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default\n"
+      },
+      {
+        "line": 672,
+        "text": "warning: value assigned to `receiver.complete` is never read\n   --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:615:13\n    |\n615 |             receiver.complete = true;\n    |             ^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n    = help: maybe it is overwritten before being read?\n"
+      },
+      {
+        "line": 680,
+        "text": "warning: unused variable: `receiver`\n   --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:598:13\n    |\n598 |         let mut receiver = OriginalCircuitRuntimeReceiver {\n    |             ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_receiver`\n    |\n    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\n"
+      }
+    ],
+    "temporary_error": {
+      "kind": "E0425",
+      "temporary_binding": "let _receiver",
+      "remaining_use": "receiver.complete = true;",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "line": 615
+    },
+    "cfg": "Production Linux lifecycle child (circuit_task_runtime.rs cfg(target_os=\"linux\")); receiver, completion assignment, and Drop are not cfg(test). Only the tests child at the end is cfg(test).",
+    "capture": "The original full log reports capture of receiver.complete plus an unused receiver. The former is a Copy bool; the unchanged destructor belongs to the whole OriginalCircuitRuntimeReceiver. A whole-value use inside async move is required to retain that actual object.",
+    "related_import_warnings": "The same rejected-fix block also names OriginalConsumerFailure, OriginalCircuitJoinObservation, and OriginalCircuitOwnerOutcome imports. These warnings are not additional E0425 errors. Their files and cfg/exports remain unchanged."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": "d45540fc4caa55836d097364a97f2342ea4d2644",
+      "post": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+      "preimage": {
+        "git_blob": "d45540fc4caa55836d097364a97f2342ea4d2644",
+        "bytes": 24074,
+        "sha256": "447fb516a3c7802b61b4cc411c0009c365759d0b85313f7ef29e70345bd80e0c"
+      },
+      "postimage": {
+        "git_blob": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+        "bytes": 24102,
+        "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+      }
+    }
+  ],
+  "ops": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "old": "            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);\n            receiver.complete = true;\n            result\n",
+      "new": "            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);\n            receiver.complete = true;\n            drop(receiver);\n            result\n",
+      "expected_occurrences": 1
+    }
+  ],
+  "exact_replay": {
+    "forward_unique": true,
+    "reverse_unique": true,
+    "entire_other_source_bytes_equal": true,
+    "post_create_get_verified": true,
+    "original_drop_text_unchanged": true
+  },
+  "revised_function": "fn receive_original_result(\n        self: &Arc<Self>,\n    ) -> impl Future<Output = Result<(), AgentdError>> + Send + 'static {\n        let job = Arc::clone(self);\n        // Capture outside the async body: even an unpolled wait relinquishes\n        // only its receiver role, not the actual task or original result.\n        let mut receiver = OriginalCircuitRuntimeReceiver {\n            job: Arc::clone(self),\n            complete: false,\n        };\n        async move {\n            let mut state = job.state.lock().await;\n            job.join_locked(&mut state).await?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {\n                return Err(custody_error(\n                    \"outer Circuit Runtime result was already consumed\",\n                ));\n            }\n            let result = state\n                .result\n                .take()\n                .ok_or_else(|| custody_error(\"original outer Circuit result is unavailable\"))?;\n            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);\n            receiver.complete = true;\n            drop(receiver);\n            result\n        }\n    }",
+  "original_drop_fulltext": "impl Drop for OriginalCircuitRuntimeReceiver {\n    fn drop(&mut self) {\n        if !self.complete {\n            let _ = self.job.delivery.compare_exchange(\n                WAITING,\n                ABANDONED,\n                Ordering::AcqRel,\n                Ordering::Acquire,\n            );\n            self.job.cancellation.cancel();\n            self.job.gate.close();\n        }\n    }\n}\n",
+  "ownership_and_paths": [
+    {
+      "path": "Creation / never-polled future",
+      "proof": "The same complete:false guard is constructed synchronously before returning the future. drop(receiver) is a whole-value use inside async move, so the non-Copy guard itself is captured before any poll. Dropping that unpolled future executes the original destructor."
+    },
+    {
+      "path": "Cancellation while state.lock().await or join_locked(...).await is pending",
+      "proof": "The future owns the full false guard. Cancellation drops it, runs the unchanged WAITING→ABANDONED compare_exchange, cancellation.cancel and gate.close. The actual JoinHandle remains in the separately retained job state; no handle is taken or detached."
+    },
+    {
+      "path": "join_locked(...).await? returns Err",
+      "proof": "The same original error propagates. The complete flag is still false and the original receiver Drop runs. The join implementation and its state.handle/result/joined storage sequence are byte-identical."
+    },
+    {
+      "path": "delivery != WAITING early return",
+      "proof": "The original custody error is unchanged. Original Drop retains its compare_exchange semantics: a previously terminal delivery is not overwritten, while the unchanged cancellation and gate close still occur."
+    },
+    {
+      "path": "state.result.take().ok_or_else(...)? returns Err",
+      "proof": "The original missing-result error propagates, complete remains false, and unchanged Drop handles abandonment. No replacement Result is constructed."
+    },
+    {
+      "path": "Actual Result delivered (Ok or original Err)",
+      "proof": "The actual saved Result is taken once, original RUNTIME_DELIVERED store occurs, the same guard.complete is set true, and the added drop(receiver) runs that guard's existing destructor with complete=true. Its fail-close branch is skipped. The actual Result is returned unchanged."
+    },
+    {
+      "path": "Normal Drop ordering and custody",
+      "proof": "The explicit receiver Drop is after completion but before the original result expression while the same state guard remains live. Because complete=true it does not acquire locks, cancel, close, or join. It releases only the receiver's Arc<Job>; the separate captured job Arc and external custody still retain the same job. State mutex, actual task, delivery/error semantics and all other owner scopes are unchanged."
+    },
+    {
+      "path": "Panic / other unwind before completion",
+      "proof": "The full captured guard remains false and its original Drop runs; there is no new success recovery or catch_unwind."
+    }
+  ],
+  "unchanged_neighbors": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "git_blob": "d03b4001b51e6504810dc8e31770d7ee9d7b489b",
+      "bytes": 14852,
+      "sha256": "35202784f44c3464771956267c86b8caa284cac7fa111f19c738937e34109a95"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "git_blob": "4eb5b6068b6658315e8baf0a7342305718125fdc",
+      "bytes": 13100,
+      "sha256": "3dd74d57d12d0f066d11c99b91a6568512475c8e673bc997db9df22505836479"
+    }
+  ],
+  "metadata_obligation": {
+    "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:494",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+    "function": "fn receive_original_result(",
+    "original_function_order_index": 16,
+    "actual_required_addition": "drop(receiver);",
+    "insert_after": "receiver.complete = true;",
+    "insert_before": "result",
+    "boundary": "same_actor_custody_circuit_owner_job_receive_original_result",
+    "boundary_definition_and_caller_unchanged": true,
+    "no_final_row_overwrite": true
+  },
+  "metadata_action": "Re-sample the same whole-function conjunction after actual source maintenance; preserve all existing markers and insert the drop(receiver) whole-value use after complete=true and before result. Existing ID/definition/caller sets, forbidden lists and all other conjunctions remain.",
+  "validation": {
+    "git_get_static_only": true,
+    "compiler_run": false,
+    "formatter_run": false,
+    "checker_run": false,
+    "tests_run": false,
+    "new_tests": 0,
+    "lint_or_checker_changes": 0,
+    "native_runs": 0,
+    "refs_changed": 0
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "not_a_business_or_root_exit_receipt": true
+  }
+}

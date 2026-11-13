@@ -10,6 +10,9 @@ use std::sync::MutexGuard;
 use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use tokio::sync::Notify;
 use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
@@ -114,13 +117,13 @@ pub(crate) struct OriginalCircuitOwnerCustody {
 }
 
 struct OriginalCircuitJobState {
-    handle: Option<JoinHandle<Result<(), AgentdError>>>,
     joined: Option<OriginalCircuitOwnerOutcome>,
     result: Option<Result<(), AgentdError>>,
 }
 
 pub(super) struct OriginalCircuitOwnerJob {
-    state: tokio::sync::Mutex<OriginalCircuitJobState>,
+    state: Arc<Mutex<OriginalCircuitJobState>>,
+    join: Shared<BoxFuture<'static, ()>>,
     delivery: AtomicU8,
     cancellation: CancellationToken,
     gate: Arc<SameActorPhaseGate>,
@@ -409,8 +412,9 @@ impl OriginalCircuitOwnerCustody {
                 admission_poisoned,
             });
         };
-        let mut state = job.state.lock().await;
-        job.join_locked(&mut state).await?;
+        job.join.clone().await;
+        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        job.join_locked(&state)?;
         let outcome = state
             .joined
             .ok_or_else(|| custody_error("outer Circuit join is missing"))?;
@@ -470,7 +474,7 @@ impl OriginalCircuitOwnerCustody {
             .job
             .clone()
             .ok_or_else(|| custody_error("outer Circuit owner was not started"))?;
-        let mut state = job.state.lock().await;
+        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         if state.joined.is_none() {
             return Err(custody_error("outer Circuit owner has not been joined"));
         }
@@ -502,12 +506,40 @@ impl OriginalCircuitStartAdmission<'_> {
         mut self,
         handle: JoinHandle<Result<(), AgentdError>>,
     ) -> Arc<OriginalCircuitOwnerJob> {
+        let state = Arc::new(Mutex::new(OriginalCircuitJobState {
+            joined: None,
+            result: None,
+        }));
+        let completed = Arc::clone(&state);
+        let join = async move {
+            let result = handle.await;
+            let (outcome, result) = match result {
+                Ok(result) => (
+                    if result.is_ok() {
+                        OriginalCircuitOwnerOutcome::ReturnedOk
+                    } else {
+                        OriginalCircuitOwnerOutcome::ReturnedErr
+                    },
+                    result,
+                ),
+                Err(error) => (
+                    OriginalCircuitOwnerOutcome::JoinFailed,
+                    Err(AgentdError::Protocol(format!(
+                        "Circuit task owner stopped: {error}"
+                    ))),
+                ),
+            };
+            // No await separates the actual join from retaining its exact
+            // non-Clone result. This cell has no back-reference to the job.
+            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            state.result = Some(result);
+            state.joined = Some(outcome);
+        }
+        .boxed()
+        .shared();
         let job = Arc::new(OriginalCircuitOwnerJob {
-            state: tokio::sync::Mutex::new(OriginalCircuitJobState {
-                handle: Some(handle),
-                joined: None,
-                result: None,
-            }),
+            state,
+            join,
             delivery: AtomicU8::new(WAITING),
             cancellation: self.cancellation.clone(),
             gate: Arc::clone(&self.gate),
@@ -539,45 +571,21 @@ impl OriginalCircuitOwnerJob {
         }
     }
 
-    async fn join_locked(&self, state: &mut OriginalCircuitJobState) -> Result<(), AgentdError> {
+    fn join_locked(&self, state: &OriginalCircuitJobState) -> Result<(), AgentdError> {
+        // Callers await the registered Shared future before this short locked
+        // check. Only that future can record the actual original completion.
         if state.joined.is_some() {
             return Ok(());
         }
-        let handle = state.handle.as_mut().ok_or_else(|| {
-            self.gate.close();
-            custody_error("actual outer Circuit handle is unavailable")
-        })?;
-        // Await only a mutable borrow. Dropping this waiting future preserves
-        // the one real handle in state, so another custodian can continue.
-        let result = handle.await;
-        state.handle = None;
-        let (outcome, result) = match result {
-            Ok(result) => (
-                if result.is_ok() {
-                    OriginalCircuitOwnerOutcome::ReturnedOk
-                } else {
-                    OriginalCircuitOwnerOutcome::ReturnedErr
-                },
-                result,
-            ),
-            Err(error) => (
-                OriginalCircuitOwnerOutcome::JoinFailed,
-                Err(AgentdError::Protocol(format!(
-                    "Circuit task owner stopped: {error}"
-                ))),
-            ),
-        };
-        // No await separates actual completion from saving the original
-        // result and terminal state. A second waiter never polls it again.
-        state.result = Some(result);
-        state.joined = Some(outcome);
-        Ok(())
+        self.gate.close();
+        Err(custody_error("actual outer Circuit handle is unavailable"))
     }
 
     async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {
         self.gate.require_open().map_err(custody_error)?;
-        let mut state = self.state.lock().await;
-        self.join_locked(&mut state).await?;
+        self.join.clone().await;
+        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        self.join_locked(&state)?;
         if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {
             return Err(custody_error(
                 "original Circuit owner did not return success",
@@ -600,8 +608,9 @@ impl OriginalCircuitOwnerJob {
             complete: false,
         };
         async move {
-            let mut state = job.state.lock().await;
-            job.join_locked(&mut state).await?;
+            job.join.clone().await;
+            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            job.join_locked(&state)?;
             if job.delivery.load(Ordering::Acquire) != WAITING {
                 return Err(custody_error(
                     "outer Circuit Runtime result was already consumed",
@@ -613,6 +622,7 @@ impl OriginalCircuitOwnerJob {
                 .ok_or_else(|| custody_error("original outer Circuit result is unavailable"))?;
             job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);
             receiver.complete = true;
+            drop(receiver);
             result
         }
     }

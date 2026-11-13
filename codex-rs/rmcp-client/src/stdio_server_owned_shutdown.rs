@@ -9,6 +9,7 @@ use std::process::ExitStatus;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 
+use futures::future::Shared;
 use rmcp::transport::async_rw::AsyncRwTransport;
 use tokio::process::Child;
 use tokio::process::ChildStdin;
@@ -84,47 +85,45 @@ impl Error for ShutdownFailures {
 }
 
 struct OwnedJob<T> {
-    state: AsyncMutex<OwnedJobState<T>>,
+    completion: Shared<BoxFuture<'static, ()>>,
+    state: Arc<AsyncMutex<OwnedJobState<T>>>,
 }
 
 struct OwnedJobState<T> {
-    handle: Option<JoinHandle<io::Result<T>>>,
     result: Option<Result<T, RecordedFailure>>,
     joined: bool,
 }
 
-impl<T> OwnedJob<T> {
+impl<T: Send + 'static> OwnedJob<T> {
     fn track(handle: JoinHandle<io::Result<T>>) -> Arc<Self> {
-        Arc::new(Self {
-            state: AsyncMutex::new(OwnedJobState {
-                handle: Some(handle),
-                result: None,
-                joined: false,
-            }),
-        })
-    }
-
-    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {
-        let mut state = self.state.lock().await;
-        if !state.joined && state.handle.is_none() {
-            state.result = Some(Err(RecordedFailure::io(io::Error::other(
-                "owned stdio job lost its actual handle before join",
-            ))));
-            state.joined = true;
-        }
-        if let Some(handle) = state.handle.as_mut() {
-            // Borrow the SAME handle. Dropping this waiter leaves it in the
-            // shared state. Record terminal state under the same lock before
-            // another waiter may poll or consume it.
+        let state = Arc::new(AsyncMutex::new(OwnedJobState {
+            result: None,
+            joined: false,
+        }));
+        let recorded = Arc::clone(&state);
+        // The registry retains this one future and the SAME actual handle.
+        // Only completion is shared: a transport output remains owned once
+        // by the result slot and is never required to implement Clone.
+        let completion = async move {
             let result = match handle.await {
                 Ok(result) => result.map_err(RecordedFailure::io),
                 Err(error) => Err(RecordedFailure::join(error)),
             };
-            state.handle = None;
+            let mut state = recorded.lock().await;
             state.result = Some(result);
             state.joined = true;
         }
-        state
+        .boxed()
+        .shared();
+        Arc::new(Self { completion, state })
+    }
+
+    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {
+        // Cancellation drops only this Shared clone. No result guard is held
+        // while the actual handle is awaited, and only the original output
+        // may be taken after this shared completion has recorded it.
+        self.completion.clone().await;
+        self.state.lock().await
     }
 }
 
@@ -461,17 +460,18 @@ impl OriginalStdioShutdownCustody {
             });
         };
         let mut failures = Vec::new();
-        let mut launch_state = launch.join().await;
-        let abandoned = match launch_state.result.take() {
-            Some(Ok(transport)) => Some(transport),
-            Some(Err(error)) => {
-                failures.push(("launch", error.clone()));
-                launch_state.result = Some(Err(error));
-                None
+        let abandoned = {
+            let mut launch_state = launch.join().await;
+            match launch_state.result.take() {
+                Some(Ok(transport)) => Some(transport),
+                Some(Err(error)) => {
+                    failures.push(("launch", error.clone()));
+                    launch_state.result = Some(Err(error));
+                    None
+                }
+                None => None,
             }
-            None => None,
         };
-        drop(launch_state);
         drop(abandoned);
 
         // A delivered transport may still be held by the SDK. Do not infer

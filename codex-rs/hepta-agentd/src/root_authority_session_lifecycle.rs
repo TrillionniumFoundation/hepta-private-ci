@@ -9,6 +9,9 @@ use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use tokio::task::AbortHandle;
 use tokio::task::JoinHandle;
 
@@ -55,7 +58,7 @@ pub(crate) enum OriginalRootSessionJoinObservation {
 }
 
 struct PhaseWorkerState {
-    handle: Option<JoinHandle<()>>,
+    handle: Option<Shared<BoxFuture<'static, OriginalRootWorkerTermination>>>,
     observed: Option<OriginalRootWorkerTermination>,
 }
 
@@ -233,6 +236,15 @@ impl OriginalRootSessionCustody {
         writer_file: &WriterCustody,
     ) -> Arc<Self> {
         let abort = worker.abort_handle();
+        let worker = async move {
+            match worker.await {
+                Ok(()) => OriginalRootWorkerTermination::Returned,
+                Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,
+                Err(_) => OriginalRootWorkerTermination::Panicked,
+            }
+        }
+        .boxed()
+        .shared();
         Arc::new(Self {
             worker: tokio::sync::Mutex::new(PhaseWorkerState {
                 handle: Some(worker),
@@ -277,24 +289,22 @@ impl OriginalRootSessionCustody {
                 "actual Session must be dropped before joining its retired tasks",
             ));
         }
-        let worker = {
+        let (recorded, pending) = {
+            let state = self.worker.lock().await;
+            (state.observed, state.handle.clone())
+        };
+        let worker = if let Some(observed) = recorded {
+            observed
+        } else {
+            let pending = pending
+                .ok_or_else(|| join_error("actual Root observation handle is unavailable"))?;
+            // Cancellation drops only this clone. The registry retains the
+            // same actual join, including a completed result awaiting recording.
+            let observed = pending.await;
             let mut state = self.worker.lock().await;
-            if let Some(observed) = state.observed {
-                observed
-            } else {
-                let handle = state
-                    .handle
-                    .as_mut()
-                    .ok_or_else(|| join_error("actual Root observation handle is unavailable"))?;
-                let observed = match handle.await {
-                    Ok(()) => OriginalRootWorkerTermination::Returned,
-                    Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,
-                    Err(_) => OriginalRootWorkerTermination::Panicked,
-                };
-                state.handle = None;
-                state.observed = Some(observed);
-                observed
-            }
+            state.handle = None;
+            state.observed = Some(observed);
+            observed
         };
         // The actual worker has joined. A normal pause may have moved its
         // original stream/guards/File into private custody before returning;

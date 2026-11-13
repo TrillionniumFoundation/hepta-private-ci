@@ -6,6 +6,9 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use tokio::task::JoinHandle;
 
 use crate::AgentdRootAuthorityError;
@@ -42,7 +45,7 @@ pub(in super::super) struct OriginalConsumerJobs {
 }
 
 struct ConsumerJobState {
-    handle: Option<JoinHandle<Result<(), AgentdRootAuthorityError>>>,
+    handle: Option<Shared<BoxFuture<'static, Result<(), OriginalConsumerFailure>>>>,
     observed: Option<Result<(), OriginalConsumerFailure>>,
 }
 
@@ -153,7 +156,7 @@ impl OriginalConsumerJobs {
                     .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
                 return Ok(summary);
             };
-            // Borrow exactly the registered handle; cancellation preserves it.
+            // Await the registered original join; cancellation preserves it.
             let outcome = job.join_original_handle().await;
             if outcome == Err(OriginalConsumerFailure::MissingHandle) {
                 return Err(AgentdRootAuthorityError::Unavailable);
@@ -303,7 +306,20 @@ impl OriginalConsumerAdmission<'_> {
     ) -> Arc<OriginalConsumerJob> {
         let job = Arc::new(OriginalConsumerJob {
             state: tokio::sync::Mutex::new(ConsumerJobState {
-                handle: Some(handle),
+                handle: Some(
+                    async move {
+                        match handle.await {
+                            Ok(Ok(())) => Ok(()),
+                            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),
+                            Err(error) if error.is_cancelled() => {
+                                Err(OriginalConsumerFailure::Cancelled)
+                            }
+                            Err(_) => Err(OriginalConsumerFailure::Panicked),
+                        }
+                    }
+                    .boxed()
+                    .shared(),
+                ),
                 observed: None,
             }),
         });
@@ -325,21 +341,21 @@ impl Drop for OriginalConsumerAdmission<'_> {
 
 impl OriginalConsumerJob {
     async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {
+        let pending = {
+            let state = self.state.lock().await;
+            if let Some(outcome) = state.observed {
+                return outcome;
+            }
+            state
+                .handle
+                .as_ref()
+                .cloned()
+                .ok_or(OriginalConsumerFailure::MissingHandle)?
+        };
+        // The registry holds the original future while this waiter is absent.
+        // Shared coordinates concurrent polls and caches this same outcome.
+        let outcome = pending.await;
         let mut state = self.state.lock().await;
-        if let Some(outcome) = state.observed {
-            return outcome;
-        }
-        let Some(handle) = state.handle.as_mut() else {
-            return Err(OriginalConsumerFailure::MissingHandle);
-        };
-        // A cancelled timeout/worker/cleanup only releases this borrow. The
-        // actual handle remains in this job and is never polled after Ready.
-        let outcome = match handle.await {
-            Ok(Ok(())) => Ok(()),
-            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),
-            Err(error) if error.is_cancelled() => Err(OriginalConsumerFailure::Cancelled),
-            Err(_) => Err(OriginalConsumerFailure::Panicked),
-        };
         state.handle = None;
         state.observed = Some(outcome);
         outcome

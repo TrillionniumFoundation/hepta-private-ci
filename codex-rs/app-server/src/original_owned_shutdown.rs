@@ -2,6 +2,9 @@
 //! A successful observation covers these registered tasks, not business effects,
 //! Root authority, another runtime, or process exit. Default embeddings use None.
 
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use std::error::Error;
 use std::fmt;
 use std::future::Future;
@@ -14,7 +17,6 @@ use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
-use tokio::sync::Mutex as AsyncMutex;
 use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 
@@ -92,51 +94,46 @@ pub(crate) enum OriginalAppServerTaskKind {
     PluginRefresh,
 }
 
-enum ActualAppServerHandle {
-    Unit(JoinHandle<()>),
-    Result(JoinHandle<io::Result<()>>),
-}
-
 pub(crate) struct OriginalAppServerJob {
-    handle: AsyncMutex<Option<ActualAppServerHandle>>,
+    completion: Shared<BoxFuture<'static, Result<(), OriginalAppServerFailure>>>,
     terminal: OnceLock<Result<(), OriginalAppServerFailure>>,
 }
 
 impl OriginalAppServerJob {
     fn unit(handle: JoinHandle<()>) -> Arc<Self> {
+        let completion = async move {
+            handle
+                .await
+                .map_err(OriginalAppServerFailure::from_join)
+        }
+        .boxed()
+        .shared();
         Arc::new(Self {
-            handle: AsyncMutex::new(Some(ActualAppServerHandle::Unit(handle))),
+            completion,
             terminal: OnceLock::new(),
         })
     }
 
     fn result(handle: JoinHandle<io::Result<()>>) -> Arc<Self> {
+        let completion = async move {
+            match handle.await {
+                Ok(result) => result.map_err(OriginalAppServerFailure::from_io),
+                Err(error) => Err(OriginalAppServerFailure::from_join(error)),
+            }
+        }
+        .boxed()
+        .shared();
         Arc::new(Self {
-            handle: AsyncMutex::new(Some(ActualAppServerHandle::Result(handle))),
+            completion,
             terminal: OnceLock::new(),
         })
     }
 
     pub(crate) async fn join_original(&self) -> Result<(), OriginalAppServerFailure> {
-        let mut slot = self.handle.lock().await;
-        if let Some(result) = self.terminal.get() {
-            return result.clone();
-        }
-        // The waiter borrows the SAME handle. Cancellation leaves it in this
-        // actual shared slot; terminal result and removal are one locked step.
-        let result = match slot.as_mut() {
-            Some(ActualAppServerHandle::Unit(handle)) => {
-                handle.await.map_err(OriginalAppServerFailure::from_join)
-            }
-            Some(ActualAppServerHandle::Result(handle)) => match handle.await {
-                Ok(result) => result.map_err(OriginalAppServerFailure::from_io),
-                Err(error) => Err(OriginalAppServerFailure::from_join(error)),
-            },
-            None => Err(OriginalAppServerFailure::from_io(io::Error::other(
-                "original App Server task lost its handle before observation",
-            ))),
-        };
-        *slot = None;
+        // The registry retains the one actual join future. Cancellation drops
+        // only this waiter; Shared coordinates concurrent observers and caches
+        // the same Arc-backed original error after the handle has completed.
+        let result = self.completion.clone().await;
         let _ = self.terminal.set(result.clone());
         result
     }

@@ -19,7 +19,7 @@ const WAIT: Duration = Duration::from_secs(5);
 
 fn custody() -> (tempfile::TempDir, Arc<OriginalCircuitOwnerCustody>) {
     let directory = tempfile::tempdir().unwrap();
-    let agent_id = AgentId::parse("blocking-custody-component").unwrap();
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
     let fleet_root = directory.path().join("fleet");
     let layout = HeptaFleetRoot::parse(fleet_root.clone())
         .unwrap()

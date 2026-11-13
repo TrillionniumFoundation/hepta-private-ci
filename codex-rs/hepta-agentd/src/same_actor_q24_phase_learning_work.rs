@@ -2,6 +2,9 @@
 //! A waiting future never owns the only JoinHandle. Terminal cleanup also
 //! discards original owner results which were never delivered to their caller.
 
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -58,7 +61,6 @@ trait OriginalJobCustody: Send + Sync {
 }
 
 struct OriginalJobState<T, E> {
-    handle: Option<JoinHandle<Result<T, E>>>,
     joined: bool,
     join_failed: bool,
     join_error: Option<tokio::task::JoinError>,
@@ -108,10 +110,11 @@ impl std::error::Error for OriginalJobReceiveError {
     }
 }
 
-/// This object holds the real handle, even while another future borrows it
-/// through an async mutex and is subsequently cancelled.
+/// The registry retains the one Shared future which owns the actual handle.
+/// Its unit completion is cloneable; the original result and JoinError are not.
 pub(crate) struct OriginalLearningJob<T, E> {
-    state: tokio::sync::Mutex<OriginalJobState<T, E>>,
+    state: Arc<Mutex<OriginalJobState<T, E>>>,
+    completion: Shared<BoxFuture<'static, ()>>,
     gate: Arc<SameActorPhaseGate>,
     pending: Arc<AtomicUsize>,
     join_failed: Arc<AtomicBool>,
@@ -467,14 +470,42 @@ impl OriginalBlockingAdmission<'_> {
         mut self,
         handle: JoinHandle<Result<T, E>>,
     ) -> Arc<OriginalLearningJob<T, E>> {
+        let state = Arc::new(Mutex::new(OriginalJobState::<T, E> {
+            joined: false,
+            join_failed: false,
+            join_error: None,
+            output: None,
+        }));
+        let recorded = Arc::clone(&state);
+        let failed = Arc::clone(&self.join_failed);
+        let gate = Arc::clone(&self.gate);
+        // This future owns the one real handle before any waiter can poll it.
+        // Registry custody of the job retains this Shared clone on cancellation.
+        let completion = async move {
+            let result = handle.await;
+            let mut state = recorded.lock().unwrap_or_else(|error| {
+                gate.close();
+                failed.store(true, Ordering::Release);
+                let mut state = error.into_inner();
+                state.join_failed = true;
+                state
+            });
+            // No await separates the actual join from its single terminal write.
+            state.joined = true;
+            match result {
+                Ok(output) => state.output = Some(output),
+                Err(error) => {
+                    state.join_failed = true;
+                    state.join_error = Some(error);
+                    failed.store(true, Ordering::Release);
+                }
+            }
+        }
+        .boxed()
+        .shared();
         let job = Arc::new(OriginalLearningJob {
-            state: tokio::sync::Mutex::new(OriginalJobState {
-                handle: Some(handle),
-                joined: false,
-                join_failed: false,
-                join_error: None,
-                output: None,
-            }),
+            state,
+            completion,
             gate: Arc::clone(&self.gate),
             pending: Arc::clone(&self.pending),
             join_failed: Arc::clone(&self.join_failed),
@@ -498,37 +529,20 @@ impl Drop for OriginalBlockingAdmission<'_> {
 }
 
 impl<T: Send + 'static, E: Send + 'static> OriginalLearningJob<T, E> {
-    async fn join_locked(&self, state: &mut OriginalJobState<T, E>) {
-        if state.joined {
-            return;
-        }
-        let result = match state.handle.as_mut() {
-            Some(handle) => handle.await,
-            None => {
-                state.join_failed = true;
-                self.join_failed.store(true, Ordering::Release);
-                state.joined = true;
-                return;
-            }
-        };
-        // No await separates completion from this terminal state transition.
-        // A later cleanup observes joined and never polls this handle again.
-        state.joined = true;
-        state.handle = None;
-        match result {
-            Ok(output) => state.output = Some(output),
-            Err(error) => {
-                state.join_failed = true;
-                state.join_error = Some(error);
-                self.join_failed.store(true, Ordering::Release);
-            }
-        }
+    fn lock_original_learning_result(&self) -> MutexGuard<'_, OriginalJobState<T, E>> {
+        self.state.lock().unwrap_or_else(|error| {
+            self.gate.close();
+            self.join_failed.store(true, Ordering::Release);
+            let mut state = error.into_inner();
+            state.join_failed = true;
+            state
+        })
     }
 
     async fn receive_with_join_cause(&self) -> Result<Result<T, E>, OriginalJobReceiveError> {
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
-        let mut state = self.state.lock().await;
-        self.join_locked(&mut state).await;
+        self.completion.clone().await;
+        let mut state = self.lock_original_learning_result();
         let failed = state.join_failed;
         let join_error = state.join_error.take();
         let output = state.output.take();
@@ -556,8 +570,8 @@ impl<T: Send + 'static, E: Send + 'static> OriginalLearningJob<T, E> {
 
     async fn receive(&self) -> Result<Result<T, E>, ()> {
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
-        let mut state = self.state.lock().await;
-        self.join_locked(&mut state).await;
+        self.completion.clone().await;
+        let mut state = self.lock_original_learning_result();
         let failed = state.join_failed;
         let output = state.output.take();
         drop(state);
@@ -582,8 +596,8 @@ impl<T: Send + 'static, E: Send + 'static> OriginalLearningJob<T, E> {
 impl<T: Send + 'static, E: Send + 'static> OriginalJobCustody for OriginalLearningJob<T, E> {
     fn join_for_normal_retirement(&self) -> Pin<Box<dyn Future<Output = bool> + Send + '_>> {
         Box::pin(async move {
-            let mut state = self.state.lock().await;
-            self.join_locked(&mut state).await;
+            self.completion.clone().await;
+            let mut state = self.lock_original_learning_result();
             let output = state.output.take();
             let succeeded = !state.join_failed && output.is_none();
             drop(state);
@@ -601,8 +615,8 @@ impl<T: Send + 'static, E: Send + 'static> OriginalJobCustody for OriginalLearni
 
     fn join_and_discard(&self) -> Pin<Box<dyn Future<Output = bool> + Send + '_>> {
         Box::pin(async move {
-            let mut state = self.state.lock().await;
-            self.join_locked(&mut state).await;
+            self.completion.clone().await;
+            let mut state = self.lock_original_learning_result();
             let succeeded = !state.join_failed;
             let output = state.output.take();
             drop(state);
@@ -616,14 +630,20 @@ impl<T: Send + 'static, E: Send + 'static> OriginalJobCustody for OriginalLearni
 
 impl<T, E> Drop for OriginalLearningJob<T, E> {
     fn drop(&mut self) {
-        let state = self.state.get_mut();
+        let mut state = self.state.lock().unwrap_or_else(|error| {
+            self.gate.close();
+            self.join_failed.store(true, Ordering::Release);
+            error.into_inner()
+        });
         if !state.joined {
             // Losing all supervision is not a completed join. Never advertise
             // it as drained merely because a holder was dropped.
             self.gate.close();
             return;
         }
-        drop(state.output.take());
+        let output = state.output.take();
+        drop(state);
+        drop(output);
         self.pending.fetch_sub(1, Ordering::AcqRel);
         self.changed.notify_waiters();
         self.gate.notify_original_waiters();

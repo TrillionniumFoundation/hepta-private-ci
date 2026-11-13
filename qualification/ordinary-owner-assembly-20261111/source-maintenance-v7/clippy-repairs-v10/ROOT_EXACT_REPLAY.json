@@ -1,0 +1,1098 @@
+{
+  "schema_version": 1,
+  "kind": "root_preliminary_v10_all_source_exact_replay",
+  "status": "STATIC_SOURCE_REPLAY_NOT_NATIVE_OR_FINAL_TEST_SET",
+  "input_head": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+  "input_tree": "64d37fd9f442a91fbb6c35a96e317dbd60b928f1",
+  "input_manifest": "69dc1fc5c75298b37bb0c218254deb7967ccc101",
+  "packet_order": [
+    "4a97b6b2dbfd160d49f8c8b7e29b65870ef2d98f",
+    "6a316e96f1bae14ee565843e4ad838455fe77947",
+    "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+    "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+    "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+    "38fd9c7a6cae56f2ded84ea58713a16c25f232f6",
+    "aa75dbfe13859ab649995256bfa021824300aaee",
+    "f9ed77785bf5fd60e75709bc6399bb09b257755f"
+  ],
+  "counts": {
+    "input_manifest_files": 199,
+    "proposed_manifest_files": 202,
+    "unique_changed_paths": 19,
+    "stages": 20,
+    "unique_operations": 90
+  },
+  "new_manifest_paths_base_preimages": [
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "pre": {
+        "blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+        "bytes": 4905,
+        "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417"
+      }
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "pre": {
+        "blob": "025813e20504f31d12dae2092a0807a1a4066419",
+        "bytes": 421005,
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "pre": {
+        "blob": "dce43c7f844f45036a7b58b307de500029f1f001",
+        "bytes": 504602,
+        "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+      }
+    }
+  ],
+  "stages": [
+    {
+      "packet": "4a97b6b2dbfd160d49f8c8b7e29b65870ef2d98f",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": {
+        "blob": "d45540fc4caa55836d097364a97f2342ea4d2644",
+        "bytes": 24074,
+        "sha256": "447fb516a3c7802b61b4cc411c0009c365759d0b85313f7ef29e70345bd80e0c"
+      },
+      "post": {
+        "blob": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+        "bytes": 24102,
+        "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+      },
+      "operations": [
+        {
+          "old": "            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);\n            receiver.complete = true;\n            result\n",
+          "new": "            job.delivery.store(RUNTIME_DELIVERED, Ordering::Release);\n            receiver.complete = true;\n            drop(receiver);\n            result\n",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "6a316e96f1bae14ee565843e4ad838455fe77947",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": {
+        "blob": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+        "bytes": 24102,
+        "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+      },
+      "post": {
+        "blob": "5bfff889730384ea518405efc8b12e1f21f37e53",
+        "bytes": 24563,
+        "sha256": "d1b70df316018425de40d15f87f4601a2f2eb2eeee5bc2b5d1375e85edf9088e"
+      },
+      "operations": [
+        {
+          "old": "use tokio::sync::Notify;",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse tokio::sync::Notify;",
+          "purpose": "Circuit Shared imports",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OriginalCircuitJobState {\n    handle: Option<JoinHandle<Result<(), AgentdError>>>,\n    joined: Option<OriginalCircuitOwnerOutcome>,\n    result: Option<Result<(), AgentdError>>,\n}\n\npub(super) struct OriginalCircuitOwnerJob {\n    state: tokio::sync::Mutex<OriginalCircuitJobState>,",
+          "new": "struct OriginalCircuitJobState {\n    joined: Option<OriginalCircuitOwnerOutcome>,\n    result: Option<Result<(), AgentdError>>,\n}\n\npub(super) struct OriginalCircuitOwnerJob {\n    state: Arc<Mutex<OriginalCircuitJobState>>,\n    join: Shared<BoxFuture<'static, ()>>,",
+          "purpose": "Retain one original handle in Shared and keep one non-Clone result cell",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut state = job.state.lock().await;\n        job.join_locked(&mut state).await?;\n        let outcome = state",
+          "new": "        job.join.clone().await;\n        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        job.join_locked(&state)?;\n        let outcome = state",
+          "purpose": "Fault join awaits original future before short state lock",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut state = job.state.lock().await;\n        if state.joined.is_none() {",
+          "new": "        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        if state.joined.is_none() {",
+          "purpose": "Single abandoned result recovery keeps same joined/delivery checks",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let job = Arc::new(OriginalCircuitOwnerJob {\n            state: tokio::sync::Mutex::new(OriginalCircuitJobState {\n                handle: Some(handle),\n                joined: None,\n                result: None,\n            }),\n",
+          "new": "        let state = Arc::new(Mutex::new(OriginalCircuitJobState {\n            joined: None,\n            result: None,\n        }));\n        let completed = Arc::clone(&state);\n        let join = async move {\n            let result = handle.await;\n            let (outcome, result) = match result {\n                Ok(result) => (\n                    if result.is_ok() {\n                        OriginalCircuitOwnerOutcome::ReturnedOk\n                    } else {\n                        OriginalCircuitOwnerOutcome::ReturnedErr\n                    },\n                    result,\n                ),\n                Err(error) => (\n                    OriginalCircuitOwnerOutcome::JoinFailed,\n                    Err(AgentdError::Protocol(format!(\n                        \"Circuit task owner stopped: {error}\"\n                    ))),\n                ),\n            };\n            // No await separates the actual join from retaining its exact\n            // non-Clone result. This cell has no back-reference to the job.\n            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n            state.result = Some(result);\n            state.joined = Some(outcome);\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalCircuitOwnerJob {\n            state,\n            join,\n",
+          "purpose": "Synchronous original handle registration with exact original outcome mapping and no extra spawn",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    async fn join_locked(&self, state: &mut OriginalCircuitJobState) -> Result<(), AgentdError> {\n        if state.joined.is_some() {\n            return Ok(());\n        }\n        let handle = state.handle.as_mut().ok_or_else(|| {\n            self.gate.close();\n            custody_error(\"actual outer Circuit handle is unavailable\")\n        })?;\n        // Await only a mutable borrow. Dropping this waiting future preserves\n        // the one real handle in state, so another custodian can continue.\n        let result = handle.await;\n        state.handle = None;\n        let (outcome, result) = match result {\n            Ok(result) => (\n                if result.is_ok() {\n                    OriginalCircuitOwnerOutcome::ReturnedOk\n                } else {\n                    OriginalCircuitOwnerOutcome::ReturnedErr\n                },\n                result,\n            ),\n            Err(error) => (\n                OriginalCircuitOwnerOutcome::JoinFailed,\n                Err(AgentdError::Protocol(format!(\n                    \"Circuit task owner stopped: {error}\"\n                ))),\n            ),\n        };\n        // No await separates actual completion from saving the original\n        // result and terminal state. A second waiter never polls it again.\n        state.result = Some(result);\n        state.joined = Some(outcome);\n        Ok(())\n    }\n\n",
+          "new": "    fn join_locked(&self, state: &OriginalCircuitJobState) -> Result<(), AgentdError> {\n        // Callers await the registered Shared future before this short locked\n        // check. Only that future can record the actual original completion.\n        if state.joined.is_some() {\n            return Ok(());\n        }\n        self.gate.close();\n        Err(custody_error(\"actual outer Circuit handle is unavailable\"))\n    }\n\n",
+          "purpose": "Retain fail-closed recorded-join check after actual Shared await",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {",
+          "new": "        self.join.clone().await;\n        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        self.join_locked(&state)?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {",
+          "purpose": "Natural join preserves both gate checks and does not consume original result",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        async move {\n            let mut state = job.state.lock().await;\n            job.join_locked(&mut state).await?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {",
+          "new": "        async move {\n            job.join.clone().await;\n            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n            job.join_locked(&state)?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {",
+          "purpose": "Original receiver awaits outside the lock then takes exact one result; complete/drop guard retained",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "6a316e96f1bae14ee565843e4ad838455fe77947",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": {
+        "blob": "4eb5b6068b6658315e8baf0a7342305718125fdc",
+        "bytes": 13100,
+        "sha256": "3dd74d57d12d0f066d11c99b91a6568512475c8e673bc997db9df22505836479"
+      },
+      "post": {
+        "blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+        "bytes": 13503,
+        "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+      },
+      "operations": [
+        {
+          "old": "use tokio::task::AbortHandle;",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse tokio::task::AbortHandle;",
+          "purpose": "Session Shared imports",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    handle: Option<JoinHandle<()>>,\n    observed: Option<OriginalRootWorkerTermination>,",
+          "new": "    handle: Option<Shared<BoxFuture<'static, OriginalRootWorkerTermination>>>,\n    observed: Option<OriginalRootWorkerTermination>,",
+          "purpose": "Preserve missing/observed state shape around actual worker's shared join",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let abort = worker.abort_handle();\n        Arc::new(Self {",
+          "new": "        let abort = worker.abort_handle();\n        let worker = async move {\n            match worker.await {\n                Ok(()) => OriginalRootWorkerTermination::Returned,\n                Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,\n                Err(_) => OriginalRootWorkerTermination::Panicked,\n            }\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {",
+          "purpose": "Retain original worker and AbortHandle with unchanged termination mapping",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let worker = {\n            let mut state = self.worker.lock().await;\n            if let Some(observed) = state.observed {\n                observed\n            } else {\n                let handle = state\n                    .handle\n                    .as_mut()\n                    .ok_or_else(|| join_error(\"actual Root observation handle is unavailable\"))?;\n                let observed = match handle.await {\n                    Ok(()) => OriginalRootWorkerTermination::Returned,\n                    Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,\n                    Err(_) => OriginalRootWorkerTermination::Panicked,\n                };\n                state.handle = None;\n                state.observed = Some(observed);\n                observed\n            }\n        };\n",
+          "new": "        let (recorded, pending) = {\n            let state = self.worker.lock().await;\n            (state.observed, state.handle.clone())\n        };\n        let worker = if let Some(observed) = recorded {\n            observed\n        } else {\n            let pending = pending\n                .ok_or_else(|| join_error(\"actual Root observation handle is unavailable\"))?;\n            // Cancellation drops only this clone. The registry retains the\n            // same actual join, including a completed result awaiting recording.\n            let observed = pending.await;\n            let mut state = self.worker.lock().await;\n            state.handle = None;\n            state.observed = Some(observed);\n            observed\n        };\n",
+          "purpose": "Unlock before original worker await; retain final-retirement predicate and original missing-handle refusal",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "6a316e96f1bae14ee565843e4ad838455fe77947",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "pre": {
+        "blob": "10eed326857e3ef1359bf31c3cb7fb2de1984fba",
+        "bytes": 20095,
+        "sha256": "30552e366a90f2b4cff1cbb97e5f2ed778fae5d598cfd8309c57809311894374"
+      },
+      "post": {
+        "blob": "1fcfdf460a80f83447eb954b187144968211549f",
+        "bytes": 19842,
+        "sha256": "671ee6efb7390c5525bee4474e550046b52d2633034c788504b9f858157d414f"
+      },
+      "operations": [
+        {
+          "old": "            let worker = {\n                let mut state = attempt.original.worker.lock().await;\n                if let Some(observed) = state.observed {\n                    observed\n                } else {\n                    let handle = state.handle.as_mut().ok_or_else(|| {\n                        join_error(\"normal Session pause lost its actual worker handle\")\n                    })?;\n                    // Borrow the same stored JoinHandle. Cancelling this wait\n                    // leaves it available to the actual outer fault custodian.\n                    let observed = match handle.await {\n                        Ok(()) => OriginalRootWorkerTermination::Returned,\n                        Err(error) if error.is_cancelled() => {\n                            OriginalRootWorkerTermination::Cancelled\n                        }\n                        Err(_) => OriginalRootWorkerTermination::Panicked,\n                    };\n                    state.handle = None;\n                    state.observed = Some(observed);\n                    observed\n                }\n            };\n",
+          "new": "            let (recorded, pending) = {\n                let state = attempt.original.worker.lock().await;\n                (state.observed, state.handle.clone())\n            };\n            let worker = if let Some(observed) = recorded {\n                observed\n            } else {\n                let pending = pending.ok_or_else(|| {\n                    join_error(\"normal Session pause lost its actual worker handle\")\n                })?;\n                // The outer custodian retains this same shared actual join if\n                // normal waiting is cancelled before or after task completion.\n                let observed = pending.await;\n                let mut state = attempt.original.worker.lock().await;\n                state.handle = None;\n                state.observed = Some(observed);\n                observed\n            };\n",
+          "purpose": "Normal pause shares exact original worker join with fault custody without guard across await",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "6a316e96f1bae14ee565843e4ad838455fe77947",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": {
+        "blob": "44ecd101f527cc1a65cdd62180942cb91a1baa1f",
+        "bytes": 12169,
+        "sha256": "c4e9ee9217ecc5a23cdbd09d494a50b94b0257a854d98c314d2ce25136bb4d77"
+      },
+      "post": {
+        "blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+        "bytes": 12698,
+        "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+      },
+      "operations": [
+        {
+          "old": "use tokio::task::JoinHandle;",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse tokio::task::JoinHandle;",
+          "purpose": "Consumer Shared imports",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    handle: Option<JoinHandle<Result<(), AgentdRootAuthorityError>>>,\n    observed: Option<Result<(), OriginalConsumerFailure>>,",
+          "new": "    handle: Option<Shared<BoxFuture<'static, Result<(), OriginalConsumerFailure>>>>,\n    observed: Option<Result<(), OriginalConsumerFailure>>,",
+          "purpose": "Retain actual consumer completion and all original MissingHandle/observed checks",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(handle),\n                observed: None,\n            }),",
+          "new": "            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(\n                    async move {\n                        match handle.await {\n                            Ok(Ok(())) => Ok(()),\n                            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),\n                            Err(error) if error.is_cancelled() => {\n                                Err(OriginalConsumerFailure::Cancelled)\n                            }\n                            Err(_) => Err(OriginalConsumerFailure::Panicked),\n                        }\n                    }\n                    .boxed()\n                    .shared(),\n                ),\n                observed: None,\n            }),",
+          "purpose": "Synchronous registration owns same consumer JoinHandle with exact Copy owner error mapping",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {\n        let mut state = self.state.lock().await;\n        if let Some(outcome) = state.observed {\n            return outcome;\n        }\n        let Some(handle) = state.handle.as_mut() else {\n            return Err(OriginalConsumerFailure::MissingHandle);\n        };\n        // A cancelled timeout/worker/cleanup only releases this borrow. The\n        // actual handle remains in this job and is never polled after Ready.\n        let outcome = match handle.await {\n            Ok(Ok(())) => Ok(()),\n            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),\n            Err(error) if error.is_cancelled() => Err(OriginalConsumerFailure::Cancelled),\n            Err(_) => Err(OriginalConsumerFailure::Panicked),\n        };\n        state.handle = None;\n        state.observed = Some(outcome);\n        outcome\n    }",
+          "new": "    async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {\n        let pending = {\n            let state = self.state.lock().await;\n            if let Some(outcome) = state.observed {\n                return outcome;\n            }\n            state\n                .handle\n                .as_ref()\n                .cloned()\n                .ok_or(OriginalConsumerFailure::MissingHandle)?\n        };\n        // The registry holds the original future while this waiter is absent.\n        // Shared coordinates concurrent polls and caches this same outcome.\n        let outcome = pending.await;\n        let mut state = self.state.lock().await;\n        state.handle = None;\n        state.observed = Some(outcome);\n        outcome\n    }",
+          "purpose": "Clone under short lock, await without it and record same terminal; cancellation retains completed Shared result",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "            // Borrow exactly the registered handle; cancellation preserves it.",
+          "new": "            // Await the registered original join; cancellation preserves it.",
+          "purpose": "Describe actual shared custody accurately",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "pre": {
+        "blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+        "bytes": 4905,
+        "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417"
+      },
+      "post": {
+        "blob": "05d301aab3c2bf2b515fe1c81ec163d6a481c935",
+        "bytes": 4956,
+        "sha256": "819959238bd9a53d7b1ed7b5c002ad3df8c9b5761bae77ca71498ec0fd9a23af"
+      },
+      "operations": [
+        {
+          "old": "ed25519-dalek = { workspace = true }\nhttp = { workspace = true }",
+          "new": "ed25519-dalek = { workspace = true }\nfutures = { workspace = true, features = [\"std\"] }\nhttp = { workspace = true }",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+      "path": "codex-rs/Cargo.lock",
+      "pre": {
+        "blob": "025813e20504f31d12dae2092a0807a1a4066419",
+        "bytes": 421005,
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      "post": {
+        "blob": "04cf97ad543fe1560943b55bd629a238de993911",
+        "bytes": 421017,
+        "sha256": "e69cea88df8b04aff1d19658473a645626615007c498f61e45e081c7714a4a2c"
+      },
+      "operations": [
+        {
+          "old": "[[package]]\nname = \"codex-hepta-agentd\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"app_test_support\",\n \"base64 0.22.1\",\n \"codex-app-server\",\n \"codex-app-server-client\",\n \"codex-app-server-protocol\",\n \"codex-arg0\",\n \"codex-config\",\n \"codex-features\",\n \"codex-hepta-agent-protocol\",\n \"codex-hepta-authbus\",\n \"codex-hepta-automation\",\n \"codex-hepta-bellman-operator\",\n \"codex-hepta-codex-adapter\",\n \"codex-hepta-cognitive-read\",\n \"codex-hepta-cognitive-store\",\n \"codex-hepta-cognitive-types\",\n \"codex-hepta-context-compiler\",\n \"codex-hepta-contracts\",\n \"codex-hepta-control-plane\",\n \"codex-hepta-evidence\",\n \"codex-hepta-fleet\",\n \"codex-hepta-infer-core\",\n \"codex-hepta-infer-worker-host\",\n \"codex-hepta-intelligence\",\n \"codex-hepta-intelligence-eval\",\n \"codex-hepta-intuition\",\n \"codex-hepta-learning-artifacts\",\n \"codex-hepta-learning-ledger\",\n \"codex-hepta-memory\",\n \"codex-hepta-memory-extension\",\n \"codex-hepta-memory-retrieval\",\n \"codex-hepta-ndu\",\n \"codex-hepta-neuron\",\n \"codex-hepta-objective\",\n \"codex-hepta-operations\",\n \"codex-hepta-paths\",\n \"codex-hepta-plasticity\",\n \"codex-hepta-prompt-optimizer\",\n \"codex-hepta-prompt-registry\",\n \"codex-hepta-supervisor\",\n \"codex-hepta-types\",\n \"codex-history\",\n \"codex-mcp\",\n \"codex-model-provider\",\n \"codex-protocol\",\n \"codex-rmcp-client\",\n \"codex-state\",\n \"codex-uds\",\n \"codex-utils-absolute-path\",\n \"codex-utils-cargo-bin\",\n \"codex-utils-cli\",\n \"codex-utils-home-dir\",\n \"codex-utils-path\",\n \"core_test_support\",\n \"ed25519-dalek 2.2.0\",\n \"http 1.5.0\",\n \"libc\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"sqlx\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-util\",\n \"wiremock\",\n]\n\n",
+          "new": "[[package]]\nname = \"codex-hepta-agentd\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"app_test_support\",\n \"base64 0.22.1\",\n \"codex-app-server\",\n \"codex-app-server-client\",\n \"codex-app-server-protocol\",\n \"codex-arg0\",\n \"codex-config\",\n \"codex-features\",\n \"codex-hepta-agent-protocol\",\n \"codex-hepta-authbus\",\n \"codex-hepta-automation\",\n \"codex-hepta-bellman-operator\",\n \"codex-hepta-codex-adapter\",\n \"codex-hepta-cognitive-read\",\n \"codex-hepta-cognitive-store\",\n \"codex-hepta-cognitive-types\",\n \"codex-hepta-context-compiler\",\n \"codex-hepta-contracts\",\n \"codex-hepta-control-plane\",\n \"codex-hepta-evidence\",\n \"codex-hepta-fleet\",\n \"codex-hepta-infer-core\",\n \"codex-hepta-infer-worker-host\",\n \"codex-hepta-intelligence\",\n \"codex-hepta-intelligence-eval\",\n \"codex-hepta-intuition\",\n \"codex-hepta-learning-artifacts\",\n \"codex-hepta-learning-ledger\",\n \"codex-hepta-memory\",\n \"codex-hepta-memory-extension\",\n \"codex-hepta-memory-retrieval\",\n \"codex-hepta-ndu\",\n \"codex-hepta-neuron\",\n \"codex-hepta-objective\",\n \"codex-hepta-operations\",\n \"codex-hepta-paths\",\n \"codex-hepta-plasticity\",\n \"codex-hepta-prompt-optimizer\",\n \"codex-hepta-prompt-registry\",\n \"codex-hepta-supervisor\",\n \"codex-hepta-types\",\n \"codex-history\",\n \"codex-mcp\",\n \"codex-model-provider\",\n \"codex-protocol\",\n \"codex-rmcp-client\",\n \"codex-state\",\n \"codex-uds\",\n \"codex-utils-absolute-path\",\n \"codex-utils-cargo-bin\",\n \"codex-utils-cli\",\n \"codex-utils-home-dir\",\n \"codex-utils-path\",\n \"core_test_support\",\n \"ed25519-dalek 2.2.0\",\n \"futures\",\n \"http 1.5.0\",\n \"libc\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"sqlx\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-util\",\n \"wiremock\",\n]\n\n",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "pre": {
+        "blob": "5d54000ec5d0d66b0eb43c4da18528361307dd59",
+        "bytes": 13370,
+        "sha256": "f7782a34c5842e0b23ca8e19c47a90cf62bb0227e47177e5273020213a68ca57"
+      },
+      "post": {
+        "blob": "6ebd03a7def0a95ef22e52152633eecaec9f8da3",
+        "bytes": 13188,
+        "sha256": "5b3aca11d63086a0d9ecf80ea383a749c07dfabb91f71e1baf9a8eaf579345b7"
+      },
+      "operations": [
+        {
+          "old": "use futures::StreamExt;\n",
+          "new": "use futures::FutureExt;\nuse futures::StreamExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OriginalThreadStartupJob {\n    state: tokio::sync::Mutex<OriginalThreadStartupState>,\n}\n\nstruct OriginalThreadStartupState {\n    handle: Option<JoinHandle<()>>,\n    result: Option<Result<(), Arc<OriginalCoreTaskFailure>>>,\n}",
+          "new": "struct OriginalThreadStartupJob {\n    completion: Shared<BoxFuture<'static, Result<(), Arc<OriginalCoreTaskFailure>>>>,\n}",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {\n        self.state.startups.push(Arc::new(OriginalThreadStartupJob {\n            state: tokio::sync::Mutex::new(OriginalThreadStartupState {\n                handle: Some(handle),\n                result: None,\n            }),\n        }));\n        self.armed = false;\n    }",
+          "new": "fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {\n        // This one future owns the actual handle. Registry custody retains a\n        // Shared clone even when every currently polling waiter is cancelled.\n        let completion = async move {\n            handle\n                .await\n                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error))))\n        }\n        .boxed()\n        .shared();\n        self.state\n            .startups\n            .push(Arc::new(OriginalThreadStartupJob { completion }));\n        self.armed = false;\n    }",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn join_original_startup(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {\n        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result {\n            return result.clone();\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => handle\n                .await\n                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error)))),\n            None => Err(Arc::new(OriginalCoreTaskFailure::State(\n                \"actual original Core startup handle is unavailable\",\n            ))),\n        };\n        state.handle = None;\n        state.result = Some(result.clone());\n        result\n    }",
+          "new": "fn join_original_startup(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {\n        // Shared records the original result once and coordinates concurrent\n        // waiters without keeping a state guard across the actual join.\n        self.completion.clone().await\n    }",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "pre": {
+        "blob": "8769b6ff6912729589bb86f835621387ff7fddf2",
+        "bytes": 20134,
+        "sha256": "905ddaf5f3ad2002a4137f6e9f60f4f6e96e3335c1384d0457c36703710324ab"
+      },
+      "post": {
+        "blob": "f816d6cbb940a0781253278445b606251706fabc",
+        "bytes": 19810,
+        "sha256": "af7257555f68f85af4a215d119c5afc0e348781066220e3f4a94459dbdc24f71"
+      },
+      "operations": [
+        {
+          "old": "use std::error::Error;\n",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse std::error::Error;\n",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "use tokio::sync::Mutex as AsyncMutex;\nuse tokio::task::JoinHandle;",
+          "new": "use tokio::task::JoinHandle;",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "enum ActualAppServerHandle {\n    Unit(JoinHandle<()>),\n    Result(JoinHandle<io::Result<()>>),\n}\n\npub(crate) struct OriginalAppServerJob {\n    handle: AsyncMutex<Option<ActualAppServerHandle>>,\n    terminal: OnceLock<Result<(), OriginalAppServerFailure>>,\n}",
+          "new": "pub(crate) struct OriginalAppServerJob {\n    completion: Shared<BoxFuture<'static, Result<(), OriginalAppServerFailure>>>,\n    terminal: OnceLock<Result<(), OriginalAppServerFailure>>,\n}",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn unit(handle: JoinHandle<()>) -> Arc<Self> {\n        Arc::new(Self {\n            handle: AsyncMutex::new(Some(ActualAppServerHandle::Unit(handle))),\n            terminal: OnceLock::new(),\n        })\n    }",
+          "new": "fn unit(handle: JoinHandle<()>) -> Arc<Self> {\n        let completion = async move {\n            handle\n                .await\n                .map_err(OriginalAppServerFailure::from_join)\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {\n            completion,\n            terminal: OnceLock::new(),\n        })\n    }",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn result(handle: JoinHandle<io::Result<()>>) -> Arc<Self> {\n        Arc::new(Self {\n            handle: AsyncMutex::new(Some(ActualAppServerHandle::Result(handle))),\n            terminal: OnceLock::new(),\n        })\n    }",
+          "new": "fn result(handle: JoinHandle<io::Result<()>>) -> Arc<Self> {\n        let completion = async move {\n            match handle.await {\n                Ok(result) => result.map_err(OriginalAppServerFailure::from_io),\n                Err(error) => Err(OriginalAppServerFailure::from_join(error)),\n            }\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {\n            completion,\n            terminal: OnceLock::new(),\n        })\n    }",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn join_original(&self) -> Result<(), OriginalAppServerFailure> {\n        let mut slot = self.handle.lock().await;\n        if let Some(result) = self.terminal.get() {\n            return result.clone();\n        }\n        // The waiter borrows the SAME handle. Cancellation leaves it in this\n        // actual shared slot; terminal result and removal are one locked step.\n        let result = match slot.as_mut() {\n            Some(ActualAppServerHandle::Unit(handle)) => {\n                handle.await.map_err(OriginalAppServerFailure::from_join)\n            }\n            Some(ActualAppServerHandle::Result(handle)) => match handle.await {\n                Ok(result) => result.map_err(OriginalAppServerFailure::from_io),\n                Err(error) => Err(OriginalAppServerFailure::from_join(error)),\n            },\n            None => Err(OriginalAppServerFailure::from_io(io::Error::other(\n                \"original App Server task lost its handle before observation\",\n            ))),\n        };\n        *slot = None;\n        let _ = self.terminal.set(result.clone());\n        result\n    }",
+          "new": "fn join_original(&self) -> Result<(), OriginalAppServerFailure> {\n        // The registry retains the one actual join future. Cancellation drops\n        // only this waiter; Shared coordinates concurrent observers and caches\n        // the same Arc-backed original error after the handle has completed.\n        let result = self.completion.clone().await;\n        let _ = self.terminal.set(result.clone());\n        result\n    }",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "pre": {
+        "blob": "0c9e0370d897118ebcf59c8422c329cb2d8e48ba",
+        "bytes": 4934,
+        "sha256": "45181e33a78de2cf090d8cb1ec21abff4b4382c6f310eb1220fb5f27e7125d15"
+      },
+      "post": {
+        "blob": "2c5867859e5692a253992d5045f1606e940f8420",
+        "bytes": 6472,
+        "sha256": "3ad7e7a9906b4600cdc7fc120e32fea0a91a29b114dac08e1c3f60a060d29150"
+      },
+      "operations": [
+        {
+          "old": "fn an_admission_dropped_before_retaining_its_handle_permanently_refuses_start() {\n    let original = enabled();\n    drop(original.reserve_original_startup().unwrap().unwrap());\n    assert!(original.reserve_original_startup().is_err());\n    let errors = original\n        .join_original_sealed(original.seal_original_startups().unwrap())\n        .await;\n    assert_eq!(errors.len(), 1);\n    assert!(matches!(\n        errors[0].as_ref(),\n        OriginalCoreTaskFailure::State(_)\n    ));\n}\n",
+          "new": "fn an_admission_dropped_before_retaining_its_handle_permanently_refuses_start() {\n    let original = enabled();\n    drop(original.reserve_original_startup().unwrap().unwrap());\n    assert!(original.reserve_original_startup().is_err());\n    let errors = original\n        .join_original_sealed(original.seal_original_startups().unwrap())\n        .await;\n    assert_eq!(errors.len(), 1);\n    assert!(matches!(\n        errors[0].as_ref(),\n        OriginalCoreTaskFailure::State(_)\n    ));\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn concurrent_startup_waiters_keep_the_original_panic_after_one_is_cancelled() {\n    let original = enabled();\n    let (release, released) = tokio::sync::oneshot::channel();\n    {\n        let admission = original.reserve_original_startup().unwrap().unwrap();\n        let worker = tokio::spawn(async move {\n            released.await.unwrap();\n            panic!(\"actual shared startup panic\");\n        });\n        admission.retain_original_thread_startup_handle(worker);\n    }\n    let plan = original.seal_original_startups().unwrap();\n    let job = Arc::clone(&plan.startups[0]);\n    let mut cancelled = Box::pin(job.join_original_startup());\n    let mut surviving = Box::pin(job.join_original_startup());\n    tokio::select! {\n        biased;\n        result = &mut cancelled => panic!(\"actual startup is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    tokio::select! {\n        biased;\n        result = &mut surviving => panic!(\"same actual startup is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    drop(cancelled);\n    release.send(()).unwrap();\n    let first = tokio::time::timeout(Duration::from_secs(2), surviving)\n        .await\n        .unwrap()\n        .unwrap_err();\n    assert!(matches!(\n        first.as_ref(),\n        OriginalCoreTaskFailure::Join(error) if error.is_panic()\n    ));\n    let again = job.join_original_startup().await.unwrap_err();\n    assert!(Arc::ptr_eq(&first, &again));\n}\n",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "2780aeb5f97e6ed06d8eaf7bd69d8926f319a201",
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "pre": {
+        "blob": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+        "bytes": 9750,
+        "sha256": "1a3ffcea9279289bf0da5d09c3a05cdae2a2fa358e87a730fffbdeab47b8877c"
+      },
+      "post": {
+        "blob": "19950711aaa74c9d57fe821b54df998740fb8350",
+        "bytes": 11486,
+        "sha256": "70fe7a425e4db41c6307a58acacaf0ef4d3f32e99d5a7c44acbdc53c5adb198d"
+      },
+      "operations": [
+        {
+          "old": "fn cancelled_job_waiter_retains_actual_task_and_fd_until_join() {\n    use tokio::io::AsyncReadExt;\n\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let job = OriginalAppServerJob::unit(tokio::spawn(async move {\n        entered_tx.send(()).expect(\"entered receiver\");\n        release_rx.await.expect(\"release actual task\");\n        drop(owned);\n    }));\n    let mut waiting = Box::pin(OriginalAppServerJob::join_original(&job));\n    tokio::select! {\n        biased;\n        result = &mut waiting => panic!(\"blocked actual task was reported joined: {result:?}\"),\n        result = entered_rx => result.expect(\"actual task started\"),\n    }\n    drop(waiting);\n    assert!(job.terminal.get().is_none());\n    assert!(job.handle.lock().await.is_some());\n    release_tx\n        .send(())\n        .expect(\"same actual task still retained\");\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"actual task joined\");\n    let mut byte = [0_u8; 1];\n    assert_eq!(peer.read(&mut byte).await.expect(\"actual EOF\"), 0);\n    // The recorded terminal result is observed again without polling a completed handle.\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"same terminal observation\");\n    assert!(job.handle.lock().await.is_none());\n}",
+          "new": "fn cancelled_job_waiter_retains_actual_task_and_fd_until_join() {\n    use tokio::io::AsyncReadExt;\n\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let job = OriginalAppServerJob::unit(tokio::spawn(async move {\n        entered_tx.send(()).expect(\"entered receiver\");\n        release_rx.await.expect(\"release actual task\");\n        drop(owned);\n    }));\n    let mut waiting = Box::pin(OriginalAppServerJob::join_original(&job));\n    tokio::select! {\n        biased;\n        result = &mut waiting => panic!(\"blocked actual task was reported joined: {result:?}\"),\n        result = entered_rx => result.expect(\"actual task started\"),\n    }\n    drop(waiting);\n    assert!(job.terminal.get().is_none());\n    assert!(job.completion.peek().is_none());\n    release_tx\n        .send(())\n        .expect(\"same actual task still retained\");\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"actual task joined\");\n    let mut byte = [0_u8; 1];\n    assert_eq!(peer.read(&mut byte).await.expect(\"actual EOF\"), 0);\n    // The recorded terminal result is observed again without polling a completed handle.\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"same terminal observation\");\n    assert!(job.completion.peek().is_some());\n}",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn real_task_panic_keeps_the_original_join_error_after_reobservation() {\n    let job = OriginalAppServerJob::unit(tokio::spawn(async {\n        panic!(\"actual original App Server component panic\");\n    }));\n    let first = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"real panic\");\n    let second = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"recorded panic\");\n    assert!(\n        first\n            .error\n            .as_ref()\n            .downcast_ref::<tokio::task::JoinError>()\n            .expect(\"original JoinError source\")\n            .is_panic()\n    );\n    assert!(Arc::ptr_eq(&first.error, &second.error));\n    assert!(job.handle.lock().await.is_none());\n}",
+          "new": "fn real_task_panic_keeps_the_original_join_error_after_reobservation() {\n    let job = OriginalAppServerJob::unit(tokio::spawn(async {\n        panic!(\"actual original App Server component panic\");\n    }));\n    let first = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"real panic\");\n    let second = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"recorded panic\");\n    assert!(\n        first\n            .error\n            .as_ref()\n            .downcast_ref::<tokio::task::JoinError>()\n            .expect(\"original JoinError source\")\n            .is_panic()\n    );\n    assert!(Arc::ptr_eq(&first.error, &second.error));\n    assert!(job.completion.peek().is_some());\n}",
+          "purpose": "",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it() {\n    use tokio::io::AsyncReadExt;\n\n    let original = OriginalAppServerOwnerCustody::new();\n    let drain = AppServerDrainHandle::new();\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let mut main = Box::pin(OriginalAppServerOwnerCustody::run_original_main(\n        &original,\n        drain.clone(),\n        async move {\n            entered_tx.send(()).expect(\"entered receiver\");\n            release_rx.await.expect(\"release actual main component\");\n            drop(owned);\n            Err(io::Error::other(\"incomplete component invocation\"))\n        },\n    ));\n    tokio::select! {\n        biased;\n        result = &mut main => panic!(\"actual main is still blocked: {result:?}\"),\n        result = entered_rx => result.expect(\"actual main started\"),\n    }\n    drop(main);\n    drain.wait_requested().await;\n    let first = original\n        .state()\n        .main\n        .clone()\n        .expect(\"same actual main retained\");\n    assert!(first.terminal.get().is_none());\n    let (restarted_tx, restarted_rx) = oneshot::channel();\n    assert!(\n        OriginalAppServerOwnerCustody::run_original_main(&original, drain, async move {\n            let _ = restarted_tx.send(());\n            Ok(())\n        },)\n        .await\n        .is_err()\n    );\n    assert!(restarted_rx.await.is_err());\n    release_tx\n        .send(())\n        .expect(\"actual main handle still present\");\n    assert!(\n        OriginalAppServerOwnerCustody::join_original_app_server(&original)\n            .await\n            .is_err()\n    );\n    let mut byte = [0_u8; 1];\n    assert_eq!(\n        peer.read(&mut byte).await.expect(\"actual owner released\"),\n        0\n    );\n    assert!(first.terminal.get().is_some());\n}\n",
+          "new": "fn cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it() {\n    use tokio::io::AsyncReadExt;\n\n    let original = OriginalAppServerOwnerCustody::new();\n    let drain = AppServerDrainHandle::new();\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let mut main = Box::pin(OriginalAppServerOwnerCustody::run_original_main(\n        &original,\n        drain.clone(),\n        async move {\n            entered_tx.send(()).expect(\"entered receiver\");\n            release_rx.await.expect(\"release actual main component\");\n            drop(owned);\n            Err(io::Error::other(\"incomplete component invocation\"))\n        },\n    ));\n    tokio::select! {\n        biased;\n        result = &mut main => panic!(\"actual main is still blocked: {result:?}\"),\n        result = entered_rx => result.expect(\"actual main started\"),\n    }\n    drop(main);\n    drain.wait_requested().await;\n    let first = original\n        .state()\n        .main\n        .clone()\n        .expect(\"same actual main retained\");\n    assert!(first.terminal.get().is_none());\n    let (restarted_tx, restarted_rx) = oneshot::channel();\n    assert!(\n        OriginalAppServerOwnerCustody::run_original_main(&original, drain, async move {\n            let _ = restarted_tx.send(());\n            Ok(())\n        },)\n        .await\n        .is_err()\n    );\n    assert!(restarted_rx.await.is_err());\n    release_tx\n        .send(())\n        .expect(\"actual main handle still present\");\n    assert!(\n        OriginalAppServerOwnerCustody::join_original_app_server(&original)\n            .await\n            .is_err()\n    );\n    let mut byte = [0_u8; 1];\n    assert_eq!(\n        peer.read(&mut byte).await.expect(\"actual owner released\"),\n        0\n    );\n    assert!(first.terminal.get().is_some());\n}\n\n#[tokio::test]\nasync fn concurrent_waiters_keep_the_original_io_error_after_one_is_cancelled() {\n    let (release, released) = oneshot::channel();\n    let job = OriginalAppServerJob::result(tokio::spawn(async move {\n        released.await.expect(\"release same actual task\");\n        Err(io::Error::new(\n            io::ErrorKind::PermissionDenied,\n            \"actual shared App Server refusal\",\n        ))\n    }));\n    let mut cancelled = Box::pin(OriginalAppServerJob::join_original(&job));\n    let mut surviving = Box::pin(OriginalAppServerJob::join_original(&job));\n    tokio::select! {\n        biased;\n        result = &mut cancelled => panic!(\"actual task is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    tokio::select! {\n        biased;\n        result = &mut surviving => panic!(\"same actual task is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    drop(cancelled);\n    assert!(job.terminal.get().is_none());\n    release.send(()).expect(\"same actual task retained\");\n    let first = tokio::time::timeout(std::time::Duration::from_secs(2), surviving)\n        .await\n        .expect(\"remaining original waiter is woken\")\n        .expect_err(\"original IO error\");\n    let again = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"same terminal IO error\");\n    assert!(Arc::ptr_eq(&first.error, &again.error));\n    let actual = first\n        .error\n        .as_ref()\n        .downcast_ref::<io::Error>()\n        .expect(\"original IO error object\");\n    assert_eq!(actual.kind(), io::ErrorKind::PermissionDenied);\n    assert_eq!(actual.to_string(), \"actual shared App Server refusal\");\n    assert!(job.require_original_success().is_err());\n}\n",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "pre": {
+        "blob": "227ba79e46743409c974835126f7a6b340efdb94",
+        "bytes": 14217,
+        "sha256": "0039095e6fa3cc6ef71b43771f0a61bd9fe2ce5ae9514fb9f37c84715b79b833"
+      },
+      "post": {
+        "blob": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+        "bytes": 13877,
+        "sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643"
+      },
+      "operations": [
+        {
+          "old": "use codex_config::types::McpServerEnvVar;\n",
+          "new": "use codex_config::types::McpServerEnvVar;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+          "purpose": "direct-existing-futures-imports",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "use tokio::sync::Mutex;\nuse tokio::task::JoinHandle;\n\nuse super::ClientState;",
+          "new": "\nuse super::ClientState;",
+          "purpose": "remove-no-longer-used-handle-slot-imports",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OriginalDriverJob {\n    state: Mutex<OriginalDriverState>,\n}\n\nstruct OriginalDriverState {\n    handle: Option<JoinHandle<Result<OriginalDriverJoined, String>>>,\n    result: Option<Result<OriginalDriverJoined, String>>,\n}",
+          "new": "struct OriginalDriverJob {\n    completion: Shared<BoxFuture<'static, Result<OriginalDriverJoined, String>>>,\n}",
+          "purpose": "same-driver-handle-owned-by-shared-completion",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let job = Arc::new(OriginalDriverJob {\n            state: Mutex::new(OriginalDriverState {\n                handle: Some(handle),\n                result: None,\n            }),\n        });",
+          "new": "        let completion = async move {\n            match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"original MCP driver cleanup task failed: {error}\")),\n            }\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalDriverJob { completion });",
+          "purpose": "register-shared-wrapper-of-original-spawn-without-an-await-gap",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result {\n            return result.clone();\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"original MCP driver cleanup task failed: {error}\")),\n            },\n            None => Err(\"original MCP driver join custody is unavailable\".into()),\n        };\n        state.handle.take();\n        state.result = Some(result.clone());\n        result",
+          "new": "        // The registry retains the same handle-owning future if a waiter\n        // is cancelled. Concurrent observers share its original result.\n        self.completion.clone().await",
+          "purpose": "join-same-shared-driver-without-a-mutex-guard",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": {
+        "blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "bytes": 15052,
+        "sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f"
+      },
+      "post": {
+        "blob": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+        "bytes": 14012,
+        "sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2"
+      },
+      "operations": [
+        {
+          "old": "use codex_rmcp_client::OriginalMcpClientShutdownObservation;\nuse tokio::sync::Mutex;\n",
+          "new": "use codex_rmcp_client::OriginalMcpClientShutdownObservation;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+          "purpose": "direct-existing-futures-imports",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "use tokio::task::JoinHandle;\nuse tokio::task::JoinSet;\n",
+          "new": "use tokio::task::JoinSet;\n",
+          "purpose": "remove-no-longer-used-option-handle-import",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OriginalStartupJob {\n    state: Mutex<OriginalStartupJobState>,\n}\n\nstruct OriginalStartupJobState {\n    handle: Option<JoinHandle<OriginalStartupJoined>>,\n    joined: Option<OriginalStartupJoined>,\n}",
+          "new": "struct OriginalStartupJob {\n    completion: Shared<BoxFuture<'static, OriginalStartupJoined>>,\n}",
+          "purpose": "same-startup-handle-owned-by-shared-completion",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OriginalCleanupJob {\n    state: Mutex<OriginalCleanupJobState>,\n}\n\nstruct OriginalCleanupJobState {\n    handle: Option<JoinHandle<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,\n    result: Option<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,\n}",
+          "new": "struct OriginalCleanupJob {\n    completion: Shared<\n        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,\n    >,\n}",
+          "purpose": "same-cleanup-handle-owned-by-shared-completion",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        state.startup_jobs.push(Arc::new(OriginalStartupJob {\n            state: Mutex::new(OriginalStartupJobState {\n                handle: Some(handle),\n                joined: None,\n            }),\n        }));",
+          "new": "        let completion = async move {\n            match handle.await {\n                Ok(joined) => joined,\n                Err(error) => OriginalStartupJoined {\n                    ready: 0,\n                    errors: vec![format!(\"actual MCP startup join owner: {error}\")],\n                },\n            }\n        }\n        .boxed()\n        .shared();\n        state\n            .startup_jobs\n            .push(Arc::new(OriginalStartupJob { completion }));",
+          "purpose": "register-same-startup-handle-shared-with-original-error",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "                let job = Arc::new(OriginalCleanupJob {\n                    state: Mutex::new(OriginalCleanupJobState {\n                        handle: Some(handle),\n                        result: None,\n                    }),\n                });",
+          "new": "                let completion = async move {\n                    match handle.await {\n                        Ok(result) => result,\n                        Err(error) => Err(format!(\"actual MCP cleanup owner failed: {error}\")),\n                    }\n                }\n                .boxed()\n                .shared();\n                let job = Arc::new(OriginalCleanupJob { completion });",
+          "purpose": "register-same-cleanup-handle-shared-with-original-error",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    async fn join_original_startup(&self) -> OriginalStartupJoined {\n        let mut state = self.state.lock().await;\n        if let Some(joined) = &state.joined {\n            return joined.clone();\n        }\n        let joined = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(joined) => joined,\n                Err(error) => OriginalStartupJoined {\n                    ready: 0,\n                    errors: vec![format!(\"actual MCP startup join owner: {error}\")],\n                },\n            },\n            None => OriginalStartupJoined {\n                ready: 0,\n                errors: vec![\"actual MCP startup handle is missing\".into()],\n            },\n        };\n        state.handle.take();\n        state.joined = Some(joined.clone());\n        joined",
+          "new": "    async fn join_original_startup(&self) -> OriginalStartupJoined {\n        self.completion.clone().await",
+          "purpose": "startup-shared-await-without-mutex",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    async fn receive_original_cleanup(\n        &self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {\n        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result {\n            return result.clone();\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"actual MCP cleanup owner failed: {error}\")),\n            },\n            None => Err(\"actual MCP cleanup handle is missing\".into()),\n        };\n        state.handle.take();\n        state.result = Some(result.clone());\n        result",
+          "new": "    async fn receive_original_cleanup(\n        &self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {\n        self.completion.clone().await",
+          "purpose": "cleanup-shared-await-without-mutex",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "pre": {
+        "blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+        "bytes": 26125,
+        "sha256": "8142cfe8f5f937e7652489fcabcbd7334db1ff0fbbdc2290f1c44a08ff5a9a1f"
+      },
+      "post": {
+        "blob": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+        "bytes": 26249,
+        "sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4"
+      },
+      "operations": [
+        {
+          "old": "use rmcp::transport::async_rw::AsyncRwTransport;\n",
+          "new": "use futures::future::Shared;\nuse rmcp::transport::async_rw::AsyncRwTransport;\n",
+          "purpose": "shared-from-existing-direct-futures-dependency",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OwnedJob<T> {\n    state: AsyncMutex<OwnedJobState<T>>,\n}\n\nstruct OwnedJobState<T> {\n    handle: Option<JoinHandle<io::Result<T>>>,\n    result: Option<Result<T, RecordedFailure>>,\n    joined: bool,\n}\n\nimpl<T> OwnedJob<T> {\n    fn track(handle: JoinHandle<io::Result<T>>) -> Arc<Self> {\n        Arc::new(Self {\n            state: AsyncMutex::new(OwnedJobState {\n                handle: Some(handle),\n                result: None,\n                joined: false,\n            }),\n        })\n    }\n\n    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {\n        let mut state = self.state.lock().await;\n        if !state.joined && state.handle.is_none() {\n            state.result = Some(Err(RecordedFailure::io(io::Error::other(\n                \"owned stdio job lost its actual handle before join\",\n            ))));\n            state.joined = true;\n        }\n        if let Some(handle) = state.handle.as_mut() {\n            // Borrow the SAME handle. Dropping this waiter leaves it in the\n            // shared state. Record terminal state under the same lock before\n            // another waiter may poll or consume it.\n            let result = match handle.await {\n                Ok(result) => result.map_err(RecordedFailure::io),\n                Err(error) => Err(RecordedFailure::join(error)),\n            };\n            state.handle = None;\n            state.result = Some(result);\n            state.joined = true;\n        }\n        state\n    }\n}",
+          "new": "struct OwnedJob<T> {\n    completion: Shared<BoxFuture<'static, ()>>,\n    state: Arc<AsyncMutex<OwnedJobState<T>>>,\n}\n\nstruct OwnedJobState<T> {\n    result: Option<Result<T, RecordedFailure>>,\n    joined: bool,\n}\n\nimpl<T: Send + 'static> OwnedJob<T> {\n    fn track(handle: JoinHandle<io::Result<T>>) -> Arc<Self> {\n        let state = Arc::new(AsyncMutex::new(OwnedJobState {\n            result: None,\n            joined: false,\n        }));\n        let recorded = Arc::clone(&state);\n        // The registry retains this one future and the SAME actual handle.\n        // Only completion is shared: a transport output remains owned once\n        // by the result slot and is never required to implement Clone.\n        let completion = async move {\n            let result = match handle.await {\n                Ok(result) => result.map_err(RecordedFailure::io),\n                Err(error) => Err(RecordedFailure::join(error)),\n            };\n            let mut state = recorded.lock().await;\n            state.result = Some(result);\n            state.joined = true;\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self { completion, state })\n    }\n\n    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {\n        // Cancellation drops only this Shared clone. No result guard is held\n        // while the actual handle is awaited, and only the original output\n        // may be taken after this shared completion has recorded it.\n        self.completion.clone().await;\n        self.state.lock().await\n    }\n}",
+          "purpose": "share-same-join-without-cloning-original-transport",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut launch_state = launch.join().await;\n        let abandoned = match launch_state.result.take() {\n            Some(Ok(transport)) => Some(transport),\n            Some(Err(error)) => {\n                failures.push((\"launch\", error.clone()));\n                launch_state.result = Some(Err(error));\n                None\n            }\n            None => None,\n        };\n        drop(launch_state);\n        drop(abandoned);",
+          "new": "        let abandoned = {\n            let mut launch_state = launch.join().await;\n            match launch_state.result.take() {\n                Some(Ok(transport)) => Some(transport),\n                Some(Err(error)) => {\n                    failures.push((\"launch\", error.clone()));\n                    launch_state.result = Some(Err(error));\n                    None\n                }\n                None => None,\n            }\n        };\n        drop(abandoned);",
+          "purpose": "lexically-release-launch-output-lock-before-real-transport-cleanup-awaits",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "pre": {
+        "blob": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+        "bytes": 8692,
+        "sha256": "f0951c8fce0f414f317a85bd394914d5048fe490edb177a4ae4659e7ed990e84"
+      },
+      "post": {
+        "blob": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+        "bytes": 11303,
+        "sha256": "9c3334f5bbe08156736c3dcacf58cdad79f23062076b1e15774968cf5694a10a"
+      },
+      "operations": [
+        {
+          "old": "    let launch = launch.state.lock().await;\n    assert!(launch.joined);\n    assert!(launch.handle.is_none());\n    assert!(\n        launch.result.is_none(),\n        \"actual transport must leave launch output\"\n    );\n    drop(launch);",
+          "new": "    {\n        let state = launch.state.lock().await;\n        assert!(state.joined);\n        assert!(launch.completion.peek().is_some());\n        assert!(\n            state.result.is_none(),\n            \"actual transport must leave launch output\"\n        );\n    }",
+          "purpose": "keep-actual-launch-output-and-joined-assertions-with-shared-terminal-fact",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        assert!(state.handle.is_none());\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));",
+          "new": "        assert!(child.completion.peek().is_some());\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));",
+          "purpose": "child-actual-shared-terminal-replaces-removed-handle-slot",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        assert!(state.handle.is_none());\n    }\n    let state = termination.state.lock().await;",
+          "new": "        assert!(reader.completion.peek().is_some());\n    }\n    let state = termination.state.lock().await;",
+          "purpose": "stderr-actual-shared-terminal-replaces-removed-handle-slot",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    assert!(state.handle.is_none());\n    assert!(matches!(state.result.as_ref(), Some(Ok(()))));",
+          "new": "    assert!(termination.completion.peek().is_some());\n    assert!(matches!(state.result.as_ref(), Some(Ok(()))));",
+          "purpose": "termination-actual-shared-terminal-replaces-removed-handle-slot",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    let state = launch.join().await;\n    assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n    drop(state);",
+          "new": "    {\n        let state = launch.join().await;\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n    }",
+          "purpose": "lexical-result-read-scope-before-actual-cleanup",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())\n        .await\n        .expect(\"original invalid UTF-8 stderr was not read\");\n    assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));\n    drop(actual_read);",
+          "new": "    {\n        let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())\n            .await\n            .expect(\"original invalid UTF-8 stderr was not read\");\n        assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));\n    }",
+          "purpose": "lexical-original-stderr-result-scope-before-later-cleanup-await",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    assert_eq!(error.kind(), io::ErrorKind::NotConnected);\n    require_actual_handles_joined(&custody).await;\n}\n",
+          "new": "    assert_eq!(error.kind(), io::ErrorKind::NotConnected);\n    require_actual_handles_joined(&custody).await;\n}\n\n#[tokio::test]\nasync fn cancelled_shared_job_waiter_keeps_one_non_clone_fd_output_for_all_waiters() {\n    use std::io::Read;\n    use std::os::unix::net::UnixStream;\n\n    let (owner, mut peer) = UnixStream::pair().unwrap();\n    peer.set_nonblocking(true).unwrap();\n    let (release, released) = tokio::sync::oneshot::channel::<()>();\n    let job = OwnedJob::track(tokio::spawn(async move {\n        released\n            .await\n            .map_err(|_| io::Error::other(\"component release sender dropped\"))?;\n        Ok(owner)\n    }));\n\n    let mut cancelled = Box::pin(job.join());\n    tokio::select! {\n        biased;\n        _ = &mut cancelled => panic!(\"actual handle cannot join before its release\"),\n        () = async {} => {}\n    }\n    drop(cancelled);\n    assert!(job.completion.peek().is_none());\n    let mut byte = [0_u8; 1];\n    assert_eq!(\n        peer.read(&mut byte).unwrap_err().kind(),\n        io::ErrorKind::WouldBlock\n    );\n\n    release.send(()).unwrap();\n    tokio::join!(\n        async {\n            let state = job.join().await;\n            assert!(state.joined);\n            assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n        },\n        async {\n            let state = job.join().await;\n            assert!(state.joined);\n            assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n        },\n    );\n    assert!(job.completion.peek().is_some());\n    let actual = {\n        let mut state = job.state.lock().await;\n        state.result.take().unwrap().unwrap()\n    };\n    assert!(job.state.lock().await.result.is_none());\n    assert_eq!(\n        peer.read(&mut byte).unwrap_err().kind(),\n        io::ErrorKind::WouldBlock\n    );\n    drop(actual);\n    assert_eq!(peer.read(&mut byte).unwrap(), 0);\n}\n\n#[tokio::test]\nasync fn shared_job_keeps_the_same_original_join_error_for_later_waiters() {\n    let job = OwnedJob::<()>::track(tokio::spawn(async {\n        panic!(\"original owned job component panic\")\n    }));\n    let first = {\n        let state = job.join().await;\n        assert!(state.joined);\n        state.result.as_ref().unwrap().as_ref().unwrap_err().clone()\n    };\n    let second = {\n        let state = job.join().await;\n        assert!(state.joined);\n        state.result.as_ref().unwrap().as_ref().unwrap_err().clone()\n    };\n    assert!(Arc::ptr_eq(&first.error, &second.error));\n    assert!(\n        first\n            .error\n            .downcast_ref::<tokio::task::JoinError>()\n            .unwrap()\n            .is_panic()\n    );\n    assert!(job.completion.peek().is_some());\n}\n",
+          "purpose": "two-necessary-real-handle-cancellation-output-and-original-error-components",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "38fd9c7a6cae56f2ded84ea58713a16c25f232f6",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "pre": {
+        "blob": "6a318dd7bb800d56939125055c37efb182e88fa4",
+        "bytes": 23007,
+        "sha256": "eaa5698ab16684be0c087698e31a44116d074a6229f8bf6c148262b56664de22"
+      },
+      "post": {
+        "blob": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+        "bytes": 23886,
+        "sha256": "f8c33abea179cea3c414ab23f9e352ef1ad22a69fc147d639a9a46c35b1f52f8"
+      },
+      "operations": [
+        {
+          "old": "use std::future::Future;\n",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse std::future::Future;\n",
+          "purpose": "existing futures Shared type",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct OriginalJobState<T, E> {\n    handle: Option<JoinHandle<Result<T, E>>>,\n",
+          "new": "struct OriginalJobState<T, E> {\n",
+          "purpose": "one original handle is owned by registered Shared future",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "/// This object holds the real handle, even while another future borrows it\n/// through an async mutex and is subsequently cancelled.\npub(crate) struct OriginalLearningJob<T, E> {\n    state: tokio::sync::Mutex<OriginalJobState<T, E>>,",
+          "new": "/// The registry retains the one Shared future which owns the actual handle.\n/// Its unit completion is cloneable; the original result and JoinError are not.\npub(crate) struct OriginalLearningJob<T, E> {\n    state: Arc<Mutex<OriginalJobState<T, E>>>,\n    completion: Shared<BoxFuture<'static, ()>>,",
+          "purpose": "separate cloneable completion from single owned result",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let job = Arc::new(OriginalLearningJob {\n            state: tokio::sync::Mutex::new(OriginalJobState {\n                handle: Some(handle),\n                joined: false,\n                join_failed: false,\n                join_error: None,\n                output: None,\n            }),",
+          "new": "        let state = Arc::new(Mutex::new(OriginalJobState::<T, E> {\n            joined: false,\n            join_failed: false,\n            join_error: None,\n            output: None,\n        }));\n        let recorded = Arc::clone(&state);\n        let failed = Arc::clone(&self.join_failed);\n        let gate = Arc::clone(&self.gate);\n        // This future owns the one real handle before any waiter can poll it.\n        // Registry custody of the job retains this Shared clone on cancellation.\n        let completion = async move {\n            let result = handle.await;\n            let mut state = recorded.lock().unwrap_or_else(|error| {\n                gate.close();\n                failed.store(true, Ordering::Release);\n                let mut state = error.into_inner();\n                state.join_failed = true;\n                state\n            });\n            // No await separates the actual join from its single terminal write.\n            state.joined = true;\n            match result {\n                Ok(output) => state.output = Some(output),\n                Err(error) => {\n                    state.join_failed = true;\n                    state.join_error = Some(error);\n                    failed.store(true, Ordering::Release);\n                }\n            }\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalLearningJob {\n            state,\n            completion,",
+          "purpose": "register Shared ownership synchronously and retain original typed terminal result",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    async fn join_locked(&self, state: &mut OriginalJobState<T, E>) {\n        if state.joined {\n            return;\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => handle.await,\n            None => {\n                state.join_failed = true;\n                self.join_failed.store(true, Ordering::Release);\n                state.joined = true;\n                return;\n            }\n        };\n        // No await separates completion from this terminal state transition.\n        // A later cleanup observes joined and never polls this handle again.\n        state.joined = true;\n        state.handle = None;\n        match result {\n            Ok(output) => state.output = Some(output),\n            Err(error) => {\n                state.join_failed = true;\n                state.join_error = Some(error);\n                self.join_failed.store(true, Ordering::Release);\n            }\n        }\n    }\n",
+          "new": "    fn lock_original_learning_result(&self) -> MutexGuard<'_, OriginalJobState<T, E>> {\n        self.state.lock().unwrap_or_else(|error| {\n            self.gate.close();\n            self.join_failed.store(true, Ordering::Release);\n            let mut state = error.into_inner();\n            state.join_failed = true;\n            state\n        })\n    }\n",
+          "purpose": "terminal state is locked only after Shared await; poison remains fail closed",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await;\n        let failed = state.join_failed;\n        let join_error = state.join_error.take();",
+          "new": "        self.completion.clone().await;\n        let mut state = self.lock_original_learning_result();\n        let failed = state.join_failed;\n        let join_error = state.join_error.take();",
+          "purpose": "actual JoinError receive without a guard across await",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await;\n        let failed = state.join_failed;\n        let output = state.output.take();",
+          "new": "        self.completion.clone().await;\n        let mut state = self.lock_original_learning_result();\n        let failed = state.join_failed;\n        let output = state.output.take();",
+          "purpose": "legacy receive preserves original mapping and output single take",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "            let mut state = self.state.lock().await;\n            self.join_locked(&mut state).await;\n            let output = state.output.take();",
+          "new": "            self.completion.clone().await;\n            let mut state = self.lock_original_learning_result();\n            let output = state.output.take();",
+          "purpose": "normal actual join no live state guard across await",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "            let mut state = self.state.lock().await;\n            self.join_locked(&mut state).await;\n            let succeeded = !state.join_failed;",
+          "new": "            self.completion.clone().await;\n            let mut state = self.lock_original_learning_result();\n            let succeeded = !state.join_failed;",
+          "purpose": "fault actual join no live state guard across await",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let state = self.state.get_mut();\n        if !state.joined {",
+          "new": "        let mut state = self.state.lock().unwrap_or_else(|error| {\n            self.gate.close();\n            self.join_failed.store(true, Ordering::Release);\n            error.into_inner()\n        });\n        if !state.joined {",
+          "purpose": "last Job Drop still distinguishes actual join from lost custody",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        drop(state.output.take());\n        self.pending.fetch_sub(1, Ordering::AcqRel);",
+          "new": "        let output = state.output.take();\n        drop(state);\n        drop(output);\n        self.pending.fetch_sub(1, Ordering::AcqRel);",
+          "purpose": "release actual output before decrement and avoid user Drop under cell lock",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "38fd9c7a6cae56f2ded84ea58713a16c25f232f6",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "pre": {
+        "blob": "1be6c551fa0137cac0e6571d6b46cd5e5f934ef5",
+        "bytes": 6544,
+        "sha256": "6f462c7b85ffecb6c8f2c17ae7aad192ada9006311f4e8c66baa1dbe835229b4"
+      },
+      "post": {
+        "blob": "a2488297954907d01cc1b10b921b295d3aa9e631",
+        "bytes": 7788,
+        "sha256": "9449167c92b3b0e6787ea73048ca0384c8aa9c7f46acca1509d3ecff17f8aad1"
+      },
+      "operations": [
+        {
+          "old": "use super::refused;\n",
+          "new": "use super::refused;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+          "purpose": "Shared unit completion uses existing workspace futures",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "struct ConsumerJobState {\n    handle: Option<JoinHandle<Result<FinalUseAuthority, AgentdError>>>,\n    output: Option<Result<FinalUseAuthority, AgentdError>>,\n    joined: bool,\n    receiving: bool,\n}",
+          "new": "struct ConsumerJobState {\n    output: Option<Result<FinalUseAuthority, AgentdError>>,\n    joined: bool,\n    receiving: bool,\n    poisoned: bool,\n}",
+          "purpose": "nonClone result remains singly owned; actual handle moves to completion future",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "pub(crate) struct OriginalBootstrapConsumerJob {\n    state: tokio::sync::Mutex<ConsumerJobState>,\n    gate: Arc<SameActorPhaseGate>,\n}",
+          "new": "pub(crate) struct OriginalBootstrapConsumerJob {\n    state: Arc<Mutex<ConsumerJobState>>,\n    completion: Shared<BoxFuture<'static, ()>>,\n    gate: Arc<SameActorPhaseGate>,\n}",
+          "purpose": "registry holds original task join independently from any waiter",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "            let mut state = job.state.lock().await;\n            job.join_locked(&mut state).await;\n            if let Some(result) = state.output.take() {",
+          "new": "            job.completion.clone().await;\n            let (output, joined, poisoned) = {\n                let mut state = job.lock_original_bootstrap_result();\n                (state.output.take(), state.joined, state.poisoned)\n            };\n            if let Some(result) = output {",
+          "purpose": "cleanup awaits clone of the original registered completion without a state guard",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "                    Err(error) => super::save_original_failure(&mut failure, error),\n                }\n            }\n        }\n        failure.map_or(Ok(()), Err)",
+          "new": "                    Err(error) => super::save_original_failure(&mut failure, error),\n                }\n            }\n            if !joined || poisoned {\n                super::save_original_failure(\n                    &mut failure,\n                    refused(\"original bootstrap consumer terminal custody unavailable\"),\n                );\n            }\n        }\n        failure.map_or(Ok(()), Err)",
+          "purpose": "preserve actual original failure first; poisoned or absent terminal never becomes success",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "        let job = Arc::new(OriginalBootstrapConsumerJob {\n            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(handle),\n                output: None,\n                joined: false,\n                receiving: false,\n            }),\n            gate: Arc::clone(&self.gate),\n        });",
+          "new": "        let state = Arc::new(Mutex::new(ConsumerJobState {\n            output: None,\n            joined: false,\n            receiving: false,\n            poisoned: false,\n        }));\n        let recorded = Arc::clone(&state);\n        let gate = Arc::clone(&self.gate);\n        // Only this retained Shared future owns and awaits the actual handle.\n        // Its unit result is cloneable; the original authority/error is not.\n        let completion = async move {\n            let result = match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(AgentdError::Protocol(format!(\n                    \"original Root production inputs: {error}\"\n                ))),\n            };\n            let mut state = recorded.lock().unwrap_or_else(|error| {\n                gate.close();\n                let mut state = error.into_inner();\n                state.poisoned = true;\n                state\n            });\n            // No await separates the actual join and the unique result write.\n            state.output = Some(result);\n            state.joined = true;\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalBootstrapConsumerJob {\n            state,\n            completion,\n            gate: Arc::clone(&self.gate),\n        });",
+          "purpose": "synchronous one-handle registration with original Protocol JoinError mapping",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    async fn join_locked(&self, state: &mut ConsumerJobState) {\n        if state.joined {\n            return;\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(AgentdError::Protocol(format!(\n                    \"original Root production inputs: {error}\"\n                ))),\n            },\n            None => Err(refused(\"actual bootstrap consumer handle missing\")),\n        };\n        // Keep the real result in the retained slot, without an intervening\n        // await. No cancelled waiter removes or re-polls the original handle.\n        state.handle = None;\n        state.output = Some(result);\n        state.joined = true;\n    }\n",
+          "new": "    fn lock_original_bootstrap_result(&self) -> MutexGuard<'_, ConsumerJobState> {\n        self.state.lock().unwrap_or_else(|error| {\n            self.gate.close();\n            let mut state = error.into_inner();\n            state.poisoned = true;\n            state\n        })\n    }\n",
+          "purpose": "short synchronous result-cell lock never held across await",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "            let mut state = job.state.lock().await;\n            if state.receiving {\n                return Err(refused(\n                    \"original bootstrap consumer result was already received\",\n                ));\n            }\n            state.receiving = true;\n            job.join_locked(&mut state).await;\n            let output = state\n                .output\n                .take()\n                .ok_or_else(|| refused(\"original bootstrap consumer output missing\"))?;",
+          "new": "            {\n                let mut state = job.lock_original_bootstrap_result();\n                if state.receiving {\n                    return Err(refused(\n                        \"original bootstrap consumer result was already received\",\n                    ));\n                }\n                state.receiving = true;\n            }\n            job.completion.clone().await;\n            let output = {\n                let mut state = job.lock_original_bootstrap_result();\n                if !state.joined {\n                    return Err(refused(\"actual bootstrap consumer join missing\"));\n                }\n                state\n                    .output\n                    .take()\n                    .ok_or_else(|| refused(\"original bootstrap consumer output missing\"))?\n            };",
+          "purpose": "claim once before await, retain same result through cancellation, take after actual join",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "38fd9c7a6cae56f2ded84ea58713a16c25f232f6",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "pre": {
+        "blob": "c5e80dc4350d986167bd5727dc48e57522e7fdcc",
+        "bytes": 5010,
+        "sha256": "2c7ccba9a6238369eb4d790a5acb3b6375a464b378de51a043fd6428efe9b87f"
+      },
+      "post": {
+        "blob": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+        "bytes": 7525,
+        "sha256": "ac10fa1daf66acdb8b2cd63f504697e842d8a297b3715a4e278352e67135477f"
+      },
+      "operations": [
+        {
+          "old": "    let state = job.state.lock().await;\n    assert!(state.joined && state.handle.is_none() && state.output.is_none());",
+          "new": "    let state = job.state.lock().unwrap();\n    assert!(state.joined && job.completion.peek().is_some() && state.output.is_none());",
+          "purpose": "actual Shared terminal replaces removed optional handle field; keep joined and released-output assertions",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    let state = job.state.lock().await;\n    assert!(state.joined && state.handle.is_none());",
+          "new": "    let state = job.state.lock().unwrap();\n    assert!(state.joined && job.completion.peek().is_some());",
+          "purpose": "same actual join observation after permanent admission refusal",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    assert!(first.state.lock().await.joined);\n    assert!(second.state.lock().await.joined);",
+          "new": "    assert!(first.state.lock().unwrap().joined);\n    assert!(first.completion.peek().is_some());\n    assert!(second.state.lock().unwrap().joined);\n    assert!(second.completion.peek().is_some());",
+          "purpose": "keep both real joins and additionally require both retained Shared completions",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "    assert!(second.completion.peek().is_some());\n}\n",
+          "new": "    assert!(second.completion.peek().is_some());\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn cancelled_cleanup_retains_one_original_consumer_and_its_error() {\n    let gate = gate();\n    let registry = Arc::new(OriginalBootstrapConsumers::new());\n    let (owner, mut peer) = UnixStream::pair().unwrap();\n    peer.set_nonblocking(true).unwrap();\n    let (entered, started) = mpsc::sync_channel(1);\n    let (release, released) = mpsc::sync_channel(1);\n    let executions = Arc::new(std::sync::atomic::AtomicUsize::new(0));\n    let calls = Arc::clone(&executions);\n    let admission = registry\n        .reserve(OriginalBootstrapConsumerKind::Device, &gate)\n        .unwrap();\n    let worker = tokio::task::spawn_blocking(move || {\n        let _owner = owner;\n        calls.fetch_add(1, std::sync::atomic::Ordering::AcqRel);\n        entered.send(()).unwrap();\n        let _ = released.recv();\n        Err(AgentdError::GenerationFenced(\n            \"same original consumer error after waiter cancellation\".into(),\n        ))\n    });\n    let job = admission.retain_original_bootstrap_consumer_handle(worker);\n    drop(job);\n    started.recv_timeout(Duration::from_secs(2)).unwrap();\n\n    let first_registry = Arc::clone(&registry);\n    let first = tokio::spawn(async move { first_registry.join_and_release().await });\n    tokio::time::timeout(Duration::from_secs(2), gate.cancelled())\n        .await\n        .unwrap();\n    first.abort();\n    assert!(first.await.unwrap_err().is_cancelled());\n\n    let mut byte = [0];\n    assert!(\n        matches!(peer.read(&mut byte), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)\n    );\n    assert!(executions.load(std::sync::atomic::Ordering::Acquire) == 1);\n\n    let second_registry = Arc::clone(&registry);\n    let mut second = tokio::spawn(async move { second_registry.join_and_release().await });\n    assert!(\n        tokio::time::timeout(Duration::from_millis(20), &mut second)\n            .await\n            .is_err()\n    );\n    release.send(()).unwrap();\n    let result = tokio::time::timeout(Duration::from_secs(2), second)\n        .await\n        .unwrap()\n        .unwrap();\n    assert!(matches!(result, Err(AgentdError::GenerationFenced(message))\n        if message == \"same original consumer error after waiter cancellation\"));\n    assert!(executions.load(std::sync::atomic::Ordering::Acquire) == 1);\n    assert!(matches!(peer.read(&mut byte), Ok(0)));\n}\n",
+          "purpose": "add a real blocking/FD test for cancellation and resumption of cleanup",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "aa75dbfe13859ab649995256bfa021824300aaee",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "pre": {
+        "blob": "dce43c7f844f45036a7b58b307de500029f1f001",
+        "bytes": 504602,
+        "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+      },
+      "post": {
+        "blob": "d6aae04306df38911602868cbed7536114307a90",
+        "bytes": 504898,
+        "sha256": "c94e11c545e0dd82afa7689da2ec7af5e3ec661e825d748f3733f2ecb0b69005"
+      },
+      "operations": [
+        {
+          "old": "fn submit_with_trace_captures_current_span_trace_context() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(1);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let io = SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: completed_session_loop_termination(),\n    }",
+          "new": "fn submit_with_trace_captures_current_span_trace_context() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(1);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let io = SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: completed_session_loop_termination(),\n        original_loop_outcome: None,\n    }",
+          "purpose": "submit_with_trace_captures_current_span_trace_context",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn shutdown_and_wait_allows_multiple_waiters() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let session_loop_handle = tokio::spawn(async move {\n        let shutdown = rx_sub.recv().await.expect(\"shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        tokio::time::sleep(StdDuration::from_millis(50)).await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n    }",
+          "new": "fn shutdown_and_wait_allows_multiple_waiters() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let session_loop_handle = tokio::spawn(async move {\n        let shutdown = rx_sub.recv().await.expect(\"shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        tokio::time::sleep(StdDuration::from_millis(50)).await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "shutdown_and_wait_allows_multiple_waiters",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(4);\n    drop(rx_sub);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let (shutdown_complete_tx, shutdown_complete_rx) = tokio::sync::oneshot::channel();\n    let session_loop_handle = tokio::spawn(async move {\n        let _ = shutdown_complete_rx.await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n    }",
+          "new": "fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(4);\n    drop(rx_sub);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let (shutdown_complete_tx, shutdown_complete_rx) = tokio::sync::oneshot::channel();\n    let session_loop_handle = tokio::spawn(async move {\n        let _ = shutdown_complete_rx.await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "shutdown_and_wait_waits_when_shutdown_is_already_in_progress",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n    }",
+          "new": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "shutdown_and_wait_shuts_down_cached_guardian_subagent",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n    }",
+          "new": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "shutdown_and_wait_shuts_down_cached_guardian_subagent",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn cached_guardian_subagent_exposes_its_rollout_path() {\n    let (parent_session, _parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n\n    let (mut child_session, _child_turn_context) = make_session_and_context().await;\n    let child_rollout_path = attach_thread_persistence(&mut child_session).await;\n    let (child_tx_sub, _child_rx_sub) = async_channel::bounded(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let child_session_loop_handle = tokio::spawn(async {});\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n    }",
+          "new": "fn cached_guardian_subagent_exposes_its_rollout_path() {\n    let (parent_session, _parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n\n    let (mut child_session, _child_turn_context) = make_session_and_context().await;\n    let child_rollout_path = attach_thread_persistence(&mut child_session).await;\n    let (child_tx_sub, _child_rx_sub) = async_channel::bounded(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let child_session_loop_handle = tokio::spawn(async {});\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "cached_guardian_subagent_exposes_its_rollout_path",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n    }",
+          "new": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review",
+          "kind": "replace_exact"
+        },
+        {
+          "old": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n    }",
+          "new": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+          "purpose": "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "packet": "f9ed77785bf5fd60e75709bc6399bb09b257755f",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "pre": {
+        "blob": "08a93401d52f34b860c4c302969f5d7c10ff5a99",
+        "bytes": 11733,
+        "sha256": "8c1ea2c0e0adc5f3e2d185aab2a50c507df0202bb3764ee24e2ac804cf3552cd"
+      },
+      "post": {
+        "blob": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+        "bytes": 11743,
+        "sha256": "eddb752181ce2da46d79fd444562cb312735654630c651daaa30a16c003a2f53"
+      },
+      "operations": [
+        {
+          "old": "AgentId::parse(\"blocking-custody-component\")",
+          "new": "AgentId::parse(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\")",
+          "purpose": "",
+          "kind": "replace_exact"
+        }
+      ],
+      "pre_get_post_get": true,
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    }
+  ],
+  "final_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "blob": "5bfff889730384ea518405efc8b12e1f21f37e53",
+      "bytes": 24563,
+      "sha256": "d1b70df316018425de40d15f87f4601a2f2eb2eeee5bc2b5d1375e85edf9088e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+      "bytes": 13503,
+      "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "blob": "1fcfdf460a80f83447eb954b187144968211549f",
+      "bytes": 19842,
+      "sha256": "671ee6efb7390c5525bee4474e550046b52d2633034c788504b9f858157d414f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+      "bytes": 12698,
+      "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "05d301aab3c2bf2b515fe1c81ec163d6a481c935",
+      "bytes": 4956,
+      "sha256": "819959238bd9a53d7b1ed7b5c002ad3df8c9b5761bae77ca71498ec0fd9a23af"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "blob": "04cf97ad543fe1560943b55bd629a238de993911",
+      "bytes": 421017,
+      "sha256": "e69cea88df8b04aff1d19658473a645626615007c498f61e45e081c7714a4a2c"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "blob": "6ebd03a7def0a95ef22e52152633eecaec9f8da3",
+      "bytes": 13188,
+      "sha256": "5b3aca11d63086a0d9ecf80ea383a749c07dfabb91f71e1baf9a8eaf579345b7"
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "blob": "f816d6cbb940a0781253278445b606251706fabc",
+      "bytes": 19810,
+      "sha256": "af7257555f68f85af4a215d119c5afc0e348781066220e3f4a94459dbdc24f71"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "blob": "2c5867859e5692a253992d5045f1606e940f8420",
+      "bytes": 6472,
+      "sha256": "3ad7e7a9906b4600cdc7fc120e32fea0a91a29b114dac08e1c3f60a060d29150"
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "blob": "19950711aaa74c9d57fe821b54df998740fb8350",
+      "bytes": 11486,
+      "sha256": "70fe7a425e4db41c6307a58acacaf0ef4d3f32e99d5a7c44acbdc53c5adb198d"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "blob": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+      "bytes": 13877,
+      "sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "blob": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+      "bytes": 14012,
+      "sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "blob": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+      "bytes": 26249,
+      "sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "blob": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+      "bytes": 11303,
+      "sha256": "9c3334f5bbe08156736c3dcacf58cdad79f23062076b1e15774968cf5694a10a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "blob": "c4bbf6c7a0b22c1a2df89c9921a1e6ebcaa1c029",
+      "bytes": 23886,
+      "sha256": "f8c33abea179cea3c414ab23f9e352ef1ad22a69fc147d639a9a46c35b1f52f8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "blob": "a2488297954907d01cc1b10b921b295d3aa9e631",
+      "bytes": 7788,
+      "sha256": "9449167c92b3b0e6787ea73048ca0384c8aa9c7f46acca1509d3ecff17f8aad1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs",
+      "blob": "8844102c2aff30fd80f844e8dbf685e41d9c37fc",
+      "bytes": 7525,
+      "sha256": "ac10fa1daf66acdb8b2cd63f504697e842d8a297b3715a4e278352e67135477f"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "blob": "d6aae04306df38911602868cbed7536114307a90",
+      "bytes": 504898,
+      "sha256": "c94e11c545e0dd82afa7689da2ec7af5e3ec661e825d748f3733f2ecb0b69005"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "blob": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+      "bytes": 11743,
+      "sha256": "eddb752181ce2da46d79fd444562cb312735654630c651daaa30a16c003a2f53"
+    }
+  ],
+  "remaining": "The narrowly requested ready-before-record concurrent cancellation component proposal is still pending. All source/test/metadata/native conclusions remain unqualified until actual execution.",
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

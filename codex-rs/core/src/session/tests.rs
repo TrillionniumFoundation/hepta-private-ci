@@ -7898,6 +7898,7 @@ async fn submit_with_trace_captures_current_span_trace_context() {
         rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: completed_session_loop_termination(),
+        original_loop_outcome: None,
     };
 
     let _trace_test_context = install_test_tracing("codex-core-tests");
@@ -8645,6 +8646,7 @@ async fn shutdown_and_wait_allows_multiple_waiters() {
         rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(session_loop_handle),
+        original_loop_outcome: None,
     });
 
     let waiter_1 = {
@@ -8681,6 +8683,7 @@ async fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {
         rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(session_loop_handle),
+        original_loop_outcome: None,
     });
 
     let waiter = {
@@ -8717,6 +8720,7 @@ async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {
         rx_event: parent_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),
+        original_loop_outcome: None,
     };
 
     let (child_session, _child_turn_context) = make_session_and_context().await;
@@ -8739,6 +8743,7 @@ async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {
         rx_event: child_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),
+        original_loop_outcome: None,
     };
     parent_session
         .guardian_review_session
@@ -8771,6 +8776,7 @@ async fn cached_guardian_subagent_exposes_its_rollout_path() {
         rx_event: child_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),
+        original_loop_outcome: None,
     };
     parent_session
         .guardian_review_session
@@ -8802,6 +8808,7 @@ async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {
         rx_event: parent_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),
+        original_loop_outcome: None,
     };
 
     let (child_session, _child_turn_context) = make_session_and_context().await;
@@ -8824,6 +8831,7 @@ async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {
         rx_event: child_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
         session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),
+        original_loop_outcome: None,
     };
     parent_session
         .guardian_review_session

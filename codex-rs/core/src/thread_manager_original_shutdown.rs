@@ -12,7 +12,10 @@ use crate::session::SessionSpawnArgs;
 use crate::session::session::Session;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::Result as CodexResult;
+use futures::FutureExt;
 use futures::StreamExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use futures::stream::FuturesUnordered;
 use std::fmt;
 use std::sync::Arc;
@@ -45,12 +48,7 @@ pub(super) struct OriginalThreadStartupAdmission<'a> {
 }
 
 struct OriginalThreadStartupJob {
-    state: tokio::sync::Mutex<OriginalThreadStartupState>,
-}
-
-struct OriginalThreadStartupState {
-    handle: Option<JoinHandle<()>>,
-    result: Option<Result<(), Arc<OriginalCoreTaskFailure>>>,
+    completion: Shared<BoxFuture<'static, Result<(), Arc<OriginalCoreTaskFailure>>>>,
 }
 
 struct OriginalThreadShutdownPlan {
@@ -225,12 +223,18 @@ impl OriginalThreadShutdownCustody {
 
 impl OriginalThreadStartupAdmission<'_> {
     pub(super) fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {
-        self.state.startups.push(Arc::new(OriginalThreadStartupJob {
-            state: tokio::sync::Mutex::new(OriginalThreadStartupState {
-                handle: Some(handle),
-                result: None,
-            }),
-        }));
+        // This one future owns the actual handle. Registry custody retains a
+        // Shared clone even when every currently polling waiter is cancelled.
+        let completion = async move {
+            handle
+                .await
+                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error))))
+        }
+        .boxed()
+        .shared();
+        self.state
+            .startups
+            .push(Arc::new(OriginalThreadStartupJob { completion }));
         self.armed = false;
     }
 }
@@ -246,21 +250,9 @@ impl Drop for OriginalThreadStartupAdmission<'_> {
 
 impl OriginalThreadStartupJob {
     async fn join_original_startup(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {
-        let mut state = self.state.lock().await;
-        if let Some(result) = &state.result {
-            return result.clone();
-        }
-        let result = match state.handle.as_mut() {
-            Some(handle) => handle
-                .await
-                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error)))),
-            None => Err(Arc::new(OriginalCoreTaskFailure::State(
-                "actual original Core startup handle is unavailable",
-            ))),
-        };
-        state.handle = None;
-        state.result = Some(result.clone());
-        result
+        // Shared records the original result once and coordinates concurrent
+        // waiters without keeping a state guard across the actual join.
+        self.completion.clone().await
     }
 }
 

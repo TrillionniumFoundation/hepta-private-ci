@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "kind": "root_existing_workspace_futures_dependency_edge",
+  "status": "SOURCE_PROPOSAL_NOT_COMPILED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "input_head": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "pre": {
+        "blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+        "bytes": 4905,
+        "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417"
+      },
+      "post": {
+        "blob": "05d301aab3c2bf2b515fe1c81ec163d6a481c935",
+        "bytes": 4956,
+        "sha256": "819959238bd9a53d7b1ed7b5c002ad3df8c9b5761bae77ca71498ec0fd9a23af"
+      },
+      "operations": [
+        {
+          "old": "ed25519-dalek = { workspace = true }\nhttp = { workspace = true }",
+          "new": "ed25519-dalek = { workspace = true }\nfutures = { workspace = true, features = [\"std\"] }\nhttp = { workspace = true }",
+          "expected_occurrences": 1
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "pre": {
+        "blob": "025813e20504f31d12dae2092a0807a1a4066419",
+        "bytes": 421005,
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      "post": {
+        "blob": "04cf97ad543fe1560943b55bd629a238de993911",
+        "bytes": 421017,
+        "sha256": "e69cea88df8b04aff1d19658473a645626615007c498f61e45e081c7714a4a2c"
+      },
+      "operations": [
+        {
+          "old": "[[package]]\nname = \"codex-hepta-agentd\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"app_test_support\",\n \"base64 0.22.1\",\n \"codex-app-server\",\n \"codex-app-server-client\",\n \"codex-app-server-protocol\",\n \"codex-arg0\",\n \"codex-config\",\n \"codex-features\",\n \"codex-hepta-agent-protocol\",\n \"codex-hepta-authbus\",\n \"codex-hepta-automation\",\n \"codex-hepta-bellman-operator\",\n \"codex-hepta-codex-adapter\",\n \"codex-hepta-cognitive-read\",\n \"codex-hepta-cognitive-store\",\n \"codex-hepta-cognitive-types\",\n \"codex-hepta-context-compiler\",\n \"codex-hepta-contracts\",\n \"codex-hepta-control-plane\",\n \"codex-hepta-evidence\",\n \"codex-hepta-fleet\",\n \"codex-hepta-infer-core\",\n \"codex-hepta-infer-worker-host\",\n \"codex-hepta-intelligence\",\n \"codex-hepta-intelligence-eval\",\n \"codex-hepta-intuition\",\n \"codex-hepta-learning-artifacts\",\n \"codex-hepta-learning-ledger\",\n \"codex-hepta-memory\",\n \"codex-hepta-memory-extension\",\n \"codex-hepta-memory-retrieval\",\n \"codex-hepta-ndu\",\n \"codex-hepta-neuron\",\n \"codex-hepta-objective\",\n \"codex-hepta-operations\",\n \"codex-hepta-paths\",\n \"codex-hepta-plasticity\",\n \"codex-hepta-prompt-optimizer\",\n \"codex-hepta-prompt-registry\",\n \"codex-hepta-supervisor\",\n \"codex-hepta-types\",\n \"codex-history\",\n \"codex-mcp\",\n \"codex-model-provider\",\n \"codex-protocol\",\n \"codex-rmcp-client\",\n \"codex-state\",\n \"codex-uds\",\n \"codex-utils-absolute-path\",\n \"codex-utils-cargo-bin\",\n \"codex-utils-cli\",\n \"codex-utils-home-dir\",\n \"codex-utils-path\",\n \"core_test_support\",\n \"ed25519-dalek 2.2.0\",\n \"http 1.5.0\",\n \"libc\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"sqlx\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-util\",\n \"wiremock\",\n]\n\n",
+          "new": "[[package]]\nname = \"codex-hepta-agentd\"\nversion = \"0.0.0\"\ndependencies = [\n \"anyhow\",\n \"app_test_support\",\n \"base64 0.22.1\",\n \"codex-app-server\",\n \"codex-app-server-client\",\n \"codex-app-server-protocol\",\n \"codex-arg0\",\n \"codex-config\",\n \"codex-features\",\n \"codex-hepta-agent-protocol\",\n \"codex-hepta-authbus\",\n \"codex-hepta-automation\",\n \"codex-hepta-bellman-operator\",\n \"codex-hepta-codex-adapter\",\n \"codex-hepta-cognitive-read\",\n \"codex-hepta-cognitive-store\",\n \"codex-hepta-cognitive-types\",\n \"codex-hepta-context-compiler\",\n \"codex-hepta-contracts\",\n \"codex-hepta-control-plane\",\n \"codex-hepta-evidence\",\n \"codex-hepta-fleet\",\n \"codex-hepta-infer-core\",\n \"codex-hepta-infer-worker-host\",\n \"codex-hepta-intelligence\",\n \"codex-hepta-intelligence-eval\",\n \"codex-hepta-intuition\",\n \"codex-hepta-learning-artifacts\",\n \"codex-hepta-learning-ledger\",\n \"codex-hepta-memory\",\n \"codex-hepta-memory-extension\",\n \"codex-hepta-memory-retrieval\",\n \"codex-hepta-ndu\",\n \"codex-hepta-neuron\",\n \"codex-hepta-objective\",\n \"codex-hepta-operations\",\n \"codex-hepta-paths\",\n \"codex-hepta-plasticity\",\n \"codex-hepta-prompt-optimizer\",\n \"codex-hepta-prompt-registry\",\n \"codex-hepta-supervisor\",\n \"codex-hepta-types\",\n \"codex-history\",\n \"codex-mcp\",\n \"codex-model-provider\",\n \"codex-protocol\",\n \"codex-rmcp-client\",\n \"codex-state\",\n \"codex-uds\",\n \"codex-utils-absolute-path\",\n \"codex-utils-cargo-bin\",\n \"codex-utils-cli\",\n \"codex-utils-home-dir\",\n \"codex-utils-path\",\n \"core_test_support\",\n \"ed25519-dalek 2.2.0\",\n \"futures\",\n \"http 1.5.0\",\n \"libc\",\n \"pretty_assertions\",\n \"serde\",\n \"serde_json\",\n \"sha2 0.10.9\",\n \"sqlx\",\n \"tempfile\",\n \"thiserror 2.0.21\",\n \"tokio\",\n \"tokio-util\",\n \"wiremock\",\n]\n\n",
+          "expected_occurrences": 1
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    }
+  ],
+  "workspace": {
+    "blob": "79862bd7edcd982bedb55897a6246b926fa54959",
+    "required_declaration": "futures = { version = \"0.3\", default-features = false }"
+  },
+  "existing_futures_lock_block": "[[package]]\nname = \"futures\"\nversion = \"0.3.34\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9a31d2a3fbaaeb2af2368bbdd904aa8e812d3c04a1ee10d3171f52d556e5d0a3\"\ndependencies = [\n \"futures-channel\",\n \"futures-core\",\n \"futures-executor\",\n \"futures-io\",\n \"futures-sink\",\n \"futures-task\",\n \"futures-util\",\n]\n",
+  "scope": {
+    "cargo_dependency_added": "futures with explicit std",
+    "lock_change": "Only the existing codex-hepta-agentd package dependency list adds the already locked futures package.",
+    "new_packages": 0,
+    "removed_packages": 0,
+    "version_changes": 0,
+    "checksum_changes": 0,
+    "new_registry_or_network_access": false,
+    "installation_or_environment_repair": false
+  },
+  "reason": "Actual nineteen-site lint repair uses retained Shared futures. Agentd did not have a direct futures dependency; transitive dependency is insufficient. The explicit std feature supplies the Shared/BoxFuture APIs through the existing workspace dependency and existing locked packages.",
+  "verification": {
+    "exact_pre_post_git_sha256_length": true,
+    "unique_forward_reverse": true,
+    "compile_or_locked_validation": false
+  },
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

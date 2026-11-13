@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v9_core_app_shared_original_join_custody_fix",
+  "status": "frozen_source_proposal_not_compiled_or_tested",
+  "source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+  "actual_warning_inventory": "f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda",
+  "actual_v9_log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+  "lint_source": "f16a05180ad8d17b97f449f0a9d204071f951bfe",
+  "existing_template": "0da95a220ed5484f419f5feb814c921c395db5ba",
+  "dependencies": [
+    {
+      "crate": "codex-core",
+      "cargo": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "existing": "futures = { workspace = true }"
+    },
+    {
+      "crate": "codex-app-server",
+      "cargo": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+      "existing": "futures = { workspace = true }"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "pre": "5d54000ec5d0d66b0eb43c4da18528361307dd59",
+      "post": "6ebd03a7def0a95ef22e52152633eecaec9f8da3",
+      "bytes": 13188,
+      "sha256": "5b3aca11d63086a0d9ecf80ea383a749c07dfabb91f71e1baf9a8eaf579345b7",
+      "ops": [
+        {
+          "old": "use futures::StreamExt;\n",
+          "new": "use futures::FutureExt;\nuse futures::StreamExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n"
+        },
+        {
+          "old": "struct OriginalThreadStartupJob {\n    state: tokio::sync::Mutex<OriginalThreadStartupState>,\n}\n\nstruct OriginalThreadStartupState {\n    handle: Option<JoinHandle<()>>,\n    result: Option<Result<(), Arc<OriginalCoreTaskFailure>>>,\n}",
+          "new": "struct OriginalThreadStartupJob {\n    completion: Shared<BoxFuture<'static, Result<(), Arc<OriginalCoreTaskFailure>>>>,\n}"
+        },
+        {
+          "old": "fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {\n        self.state.startups.push(Arc::new(OriginalThreadStartupJob {\n            state: tokio::sync::Mutex::new(OriginalThreadStartupState {\n                handle: Some(handle),\n                result: None,\n            }),\n        }));\n        self.armed = false;\n    }",
+          "new": "fn retain_original_thread_startup_handle(mut self, handle: JoinHandle<()>) {\n        // This one future owns the actual handle. Registry custody retains a\n        // Shared clone even when every currently polling waiter is cancelled.\n        let completion = async move {\n            handle\n                .await\n                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error))))\n        }\n        .boxed()\n        .shared();\n        self.state\n            .startups\n            .push(Arc::new(OriginalThreadStartupJob { completion }));\n        self.armed = false;\n    }"
+        },
+        {
+          "old": "fn join_original_startup(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {\n        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result {\n            return result.clone();\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => handle\n                .await\n                .map_err(|error| Arc::new(OriginalCoreTaskFailure::Join(Arc::new(error)))),\n            None => Err(Arc::new(OriginalCoreTaskFailure::State(\n                \"actual original Core startup handle is unavailable\",\n            ))),\n        };\n        state.handle = None;\n        state.result = Some(result.clone());\n        result\n    }",
+          "new": "fn join_original_startup(&self) -> Result<(), Arc<OriginalCoreTaskFailure>> {\n        // Shared records the original result once and coordinates concurrent\n        // waiters without keeping a state guard across the actual join.\n        self.completion.clone().await\n    }"
+        }
+      ],
+      "create_get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "pre": "8769b6ff6912729589bb86f835621387ff7fddf2",
+      "post": "f816d6cbb940a0781253278445b606251706fabc",
+      "bytes": 19810,
+      "sha256": "af7257555f68f85af4a215d119c5afc0e348781066220e3f4a94459dbdc24f71",
+      "ops": [
+        {
+          "old": "use std::error::Error;\n",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse std::error::Error;\n"
+        },
+        {
+          "old": "use tokio::sync::Mutex as AsyncMutex;\nuse tokio::task::JoinHandle;",
+          "new": "use tokio::task::JoinHandle;"
+        },
+        {
+          "old": "enum ActualAppServerHandle {\n    Unit(JoinHandle<()>),\n    Result(JoinHandle<io::Result<()>>),\n}\n\npub(crate) struct OriginalAppServerJob {\n    handle: AsyncMutex<Option<ActualAppServerHandle>>,\n    terminal: OnceLock<Result<(), OriginalAppServerFailure>>,\n}",
+          "new": "pub(crate) struct OriginalAppServerJob {\n    completion: Shared<BoxFuture<'static, Result<(), OriginalAppServerFailure>>>,\n    terminal: OnceLock<Result<(), OriginalAppServerFailure>>,\n}"
+        },
+        {
+          "old": "fn unit(handle: JoinHandle<()>) -> Arc<Self> {\n        Arc::new(Self {\n            handle: AsyncMutex::new(Some(ActualAppServerHandle::Unit(handle))),\n            terminal: OnceLock::new(),\n        })\n    }",
+          "new": "fn unit(handle: JoinHandle<()>) -> Arc<Self> {\n        let completion = async move {\n            handle\n                .await\n                .map_err(OriginalAppServerFailure::from_join)\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {\n            completion,\n            terminal: OnceLock::new(),\n        })\n    }"
+        },
+        {
+          "old": "fn result(handle: JoinHandle<io::Result<()>>) -> Arc<Self> {\n        Arc::new(Self {\n            handle: AsyncMutex::new(Some(ActualAppServerHandle::Result(handle))),\n            terminal: OnceLock::new(),\n        })\n    }",
+          "new": "fn result(handle: JoinHandle<io::Result<()>>) -> Arc<Self> {\n        let completion = async move {\n            match handle.await {\n                Ok(result) => result.map_err(OriginalAppServerFailure::from_io),\n                Err(error) => Err(OriginalAppServerFailure::from_join(error)),\n            }\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {\n            completion,\n            terminal: OnceLock::new(),\n        })\n    }"
+        },
+        {
+          "old": "fn join_original(&self) -> Result<(), OriginalAppServerFailure> {\n        let mut slot = self.handle.lock().await;\n        if let Some(result) = self.terminal.get() {\n            return result.clone();\n        }\n        // The waiter borrows the SAME handle. Cancellation leaves it in this\n        // actual shared slot; terminal result and removal are one locked step.\n        let result = match slot.as_mut() {\n            Some(ActualAppServerHandle::Unit(handle)) => {\n                handle.await.map_err(OriginalAppServerFailure::from_join)\n            }\n            Some(ActualAppServerHandle::Result(handle)) => match handle.await {\n                Ok(result) => result.map_err(OriginalAppServerFailure::from_io),\n                Err(error) => Err(OriginalAppServerFailure::from_join(error)),\n            },\n            None => Err(OriginalAppServerFailure::from_io(io::Error::other(\n                \"original App Server task lost its handle before observation\",\n            ))),\n        };\n        *slot = None;\n        let _ = self.terminal.set(result.clone());\n        result\n    }",
+          "new": "fn join_original(&self) -> Result<(), OriginalAppServerFailure> {\n        // The registry retains the one actual join future. Cancellation drops\n        // only this waiter; Shared coordinates concurrent observers and caches\n        // the same Arc-backed original error after the handle has completed.\n        let result = self.completion.clone().await;\n        let _ = self.terminal.set(result.clone());\n        result\n    }"
+        }
+      ],
+      "create_get_verified": true
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "pre": "0c9e0370d897118ebcf59c8422c329cb2d8e48ba",
+      "post": "2c5867859e5692a253992d5045f1606e940f8420",
+      "bytes": 6472,
+      "sha256": "3ad7e7a9906b4600cdc7fc120e32fea0a91a29b114dac08e1c3f60a060d29150",
+      "ops": [
+        {
+          "old": "fn an_admission_dropped_before_retaining_its_handle_permanently_refuses_start() {\n    let original = enabled();\n    drop(original.reserve_original_startup().unwrap().unwrap());\n    assert!(original.reserve_original_startup().is_err());\n    let errors = original\n        .join_original_sealed(original.seal_original_startups().unwrap())\n        .await;\n    assert_eq!(errors.len(), 1);\n    assert!(matches!(\n        errors[0].as_ref(),\n        OriginalCoreTaskFailure::State(_)\n    ));\n}\n",
+          "new": "fn an_admission_dropped_before_retaining_its_handle_permanently_refuses_start() {\n    let original = enabled();\n    drop(original.reserve_original_startup().unwrap().unwrap());\n    assert!(original.reserve_original_startup().is_err());\n    let errors = original\n        .join_original_sealed(original.seal_original_startups().unwrap())\n        .await;\n    assert_eq!(errors.len(), 1);\n    assert!(matches!(\n        errors[0].as_ref(),\n        OriginalCoreTaskFailure::State(_)\n    ));\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn concurrent_startup_waiters_keep_the_original_panic_after_one_is_cancelled() {\n    let original = enabled();\n    let (release, released) = tokio::sync::oneshot::channel();\n    {\n        let admission = original.reserve_original_startup().unwrap().unwrap();\n        let worker = tokio::spawn(async move {\n            released.await.unwrap();\n            panic!(\"actual shared startup panic\");\n        });\n        admission.retain_original_thread_startup_handle(worker);\n    }\n    let plan = original.seal_original_startups().unwrap();\n    let job = Arc::clone(&plan.startups[0]);\n    let mut cancelled = Box::pin(job.join_original_startup());\n    let mut surviving = Box::pin(job.join_original_startup());\n    tokio::select! {\n        biased;\n        result = &mut cancelled => panic!(\"actual startup is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    tokio::select! {\n        biased;\n        result = &mut surviving => panic!(\"same actual startup is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    drop(cancelled);\n    release.send(()).unwrap();\n    let first = tokio::time::timeout(Duration::from_secs(2), surviving)\n        .await\n        .unwrap()\n        .unwrap_err();\n    assert!(matches!(\n        first.as_ref(),\n        OriginalCoreTaskFailure::Join(error) if error.is_panic()\n    ));\n    let again = job.join_original_startup().await.unwrap_err();\n    assert!(Arc::ptr_eq(&first, &again));\n}\n"
+        }
+      ],
+      "test_only": true,
+      "create_get_verified": true
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "pre": "c8e64b92a7dfec68ae08c1809a3204c9d1b41870",
+      "post": "19950711aaa74c9d57fe821b54df998740fb8350",
+      "bytes": 11486,
+      "sha256": "70fe7a425e4db41c6307a58acacaf0ef4d3f32e99d5a7c44acbdc53c5adb198d",
+      "ops": [
+        {
+          "old": "fn cancelled_job_waiter_retains_actual_task_and_fd_until_join() {\n    use tokio::io::AsyncReadExt;\n\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let job = OriginalAppServerJob::unit(tokio::spawn(async move {\n        entered_tx.send(()).expect(\"entered receiver\");\n        release_rx.await.expect(\"release actual task\");\n        drop(owned);\n    }));\n    let mut waiting = Box::pin(OriginalAppServerJob::join_original(&job));\n    tokio::select! {\n        biased;\n        result = &mut waiting => panic!(\"blocked actual task was reported joined: {result:?}\"),\n        result = entered_rx => result.expect(\"actual task started\"),\n    }\n    drop(waiting);\n    assert!(job.terminal.get().is_none());\n    assert!(job.handle.lock().await.is_some());\n    release_tx\n        .send(())\n        .expect(\"same actual task still retained\");\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"actual task joined\");\n    let mut byte = [0_u8; 1];\n    assert_eq!(peer.read(&mut byte).await.expect(\"actual EOF\"), 0);\n    // The recorded terminal result is observed again without polling a completed handle.\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"same terminal observation\");\n    assert!(job.handle.lock().await.is_none());\n}",
+          "new": "fn cancelled_job_waiter_retains_actual_task_and_fd_until_join() {\n    use tokio::io::AsyncReadExt;\n\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let job = OriginalAppServerJob::unit(tokio::spawn(async move {\n        entered_tx.send(()).expect(\"entered receiver\");\n        release_rx.await.expect(\"release actual task\");\n        drop(owned);\n    }));\n    let mut waiting = Box::pin(OriginalAppServerJob::join_original(&job));\n    tokio::select! {\n        biased;\n        result = &mut waiting => panic!(\"blocked actual task was reported joined: {result:?}\"),\n        result = entered_rx => result.expect(\"actual task started\"),\n    }\n    drop(waiting);\n    assert!(job.terminal.get().is_none());\n    assert!(job.completion.peek().is_none());\n    release_tx\n        .send(())\n        .expect(\"same actual task still retained\");\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"actual task joined\");\n    let mut byte = [0_u8; 1];\n    assert_eq!(peer.read(&mut byte).await.expect(\"actual EOF\"), 0);\n    // The recorded terminal result is observed again without polling a completed handle.\n    OriginalAppServerJob::join_original(&job)\n        .await\n        .expect(\"same terminal observation\");\n    assert!(job.completion.peek().is_some());\n}"
+        },
+        {
+          "old": "fn real_task_panic_keeps_the_original_join_error_after_reobservation() {\n    let job = OriginalAppServerJob::unit(tokio::spawn(async {\n        panic!(\"actual original App Server component panic\");\n    }));\n    let first = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"real panic\");\n    let second = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"recorded panic\");\n    assert!(\n        first\n            .error\n            .as_ref()\n            .downcast_ref::<tokio::task::JoinError>()\n            .expect(\"original JoinError source\")\n            .is_panic()\n    );\n    assert!(Arc::ptr_eq(&first.error, &second.error));\n    assert!(job.handle.lock().await.is_none());\n}",
+          "new": "fn real_task_panic_keeps_the_original_join_error_after_reobservation() {\n    let job = OriginalAppServerJob::unit(tokio::spawn(async {\n        panic!(\"actual original App Server component panic\");\n    }));\n    let first = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"real panic\");\n    let second = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"recorded panic\");\n    assert!(\n        first\n            .error\n            .as_ref()\n            .downcast_ref::<tokio::task::JoinError>()\n            .expect(\"original JoinError source\")\n            .is_panic()\n    );\n    assert!(Arc::ptr_eq(&first.error, &second.error));\n    assert!(job.completion.peek().is_some());\n}"
+        },
+        {
+          "old": "fn cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it() {\n    use tokio::io::AsyncReadExt;\n\n    let original = OriginalAppServerOwnerCustody::new();\n    let drain = AppServerDrainHandle::new();\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let mut main = Box::pin(OriginalAppServerOwnerCustody::run_original_main(\n        &original,\n        drain.clone(),\n        async move {\n            entered_tx.send(()).expect(\"entered receiver\");\n            release_rx.await.expect(\"release actual main component\");\n            drop(owned);\n            Err(io::Error::other(\"incomplete component invocation\"))\n        },\n    ));\n    tokio::select! {\n        biased;\n        result = &mut main => panic!(\"actual main is still blocked: {result:?}\"),\n        result = entered_rx => result.expect(\"actual main started\"),\n    }\n    drop(main);\n    drain.wait_requested().await;\n    let first = original\n        .state()\n        .main\n        .clone()\n        .expect(\"same actual main retained\");\n    assert!(first.terminal.get().is_none());\n    let (restarted_tx, restarted_rx) = oneshot::channel();\n    assert!(\n        OriginalAppServerOwnerCustody::run_original_main(&original, drain, async move {\n            let _ = restarted_tx.send(());\n            Ok(())\n        },)\n        .await\n        .is_err()\n    );\n    assert!(restarted_rx.await.is_err());\n    release_tx\n        .send(())\n        .expect(\"actual main handle still present\");\n    assert!(\n        OriginalAppServerOwnerCustody::join_original_app_server(&original)\n            .await\n            .is_err()\n    );\n    let mut byte = [0_u8; 1];\n    assert_eq!(\n        peer.read(&mut byte).await.expect(\"actual owner released\"),\n        0\n    );\n    assert!(first.terminal.get().is_some());\n}\n",
+          "new": "fn cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it() {\n    use tokio::io::AsyncReadExt;\n\n    let original = OriginalAppServerOwnerCustody::new();\n    let drain = AppServerDrainHandle::new();\n    let (owned, mut peer) = tokio::net::UnixStream::pair().expect(\"actual socketpair\");\n    let (entered_tx, entered_rx) = oneshot::channel();\n    let (release_tx, release_rx) = oneshot::channel();\n    let mut main = Box::pin(OriginalAppServerOwnerCustody::run_original_main(\n        &original,\n        drain.clone(),\n        async move {\n            entered_tx.send(()).expect(\"entered receiver\");\n            release_rx.await.expect(\"release actual main component\");\n            drop(owned);\n            Err(io::Error::other(\"incomplete component invocation\"))\n        },\n    ));\n    tokio::select! {\n        biased;\n        result = &mut main => panic!(\"actual main is still blocked: {result:?}\"),\n        result = entered_rx => result.expect(\"actual main started\"),\n    }\n    drop(main);\n    drain.wait_requested().await;\n    let first = original\n        .state()\n        .main\n        .clone()\n        .expect(\"same actual main retained\");\n    assert!(first.terminal.get().is_none());\n    let (restarted_tx, restarted_rx) = oneshot::channel();\n    assert!(\n        OriginalAppServerOwnerCustody::run_original_main(&original, drain, async move {\n            let _ = restarted_tx.send(());\n            Ok(())\n        },)\n        .await\n        .is_err()\n    );\n    assert!(restarted_rx.await.is_err());\n    release_tx\n        .send(())\n        .expect(\"actual main handle still present\");\n    assert!(\n        OriginalAppServerOwnerCustody::join_original_app_server(&original)\n            .await\n            .is_err()\n    );\n    let mut byte = [0_u8; 1];\n    assert_eq!(\n        peer.read(&mut byte).await.expect(\"actual owner released\"),\n        0\n    );\n    assert!(first.terminal.get().is_some());\n}\n\n#[tokio::test]\nasync fn concurrent_waiters_keep_the_original_io_error_after_one_is_cancelled() {\n    let (release, released) = oneshot::channel();\n    let job = OriginalAppServerJob::result(tokio::spawn(async move {\n        released.await.expect(\"release same actual task\");\n        Err(io::Error::new(\n            io::ErrorKind::PermissionDenied,\n            \"actual shared App Server refusal\",\n        ))\n    }));\n    let mut cancelled = Box::pin(OriginalAppServerJob::join_original(&job));\n    let mut surviving = Box::pin(OriginalAppServerJob::join_original(&job));\n    tokio::select! {\n        biased;\n        result = &mut cancelled => panic!(\"actual task is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    tokio::select! {\n        biased;\n        result = &mut surviving => panic!(\"same actual task is still blocked: {result:?}\"),\n        () = std::future::ready(()) => {},\n    }\n    drop(cancelled);\n    assert!(job.terminal.get().is_none());\n    release.send(()).expect(\"same actual task retained\");\n    let first = tokio::time::timeout(std::time::Duration::from_secs(2), surviving)\n        .await\n        .expect(\"remaining original waiter is woken\")\n        .expect_err(\"original IO error\");\n    let again = OriginalAppServerJob::join_original(&job)\n        .await\n        .expect_err(\"same terminal IO error\");\n    assert!(Arc::ptr_eq(&first.error, &again.error));\n    let actual = first\n        .error\n        .as_ref()\n        .downcast_ref::<io::Error>()\n        .expect(\"original IO error object\");\n    assert_eq!(actual.kind(), io::ErrorKind::PermissionDenied);\n    assert_eq!(actual.to_string(), \"actual shared App Server refusal\");\n    assert!(job.require_original_success().is_err());\n}\n"
+        }
+      ],
+      "test_only": true,
+      "create_get_verified": true
+    }
+  ],
+  "counts": {
+    "paths": 4,
+    "product_paths": 2,
+    "test_paths": 2,
+    "exact_unique_ops": 14,
+    "new_components": 2
+  },
+  "actual_custody": [
+    {
+      "owner": "OriginalThreadStartupJob",
+      "prior": "AsyncMutex<State{Option<JoinHandle<()>>,Option<Result<(),Arc<OriginalCoreTaskFailure>>>>>> held across handle.await",
+      "after": "Shared<BoxFuture<'static,Result<(),Arc<OriginalCoreTaskFailure>>>>",
+      "handle_source": "The same JoinHandle<()> parameter of retain_original_thread_startup_handle, synchronously moved into one shared future then retained in the same original registry.",
+      "waiter": "Only a clone of that retained completion is awaited.",
+      "terminal": "The exact original Arc<OriginalCoreTaskFailure::Join(Arc<JoinError>)> result is cached by Shared and cloned without stringification.",
+      "normal_none": "Disabled/default startup admission and all original spawn/registration/join-plan methods are byte-identical."
+    },
+    {
+      "owner": "OriginalAppServerJob",
+      "prior": "AsyncMutex<Option<Unit/Result JoinHandle>> held across actual handle.await",
+      "after": "Shared<BoxFuture<'static,Result<(),OriginalAppServerFailure>>> plus the unchanged terminal OnceLock",
+      "handle_source": "The same original unit or io::Result JoinHandle is captured once in the corresponding unchanged-visibility private constructor.",
+      "waiter": "Only a shared clone is awaited; after Ready the existing terminal cell is synchronously recorded without an intervening await.",
+      "terminal": "OriginalAppServerFailure still holds the same Arc<dyn Error+Send+Sync>; original io::Error and JoinError sources and error-priority aggregation are preserved.",
+      "normal_none": "OptionalAppServerTask::Ordinary, owner admission, shutdown/stop, all actual task registry and processor cleanup methods are byte-identical."
+    }
+  ],
+  "representation_change": "The old private None-handle/no-terminal state no longer exists: each private job contains a nonoptional completion constructed synchronously from its real handle. No missing handle is converted to success; there is no new public constructor or authority.",
+  "unchanged_proof": [
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "pre": "5d54000ec5d0d66b0eb43c4da18528361307dd59",
+      "post": "6ebd03a7def0a95ef22e52152633eecaec9f8da3",
+      "unchanged_unique_functions": [
+        "fmt",
+        "source",
+        "refused",
+        "enable",
+        "reserve_original_startup",
+        "retain_original_session_loop",
+        "seal_original_startups",
+        "join_original_sealed",
+        "drop",
+        "original_session_shutdown_origin",
+        "spawn_original_delegate",
+        "enable_original_shutdown_custody",
+        "shutdown_all_threads_original"
+      ],
+      "changed_unique_functions": [
+        "retain_original_thread_startup_handle",
+        "join_original_startup"
+      ],
+      "affected_guard_origins": [
+        "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:5"
+      ],
+      "definition_markers_to_resample": []
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "pre": "8769b6ff6912729589bb86f835621387ff7fddf2",
+      "post": "f816d6cbb940a0781253278445b606251706fabc",
+      "unchanged_unique_functions": [
+        "from_io",
+        "from_join",
+        "to_io",
+        "require_original_success",
+        "into_future",
+        "require_original_custody",
+        "new",
+        "state",
+        "request_stop",
+        "run_original_main",
+        "retain_original_transport",
+        "seal_original_background",
+        "spawn_original_background",
+        "retain_unreleased_original_processor",
+        "record_original_failure",
+        "retain_original_processor",
+        "retain_original_task",
+        "optional_original_task",
+        "join_original_group",
+        "finish_original_processor",
+        "join_original_app_server",
+        "drop",
+        "finish_original_failures"
+      ],
+      "changed_unique_functions": [
+        "unit",
+        "result",
+        "join_original"
+      ],
+      "affected_guard_origins": [
+        "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0"
+      ],
+      "definition_markers_to_resample": []
+    }
+  ],
+  "test_changes": [
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+      "test": "concurrent_startup_waiters_keep_the_original_panic_after_one_is_cancelled",
+      "covers": "Two real waiters on one retained original startup; one dropped before release; survivor and later observer receive the same Arc-backed original panic."
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "test": "concurrent_waiters_keep_the_original_io_error_after_one_is_cancelled",
+      "covers": "Two real waiters on one io::Result task; one dropped before release; remaining observer receives original PermissionDenied error object and repeated observation preserves Arc identity."
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "existing_tests": "Two old component tests retain actual FD EOF/panic/reobservation assertions; the three private handle-slot assertions become equivalent Shared completion pending/ready observations."
+    }
+  ],
+  "constraints": [
+    "No added spawned task or polling wrapper.",
+    "No JoinHandle take followed by bare await; the registry retains the shared future throughout cancellation.",
+    "No new signing, authority, clock sample, retry, timeout, deadline, gate, or peer change.",
+    "No Cargo/lock change; both crates already have the futures workspace dependency.",
+    "No lint suppression or checker/helper change.",
+    "Production functions retain original argument/result signatures and visibility; no new product methods or boundary IDs."
+  ],
+  "metadata": {
+    "whole_guard_successors_required": [
+      {
+        "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+        "origins": [
+          "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:5"
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "origins": [
+          "40133ee467b53d972b93c5753e9142fadf100d45#new_protected:0"
+        ]
+      }
+    ],
+    "boundary_definition_markers_current_all_present": true,
+    "caller_arrays_unchanged": true,
+    "required_forbidden_preserved": "Final guard resampling must retain all raw required and forbidden arrays; complete removed state structs are replaced by complete actual Shared custody structure and constructor/join code.",
+    "no_whole_metadata_overwrite": true
+  },
+  "execution": {
+    "native": 0,
+    "h": 0,
+    "refs": 0,
+    "tests_executed": 0,
+    "compiler_executed": false
+  }
+}

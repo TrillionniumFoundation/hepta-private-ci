@@ -1,0 +1,790 @@
+{
+  "schema_version": 1,
+  "kind": "v9_actual_mcp_five_await_holding_invalid_type_same_handle_shared_custody_fix",
+  "status": "frozen_source_only_uninstalled_uncompiled_tests_unrun",
+  "baseline": {
+    "commit": "14d377594626fcd8d2664aaf805436a818bec867",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+    "source_manifest": "26aa82d0ac4558c7b669d6ee9ad4f58c98daeb2a",
+    "note": "These three actual product sources were not modified by the failed v9 automatic Clippy pass. No transient failed-fix bytes are used."
+  },
+  "original_evidence": {
+    "full_v9_log": {
+      "git_blob": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+      "bytes": 97371,
+      "sha256": "37b9622af630f061012c04a1e38f5f48f044a9f481256940bcf0cdad8c67d95c"
+    },
+    "actual_nineteen_site_inventory": {
+      "git_blob": "f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda",
+      "bytes": 47636,
+      "sha256": "763b9e56342bf705b7156aa73169d5c9b6f55c0f1979afd06092e26ef3e48422"
+    },
+    "selected_five_sites": [
+      {
+        "index": 1,
+        "group": "chain_nextuse:MCP5",
+        "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+        "reported_line": 321,
+        "stable_pre_blob": "227ba79e46743409c974835126f7a6b340efdb94",
+        "function": "join_original",
+        "impl_owner": "OriginalDriverJob",
+        "signature": "fn join_original(&self) -> Result<OriginalDriverJoined, String> {"
+      },
+      {
+        "index": 2,
+        "group": "chain_nextuse:MCP5",
+        "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+        "reported_line": 108,
+        "stable_pre_blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+        "function": "join",
+        "impl_owner": "OwnedJob",
+        "signature": "fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {"
+      },
+      {
+        "index": 3,
+        "group": "chain_nextuse:MCP5",
+        "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+        "reported_line": 464,
+        "stable_pre_blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+        "function": "join_original_stdio",
+        "impl_owner": "OriginalStdioShutdownCustody",
+        "signature": "fn join_original_stdio(&self) -> io::Result<OriginalStdioShutdownObservation> {"
+      },
+      {
+        "index": 4,
+        "group": "chain_nextuse:MCP5",
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "reported_line": 384,
+        "stable_pre_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "function": "join_original_startup",
+        "impl_owner": "OriginalStartupJob",
+        "signature": "fn join_original_startup(&self) -> OriginalStartupJoined {"
+      },
+      {
+        "index": 5,
+        "group": "chain_nextuse:MCP5",
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "reported_line": 411,
+        "stable_pre_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "function": "receive_original_cleanup",
+        "impl_owner": "OriginalCleanupJob",
+        "signature": "fn receive_original_cleanup(\n        &self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {"
+      }
+    ],
+    "existing_shared_pattern": {
+      "git_blob": "0da95a220ed5484f419f5feb814c921c395db5ba",
+      "bytes": 4999,
+      "sha256": "ece5b5c32912e3dfba8877c320b2cde39a5d98b1e8b06ca08a0579be875fd55d"
+    },
+    "cargo_direct_dependencies": [
+      {
+        "path": "codex-rs/rmcp-client/Cargo.toml",
+        "git_blob": "1a88c3aedbe8aeccb5ce2debd97681de04d38116",
+        "bytes": 2543,
+        "sha256": "630a65afa578517edb7bb67ba50963dc8d8f182cfe313d6538c30523d034c047",
+        "actual_line": "futures = { workspace = true, default-features = false, features = [\"std\"] }"
+      },
+      {
+        "path": "codex-rs/codex-mcp/Cargo.toml",
+        "git_blob": "6134f2126db203999727d05f61921836dfed06b7",
+        "bytes": 1726,
+        "sha256": "c14b473064600e0886d20b034fb07ab0a5f71d7120c0e6e585f3b93f88aec0ad",
+        "actual_line": "futures = { workspace = true }"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "pre": "227ba79e46743409c974835126f7a6b340efdb94",
+      "post": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+      "preimage": {
+        "git_blob": "227ba79e46743409c974835126f7a6b340efdb94",
+        "bytes": 14217,
+        "sha256": "0039095e6fa3cc6ef71b43771f0a61bd9fe2ce5ae9514fb9f37c84715b79b833"
+      },
+      "postimage": {
+        "git_blob": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+        "bytes": 13877,
+        "sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+      "post": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+      "preimage": {
+        "git_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "bytes": 15052,
+        "sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f"
+      },
+      "postimage": {
+        "git_blob": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+        "bytes": 14012,
+        "sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "pre": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+      "post": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+      "preimage": {
+        "git_blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+        "bytes": 26125,
+        "sha256": "8142cfe8f5f937e7652489fcabcbd7334db1ff0fbbdc2290f1c44a08ff5a9a1f"
+      },
+      "postimage": {
+        "git_blob": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+        "bytes": 26249,
+        "sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "pre": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+      "post": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+      "preimage": {
+        "git_blob": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+        "bytes": 8692,
+        "sha256": "f0951c8fce0f414f317a85bd394914d5048fe490edb177a4ae4659e7ed990e84"
+      },
+      "postimage": {
+        "git_blob": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+        "bytes": 11303,
+        "sha256": "9c3334f5bbe08156736c3dcacf58cdad79f23062076b1e15774968cf5694a10a"
+      }
+    }
+  ],
+  "ops": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": "use codex_config::types::McpServerEnvVar;\n",
+      "new": "use codex_config::types::McpServerEnvVar;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+      "expected_occurrences": 1,
+      "reason": "direct-existing-futures-imports"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": "use tokio::sync::Mutex;\nuse tokio::task::JoinHandle;\n\nuse super::ClientState;",
+      "new": "\nuse super::ClientState;",
+      "expected_occurrences": 1,
+      "reason": "remove-no-longer-used-handle-slot-imports"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": "struct OriginalDriverJob {\n    state: Mutex<OriginalDriverState>,\n}\n\nstruct OriginalDriverState {\n    handle: Option<JoinHandle<Result<OriginalDriverJoined, String>>>,\n    result: Option<Result<OriginalDriverJoined, String>>,\n}",
+      "new": "struct OriginalDriverJob {\n    completion: Shared<BoxFuture<'static, Result<OriginalDriverJoined, String>>>,\n}",
+      "expected_occurrences": 1,
+      "reason": "same-driver-handle-owned-by-shared-completion"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": "        let job = Arc::new(OriginalDriverJob {\n            state: Mutex::new(OriginalDriverState {\n                handle: Some(handle),\n                result: None,\n            }),\n        });",
+      "new": "        let completion = async move {\n            match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"original MCP driver cleanup task failed: {error}\")),\n            }\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalDriverJob { completion });",
+      "expected_occurrences": 1,
+      "reason": "register-shared-wrapper-of-original-spawn-without-an-await-gap"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": "        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result {\n            return result.clone();\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"original MCP driver cleanup task failed: {error}\")),\n            },\n            None => Err(\"original MCP driver join custody is unavailable\".into()),\n        };\n        state.handle.take();\n        state.result = Some(result.clone());\n        result",
+      "new": "        // The registry retains the same handle-owning future if a waiter\n        // is cancelled. Concurrent observers share its original result.\n        self.completion.clone().await",
+      "expected_occurrences": 1,
+      "reason": "join-same-shared-driver-without-a-mutex-guard"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "use codex_rmcp_client::OriginalMcpClientShutdownObservation;\nuse tokio::sync::Mutex;\n",
+      "new": "use codex_rmcp_client::OriginalMcpClientShutdownObservation;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\n",
+      "expected_occurrences": 1,
+      "reason": "direct-existing-futures-imports"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "use tokio::task::JoinHandle;\nuse tokio::task::JoinSet;\n",
+      "new": "use tokio::task::JoinSet;\n",
+      "expected_occurrences": 1,
+      "reason": "remove-no-longer-used-option-handle-import"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "struct OriginalStartupJob {\n    state: Mutex<OriginalStartupJobState>,\n}\n\nstruct OriginalStartupJobState {\n    handle: Option<JoinHandle<OriginalStartupJoined>>,\n    joined: Option<OriginalStartupJoined>,\n}",
+      "new": "struct OriginalStartupJob {\n    completion: Shared<BoxFuture<'static, OriginalStartupJoined>>,\n}",
+      "expected_occurrences": 1,
+      "reason": "same-startup-handle-owned-by-shared-completion"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "struct OriginalCleanupJob {\n    state: Mutex<OriginalCleanupJobState>,\n}\n\nstruct OriginalCleanupJobState {\n    handle: Option<JoinHandle<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,\n    result: Option<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,\n}",
+      "new": "struct OriginalCleanupJob {\n    completion: Shared<\n        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,\n    >,\n}",
+      "expected_occurrences": 1,
+      "reason": "same-cleanup-handle-owned-by-shared-completion"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "        state.startup_jobs.push(Arc::new(OriginalStartupJob {\n            state: Mutex::new(OriginalStartupJobState {\n                handle: Some(handle),\n                joined: None,\n            }),\n        }));",
+      "new": "        let completion = async move {\n            match handle.await {\n                Ok(joined) => joined,\n                Err(error) => OriginalStartupJoined {\n                    ready: 0,\n                    errors: vec![format!(\"actual MCP startup join owner: {error}\")],\n                },\n            }\n        }\n        .boxed()\n        .shared();\n        state\n            .startup_jobs\n            .push(Arc::new(OriginalStartupJob { completion }));",
+      "expected_occurrences": 1,
+      "reason": "register-same-startup-handle-shared-with-original-error"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "                let job = Arc::new(OriginalCleanupJob {\n                    state: Mutex::new(OriginalCleanupJobState {\n                        handle: Some(handle),\n                        result: None,\n                    }),\n                });",
+      "new": "                let completion = async move {\n                    match handle.await {\n                        Ok(result) => result,\n                        Err(error) => Err(format!(\"actual MCP cleanup owner failed: {error}\")),\n                    }\n                }\n                .boxed()\n                .shared();\n                let job = Arc::new(OriginalCleanupJob { completion });",
+      "expected_occurrences": 1,
+      "reason": "register-same-cleanup-handle-shared-with-original-error"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "    async fn join_original_startup(&self) -> OriginalStartupJoined {\n        let mut state = self.state.lock().await;\n        if let Some(joined) = &state.joined {\n            return joined.clone();\n        }\n        let joined = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(joined) => joined,\n                Err(error) => OriginalStartupJoined {\n                    ready: 0,\n                    errors: vec![format!(\"actual MCP startup join owner: {error}\")],\n                },\n            },\n            None => OriginalStartupJoined {\n                ready: 0,\n                errors: vec![\"actual MCP startup handle is missing\".into()],\n            },\n        };\n        state.handle.take();\n        state.joined = Some(joined.clone());\n        joined",
+      "new": "    async fn join_original_startup(&self) -> OriginalStartupJoined {\n        self.completion.clone().await",
+      "expected_occurrences": 1,
+      "reason": "startup-shared-await-without-mutex"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": "    async fn receive_original_cleanup(\n        &self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {\n        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result {\n            return result.clone();\n        }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"actual MCP cleanup owner failed: {error}\")),\n            },\n            None => Err(\"actual MCP cleanup handle is missing\".into()),\n        };\n        state.handle.take();\n        state.result = Some(result.clone());\n        result",
+      "new": "    async fn receive_original_cleanup(\n        &self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {\n        self.completion.clone().await",
+      "expected_occurrences": 1,
+      "reason": "cleanup-shared-await-without-mutex"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "old": "use rmcp::transport::async_rw::AsyncRwTransport;\n",
+      "new": "use futures::future::Shared;\nuse rmcp::transport::async_rw::AsyncRwTransport;\n",
+      "expected_occurrences": 1,
+      "reason": "shared-from-existing-direct-futures-dependency"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "old": "struct OwnedJob<T> {\n    state: AsyncMutex<OwnedJobState<T>>,\n}\n\nstruct OwnedJobState<T> {\n    handle: Option<JoinHandle<io::Result<T>>>,\n    result: Option<Result<T, RecordedFailure>>,\n    joined: bool,\n}\n\nimpl<T> OwnedJob<T> {\n    fn track(handle: JoinHandle<io::Result<T>>) -> Arc<Self> {\n        Arc::new(Self {\n            state: AsyncMutex::new(OwnedJobState {\n                handle: Some(handle),\n                result: None,\n                joined: false,\n            }),\n        })\n    }\n\n    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {\n        let mut state = self.state.lock().await;\n        if !state.joined && state.handle.is_none() {\n            state.result = Some(Err(RecordedFailure::io(io::Error::other(\n                \"owned stdio job lost its actual handle before join\",\n            ))));\n            state.joined = true;\n        }\n        if let Some(handle) = state.handle.as_mut() {\n            // Borrow the SAME handle. Dropping this waiter leaves it in the\n            // shared state. Record terminal state under the same lock before\n            // another waiter may poll or consume it.\n            let result = match handle.await {\n                Ok(result) => result.map_err(RecordedFailure::io),\n                Err(error) => Err(RecordedFailure::join(error)),\n            };\n            state.handle = None;\n            state.result = Some(result);\n            state.joined = true;\n        }\n        state\n    }\n}",
+      "new": "struct OwnedJob<T> {\n    completion: Shared<BoxFuture<'static, ()>>,\n    state: Arc<AsyncMutex<OwnedJobState<T>>>,\n}\n\nstruct OwnedJobState<T> {\n    result: Option<Result<T, RecordedFailure>>,\n    joined: bool,\n}\n\nimpl<T: Send + 'static> OwnedJob<T> {\n    fn track(handle: JoinHandle<io::Result<T>>) -> Arc<Self> {\n        let state = Arc::new(AsyncMutex::new(OwnedJobState {\n            result: None,\n            joined: false,\n        }));\n        let recorded = Arc::clone(&state);\n        // The registry retains this one future and the SAME actual handle.\n        // Only completion is shared: a transport output remains owned once\n        // by the result slot and is never required to implement Clone.\n        let completion = async move {\n            let result = match handle.await {\n                Ok(result) => result.map_err(RecordedFailure::io),\n                Err(error) => Err(RecordedFailure::join(error)),\n            };\n            let mut state = recorded.lock().await;\n            state.result = Some(result);\n            state.joined = true;\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self { completion, state })\n    }\n\n    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {\n        // Cancellation drops only this Shared clone. No result guard is held\n        // while the actual handle is awaited, and only the original output\n        // may be taken after this shared completion has recorded it.\n        self.completion.clone().await;\n        self.state.lock().await\n    }\n}",
+      "expected_occurrences": 1,
+      "reason": "share-same-join-without-cloning-original-transport"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "old": "        let mut launch_state = launch.join().await;\n        let abandoned = match launch_state.result.take() {\n            Some(Ok(transport)) => Some(transport),\n            Some(Err(error)) => {\n                failures.push((\"launch\", error.clone()));\n                launch_state.result = Some(Err(error));\n                None\n            }\n            None => None,\n        };\n        drop(launch_state);\n        drop(abandoned);",
+      "new": "        let abandoned = {\n            let mut launch_state = launch.join().await;\n            match launch_state.result.take() {\n                Some(Ok(transport)) => Some(transport),\n                Some(Err(error)) => {\n                    failures.push((\"launch\", error.clone()));\n                    launch_state.result = Some(Err(error));\n                    None\n                }\n                None => None,\n            }\n        };\n        drop(abandoned);",
+      "expected_occurrences": 1,
+      "reason": "lexically-release-launch-output-lock-before-real-transport-cleanup-awaits"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "    let launch = launch.state.lock().await;\n    assert!(launch.joined);\n    assert!(launch.handle.is_none());\n    assert!(\n        launch.result.is_none(),\n        \"actual transport must leave launch output\"\n    );\n    drop(launch);",
+      "new": "    {\n        let state = launch.state.lock().await;\n        assert!(state.joined);\n        assert!(launch.completion.peek().is_some());\n        assert!(\n            state.result.is_none(),\n            \"actual transport must leave launch output\"\n        );\n    }",
+      "expected_occurrences": 1,
+      "reason": "keep-actual-launch-output-and-joined-assertions-with-shared-terminal-fact"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "        assert!(state.handle.is_none());\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));",
+      "new": "        assert!(child.completion.peek().is_some());\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));",
+      "expected_occurrences": 1,
+      "reason": "child-actual-shared-terminal-replaces-removed-handle-slot"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "        assert!(state.handle.is_none());\n    }\n    let state = termination.state.lock().await;",
+      "new": "        assert!(reader.completion.peek().is_some());\n    }\n    let state = termination.state.lock().await;",
+      "expected_occurrences": 1,
+      "reason": "stderr-actual-shared-terminal-replaces-removed-handle-slot"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "    assert!(state.handle.is_none());\n    assert!(matches!(state.result.as_ref(), Some(Ok(()))));",
+      "new": "    assert!(termination.completion.peek().is_some());\n    assert!(matches!(state.result.as_ref(), Some(Ok(()))));",
+      "expected_occurrences": 1,
+      "reason": "termination-actual-shared-terminal-replaces-removed-handle-slot"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "    let state = launch.join().await;\n    assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n    drop(state);",
+      "new": "    {\n        let state = launch.join().await;\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n    }",
+      "expected_occurrences": 1,
+      "reason": "lexical-result-read-scope-before-actual-cleanup"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "    let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())\n        .await\n        .expect(\"original invalid UTF-8 stderr was not read\");\n    assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));\n    drop(actual_read);",
+      "new": "    {\n        let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())\n            .await\n            .expect(\"original invalid UTF-8 stderr was not read\");\n        assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));\n    }",
+      "expected_occurrences": 1,
+      "reason": "lexical-original-stderr-result-scope-before-later-cleanup-await"
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "old": "    assert_eq!(error.kind(), io::ErrorKind::NotConnected);\n    require_actual_handles_joined(&custody).await;\n}\n",
+      "new": "    assert_eq!(error.kind(), io::ErrorKind::NotConnected);\n    require_actual_handles_joined(&custody).await;\n}\n\n#[tokio::test]\nasync fn cancelled_shared_job_waiter_keeps_one_non_clone_fd_output_for_all_waiters() {\n    use std::io::Read;\n    use std::os::unix::net::UnixStream;\n\n    let (owner, mut peer) = UnixStream::pair().unwrap();\n    peer.set_nonblocking(true).unwrap();\n    let (release, released) = tokio::sync::oneshot::channel::<()>();\n    let job = OwnedJob::track(tokio::spawn(async move {\n        released\n            .await\n            .map_err(|_| io::Error::other(\"component release sender dropped\"))?;\n        Ok(owner)\n    }));\n\n    let mut cancelled = Box::pin(job.join());\n    tokio::select! {\n        biased;\n        _ = &mut cancelled => panic!(\"actual handle cannot join before its release\"),\n        () = async {} => {}\n    }\n    drop(cancelled);\n    assert!(job.completion.peek().is_none());\n    let mut byte = [0_u8; 1];\n    assert_eq!(\n        peer.read(&mut byte).unwrap_err().kind(),\n        io::ErrorKind::WouldBlock\n    );\n\n    release.send(()).unwrap();\n    tokio::join!(\n        async {\n            let state = job.join().await;\n            assert!(state.joined);\n            assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n        },\n        async {\n            let state = job.join().await;\n            assert!(state.joined);\n            assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n        },\n    );\n    assert!(job.completion.peek().is_some());\n    let actual = {\n        let mut state = job.state.lock().await;\n        state.result.take().unwrap().unwrap()\n    };\n    assert!(job.state.lock().await.result.is_none());\n    assert_eq!(\n        peer.read(&mut byte).unwrap_err().kind(),\n        io::ErrorKind::WouldBlock\n    );\n    drop(actual);\n    assert_eq!(peer.read(&mut byte).unwrap(), 0);\n}\n\n#[tokio::test]\nasync fn shared_job_keeps_the_same_original_join_error_for_later_waiters() {\n    let job = OwnedJob::<()>::track(tokio::spawn(async {\n        panic!(\"original owned job component panic\")\n    }));\n    let first = {\n        let state = job.join().await;\n        assert!(state.joined);\n        state.result.as_ref().unwrap().as_ref().unwrap_err().clone()\n    };\n    let second = {\n        let state = job.join().await;\n        assert!(state.joined);\n        state.result.as_ref().unwrap().as_ref().unwrap_err().clone()\n    };\n    assert!(Arc::ptr_eq(&first.error, &second.error));\n    assert!(\n        first\n            .error\n            .downcast_ref::<tokio::task::JoinError>()\n            .unwrap()\n            .is_panic()\n    );\n    assert!(job.completion.peek().is_some());\n}\n",
+      "expected_occurrences": 1,
+      "reason": "two-necessary-real-handle-cancellation-output-and-original-error-components"
+    }
+  ],
+  "exact_replay": {
+    "files": 4,
+    "product_files": 3,
+    "component_test_files": 1,
+    "operations": 23,
+    "results": [
+      {
+        "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+        "preimage": {
+          "git_blob": "227ba79e46743409c974835126f7a6b340efdb94",
+          "bytes": 14217,
+          "sha256": "0039095e6fa3cc6ef71b43771f0a61bd9fe2ce5ae9514fb9f37c84715b79b833"
+        },
+        "postimage": {
+          "git_blob": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+          "bytes": 13877,
+          "sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643"
+        },
+        "ops": 5,
+        "forward_exact": true,
+        "reverse_exact": true,
+        "old_test_count": 0,
+        "new_test_count": 0,
+        "spawn_tokens_before": 1,
+        "spawn_tokens_after": 1,
+        "unique_fn_raw_unchanged": [
+          "require_original_ready_client_joined",
+          "new",
+          "request_stop",
+          "reserve_original_constructor",
+          "retain_original_client",
+          "retain_original_service",
+          "join_original_client",
+          "join_actual_original_service",
+          "drop",
+          "new_stdio_client_with_owned_shutdown"
+        ],
+        "unique_fn_raw_changed": [
+          "start_original_driver_join",
+          "join_original"
+        ]
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "preimage": {
+          "git_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+          "bytes": 15052,
+          "sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f"
+        },
+        "postimage": {
+          "git_blob": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+          "bytes": 14012,
+          "sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2"
+        },
+        "ops": 8,
+        "forward_exact": true,
+        "reverse_exact": true,
+        "old_test_count": 0,
+        "new_test_count": 0,
+        "spawn_tokens_before": 2,
+        "spawn_tokens_after": 2,
+        "unique_fn_raw_unchanged": [
+          "require_original_ready_runtime_joined",
+          "new",
+          "reserve_original_input",
+          "original_client_custody",
+          "require_original_construction",
+          "request_stop",
+          "join_original_resources"
+        ],
+        "unique_fn_raw_changed": [
+          "retain_original_startup",
+          "stop_and_join_original_runtime",
+          "join_original_startup",
+          "receive_original_cleanup"
+        ]
+      },
+      {
+        "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+        "preimage": {
+          "git_blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+          "bytes": 26125,
+          "sha256": "8142cfe8f5f937e7652489fcabcbd7334db1ff0fbbdc2290f1c44a08ff5a9a1f"
+        },
+        "postimage": {
+          "git_blob": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+          "bytes": 26249,
+          "sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4"
+        },
+        "ops": 3,
+        "forward_exact": true,
+        "reverse_exact": true,
+        "old_test_count": 0,
+        "new_test_count": 0,
+        "spawn_tokens_before": 6,
+        "spawn_tokens_after": 6,
+        "unique_fn_raw_unchanged": [
+          "io",
+          "to_io",
+          "require_original_child_exited",
+          "new",
+          "state",
+          "request_stop",
+          "launch",
+          "start_launch",
+          "register_process",
+          "retain_stderr",
+          "retain_child",
+          "retire_transport",
+          "drop",
+          "send",
+          "receive",
+          "close",
+          "new_with_owned_shutdown",
+          "launch_server_owned",
+          "unsupported"
+        ],
+        "unique_fn_raw_changed": [
+          "track",
+          "join_original_stdio"
+        ]
+      },
+      {
+        "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+        "preimage": {
+          "git_blob": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+          "bytes": 8692,
+          "sha256": "f0951c8fce0f414f317a85bd394914d5048fe490edb177a4ae4659e7ed990e84"
+        },
+        "postimage": {
+          "git_blob": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+          "bytes": 11303,
+          "sha256": "9c3334f5bbe08156736c3dcacf58cdad79f23062076b1e15774968cf5694a10a"
+        },
+        "ops": 7,
+        "forward_exact": true,
+        "reverse_exact": true,
+        "old_test_count": 6,
+        "new_test_count": 8,
+        "spawn_tokens_before": 0,
+        "spawn_tokens_after": 2,
+        "unique_fn_raw_unchanged": [
+          "original_command",
+          "joined",
+          "empty_custody_cannot_attest_a_child_exit_or_start_after_stop",
+          "unsupported_modern_mode_refuses_before_an_actual_launch",
+          "cancelled_cleanup_waiter_keeps_the_same_undropped_transport_and_jobs",
+          "retained_sdk_send_future_cannot_keep_the_closed_actual_writer_live"
+        ],
+        "unique_fn_raw_changed": [
+          "require_actual_handles_joined",
+          "abandoned_actual_launch_output_is_taken_and_its_child_reaped",
+          "actual_stderr_error_is_preserved_after_child_and_helper_joins"
+        ]
+      }
+    ],
+    "create_get_receipts": [
+      {
+        "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+        "pin": {
+          "git_blob": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+          "bytes": 13877,
+          "sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643"
+        },
+        "create_sha": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+        "get_exact": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "pin": {
+          "git_blob": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+          "bytes": 14012,
+          "sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2"
+        },
+        "create_sha": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+        "get_exact": true
+      },
+      {
+        "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+        "pin": {
+          "git_blob": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+          "bytes": 26249,
+          "sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4"
+        },
+        "create_sha": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+        "get_exact": true
+      },
+      {
+        "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+        "pin": {
+          "git_blob": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+          "bytes": 11303,
+          "sha256": "9c3334f5bbe08156736c3dcacf58cdad79f23062076b1e15774968cf5694a10a"
+        },
+        "create_sha": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+        "get_exact": true
+      }
+    ]
+  },
+  "ownership_and_errors": [
+    {
+      "job": "OriginalDriverJob",
+      "original_result": "Result<OriginalDriverJoined, String>",
+      "registry": "OriginalClientState.driver",
+      "change": "The original already-spawned cleanup task's exact handle moves synchronously into one Shared<BoxFuture>. Every waiter awaits a clone; no lock is held over handle.await and no new task is spawned.",
+      "original_error": "The same original task Result and same JoinError-to-string message remain. No originally typed error is newly stringified."
+    },
+    {
+      "job": "OriginalStartupJob",
+      "original_result": "OriginalStartupJoined { ready, errors }",
+      "registry": "OriginalRuntimeState.startup_jobs",
+      "change": "The exact original startup JoinSet-draining task handle moves into one Shared future before the job enters the existing registry.",
+      "original_error": "Same actual startup child errors and same outer join-error diagnostic; cleanup still joins every original startup job and always attempts client cleanup."
+    },
+    {
+      "job": "OriginalCleanupJob",
+      "original_result": "Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>",
+      "registry": "OriginalMcpRuntimeShutdown.cleanup",
+      "change": "The same original cleanup task handle is retained by one Shared future registered synchronously before returning the waiter. Cancelled and later waiters share the same terminal result.",
+      "original_error": "Same actual cleanup Result and existing JoinError diagnostic. Runtime observation remains private and requires actual ready runtime/client/child facts."
+    },
+    {
+      "job": "OwnedJob<T>",
+      "original_result": "Result<T, RecordedFailure>; T includes non-Clone StdioServerTransport",
+      "registry": "CustodyState.launch/child/stderr/termination",
+      "change": "One Shared<BoxFuture<'static, ()>> owns the exact handle. It awaits that handle before acquiring the original result mutex, stores the actual Result once, then marks joined. Shared completion clones only unit; transport is never cloned.",
+      "original_error": "RecordedFailure::io and ::join and original Arc<dyn Error> objects are byte unchanged; original error kind/source preserved.",
+      "cancellation": "Cancel before/during actual join or while waiting to store/observe its result drops only a Shared clone or a short result-lock waiter. Registry still owns the same completion and result slot. No output can disappear between taking a handle and awaiting it.",
+      "multiple_waiters": "All waiters share the same physical join; the result lock still serializes unique transport take. Error results are retained for later observers.",
+      "cycles": "The shared future owns only the separate result Arc, which has no backreference to the completion or job. It does not introduce a job/completion/result self-cycle. The pre-existing actual launch-output custody is released by the same unique take/drop path.",
+      "lock_scope": "join() awaits completion before taking a result guard. join_original_stdio's launch output guard is confined to a lexical block and is gone before actual transport Drop, child notification waits or any following cleanup await."
+    }
+  ],
+  "structurally_removed_unreachable_states": [
+    "The three private Clone-result jobs no longer have an empty optional handle state. Their sole existing constructors always supply an actual spawned handle; replacement Shared fields are mandatory.",
+    "OwnedJob::track likewise always consumes its real JoinHandle. The old hypothetical missing-handle-without-joined fallback is not a reachable representation in the new structure.",
+    "This removes impossible storage states rather than changing a reachable original failure into success; every real task Err and JoinError still follows its original failure mapping."
+  ],
+  "preserved_raw_spans": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalMcpClientShutdown",
+      "raw_blob": {
+        "git_blob": "fe0a0644eb97c914c5d46cc0886a54bb89afc716",
+        "bytes": 103,
+        "sha256": "82675c5ac40b711f77ce9eef5d77c4bfab9b40505d0b7610be56a6ddd4f06be2"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalMcpConstructionGuard",
+      "raw_blob": {
+        "git_blob": "2adf3c1a0fb60733bc30c1641a2ed4fd185fb423",
+        "bytes": 331,
+        "sha256": "61813aff781ee9907ff6ef3f60e28871b3fbda1fdd47902edae291d800587666"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalMcpRuntimeShutdown",
+      "raw_blob": {
+        "git_blob": "c1d9d271142f94a42d1e594da76e25bb2b5b4499",
+        "bytes": 104,
+        "sha256": "c0d887b8a128a808c19ff7f98a0cf6461a0f4df16484c813038657dbdfa9e9ee"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalOwnedStdioTransport",
+      "raw_blob": {
+        "git_blob": "9e3559f61724d2f08f3578a9ee4b2ed86d6d0ca4",
+        "bytes": 109,
+        "sha256": "45f906d2ee6f614534f2f8afa32900c0cc311664468ebcdfb66e4e8b5b74095b"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl RecordedFailure",
+      "raw_blob": {
+        "git_blob": "06846ea38b6ad361e64d02f4da91e798a271f1f5",
+        "bytes": 412,
+        "sha256": "363fb042714197867a2383df33903127a7dfc3b6089b91d7141b13a2a5f2819c"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl Error for RecordedFailure",
+      "raw_blob": {
+        "git_blob": "a21b1f5b9427e51b75b0af4ebb44e24cffbb53a0",
+        "bytes": 131,
+        "sha256": "097b615db11542d8c7c8a250a80839e6806cad91a629fbb533cfe8ed988e1ef2"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl Error for ShutdownFailures",
+      "raw_blob": {
+        "git_blob": "04229c72ef3fc58c757274a6ea11bfacdfc36e1f",
+        "bytes": 159,
+        "sha256": "43a0ea4ddd6d551fb9d297af601536d38cb83d3b4999c27010d25326af1d07b7"
+      },
+      "byte_equal": true
+    }
+  ],
+  "unchanged_contracts": {
+    "original_none_and_default_parents_not_modified": true,
+    "no_added_product_spawn": true,
+    "same_original_task_admission_and_seals": true,
+    "same_original_child_process_stdio_environment_group_and_commands": true,
+    "same_term_two_second_kill_policy": true,
+    "same_sdk_driver_then_stdio_cleanup_and_error_aggregation": true,
+    "same_not_started_refusal_and_no_empty_count_join_proof": true,
+    "no_new_timeout_deadline_retry_or_restart": true,
+    "no_lint_allow_or_checker_change": true,
+    "no_authority_capability_or_completion_construction": true,
+    "sdk_limit": "This packet joins the already-owned service driver/stdio resources only; it does not claim all SDK protocol/logging tails have joined."
+  },
+  "component_tests": {
+    "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+    "existing_count": 6,
+    "new_count": 2,
+    "total": 8,
+    "executed": false,
+    "existing_macro_counts": {
+      "assert": 21,
+      "assert_eq": 6,
+      "assert_ne": 0,
+      "panic": 3,
+      "matches": 4
+    },
+    "after_existing_macro_counts": {
+      "assert": 21,
+      "assert_eq": 6,
+      "assert_ne": 0,
+      "panic": 3,
+      "matches": 4
+    },
+    "existing_changes": "Four removed optional-handle assertions are adapted to actual Shared terminal peek; original joined/result/FD/process/termination assertions remain. Three lexical scope adaptations ensure result guards end before later awaits. Original six test names, process scripts and timeouts remain.",
+    "new_tests": [
+      {
+        "name": "cancelled_shared_job_waiter_keeps_one_non_clone_fd_output_for_all_waiters",
+        "scope": "Actual Tokio JoinHandle, a real UnixStream pair and oneshot release; biased poll/cancel, then two waiters share one completion; the real FD is taken once and EOF occurs only after its actual Drop. No business/authority fixture."
+      },
+      {
+        "name": "shared_job_keeps_the_same_original_join_error_for_later_waiters",
+        "scope": "Actual Tokio task panic; repeated observations retain the same Arc to the original JoinError and check is_panic. No synthetic successful join."
+      }
+    ],
+    "no_business_qualification": true
+  },
+  "metadata_obligations": [
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:0",
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "forbidden_preserved": [
+        "std::mem::forget(",
+        "SigningKey::generate(",
+        ".abort_all(",
+        ".detach("
+      ],
+      "changed_functions": [
+        "start_original_driver_join",
+        "join_original"
+      ],
+      "source_pre": {
+        "git_blob": "227ba79e46743409c974835126f7a6b340efdb94",
+        "bytes": 14217,
+        "sha256": "0039095e6fa3cc6ef71b43771f0a61bd9fe2ce5ae9514fb9f37c84715b79b833"
+      },
+      "source_post": {
+        "git_blob": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+        "bytes": 13877,
+        "sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643"
+      },
+      "action": "Recapture only corresponding actual whole structure/function spans after source acceptance. Preserve every other required, forbidden, function order and same-path conjunct. This packet does not write CALLERS.",
+      "structure_changes": [
+        "OriginalDriverJob now directly owns Shared<BoxFuture<original Clone result>>; OriginalDriverState Option slot is removed, not retained as a vacuous None check."
+      ]
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:1",
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "forbidden_preserved": [
+        "std::mem::forget(",
+        "SigningKey::generate(",
+        ".abort_all(",
+        ".detach("
+      ],
+      "changed_functions": [
+        "retain_original_startup",
+        "stop_and_join_original_runtime",
+        "join_original_startup",
+        "receive_original_cleanup"
+      ],
+      "source_pre": {
+        "git_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "bytes": 15052,
+        "sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f"
+      },
+      "source_post": {
+        "git_blob": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+        "bytes": 14012,
+        "sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2"
+      },
+      "action": "Recapture only corresponding actual whole structure/function spans after source acceptance. Preserve every other required, forbidden, function order and same-path conjunct. This packet does not write CALLERS.",
+      "structure_changes": [
+        "OriginalStartupJob owns Shared<BoxFuture<OriginalStartupJoined>>; OriginalCleanupJob owns Shared<BoxFuture<original Arc observation result>>. The two old mutable Option-handle state structs are replaced by these concrete structures."
+      ]
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:25",
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "forbidden_preserved": [
+        ".abort(",
+        ".abort_all(",
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "CompletionProof",
+        "TokioChildProcess::builder"
+      ],
+      "changed_functions": [
+        "track",
+        "join (OwnedJob only; RecordedFailure::join unchanged)",
+        "join_original_stdio"
+      ],
+      "source_pre": {
+        "git_blob": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+        "bytes": 26125,
+        "sha256": "8142cfe8f5f937e7652489fcabcbd7334db1ff0fbbdc2290f1c44a08ff5a9a1f"
+      },
+      "source_post": {
+        "git_blob": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+        "bytes": 26249,
+        "sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4"
+      },
+      "action": "Recapture only corresponding actual whole structure/function spans after source acceptance. Preserve every other required, forbidden, function order and same-path conjunct. This packet does not write CALLERS.",
+      "structure_changes": [
+        "OwnedJob has completion plus an Arc to the original result slot; OwnedJobState has result and joined, no replaceable optional handle.",
+        "Replace raw handle Option requirement by actual track(handle: JoinHandle<io::Result<T>>) plus Shared completion and Arc<AsyncMutex<OwnedJobState<T>>>; retain original result, termination-thread, failed-child-owner and cfg-test requirements.",
+        "Whole impl<T> span becomes actual impl<T: Send + 'static>; whole join_original_stdio changes only lexical output-lock scope."
+      ]
+    }
+  ],
+  "boundary_action": "No new public or crate-visible API, symbol, product caller, boundary ID or call_pattern is introduced or removed. All 19 existing boundary definitions in these three paths remain; the actual definition markers in the stdio join row still occur. Existing source-origin guards must be recaptured as listed rather than deleted.",
+  "validation": {
+    "git_get_and_create_get": true,
+    "unique_forward_reverse": true,
+    "pure_v8_static_only": true,
+    "compiler_executed": false,
+    "formatter_executed": false,
+    "original_checker_executed": false,
+    "tests_executed": false,
+    "qualification_executed": false,
+    "h": false,
+    "pty": false,
+    "ref_mutated": false
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "note": "A source fix and unexecuted component tests do not establish compilation, ordinary deployment, C adoption, normal shutdown or complete business qualification."
+  }
+}

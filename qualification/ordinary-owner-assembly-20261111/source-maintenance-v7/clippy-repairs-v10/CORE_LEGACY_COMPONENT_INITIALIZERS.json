@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v9_Core_E0063_existing_fixture_minimal_field_initialization",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "14d377594626fcd8d2664aaf805436a818bec867",
+  "base_tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03",
+  "status": "SOURCE_PROPOSAL_FROZEN_AND_GET_VERIFIED; no compiler or tests executed by author",
+  "actual_failure": {
+    "log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+    "bytes": 97371,
+    "sha256": "37b9622af630f061012c04a1e38f5f48f044a9f481256940bcf0cdad8c67d95c",
+    "error": "E0063",
+    "message": "missing field `original_loop_outcome` in initializer of `session::SessionIo`",
+    "positions": [
+      {
+        "line": 7896,
+        "function": "submit_with_trace_captures_current_span_trace_context"
+      },
+      {
+        "line": 8643,
+        "function": "shutdown_and_wait_allows_multiple_waiters"
+      },
+      {
+        "line": 8679,
+        "function": "shutdown_and_wait_waits_when_shutdown_is_already_in_progress"
+      },
+      {
+        "line": 8715,
+        "function": "shutdown_and_wait_shuts_down_cached_guardian_subagent"
+      },
+      {
+        "line": 8737,
+        "function": "shutdown_and_wait_shuts_down_cached_guardian_subagent"
+      },
+      {
+        "line": 8769,
+        "function": "cached_guardian_subagent_exposes_its_rollout_path"
+      },
+      {
+        "line": 8800,
+        "function": "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review"
+      },
+      {
+        "line": 8822,
+        "function": "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "pre": "dce43c7f844f45036a7b58b307de500029f1f001",
+      "pre_bytes": 504602,
+      "pre_sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "post": "d6aae04306df38911602868cbed7536114307a90",
+      "post_bytes": 504898,
+      "post_sha256": "c94e11c545e0dd82afa7689da2ec7af5e3ec661e825d748f3733f2ecb0b69005",
+      "pre_fixed_ref_GET": true,
+      "post_CREATE_GET_full_equal": true
+    }
+  ],
+  "ops": [
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn submit_with_trace_captures_current_span_trace_context() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(1);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let io = SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: completed_session_loop_termination(),\n    }",
+      "after": "fn submit_with_trace_captures_current_span_trace_context() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(1);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let io = SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: completed_session_loop_termination(),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "submit_with_trace_captures_current_span_trace_context",
+      "original_line": 7896
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn shutdown_and_wait_allows_multiple_waiters() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let session_loop_handle = tokio::spawn(async move {\n        let shutdown = rx_sub.recv().await.expect(\"shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        tokio::time::sleep(StdDuration::from_millis(50)).await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n    }",
+      "after": "fn shutdown_and_wait_allows_multiple_waiters() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let session_loop_handle = tokio::spawn(async move {\n        let shutdown = rx_sub.recv().await.expect(\"shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        tokio::time::sleep(StdDuration::from_millis(50)).await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "shutdown_and_wait_allows_multiple_waiters",
+      "original_line": 8643
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(4);\n    drop(rx_sub);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let (shutdown_complete_tx, shutdown_complete_rx) = tokio::sync::oneshot::channel();\n    let session_loop_handle = tokio::spawn(async move {\n        let _ = shutdown_complete_rx.await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n    }",
+      "after": "fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {\n    let (_session, _turn_context) = make_session_and_context().await;\n    let (tx_sub, rx_sub) = async_channel::bounded(4);\n    drop(rx_sub);\n    let (_tx_event, rx_event) = async_channel::unbounded();\n    let (shutdown_complete_tx, shutdown_complete_rx) = tokio::sync::oneshot::channel();\n    let session_loop_handle = tokio::spawn(async move {\n        let _ = shutdown_complete_rx.await;\n    });\n    let io = Arc::new(SessionIo {\n        tx_sub,\n        rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "shutdown_and_wait_waits_when_shutdown_is_already_in_progress",
+      "original_line": 8679
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n    }",
+      "after": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "shutdown_and_wait_shuts_down_cached_guardian_subagent",
+      "original_line": 8715
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n    }",
+      "after": "fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "shutdown_and_wait_shuts_down_cached_guardian_subagent",
+      "original_line": 8737
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn cached_guardian_subagent_exposes_its_rollout_path() {\n    let (parent_session, _parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n\n    let (mut child_session, _child_turn_context) = make_session_and_context().await;\n    let child_rollout_path = attach_thread_persistence(&mut child_session).await;\n    let (child_tx_sub, _child_rx_sub) = async_channel::bounded(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let child_session_loop_handle = tokio::spawn(async {});\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n    }",
+      "after": "fn cached_guardian_subagent_exposes_its_rollout_path() {\n    let (parent_session, _parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n\n    let (mut child_session, _child_turn_context) = make_session_and_context().await;\n    let child_rollout_path = attach_thread_persistence(&mut child_session).await;\n    let (child_tx_sub, _child_rx_sub) = async_channel::bounded(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let child_session_loop_handle = tokio::spawn(async {});\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "cached_guardian_subagent_exposes_its_rollout_path",
+      "original_line": 8769
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n    }",
+      "after": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review",
+      "original_line": 8800
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n    }",
+      "after": "fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\n    let (parent_session, parent_turn_context) = make_session_and_context().await;\n    let parent_session = Arc::new(parent_session);\n    let parent_config = Arc::clone(&parent_turn_context.config);\n    let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);\n    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();\n    let parent_session_for_loop = Arc::clone(&parent_session);\n    let parent_session_loop_handle = tokio::spawn(async move {\n        submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;\n    });\n    let parent_io = SessionIo {\n        tx_sub: parent_tx_sub,\n        rx_event: parent_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(parent_session_loop_handle),\n        original_loop_outcome: None,\n    };\n\n    let (child_session, _child_turn_context) = make_session_and_context().await;\n    let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);\n    let (_child_tx_event, child_rx_event) = async_channel::unbounded();\n    let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();\n    let child_session_loop_handle = tokio::spawn(async move {\n        let shutdown = child_rx_sub\n            .recv()\n            .await\n            .expect(\"child shutdown submission\");\n        assert!(matches!(shutdown.op, Op::Shutdown));\n        child_shutdown_tx\n            .send(())\n            .expect(\"child shutdown signal should be delivered\");\n    });\n    let child_session = Arc::new(child_session);\n    let child_io = SessionIo {\n        tx_sub: child_tx_sub,\n        rx_event: child_rx_event,\n        agent_status: watch::channel(AgentStatus::PendingInit).1,\n        session_loop_termination: session_loop_termination_from_handle(child_session_loop_handle),\n        original_loop_outcome: None,\n    }",
+      "occurrence_count": 1,
+      "fixture_function": "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review",
+      "original_line": 8822
+    }
+  ],
+  "exact_change": "Eight field additions, each `original_loop_outcome: None,`; removing exactly these eight lines restores the complete 504,602-byte original file. No other byte changes.",
+  "type_and_ownership_basis": [
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "pin": "f335c2173beed441d633772ae5f1bee00ef6d2ee",
+      "facts": [
+        "SessionIo.original_loop_outcome is Option<Arc<OriginalSessionLoopOutcome>>.",
+        "The actual production Session::spawn observes its original submission-loop JoinHandle using observe_original_session_loop and stores Some of that actual outcome.",
+        "These eight older fixtures already use completed_session_loop_termination or session_loop_termination_from_handle. They do not call that real-outcome observer and must not be populated with a fabricated success record.",
+        "Ordinary SessionIo::shutdown_and_wait still clones and awaits the same existing shared termination future and keeps its original submission error handling.",
+        "The existing helper session_loop_termination_from_handle still consumes the same original JoinHandle and awaits it. This patch neither moves, drops, duplicates nor replaces any handle.",
+        "The entire tests module is existing #[cfg(test)]; no production constructor or implementation changes."
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/session/original_shutdown.rs",
+      "pin": "0da95a220ed5484f419f5feb814c921c395db5ba",
+      "facts": [
+        "The real side record is created by observe_original_session_loop with an empty OnceLock and set only after the original handle await.",
+        "OriginalSessionLoopShutdown with absent outcome awaits the original termination and returns OriginalCoreTaskFailure::State; None cannot become a strict cleanup success.",
+        "The real-handle original_loop_io_for_test helper remains unchanged and continues to populate Some only via the actual observer."
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/session/original_shutdown_tests.rs",
+      "pin": "bfa76cc8a0f910b51be65ffeda49717963fa8d7b",
+      "facts": [
+        "Existing missing_side_record_is_refused_even_after_the_real_unit_future_completes exercises the actual None refusal; its assertions are unchanged.",
+        "No new execution result is asserted by this source inspection."
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/codex_delegate_tests.rs",
+      "pin": "44e30df042f4a8144cb70a946427db8f631194d4",
+      "facts": [
+        "The two existing ordinary SessionIo fixtures already initialize the added optional side record as None.",
+        "The new eight initializations follow the same explicit absent-record meaning, not a new Default or synthesized completion."
+      ]
+    }
+  ],
+  "preservation": {
+    "true_unique_forward_reverse": true,
+    "strip_insertions_whole_file_equal": true,
+    "old_handles_and_shared_futures": "All original spawn, handle values, shared termination helper calls, await sites and drop/guardian-cache operations are byte-identical.",
+    "old_assertions_and_attributes": "All assertions, expectations, test/ignore/cfg attributes, timeout/timing values and existing helper calls are byte-identical.",
+    "function_roster": {
+      "count": 329,
+      "meaning": "All fn declarations, including helpers; not a count of tests",
+      "same_order": true
+    },
+    "macro_roster": {
+      "count": 675,
+      "meaning": "Bounded lexical occurrences of assert/assert_eq/assert_ne/debug_assert variants/panic/matches; not all are assertion tests",
+      "same_order": true
+    },
+    "no_production_changes": true,
+    "no_metadata_checker_harness_changes": true
+  },
+  "validation": {
+    "literal_count": 8,
+    "unique_ops": 8,
+    "functions": [
+      "submit_with_trace_captures_current_span_trace_context",
+      "shutdown_and_wait_allows_multiple_waiters",
+      "shutdown_and_wait_waits_when_shutdown_is_already_in_progress",
+      "shutdown_and_wait_shuts_down_cached_guardian_subagent",
+      "cached_guardian_subagent_exposes_its_rollout_path",
+      "shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review"
+    ],
+    "pre_pin": "dce43c7f844f45036a7b58b307de500029f1f001",
+    "post_pin": "d6aae04306df38911602868cbed7536114307a90",
+    "pre_bytes": 504602,
+    "post_bytes": 504898,
+    "pre_sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+    "post_sha256": "c94e11c545e0dd82afa7689da2ec7af5e3ec661e825d748f3733f2ecb0b69005",
+    "pure_addition_bytes": 296,
+    "fn_roster_count": 329,
+    "assertion_and_matches_macro_count": 675,
+    "strip_all_eight_lines_equals_original": true,
+    "ops_forward_reverse_exact": true
+  },
+  "next_execution": "Root may compile and run the actual focused/default Core gates on the final composed source. This patch does not certify any other V9 lint failure or the whole crate.",
+  "limits": [
+    "No h/native/shell/Python/Cargo/fmt/checker/test/ref execution.",
+    "No successful loop outcome or new authority is constructed.",
+    "Eight reported compiler errors are addressed by source shape only; compiler confirmation remains pending."
+  ]
+}

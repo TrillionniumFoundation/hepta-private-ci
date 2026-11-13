@@ -54,8 +54,8 @@ async fn unpolled_receive_keeps_real_task_and_fd_until_cleanup_join() {
     assert!(matches!(result, Err(AgentdError::GenerationFenced(message))
         if message == "actual component consumer refused"));
     assert!(matches!(peer.read(&mut byte), Ok(0)));
-    let state = job.state.lock().await;
-    assert!(state.joined && state.handle.is_none() && state.output.is_none());
+    let state = job.state.lock().unwrap();
+    assert!(state.joined && job.completion.peek().is_some() && state.output.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -80,8 +80,8 @@ async fn one_actual_consumer_kind_cannot_be_spawned_twice() {
             .is_err()
     );
     assert!(registry.join_and_release().await.is_err());
-    let state = job.state.lock().await;
-    assert!(state.joined && state.handle.is_none());
+    let state = job.state.lock().unwrap();
+    assert!(state.joined && job.completion.peek().is_some());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -126,6 +126,66 @@ async fn panicked_consumer_does_not_skip_the_other_actual_join() {
         Err(AgentdError::Protocol(_))
     ));
     assert!(matches!(peer.read(&mut byte), Ok(0)));
-    assert!(first.state.lock().await.joined);
-    assert!(second.state.lock().await.joined);
+    assert!(first.state.lock().unwrap().joined);
+    assert!(first.completion.peek().is_some());
+    assert!(second.state.lock().unwrap().joined);
+    assert!(second.completion.peek().is_some());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cancelled_cleanup_retains_one_original_consumer_and_its_error() {
+    let gate = gate();
+    let registry = Arc::new(OriginalBootstrapConsumers::new());
+    let (owner, mut peer) = UnixStream::pair().unwrap();
+    peer.set_nonblocking(true).unwrap();
+    let (entered, started) = mpsc::sync_channel(1);
+    let (release, released) = mpsc::sync_channel(1);
+    let executions = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let calls = Arc::clone(&executions);
+    let admission = registry
+        .reserve(OriginalBootstrapConsumerKind::Device, &gate)
+        .unwrap();
+    let worker = tokio::task::spawn_blocking(move || {
+        let _owner = owner;
+        calls.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+        entered.send(()).unwrap();
+        let _ = released.recv();
+        Err(AgentdError::GenerationFenced(
+            "same original consumer error after waiter cancellation".into(),
+        ))
+    });
+    let job = admission.retain_original_bootstrap_consumer_handle(worker);
+    drop(job);
+    started.recv_timeout(Duration::from_secs(2)).unwrap();
+
+    let first_registry = Arc::clone(&registry);
+    let first = tokio::spawn(async move { first_registry.join_and_release().await });
+    tokio::time::timeout(Duration::from_secs(2), gate.cancelled())
+        .await
+        .unwrap();
+    first.abort();
+    assert!(first.await.unwrap_err().is_cancelled());
+
+    let mut byte = [0];
+    assert!(
+        matches!(peer.read(&mut byte), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
+    assert!(executions.load(std::sync::atomic::Ordering::Acquire) == 1);
+
+    let second_registry = Arc::clone(&registry);
+    let mut second = tokio::spawn(async move { second_registry.join_and_release().await });
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), &mut second)
+            .await
+            .is_err()
+    );
+    release.send(()).unwrap();
+    let result = tokio::time::timeout(Duration::from_secs(2), second)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(matches!(result, Err(AgentdError::GenerationFenced(message))
+        if message == "same original consumer error after waiter cancellation"));
+    assert!(executions.load(std::sync::atomic::Ordering::Acquire) == 1);
+    assert!(matches!(peer.read(&mut byte), Ok(0)));
 }

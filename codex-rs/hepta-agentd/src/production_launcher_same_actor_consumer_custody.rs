@@ -3,6 +3,9 @@
 //! or an owner which the closure has opened but not yet delivered.
 
 use super::refused;
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use crate::AgentdError;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
@@ -36,14 +39,15 @@ pub(crate) struct OriginalBootstrapConsumerAdmission<'a> {
 }
 
 struct ConsumerJobState {
-    handle: Option<JoinHandle<Result<FinalUseAuthority, AgentdError>>>,
     output: Option<Result<FinalUseAuthority, AgentdError>>,
     joined: bool,
     receiving: bool,
+    poisoned: bool,
 }
 
 pub(crate) struct OriginalBootstrapConsumerJob {
-    state: tokio::sync::Mutex<ConsumerJobState>,
+    state: Arc<Mutex<ConsumerJobState>>,
+    completion: Shared<BoxFuture<'static, ()>>,
     gate: Arc<SameActorPhaseGate>,
 }
 
@@ -105,15 +109,24 @@ impl OriginalBootstrapConsumers {
         let mut failure = poisoned.then(|| refused("original bootstrap consumer custody poisoned"));
         for job in jobs {
             job.gate.close();
-            let mut state = job.state.lock().await;
-            job.join_locked(&mut state).await;
-            if let Some(result) = state.output.take() {
+            job.completion.clone().await;
+            let (output, joined, poisoned) = {
+                let mut state = job.lock_original_bootstrap_result();
+                (state.output.take(), state.joined, state.poisoned)
+            };
+            if let Some(result) = output {
                 // Undelivered owner is released only AFTER its actual task
                 // joined. An undelivered original error remains observable.
                 match result {
                     Ok(owner) => drop(owner),
                     Err(error) => super::save_original_failure(&mut failure, error),
                 }
+            }
+            if !joined || poisoned {
+                super::save_original_failure(
+                    &mut failure,
+                    refused("original bootstrap consumer terminal custody unavailable"),
+                );
             }
         }
         failure.map_or(Ok(()), Err)
@@ -125,13 +138,38 @@ impl OriginalBootstrapConsumerAdmission<'_> {
         mut self,
         handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,
     ) -> Arc<OriginalBootstrapConsumerJob> {
+        let state = Arc::new(Mutex::new(ConsumerJobState {
+            output: None,
+            joined: false,
+            receiving: false,
+            poisoned: false,
+        }));
+        let recorded = Arc::clone(&state);
+        let gate = Arc::clone(&self.gate);
+        // Only this retained Shared future owns and awaits the actual handle.
+        // Its unit result is cloneable; the original authority/error is not.
+        let completion = async move {
+            let result = match handle.await {
+                Ok(result) => result,
+                Err(error) => Err(AgentdError::Protocol(format!(
+                    "original Root production inputs: {error}"
+                ))),
+            };
+            let mut state = recorded.lock().unwrap_or_else(|error| {
+                gate.close();
+                let mut state = error.into_inner();
+                state.poisoned = true;
+                state
+            });
+            // No await separates the actual join and the unique result write.
+            state.output = Some(result);
+            state.joined = true;
+        }
+        .boxed()
+        .shared();
         let job = Arc::new(OriginalBootstrapConsumerJob {
-            state: tokio::sync::Mutex::new(ConsumerJobState {
-                handle: Some(handle),
-                output: None,
-                joined: false,
-                receiving: false,
-            }),
+            state,
+            completion,
             gate: Arc::clone(&self.gate),
         });
         self.state.jobs.push(Arc::clone(&job));
@@ -149,24 +187,13 @@ impl Drop for OriginalBootstrapConsumerAdmission<'_> {
 }
 
 impl OriginalBootstrapConsumerJob {
-    async fn join_locked(&self, state: &mut ConsumerJobState) {
-        if state.joined {
-            return;
-        }
-        let result = match state.handle.as_mut() {
-            Some(handle) => match handle.await {
-                Ok(result) => result,
-                Err(error) => Err(AgentdError::Protocol(format!(
-                    "original Root production inputs: {error}"
-                ))),
-            },
-            None => Err(refused("actual bootstrap consumer handle missing")),
-        };
-        // Keep the real result in the retained slot, without an intervening
-        // await. No cancelled waiter removes or re-polls the original handle.
-        state.handle = None;
-        state.output = Some(result);
-        state.joined = true;
+    fn lock_original_bootstrap_result(&self) -> MutexGuard<'_, ConsumerJobState> {
+        self.state.lock().unwrap_or_else(|error| {
+            self.gate.close();
+            let mut state = error.into_inner();
+            state.poisoned = true;
+            state
+        })
     }
 
     pub(crate) fn receive_original(
@@ -175,18 +202,26 @@ impl OriginalBootstrapConsumerJob {
         let job = Arc::clone(self);
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
         async move {
-            let mut state = job.state.lock().await;
-            if state.receiving {
-                return Err(refused(
-                    "original bootstrap consumer result was already received",
-                ));
+            {
+                let mut state = job.lock_original_bootstrap_result();
+                if state.receiving {
+                    return Err(refused(
+                        "original bootstrap consumer result was already received",
+                    ));
+                }
+                state.receiving = true;
             }
-            state.receiving = true;
-            job.join_locked(&mut state).await;
-            let output = state
-                .output
-                .take()
-                .ok_or_else(|| refused("original bootstrap consumer output missing"))?;
+            job.completion.clone().await;
+            let output = {
+                let mut state = job.lock_original_bootstrap_result();
+                if !state.joined {
+                    return Err(refused("actual bootstrap consumer join missing"));
+                }
+                state
+                    .output
+                    .take()
+                    .ok_or_else(|| refused("original bootstrap consumer output missing"))?
+            };
             let owner = output?;
             job.gate.require_open()?;
             closing.disarm();

@@ -328,27 +328,23 @@ impl OriginalRootSessionPauseWaiter {
             attempt
                 .original
                 .require_original_pause_origin(&attempt.identity, &attempt.original.gate)?;
-            let worker = {
+            let (recorded, pending) = {
+                let state = attempt.original.worker.lock().await;
+                (state.observed, state.handle.clone())
+            };
+            let worker = if let Some(observed) = recorded {
+                observed
+            } else {
+                let pending = pending.ok_or_else(|| {
+                    join_error("normal Session pause lost its actual worker handle")
+                })?;
+                // The outer custodian retains this same shared actual join if
+                // normal waiting is cancelled before or after task completion.
+                let observed = pending.await;
                 let mut state = attempt.original.worker.lock().await;
-                if let Some(observed) = state.observed {
-                    observed
-                } else {
-                    let handle = state.handle.as_mut().ok_or_else(|| {
-                        join_error("normal Session pause lost its actual worker handle")
-                    })?;
-                    // Borrow the same stored JoinHandle. Cancelling this wait
-                    // leaves it available to the actual outer fault custodian.
-                    let observed = match handle.await {
-                        Ok(()) => OriginalRootWorkerTermination::Returned,
-                        Err(error) if error.is_cancelled() => {
-                            OriginalRootWorkerTermination::Cancelled
-                        }
-                        Err(_) => OriginalRootWorkerTermination::Panicked,
-                    };
-                    state.handle = None;
-                    state.observed = Some(observed);
-                    observed
-                }
+                state.handle = None;
+                state.observed = Some(observed);
+                observed
             };
             if worker != OriginalRootWorkerTermination::Returned
                 || attempt.original.consumers.worker_failure().is_some()

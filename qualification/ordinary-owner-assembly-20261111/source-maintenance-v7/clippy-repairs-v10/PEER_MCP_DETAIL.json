@@ -1,0 +1,1131 @@
+{
+  "schema_version": 1,
+  "kind": "bounded_independent_review_of_actual_v9_mcp_five_await_sites",
+  "reviewer": "runtime_access",
+  "author": "chain_nextuse",
+  "packet": "d36c2a40cdd4821e323a0b7cb4d99d847af98dcc",
+  "verdict": "No confirmed local static semantic blocker in the reviewed 4-path/23-op delta. Actual formatter/compiler/tests/original checker remain unexecuted by this reviewer.",
+  "original_log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+  "inventory": "f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda",
+  "replay": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "pre": "227ba79e46743409c974835126f7a6b340efdb94",
+      "post": "25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe",
+      "ops": 5,
+      "pre_bytes": 14217,
+      "post_bytes": 13877,
+      "pre_sha256": "0039095e6fa3cc6ef71b43771f0a61bd9fe2ce5ae9514fb9f37c84715b79b833",
+      "post_sha256": "149e58f0ae3bafea438d69e0ef5860bc33812f6d5ab49f5aee49a29169033643",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+      "post": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+      "ops": 8,
+      "pre_bytes": 15052,
+      "post_bytes": 14012,
+      "pre_sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f",
+      "post_sha256": "df9a86addf11e1a7018ffed2c14a29fb33b45c7dedb23536b1bf824883044cc2",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "pre": "868c1591cf84f1390f813ddaec5ecc97e8114454",
+      "post": "d9646f8a829656e42aa642260070d2e949e9ce2b",
+      "ops": 3,
+      "pre_bytes": 26125,
+      "post_bytes": 26249,
+      "pre_sha256": "8142cfe8f5f937e7652489fcabcbd7334db1ff0fbbdc2290f1c44a08ff5a9a1f",
+      "post_sha256": "90af8ea6bc1474aecf2950fb39b60357a8adc576af5eae205a67dd66901964d4",
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "pre": "5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f",
+      "post": "5fa72acad70da6c240ae6c3643fc0c4f3dd543b1",
+      "ops": 7,
+      "pre_bytes": 8692,
+      "post_bytes": 11303,
+      "pre_sha256": "f0951c8fce0f414f317a85bd394914d5048fe490edb177a4ae4659e7ed990e84",
+      "post_sha256": "9c3334f5bbe08156736c3dcacf58cdad79f23062076b1e15774968cf5694a10a",
+      "unique_forward_reverse": true
+    }
+  ],
+  "dependencies": [
+    {
+      "pin": "0da95a220ed5484f419f5feb814c921c395db5ba",
+      "bytes": 4999,
+      "sha256": "ece5b5c32912e3dfba8877c320b2cde39a5d98b1e8b06ca08a0579be875fd55d",
+      "relevant_lines": [
+        "//! unit completion future. Strict cleanup keeps its real JoinError separately.",
+        "use futures::FutureExt;",
+        "use futures::future::BoxFuture;",
+        "use futures::future::Shared;",
+        "use tokio::task::JoinError;",
+        "    Join(Arc<JoinError>),",
+        "    result: OnceLock<Result<(), Arc<JoinError>>>,",
+        "/// This is the SAME actual handle and the same unit-valued Shared future",
+        "        let result = handle.await.map_err(Arc::new);",
+        "    completion: Shared<BoxFuture<'static, Result<(), Arc<OriginalCoreTaskFailure>>>>,",
+        "    /// A cancelled waiter drops only this Shared clone. The registry retains"
+      ]
+    },
+    {
+      "pin": "1a88c3aedbe8aeccb5ce2debd97681de04d38116",
+      "bytes": 2543,
+      "sha256": "630a65afa578517edb7bb67ba50963dc8d8f182cfe313d6538c30523d034c047",
+      "relevant_lines": [
+        "futures = { workspace = true, default-features = false, features = [\"std\"] }"
+      ]
+    },
+    {
+      "pin": "6134f2126db203999727d05f61921836dfed06b7",
+      "bytes": 1726,
+      "sha256": "c14b473064600e0886d20b034fb07ab0a5f71d7120c0e6e585f3b93f88aec0ad",
+      "relevant_lines": [
+        "futures = { workspace = true }"
+      ]
+    }
+  ],
+  "function_comparison": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "function_count_before": 12,
+      "function_count_after": 12,
+      "changed": [
+        {
+          "name": "start_original_driver_join",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "35992485dd2577ac0790f225d5fbc0725628bd7d19067bc2a4382483dfe3a390",
+          "post_sha": "e2ed81cc3c5bb10e94832af2d283fa76fca4c314831540910187f5e2a87171ab"
+        },
+        {
+          "name": "join_original",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "5a66bf5469d9e15d1747dd8c05805623264443d52da1fdf950f3b24c17947383",
+          "post_sha": "d3ee6106a5219a526d114ae1fdf14d7890fb7ad85882eaf7952cf06175972431"
+        }
+      ],
+      "unchanged": 10,
+      "comparisons": [
+        {
+          "name": "require_original_ready_client_joined",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "7cac368a6b769e18ac954de94b28b305bf42a7ad75bf8d379638e00193c0ad57",
+          "post_sha": "7cac368a6b769e18ac954de94b28b305bf42a7ad75bf8d379638e00193c0ad57"
+        },
+        {
+          "name": "new",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "d8a1fe2bc7c8bfc54c09098106edd681105d56679117c249933d64e470018e50",
+          "post_sha": "d8a1fe2bc7c8bfc54c09098106edd681105d56679117c249933d64e470018e50"
+        },
+        {
+          "name": "request_stop",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "ae17aec3245fbc54d9762cf3c849cacf217ece5576cd559006bd1370213d112d",
+          "post_sha": "ae17aec3245fbc54d9762cf3c849cacf217ece5576cd559006bd1370213d112d"
+        },
+        {
+          "name": "reserve_original_constructor",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "577d301ccd81202f6345286c5030f356917dfca3f12ea39b8ae286e9c72c3620",
+          "post_sha": "577d301ccd81202f6345286c5030f356917dfca3f12ea39b8ae286e9c72c3620"
+        },
+        {
+          "name": "retain_original_client",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "5abb30018d688a6d65494ccc7f57f7eec402a73fd5aa63f186977f75ee73cb54",
+          "post_sha": "5abb30018d688a6d65494ccc7f57f7eec402a73fd5aa63f186977f75ee73cb54"
+        },
+        {
+          "name": "retain_original_service",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "bceb8c4fa1e483f012d65b4743d199e78e7a886ef9632aa90e8d26664f1ef5c3",
+          "post_sha": "bceb8c4fa1e483f012d65b4743d199e78e7a886ef9632aa90e8d26664f1ef5c3"
+        },
+        {
+          "name": "start_original_driver_join",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "35992485dd2577ac0790f225d5fbc0725628bd7d19067bc2a4382483dfe3a390",
+          "post_sha": "e2ed81cc3c5bb10e94832af2d283fa76fca4c314831540910187f5e2a87171ab"
+        },
+        {
+          "name": "join_original_client",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "d2af5381fe15423b60b0882e3563224dd0b70685c0777f496426ba1f221b4f98",
+          "post_sha": "d2af5381fe15423b60b0882e3563224dd0b70685c0777f496426ba1f221b4f98"
+        },
+        {
+          "name": "join_actual_original_service",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "8cdc54efd0d7aacc8ff92c6af070d04580b05e470e13efed2cc8be08c5238abb",
+          "post_sha": "8cdc54efd0d7aacc8ff92c6af070d04580b05e470e13efed2cc8be08c5238abb"
+        },
+        {
+          "name": "join_original",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "5a66bf5469d9e15d1747dd8c05805623264443d52da1fdf950f3b24c17947383",
+          "post_sha": "d3ee6106a5219a526d114ae1fdf14d7890fb7ad85882eaf7952cf06175972431"
+        },
+        {
+          "name": "drop",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "77836279ebb33598623830ec593d1ef73d225360602d0070ea0f5fecb7be58f4",
+          "post_sha": "77836279ebb33598623830ec593d1ef73d225360602d0070ea0f5fecb7be58f4"
+        },
+        {
+          "name": "new_stdio_client_with_owned_shutdown",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "29872d692e0f4701ba7ef3088da2cb9c6822614ca43658503183acc1b0ce1608",
+          "post_sha": "29872d692e0f4701ba7ef3088da2cb9c6822614ca43658503183acc1b0ce1608"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "function_count_before": 13,
+      "function_count_after": 13,
+      "changed": [
+        {
+          "name": "retain_original_startup",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "0c2f89be25206ebec3f0485a61f0e9e42827db8cadb9cc4ba6988b34da10cc72",
+          "post_sha": "5a9837410a48539c0e3d866ef82cf139940587d2140b92290a70692625066ca2"
+        },
+        {
+          "name": "stop_and_join_original_runtime",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "66bc8977e4e66cc4f6d4ee60a0a68f56e0a2ab86cea00225bb83b2c5ae7d116f",
+          "post_sha": "40f157281e4497c1b71b67b1509de60d6e09b843fb5fce1df5ae7e0152504c82"
+        },
+        {
+          "name": "join_original_startup",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "23a6f5241df72b3d1deedeb0f8cf56668f7f161cd98009c8271da52df29f5ba8",
+          "post_sha": "8ab72318ad09c0b7162cf8447c3c3191153fd6030e9c2f83ad6392772ac87b04"
+        },
+        {
+          "name": "receive_original_cleanup",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "0d546a4bdc7cd7e7238ee4e3de8b145d981948d485d7e93349d357d344d11f93",
+          "post_sha": "4ad58d897958cb282f851fd4c402925a4b7a66c4abbc69d031fda951783e29b3"
+        }
+      ],
+      "unchanged": 9,
+      "comparisons": [
+        {
+          "name": "require_original_ready_runtime_joined",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "c5527b3b661783659557b76557ca03ef5d7562c27549d711acaf1ccb703ee13d",
+          "post_sha": "c5527b3b661783659557b76557ca03ef5d7562c27549d711acaf1ccb703ee13d"
+        },
+        {
+          "name": "new",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "1de1a2ba8d1151c8f7635a676c56c40196b1a8c90b808d6826a513b43db0cbea",
+          "post_sha": "1de1a2ba8d1151c8f7635a676c56c40196b1a8c90b808d6826a513b43db0cbea"
+        },
+        {
+          "name": "reserve_original_input",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "c4b9af8cecdb8b1f7dd19ade76e85370912150f9c9c447438da9a4f036057a86",
+          "post_sha": "c4b9af8cecdb8b1f7dd19ade76e85370912150f9c9c447438da9a4f036057a86"
+        },
+        {
+          "name": "original_client_custody",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "a1e72c55a0297c80e847ca884921b4a438f6a6481822d6b12196a8a8a99e646b",
+          "post_sha": "a1e72c55a0297c80e847ca884921b4a438f6a6481822d6b12196a8a8a99e646b"
+        },
+        {
+          "name": "require_original_construction",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "08bd96015ec89671deb7531b8824b42e5f2eae08727eefea55ed082bfff1d260",
+          "post_sha": "08bd96015ec89671deb7531b8824b42e5f2eae08727eefea55ed082bfff1d260"
+        },
+        {
+          "name": "retain_original_startup",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "0c2f89be25206ebec3f0485a61f0e9e42827db8cadb9cc4ba6988b34da10cc72",
+          "post_sha": "5a9837410a48539c0e3d866ef82cf139940587d2140b92290a70692625066ca2"
+        },
+        {
+          "name": "request_stop",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "542adc74c30944b1d694857e07b48d85b5021f1de41b599c80ce3ffb43e9bd9a",
+          "post_sha": "542adc74c30944b1d694857e07b48d85b5021f1de41b599c80ce3ffb43e9bd9a"
+        },
+        {
+          "name": "stop_and_join_original_runtime",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "66bc8977e4e66cc4f6d4ee60a0a68f56e0a2ab86cea00225bb83b2c5ae7d116f",
+          "post_sha": "40f157281e4497c1b71b67b1509de60d6e09b843fb5fce1df5ae7e0152504c82"
+        },
+        {
+          "name": "join_original_resources",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "93c4eb6fb71cd01cf7ec13738e2929fe89b78613fb75880fb4773c9c918f580d",
+          "post_sha": "93c4eb6fb71cd01cf7ec13738e2929fe89b78613fb75880fb4773c9c918f580d"
+        },
+        {
+          "name": "drop",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "e0ba3fc6c8d466316e5706e409f4d9dfa50a52c4262b77a078f35260529f70aa",
+          "post_sha": "e0ba3fc6c8d466316e5706e409f4d9dfa50a52c4262b77a078f35260529f70aa"
+        },
+        {
+          "name": "drop",
+          "occurrence": 1,
+          "byte_equal": true,
+          "pre_sha": "77836279ebb33598623830ec593d1ef73d225360602d0070ea0f5fecb7be58f4",
+          "post_sha": "77836279ebb33598623830ec593d1ef73d225360602d0070ea0f5fecb7be58f4"
+        },
+        {
+          "name": "join_original_startup",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "23a6f5241df72b3d1deedeb0f8cf56668f7f161cd98009c8271da52df29f5ba8",
+          "post_sha": "8ab72318ad09c0b7162cf8447c3c3191153fd6030e9c2f83ad6392772ac87b04"
+        },
+        {
+          "name": "receive_original_cleanup",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "0d546a4bdc7cd7e7238ee4e3de8b145d981948d485d7e93349d357d344d11f93",
+          "post_sha": "4ad58d897958cb282f851fd4c402925a4b7a66c4abbc69d031fda951783e29b3"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "function_count_before": 29,
+      "function_count_after": 29,
+      "changed": [
+        {
+          "name": "join",
+          "occurrence": 1,
+          "byte_equal": false,
+          "pre_sha": "6af44545055e688e16eb53ab250138967ae81d874d003ee08cfcd0e99718f1f1",
+          "post_sha": "56cb116470f1cdabdc3afbd661bc4949d1ed1e7183e3d8c1778477863a9680ca"
+        },
+        {
+          "name": "track",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "4fc716d5d2fc0258112ed07921ce97d178aef06ce8d9d18b3e0628073fa93b03",
+          "post_sha": "4d04c05fca98dd7ab1f0b2083b37322f405d2e9a80c729deae0ca84869a43c59"
+        },
+        {
+          "name": "join_original_stdio",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "5dcdc928390935f1c9cd2138a36a4eebe9a3d47dc0f884eacb1d3129a69662b5",
+          "post_sha": "62569d04f51e6e80e065c8f7be73eb278830425f0828c3c5dd86dee62c534cd4"
+        }
+      ],
+      "unchanged": 26,
+      "comparisons": [
+        {
+          "name": "io",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "a5d328b9e49ea2dd9f86dac17626b268956e83125806cd16669cea6e48a485df",
+          "post_sha": "a5d328b9e49ea2dd9f86dac17626b268956e83125806cd16669cea6e48a485df"
+        },
+        {
+          "name": "join",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "9ff04df375062cc0b18dc305f100560eb98a57638c97055501ec8a9f26c7822d",
+          "post_sha": "9ff04df375062cc0b18dc305f100560eb98a57638c97055501ec8a9f26c7822d"
+        },
+        {
+          "name": "join",
+          "occurrence": 1,
+          "byte_equal": false,
+          "pre_sha": "6af44545055e688e16eb53ab250138967ae81d874d003ee08cfcd0e99718f1f1",
+          "post_sha": "56cb116470f1cdabdc3afbd661bc4949d1ed1e7183e3d8c1778477863a9680ca"
+        },
+        {
+          "name": "to_io",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "bf64acbd8ccc01267fc79a2d65df1cae76743dbfb0c2d7143265e965f41b5ffd",
+          "post_sha": "bf64acbd8ccc01267fc79a2d65df1cae76743dbfb0c2d7143265e965f41b5ffd"
+        },
+        {
+          "name": "fmt",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "462cedad0ee5912d6bc790649b607806f6e38cbe33c603e623402246fe55a6fa",
+          "post_sha": "462cedad0ee5912d6bc790649b607806f6e38cbe33c603e623402246fe55a6fa"
+        },
+        {
+          "name": "fmt",
+          "occurrence": 1,
+          "byte_equal": true,
+          "pre_sha": "3f64f8d9483ae2af4d3e61d6386cae73effebd5f416fce7e68e670d69661460d",
+          "post_sha": "3f64f8d9483ae2af4d3e61d6386cae73effebd5f416fce7e68e670d69661460d"
+        },
+        {
+          "name": "source",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "d0aeb79b62489793224fe4f71aa99eca6e177494e5ce32ae334abc4d3b7491e4",
+          "post_sha": "d0aeb79b62489793224fe4f71aa99eca6e177494e5ce32ae334abc4d3b7491e4"
+        },
+        {
+          "name": "source",
+          "occurrence": 1,
+          "byte_equal": true,
+          "pre_sha": "b73e53081536c55e6d5e619132b4a127a0a7726f4296377e0bb6184db5887556",
+          "post_sha": "b73e53081536c55e6d5e619132b4a127a0a7726f4296377e0bb6184db5887556"
+        },
+        {
+          "name": "track",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "4fc716d5d2fc0258112ed07921ce97d178aef06ce8d9d18b3e0628073fa93b03",
+          "post_sha": "4d04c05fca98dd7ab1f0b2083b37322f405d2e9a80c729deae0ca84869a43c59"
+        },
+        {
+          "name": "require_original_child_exited",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "8d116237d0b93fb89d035511424c1032cdfb92436183bcc13941ecbcbb65c6f1",
+          "post_sha": "8d116237d0b93fb89d035511424c1032cdfb92436183bcc13941ecbcbb65c6f1"
+        },
+        {
+          "name": "new",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "888aeae63828f5e4690d955800569244179c4159e74c3388c2dc2e4afdadf189",
+          "post_sha": "888aeae63828f5e4690d955800569244179c4159e74c3388c2dc2e4afdadf189"
+        },
+        {
+          "name": "state",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "c3aa30c6a47c6ace3f409ec9accdff0c98f43a426be1e7178533e0dcfc4785e7",
+          "post_sha": "c3aa30c6a47c6ace3f409ec9accdff0c98f43a426be1e7178533e0dcfc4785e7"
+        },
+        {
+          "name": "request_stop",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "c87d0830991bf473f9d7c66b937e54171f41f6677680a2f82ec9975d24526188",
+          "post_sha": "c87d0830991bf473f9d7c66b937e54171f41f6677680a2f82ec9975d24526188"
+        },
+        {
+          "name": "start_termination",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "61ab1a612edcf32c2c31a907edada4bbfac11d8ae3694efd06c2c42fef867947",
+          "post_sha": "61ab1a612edcf32c2c31a907edada4bbfac11d8ae3694efd06c2c42fef867947"
+        },
+        {
+          "name": "start_termination",
+          "occurrence": 1,
+          "byte_equal": true,
+          "pre_sha": "f869b02029787a0f36b0b96a1abaae6680f92a46afd6c4601e43f6f17a09eb6c",
+          "post_sha": "f869b02029787a0f36b0b96a1abaae6680f92a46afd6c4601e43f6f17a09eb6c"
+        },
+        {
+          "name": "launch",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "eef9fea774de57ccd9576cbd285414e9ab28fabf4117c152e01b8cf9b60b53b8",
+          "post_sha": "eef9fea774de57ccd9576cbd285414e9ab28fabf4117c152e01b8cf9b60b53b8"
+        },
+        {
+          "name": "start_launch",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "180bdecbe0c804669d62eefaaa850b55b1ee4c146a7a9671ae71a5f0c8ca6b44",
+          "post_sha": "180bdecbe0c804669d62eefaaa850b55b1ee4c146a7a9671ae71a5f0c8ca6b44"
+        },
+        {
+          "name": "register_process",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "d9a38a097c89444a30b1b7538dce05473d3d8f471ffbdb1d1b34c3113b373e9d",
+          "post_sha": "d9a38a097c89444a30b1b7538dce05473d3d8f471ffbdb1d1b34c3113b373e9d"
+        },
+        {
+          "name": "retain_stderr",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "3881b4a84086ac400e3e7845cfb045678cd06bdb9c11d2ce9a7ddfb7e1c14ab9",
+          "post_sha": "3881b4a84086ac400e3e7845cfb045678cd06bdb9c11d2ce9a7ddfb7e1c14ab9"
+        },
+        {
+          "name": "retain_child",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "0f77c69997c75401282a0536b539174f910df5e4f270bb318dc4272ffe47b05a",
+          "post_sha": "0f77c69997c75401282a0536b539174f910df5e4f270bb318dc4272ffe47b05a"
+        },
+        {
+          "name": "join_original_stdio",
+          "occurrence": 0,
+          "byte_equal": false,
+          "pre_sha": "5dcdc928390935f1c9cd2138a36a4eebe9a3d47dc0f884eacb1d3129a69662b5",
+          "post_sha": "62569d04f51e6e80e065c8f7be73eb278830425f0828c3c5dd86dee62c534cd4"
+        },
+        {
+          "name": "retire_transport",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "4b410484641a177350209891b5521ecbd5d055a85cfab0df0b5bd8152e0722f0",
+          "post_sha": "4b410484641a177350209891b5521ecbd5d055a85cfab0df0b5bd8152e0722f0"
+        },
+        {
+          "name": "drop",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "bbd7ecfb8c3c321567c49c117ffd80d2a19f749b1eb60a9ecf584ba5ca53765e",
+          "post_sha": "bbd7ecfb8c3c321567c49c117ffd80d2a19f749b1eb60a9ecf584ba5ca53765e"
+        },
+        {
+          "name": "send",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "005c57585048face67f4b20917d38a15ee2cf8670c245d4d3e868be404b14d0a",
+          "post_sha": "005c57585048face67f4b20917d38a15ee2cf8670c245d4d3e868be404b14d0a"
+        },
+        {
+          "name": "receive",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "8849af7dcdc15bf748c27f5a2969ce9f59a9ea67275db5af18320882c4ab933a",
+          "post_sha": "8849af7dcdc15bf748c27f5a2969ce9f59a9ea67275db5af18320882c4ab933a"
+        },
+        {
+          "name": "close",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "fba596b1e7411a8baba2e9fb3e8e2a7b179b60cc07cc892d51e4dfb12ddefdd8",
+          "post_sha": "fba596b1e7411a8baba2e9fb3e8e2a7b179b60cc07cc892d51e4dfb12ddefdd8"
+        },
+        {
+          "name": "new_with_owned_shutdown",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "74c335a03f6e30f65cb670a17a7508b2b968f98b5cddcb481e22d1f40a8cb404",
+          "post_sha": "74c335a03f6e30f65cb670a17a7508b2b968f98b5cddcb481e22d1f40a8cb404"
+        },
+        {
+          "name": "launch_server_owned",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "b003e2f34ab9fb3a9424387c6ff7cfbde5208b8372d11db92bb41eae124494d3",
+          "post_sha": "b003e2f34ab9fb3a9424387c6ff7cfbde5208b8372d11db92bb41eae124494d3"
+        },
+        {
+          "name": "unsupported",
+          "occurrence": 0,
+          "byte_equal": true,
+          "pre_sha": "a19ec181ff61a96ced0ccc51c89aef81e0446a1c3fea26a8e2d37fd36a14ef9a",
+          "post_sha": "a19ec181ff61a96ced0ccc51c89aef81e0446a1c3fea26a8e2d37fd36a14ef9a"
+        }
+      ]
+    }
+  ],
+  "preserved_raw_spans": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalMcpClientShutdown",
+      "bytes": 103,
+      "git_blob": "fe0a0644eb97c914c5d46cc0886a54bb89afc716",
+      "sha256": "82675c5ac40b711f77ce9eef5d77c4bfab9b40505d0b7610be56a6ddd4f06be2",
+      "raw_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalMcpConstructionGuard",
+      "bytes": 331,
+      "git_blob": "2adf3c1a0fb60733bc30c1641a2ed4fd185fb423",
+      "sha256": "61813aff781ee9907ff6ef3f60e28871b3fbda1fdd47902edae291d800587666",
+      "raw_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalMcpRuntimeShutdown",
+      "bytes": 104,
+      "git_blob": "c1d9d271142f94a42d1e594da76e25bb2b5b4499",
+      "sha256": "c0d887b8a128a808c19ff7f98a0cf6461a0f4df16484c813038657dbdfa9e9ee",
+      "raw_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl Drop for OriginalOwnedStdioTransport",
+      "bytes": 109,
+      "git_blob": "9e3559f61724d2f08f3578a9ee4b2ed86d6d0ca4",
+      "sha256": "45f906d2ee6f614534f2f8afa32900c0cc311664468ebcdfb66e4e8b5b74095b",
+      "raw_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl RecordedFailure",
+      "bytes": 412,
+      "git_blob": "06846ea38b6ad361e64d02f4da91e798a271f1f5",
+      "sha256": "363fb042714197867a2383df33903127a7dfc3b6089b91d7141b13a2a5f2819c",
+      "raw_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl Error for RecordedFailure",
+      "bytes": 131,
+      "git_blob": "a21b1f5b9427e51b75b0af4ebb44e24cffbb53a0",
+      "sha256": "097b615db11542d8c7c8a250a80839e6806cad91a629fbb533cfe8ed988e1ef2",
+      "raw_equal": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "selector": "impl Error for ShutdownFailures",
+      "bytes": 159,
+      "git_blob": "04229c72ef3fc58c757274a6ea11bfacdfc36e1f",
+      "sha256": "43a0ea4ddd6d551fb9d297af601536d38cb83d3b4999c27010d25326af1d07b7",
+      "raw_equal": true
+    }
+  ],
+  "boundary_definition_checks": [
+    {
+      "id": "mcp_owned_client_new",
+      "definition_markers": [
+        {
+          "marker": "pub fn new(fallback_cwd: PathBuf) -> Arc<Self> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_client_request_stop",
+      "definition_markers": [
+        {
+          "marker": "pub fn request_stop(&self) {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_client_retain_original_service",
+      "definition_markers": [
+        {
+          "marker": "pub(super) fn retain_original_service(&self, service: &Arc<OriginalService>) -> Result<()> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_client_join_original_client",
+      "definition_markers": [
+        {
+          "marker": "pub async fn join_original_client(&self) -> Result<OriginalMcpClientShutdownObservation> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_client_observation_require_original_ready_client_joined",
+      "definition_markers": [
+        {
+          "marker": "pub fn require_original_ready_client_joined(&self) -> Result<()> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_client_constructor_new_stdio_client_with_owned_shutdown",
+      "definition_markers": [
+        {
+          "marker": "pub async fn new_stdio_client_with_owned_shutdown(\n        program: OsString,\n        args: Vec<OsString>,\n        env: Option<HashMap<OsString, OsString>>,\n        env_vars: &[McpServerEnvVar],\n        cwd: Option<String>,\n        owner: Arc<OriginalMcpClientShutdown>,\n    ) -> std::io::Result<Arc<Self>> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_new",
+      "definition_markers": [
+        {
+          "marker": "pub fn new() -> Arc<Self> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_reserve_original_input",
+      "definition_markers": [
+        {
+          "marker": "pub(crate) fn reserve_original_input(\n        self: &Arc<Self>,\n        input: &McpRuntimeInput,\n    ) -> Result<OriginalMcpConstructionGuard> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_original_client_custody",
+      "definition_markers": [
+        {
+          "marker": "pub(crate) fn original_client_custody(&self) -> Result<Arc<OriginalMcpClientShutdown>> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_require_original_construction",
+      "definition_markers": [
+        {
+          "marker": "pub(crate) fn require_original_construction(&self) -> Result<()> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_retain_original_startup",
+      "definition_markers": [
+        {
+          "marker": "pub(crate) fn retain_original_startup(&self, mut actual: JoinSet<StartupOutput>) {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_request_stop",
+      "definition_markers": [
+        {
+          "marker": "pub fn request_stop(&self) {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_stop_and_join_original_runtime",
+      "definition_markers": [
+        {
+          "marker": "pub fn stop_and_join_original_runtime(\n        self: &Arc<Self>,\n    ) -> impl std::future::Future<Output = Result<Arc<OriginalMcpRuntimeShutdownObservation>>>\n    + Send\n    + 'static {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_runtime_observation_require_original_ready_runtime_joined",
+      "definition_markers": [
+        {
+          "marker": "pub fn require_original_ready_runtime_joined(&self) -> Result<()> {",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_stdio_new",
+      "definition_markers": [
+        {
+          "marker": "fn new() -> Arc<Self>",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "state: Mutex::new(CustodyState::default())",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "stopping: AtomicBool::new(false)",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_stdio_launcher",
+      "definition_markers": [
+        {
+          "marker": "fn new_with_owned_shutdown(",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "owned_shutdown: Some(custody)",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_stdio_stop",
+      "definition_markers": [
+        {
+          "marker": "fn request_stop(",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "self.stopping.store(true, Ordering::Release)",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "!state.termination_attempted",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "self.start_termination(&mut state, process_id, &runtime)",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_stdio_join",
+      "definition_markers": [
+        {
+          "marker": "fn join_original_stdio(",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "let mut launch_state = launch.join().await",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "drop(abandoned)",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "let child_state = child.join().await",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "ShutdownFailures(failures)",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    },
+    {
+      "id": "mcp_owned_stdio_actual_exit",
+      "definition_markers": [
+        {
+          "marker": "fn require_original_child_exited(",
+          "pre_count": 1,
+          "post_count": 1
+        },
+        {
+          "marker": "self.process_id.is_some() && self.status.is_some()",
+          "pre_count": 1,
+          "post_count": 1
+        }
+      ]
+    }
+  ],
+  "component_checks": {
+    "old_names": [
+      "empty_custody_cannot_attest_a_child_exit_or_start_after_stop",
+      "unsupported_modern_mode_refuses_before_an_actual_launch",
+      "abandoned_actual_launch_output_is_taken_and_its_child_reaped",
+      "cancelled_cleanup_waiter_keeps_the_same_undropped_transport_and_jobs",
+      "actual_stderr_error_is_preserved_after_child_and_helper_joins",
+      "retained_sdk_send_future_cannot_keep_the_closed_actual_writer_live"
+    ],
+    "new_names": [
+      "empty_custody_cannot_attest_a_child_exit_or_start_after_stop",
+      "unsupported_modern_mode_refuses_before_an_actual_launch",
+      "abandoned_actual_launch_output_is_taken_and_its_child_reaped",
+      "cancelled_cleanup_waiter_keeps_the_same_undropped_transport_and_jobs",
+      "actual_stderr_error_is_preserved_after_child_and_helper_joins",
+      "retained_sdk_send_future_cannot_keep_the_closed_actual_writer_live",
+      "cancelled_shared_job_waiter_keeps_one_non_clone_fd_output_for_all_waiters",
+      "shared_job_keeps_the_same_original_join_error_for_later_waiters"
+    ],
+    "old_macro_counts": {
+      "assert": 21,
+      "assert_eq": 6,
+      "assert_ne": 0,
+      "panic": 3,
+      "matches": 4
+    },
+    "old_tests_post_macro_counts": {
+      "assert": 21,
+      "assert_eq": 6,
+      "assert_ne": 0,
+      "panic": 3,
+      "matches": 4
+    },
+    "unexecuted": true
+  },
+  "unchanged_token_inventory": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "tokens": [
+        {
+          "literal": "tokio::spawn(",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "literal": ".spawn_blocking(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "std::thread::spawn",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "Duration::",
+          "pre": 1,
+          "post": 1
+        },
+        {
+          "literal": "timeout(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".abort(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".abort_all(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "SigningKey",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "clock",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "500",
+          "pre": 0,
+          "post": 0
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "tokens": [
+        {
+          "literal": "tokio::spawn(",
+          "pre": 2,
+          "post": 2
+        },
+        {
+          "literal": ".spawn_blocking(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "std::thread::spawn",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "Duration::",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "timeout(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".abort(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".abort_all(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "SigningKey",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "clock",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "500",
+          "pre": 0,
+          "post": 0
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "tokens": [
+        {
+          "literal": "tokio::spawn(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".spawn_blocking(",
+          "pre": 2,
+          "post": 2
+        },
+        {
+          "literal": "std::thread::spawn",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "Duration::",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "timeout(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".abort(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": ".abort_all(",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "SigningKey",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "clock",
+          "pre": 0,
+          "post": 0
+        },
+        {
+          "literal": "500",
+          "pre": 0,
+          "post": 0
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "driver",
+      "fact": "The sole concrete constructor retains the exact already-spawned driver cleanup handle in one mandatory Shared<BoxFuture<Result<OriginalDriverJoined,String>>> before publishing the job. The task body and service-cancel match, including unknown QuitReason rejection, are byte unchanged.",
+      "cancellation": "Waiters clone the registry-held completion. Dropping a waiter cannot remove the handle or repoll a completed handle. Concurrent observers get the cached original terminal result.",
+      "errors": "The actual task's result is unchanged. The pre-existing JoinError-to-string mapping moves verbatim into the shared future; no typed error is newly flattened."
+    },
+    {
+      "id": "startup_cleanup",
+      "fact": "OriginalStartupJob and OriginalCleanupJob similarly retain the same existing actual handles in mandatory shared completions. Their registration lock regions contain no new await. The original startup JoinSet drain and always-attempt-client-cleanup body are byte unchanged.",
+      "errors": "OriginalStartupJoined already implements Clone; cleanup returns the same Arc observation. All pre-existing actual task failure strings and aggregation order remain. Existing private missing-optional-handle branches become structurally unrepresentable rather than success cases."
+    },
+    {
+      "id": "stdio_nonclone",
+      "fact": "OwnedJob<T> retains Shared<BoxFuture<()>> and an independent Arc<AsyncMutex<OwnedJobState<T>>>. The single future first awaits the original handle, then acquires the result lock, stores the exact original non-Clone T or RecordedFailure, and marks joined without another await.",
+      "cancellation": "The registry retains the shared completion and result cell before any waiter can poll. Cancellation while waiting on the actual handle or the result lock loses only a shared clone. The result cell does not point back to the Shared future or job.",
+      "unique_delivery": "The launch output is still consumed only under the same result mutex. Concurrent cleanup waiters cannot clone or retake transport. Errors remain in the original slot for subsequent observation.",
+      "cycle_limit": "This delta adds no result-cell-to-completion cycle. Existing actual transport -> custody -> launch-output retention requires the original unique take/drop cleanup path; the review does not infer completion from mere Arc existence."
+    },
+    {
+      "id": "stdio_lock_scope",
+      "fact": "join_original_stdio scopes the launch-result guard in a lexical block. The actual abandoned transport is dropped only after that block, before later child/notification waits. OwnedJob::join awaits completion before acquiring the result guard; no result guard spans handle.await.",
+      "preserved": "Real child wait, stderr, TERM/KILL policy, shutdown error aggregation, non-started observation refusal, failed-child retention, actual transport Drop and SDK framing functions are byte unchanged."
+    },
+    {
+      "id": "same_original_errors",
+      "fact": "RecordedFailure::io, ::join, Error::source and ShutdownFailures::source are byte identical; actual io::Error and JoinError remain behind the same Arc<dyn Error>. The shared unit result never stands in for the original transport or failure."
+    },
+    {
+      "id": "dependency",
+      "fact": "Both MCP crates already directly depend on futures; the actual Cargo blobs were GET/hash checked. No Cargo/lock/network/install change is part of this packet."
+    },
+    {
+      "id": "components",
+      "fact": "All 6 old test names and 21 assert/6 assert_eq/3 panic/4 matches counts remain. Four obsolete optional-handle assertions become shared terminal-peek assertions; existing joined/output/FD/process checks remain. Two added components use an actual non-Clone UnixStream output and an actual task panic, respectively.",
+      "execution": "Not executed. Static reading and exact replay only."
+    }
+  ],
+  "metadata_obligations": [
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:0",
+      "action": "Recapture actual driver Shared type and complete start/join functions; preserve every other required/forbidden/same-path conjunct."
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:1",
+      "action": "Recapture actual startup/cleanup Shared types and complete retain/start/join functions; preserve every other required/forbidden/same-path conjunct."
+    },
+    {
+      "origin": "e6da443d18aefcfb345a222cdbc025195271af72#new_protected:25",
+      "action": "Explicit author-semantic replacement of obsolete optional-handle type guard by the actual track(JoinHandle), mandatory Shared completion and original result-cell fields. Preserve original result/error/termination/failed-child requirements and all forbidden literals."
+    }
+  ],
+  "limits": [
+    "Independent GET/hash and pure V8 unique forward/reverse replay, not Rust compilation or lint execution.",
+    "19 existing boundary declaration markers checked against both actual source versions; no full-repository caller closure claim.",
+    "The same existing owned service/stdio tasks are covered, not all SDK protocol/logging tails or daemon OS exit.",
+    "No native/h/PTY/ref/formatter/original checker/helper execution by reviewer.",
+    "Other 14 logged sites and final metadata semantic union require their separate actual source deltas."
+  ]
+}

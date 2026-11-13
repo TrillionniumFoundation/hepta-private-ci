@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/hepta_audit",
+  "kind": "v9_two_narrow_lifecycle_followups_independent_review",
+  "status": "NO_CONFIRMED_LOCAL_BLOCKER_IN_THESE_TWO_LOCAL_CHANGES",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "packets": [
+    "4a97b6b2dbfd160d49f8c8b7e29b65870ef2d98f",
+    "f9ed77785bf5fd60e75709bc6399bb09b257755f"
+  ],
+  "actual_log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+  "verified_sources": [
+    {
+      "pin": "d45540fc4caa55836d097364a97f2342ea4d2644",
+      "bytes": 24074,
+      "sha256": "447fb516a3c7802b61b4cc411c0009c365759d0b85313f7ef29e70345bd80e0c"
+    },
+    {
+      "pin": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+      "bytes": 24102,
+      "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+    },
+    {
+      "pin": "08a93401d52f34b860c4c302969f5d7c10ff5a99",
+      "bytes": 11733,
+      "sha256": "8c1ea2c0e0adc5f3e2d185aab2a50c507df0202bb3764ee24e2ac804cf3552cd"
+    },
+    {
+      "pin": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+      "bytes": 11743,
+      "sha256": "eddb752181ce2da46d79fd444562cb312735654630c651daaa30a16c003a2f53"
+    },
+    {
+      "pin": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+      "bytes": 3196,
+      "sha256": "456b322e28ab0ab6f26f7ae5b2fde5d6d8a9a28b9bb467371664e185e2a88650"
+    }
+  ],
+  "exact_replay": "Both individual replacements have one exact forward match and one exact reverse match; complete post/pre byte equality and Git hashes independently reproduced.",
+  "receiver_findings": [
+    "The added drop(receiver) is a whole-value use in the returned async move future. This forces that future to capture the actual non-Copy guard rather than using only the Copy complete field.",
+    "The same complete:false guard remains constructed before returning the future. Its actual destructor is byte-identical and still performs WAITING→ABANDONED comparison, cancellation and same Gate close on incompletion.",
+    "Unpolled drop, cancellation while joining, join failure, invalid delivery and absent-result paths still own the original incomplete guard and propagate original errors. No handle is taken away from its retained state or replaced.",
+    "On real result delivery, the exact original result is taken once, RUNTIME_DELIVERED is stored, complete becomes true, then the actual guard is dropped before returning that result. The complete destructor branch is inert; the separate captured job Arc remains. No added await or callback occurs at this cut.",
+    "This is a necessary capture/lifetime clarification, not a claim that the previous compiler warning was semantically harmless. Unrelated await-holding-invalid-type failures remain outstanding and are not repaired by this one line."
+  ],
+  "fixture_findings": [
+    "Only the invalid blocking-custody-component literal becomes 018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12; all other test-source bytes are equal after reversing this replacement.",
+    "The original actual AgentId parser requires 36 bytes, fixed hyphens, lowercase hex, version nibble 1..8 and variant 8/9/a/b. The replacement has version 7 and variant 8 and meets those lexical constraints.",
+    "The literal is explicitly synthetic fixture identity and does not construct an authorization or successful completion. Actual Gate/FD/barrier/worker assertions and the five existing components remain unchanged.",
+    "No parser, test name, assertion, ignore/cfg rule, deadline or production authority field changes."
+  ],
+  "declared_fn_names": [
+    "custody",
+    "fmt",
+    "cancelled_runtime_wait_keeps_actual_blocking_handle_fd_and_original_error",
+    "joined_runtime_error_is_delivered_once_and_never_relabelled_success",
+    "an_unpolled_receiver_and_real_worker_panic_remain_explicit_join_failure",
+    "natural_join_observation_waits_for_the_real_fd_owner_and_does_not_take_its_result",
+    "natural_join_refusal_keeps_the_original_error_for_its_actual_runtime_receiver"
+  ],
+  "metadata_obligation": {
+    "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:494",
+    "function": "fn receive_original_result(",
+    "required_delta": "Include actual drop(receiver); immediately after receiver.complete = true; and before the original result expression, then re-extract against the final composed source.",
+    "boundaries": "No symbol/caller/signature changes; do not add unrelated caller exemptions."
+  },
+  "limitations": [
+    "Only Git GET and pure V8 static analysis. No native/Cargo/formatter/original checker/test/ref execution.",
+    "No overall V9 compilation, cleanup, phase or business PASS; Root's separate same-handle lock-across-await repair remains required."
+  ]
+}

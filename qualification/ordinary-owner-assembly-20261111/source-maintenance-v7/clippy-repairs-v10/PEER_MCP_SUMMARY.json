@@ -1,0 +1,54 @@
+# Independent review: MCP five actual await-holding-invalid-type sites
+
+## Result and exact scope
+
+No confirmed local static semantic blocker was found in source packet d36c2a40cdd4821e323a0b7cb4d99d847af98dcc. This review covers its three product sources and one component source, 23 exact operations, and the five sites identified in the actual v9 log 20c868b0a0446a942eedb054a13eb8370eea3ec7. It does not assert compilation, lint, tests, original checker or business qualification.
+
+Independent detail: 2948308d8b590aad12eaf5e9154975b8239a02ef (42340 bytes, SHA-256 1bd6a7f77547a91be8dccf9c6f0788524fa049b58dbf92f6bf268bc7d0bf893a). Every preimage and postimage was GET/hash checked. All 23 operations match exactly once in forward order and once in reverse order and reconstruct the full opposite image.
+
+| Actual path under codex-rs | Preimage | Postimage | Ops |
+|---|---|---|---:|
+| rmcp-client/src/rmcp_client_owned_shutdown.rs | 227ba79e46743409c974835126f7a6b340efdb94 | 25c3f6f87bc58d4896ed5c376c75650b3eb9d8fe | 5 |
+| codex-mcp/src/original_owned_shutdown.rs | 4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6 | 4676f4f1bcae462d4392e7545df37d1c670ed1b6 | 8 |
+| rmcp-client/src/stdio_server_owned_shutdown.rs | 868c1591cf84f1390f813ddaec5ecc97e8114454 | d9646f8a829656e42aa642260070d2e949e9ce2b | 3 |
+| rmcp-client/src/stdio_server_owned_shutdown_tests.rs | 5248c0e10533a1d15dcd558e2d5d7bc54ffcdf1f | 5fa72acad70da6c240ae6c3643fc0c4f3dd543b1 | 7 |
+
+## Same handles and cancellation
+
+Driver, startup and runtime cleanup jobs now retain one mandatory Shared future containing the same already-created Tokio handle. Their original creation and registration order has no new await gap. A waiter awaits a clone of the registry-held shared future. Cancellation therefore does not take the actual handle from custody or cause a later waiter to poll an already-completed handle again.
+
+These three outputs were already Clone: the private driver enum and String error, OriginalStartupJoined, and the Arc runtime observation plus String error. The original task results and existing JoinError-to-string mappings move verbatim into the shared future. This review does not endorse flattening new typed errors: none is newly flattened by this delta.
+
+For stdio, the output includes the actual non-Clone transport. Shared therefore caches only unit completion. The exact handle-owning future stores the original result in a separate Arc<AsyncMutex<OwnedJobState<T>>>. It awaits the handle before locking the result cell, then writes the result and joined flag without another await. The cell has no pointer back to the completion or job. The actual transport remains a single value taken under the original result lock; error values remain available for later observers.
+
+The pre-existing transport-to-custody-to-unconsumed-output retention still requires the original cleanup path to take and drop the actual transport. No empty registry, Shared object or count is used as a physical completion proof.
+
+## Lock scope, error and owner preservation
+
+OwnedJob::join waits for the shared completion before acquiring its result guard. join_original_stdio now encloses its launch-result read/take in an explicit lexical block. That block ends before the abandoned transport is dropped and before subsequent child or notification waits.
+
+RecordedFailure::io, RecordedFailure::join and both original Error::source implementations are byte identical. Actual io::Error and JoinError objects remain behind their original Arc, with original kind/source. The original real child wait, stderr handling, TERM then two-second KILL policy, cleanup error aggregation, failed-child retention, SDK framing, and actual transport Drop bodies are byte identical.
+
+The lower product source has 10 unchanged functions and only two changed functions; the upper has nine unchanged and four changed; stdio has 26 unchanged and three changed. All seven specifically checked error/Drop impl spans are byte identical. Product spawn counts and actual spawn bodies are unchanged; no new spawned wrapper, timeout, clock, admission, authority operation or default-path edit is introduced.
+
+The removed optional-handle missing-state branches are author-semantic representation changes. Each replacement mandatory completion is constructed only from the same concrete actual handle. They are not a mapping of a reachable original failure to success.
+
+Both affected MCP crates already have a direct futures dependency. The actual Cargo files were independently read and hash checked; this packet does not modify Cargo, lockfiles or the environment.
+
+## Components and metadata
+
+All six original component names and existing assertion macro counts remain. Four optional-handle-state assertions are adjusted to the actual Shared terminal state; original joined, output, FD, process and helper assertions remain. Two new components use a real UnixStream output and a real Tokio task panic to exercise cancellation, two observers, unique output consumption and Arc identity of the original JoinError. They have not been executed.
+
+All 19 existing boundary definition marker sets still occur in both actual product versions. This is a bounded declaration check, not a new full-repository typed caller proof.
+
+Required guard follow-up is explicit at these three immutable origins:
+
+- e6da443d18aefcfb345a222cdbc025195271af72#new_protected:0: actual driver Shared structure and complete retain/join functions.
+- e6da443d18aefcfb345a222cdbc025195271af72#new_protected:1: actual startup/cleanup Shared structures and complete registration/join functions.
+- e6da443d18aefcfb345a222cdbc025195271af72#new_protected:25: replace the obsolete optional-handle field obligation with the actual track(JoinHandle), mandatory Shared completion and original unique result-cell custody. Retain all result/error/termination/failed-child requirements and every forbidden literal.
+
+Those are source-semantic successors; they must not be labelled whitespace-only, and no duplicate same-path conjunct may be discarded.
+
+## Limits
+
+This review used Git reads and pure V8 byte/hash/replay and source analysis only. It executed no formatter, Cargo, native test, original checker/helper, h, PTY or ref mutation. It covers the existing selected service and stdio owners, not every SDK protocol/logging tail or daemon OS exit. The other 14 diagnosed sites and final source/metadata union remain separately owned review obligations.

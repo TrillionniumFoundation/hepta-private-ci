@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "kind": "root_six_actual_lock_await_sites_source_proposal",
+  "status": "DRAFT_STATIC_NOT_FORMATTED_COMPILED_OR_PEER_REVIEWED",
+  "input_head": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+  "original_log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+  "actual_sites_inventory": "f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda",
+  "prerequisites": {
+    "receiver_capture_packet": "4a97b6b2dbfd160d49f8c8b7e29b65870ef2d98f",
+    "circuit_pre_is_accepted_capture_post": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+    "dependency_packet": "b447430ce8f5b8f0107bf7a299341df7d7dcedea"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": {
+        "blob": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+        "bytes": 24102,
+        "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+      },
+      "post": {
+        "blob": "5bfff889730384ea518405efc8b12e1f21f37e53",
+        "bytes": 24563,
+        "sha256": "d1b70df316018425de40d15f87f4601a2f2eb2eeee5bc2b5d1375e85edf9088e"
+      },
+      "operations": [
+        {
+          "old": "use tokio::sync::Notify;",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse tokio::sync::Notify;",
+          "expected_occurrences": 1,
+          "purpose": "Circuit Shared imports"
+        },
+        {
+          "old": "struct OriginalCircuitJobState {\n    handle: Option<JoinHandle<Result<(), AgentdError>>>,\n    joined: Option<OriginalCircuitOwnerOutcome>,\n    result: Option<Result<(), AgentdError>>,\n}\n\npub(super) struct OriginalCircuitOwnerJob {\n    state: tokio::sync::Mutex<OriginalCircuitJobState>,",
+          "new": "struct OriginalCircuitJobState {\n    joined: Option<OriginalCircuitOwnerOutcome>,\n    result: Option<Result<(), AgentdError>>,\n}\n\npub(super) struct OriginalCircuitOwnerJob {\n    state: Arc<Mutex<OriginalCircuitJobState>>,\n    join: Shared<BoxFuture<'static, ()>>,",
+          "expected_occurrences": 1,
+          "purpose": "Retain one original handle in Shared and keep one non-Clone result cell"
+        },
+        {
+          "old": "        let mut state = job.state.lock().await;\n        job.join_locked(&mut state).await?;\n        let outcome = state",
+          "new": "        job.join.clone().await;\n        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        job.join_locked(&state)?;\n        let outcome = state",
+          "expected_occurrences": 1,
+          "purpose": "Fault join awaits original future before short state lock"
+        },
+        {
+          "old": "        let mut state = job.state.lock().await;\n        if state.joined.is_none() {",
+          "new": "        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        if state.joined.is_none() {",
+          "expected_occurrences": 1,
+          "purpose": "Single abandoned result recovery keeps same joined/delivery checks"
+        },
+        {
+          "old": "        let job = Arc::new(OriginalCircuitOwnerJob {\n            state: tokio::sync::Mutex::new(OriginalCircuitJobState {\n                handle: Some(handle),\n                joined: None,\n                result: None,\n            }),\n",
+          "new": "        let state = Arc::new(Mutex::new(OriginalCircuitJobState {\n            joined: None,\n            result: None,\n        }));\n        let completed = Arc::clone(&state);\n        let join = async move {\n            let result = handle.await;\n            let (outcome, result) = match result {\n                Ok(result) => (\n                    if result.is_ok() {\n                        OriginalCircuitOwnerOutcome::ReturnedOk\n                    } else {\n                        OriginalCircuitOwnerOutcome::ReturnedErr\n                    },\n                    result,\n                ),\n                Err(error) => (\n                    OriginalCircuitOwnerOutcome::JoinFailed,\n                    Err(AgentdError::Protocol(format!(\n                        \"Circuit task owner stopped: {error}\"\n                    ))),\n                ),\n            };\n            // No await separates the actual join from retaining its exact\n            // non-Clone result. This cell has no back-reference to the job.\n            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n            state.result = Some(result);\n            state.joined = Some(outcome);\n        }\n        .boxed()\n        .shared();\n        let job = Arc::new(OriginalCircuitOwnerJob {\n            state,\n            join,\n",
+          "expected_occurrences": 1,
+          "purpose": "Synchronous original handle registration with exact original outcome mapping and no extra spawn"
+        },
+        {
+          "old": "    async fn join_locked(&self, state: &mut OriginalCircuitJobState) -> Result<(), AgentdError> {\n        if state.joined.is_some() {\n            return Ok(());\n        }\n        let handle = state.handle.as_mut().ok_or_else(|| {\n            self.gate.close();\n            custody_error(\"actual outer Circuit handle is unavailable\")\n        })?;\n        // Await only a mutable borrow. Dropping this waiting future preserves\n        // the one real handle in state, so another custodian can continue.\n        let result = handle.await;\n        state.handle = None;\n        let (outcome, result) = match result {\n            Ok(result) => (\n                if result.is_ok() {\n                    OriginalCircuitOwnerOutcome::ReturnedOk\n                } else {\n                    OriginalCircuitOwnerOutcome::ReturnedErr\n                },\n                result,\n            ),\n            Err(error) => (\n                OriginalCircuitOwnerOutcome::JoinFailed,\n                Err(AgentdError::Protocol(format!(\n                    \"Circuit task owner stopped: {error}\"\n                ))),\n            ),\n        };\n        // No await separates actual completion from saving the original\n        // result and terminal state. A second waiter never polls it again.\n        state.result = Some(result);\n        state.joined = Some(outcome);\n        Ok(())\n    }\n\n",
+          "new": "    fn join_locked(&self, state: &OriginalCircuitJobState) -> Result<(), AgentdError> {\n        // Callers await the registered Shared future before this short locked\n        // check. Only that future can record the actual original completion.\n        if state.joined.is_some() {\n            return Ok(());\n        }\n        self.gate.close();\n        Err(custody_error(\"actual outer Circuit handle is unavailable\"))\n    }\n\n",
+          "expected_occurrences": 1,
+          "purpose": "Retain fail-closed recorded-join check after actual Shared await"
+        },
+        {
+          "old": "        let mut state = self.state.lock().await;\n        self.join_locked(&mut state).await?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {",
+          "new": "        self.join.clone().await;\n        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        self.join_locked(&state)?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {",
+          "expected_occurrences": 1,
+          "purpose": "Natural join preserves both gate checks and does not consume original result"
+        },
+        {
+          "old": "        async move {\n            let mut state = job.state.lock().await;\n            job.join_locked(&mut state).await?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {",
+          "new": "        async move {\n            job.join.clone().await;\n            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n            job.join_locked(&state)?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {",
+          "expected_occurrences": 1,
+          "purpose": "Original receiver awaits outside the lock then takes exact one result; complete/drop guard retained"
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": {
+        "blob": "4eb5b6068b6658315e8baf0a7342305718125fdc",
+        "bytes": 13100,
+        "sha256": "3dd74d57d12d0f066d11c99b91a6568512475c8e673bc997db9df22505836479"
+      },
+      "post": {
+        "blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+        "bytes": 13503,
+        "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+      },
+      "operations": [
+        {
+          "old": "use tokio::task::AbortHandle;",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse tokio::task::AbortHandle;",
+          "expected_occurrences": 1,
+          "purpose": "Session Shared imports"
+        },
+        {
+          "old": "    handle: Option<JoinHandle<()>>,\n    observed: Option<OriginalRootWorkerTermination>,",
+          "new": "    handle: Option<Shared<BoxFuture<'static, OriginalRootWorkerTermination>>>,\n    observed: Option<OriginalRootWorkerTermination>,",
+          "expected_occurrences": 1,
+          "purpose": "Preserve missing/observed state shape around actual worker's shared join"
+        },
+        {
+          "old": "        let abort = worker.abort_handle();\n        Arc::new(Self {",
+          "new": "        let abort = worker.abort_handle();\n        let worker = async move {\n            match worker.await {\n                Ok(()) => OriginalRootWorkerTermination::Returned,\n                Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,\n                Err(_) => OriginalRootWorkerTermination::Panicked,\n            }\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {",
+          "expected_occurrences": 1,
+          "purpose": "Retain original worker and AbortHandle with unchanged termination mapping"
+        },
+        {
+          "old": "        let worker = {\n            let mut state = self.worker.lock().await;\n            if let Some(observed) = state.observed {\n                observed\n            } else {\n                let handle = state\n                    .handle\n                    .as_mut()\n                    .ok_or_else(|| join_error(\"actual Root observation handle is unavailable\"))?;\n                let observed = match handle.await {\n                    Ok(()) => OriginalRootWorkerTermination::Returned,\n                    Err(error) if error.is_cancelled() => OriginalRootWorkerTermination::Cancelled,\n                    Err(_) => OriginalRootWorkerTermination::Panicked,\n                };\n                state.handle = None;\n                state.observed = Some(observed);\n                observed\n            }\n        };\n",
+          "new": "        let (recorded, pending) = {\n            let state = self.worker.lock().await;\n            (state.observed, state.handle.clone())\n        };\n        let worker = if let Some(observed) = recorded {\n            observed\n        } else {\n            let pending = pending\n                .ok_or_else(|| join_error(\"actual Root observation handle is unavailable\"))?;\n            // Cancellation drops only this clone. The registry retains the\n            // same actual join, including a completed result awaiting recording.\n            let observed = pending.await;\n            let mut state = self.worker.lock().await;\n            state.handle = None;\n            state.observed = Some(observed);\n            observed\n        };\n",
+          "expected_occurrences": 1,
+          "purpose": "Unlock before original worker await; retain final-retirement predicate and original missing-handle refusal"
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "pre": {
+        "blob": "10eed326857e3ef1359bf31c3cb7fb2de1984fba",
+        "bytes": 20095,
+        "sha256": "30552e366a90f2b4cff1cbb97e5f2ed778fae5d598cfd8309c57809311894374"
+      },
+      "post": {
+        "blob": "1fcfdf460a80f83447eb954b187144968211549f",
+        "bytes": 19842,
+        "sha256": "671ee6efb7390c5525bee4474e550046b52d2633034c788504b9f858157d414f"
+      },
+      "operations": [
+        {
+          "old": "            let worker = {\n                let mut state = attempt.original.worker.lock().await;\n                if let Some(observed) = state.observed {\n                    observed\n                } else {\n                    let handle = state.handle.as_mut().ok_or_else(|| {\n                        join_error(\"normal Session pause lost its actual worker handle\")\n                    })?;\n                    // Borrow the same stored JoinHandle. Cancelling this wait\n                    // leaves it available to the actual outer fault custodian.\n                    let observed = match handle.await {\n                        Ok(()) => OriginalRootWorkerTermination::Returned,\n                        Err(error) if error.is_cancelled() => {\n                            OriginalRootWorkerTermination::Cancelled\n                        }\n                        Err(_) => OriginalRootWorkerTermination::Panicked,\n                    };\n                    state.handle = None;\n                    state.observed = Some(observed);\n                    observed\n                }\n            };\n",
+          "new": "            let (recorded, pending) = {\n                let state = attempt.original.worker.lock().await;\n                (state.observed, state.handle.clone())\n            };\n            let worker = if let Some(observed) = recorded {\n                observed\n            } else {\n                let pending = pending.ok_or_else(|| {\n                    join_error(\"normal Session pause lost its actual worker handle\")\n                })?;\n                // The outer custodian retains this same shared actual join if\n                // normal waiting is cancelled before or after task completion.\n                let observed = pending.await;\n                let mut state = attempt.original.worker.lock().await;\n                state.handle = None;\n                state.observed = Some(observed);\n                observed\n            };\n",
+          "expected_occurrences": 1,
+          "purpose": "Normal pause shares exact original worker join with fault custody without guard across await"
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": {
+        "blob": "44ecd101f527cc1a65cdd62180942cb91a1baa1f",
+        "bytes": 12169,
+        "sha256": "c4e9ee9217ecc5a23cdbd09d494a50b94b0257a854d98c314d2ce25136bb4d77"
+      },
+      "post": {
+        "blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+        "bytes": 12698,
+        "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+      },
+      "operations": [
+        {
+          "old": "use tokio::task::JoinHandle;",
+          "new": "use futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse tokio::task::JoinHandle;",
+          "expected_occurrences": 1,
+          "purpose": "Consumer Shared imports"
+        },
+        {
+          "old": "    handle: Option<JoinHandle<Result<(), AgentdRootAuthorityError>>>,\n    observed: Option<Result<(), OriginalConsumerFailure>>,",
+          "new": "    handle: Option<Shared<BoxFuture<'static, Result<(), OriginalConsumerFailure>>>>,\n    observed: Option<Result<(), OriginalConsumerFailure>>,",
+          "expected_occurrences": 1,
+          "purpose": "Retain actual consumer completion and all original MissingHandle/observed checks"
+        },
+        {
+          "old": "            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(handle),\n                observed: None,\n            }),",
+          "new": "            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(\n                    async move {\n                        match handle.await {\n                            Ok(Ok(())) => Ok(()),\n                            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),\n                            Err(error) if error.is_cancelled() => {\n                                Err(OriginalConsumerFailure::Cancelled)\n                            }\n                            Err(_) => Err(OriginalConsumerFailure::Panicked),\n                        }\n                    }\n                    .boxed()\n                    .shared(),\n                ),\n                observed: None,\n            }),",
+          "expected_occurrences": 1,
+          "purpose": "Synchronous registration owns same consumer JoinHandle with exact Copy owner error mapping"
+        },
+        {
+          "old": "    async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {\n        let mut state = self.state.lock().await;\n        if let Some(outcome) = state.observed {\n            return outcome;\n        }\n        let Some(handle) = state.handle.as_mut() else {\n            return Err(OriginalConsumerFailure::MissingHandle);\n        };\n        // A cancelled timeout/worker/cleanup only releases this borrow. The\n        // actual handle remains in this job and is never polled after Ready.\n        let outcome = match handle.await {\n            Ok(Ok(())) => Ok(()),\n            Ok(Err(error)) => Err(OriginalConsumerFailure::Owner(error)),\n            Err(error) if error.is_cancelled() => Err(OriginalConsumerFailure::Cancelled),\n            Err(_) => Err(OriginalConsumerFailure::Panicked),\n        };\n        state.handle = None;\n        state.observed = Some(outcome);\n        outcome\n    }",
+          "new": "    async fn join_original_handle(&self) -> Result<(), OriginalConsumerFailure> {\n        let pending = {\n            let state = self.state.lock().await;\n            if let Some(outcome) = state.observed {\n                return outcome;\n            }\n            state\n                .handle\n                .as_ref()\n                .cloned()\n                .ok_or(OriginalConsumerFailure::MissingHandle)?\n        };\n        // The registry holds the original future while this waiter is absent.\n        // Shared coordinates concurrent polls and caches this same outcome.\n        let outcome = pending.await;\n        let mut state = self.state.lock().await;\n        state.handle = None;\n        state.observed = Some(outcome);\n        outcome\n    }",
+          "expected_occurrences": 1,
+          "purpose": "Clone under short lock, await without it and record same terminal; cancellation retains completed Shared result"
+        },
+        {
+          "old": "            // Borrow exactly the registered handle; cancellation preserves it.",
+          "new": "            // Await the registered original join; cancellation preserves it.",
+          "expected_occurrences": 1,
+          "purpose": "Describe actual shared custody accurately"
+        }
+      ],
+      "unique_forward_reverse": true,
+      "all_other_bytes_exact": true
+    }
+  ],
+  "counts": {
+    "paths": 4,
+    "operations": 18,
+    "actual_log_sites": 6
+  },
+  "core_invariants": [
+    "Every Shared future is constructed in synchronous retention from the already supplied original JoinHandle; none spawns or re-arms work.",
+    "Registry/job fields strongly retain the original future while any waiter is cancelled. Shared coordinates polls and retains one terminal result.",
+    "Circuit Shared output is unit; the original non-Clone AgentdError or result remains in one separate Arc<short std Mutex> cell with no back-reference. No await separates real JoinHandle completion from retaining exact result and outcome.",
+    "Circuit delivery atomic checks, single take, gate/cancellation behavior and complete/drop of the whole receiver remain. The private join_locked helper is now a synchronous recorded-completion check following explicit real shared await.",
+    "Session and consumer retain their existing Option handle/observed state and exact missing-handle refusal. A short lock clones the actual future, awaiting happens outside it, and a short lock records its exact cached terminal.",
+    "If cancelled between actual Session/consumer join and recording, the registry still retains the completed Shared result. Concurrent waiters observe the same terminal; all existing count/Arc identity bookkeeping remains.",
+    "Original Session final_retirement source and its handle.is_none/observed predicate, field destruction order, Weak LiveRoot, purpose FDs, and normal/fault conditions remain byte exact.",
+    "No lint allow, checker changes, clock/deadline/counter renewal, new external owner, string replacement of existing errors, or business result is introduced."
+  ],
+  "remaining": [
+    "Independent semantic review of all four complete postimages and guard adaptation.",
+    "Actual native just fmt/fix/bins and original qualification.",
+    "Confirm existing cancellation/FD/result tests cover concurrency and add a focused real component case only if needed."
+  ],
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "kind": "independent-circuit-lifecycle-component-uuid-fixture-correction",
+  "status": "FROZEN_TEST_ONLY_PROPOSAL_UNEXECUTED",
+  "baseline": {
+    "head": "14d377594626fcd8d2664aaf805436a818bec867",
+    "tree": "62a2a16cb7099eac3ce38fe134d8092bc54add03"
+  },
+  "relationship": "Independent statically confirmed setup refusal, not the v9 E0425 diagnosis. Does not replace or explain the separate production whole-guard capture fix.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "pre": "08a93401d52f34b860c4c302969f5d7c10ff5a99",
+      "post": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+      "preimage": {
+        "git_blob": "08a93401d52f34b860c4c302969f5d7c10ff5a99",
+        "bytes": 11733,
+        "sha256": "8c1ea2c0e0adc5f3e2d185aab2a50c507df0202bb3764ee24e2ac804cf3552cd"
+      },
+      "postimage": {
+        "git_blob": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+        "bytes": 11743,
+        "sha256": "eddb752181ce2da46d79fd444562cb312735654630c651daaa30a16c003a2f53"
+      }
+    }
+  ],
+  "ops": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs",
+      "old": "AgentId::parse(\"blocking-custody-component\")",
+      "new": "AgentId::parse(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\")",
+      "expected_occurrences": 1
+    }
+  ],
+  "original_parser": {
+    "path": "codex-rs/hepta-contracts/src/agent_id.rs",
+    "git_blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+    "bytes": 3196,
+    "sha256": "456b322e28ab0ab6f26f7ae5b2fde5d6d8a9a28b9bb467371664e185e2a88650",
+    "unchanged": true,
+    "contract": "36 bytes, fixed hyphens, lowercase hex, UUID version 1..8 and RFC9562 variant 8/9/a/b; prior blocking-custody-component is rejected before component setup."
+  },
+  "existing_same_crate_test_pattern": {
+    "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "git_blob": "182de411a4903855b7bc3c18e92481e4ce545e82",
+    "bytes": 23740,
+    "sha256": "87966b644bf71837c49aacbb75cc44cb31a1a886cc549519e2f51339303710e3",
+    "declaration": "const AGENT_ID: &str = \"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\";",
+    "actual_use": "AgentId::parse(AGENT_ID).expect(\"valid agent id\")",
+    "cfg": "inside existing cfg(test) mod tests"
+  },
+  "fixture_scope": "Only test data in the existing private custody() helper. Each component still uses its own actual tempfile tree, real Gate, actual blocking worker/FD/barriers and the unchanged original identity struct. No production actor, role, signer, trust, material, or completion proof is introduced.",
+  "cfg_parent": {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+    "preimage": {
+      "git_blob": "d45540fc4caa55836d097364a97f2342ea4d2644",
+      "bytes": 24074,
+      "sha256": "447fb516a3c7802b61b4cc411c0009c365759d0b85313f7ef29e70345bd80e0c"
+    },
+    "exact_declaration": "#[cfg(test)]\n#[path = \"circuit_task_runtime_lifecycle_tests.rs\"]\nmod tests;"
+  },
+  "five_original_tests": [
+    "cancelled_runtime_wait_keeps_actual_blocking_handle_fd_and_original_error",
+    "joined_runtime_error_is_delivered_once_and_never_relabelled_success",
+    "an_unpolled_receiver_and_real_worker_panic_remain_explicit_join_failure",
+    "natural_join_observation_waits_for_the_real_fd_owner_and_does_not_take_its_result",
+    "natural_join_refusal_keeps_the_original_error_for_its_actual_runtime_receiver"
+  ],
+  "preserved": {
+    "five_tests_exact_names": true,
+    "all_test_bodies_unchanged": true,
+    "all_assertions_unchanged": true,
+    "macro_counts": {
+      "before": {
+        "assert": 14,
+        "assert_eq": 15,
+        "assert_ne": 0,
+        "matches": 0,
+        "panic": 5
+      },
+      "after": {
+        "assert": 14,
+        "assert_eq": 15,
+        "assert_ne": 0,
+        "matches": 0,
+        "panic": 5
+      }
+    },
+    "wait_duration_unchanged": "Duration::from_secs(5)",
+    "original_drop_and_guards_unchanged": true,
+    "all_other_source_bytes_exact": true
+  },
+  "exact_replay": {
+    "forward_unique": true,
+    "reverse_unique": true,
+    "post_create_get_verified": true
+  },
+  "metadata": {
+    "product_boundary_or_caller_changes": 0,
+    "protected_test_rows_in_current_1010_598_plan": 0,
+    "entire_plan_contains_old_literal": false,
+    "no_metadata_edits": true
+  },
+  "validation": {
+    "compiler_run": false,
+    "tests_run": false,
+    "fixture_components_only": true,
+    "qualification_pass_claimed": false,
+    "refs_changed": 0,
+    "h_or_native_calls": 0
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  }
+}

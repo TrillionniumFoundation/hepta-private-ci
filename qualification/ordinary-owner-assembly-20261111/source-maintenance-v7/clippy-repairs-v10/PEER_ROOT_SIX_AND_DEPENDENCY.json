@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "kind": "independent_root_six_join_sites_and_direct_futures_dependency_review",
+  "reviewer": "chain_nextuse",
+  "conclusion": "NO_CONFIRMED_LOCAL_STATIC_CODE_BLOCKER; one precise new Shared-ready/record-lock test gap identified",
+  "scope": {
+    "products": {
+      "git_blob": "6a316e96f1bae14ee565843e4ad838455fe77947",
+      "bytes": 21641,
+      "sha256": "6229242ec6b8fadc9527784d9550992f4a59ae0f622cfa886e7760584340ed73"
+    },
+    "dependency": {
+      "git_blob": "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+      "bytes": 6978,
+      "sha256": "4f46b1b498241bd2fd02de9e9122313287a4da20e20bf76cfcbae13eb95732c5"
+    },
+    "product_paths": 4,
+    "product_operations": 18,
+    "dependency_paths": 2,
+    "dependency_operations": 2,
+    "original_log": "20c868b0a0446a942eedb054a13eb8370eea3ec7",
+    "actual_sites": "f3c5006b49ad5f388fe2c0abd2e09772ee5cbdda",
+    "no_original_checker_or_native_execution": true
+  },
+  "source_checks": {
+    "verified_all_full_pre_and_post_blobs": true,
+    "all_unique_forward_reverse": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+        "pre": {
+          "git_blob": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+          "bytes": 24102,
+          "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+        },
+        "post": {
+          "git_blob": "5bfff889730384ea518405efc8b12e1f21f37e53",
+          "bytes": 24563,
+          "sha256": "d1b70df316018425de40d15f87f4601a2f2eb2eeee5bc2b5d1375e85edf9088e"
+        },
+        "operations": 8,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "pre": {
+          "git_blob": "4eb5b6068b6658315e8baf0a7342305718125fdc",
+          "bytes": 13100,
+          "sha256": "3dd74d57d12d0f066d11c99b91a6568512475c8e673bc997db9df22505836479"
+        },
+        "post": {
+          "git_blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+          "bytes": 13503,
+          "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+        },
+        "operations": 4,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "pre": {
+          "git_blob": "10eed326857e3ef1359bf31c3cb7fb2de1984fba",
+          "bytes": 20095,
+          "sha256": "30552e366a90f2b4cff1cbb97e5f2ed778fae5d598cfd8309c57809311894374"
+        },
+        "post": {
+          "git_blob": "1fcfdf460a80f83447eb954b187144968211549f",
+          "bytes": 19842,
+          "sha256": "671ee6efb7390c5525bee4474e550046b52d2633034c788504b9f858157d414f"
+        },
+        "operations": 1,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "pre": {
+          "git_blob": "44ecd101f527cc1a65cdd62180942cb91a1baa1f",
+          "bytes": 12169,
+          "sha256": "c4e9ee9217ecc5a23cdbd09d494a50b94b0257a854d98c314d2ce25136bb4d77"
+        },
+        "post": {
+          "git_blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+          "bytes": 12698,
+          "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+        },
+        "operations": 5,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/Cargo.toml",
+        "pre": {
+          "git_blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+          "bytes": 4905,
+          "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417"
+        },
+        "post": {
+          "git_blob": "05d301aab3c2bf2b515fe1c81ec163d6a481c935",
+          "bytes": 4956,
+          "sha256": "819959238bd9a53d7b1ed7b5c002ad3df8c9b5761bae77ca71498ec0fd9a23af"
+        },
+        "operations": 1,
+        "forward": true,
+        "reverse": true
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "pre": {
+          "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+          "bytes": 421005,
+          "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+        },
+        "post": {
+          "git_blob": "04cf97ad543fe1560943b55bd629a238de993911",
+          "bytes": 421017,
+          "sha256": "e69cea88df8b04aff1d19658473a645626615007c498f61e45e081c7714a4a2c"
+        },
+        "operations": 1,
+        "forward": true,
+        "reverse": true
+      }
+    ],
+    "actual_input_head": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+    "actual_path_match": "The three Session sources and two dependency preimages match the immutable input head. Circuit deliberately uses the accepted receiver-capture overlay, not the raw input-head blob.",
+    "circuit_overlay": {
+      "base": {
+        "git_blob": "d45540fc4caa55836d097364a97f2342ea4d2644",
+        "bytes": 24074,
+        "sha256": "447fb516a3c7802b61b4cc411c0009c365759d0b85313f7ef29e70345bd80e0c"
+      },
+      "capture_packet": "4a97b6b2dbfd160d49f8c8b7e29b65870ef2d98f",
+      "post": {
+        "git_blob": "27cb1a78ba4c25413d1bc3febd01bdc70949944f",
+        "bytes": 24102,
+        "sha256": "b2e283923acd3fbd604bd7c180583db1ef113996be6e735ace81ccdc95a128bc"
+      },
+      "exact": true
+    },
+    "circuit_component_fixture": {
+      "base": "08a93401d52f34b860c4c302969f5d7c10ff5a99",
+      "accepted_separate_packet": "f9ed77785bf5fd60e75709bc6399bb09b257755f",
+      "post": "70566508729dbf5c8d4bef57736cf7fc1d940f66",
+      "note": "Five unchanged test bodies were read with the separately proposed valid UUID literal. The base test fixture was not silently relabelled fixed."
+    },
+    "related_original_sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+        "git_blob": "20dafd52c3da842bbf9f6693375c69134efbb222",
+        "bytes": 7733,
+        "sha256": "c9f4f254269fc4b62b5caa3f6a28f4c7a1c6594a5d54d63517126f332ad01ec2"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "git_blob": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+        "bytes": 35493,
+        "sha256": "daa2138c015b1a43c903948593595b0bc5df67700c3b362d9097370ed383c6f9"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/error.rs",
+        "git_blob": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf",
+        "bytes": 2813,
+        "sha256": "1131916265c0c1a27a2f9f87150f181e9701f56bf867a716f006595a6331287f"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "git_blob": "191fb6a5db52cdbf7e4ded2857120336c28cfff4",
+        "bytes": 27223,
+        "sha256": "b0f09d4407d529c969a9a1f01266aeca41cf81fa8b282a6fe18c6bc3f56f5e11"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+        "git_blob": "02158aa085672808553260586ea30042229aba92",
+        "bytes": 12267,
+        "sha256": "f32128f187d7a57cbf514559c5566c45162124b6d7d5d2bea36f221def2b7271"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_normal_tests.rs",
+        "git_blob": "455843cd48322a8a0ea618a37354e840c2eaf2f3",
+        "bytes": 18609,
+        "sha256": "7c2cbd6b82e54e48c40ec0fa37a8951779c8b3dd76ec8bdd0111eaa9c649ed15"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "git_blob": "dde16cb9b02d441891c14a92adf43e2779340219",
+        "bytes": 9529,
+        "sha256": "bcedc6574d2262f7d3b0f40c8b45cbd83ac4f1d1341e3f61918bf91bdfba833a"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "area": "Circuit same non-Clone result",
+      "finding": "The exact supplied JoinHandle moves synchronously into one Shared<BoxFuture<'static, ()>> retained by the registered job. The Shared future awaits it and then performs outcome classification and original Result storage under a short std mutex with no intervening await. AgentdError is not cloned, reconstructed or newly stringified; original task JoinError retains the exact prior Protocol mapping.",
+      "safety": "The result cell contains only joined/result and no job or completion backreference. A cancelled waiter cannot take or detach the handle. The Shared future can only be polled once to terminal, and the separately retained original result remains single-consumer."
+    },
+    {
+      "area": "Circuit complete receiver",
+      "finding": "The complete receiver object remains captured outside the async body and explicitly dropped after RUNTIME_DELIVERED and complete=true. Every early return and cancellation retains the original armed Drop. The field/move fix from 4a97 is not reverted.",
+      "safety": "The original result take and delivery update stay under the same result lock without an await. Cleanup can take it only for ABANDONED, then stores CLEANUP_RECOVERED. Natural observation still requires ReturnedOk and live Gate and never consumes the original Result."
+    },
+    {
+      "area": "Session worker two real consumers",
+      "finding": "Fault join and normal pause both clone the one recorded Shared under a short worker lock, await outside it, and reacquire the same lock to record the exact Copy terminal. No handle is removed before its actual join. The original AbortHandle still cancels the actual worker; Legacy(JoinHandle) remains unchanged.",
+      "cancellation_window": "If cancelled after Shared becomes Ready but before the second lock succeeds, PhaseWorkerState still owns Some(completed Shared) with observed None. A later waiter obtains that cached actual outcome. If another waiter has already recorded it, observed is already the same value; a preexisting Shared clone can only write that same value.",
+      "fault_normal_race": "The unchanged fault path closes Gate/consumer admission. Normal pause retains its original origin/Gate checks after the real joins and cannot turn concurrent fault closure into a normal pause."
+    },
+    {
+      "area": "Consumer same task and exactly-once accounting",
+      "finding": "The actual ConsumerSyncJob handle is wrapped synchronously while the existing admission guard remains held. Its result remains the same Copy OriginalConsumerFailure mapping. All successful and failing observers share the same original terminal.",
+      "cancellation_window": "Cancellation after physical join but before recording leaves the completed Shared in the job. Cancellation after recording but before record_joined leaves the job in the registry for a later waiter.",
+      "accounting": "record_joined is byte identical: it removes only the same Arc identity when still present, increments joined once and retains the first actual failure. Concurrent waiters cannot increment for the same retained Arc twice. registered/overflow/admission/deadline logic is unchanged."
+    },
+    {
+      "area": "Actual resource/drop order",
+      "finding": "The actual final-retirement source is unchanged: it still requires no stored worker handle and observed Returned, the exact consumer summary, taken pause resources, actual Session-field retirement and exclusive real File ownership before release. A completed-but-unrecorded Shared does not satisfy that predicate.",
+      "field_order": "OriginalRootSessionCustody still drops worker/consumers/pause before its last writer File; original Session still drops live, worker and writer File before final retirement notice. The Shared wrappers capture only the same original handles/results; they add no new postterminal job/registry self-cycle.",
+      "scope_limit": "Existing live task closures may still hold their operational resources until they return, as before. This review does not treat a cancelled task, empty count, EOF or Arc count as proof of business completion."
+    },
+    {
+      "area": "Type/Send obligations",
+      "finding": "Session and consumer terminal values were already Copy/Clone. Circuit shares only unit and keeps the non-Clone AgentdError in Arc<Mutex<...>>. No payload Clone or additional payload Sync requirement is introduced. Original JoinHandle outputs already travel through the actual Tokio spawn APIs. Guards created after the final await stay in synchronous lexical scopes.",
+      "limit": "This is source-level trait/ownership reasoning, not a Rust compiler result."
+    },
+    {
+      "area": "Dependency edge",
+      "finding": "Agentd adds futures = { workspace = true, features = [\"std\"] } against the already existing workspace futures version 0.3 with default features disabled. The actual lock remains 1,523 package blocks and differs only by the futures name in codex-hepta-agentd dependencies. The existing futures 0.3.34 block and all versions/checksums are byte unchanged.",
+      "limit": "No package installation, resolver execution or --locked build was run by this review."
+    }
+  ],
+  "preserved_drop_spans": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "selector": "impl Drop for OriginalCircuitOwnerCustody {",
+      "span": {
+        "git_blob": "a232a422dab5b162de89956f4b3afce0ea0a9ce5",
+        "bytes": 181,
+        "sha256": "59dbf5b8183742b6de31cdd699bf196c6724f74028f1926a05bd53e3e951577b"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "selector": "impl Drop for OriginalCircuitStartAdmission<'_> {",
+      "span": {
+        "git_blob": "e6863d59c1bce62df301f83bb0733c1496488e96",
+        "bytes": 226,
+        "sha256": "05148a799a60b6b1b77d18c2fc3b1354a2a233c3d958ae77585a835e8466b332"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "selector": "impl Drop for OriginalCircuitRuntimeReceiver {",
+      "span": {
+        "git_blob": "273b5332af210cabafaa41d843f3f005b645771b",
+        "bytes": 388,
+        "sha256": "f6902c8878462d85e468fec79b23ac4aaa299c65463c9deee090543c282c0216"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "selector": "impl Drop for OriginalRootSessionCustodySlot {",
+      "span": {
+        "git_blob": "c2bb432401f733d746043881969406887e233288",
+        "bytes": 493,
+        "sha256": "a2318a89c175b1455dee1af1b53a529de9cc9dc580dda98011976b819704db4d"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "selector": "impl Drop for OriginalSessionAdmission<'_> {",
+      "span": {
+        "git_blob": "a0345659b63347cc887a6023f8dad1d0d2bf13bf",
+        "bytes": 182,
+        "sha256": "c22874647b1a9e66dc568e9f1868e09a599345f45125e726454c0f8177b0088e"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "selector": "impl Drop for OriginalRootSessionCustody {",
+      "span": {
+        "git_blob": "096affba77d2e41fc7274a244d1818dc90092c35",
+        "bytes": 261,
+        "sha256": "b2574bc87a603155f8bcb33272529c0ea11a51abe9f07c1068ef0746671700c8"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "selector": "impl Drop for OriginalSessionRetirement {",
+      "span": {
+        "git_blob": "6b37cc708f949b61b104db27e305af7edca9483b",
+        "bytes": 143,
+        "sha256": "77ab8707e49ed2877ac675072e5d2bfc4e0e147342525b66e9f46a1551116a94"
+      },
+      "byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "selector": "impl Drop for OriginalConsumerAdmission<'_> {",
+      "span": {
+        "git_blob": "985dd9720aca469915376fdf1b45d1b8bcfe966b",
+        "bytes": 182,
+        "sha256": "dfacde0c9c383ee9ad2d3e29e3d06ad78144a14f8c6751eda80b61bd0ad9ef9c"
+      },
+      "byte_equal": true
+    }
+  ],
+  "unchanged_counter_implementation": {
+    "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+    "span": "fn record_joined(\n        &self,\n        job: &Arc<OriginalConsumerJob>,\n        outcome: Result<(), OriginalConsumerFailure>,\n    ) {\n        // Recovery is bookkeeping of an already observed actual join. It\n        // cannot admit, repeat or restore a consumer operation.\n        let mut state = self\n            .state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        if let Some(index) = state\n            .retained\n            .iter()\n            .position(|entry| Arc::ptr_eq(entry, job))\n        {\n            state.retained.remove(index);\n            state.joined += 1;\n            if let Err(error) = outcome {\n                state.first_observed_failure.get_or_insert(error);\n            }\n        }\n    }",
+    "pin": {
+      "git_blob": "0befb3f6aaeccf2cd5c8501e2e788cf9c0014b48",
+      "bytes": 760,
+      "sha256": "b612abc8566980ecc2e04f40c56659eb54e6e5f356869f3eb1c75ed503821087"
+    },
+    "unchanged": true
+  },
+  "actual_session_field_order": {
+    "source": {
+      "git_blob": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+      "bytes": 35493,
+      "sha256": "daa2138c015b1a43c903948593595b0bc5df67700c3b362d9097370ed383c6f9"
+    },
+    "span": "pub struct AgentdRootAuthoritySession {\n    live: Arc<LiveRoot>,\n    worker: OriginalSessionWorker,\n    writer_file: WriterCustody,\n    // Last: only after the original operational fields have really dropped.\n    _retirement: Option<lifecycle::OriginalSessionRetirement>,\n}",
+    "span_meta": {
+      "git_blob": "716bf89cebb0c88a4bc542b1c4c8683560b844c3",
+      "bytes": 273,
+      "sha256": "6883d9692b04e9bcc17deeb787538fbfb1f2e89d855635b8e4eef88f88c98c12"
+    }
+  },
+  "test_review": {
+    "executed": false,
+    "existing_components_read": {
+      "circuit": 5,
+      "session_lifecycle": 5,
+      "normal_pause_and_file_retirement": 9
+    },
+    "adequate_existing_coverage": [
+      "Actual blocking owner FD stays open while cancelled receiver and cancelled cleanup wait are pending; exact original I/O error object is later recovered once.",
+      "Unpolled receiver cancellation and actual worker panic retain explicit failure.",
+      "Natural Circuit join waits for the actual FD owner, leaves the result for its real receiver and does not turn original Err into success.",
+      "Original blocked consumer CAS survives activation/cleanup/pause cancellation, is actually joined and preserves error/panic plus File custody.",
+      "Normal pause waits for the full refresh/consumer cut; parked original stream/guards/File remain held until real component release.",
+      "Final Session fields refuse live Session or extra real File owners and release the exact File only after actual joins/field retirement."
+    ],
+    "exact_gap": "No read test deterministically forces Shared to be Ready while the observer is blocked on the second result-state lock, cancels one such waiter and then lets another waiter record/reuse the same terminal. Existing repeated cleanup assertions happen after recording.",
+    "recommendation": {
+      "scope": "At most one focused Consumer case plus one Session-worker case if testing their independently implemented recording paths. No production hook or generic state machine.",
+      "mechanism": "Register a real blocked task/FD using the actual constructor. Poll two real waiter futures while the task is pending so both have cloned the same Shared. Release and drive that same registered Shared to Ready. Then hold the private state lock only within a synchronous polling block, poll both waiters to their record-lock Pending state, cancel one and assert the original cached Shared remains. Release the lock, await the second and any later waiter. For consumers assert one Arc removal/counter increment and original failure; for Session assert the same Returned/Cancelled/Panicked mapping and final None/observed state. No await occurs while the test itself holds that guard.",
+      "authority_limit": "Use component-only actual handles/FDs; do not fabricate C, RootIntent, business receipt or FinalUse acceptance."
+    }
+  },
+  "metadata_obligations": [
+    {
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:494",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "update": "Recapture the changed job state, Shared owner and six changed function guards. Preserve whole receiver Drop/explicit drop(receiver), original delivery and all unchanged row conjuncts."
+    },
+    {
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:504",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "update": "Recapture actual Shared/observed state, retain_original_session_consumer_handle and join_original_handle; record_joined and accounting guard remain."
+    },
+    {
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:506",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "update": "Recapture actual PhaseWorkerState/from_original_worker/fault join; preserve Drop, origin, abort and writer-last guards."
+    },
+    {
+      "origin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:507",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "update": "Recapture only join_original_paused's changed actual wait/record sequence; retain all park/admission/pidfd/deadline/FD/normal guards and final-retirement conjunction."
+    }
+  ],
+  "verification_limits": {
+    "original_checker": false,
+    "formatter": false,
+    "compiler": false,
+    "tests": false,
+    "native": false,
+    "h": false,
+    "pty": false,
+    "refs": false,
+    "no_business_or_root_exit_qualification": true,
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  }
+}
