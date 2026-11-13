@@ -26,7 +26,9 @@ TRANSPORT = A + "authority_host_run_start_transport.rs"
 CLIENT = A + "root_generation_initial_run_start.rs"
 OBJECTIVE = A + "objective_run_start_retention.rs"
 SUBMISSION = A + "objective_submission.rs"
+RUNTIME = A + "objective_runtime.rs"
 CALLERS = {
+    "original_run_start_publisher_generation": (CLIENT, INPUTS),
     "root_initial_run_start_enable": (A + "bin/hepta-authority-host.rs",),
     "root_initial_run_start_fixed_files": (
         A + "authority_host_completed_observation.rs",
@@ -262,7 +264,8 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
             "actual.publication.sequence != publication.sequence",
             "actual.publication.record_digest != digest(&publication.record_digest)?",
             "actual.publication.chain_digest != digest(&publication.chain_digest)?",
-            "record.snapshot.generation != target.generation()",
+            "!crate::objective_runtime::run_start_matches_original_publisher(",
+            "&record.snapshot,",
             "record.admission.observed_at_unix_micros > now_micros",
             "record.admission.deadline_unix_micros <= now_micros",
             "authentication_is_current(", "if read()? != observed",
@@ -341,6 +344,8 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
         self.remove(CLIENT, "retain_live_run_start", (
             "self.run_start_attempted.swap(true, Ordering::AcqRel)",
             "published.publication.disposition != RunStartAppendDisposition::Appended",
+            "!crate::objective_runtime::run_start_matches_original_publisher(",
+            "self.connection.original_launch_binding().1", "&record.snapshot,",
             "published.run_start != record.snapshot", "self.lane.try_lock()", "held.take()",
             "request_id.checked_add(1)", "lane.stream.exchange(", "require_retained_reply(",
             "self.observe_initial_current()? != before", "self.fence()",
@@ -349,6 +354,13 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
             "response.request_id != request_id", "response.profile != profile", "response.mode != mode",
             "&response.publication != publication", "retained.is_zero()",
             "retained.to_string() != response.retained",
+        ))
+
+    def test_original_publisher_binding_requires_running_generation_and_its_fence(self):
+        self.remove(RUNTIME, "run_start_matches_original_publisher", (
+            "identity.spawn_generation != 0", ".spawn_generation", ".checked_add(1)",
+            ".is_some_and(|running_generation|", "snapshot.generation == running_generation",
+            "snapshot.fence_digest == objective_fence(identity, running_generation)",
         ))
 
     def test_actual_live_seam_rechecks_current_authbus_before_execution(self):

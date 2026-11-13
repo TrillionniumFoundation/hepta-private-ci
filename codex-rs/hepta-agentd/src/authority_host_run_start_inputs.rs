@@ -171,9 +171,10 @@ impl OriginalInputPin {
                 || actual.publication.sequence != publication.sequence
                 || actual.publication.record_digest != digest(&publication.record_digest)?
                 || actual.publication.chain_digest != digest(&publication.chain_digest)?
-                || record.snapshot.generation != target.generation()
-                || record.snapshot.fence_digest
-                    != crate::objective_runtime::objective_fence(identity, target.generation())
+                || !crate::objective_runtime::run_start_matches_original_publisher(
+                    identity,
+                    &record.snapshot,
+                )
                 || record.admission.profile_id != decoded.profile.profile_id
                 || record.admission.profile_revision != decoded.profile.profile_revision.get()
                 || record.admission.observed_at_unix_micros > now_micros
