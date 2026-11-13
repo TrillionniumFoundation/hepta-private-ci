@@ -76,31 +76,38 @@ impl ActualCommand {
         })
     }
 
-    async fn finish(self, counts: [u64; 2], task_reads: u64) -> anyhow::Result<()> {
-        let Self {
-            f,
-            mut c,
-            trainer,
-            evaluator,
-            peers,
-            files,
-            task_host,
-            task_peer,
-            host,
-        } = self;
-        drop(host);
-        assert_eq!(
-            task_peer.join().expect("same actual evaluated task peer")?,
-            task_reads
-        );
-        drop(task_host);
-        drop(trainer);
-        drop(evaluator);
-        assert_eq!(peers.finish()?, counts);
-        drop(files);
-        c.stop().await?;
-        drop(c);
-        f.finish().await
+    fn finish(
+        self,
+        counts: [u64; 2],
+        task_reads: u64,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<()>>>> {
+        Box::pin(async move {
+            let owned = self;
+            let Self {
+                f,
+                mut c,
+                trainer,
+                evaluator,
+                peers,
+                files,
+                task_host,
+                task_peer,
+                host,
+            } = owned;
+            drop(host);
+            assert_eq!(
+                task_peer.join().expect("same actual evaluated task peer")?,
+                task_reads
+            );
+            drop(task_host);
+            drop(trainer);
+            drop(evaluator);
+            assert_eq!(peers.finish()?, counts);
+            drop(files);
+            c.stop().await?;
+            drop(c);
+            f.finish().await
+        })
     }
 
     fn recover_original_owner(self) -> anyhow::Result<Self> {

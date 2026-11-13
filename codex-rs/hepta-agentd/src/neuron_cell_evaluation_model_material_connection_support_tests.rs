@@ -244,6 +244,37 @@ impl OriginalCellEvaluationModelMaterialV1 {
         assert!(self.fixture_original_material_pages() <= MAX_PAGES);
         let raw = &body.members[0];
         super::super::codec::fixture_qualification_vector_bounds(&raw.qualification)?;
+        // Parse the actual producer's envelope IDs without another execution.
+        let mut execution = super::super::codec::Reader::new(&raw.execution_record);
+        execution.literal(b"HPEXEV01")?;
+        for _ in 0..2 {
+            let start = execution.offset;
+            let id = execution.id_u16()?;
+            let end = execution.offset;
+            assert_eq!(end - start, id.as_str().len() + 2);
+            let bytes = &raw.execution_record[start..end];
+            let mut exact = super::super::codec::Reader::new(bytes);
+            assert_eq!(exact.id_u16()?, id);
+            exact.finish()?;
+            for length in [129_u16, u16::MAX] {
+                let mut oversized = bytes.to_vec();
+                oversized[..2].copy_from_slice(&length.to_be_bytes());
+                let mut reader = super::super::codec::Reader::new(&oversized);
+                assert!(matches!(
+                    reader.id_u16(),
+                    Err(Error::Binding("bounded original material count"))
+                ));
+                assert_eq!(reader.offset, 2);
+            }
+            assert!(matches!(
+                super::super::codec::Reader::new(&bytes[..1]).id_u16(),
+                Err(Error::Binding("truncated original material"))
+            ));
+            assert!(matches!(
+                super::super::codec::Reader::new(&bytes[..bytes.len() - 1]).id_u16(),
+                Err(Error::Binding("truncated original material"))
+            ));
+        }
         let record: serde_json::Value = serde_json::from_slice(&raw.record)?;
         let candidate: CellBackendManifestV2 =
             serde_json::from_value(record["candidate"]["manifest"].clone())?;

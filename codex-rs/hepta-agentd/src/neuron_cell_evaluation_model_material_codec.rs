@@ -217,6 +217,20 @@ impl<'a> Reader<'a> {
             .map_err(|_| Error::Binding("material identifier"))?;
         StableId::new(value).map_err(|_| Error::Binding("material identifier"))
     }
+    // HPEXEV01 uses u16 ID lengths; other original commitments use u32.
+    pub(super) fn id_u16(&mut self) -> Result<StableId, Error> {
+        let length = usize::from(u16::from_be_bytes(
+            self.take(/*count*/ 2)?
+                .try_into()
+                .map_err(|_| Error::Binding("material integer"))?,
+        ));
+        if length > 128 {
+            return Err(Error::Binding("bounded original material count"));
+        }
+        let value = std::str::from_utf8(self.take(length)?)
+            .map_err(|_| Error::Binding("material identifier"))?;
+        StableId::new(value).map_err(|_| Error::Binding("material identifier"))
+    }
     pub(super) fn ids(&mut self) -> Result<Vec<StableId>, Error> {
         (0..self.count(1024)?).map(|_| self.id()).collect()
     }

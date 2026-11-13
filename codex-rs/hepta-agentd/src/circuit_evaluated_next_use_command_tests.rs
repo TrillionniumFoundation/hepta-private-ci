@@ -177,49 +177,52 @@ impl ActualNextCommand {
         })
     }
 
-    async fn finish(
+    fn finish(
         self,
         counts: [u64; 2],
         selection_reads: u64,
         next_reads: u64,
         selector_evidence_reads: u64,
-    ) -> anyhow::Result<()> {
-        let Self {
-            common,
-            material: _,
-            dataset: _,
-            selection: _,
-            selector_client,
-            selector_peer,
-            selector_evidence_peer,
-            task_host,
-            task_peer,
-            files,
-            host,
-        } = self;
-        drop(host);
-        assert_eq!(
-            task_peer
-                .join()
-                .expect("same actual five-cut C task peer")?,
-            next_reads
-        );
-        drop(task_host);
-        assert_eq!(
-            selector_evidence_peer
-                .join()
-                .expect("same actual readonly S evidence peer")?,
-            selector_evidence_reads
-        );
-        drop(selector_client);
-        assert_eq!(
-            selector_peer
-                .join()
-                .expect("same original S command peer")?,
-            2
-        );
-        drop(files);
-        common.finish(counts, selection_reads).await
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<()>>>> {
+        Box::pin(async move {
+            let owned = self;
+            let Self {
+                common,
+                material: _,
+                dataset: _,
+                selection: _,
+                selector_client,
+                selector_peer,
+                selector_evidence_peer,
+                task_host,
+                task_peer,
+                files,
+                host,
+            } = owned;
+            drop(host);
+            assert_eq!(
+                task_peer
+                    .join()
+                    .expect("same actual five-cut C task peer")?,
+                next_reads
+            );
+            drop(task_host);
+            assert_eq!(
+                selector_evidence_peer
+                    .join()
+                    .expect("same actual readonly S evidence peer")?,
+                selector_evidence_reads
+            );
+            drop(selector_client);
+            assert_eq!(
+                selector_peer
+                    .join()
+                    .expect("same original S command peer")?,
+                2
+            );
+            drop(files);
+            common.finish(counts, selection_reads).await
+        })
     }
 }
 
