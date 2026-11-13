@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-n256-independent-oracle-source-freeze-v1",
+  "identity": "hcsn-n256-independent-oracle-source-20261113-c06d-001",
+  "base_commit": "aa276941148f22520834d7aa9ace8a9a966b38b4",
+  "parent_draft": 6298,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-independent-oracle-intent.yml": "72dd027a887a03286c7ae379c9538366c1b01c9ee17979fb1a30dc59f4bb1304",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/__init__.py": "9081d23a5a19cbcb7ae0527d0b55766c4f08d3f883779ce7fd8007165afb6420",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/admission.py": "32118a317eb7195cef57516d209807e87b5aeb9a6c6e3afaf33ea050c6fb6bfc",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/independent_oracle.py": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/static_inspector.py": "c4eb10e1baa848ec33318aebe0a648e2dbac61443ee0cb6206a61f6cb36c3645",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/test_static.py": "09a9b49c8b8ec54fac1206819795cf4bd61ce1328141e80b532e2cd1ec1bb118",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/REQUEST.json": "aa1a87b98e029d54a863471c4b60b68dcca83de37c20c24dbaf0cbcfdf083e1e",
+    "qualification/hcsn_currentstate_n256_independent_oracle_intent/README.md": "660cb40b8c3028232d8831acf70603f4f95a18c884a8931859cdb3c849f1c9ff"
+  },
+  "bindings": {
+    "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2"
+  },
+  "implementation": {
+    "independent_candidate_imports": 0,
+    "lazy_numeric_import_after_admission": true,
+    "dense_expm_forbidden": true,
+    "streamed_hex_coordinates": true,
+    "warm_coarse_cold_surfaces": true
+  },
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "unresolved": [
+    "independent numerical review of delay/reset/full-state semantics",
+    "canonical serializer and cold loader source",
+    "runtime profile",
+    "current host and ancestor-cgroup snapshots",
+    "allocation, concurrency, and calendar",
+    "N256 numerical oracle execution and candidate comparison"
+  ],
+  "status": "PASS_SOURCE_ONLY_HOLD_NUMERICAL",
+  "oracle_numerical_qualification": false,
+  "largegrid_qualification": false,
+  "all_closed": false
+}
