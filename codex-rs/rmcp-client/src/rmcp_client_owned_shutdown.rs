@@ -104,7 +104,10 @@ impl OriginalMcpClientShutdown {
     pub fn request_stop(&self) {
         self.stopped.store(true, Ordering::Release);
         // Poison grants cleanup access only, never another start.
-        let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(service) = &state.service {
             service.cancellation_token().cancel();
         }
@@ -143,7 +146,10 @@ impl OriginalMcpClientShutdown {
 
     pub(super) fn retain_original_service(&self, service: &Arc<OriginalService>) -> Result<()> {
         let poisoned = self.state.is_poisoned();
-        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         // The original handshake already created this driver. Even poison
         // must retain it for cleanup before returning the refusal.
         let duplicate = state.service.is_some() || state.driver.is_some();
@@ -161,7 +167,10 @@ impl OriginalMcpClientShutdown {
     }
 
     fn start_original_driver_join(&self) -> Option<Arc<OriginalDriverJob>> {
-        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(job) = &state.driver {
             return Some(Arc::clone(job));
         }
@@ -221,7 +230,7 @@ impl OriginalMcpClientShutdown {
         let client = self
             .state
             .lock()
-            .unwrap_or_else(|error| error.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .client
             .as_ref()
             .and_then(Weak::upgrade);
@@ -237,11 +246,11 @@ impl OriginalMcpClientShutdown {
                     transport: Some(PendingTransport::Stdio { mut transport }),
                 } => {
                     use rmcp::transport::Transport;
-                    if let Err(error) = transport.close().await {
-                        if first_error.is_none() {
-                            first_error =
-                                Some(anyhow!("original pending MCP transport close: {error}"));
-                        }
+                    if let Err(error) = transport.close().await
+                        && first_error.is_none()
+                    {
+                        first_error =
+                            Some(anyhow!("original pending MCP transport close: {error}"));
                     }
                 }
                 // Ready's Arc was retained before the first subsequent await.

@@ -212,7 +212,10 @@ impl OriginalMcpRuntimeShutdown {
 
     pub(crate) fn retain_original_startup(&self, mut actual: JoinSet<StartupOutput>) {
         let poisoned = self.state.is_poisoned();
-        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if poisoned || !state.constructing || !state.startup_jobs.is_empty() {
             state.custody_failure = Some("original startup handle registration was refused".into());
         }
@@ -248,7 +251,10 @@ impl OriginalMcpRuntimeShutdown {
 
     pub fn request_stop(&self) {
         self.stopped.store(true, Ordering::Release);
-        let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(startup) = &state.startup {
             startup.cancel();
         }
@@ -271,7 +277,7 @@ impl OriginalMcpRuntimeShutdown {
             let mut slot = self
                 .cleanup
                 .lock()
-                .unwrap_or_else(|error| error.into_inner());
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             if let Some(job) = slot.as_ref() {
                 Arc::clone(job)
             } else {
@@ -306,7 +312,7 @@ impl OriginalMcpRuntimeShutdown {
             let constructing = self
                 .state
                 .lock()
-                .unwrap_or_else(|error| error.into_inner())
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
                 .constructing;
             if !constructing {
                 break;
@@ -314,7 +320,10 @@ impl OriginalMcpRuntimeShutdown {
             changed.await;
         }
         let (jobs, client, mut first_error) = {
-            let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+            let state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             let failure = if self.state.is_poisoned() || self.cleanup.is_poisoned() {
                 Some("original MCP cleanup custody is poisoned".to_string())
             } else {
@@ -363,7 +372,7 @@ impl Drop for OriginalMcpConstructionGuard {
             .owner
             .state
             .lock()
-            .unwrap_or_else(|error| error.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         state.constructing = false;
         drop(state);
         self.owner.changed.notify_waiters();

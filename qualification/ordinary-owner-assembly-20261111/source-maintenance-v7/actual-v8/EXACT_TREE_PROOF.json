@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "kind": "root-exact-v8-postimages-and-evidence-tree",
+  "parent_commit": "230d771303b3775ea88126ff933a1d2e3452c948",
+  "base_tree": "880feb6979d16f878adc6091f700ef67ff4e57a0",
+  "tree_before_this_proof": "03140e8d83ebb68421af4af4a567ee23e504420b",
+  "changed_paths": [
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "old": {
+        "sha": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "68ada589061cf74d714a89fc04657cd02cc5f4b6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "old": {
+        "sha": "658a425299210940a3e8b15a4945867f64818a0c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "old": {
+        "sha": "4c0c34579b757db415f6e7f7851b2418c8a8c987",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "227ba79e46743409c974835126f7a6b340efdb94",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/CONFIG.json",
+      "old": null,
+      "new": {
+        "sha": "e0bd3facb79c2722d646cd5000b81932f69afdbb",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/FINAL_POSTIMAGES.json",
+      "old": null,
+      "new": {
+        "sha": "dbc94e43c8b285189ba36cd7757ffe36611a2347",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/FINAL_SCOPE.json",
+      "old": null,
+      "new": {
+        "sha": "9aa9184d8d8694d016041fd3977746a57c68050a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/FINAL.patch",
+      "old": null,
+      "new": {
+        "sha": "e6c1050136bf6562a85cafe14fe0685a38612758",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/fix-eleven-crates.log",
+      "old": null,
+      "new": {
+        "sha": "90446e45517aa27aa716ddf80a7b0c635b423d28",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/FORMATTED_POSTIMAGES.json",
+      "old": null,
+      "new": {
+        "sha": "3a5504ddfa5b32081d12d94047330e1f8afba438",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/INPUT_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "2568ae7251360b252bebd965b1aa5a7ca5014635",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/ORIGINAL_EVIDENCE_BUNDLE.json",
+      "old": null,
+      "new": {
+        "sha": "8b5c6424aebc1c61d8aa0abc020467bef066f00d",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/ORIGINAL_TRANSFER_OUTPUT.jsonl",
+      "old": null,
+      "new": {
+        "sha": "c3c6f4c55d54c63f8d551374e575a3dad254c825",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/postimage/codex-rs/app-server/src/message_processor.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "68ada589061cf74d714a89fc04657cd02cc5f4b6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/postimage/codex-rs/codex-mcp/src/original_owned_shutdown.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/postimage/codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs.txt",
+      "old": null,
+      "new": {
+        "sha": "227ba79e46743409c974835126f7a6b340efdb94",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/README.md",
+      "old": null,
+      "new": {
+        "sha": "2f20e6d74dacd1c96abe100745a6dceb5c4a6da9",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/REQUEST.json",
+      "old": null,
+      "new": {
+        "sha": "3fd066ca5f7d0bd5a6cda72194f55d912023e734",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/RESULT.json",
+      "old": null,
+      "new": {
+        "sha": "35a0088c0d1a168925d627d6fd78bf6537e9e930",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/ROOT_BYTE_VERIFICATION.json",
+      "old": null,
+      "new": {
+        "sha": "a5693551539ac1f6a20b8c0fc32e025fb52ead85",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/SCRIPT.py",
+      "old": null,
+      "new": {
+        "sha": "93233fc8baac8d0149afa8cb0c1f52d6730ffe06",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/START-tool.json",
+      "old": null,
+      "new": {
+        "sha": "cfd1a868f8cb8d23b62245848dbccc3abbf28e96",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/THREE_SOURCE_ROOT_REPLAY.json",
+      "old": null,
+      "new": {
+        "sha": "9a6033b5fb23f2bf3adfbf9970a0ece1127b325f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/TRANSFER_REQUEST.json",
+      "old": null,
+      "new": {
+        "sha": "c9dc814ec6e241e93627969dca5815e163191ee5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/TRANSFER_SCRIPT.py",
+      "old": null,
+      "new": {
+        "sha": "cd584d161a82b7dd181c887571a36fc37e5e17b6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/TRANSFER_START-tool.json",
+      "old": null,
+      "new": {
+        "sha": "ef564c698c8e0f1402ce84c15355d418895bfdb6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/000000.json",
+      "old": null,
+      "new": {
+        "sha": "8da7df5a291007f343a0a31482f6e1e526b884c3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/016384.json",
+      "old": null,
+      "new": {
+        "sha": "926f25f84a55ddf16aa9cf236640e8e7e34b44c2",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/032768.json",
+      "old": null,
+      "new": {
+        "sha": "44ff369e5487b8f5003590052e68f17d746a6808",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/049152.json",
+      "old": null,
+      "new": {
+        "sha": "dc719b74218a6b3858d97d28260e01f17ac08416",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/057344.json",
+      "old": null,
+      "new": {
+        "sha": "8a603616b8aece444f00c727cb44d9571254b2be",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/065536.json",
+      "old": null,
+      "new": {
+        "sha": "93b72cc01a6fc0c572e3d943811d7c39b730ee34",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/081920.json",
+      "old": null,
+      "new": {
+        "sha": "0f15725d3ec9d30d5e47d9f6d31f476922884579",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/098304.json",
+      "old": null,
+      "new": {
+        "sha": "53b3ec838c3803f5ec79f192ad126dc4215e9722",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v8/transport-chunks/114688.json",
+      "old": null,
+      "new": {
+        "sha": "7cc58e1b0a9ad519d7c49fc8dcf6b2657c848939",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+      "old": {
+        "sha": "2568ae7251360b252bebd965b1aa5a7ca5014635",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "c4b447e17082a076c998cf71e43d7f006c286b06",
+        "mode": "100644",
+        "type": "blob"
+      }
+    }
+  ],
+  "source_manifest": {
+    "blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+    "bytes": 57520,
+    "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+  },
+  "source_paths": 3,
+  "qualification_paths": 32,
+  "maintenance_status": "FAILED",
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "no_qualification_claim": true
+}

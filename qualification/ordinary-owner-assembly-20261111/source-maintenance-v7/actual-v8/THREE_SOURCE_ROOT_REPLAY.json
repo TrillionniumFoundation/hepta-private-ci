@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "kind": "root-exact-native-v8-three-source-replay-and-static-review",
+  "parent": {
+    "head": "230d771303b3775ea88126ff933a1d2e3452c948",
+    "tree": "880feb6979d16f878adc6091f700ef67ff4e57a0",
+    "manifest": "2568ae7251360b252bebd965b1aa5a7ca5014635"
+  },
+  "actual_final_manifest": "dbc94e43c8b285189ba36cd7757ffe36611a2347",
+  "actual_patch": "e6c1050136bf6562a85cafe14fe0685a38612758",
+  "reconstructor": "37994ecccbb147ce5ed41ddb9077e158c16e2704",
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "pre_blob": "0a2740190bcaeab3b86b54ba53b82fc24b4a9c55",
+      "post_blob": "68ada589061cf74d714a89fc04657cd02cc5f4b6",
+      "hunk_count": 1,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 948,
+          "old_count": 10,
+          "new_start": 948,
+          "new_count": 10,
+          "patch_header_line": 5
+        }
+      ],
+      "bytes": 82330,
+      "sha256": "205c3dc044430550c58bc491d829a52de9bbf7815aaf0e831373dba557cae73b",
+      "forward_reverse_exact": true,
+      "matches_original_captured_postimage": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre_blob": "658a425299210940a3e8b15a4945867f64818a0c",
+      "post_blob": "4dce2ebdb689852945f7a9e8cf6f2cb4b18bd7c6",
+      "hunk_count": 6,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 212,
+          "old_count": 7,
+          "new_start": 212,
+          "new_count": 10,
+          "patch_header_line": 24
+        },
+        {
+          "old_start": 248,
+          "old_count": 7,
+          "new_start": 251,
+          "new_count": 10,
+          "patch_header_line": 36
+        },
+        {
+          "old_start": 271,
+          "old_count": 7,
+          "new_start": 277,
+          "new_count": 7,
+          "patch_header_line": 48
+        },
+        {
+          "old_start": 306,
+          "old_count": 7,
+          "new_start": 312,
+          "new_count": 7,
+          "patch_header_line": 57
+        },
+        {
+          "old_start": 314,
+          "old_count": 7,
+          "new_start": 320,
+          "new_count": 10,
+          "patch_header_line": 66
+        },
+        {
+          "old_start": 363,
+          "old_count": 7,
+          "new_start": 372,
+          "new_count": 7,
+          "patch_header_line": 78
+        }
+      ],
+      "bytes": 15052,
+      "sha256": "a77cafbeca79edef7d856b356f0ff5273c33b9097d46f990cdee73a8684a0e5f",
+      "forward_reverse_exact": true,
+      "matches_original_captured_postimage": true
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs",
+      "pre_blob": "4c0c34579b757db415f6e7f7851b2418c8a8c987",
+      "post_blob": "227ba79e46743409c974835126f7a6b340efdb94",
+      "hunk_count": 5,
+      "no_newline_markers": 0,
+      "hunk_positions": [
+        {
+          "old_start": 104,
+          "old_count": 7,
+          "new_start": 104,
+          "new_count": 10,
+          "patch_header_line": 91
+        },
+        {
+          "old_start": 143,
+          "old_count": 7,
+          "new_start": 146,
+          "new_count": 10,
+          "patch_header_line": 103
+        },
+        {
+          "old_start": 161,
+          "old_count": 7,
+          "new_start": 167,
+          "new_count": 10,
+          "patch_header_line": 115
+        },
+        {
+          "old_start": 221,
+          "old_count": 7,
+          "new_start": 230,
+          "new_count": 7,
+          "patch_header_line": 127
+        },
+        {
+          "old_start": 237,
+          "old_count": 11,
+          "new_start": 246,
+          "new_count": 11,
+          "patch_header_line": 136
+        }
+      ],
+      "bytes": 14217,
+      "sha256": "0039095e6fa3cc6ef71b43771f0a61bd9fe2ce5ae9514fb9f37c84715b79b833",
+      "forward_reverse_exact": true,
+      "matches_original_captured_postimage": true
+    }
+  ],
+  "semantic_observations": [
+    "PoisonError::into_inner method references return the same original mutex guards; poison checks and ownership fields remain in place.",
+    "The App Server let-chain retains the Some(worker) gate, actual join_original(worker).await, and error collection in the same order.",
+    "The lower MCP let-chain evaluates actual transport.close().await before first_error.is_none(), so prior failures do not skip transport cleanup.",
+    "The previously reviewed unknown QuitReason refusal arm remains present."
+  ],
+  "final_source_manifest": {
+    "blob": "c4b447e17082a076c998cf71e43d7f006c286b06",
+    "bytes": 57520,
+    "sha256": "92cb638e706854058436484868451d8bed312c1fe5f240a34dfdde28513be5f3"
+  },
+  "qualification_status": "NOT_QUALIFIED",
+  "native_v8_fix_exit": 101,
+  "original_checker_run": false,
+  "tests_run": false,
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

@@ -948,10 +948,10 @@ impl MessageProcessor {
                 {
                     failures.push(("original models refresh", std::io::Error::other(error)));
                 }
-                if let Some(worker) = &mut processor.turn_cost_worker {
-                    if let Err(error) = TurnCostWorker::join_original(worker).await {
-                        failures.push(("original turn cost", std::io::Error::other(error)));
-                    }
+                if let Some(worker) = &mut processor.turn_cost_worker
+                    && let Err(error) = TurnCostWorker::join_original(worker).await
+                {
+                    failures.push(("original turn cost", std::io::Error::other(error)));
                 }
                 drop(processor);
             }

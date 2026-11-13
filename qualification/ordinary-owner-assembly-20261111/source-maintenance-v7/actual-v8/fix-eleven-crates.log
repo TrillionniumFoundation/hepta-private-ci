@@ -1,0 +1,817 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking rama-crypto v0.3.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/rama-crypto-0.3.0-time-backport)
+    Checking codex-utils-absolute-path v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/rustls-provider)
+    Checking codex-http-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/http-client)
+    Checking rama-tls v0.3.0
+   Compiling starlark v0.14.2 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/starlark-0.14.2-blake3-backport)
+    Checking codex-utils-home-dir v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/home-dir)
+    Checking rama-http-types v0.3.0
+    Checking rama-http-headers v0.3.0
+    Checking rama-http v0.3.0
+    Checking rama-tls-rustls v0.3.0
+    Checking codex-utils-cache v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/cache)
+    Checking codex-execpolicy v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/execpolicy)
+    Checking codex-utils-image v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/image)
+    Checking codex-utils-path-uri v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/redacted-string)
+    Checking codex-utils-string v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/string)
+    Checking codex-async-utils v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/async-utils)
+    Checking codex-utils-pty v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/pty)
+    Checking codex-websocket-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/websocket-client)
+    Checking codex-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/codex-client)
+    Checking rama-http-core v0.3.0
+    Checking codex-utils-path v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/path-utils)
+   Compiling i18n-config v0.4.8 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/i18n-config-0.4.8)
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)
+   Compiling i18n-embed-impl v0.8.4
+   Compiling codex-windows-sandbox v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/windows-sandbox-rs)
+    Checking secret-service v6.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/secret-service-6.0.0)
+    Checking zbus-secret-service-keyring-store v1.0.1 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1)
+   Compiling i18n-embed v0.15.4
+   Compiling i18n-embed-fl v0.9.4
+    Checking keyring v4.2.0
+    Checking age v0.11.5
+    Checking codex-keyring-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/keyring-store)
+    Checking codex-hepta-contracts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-contracts)
+    Checking rama-http-backend v0.3.0
+    Checking codex-network-proxy v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/network-proxy)
+    Checking codex-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/protocol)
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/cargo-bin)
+   Compiling sqlx-sqlite v0.9.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/sqlx-sqlite-0.9.0)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+   Compiling sqlx-macros-core v0.9.0
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling sqlx-macros v0.9.0
+    Checking codex-utils-template v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/template)
+    Checking sqlx v0.9.0
+    Checking codex-workload-identity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/terminal-detection)
+    Checking codex-install-context v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/install-context)
+    Checking aws-config v1.12.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/third_party/aws-config-1.12.0)
+    Checking codex-hepta-types v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-types)
+    Checking codex-collaboration-mode-templates v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/collaboration-mode-templates)
+    Checking codex-aws-auth v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/aws-auth)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/code-mode-protocol)
+    Checking codex-diagnostics v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/diagnostics)
+    Checking codex-file-search v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/file-search)
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/app-server-protocol-noop-macros)
+   Compiling codex-skills v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/skills)
+    Checking codex-utils-stream-parser v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/stream-parser)
+    Checking codex-hepta-cognitive-types v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-cognitive-types)
+    Checking codex-file-system v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/file-system)
+    Checking codex-git-utils v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/git-utils)
+    Checking codex-api v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/codex-api)
+    Checking codex-shell-command v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/shell-command)
+    Checking codex-exec-server-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/exec-server-protocol)
+    Checking codex-secrets v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/secrets)
+    Checking codex-otel v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/model-provider-info)
+    Checking codex-agent-identity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/agent-identity)
+    Checking codex-history v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/history)
+    Checking codex-state v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/state)
+    Checking codex-features v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/features)
+    Checking codex-config v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/config)
+    Checking codex-sandboxing v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/sandboxing)
+    Checking codex-utils-output-truncation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/output-truncation)
+    Checking codex-response-debug-context v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/response-debug-context)
+    Checking codex-code-mode v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/code-mode)
+    Checking codex-context-fragments v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/context-fragments)
+    Checking codex-rollout v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/rollout)
+    Checking codex-exec-server v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/exec-server)
+    Checking codex-login v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/login)
+    Checking codex-models-manager v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/feedback)
+    Checking codex-model-provider v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/model-provider)
+    Checking codex-app-server-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/app-server-protocol)
+    Checking codex-rmcp-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/rmcp-client)
+       Fixed rmcp-client/src/rmcp_client_owned_shutdown.rs (5 fixes)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> rmcp-client/src/rmcp_client_owned_shutdown.rs:311:13
+    |
+311 |         let mut state = self.state.lock().await;
+    |             ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+    = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> rmcp-client/src/stdio_server_owned_shutdown.rs:108:13
+    |
+108 |         let mut state = self.state.lock().await;
+    |             ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> rmcp-client/src/stdio_server_owned_shutdown.rs:464:13
+    |
+464 |         let mut launch_state = launch.join().await;
+    |             ^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: `codex-rmcp-client` (lib) generated 10 warnings
+    Checking codex-utils-plugins v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/plugins)
+    Checking codex-plugin v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/plugin)
+    Checking codex-connectors v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/connectors)
+    Checking codex-exec-server-test-support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/exec-server/tests/support)
+    Checking codex-mcp v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/codex-mcp)
+       Fixed codex-mcp/src/original_owned_shutdown.rs (6 fixes)
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> codex-mcp/src/original_owned_shutdown.rs:375:13
+    |
+375 |         let mut state = self.state.lock().await;
+    |             ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+    = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> codex-mcp/src/original_owned_shutdown.rs:402:13
+    |
+402 |         let mut state = self.state.lock().await;
+    |             ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: `codex-mcp` (lib) generated 2 warnings
+    Checking codex-tools v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/tools)
+    Checking codex-extension-api v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/extension-api)
+    Checking codex-hooks v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hooks)
+    Checking codex-apply-patch v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/apply-patch)
+    Checking codex-analytics v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/analytics)
+    Checking codex-shell-escalation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/shell-escalation)
+    Checking codex-thread-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/thread-store)
+    Checking codex-core-plugins v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/skills)
+    Checking codex-prompts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/memories/read)
+    Checking codex-utils-audio v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/audio)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-memory-retrieval)
+    Checking codex-core v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/core)
+    Checking codex-hepta-paths v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-paths)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/linux-sandbox)
+    Checking codex-process-hardening v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/process-hardening)
+    Checking codex-arg0 v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/arg0)
+    Checking codex-hepta-prompt-registry v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-kg v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-kg)
+    Checking codex-home v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/codex-home)
+    Checking codex-hepta-operations v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-operations)
+    Checking codex-hepta-cognitive-read v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-cognitive-read)
+    Checking codex-backend-openapi-models v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/codex-backend-openapi-models)
+   Compiling serial_test_derive v3.5.0
+    Checking serial_test v3.5.0
+    Checking codex-backend-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/backend-client)
+    Checking codex-hepta-memory-federation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-memory-federation)
+    Checking codex-hepta-memory v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-memory)
+    Checking float-cmp v0.10.0
+    Checking normalize-line-endings v0.3.0
+    Checking predicates v3.1.4
+    Checking codex-hepta-authbus v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-authbus)
+    Checking codex-uds v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/uds)
+    Checking assert_cmd v2.2.2
+    Checking codex-hepta-evidence v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-evidence)
+    Checking codex-connectors-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/connectors)
+    Checking codex-utils-cli v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/cli)
+    Checking codex-hepta-governance v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/hepta-memory)
+    Checking codex-git-attribution v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/git-attribution)
+    Checking codex-file-watcher v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/file-watcher)
+    Checking codex-hepta-prompt-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/hepta-prompt)
+    Checking codex-utils-json-to-toml v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/utils/json-to-toml)
+    Checking codex-hepta-intuition v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-intuition)
+    Checking codex-hepta-learning-ledger v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-learning-ledger)
+warning: function `session_loop_termination_from_handle` is never used
+    --> core/src/session/mod.rs:1016:15
+     |
+1016 | pub(crate) fn session_loop_termination_from_handle(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> core/src/thread_manager_original_shutdown.rs:249:13
+    |
+249 |         let mut state = self.state.lock().await;
+    |             ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+    = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: `codex-core` (lib) generated 2 warnings
+    Checking codex-web-search-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/web-search)
+    Checking codex-image-generation-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/image-generation)
+    Checking codex-memories-write v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/memories/write)
+    Checking core_test_support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/core/tests/common)
+    Checking codex-external-agent-migration v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/external-agent-migration)
+    Checking codex-guardian-v2 v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/guardian-v2)
+    Checking codex-queue-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/queue)
+    Checking codex-app-server-transport v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/app-server-transport)
+    Checking codex-agent-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/agent)
+    Checking codex-chatgpt v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/chatgpt)
+    Checking codex-goal-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/goal)
+    Checking codex-cloud-config v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/cloud-config)
+    Checking codex-mcp-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/mcp)
+    Checking codex-memories-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/memories)
+    Checking codex-history-notes-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/ext/history-notes)
+    Checking app_test_support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/app-server/tests/common)
+    Checking codex-app-server v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/app-server)
+    Checking codex-hepta-fleet v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-fleet)
+       Fixed app-server/src/message_processor.rs (1 fix)
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> app-server/src/original_owned_shutdown.rs:121:13
+    |
+121 |         let mut slot = self.handle.lock().await;
+    |             ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+    = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: `codex-app-server` (lib) generated 1 warning
+    Checking codex-hepta-ndu v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-ndu)
+    Checking codex-hepta-wire v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-wire)
+    Checking codex-hepta-infer-core v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-infer-core)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-automation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-automation)
+    Checking codex-hepta-neuron v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-neuron)
+    Checking codex-hepta-agent-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-agent-protocol)
+    Checking codex-hepta-context-compiler v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-control-plane v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-control-plane)
+    Checking codex-app-server-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/app-server-client)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-objective v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-objective)
+    Checking codex-hepta-plasticity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-plasticity)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-matrix-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-matrix-protocol)
+    Checking codex-hepta-supervisor v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-supervisor)
+    Checking codex-hepta-intelligence v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-intelligence)
+    Checking codex-hepta-codex-adapter v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-bellman-operator v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-bellman-operator)
+    Checking codex-hepta-cognitive-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-cognitive-store)
+   Compiling test-case-core v3.4.0
+    Checking codex-hepta-agentd v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/hepta-agentd)
+   Compiling test-case-macros v3.4.0
+    Checking test-case v3.4.0
+   Compiling test-log-core v0.2.21
+   Compiling test-log-macros v0.2.21
+    Checking console v0.16.6
+   Compiling tracing-test-macro v0.2.6
+    Checking tracing-test v0.2.6
+    Checking insta v1.49.0
+    Checking test-log v0.2.21
+    Checking codex-test-binary-support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v8/source/codex-rs/test-binary-support)
+    Checking assert_matches v1.5.0
+error[E0432]: unresolved import `super::outcome_data`
+  --> hepta-agentd/src/same_actor_q24_deployment_data.rs:14:12
+   |
+14 | use super::outcome_data::OriginalSignedOutcomeData;
+   |            ^^^^^^^^^^^^ could not find `outcome_data` in `super`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_owner.rs:301:17
+    |
+301 |                 tracing::info!(observation = ?observed, "actual original Session cleanup observed")
+    |                 ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_owner.rs:262:21
+    |
+262 |                     tracing::info!(observation = ?observed, "actual original Circuit cleanup observed");
+    |                     ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_owner.rs:370:37
+    |
+370 | ...                   tracing::error!(error = %signal, "original signal listener also failed");
+    |                       ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_owner.rs:399:29
+    |
+399 | ...                   tracing::error!(error = %cleanup, "original phase also failed during physical cleanup");
+    |                       ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_owner.rs:434:17
+    |
+434 |                 tracing::error!(error = %error, "cancelled original phase owner finished with failure");
+    |                 ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_owner.rs:454:9
+    |
+454 |         tracing::error!(error = %error, "additional original cleanup failure");
+    |         ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_completion.rs:198:9
+    |
+198 |         tracing::error!(error = %error, "additional original terminal cleanup failure");
+    |         ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_run.rs:171:13
+    |
+171 |             tracing::error!(error = %error, "original deployment coordinator also failed");
+    |             ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+  --> hepta-agentd/src/production_launcher_same_actor_runtime.rs:51:21
+   |
+51 |                     tracing::error!(error = %cleanup, "original Runtime cleanup also failed");
+   |                     ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_runtime.rs:268:21
+    |
+268 |                     tracing::error!(error = %cleanup, "original App Server cleanup also failed");
+    |                     ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/production_launcher_same_actor_runtime.rs:278:25
+    |
+278 |                         tracing::error!(error = %cleanup, "original Runtime MCP cleanup also failed");
+    |                         ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0433]: cannot find module or crate `tracing` in this scope
+   --> hepta-agentd/src/same_actor_q24_deployment_owner.rs:103:17
+    |
+103 |                 tracing::error!(error = %error, "original deployment coordinator stopped with failure");
+    |                 ^^^^^^^ use of unresolved module or unlinked crate `tracing`
+
+error[E0425]: cannot find type `AgentdIdentity` in this scope
+  --> hepta-agentd/src/circuit_q24_successor_worker.rs:22:15
+   |
+22 |     identity: AgentdIdentity,
+   |               ^^^^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing this struct through its public re-export
+   |
+ 4 + use crate::AgentdIdentity;
+   |
+
+warning: unused import: `work::OriginalJobReceiveError`
+  --> hepta-agentd/src/same_actor_q24_phase_learning.rs:26:16
+   |
+26 | pub(crate) use work::OriginalJobReceiveError;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `lifecycle::OriginalConsumerFailure`
+  --> hepta-agentd/src/root_authority_session.rs:45:16
+   |
+45 | pub(crate) use lifecycle::OriginalConsumerFailure;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `lifecycle::OriginalConsumerJoinSummary`
+  --> hepta-agentd/src/root_authority_session.rs:46:16
+   |
+46 | pub(crate) use lifecycle::OriginalConsumerJoinSummary;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `lifecycle::OriginalRootSessionJoinObservation`
+  --> hepta-agentd/src/root_authority_session.rs:49:16
+   |
+49 | pub(crate) use lifecycle::OriginalRootSessionJoinObservation;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `lifecycle::OriginalRootWorkerTermination`
+  --> hepta-agentd/src/root_authority_session.rs:53:16
+   |
+53 | pub(crate) use lifecycle::OriginalRootWorkerTermination;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `runtime::OriginalCircuitJoinObservation`
+  --> hepta-agentd/src/circuit_task.rs:31:16
+   |
+31 | pub(crate) use runtime::OriginalCircuitJoinObservation;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `runtime::OriginalCircuitOwnerOutcome`
+  --> hepta-agentd/src/circuit_task.rs:39:16
+   |
+39 | pub(crate) use runtime::OriginalCircuitOwnerOutcome;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0277]: `?` couldn't convert the error to `error::AgentdError`
+   --> hepta-agentd/src/same_actor_q24_deployment_root_exit.rs:139:14
+    |
+137 |               let root = unsafe {
+    |  ________________________-
+138 | |                 AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)
+139 | |             }?;
+    | |             -^ the trait `std::convert::From<tokio::io::unix::AsyncFdRegisterError<std::os::fd::OwnedFd>>` is not implemented for `error::AgentdError`
+    | |_____________|
+    |               this can't be annotated with `?` because it has type `Result<_, tokio::io::unix::AsyncFdRegisterError<std::os::fd::OwnedFd>>`
+    |
+note: `error::AgentdError` needs to implement `From<tokio::io::unix::AsyncFdRegisterError<std::os::fd::OwnedFd>>`
+   --> hepta-agentd/src/error.rs:13:1
+    |
+ 13 | pub enum AgentdError {
+    | ^^^^^^^^^^^^^^^^^^^^
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `error::AgentdError` implements trait `std::convert::From<T>`:
+              std::convert::From<codex_hepta_automation::AutomationError>
+              std::convert::From<codex_hepta_fleet::FleetRegistryError>
+              std::convert::From<codex_hepta_memory::CognitiveStoreError>
+              std::convert::From<codex_hepta_memory::ProductionCognitiveMutationError>
+              std::convert::From<codex_hepta_memory::ProductionWriterError>
+              std::convert::From<serde_json::Error>
+              std::convert::From<std::io::Error>
+    = note: the full name for the type has been written to '/home/qq/af52-learning-20261111/target/debug/deps/codex_hepta_agentd-56f14abfaf206530.long-type-5687350639231957459.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0369]: binary operation `!=` cannot be applied to type `learning_iteration_checkpoint::profile::HostAuthorityLearningProfileV1`
+  --> hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs:80:21
+   |
+80 |         if expected != profile {
+   |            -------- ^^ ------- learning_iteration_checkpoint::profile::HostAuthorityLearningProfileV1
+   |            |
+   |            learning_iteration_checkpoint::profile::HostAuthorityLearningProfileV1
+   |
+note: an implementation of `std::cmp::PartialEq` might be missing for `learning_iteration_checkpoint::profile::HostAuthorityLearningProfileV1`
+  --> hepta-agentd/src/authority_host_learning_profile.rs:54:1
+   |
+54 | pub struct HostAuthorityLearningProfileV1 {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ must implement `std::cmp::PartialEq`
+help: consider annotating `learning_iteration_checkpoint::profile::HostAuthorityLearningProfileV1` with `#[derive(PartialEq)]`
+  --> hepta-agentd/src/authority_host_learning_profile.rs:54:1
+   |
+54 + #[derive(PartialEq)]
+55 | pub struct HostAuthorityLearningProfileV1 {
+   |
+
+error[E0599]: no associated function or constant named `new` found for struct `codex_hepta_contracts::AgentId` in the current scope
+   --> hepta-agentd/src/same_actor_q24_deployment_task.rs:295:30
+    |
+295 |         let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;
+    |                              ^^^ associated function or constant not found in `codex_hepta_contracts::AgentId`
+    |
+note: if you're trying to build a new `codex_hepta_contracts::AgentId`, consider using `codex_hepta_contracts::AgentId::parse` which returns `std::result::Result<codex_hepta_contracts::AgentId, codex_hepta_contracts::AgentIdParseError>`
+   --> hepta-contracts/src/agent_id.rs:42:5
+    |
+ 42 |     pub fn parse(value: impl Into<String>) -> Result<Self, AgentIdParseError> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `ne` with a similar name
+    |
+295 -         let agent = AgentId::new(&self.owner_agent_id).map_err(deployment_error)?;
+295 +         let agent = AgentId::ne(&self.owner_agent_id).map_err(deployment_error)?;
+    |
+
+warning: value captured by `receiver.complete` is never read
+   --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:615:13
+    |
+615 |             receiver.complete = true;
+    |             ^^^^^^^^^^^^^^^^^
+    |
+    = help: did you mean to capture by reference instead?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `receiver.complete` is never read
+   --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:615:13
+    |
+615 |             receiver.complete = true;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `receiver`
+   --> hepta-agentd/src/circuit_task_runtime_lifecycle.rs:598:13
+    |
+598 |         let mut receiver = OriginalCircuitRuntimeReceiver {
+    |             ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_receiver`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+Some errors have detailed explanations: E0277, E0369, E0425, E0432, E0433, E0599.
+For more information about an error, try `rustc --explain E0277`.
+warning: `codex-hepta-agentd` (lib) generated 10 warnings
+error: could not compile `codex-hepta-agentd` (lib) due to 17 previous errors; 10 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+error: recipe `fix` failed on line 58 with exit code 101
