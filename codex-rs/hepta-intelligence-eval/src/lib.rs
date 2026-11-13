@@ -320,10 +320,12 @@ fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> 
         }
     }
 
-    let disposition = if !failed_metrics.is_empty() {
-        Disposition::Ineligible
-    } else if insufficient {
+    // Compatibility evaluations retain known failures without labeling a
+    // partial comparison as a complete negative result.
+    let disposition = if insufficient {
         Disposition::InsufficientEvidence
+    } else if !failed_metrics.is_empty() {
+        Disposition::Ineligible
     } else {
         Disposition::EligibleForFurtherReview
     };
