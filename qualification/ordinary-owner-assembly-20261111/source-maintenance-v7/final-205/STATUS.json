@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "kind": "final_205_candidate_status",
+  "as_of": "2026-11-13",
+  "status": "SOURCE_ONLY_UNQUALIFIED_EXECUTION_CHANNEL_UNAVAILABLE",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "maintenance_branch": "codex/ordinary-owner-maintenance-v7-20261112-af52",
+  "parent_commit": "f9615a668f0d3a8c584a304389c4ce4c69701123",
+  "parent_tree": "089e8d49790bb0944cfcd83f7b10f3bb94786b43",
+  "source_manifest": {
+    "blob": "443d5295721bd5399d86e54bc3b3a879fc4ec6da",
+    "bytes": 59789,
+    "sha256": "d987abdabd2f0a00dd4406023ddbc5d951b417afbd4959b9b5a17e880340f1d7"
+  },
+  "source_file_count": 205,
+  "old_204_manifest_rows_exact": true,
+  "sole_nonqualification_change": {
+    "path": "CALLERS.toml",
+    "pre": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+    "post": "0f0b4c835de967f90263ae9041865f5ac431615e"
+  },
+  "pr": {
+    "number": 6006,
+    "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "draft": true,
+    "source_advanced": false,
+    "merged": false
+  },
+  "static_metadata": {
+    "recipe": "a6d3c7c53b914d3609c45968dcb8513219d96c5c",
+    "root": "894facbd743f5199f3cb1e04c64d73aee23587cf",
+    "historical_peer": "6174f54e0e9374fc4f49a1519a92bf2a6fd4372c",
+    "shared_peer": "2d154dbf69d12f793da747f8d9b39a580c798530",
+    "declared_boundaries": 1011,
+    "required_ids": 1011,
+    "protected_conjuncts": 600,
+    "original_checker_executed": false
+  },
+  "extra_gate_runner": {
+    "script": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+    "config": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+    "index": "7e8714fc1af4c7893a176c7353850aaa301366dd",
+    "command_count": 9,
+    "binding": "UNBOUND_DO_NOT_LAUNCH",
+    "executed": false
+  },
+  "execution": {
+    "current_candidate_launched": false,
+    "last_actual_maintenance": "v9 FAILED",
+    "v10_source_commit": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "v10_idempotency_key": "af52-future-202-maintenance-v10",
+    "v10_start_error": "NOT_FOUND / tunnel_client_not_seen",
+    "v10_session_ack": false,
+    "v10_native_result_received": false,
+    "v10_running_or_absent_not_established_by_start_response": true,
+    "environment_status": "unavailable",
+    "last_original_qualification": "V46 FAILED_NATIVE_COMPONENTS",
+    "historical_ordinary": [
+      1997,
+      1997
+    ],
+    "historical_root": [
+      16,
+      17
+    ],
+    "current_inherited_pass": false
+  },
+  "frozen_contract": {
+    "business_deadline_ms": 500,
+    "origin": "original request_started_ns",
+    "renew_or_rearm": false,
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "native_harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "original_package_count": 7,
+    "original_root_test_count": 17,
+    "retries": 0,
+    "original_overall_seconds": 27000,
+    "original_fullcaller_seconds": 3600
+  },
+  "business": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_C_accepted": false,
+    "actual_daemon_and_root_OS_restart_accepted": false
+  },
+  "chain": {
+    "proposal_only": true,
+    "installed": false,
+    "ref_mutated": false,
+    "pr": 909,
+    "head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "draft": true,
+    "required_channel": "ProfHepta through HeptaRuntime local GitHub",
+    "required_channel_verified": false,
+    "exact_three_path_replay": [
+      {
+        "path": "scripts/cell_learning_local_decision_join.py",
+        "pre": "1409d50d835e12c32341a3e650f53191915b8030",
+        "post": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+        "ops": 4,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "scripts/test_cell_learning_local_decision_join.py",
+        "pre": "02515dcb1b33afae4b350a7272db662402819064",
+        "post": "a8c35861954c6b68dd2af5453fa1365020380217",
+        "ops": 4,
+        "unique_forward_reverse": true
+      },
+      {
+        "path": "docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+        "pre": "231a2200510edb81efed565a4563f768105de677",
+        "post": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543",
+        "ops": 3,
+        "unique_forward_reverse": true
+      }
+    ],
+    "tests_executed": false,
+    "authority": "DENY_ALL",
+    "current_permission": "NOT_EXPORTED",
+    "qualification": "HOLD_NO_GO",
+    "independent_consumer": false,
+    "final_use": false
+  },
+  "limitations": [
+    "Source, metadata and runner are reviewable artifacts; original checker/compiler/native qualification on final candidate remains unexecuted.",
+    "Current metadata source projections are bounded; no whole-repository caller closure is claimed.",
+    "Current environment unavailability blocks real executions. Existing launch identity must be reconciled before shared-target reuse."
+  ]
+}

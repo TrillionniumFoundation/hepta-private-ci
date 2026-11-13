@@ -1,0 +1,3509 @@
+{
+  "schema_version": 1,
+  "kind": "root_new_boundary_actual_rows125_semantic_proposal",
+  "source_manifest": "fc153553bd244cc4f4acc0ca1120ef23696eb249",
+  "source_ufcs_packet": "4389ac3ec9cf171f302241419c9888a0f8e765b4",
+  "predecessor_boundary_draft": "b9db22f4ddce9907e2674b737e6fa61c06aea99f",
+  "reference_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "reference_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "authority": "0 h/native/ref; pure V8 static analysis and Git GET/CREATE only",
+  "status": "125 proposed new rows, not a replacement full CALLERS table; preserve all existing declarations and guards",
+  "counts": {
+    "prior_candidates": 118,
+    "prior_inventory": 220,
+    "actual_concrete_missed": 6,
+    "actual_trait_impl_missed": 1,
+    "proposed_rows": 125,
+    "remaining_classified_functions": 95,
+    "caller_corrections": 34
+  },
+  "rows": [
+    {
+      "id": "root_ordinary_original_deployment_binding_from_original_phase",
+      "symbol": "OriginalDeploymentBinding::from_original_phase",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn from_original_phase(original: &OriginalPhaseBootstrap) -> io::Result<Self> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentBinding"
+    },
+    {
+      "id": "root_ordinary_original_deployment_socket",
+      "symbol": "original_deployment_socket",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn original_deployment_socket(original: &OriginalPhaseBootstrap) -> io::Result<PathBuf> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_deployment_request_encode_original",
+      "symbol": "OriginalDeploymentRequest::encode_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn encode_original(&self) -> io::Result<Vec<u8>> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentRequest"
+    },
+    {
+      "id": "root_ordinary_original_deployment_request_decode_original",
+      "symbol": "OriginalDeploymentRequest::decode_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn decode_original(bytes: &[u8]) -> io::Result<Self> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentRequest"
+    },
+    {
+      "id": "root_ordinary_original_deployment_request_require_original_stage",
+      "symbol": "OriginalDeploymentRequest::require_original_stage",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_stage(\n        &self,\n        binding: &OriginalDeploymentBinding,\n        stage: OriginalDeploymentStage,\n    ) -> io::Result<()> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentRequest"
+    },
+    {
+      "id": "root_ordinary_original_deployment_acknowledgement_from_actual_registration",
+      "symbol": "OriginalDeploymentAcknowledgement::from_actual_registration",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn from_actual_registration(\n        request: &OriginalDeploymentRequest,\n        registration_binding: Option<String>,\n    ) -> io::Result<Self> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentAcknowledgement"
+    },
+    {
+      "id": "root_ordinary_original_deployment_acknowledgement_require_original_request",
+      "symbol": "OriginalDeploymentAcknowledgement::require_original_request",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_request(&self, request: &OriginalDeploymentRequest) -> io::Result<()> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentAcknowledgement"
+    },
+    {
+      "id": "root_ordinary_original_deployment_acknowledgement_encode_original",
+      "symbol": "OriginalDeploymentAcknowledgement::encode_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn encode_original(&self, request: &OriginalDeploymentRequest) -> io::Result<Vec<u8>> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentAcknowledgement"
+    },
+    {
+      "id": "root_ordinary_original_deployment_acknowledgement_decode_original",
+      "symbol": "OriginalDeploymentAcknowledgement::decode_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs",
+      "definition_markers": [
+        "pub(crate) fn decode_original(bytes: &[u8], request: &OriginalDeploymentRequest) -> io::Result<Self> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentAcknowledgement"
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_new",
+      "symbol": "OriginalBootstrapConsumers::new",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "definition_markers": [
+        "pub(super) fn new() -> Self {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalBootstrapConsumers"
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_reserve",
+      "symbol": "OriginalBootstrapConsumers::reserve",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "definition_markers": [
+        "pub(super) fn reserve(\n        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalBootstrapConsumers"
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_close",
+      "symbol": "OriginalBootstrapConsumers::close",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "definition_markers": [
+        "pub(super) fn close(&self) {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalBootstrapConsumers"
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumers_join_and_release",
+      "symbol": "OriginalBootstrapConsumers::join_and_release",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "definition_markers": [
+        "pub(super) async fn join_and_release(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalBootstrapConsumers"
+    },
+    {
+      "id": "root_ordinary_agentd_original_same_actor_deployment_startup_v1_select_from_process_environment",
+      "symbol": "AgentdOriginalSameActorDeploymentStartupV1::select_from_process_environment",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+      "definition_markers": [
+        "pub fn select_from_process_environment(\n        arguments: Vec<OsString>,\n    ) -> Result<(Option<Self>, Vec<OsString>), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/main.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "AgentdOriginalSameActorDeploymentStartupV1"
+    },
+    {
+      "id": "root_ordinary_agentd_original_same_actor_deployment_startup_v1_run_original_deployment",
+      "symbol": "AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs",
+      "definition_markers": [
+        "pub async fn run_original_deployment(\n        self, arg0_paths: Arg0DispatchPaths,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/main.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "AgentdOriginalSameActorDeploymentStartupV1"
+    },
+    {
+      "id": "root_ordinary_original_deployment_client_connect_original",
+      "symbol": "OriginalDeploymentClient::connect_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "definition_markers": [
+        "pub(super) async fn connect_original(\n        context: Arc<OriginalSameActorRootContext>,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentClient"
+    },
+    {
+      "id": "root_ordinary_original_deployment_client_exchange_original",
+      "symbol": "OriginalDeploymentClient::exchange_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "definition_markers": [
+        "pub(super) fn exchange_original(\n        &mut self,\n        progress: OriginalDeploymentProgress,\n    ) -> Result<OriginalDeploymentAcknowledgement, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentClient"
+    },
+    {
+      "id": "root_ordinary_original_ordinary_task_ingress_for_original_context",
+      "symbol": "OriginalOrdinaryTaskIngress::for_original_context",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+      "definition_markers": [
+        "pub(super) fn for_original_context(\n        context: Arc<OriginalSameActorRootContext>,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalOrdinaryTaskIngress"
+    },
+    {
+      "id": "root_ordinary_original_ordinary_task_ingress_submit_original_once",
+      "symbol": "OriginalOrdinaryTaskIngress::submit_original_once",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+      "definition_markers": [
+        "pub(super) async fn submit_original_once(\n        &mut self,\n        stage: OriginalOrdinaryTaskStage,\n        request: AuthBusObjectiveIngress,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalOrdinaryTaskIngress"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_owner_start_original",
+      "symbol": "OriginalDeploymentCoordinatorOwner::start_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "definition_markers": [
+        "pub(super) fn start_original(\n        context: Arc<OriginalSameActorRootContext>,\n        coordinator: OriginalDeploymentCoordinator,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinatorOwner"
+    },
+    {
+      "id": "root_ordinary_join_original_thread",
+      "symbol": "join_original_thread",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "definition_markers": [
+        "fn join_original_thread(\n    thread: JoinHandle<Result<OriginalDeploymentRetained, AgentdError>>,\n) -> Result<OriginalDeploymentRetained, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_load_original_deployment",
+      "symbol": "load_original_deployment",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+      "definition_markers": [
+        "pub(super) async fn load_original_deployment(\n    context: Arc<OriginalSameActorRootContext>,\n    descriptor: PinnedFileData,\n) -> Result<OriginalLoadedDeployment, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_coordinator_at_c_outcome_require_original_retirement_origin",
+      "symbol": "OriginalCoordinatorAtCOutcome::require_original_retirement_origin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_retirement_origin(\n        &self, identity: &crate::AgentdIdentity,\n        gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCoordinatorAtCOutcome"
+    },
+    {
+      "id": "root_ordinary_original_coordinator_at_c_outcome_take_original_retirement_client",
+      "symbol": "OriginalCoordinatorAtCOutcome::take_original_retirement_client",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "pub(super) fn take_original_retirement_client(\n        &mut self,\n    ) -> Result<OriginalDeploymentClient, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCoordinatorAtCOutcome"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_new_original",
+      "symbol": "OriginalDeploymentCoordinator::new_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "pub(super) fn new_original(\n        context: Arc<OriginalSameActorRootContext>,\n        client: OriginalDeploymentClient,\n        ingress: OriginalOrdinaryTaskIngress,\n        commands: mpsc::Sender<Command>,\n        events: mpsc::Receiver<Event>,\n        actual: OriginalCoordinatorMaterials,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_require_original_context",
+      "symbol": "OriginalDeploymentCoordinator::require_original_context",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_context(\n        &self, context: &Arc<OriginalSameActorRootContext>,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_send_original",
+      "symbol": "OriginalDeploymentCoordinator::send_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "fn send_original(&self, command: Command) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_prepared",
+      "symbol": "OriginalDeploymentCoordinator::prepared",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "fn prepared(&self) -> Result<Arc<CellQ24PreparedLearningV1>, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_original_client_mut",
+      "symbol": "OriginalDeploymentCoordinator::original_client_mut",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "fn original_client_mut(&mut self) -> Result<&mut OriginalDeploymentClient, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_run_original",
+      "symbol": "OriginalDeploymentCoordinator::run_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "definition_markers": [
+        "pub(super) async fn run_original(mut self) -> Result<OriginalCoordinatorAtCOutcome, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_receive_prepared_original",
+      "symbol": "OriginalDeploymentCoordinator::receive_prepared_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "definition_markers": [
+        "pub(super) fn receive_prepared_original(\n        &mut self,\n        prepared: Arc<CellQ24PreparedLearningV1>,\n        profile: HostAuthorityLearningProfileV1,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_execute_original_b",
+      "symbol": "OriginalDeploymentCoordinator::execute_original_b",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "definition_markers": [
+        "pub(super) fn execute_original_b(\n        &mut self,\n        snapshot: LearningIterationSnapshotV1,\n        material: OriginalCellQ24TrainingMaterialV1,\n        readback: OriginalCellQ24TrainingReadbackV1,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_receive_original_decision",
+      "symbol": "OriginalDeploymentCoordinator::receive_original_decision",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "definition_markers": [
+        "pub(super) fn receive_original_decision(\n        &mut self, snapshot: LearningIterationSnapshotV1,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_receive_original_artifact",
+      "symbol": "OriginalDeploymentCoordinator::receive_original_artifact",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "definition_markers": [
+        "pub(super) fn receive_original_artifact(&mut self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_await_original_current_material",
+      "symbol": "OriginalDeploymentCoordinator::await_original_current_material",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "definition_markers": [
+        "pub(super) fn await_original_current_material(\n        &mut self, canonical: &str, wait: &mut OriginalActorWait,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinator"
+    },
+    {
+      "id": "root_ordinary_physical_pin_of",
+      "symbol": "PhysicalPin::of",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "fn of(metadata: &Metadata) -> Self {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "PhysicalPin"
+    },
+    {
+      "id": "root_ordinary_original_pinned_read_bytes",
+      "symbol": "OriginalPinnedRead::bytes",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn bytes(&self) -> &[u8] {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalPinnedRead"
+    },
+    {
+      "id": "root_ordinary_original_pinned_read_clone_original_file",
+      "symbol": "OriginalPinnedRead::clone_original_file",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn clone_original_file(&self) -> Result<File, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalPinnedRead"
+    },
+    {
+      "id": "root_ordinary_original_pinned_read_parse_original",
+      "symbol": "OriginalPinnedRead::parse_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn parse_original<T: serde::de::DeserializeOwned + Serialize>(\n        &self,\n    ) -> Result<T, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalPinnedRead"
+    },
+    {
+      "id": "root_ordinary_original_pinned_read_require_original_pin",
+      "symbol": "OriginalPinnedRead::require_original_pin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_pin(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalPinnedRead"
+    },
+    {
+      "id": "root_ordinary_original_directory_pin_require_original_directory_pin",
+      "symbol": "OriginalDirectoryPin::require_original_directory_pin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_directory_pin(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDirectoryPin"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_for_original_context",
+      "symbol": "OriginalDeploymentFiles::for_original_context",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn for_original_context(\n        context: Arc<OriginalSameActorRootContext>,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_read_root_descriptor",
+      "symbol": "OriginalDeploymentFiles::read_root_descriptor",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn read_root_descriptor(\n        &mut self,\n        input: &PinnedFileData,\n        maximum: usize,\n    ) -> Result<OriginalPinnedRead, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_read_original",
+      "symbol": "OriginalDeploymentFiles::read_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn read_original(\n        &mut self,\n        input: &PinnedFileData,\n        maximum: usize,\n    ) -> Result<OriginalPinnedRead, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_read_original_stage",
+      "symbol": "OriginalDeploymentFiles::read_original_stage",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn read_original_stage(\n        &mut self,\n        path: &Path,\n        maximum: usize,\n    ) -> Result<OriginalPinnedRead, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_open_original_owner",
+      "symbol": "OriginalDeploymentFiles::open_original_owner",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_owner(\n        &mut self,\n        input: &MutableFileData,\n    ) -> Result<File, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_open_original_owner_with_directory",
+      "symbol": "OriginalDeploymentFiles::open_original_owner_with_directory",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_owner_with_directory(\n        &mut self,\n        input: &MutableFileData,\n    ) -> Result<(File, File), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_pin_original_owner_directory",
+      "symbol": "OriginalDeploymentFiles::pin_original_owner_directory",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn pin_original_owner_directory(\n        &mut self,\n        path: &Path,\n    ) -> Result<OriginalDirectoryPin, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_pin_original_artifact_lock",
+      "symbol": "OriginalDeploymentFiles::pin_original_artifact_lock",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn pin_original_artifact_lock(\n        &mut self,\n        path: &Path,\n    ) -> Result<OriginalPinnedRead, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_retain_original_initial_file_origin",
+      "symbol": "OriginalDeploymentFiles::retain_original_initial_file_origin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn retain_original_initial_file_origin(\n        &mut self, file: &File, path: &Path,\n    ) -> Result<OriginalOwnerFileOrigin, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_require_original_context",
+      "symbol": "OriginalDeploymentFiles::require_original_context",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_context(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_original_deployment_files_read_original_signing_key",
+      "symbol": "OriginalDeploymentFiles::read_original_signing_key",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "pub(super) fn read_original_signing_key(\n        &mut self,\n        input: &PinnedFileData,\n    ) -> Result<ed25519_dalek::SigningKey, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentFiles"
+    },
+    {
+      "id": "root_ordinary_open_original_parent",
+      "symbol": "open_original_parent",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "fn open_original_parent(path: &Path) -> Result<(PathBuf, File), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_directory_identity",
+      "symbol": "directory_identity",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+      "definition_markers": [
+        "fn directory_identity(metadata: &Metadata) -> (u64, u64, u32, u32, u32) {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_owner_file_origin_capture_original",
+      "symbol": "OriginalOwnerFileOrigin::capture_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+      "definition_markers": [
+        "pub(super) fn capture_original(\n        file: &File, path: &Path, files: &mut OriginalDeploymentFiles,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalOwnerFileOrigin"
+    },
+    {
+      "id": "root_ordinary_original_owner_file_origin_reopen_original",
+      "symbol": "OriginalOwnerFileOrigin::reopen_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs",
+      "definition_markers": [
+        "pub(in super::super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<File, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalOwnerFileOrigin"
+    },
+    {
+      "id": "root_ordinary_learning_authority_data_activate_original",
+      "symbol": "LearningAuthorityData::activate_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "definition_markers": [
+        "pub(super) fn activate_original(\n        &self,\n        now_unix_seconds: u64,\n    ) -> Result<OriginalLearningAuthority, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "LearningAuthorityData"
+    },
+    {
+      "id": "root_ordinary_original_signed_owner_files_data_require_fresh",
+      "symbol": "OriginalSignedOwnerFilesData::require_fresh",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "fn require_fresh(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalSignedOwnerFilesData"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_open_original",
+      "symbol": "OriginalDeploymentLearning::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        data: OriginalLearningMaterialsData,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<(Self, OriginalCellQ24TaskLedgerInputsV1), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_original_a_claim_deadline",
+      "symbol": "OriginalDeploymentLearning::original_a_claim_deadline",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn original_a_claim_deadline(&self) -> u64 {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_original_c_claim_deadline",
+      "symbol": "OriginalDeploymentLearning::original_c_claim_deadline",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn original_c_claim_deadline(&self) -> u64 {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_verifier",
+      "symbol": "OriginalDeploymentLearning::verifier",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn verifier(&self) -> &LearningEvidenceVerifierV1 {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_require_original_signer",
+      "symbol": "OriginalDeploymentLearning::require_original_signer",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_signer(\n        &self,\n        principal: &str,\n        role: LearningEvidenceRoleV1,\n        now: u64,\n    ) -> Result<TrustedLearningSignerV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_open_original_freeze",
+      "symbol": "OriginalDeploymentLearning::open_original_freeze",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_freeze(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<OriginalCellQ24TaskDatasetFreezeInputsV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_open_original_c_task",
+      "symbol": "OriginalDeploymentLearning::open_original_c_task",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_c_task(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<OriginalCellQ24TaskLedgerInputsV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_require_original_key",
+      "symbol": "require_original_key",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "definition_markers": [
+        "fn require_original_key(\n    signer: &TrustedLearningSignerV1,\n    key: &ed25519_dalek::SigningKey,\n) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_learning_owners_data_require_fresh",
+      "symbol": "OriginalLearningOwnersData::require_fresh",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+      "definition_markers": [
+        "pub(super) fn require_fresh(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalLearningOwnersData"
+    },
+    {
+      "id": "root_ordinary_original_deployment_learning_open_original_scoped_inputs",
+      "symbol": "OriginalDeploymentLearning::open_original_scoped_inputs",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+      "definition_markers": [
+        "pub(in crate::same_actor_q24_deployment) fn open_original_scoped_inputs(\n        &self,\n        prepared: Arc<CellQ24PreparedLearningV1>,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<OriginalSameActorLearningInputsV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentLearning"
+    },
+    {
+      "id": "root_ordinary_original_model_data_open_original",
+      "symbol": "OriginalModelData::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<(Arc<LoadedCellQ24ModelV1>, CellCompatibilityBundleV1), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalModelData"
+    },
+    {
+      "id": "root_ordinary_original_initial_data_open_original",
+      "symbol": "OriginalInitialData::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<(OriginalRootInitialFeatureTargetV1, OriginalInitialPredecessorFiles), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalInitialData"
+    },
+    {
+      "id": "root_ordinary_original_initial_predecessor_files_reopen_original",
+      "symbol": "OriginalInitialPredecessorFiles::reopen_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "definition_markers": [
+        "pub(super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<crate::AgentdGenerationUpdatePredecessorFilesV1<codex_hepta_neuron::FileAnchorWitnessStore>, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalInitialPredecessorFiles"
+    },
+    {
+      "id": "root_ordinary_original_circuit_data_open_original_circuit",
+      "symbol": "OriginalCircuitData::open_original_circuit",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_circuit(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<OriginalSameActorATaskInputsV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitData"
+    },
+    {
+      "id": "root_ordinary_original_c_data_open_original",
+      "symbol": "OriginalCData::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n        files: &mut OriginalDeploymentFiles,\n        resources: OriginalCResources<'_>,\n    ) -> Result<OpenedOriginalC, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCData"
+    },
+    {
+      "id": "root_ordinary_original_deployment_artifacts_open_original",
+      "symbol": "OriginalDeploymentArtifacts::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        data: &OriginalArtifactOwnerData,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<(Self, AgentdSelectedGenerationV1), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentArtifacts"
+    },
+    {
+      "id": "root_ordinary_original_deployment_artifacts_require_original_paths",
+      "symbol": "OriginalDeploymentArtifacts::require_original_paths",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_paths(&self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentArtifacts"
+    },
+    {
+      "id": "root_ordinary_original_deployment_artifacts_open_original_selection",
+      "symbol": "OriginalDeploymentArtifacts::open_original_selection",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_selection(\n        &self,\n        data: &OriginalSelectionData,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<(OriginalCellQ24SelectionInputsV1, Digest32), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentArtifacts"
+    },
+    {
+      "id": "root_ordinary_original_deployment_artifacts_original_artifact_command",
+      "symbol": "OriginalDeploymentArtifacts::original_artifact_command",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "definition_markers": [
+        "pub(super) fn original_artifact_command(\n        &self,\n        data: &OriginalArtifactDecisionData,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<OriginalSameActorArtifactInputsV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentArtifacts"
+    },
+    {
+      "id": "root_ordinary_original_actor_wait_for_original_prepared",
+      "symbol": "OriginalActorWait::for_original_prepared",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "definition_markers": [
+        "pub(super) fn for_original_prepared(\n        context: Arc<OriginalSameActorRootContext>,\n        prepared: &CellQ24PreparedLearningV1,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalActorWait"
+    },
+    {
+      "id": "root_ordinary_original_actor_wait_for_original_task",
+      "symbol": "OriginalActorWait::for_original_task",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "definition_markers": [
+        "pub(super) fn for_original_task(\n        context: Arc<OriginalSameActorRootContext>,\n        original_expiry_unix_seconds: u64,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalActorWait"
+    },
+    {
+      "id": "root_ordinary_original_actor_wait_require_original_live",
+      "symbol": "OriginalActorWait::require_original_live",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "definition_markers": [
+        "pub(super) fn require_original_live(&mut self) -> Result<u64, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalActorWait"
+    },
+    {
+      "id": "root_ordinary_original_actor_wait_wait_original_file",
+      "symbol": "OriginalActorWait::wait_original_file",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "definition_markers": [
+        "pub(super) fn wait_original_file(\n        &mut self,\n        files: &mut OriginalDeploymentFiles,\n        path: &std::path::Path,\n        maximum: usize,\n    ) -> Result<OriginalPinnedRead, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalActorWait"
+    },
+    {
+      "id": "root_ordinary_original_actor_exchange_new",
+      "symbol": "OriginalActorExchange::new",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "definition_markers": [
+        "pub(super) fn new(data: OriginalActorExchangeData) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalActorExchange"
+    },
+    {
+      "id": "root_ordinary_original_actor_exchange_exchange_original",
+      "symbol": "OriginalActorExchange::exchange_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+      "definition_markers": [
+        "pub(super) fn exchange_original<T: Serialize>(\n        self,\n        request: &T,\n        files: &mut OriginalDeploymentFiles,\n        wait: &mut OriginalActorWait,\n    ) -> Result<(Digest32, OriginalPinnedRead), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalActorExchange"
+    },
+    {
+      "id": "root_ordinary_original_execution_attestor_new",
+      "symbol": "OriginalExecutionAttestor::new",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "definition_markers": [
+        "pub(super) fn new(\n        context: Arc<OriginalSameActorRootContext>,\n        prepared: &'a CellQ24PreparedLearningV1,\n        expected: ProductEvaluationExecutionKeyV1,\n        exchange: OriginalActorExchangeData,\n        files: &'a mut OriginalDeploymentFiles,\n        wait: &'a mut OriginalActorWait,\n    ) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalExecutionAttestor"
+    },
+    {
+      "id": "root_ordinary_original_execution_attestor_take_original_failure",
+      "symbol": "OriginalExecutionAttestor::take_original_failure",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "definition_markers": [
+        "pub(super) fn take_original_failure(&mut self) -> Option<AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalExecutionAttestor"
+    },
+    {
+      "id": "root_ordinary_request_original_qualification",
+      "symbol": "request_original_qualification",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "definition_markers": [
+        "pub(super) fn request_original_qualification(\n    original: OriginalQualificationSigningRequest<'_>,\n    exchange: OriginalActorExchangeData,\n    files: &mut OriginalDeploymentFiles,\n    wait: &mut OriginalActorWait,\n) -> Result<SignedEvaluationEvidenceV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_evaluation_journal_data_open_original",
+      "symbol": "OriginalEvaluationJournalData::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<CellGenerationJournalV2<FileAnchorWitnessStore>, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalEvaluationJournalData"
+    },
+    {
+      "id": "root_ordinary_original_holdout_data_open_original_holdout",
+      "symbol": "OriginalHoldoutData::open_original_holdout",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_holdout(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalHoldoutData"
+    },
+    {
+      "id": "root_ordinary_original_evaluation_store_data_open_original_execution",
+      "symbol": "OriginalEvaluationStoreData::open_original_execution",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_execution(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductEvaluationExecutionStoreV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalEvaluationStoreData"
+    },
+    {
+      "id": "root_ordinary_original_evaluation_store_data_open_original_sink",
+      "symbol": "OriginalEvaluationStoreData::open_original_sink",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+      "definition_markers": [
+        "pub(super) fn open_original_sink(\n        &self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<LockedFileProductQualificationEvidenceSinkV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalEvaluationStoreData"
+    },
+    {
+      "id": "root_ordinary_original_evaluation_data_execute_original",
+      "symbol": "OriginalEvaluationData::execute_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "definition_markers": [
+        "pub(super) fn execute_original(\n        &self,\n        context: &Arc<OriginalSameActorRootContext>,\n        prepared: &Arc<CellQ24PreparedLearningV1>,\n        trainer: OriginalCellQ24TrainingReadbackV1,\n        learning: &OriginalDeploymentLearning,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<OriginalExecutedEvaluation, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalEvaluationData"
+    },
+    {
+      "id": "root_ordinary_original_witness_data_open_original",
+      "symbol": "OriginalWitnessData::open_original",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+      "definition_markers": [
+        "pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<FileAnchorWitnessStore, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalWitnessData"
+    },
+    {
+      "id": "root_ordinary_require_fresh_original_file",
+      "symbol": "require_fresh_original_file",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+      "definition_markers": [
+        "pub(super) fn require_fresh_original_file(input: &MutableFileData) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_deployment_descriptor_from_original_arguments",
+      "symbol": "OriginalDeploymentDescriptor::from_original_arguments",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "definition_markers": [
+        "pub(crate) fn from_original_arguments(path: PathBuf, digest: Digest32) -> Result<Self, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentDescriptor"
+    },
+    {
+      "id": "root_ordinary_open_original_deployment",
+      "symbol": "open_original_deployment",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "definition_markers": [
+        "pub(crate) async fn open_original_deployment(\n    context: Arc<OriginalSameActorRootContext>,\n    descriptor: OriginalDeploymentDescriptor,\n) -> Result<(OriginalSameActorBusinessInputsV1, OriginalDeploymentCoordinatorOwner), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_deployment_client_authorize_original_root_retirement",
+      "symbol": "OriginalDeploymentClient::authorize_original_root_retirement",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "definition_markers": [
+        "pub(in super::super) fn authorize_original_root_retirement(\n        mut self,\n        stopped: &OriginalSameActorRuntimeStopped,\n        learning: &OriginalSameActorLearningJoined,\n        natural: &OriginalCircuitNaturalJoin,\n        session: &OriginalRootSessionPaused,\n    ) -> Result<OriginalRootRetirementIntent, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentClient"
+    },
+    {
+      "id": "root_ordinary_original_root_retirement_intent_require_original_gate",
+      "symbol": "OriginalRootRetirementIntent::require_original_gate",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_gate(\n        &self, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_required_purpose_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootRetirementIntent"
+    },
+    {
+      "id": "root_ordinary_original_root_retirement_intent_require_original_origin",
+      "symbol": "OriginalRootRetirementIntent::require_original_origin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootRetirementIntent"
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_owner_take_original_after_c_join",
+      "symbol": "OriginalDeploymentCoordinatorOwner::take_original_after_c_join",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "definition_markers": [
+        "pub(crate) fn take_original_after_c_join(\n        &mut self,\n        stopped: &OriginalSameActorRuntimeStopped,\n        learning: &OriginalSameActorLearningJoined,\n        natural: &OriginalCircuitNaturalJoin,\n    ) -> Result<OriginalDeploymentRetained, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentCoordinatorOwner"
+    },
+    {
+      "id": "root_ordinary_original_deployment_retained_require_original_origin",
+      "symbol": "OriginalDeploymentRetained::require_original_origin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentRetained"
+    },
+    {
+      "id": "root_ordinary_original_deployment_retained_authorize_original_root_retirement",
+      "symbol": "OriginalDeploymentRetained::authorize_original_root_retirement",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "definition_markers": [
+        "pub(crate) fn authorize_original_root_retirement(\n        mut self,\n        stopped: &OriginalSameActorRuntimeStopped,\n        learning: &OriginalSameActorLearningJoined,\n        natural: &OriginalCircuitNaturalJoin,\n        session: &OriginalRootSessionPaused,\n    ) -> Result<(OriginalRootRetirementIntent, Self), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalDeploymentRetained"
+    },
+    {
+      "id": "root_ordinary_original_same_actor_root_context_finish_original_deadline_watch",
+      "symbol": "OriginalSameActorRootContext::finish_original_deadline_watch",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "definition_markers": [
+        "pub(crate) fn finish_original_deadline_watch(\n        &self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalSameActorRootContext"
+    },
+    {
+      "id": "root_ordinary_original_same_actor_root_context_retire_original_runtime_purposes",
+      "symbol": "OriginalSameActorRootContext::retire_original_runtime_purposes",
+      "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "definition_markers": [
+        "pub(crate) fn retire_original_runtime_purposes(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalSameActorRootContext"
+    },
+    {
+      "id": "root_ordinary_original_root_retirement_intent_observe_original_root_workers_joined",
+      "symbol": "OriginalRootRetirementIntent::observe_original_root_workers_joined",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "definition_markers": [
+        "pub(crate) fn observe_original_root_workers_joined(\n        self,\n        runtime: &OriginalRuntimeRootPurposesRetired,\n        learning: &OriginalSameActorLearningPurposesRetired,\n        session: &OriginalRootSessionObservationRetired,\n        coordinator: &OriginalDeploymentRetained,\n    ) -> Result<OriginalRootWorkersJoined, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootRetirementIntent"
+    },
+    {
+      "id": "root_ordinary_original_root_workers_joined_require_original_final_peer",
+      "symbol": "OriginalRootWorkersJoined::require_original_final_peer",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_final_peer(\n        &self, channel: &RequiredSameActorPhaseChannel,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootWorkersJoined"
+    },
+    {
+      "id": "root_ordinary_original_root_workers_joined_wait_original_root_process_exit",
+      "symbol": "OriginalRootWorkersJoined::wait_original_root_process_exit",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "definition_markers": [
+        "pub(crate) fn wait_original_root_process_exit(\n        self,\n    ) -> impl std::future::Future<Output = Result<OriginalRootProcessExited, AgentdError>> + Send + 'static {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootWorkersJoined"
+    },
+    {
+      "id": "root_ordinary_original_root_process_exited_require_original_cleanup_origin",
+      "symbol": "OriginalRootProcessExited::require_original_cleanup_origin",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_cleanup_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootProcessExited"
+    },
+    {
+      "id": "root_ordinary_original_required_purpose_retirement_shutdown_original_after_root_intent",
+      "symbol": "OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_required_purpose_retirement.rs",
+      "definition_markers": [
+        "pub(crate) fn shutdown_original_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalRequiredPurposeRetirement"
+    },
+    {
+      "id": "root_ordinary_agentd_original_same_actor_phase_startup_v1_from_original_receive_start",
+      "symbol": "AgentdOriginalSameActorPhaseStartupV1::from_original_receive_start",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "definition_markers": [
+        "fn from_original_receive_start(\n        arguments: Vec<OsString>,\n        phase_handoff: UnixDatagram,\n        scoped_handoff: UnixDatagram,\n        start: OriginalPhaseReceiveStart,\n    ) -> Result<(Self, Vec<OsString>), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "AgentdOriginalSameActorPhaseStartupV1"
+    },
+    {
+      "id": "root_ordinary_require_disjoint_phase_descriptor_numbers",
+      "symbol": "require_disjoint_phase_descriptor_numbers",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "definition_markers": [
+        "fn require_disjoint_phase_descriptor_numbers(\n    arguments: &[OsString], extra: [i32; 2],\n) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_agentd_unix_cognitive_checkpoint_transport_retire_original_root_checkpoint_purpose",
+      "symbol": "AgentdUnixCognitiveCheckpointTransport::retire_original_root_checkpoint_purpose",
+      "definition_path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "definition_markers": [
+        "pub(crate) fn retire_original_root_checkpoint_purpose(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "AgentdUnixCognitiveCheckpointTransport"
+    },
+    {
+      "id": "root_ordinary_agentd_unix_final_use_grant_provider_retire_original_root_grant_purpose",
+      "symbol": "AgentdUnixFinalUseGrantProvider::retire_original_root_grant_purpose",
+      "definition_path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "definition_markers": [
+        "pub(crate) fn retire_original_root_grant_purpose(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "AgentdUnixFinalUseGrantProvider"
+    },
+    {
+      "id": "root_ordinary_required_same_actor_phase_channel_original_retirement_custody",
+      "symbol": "RequiredSameActorPhaseChannel::original_retirement_custody",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": [
+        "pub(crate) fn original_retirement_custody(&self) -> OriginalRequiredPurposeRetirement {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "RequiredSameActorPhaseChannel"
+    },
+    {
+      "id": "root_ordinary_required_same_actor_phase_channel_shutdown_original_after_root_intent",
+      "symbol": "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": [
+        "pub(crate) fn shutdown_original_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "RequiredSameActorPhaseChannel"
+    },
+    {
+      "id": "root_ordinary_required_same_actor_phase_channel_shutdown_original_after_root_workers_joined",
+      "symbol": "RequiredSameActorPhaseChannel::shutdown_original_after_root_workers_joined",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": [
+        "pub(crate) fn shutdown_original_after_root_workers_joined(\n        &self,\n        joined: &crate::same_actor_q24_deployment::OriginalRootWorkersJoined,\n    ) -> Result<(), crate::AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "RequiredSameActorPhaseChannel"
+    },
+    {
+      "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+      "symbol": "SameActorPhaseGate::retain_required_original_stream",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": [
+        "pub(crate) fn retain_required_original_stream(\n        self: &Arc<Self>,\n        stream: &UnixStream,\n    ) -> io::Result<RequiredSameActorPhaseChannel> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "SameActorPhaseGate"
+    },
+    {
+      "id": "root_ordinary_original_same_actor_phase_watch_start",
+      "symbol": "OriginalSameActorPhaseWatch::start",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": [
+        "pub(crate) fn start(gate: &Arc<SameActorPhaseGate>) -> io::Result<Self> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalSameActorPhaseWatch"
+    },
+    {
+      "id": "root_ordinary_original_same_actor_phase_watch_finish_original_after_root_exit",
+      "symbol": "OriginalSameActorPhaseWatch::finish_original_after_root_exit",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "definition_markers": [
+        "pub(crate) fn finish_original_after_root_exit(\n        mut self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n        identity: &crate::AgentdIdentity,\n    ) -> Result<(), crate::AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalSameActorPhaseWatch"
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumer_admission_retain_original_bootstrap_consumer_handle",
+      "symbol": "OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle",
+      "receiver_type": "OriginalBootstrapConsumerAdmission",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "definition_markers": [
+        "pub(crate) fn retain_original_bootstrap_consumer_handle(\n        mut self, handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,\n    ) -> Arc<OriginalBootstrapConsumerJob> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_bootstrap_consumer_job_receive_original",
+      "symbol": "OriginalBootstrapConsumerJob::receive_original",
+      "receiver_type": "OriginalBootstrapConsumerJob",
+      "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "definition_markers": [
+        "pub(crate) fn receive_original(\n        self: &Arc<Self>,\n    ) -> impl Future<Output = Result<FinalUseAuthority, AgentdError>> + Send + 'static {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_deployment_coordinator_owner_stop_and_join_original",
+      "symbol": "OriginalDeploymentCoordinatorOwner::stop_and_join_original",
+      "receiver_type": "OriginalDeploymentCoordinatorOwner",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "definition_markers": [
+        "pub(crate) fn stop_and_join_original(&mut self) -> Result<(), AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_learning_authority_original_signer",
+      "symbol": "OriginalLearningAuthority::original_signer",
+      "receiver_type": "OriginalLearningAuthority",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "definition_markers": [
+        "pub(super) fn original_signer(\n        &self,\n        principal_id: &str,\n        required_role: LearningEvidenceRoleV1,\n    ) -> Result<TrustedLearningSignerV1, AgentdError> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_learning_authority_into_original_parts",
+      "symbol": "OriginalLearningAuthority::into_original_parts",
+      "receiver_type": "OriginalLearningAuthority",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "definition_markers": [
+        "pub(super) fn into_original_parts(\n        self,\n    ) -> (ActivatedLearningTrustV1, Vec<TrustedLearningSignerV1>) {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_deployment_artifacts_owner",
+      "symbol": "OriginalDeploymentArtifacts::owner",
+      "receiver_type": "OriginalDeploymentArtifacts",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "definition_markers": [
+        "pub(super) fn owner(&self) -> &Arc<Mutex<LearningArtifactOwnerService>> {"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "root_ordinary_original_execution_attestor_attest_execution",
+      "symbol": "OriginalExecutionAttestor::attest_execution",
+      "call_pattern": "\\.\\s*attest_execution\\s*\\(",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "definition_markers": [
+        "impl ProductEvaluationExecutionAttestorV1 for OriginalExecutionAttestor<'_> {",
+        "fn attest_execution(",
+        "match self.exchange_original_request(request) {",
+        "self.failure = Some(error);",
+        "Err(ProductProviderErrorV1::Indeterminate)"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
+      ],
+      "caller_markers": [
+        ".attest_execution(",
+        "execution_codec::encode_execution(&executed)?",
+        "authenticate(request, &signed, &signing_payload)?"
+      ]
+    }
+  ],
+  "required_boundary_ids_append": [
+    "root_ordinary_original_deployment_binding_from_original_phase",
+    "root_ordinary_original_deployment_socket",
+    "root_ordinary_original_deployment_request_encode_original",
+    "root_ordinary_original_deployment_request_decode_original",
+    "root_ordinary_original_deployment_request_require_original_stage",
+    "root_ordinary_original_deployment_acknowledgement_from_actual_registration",
+    "root_ordinary_original_deployment_acknowledgement_require_original_request",
+    "root_ordinary_original_deployment_acknowledgement_encode_original",
+    "root_ordinary_original_deployment_acknowledgement_decode_original",
+    "root_ordinary_original_bootstrap_consumers_new",
+    "root_ordinary_original_bootstrap_consumers_reserve",
+    "root_ordinary_original_bootstrap_consumers_close",
+    "root_ordinary_original_bootstrap_consumers_join_and_release",
+    "root_ordinary_agentd_original_same_actor_deployment_startup_v1_select_from_process_environment",
+    "root_ordinary_agentd_original_same_actor_deployment_startup_v1_run_original_deployment",
+    "root_ordinary_original_deployment_client_connect_original",
+    "root_ordinary_original_deployment_client_exchange_original",
+    "root_ordinary_original_ordinary_task_ingress_for_original_context",
+    "root_ordinary_original_ordinary_task_ingress_submit_original_once",
+    "root_ordinary_original_deployment_coordinator_owner_start_original",
+    "root_ordinary_join_original_thread",
+    "root_ordinary_load_original_deployment",
+    "root_ordinary_original_coordinator_at_c_outcome_require_original_retirement_origin",
+    "root_ordinary_original_coordinator_at_c_outcome_take_original_retirement_client",
+    "root_ordinary_original_deployment_coordinator_new_original",
+    "root_ordinary_original_deployment_coordinator_require_original_context",
+    "root_ordinary_original_deployment_coordinator_send_original",
+    "root_ordinary_original_deployment_coordinator_prepared",
+    "root_ordinary_original_deployment_coordinator_original_client_mut",
+    "root_ordinary_original_deployment_coordinator_run_original",
+    "root_ordinary_original_deployment_coordinator_receive_prepared_original",
+    "root_ordinary_original_deployment_coordinator_execute_original_b",
+    "root_ordinary_original_deployment_coordinator_receive_original_decision",
+    "root_ordinary_original_deployment_coordinator_receive_original_artifact",
+    "root_ordinary_original_deployment_coordinator_await_original_current_material",
+    "root_ordinary_physical_pin_of",
+    "root_ordinary_original_pinned_read_bytes",
+    "root_ordinary_original_pinned_read_clone_original_file",
+    "root_ordinary_original_pinned_read_parse_original",
+    "root_ordinary_original_pinned_read_require_original_pin",
+    "root_ordinary_original_directory_pin_require_original_directory_pin",
+    "root_ordinary_original_deployment_files_for_original_context",
+    "root_ordinary_original_deployment_files_read_root_descriptor",
+    "root_ordinary_original_deployment_files_read_original",
+    "root_ordinary_original_deployment_files_read_original_stage",
+    "root_ordinary_original_deployment_files_open_original_owner",
+    "root_ordinary_original_deployment_files_open_original_owner_with_directory",
+    "root_ordinary_original_deployment_files_pin_original_owner_directory",
+    "root_ordinary_original_deployment_files_pin_original_artifact_lock",
+    "root_ordinary_original_deployment_files_retain_original_initial_file_origin",
+    "root_ordinary_original_deployment_files_require_original_context",
+    "root_ordinary_original_deployment_files_read_original_signing_key",
+    "root_ordinary_open_original_parent",
+    "root_ordinary_directory_identity",
+    "root_ordinary_original_owner_file_origin_capture_original",
+    "root_ordinary_original_owner_file_origin_reopen_original",
+    "root_ordinary_learning_authority_data_activate_original",
+    "root_ordinary_original_signed_owner_files_data_require_fresh",
+    "root_ordinary_original_deployment_learning_open_original",
+    "root_ordinary_original_deployment_learning_original_a_claim_deadline",
+    "root_ordinary_original_deployment_learning_original_c_claim_deadline",
+    "root_ordinary_original_deployment_learning_verifier",
+    "root_ordinary_original_deployment_learning_require_original_signer",
+    "root_ordinary_original_deployment_learning_open_original_freeze",
+    "root_ordinary_original_deployment_learning_open_original_c_task",
+    "root_ordinary_require_original_key",
+    "root_ordinary_original_learning_owners_data_require_fresh",
+    "root_ordinary_original_deployment_learning_open_original_scoped_inputs",
+    "root_ordinary_original_model_data_open_original",
+    "root_ordinary_original_initial_data_open_original",
+    "root_ordinary_original_initial_predecessor_files_reopen_original",
+    "root_ordinary_original_circuit_data_open_original_circuit",
+    "root_ordinary_original_c_data_open_original",
+    "root_ordinary_original_deployment_artifacts_open_original",
+    "root_ordinary_original_deployment_artifacts_require_original_paths",
+    "root_ordinary_original_deployment_artifacts_open_original_selection",
+    "root_ordinary_original_deployment_artifacts_original_artifact_command",
+    "root_ordinary_original_actor_wait_for_original_prepared",
+    "root_ordinary_original_actor_wait_for_original_task",
+    "root_ordinary_original_actor_wait_require_original_live",
+    "root_ordinary_original_actor_wait_wait_original_file",
+    "root_ordinary_original_actor_exchange_new",
+    "root_ordinary_original_actor_exchange_exchange_original",
+    "root_ordinary_original_execution_attestor_new",
+    "root_ordinary_original_execution_attestor_take_original_failure",
+    "root_ordinary_request_original_qualification",
+    "root_ordinary_original_evaluation_journal_data_open_original",
+    "root_ordinary_original_holdout_data_open_original_holdout",
+    "root_ordinary_original_evaluation_store_data_open_original_execution",
+    "root_ordinary_original_evaluation_store_data_open_original_sink",
+    "root_ordinary_original_evaluation_data_execute_original",
+    "root_ordinary_original_witness_data_open_original",
+    "root_ordinary_require_fresh_original_file",
+    "root_ordinary_original_deployment_descriptor_from_original_arguments",
+    "root_ordinary_open_original_deployment",
+    "root_ordinary_original_deployment_client_authorize_original_root_retirement",
+    "root_ordinary_original_root_retirement_intent_require_original_gate",
+    "root_ordinary_original_root_retirement_intent_require_original_origin",
+    "root_ordinary_original_deployment_coordinator_owner_take_original_after_c_join",
+    "root_ordinary_original_deployment_retained_require_original_origin",
+    "root_ordinary_original_deployment_retained_authorize_original_root_retirement",
+    "root_ordinary_original_same_actor_root_context_finish_original_deadline_watch",
+    "root_ordinary_original_same_actor_root_context_retire_original_runtime_purposes",
+    "root_ordinary_original_root_retirement_intent_observe_original_root_workers_joined",
+    "root_ordinary_original_root_workers_joined_require_original_final_peer",
+    "root_ordinary_original_root_workers_joined_wait_original_root_process_exit",
+    "root_ordinary_original_root_process_exited_require_original_cleanup_origin",
+    "root_ordinary_original_required_purpose_retirement_shutdown_original_after_root_intent",
+    "root_ordinary_agentd_original_same_actor_phase_startup_v1_from_original_receive_start",
+    "root_ordinary_require_disjoint_phase_descriptor_numbers",
+    "root_ordinary_agentd_unix_cognitive_checkpoint_transport_retire_original_root_checkpoint_purpose",
+    "root_ordinary_agentd_unix_final_use_grant_provider_retire_original_root_grant_purpose",
+    "root_ordinary_required_same_actor_phase_channel_original_retirement_custody",
+    "root_ordinary_required_same_actor_phase_channel_shutdown_original_after_root_intent",
+    "root_ordinary_required_same_actor_phase_channel_shutdown_original_after_root_workers_joined",
+    "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+    "root_ordinary_original_same_actor_phase_watch_start",
+    "root_ordinary_original_same_actor_phase_watch_finish_original_after_root_exit",
+    "root_ordinary_original_bootstrap_consumer_admission_retain_original_bootstrap_consumer_handle",
+    "root_ordinary_original_bootstrap_consumer_job_receive_original",
+    "root_ordinary_original_deployment_coordinator_owner_stop_and_join_original",
+    "root_ordinary_original_learning_authority_original_signer",
+    "root_ordinary_original_learning_authority_into_original_parts",
+    "root_ordinary_original_deployment_artifacts_owner",
+    "root_ordinary_original_execution_attestor_attest_execution"
+  ],
+  "caller_corrections": [
+    {
+      "symbol": "OriginalDeploymentRequest::encode_original",
+      "id": "root_ordinary_original_deployment_request_encode_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 6412,
+              "text": "OriginalDeploymentRequest::encode_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentAcknowledgement::encode_original",
+      "id": "root_ordinary_original_deployment_acknowledgement_encode_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 6481,
+              "text": "OriginalDeploymentAcknowledgement::encode_original("
+            },
+            {
+              "kind": "dot",
+              "offset": 11102,
+              "receiver": "acknowledgement",
+              "owner": "BoundDeploymentProgress",
+              "resolved": "OriginalDeploymentAcknowledgement"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalBootstrapConsumers::close",
+      "id": "root_ordinary_original_bootstrap_consumers_close",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 3608,
+              "receiver": "gate",
+              "owner": "OriginalPhaseRunControl",
+              "resolved": "SameActorPhaseGate"
+            },
+            {
+              "kind": "dot",
+              "offset": 3741,
+              "receiver": "gate",
+              "owner": "OriginalPhaseRunControl",
+              "resolved": "SameActorPhaseGate"
+            },
+            {
+              "kind": "dot",
+              "offset": 3949,
+              "receiver": "gate",
+              "owner": "OriginalPhaseRunControl",
+              "resolved": "SameActorPhaseGate"
+            },
+            {
+              "kind": "dot",
+              "offset": 4390,
+              "receiver": "gate",
+              "owner": "OriginalPhaseRunControl",
+              "resolved": "SameActorPhaseGate"
+            },
+            {
+              "kind": "dot",
+              "offset": 4643,
+              "receiver": "gate",
+              "owner": "OriginalPhaseRunControl",
+              "resolved": "SameActorPhaseGate"
+            },
+            {
+              "kind": "dot",
+              "offset": 6949,
+              "receiver": "self.consumers",
+              "owner": "OriginalPhaseRunControl",
+              "resolved": "OriginalBootstrapConsumers"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment",
+      "id": "root_ordinary_agentd_original_same_actor_deployment_startup_v1_run_original_deployment",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/main.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 2458,
+              "text": "AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentClient::exchange_original",
+      "id": "root_ordinary_original_deployment_client_exchange_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4114,
+              "text": "OriginalDeploymentClient::exchange_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 7806,
+              "text": "OriginalDeploymentClient::exchange_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 12810,
+              "text": "OriginalDeploymentClient::exchange_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalPinnedRead::bytes",
+      "id": "root_ordinary_original_pinned_read_bytes",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 8684,
+              "text": "OriginalPinnedRead::bytes("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalPinnedRead::clone_original_file",
+      "id": "root_ordinary_original_pinned_read_clone_original_file",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5532,
+              "text": "OriginalPinnedRead::clone_original_file("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 1824,
+              "text": "OriginalPinnedRead::clone_original_file("
+            },
+            {
+              "kind": "qualified",
+              "offset": 1908,
+              "text": "OriginalPinnedRead::clone_original_file("
+            },
+            {
+              "kind": "qualified",
+              "offset": 1993,
+              "text": "OriginalPinnedRead::clone_original_file("
+            },
+            {
+              "kind": "qualified",
+              "offset": 2110,
+              "text": "OriginalPinnedRead::clone_original_file("
+            },
+            {
+              "kind": "qualified",
+              "offset": 2236,
+              "text": "OriginalPinnedRead::clone_original_file("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3595,
+              "text": "OriginalPinnedRead::clone_original_file("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10246,
+              "text": "OriginalPinnedRead::clone_original_file("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10324,
+              "text": "OriginalPinnedRead::clone_original_file("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalPinnedRead::parse_original",
+      "id": "root_ordinary_original_pinned_read_parse_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5844,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 7709,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 9197,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "dot",
+              "offset": 10950,
+              "receiver": "response",
+              "owner": null,
+              "resolved": "OriginalPinnedRead"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 8871,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 14072,
+              "text": "OriginalPinnedRead::parse_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4037,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 7680,
+              "text": "OriginalPinnedRead::parse_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 2538,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 4120,
+              "text": "OriginalPinnedRead::parse_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 4223,
+              "text": "OriginalPinnedRead::parse_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalPinnedRead::require_original_pin",
+      "id": "root_ordinary_original_pinned_read_require_original_pin",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5666,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 8364,
+              "text": "OriginalPinnedRead::require_original_pin("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 2461,
+              "text": "OriginalPinnedRead::require_original_pin("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 6117,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 8127,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 9616,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "dot",
+              "offset": 11368,
+              "receiver": "response",
+              "owner": null,
+              "resolved": "OriginalPinnedRead"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5714,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 9631,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 14437,
+              "text": "OriginalPinnedRead::require_original_pin("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4429,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 8169,
+              "text": "OriginalPinnedRead::require_original_pin("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4161,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 5198,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 9047,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10410,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10472,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "dot",
+              "offset": 5980,
+              "receiver": "self.lock",
+              "owner": "OriginalDeploymentArtifacts",
+              "resolved": "OriginalPinnedRead"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3601,
+              "text": "OriginalPinnedRead::require_original_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 5802,
+              "text": "OriginalPinnedRead::require_original_pin("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDirectoryPin::require_original_directory_pin",
+      "id": "root_ordinary_original_directory_pin_require_original_directory_pin",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5122,
+              "text": "OriginalDirectoryPin::require_original_directory_pin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 5895,
+              "text": "OriginalDirectoryPin::require_original_directory_pin("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalSignedOwnerFilesData::require_fresh",
+      "id": "root_ordinary_original_signed_owner_files_data_require_fresh",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 2460,
+              "receiver": "self.experience",
+              "owner": "OriginalLearningOwnersData",
+              "resolved": "OriginalSignedOwnerFilesData"
+            },
+            {
+              "kind": "dot",
+              "offset": 2499,
+              "receiver": "self.dataset",
+              "owner": "OriginalLearningOwnersData",
+              "resolved": "OriginalSignedOwnerFilesData"
+            },
+            {
+              "kind": "dot",
+              "offset": 2669,
+              "receiver": "self.training_receipts",
+              "owner": "OriginalLearningOwnersData",
+              "resolved": "OriginalSignedOwnerFilesData"
+            },
+            {
+              "kind": "dot",
+              "offset": 2706,
+              "receiver": "self.local",
+              "owner": "OriginalLearningOwnersData",
+              "resolved": "OriginalSignedOwnerFilesData"
+            },
+            {
+              "kind": "dot",
+              "offset": 6308,
+              "receiver": "data",
+              "owner": "OriginalDeploymentLearning",
+              "resolved": "OriginalSignedOwnerFilesData"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentLearning::open_original",
+      "id": "root_ordinary_original_deployment_learning_open_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4878,
+              "text": "OriginalDeploymentLearning::open_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentLearning::open_original_c_task",
+      "id": "root_ordinary_original_deployment_learning_open_original_c_task",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4248,
+              "text": "OriginalDeploymentLearning::open_original_c_task("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalLearningOwnersData::require_fresh",
+      "id": "root_ordinary_original_learning_owners_data_require_fresh",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3972,
+              "text": "OriginalLearningOwnersData::require_fresh("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalModelData::open_original",
+      "id": "root_ordinary_original_model_data_open_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4267,
+              "text": "OriginalModelData::open_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalInitialPredecessorFiles::reopen_original",
+      "id": "root_ordinary_original_initial_predecessor_files_reopen_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4347,
+              "text": "OriginalInitialPredecessorFiles::reopen_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalCData::open_original",
+      "id": "root_ordinary_original_c_data_open_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 12197,
+              "text": "OriginalCData::open_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentArtifacts::open_original",
+      "id": "root_ordinary_original_deployment_artifacts_open_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4473,
+              "text": "OriginalDeploymentArtifacts::open_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalActorExchange::exchange_original",
+      "id": "root_ordinary_original_actor_exchange_exchange_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3348,
+              "text": "OriginalActorExchange::exchange_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 5604,
+              "text": "OriginalActorExchange::exchange_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 7497,
+              "text": "OriginalActorExchange::exchange_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 8980,
+              "text": "OriginalActorExchange::exchange_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10379,
+              "text": "OriginalActorExchange::exchange_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3889,
+              "text": "OriginalActorExchange::exchange_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 7509,
+              "text": "OriginalActorExchange::exchange_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalExecutionAttestor::take_original_failure",
+      "id": "root_ordinary_original_execution_attestor_take_original_failure",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 8170,
+              "text": "OriginalExecutionAttestor::take_original_failure("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalEvaluationJournalData::open_original",
+      "id": "root_ordinary_original_evaluation_journal_data_open_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4482,
+              "text": "OriginalEvaluationJournalData::open_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 4588,
+              "text": "OriginalEvaluationJournalData::open_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalWitnessData::open_original",
+      "id": "root_ordinary_original_witness_data_open_original",
+      "classification": "existing draft caller correction",
+      "old_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs"
+      ],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 10655,
+              "text": "OriginalWitnessData::open_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3833,
+              "text": "OriginalWitnessData::open_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 4015,
+              "text": "OriginalWitnessData::open_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 4473,
+              "text": "OriginalWitnessData::open_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 6654,
+              "text": "OriginalWitnessData::open_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 2339,
+              "receiver": "self.witness",
+              "owner": "OriginalEvaluationJournalData",
+              "resolved": "OriginalWitnessData"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 7748,
+              "text": "OriginalWitnessData::open_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 7916,
+              "text": "OriginalWitnessData::open_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 7582,
+              "text": "OriginalWitnessData::open_original("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10314,
+              "text": "OriginalWitnessData::open_original("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3932,
+              "text": "OriginalWitnessData::open_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalRootRetirementIntent::require_original_origin",
+      "id": "root_ordinary_original_root_retirement_intent_require_original_origin",
+      "classification": "existing draft caller correction",
+      "old_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+      ],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 4205,
+              "receiver": "self",
+              "owner": "OriginalSameActorRuntimeStopped",
+              "resolved": "OriginalSameActorRuntimeStopped"
+            },
+            {
+              "kind": "dot",
+              "offset": 4292,
+              "receiver": "intent",
+              "owner": "OriginalSameActorRuntimeStopped",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 4441,
+              "receiver": "self",
+              "owner": "OriginalSameActorRuntimeStopped",
+              "resolved": "OriginalSameActorRuntimeStopped"
+            },
+            {
+              "kind": "dot",
+              "offset": 4528,
+              "receiver": "intent",
+              "owner": "OriginalSameActorRuntimeStopped",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 2215,
+              "receiver": "intent",
+              "owner": "OriginalLearningLoopRetired",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 2554,
+              "receiver": "intent",
+              "owner": "OriginalLearningLoopRetired",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 3388,
+              "receiver": "intent",
+              "owner": "OriginalRetiredLearningOwners",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 3749,
+              "receiver": "intent",
+              "owner": "OriginalRetiredLearningOwners",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 16824,
+              "text": "OriginalRootRetirementIntent::require_original_origin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 17026,
+              "text": "OriginalRootRetirementIntent::require_original_origin("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 9711,
+              "text": "OriginalRootRetirementIntent::require_original_origin("
+            },
+            {
+              "kind": "qualified",
+              "offset": 10467,
+              "text": "OriginalRootRetirementIntent::require_original_origin("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5189,
+              "text": "OriginalRootRetirementIntent::require_original_origin("
+            },
+            {
+              "kind": "dot",
+              "offset": 2435,
+              "receiver": "intent",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 2495,
+              "receiver": "runtime",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRuntimeRootPurposesRetired"
+            },
+            {
+              "kind": "dot",
+              "offset": 2615,
+              "receiver": "session",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRootSessionObservationRetired"
+            },
+            {
+              "kind": "dot",
+              "offset": 2679,
+              "receiver": "coordinator",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalDeploymentRetained"
+            },
+            {
+              "kind": "dot",
+              "offset": 3295,
+              "receiver": "intent",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 3958,
+              "receiver": "intent",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 4022,
+              "receiver": "runtime",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRuntimeRootPurposesRetired"
+            },
+            {
+              "kind": "dot",
+              "offset": 4150,
+              "receiver": "session",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalRootSessionObservationRetired"
+            },
+            {
+              "kind": "dot",
+              "offset": 4218,
+              "receiver": "coordinator",
+              "owner": "OriginalRootRetirementIntent",
+              "resolved": "OriginalDeploymentRetained"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 1359,
+              "receiver": "intent",
+              "owner": "OriginalSameActorRootContext",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 2369,
+              "receiver": "intent",
+              "owner": "OriginalSameActorRootContext",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 3872,
+              "receiver": "intent",
+              "owner": "LiveGenerationCurrent",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 4384,
+              "receiver": "intent",
+              "owner": "LiveGenerationCurrent",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 777,
+              "receiver": "intent",
+              "owner": "PublishedCircuitFeatureTaskV1",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 1447,
+              "receiver": "intent",
+              "owner": "PublishedCircuitFeatureTaskV1",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 9399,
+              "receiver": "intent",
+              "owner": "OriginalPublicationStream",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 10386,
+              "receiver": "intent",
+              "owner": "OriginalPublicationStream",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 2243,
+              "receiver": "intent",
+              "owner": "AgentdRootQ24ModelFactoryV1",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 3328,
+              "receiver": "intent",
+              "owner": "AgentdRootQ24ModelFactoryV1",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 3445,
+              "receiver": "intent",
+              "owner": "OriginalLearningCheckpointRetirement",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 4783,
+              "receiver": "intent",
+              "owner": "OriginalLearningCheckpointRetirement",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 711,
+              "receiver": "intent",
+              "owner": "OriginalCellQ24LearningStageOwnersV1",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 1604,
+              "receiver": "intent",
+              "owner": "OriginalCellQ24LearningStageOwnersV1",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 2153,
+              "receiver": "intent",
+              "owner": "OriginalCellQ24LearningStageOwnersV1",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 6183,
+              "receiver": "intent",
+              "owner": "RootGenerationCurrentClient",
+              "resolved": "OriginalRootRetirementIntent"
+            },
+            {
+              "kind": "dot",
+              "offset": 6851,
+              "receiver": "intent",
+              "owner": "RootGenerationCurrentClient",
+              "resolved": "OriginalRootRetirementIntent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent",
+      "id": "root_ordinary_original_required_purpose_retirement_shutdown_original_after_root_intent",
+      "classification": "existing draft caller correction",
+      "old_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs"
+      ],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 6490,
+              "text": "OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 2090,
+              "text": "OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent("
+            },
+            {
+              "kind": "qualified",
+              "offset": 2227,
+              "text": "OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "RequiredSameActorPhaseChannel::original_retirement_custody",
+      "id": "root_ordinary_required_same_actor_phase_channel_original_retirement_custody",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 21103,
+              "text": "RequiredSameActorPhaseChannel::original_retirement_custody("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent",
+      "id": "root_ordinary_required_same_actor_phase_channel_shutdown_original_after_root_intent",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 9808,
+              "text": "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 9243,
+              "text": "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3140,
+              "text": "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4582,
+              "text": "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "SameActorPhaseGate::retain_required_original_stream",
+      "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+      "classification": "existing draft caller correction",
+      "old_callers": [
+        "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 5468,
+              "receiver": "phase\n            ",
+              "owner": "AgentdUnixCognitiveCheckpointTransport",
+              "resolved": "SameActorPhaseGate"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 3782,
+              "text": "SameActorPhaseGate::retain_required_original_stream("
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 4175,
+              "receiver": "gate\n            ",
+              "owner": "AgentdUnixFinalUseGrantProvider",
+              "resolved": "SameActorPhaseGate"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "calls": [
+            {
+              "kind": "dot",
+              "offset": 20886,
+              "receiver": "gate",
+              "owner": null,
+              "resolved": "SameActorPhaseGate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalSameActorPhaseWatch::finish_original_after_root_exit",
+      "id": "root_ordinary_original_same_actor_phase_watch_finish_original_after_root_exit",
+      "classification": "existing draft caller correction",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 993,
+              "text": "OriginalSameActorPhaseWatch::finish_original_after_root_exit("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle",
+      "id": "root_ordinary_original_bootstrap_consumer_admission_retain_original_bootstrap_consumer_handle",
+      "classification": "missing boundary and actual caller",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 22863,
+              "text": "OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalBootstrapConsumerJob::receive_original",
+      "id": "root_ordinary_original_bootstrap_consumer_job_receive_original",
+      "classification": "missing boundary and actual caller",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 23005,
+              "text": "OriginalBootstrapConsumerJob::receive_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentCoordinatorOwner::stop_and_join_original",
+      "id": "root_ordinary_original_deployment_coordinator_owner_stop_and_join_original",
+      "classification": "missing boundary and actual caller",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5889,
+              "text": "OriginalDeploymentCoordinatorOwner::stop_and_join_original("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalLearningAuthority::original_signer",
+      "id": "root_ordinary_original_learning_authority_original_signer",
+      "classification": "missing boundary and actual caller",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4322,
+              "text": "OriginalLearningAuthority::original_signer("
+            },
+            {
+              "kind": "qualified",
+              "offset": 4518,
+              "text": "OriginalLearningAuthority::original_signer("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalLearningAuthority::into_original_parts",
+      "id": "root_ordinary_original_learning_authority_into_original_parts",
+      "classification": "missing boundary and actual caller",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 4728,
+              "text": "OriginalLearningAuthority::into_original_parts("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "OriginalDeploymentArtifacts::owner",
+      "id": "root_ordinary_original_deployment_artifacts_owner",
+      "classification": "missing boundary and actual caller",
+      "old_callers": [],
+      "actual_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs"
+      ],
+      "actual_sites": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "calls": [
+            {
+              "kind": "qualified",
+              "offset": 5345,
+              "text": "OriginalDeploymentArtifacts::owner("
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "integration": [
+    "Semantically union with original declarations; never replace old 789/512 or later annexes.",
+    "28 existing draft caller sets are corrected and 6 previously omitted rows added; generic trait row is a separate seventh added row.",
+    "No old declared ID or guard removed. Three old unchanged functions are reclassified only inside skipped inventory.",
+    "After actual formatter, resample exact definition/caller/guard strings from real postimages without removing any substantive obligation."
+  ]
+}

@@ -1,0 +1,1171 @@
+{
+  "schema_version": 1,
+  "kind": "source_bound_old_boundary_reconciliation",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "path": "CALLERS.toml",
+  "baseline": {
+    "git_blob": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+    "bytes": 1204984,
+    "sha256": "f202f39b02ec74689cebe25af4963af62496c226760caeec32f25aa64c6e6709"
+  },
+  "source_manifest": {
+    "git_blob": "658549a54628df700158c30011f9eb640e21cd78",
+    "bytes": 57198,
+    "sha256": "52f0e102dfa2cef0e1d4585ad733f54f8f72b13d50f86cdf94451f319fb3b83c"
+  },
+  "actual_ufcs_overlay": {
+    "git_blob": "4389ac3ec9cf171f302241419c9888a0f8e765b4",
+    "bytes": 82821,
+    "sha256": "8980487775b65aa6f9a8eba6e12334e6119243a8e72275606dd6fbf4dbd4d26a"
+  },
+  "old_row_changes": [
+    {
+      "kind": "boundary",
+      "id": "root_original_writer_purpose_receive",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_original_writer_purpose_receive",
+        "symbol": "receive_root_production_writer_handoff",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+        "definition_markers": [
+          "pub fn receive_root_production_writer_handoff(",
+          "libc::MSG_CMSG_CLOEXEC",
+          "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+          "descriptors.len() != 3",
+          "&bytes[..WRITER_FRAME.len()] != WRITER_FRAME",
+          "require_root_pin(&root, peer.pid as u32)?",
+          "RootProductionWriterDescriptor(writer)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_original_writer_purpose_receive",
+        "symbol": "receive_root_production_writer_handoff",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+        "definition_markers": [
+          "pub fn receive_root_production_writer_handoff(",
+          "libc::MSG_CMSG_CLOEXEC",
+          "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+          "descriptors.len() != 3",
+          "&bytes[..WRITER_FRAME.len()] != WRITER_FRAME",
+          "require_root_pin(&root, peer.pid as u32)?",
+          "RootProductionWriterDescriptor(writer)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "cbe05087b882c8bb69c9054e707f0f21500fb917b598b0bd40e230dc3033ea49",
+      "new_row_identity_sha256": "f821ac2f025aa9335ca33260d1c7afd159ed9b15b0ea54577ccf7dd632561e36"
+    },
+    {
+      "kind": "boundary",
+      "id": "agentd_original_root_writer_consume",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "agentd_original_root_writer_consume",
+        "symbol": "AgentdConfig::from_root_writer_handoff",
+        "definition_path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+        "definition_markers": [
+          "pub fn from_root_writer_handoff(",
+          "writer: crate::RootProductionWriterDescriptor",
+          "writer.into_file()",
+          "bundle.consumer.pid != std::process::id()",
+          "verify_sender_process_binding(",
+          "(descriptor.dev(), descriptor.ino()) != (named.dev(), named.ino())",
+          "WriterSource::RootDescriptor(writer)",
+          "verify()?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "agentd_original_root_writer_consume",
+        "symbol": "AgentdConfig::from_root_writer_handoff",
+        "definition_path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+        "definition_markers": [
+          "pub fn from_root_writer_handoff(",
+          "writer: crate::RootProductionWriterDescriptor",
+          "writer.into_file()",
+          "bundle.consumer.pid != std::process::id()",
+          "verify_sender_process_binding(",
+          "(descriptor.dev(), descriptor.ino()) != (named.dev(), named.ino())",
+          "WriterSource::RootDescriptor(writer)",
+          "verify()?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "7966d2ee1a843ea55ce06364f3fd2ca15512c3cc3d011d79fbd2950347c66282",
+      "new_row_identity_sha256": "9d26ec0aff82987ec9756ad8dc546d8bc09154c4f661edfaa43aa07d6322b328"
+    },
+    {
+      "kind": "boundary",
+      "id": "cell_learning_evaluation_profile_freeze",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "cell_learning_evaluation_profile_freeze",
+        "symbol": "freeze_cell_learning_evaluation_plan_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "definition_markers": [
+          "pub fn freeze_cell_learning_evaluation_plan_v1",
+          "evaluation_profile.is_zero()",
+          "Some(evaluation_profile.into_array())"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "cell_learning_evaluation_profile_freeze",
+        "symbol": "freeze_cell_learning_evaluation_plan_v1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "definition_markers": [
+          "pub fn freeze_cell_learning_evaluation_plan_v1",
+          "evaluation_profile.is_zero()",
+          "Some(evaluation_profile.into_array())"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "8a5c8ff7b8378599c0524647ddd50d490a383554b76f3267ea78cd0b3fe9739d",
+      "new_row_identity_sha256": "b211dc9a64361052f120413ac2b456894e5bda6d9665f7d409376dc10f83105c"
+    },
+    {
+      "kind": "boundary",
+      "id": "cell_original_evaluation_execution",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "cell_original_evaluation_execution",
+        "symbol": "CellEvaluationRunnerV1::evaluate_or_readback",
+        "receiver_type": "CellEvaluationRunnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "definition_markers": [
+          "pub fn evaluate_or_readback<",
+          "plan.require_journals(journals)?",
+          "request.plan != &plan.product"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "cell_original_evaluation_execution",
+        "symbol": "CellEvaluationRunnerV1::evaluate_or_readback",
+        "receiver_type": "CellEvaluationRunnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+        "definition_markers": [
+          "pub fn evaluate_or_readback<",
+          "plan.require_journals(journals)?",
+          "request.plan != &plan.product"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "74b9376d3a61b3ce69096a082b6b5e13f8ae8d03260948193c24694a0672456b",
+      "new_row_identity_sha256": "03b83f7fb07961b8f350ec97dda3de120347f32d8a52ca3a0e97b25db4530094"
+    },
+    {
+      "kind": "boundary",
+      "id": "learning_original_evaluation_key",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "learning_original_evaluation_key",
+        "symbol": "product_evaluation_execution_key_v1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+        "definition_markers": [
+          "pub fn product_evaluation_execution_key_v1(",
+          "plan.validate_integrity()?",
+          "plan.receipt_seal.as_array()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "caller_markers": [
+          "product_evaluation_execution_key_v1("
+        ]
+      },
+      "new_row": {
+        "id": "learning_original_evaluation_key",
+        "symbol": "product_evaluation_execution_key_v1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+        "definition_markers": [
+          "pub fn product_evaluation_execution_key_v1(",
+          "plan.validate_integrity()?",
+          "plan.receipt_seal.as_array()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+        ],
+        "caller_markers": [
+          "product_evaluation_execution_key_v1("
+        ]
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "37be5c99195ebf803784ef24d60a27062b5c84288b6eddb6480b452aac875d6c",
+      "new_row_identity_sha256": "9bc2e134b71461440cb2e6789d2e3d60c2d75078df2dd19fecbd7863cb279874"
+    },
+    {
+      "kind": "boundary",
+      "id": "learning_original_feature_objective_reply",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "learning_original_feature_objective_reply",
+        "symbol": "AgentdClient::objective_start_once",
+        "receiver_type": "AgentdClient",
+        "definition_path": "codex-rs/hepta-agentd/src/client_control.rs",
+        "definition_markers": [
+          "pub(crate) async fn objective_start_once("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/client.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+        ],
+        "caller_markers": [
+          ".objective_start_once("
+        ]
+      },
+      "new_row": {
+        "id": "learning_original_feature_objective_reply",
+        "symbol": "AgentdClient::objective_start_once",
+        "receiver_type": "AgentdClient",
+        "definition_path": "codex-rs/hepta-agentd/src/client_control.rs",
+        "definition_markers": [
+          "pub(crate) async fn objective_start_once("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/client.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs"
+        ],
+        "caller_markers": [
+          ".objective_start_once("
+        ]
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "386327d32b19b0fa783ac4be0f01b4e467f0ae489fadd10438f996263c8aa01f",
+      "new_row_identity_sha256": "347ef654943636b7f5c7c00531674dac3d92b53c66d0560745e6c2f4fdf8bcd3"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_generation_connection_inputs_take",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_generation_connection_inputs_take",
+        "symbol": "AgentdRootProductionInputs::take_generation_publication_connection",
+        "receiver_type": "AgentdRootProductionInputs",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+        "definition_markers": [
+          "pub fn take_generation_publication_connection(",
+          "self.publication_connection.take_original_connection()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_generation_connection_inputs_take",
+        "symbol": "AgentdRootProductionInputs::take_generation_publication_connection",
+        "receiver_type": "AgentdRootProductionInputs",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+        "definition_markers": [
+          "pub fn take_generation_publication_connection(",
+          "self.publication_connection.take_original_connection()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "09699d46438b8e951a3fae610869d36bb11fef1fa31abda57c98ca9fcf4f56a8",
+      "new_row_identity_sha256": "6456dd53348dc9e46a37751edda68a4e446468dbe61d4bb582cdcbee6358ddc0"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_original_peer_channel_until",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_original_peer_channel_until",
+        "symbol": "HostAuthorityPeerChannel::from_stream_until",
+        "receiver_type": "HostAuthorityPeerChannel",
+        "definition_path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "definition_markers": [
+          "pub fn from_stream_until(",
+          "remaining > policy.lifetime",
+          "OwnerChannel::new_until(owner_pidfd, policy.peer.pid, end)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_original_peer_channel_until",
+        "symbol": "HostAuthorityPeerChannel::from_stream_until",
+        "receiver_type": "HostAuthorityPeerChannel",
+        "definition_path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "definition_markers": [
+          "pub fn from_stream_until(",
+          "remaining > policy.lifetime",
+          "OwnerChannel::new_until(owner_pidfd, policy.peer.pid, end)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+          "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "522281615b6085c4184642f41b46622cb562dce828cce1dd66dfdc474d37fd90",
+      "new_row_identity_sha256": "81ef124c1dc925a8876170aed858ae6d58da31a5dfaf4ba85c38d21804792c94"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_same_actor_receive_start",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_same_actor_receive_start",
+        "symbol": "OriginalPhaseReceiveStart::capture",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "definition_markers": [
+          "pub(crate) fn capture()",
+          "Instant::now()",
+          "boottime_ns()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_same_actor_receive_start",
+        "symbol": "OriginalPhaseReceiveStart::capture",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "definition_markers": [
+          "pub(crate) fn capture()",
+          "Instant::now()",
+          "boottime_ns()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "90655bc836fc63e2004333cd35ced5da8d33a3c4321e6a8a3803c6d347d2e088",
+      "new_row_identity_sha256": "310e383d7bcc044a5633cda95369f3e3797132b3aeb744c28482d67e8784e6fa"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_same_actor_receive_inputs",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_same_actor_receive_inputs",
+        "symbol": "receive_original_same_actor_inputs",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "definition_markers": [
+          "pub(crate) async fn receive_original_same_actor_inputs(",
+          "AgentdRootAuthoritySession::connect_same_actor_phase_until(",
+          "activate_original_phase_final_use_owners("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_same_actor_receive_inputs",
+        "symbol": "receive_original_same_actor_inputs",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "definition_markers": [
+          "pub(crate) async fn receive_original_same_actor_inputs(",
+          "AgentdRootAuthoritySession::connect_same_actor_phase_until(",
+          "activate_original_phase_final_use_owners("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "9bb5cab6fd138d1709ef369946ae8166b7ba245617fed4d7e518886157c4172d",
+      "new_row_identity_sha256": "c65d8b93647c9104d6a04f7751d308b3525d37b8828ed6b3834f1b884763acee"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_same_actor_context_current",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_same_actor_context_current",
+        "symbol": "OriginalSameActorRootContext::require_current",
+        "receiver_type": "OriginalSameActorRootContext",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "definition_markers": [
+          "pub(crate) fn require_current(",
+          "self.session",
+          "self.gate.require_open()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+          "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_same_actor_context_current",
+        "symbol": "OriginalSameActorRootContext::require_current",
+        "receiver_type": "OriginalSameActorRootContext",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "definition_markers": [
+          "pub(crate) fn require_current(",
+          "self.session",
+          "self.gate.require_open()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "4d8bb0ccfd0c9b54f8a9b8861cd93cf23bdd4cd7360f17cda5f7b72b88b5d848",
+      "new_row_identity_sha256": "94f8164b1256a1ab0c1c018fa267f08c86c6c60870c6af5ab1e0cd11d9765d8b"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_same_actor_take_start_rights",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_same_actor_take_start_rights",
+        "symbol": "receive_original_phase_start",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+        "definition_markers": [
+          "pub(crate) fn receive_original_phase_start(",
+          "START_FRAME"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_same_actor_take_start_rights",
+        "symbol": "receive_original_phase_start",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+        "definition_markers": [
+          "pub(crate) fn receive_original_phase_start(",
+          "START_FRAME"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "05bc68060cd4a335fd3c4009a7c0d5399d05bcaab4f205fb41f2bc3e61baf56b",
+      "new_row_identity_sha256": "f1b997a4c61592746ec90f90a77e4def59290fae535ba5a7cbd62895fb4b2131"
+    },
+    {
+      "kind": "boundary",
+      "id": "root_same_actor_initial_connect",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "root_same_actor_initial_connect",
+        "symbol": "RootGenerationInitialHandoffV1::connect_original_same_actor_initial",
+        "call_pattern": "(?:\\.\\s*|\\b[\\w:]+::)connect_original_same_actor_initial\\s*\\(",
+        "definition_path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+        "definition_markers": [
+          "pub(crate) fn connect_original_same_actor_initial(",
+          "connection.require_same_successor_session(",
+          "from_original_initial_phase_stream_until("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "root_same_actor_initial_connect",
+        "symbol": "RootGenerationInitialHandoffV1::connect_original_same_actor_initial",
+        "call_pattern": "(?:\\.\\s*|\\b[\\w:]+::)connect_original_same_actor_initial\\s*\\(",
+        "definition_path": "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+        "definition_markers": [
+          "pub(crate) fn connect_original_same_actor_initial(",
+          "connection.require_same_successor_session(",
+          "from_original_initial_phase_stream_until("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "8becda683eb32c179a910b9c3ffd9d14ebd43fab2d05dfd78b3bf9e9cba7606e",
+      "new_row_identity_sha256": "8ac8f49b0feca68ca2d1ad875c5846f74faac34c32ae350d62efa77a7ac11223"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_same_actor_initial_install",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "q24_same_actor_initial_install",
+        "symbol": "install_original_initial_task",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+        "definition_markers": [
+          "pub(crate) fn install_original_initial_task(",
+          "OriginalRootGenerationInitialV1::prepare_feature(",
+          "prepared.publish(&signed)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_same_actor_initial_install",
+        "symbol": "install_original_initial_task",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+        "definition_markers": [
+          "pub(crate) fn install_original_initial_task(",
+          "OriginalRootGenerationInitialV1::prepare_feature(",
+          "prepared.publish(&signed)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+      ],
+      "old_row_identity_sha256": "0d108f64327d672634042905121bf73d1058aec6026a0f273c70d126f9bcbaa1",
+      "new_row_identity_sha256": "ff502b255152a4d9ac74567b50f5a630e53a6fd7201a4487c8849dc2363973fe"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_learning_normal_owners_binding",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "q24_learning_normal_owners_binding",
+        "symbol": "OriginalRetiredLearningOwners::require_original_work",
+        "receiver_type": "OriginalRetiredLearningOwners",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "impl OriginalRetiredLearningOwners",
+          "OriginalLearningLoopRetired::require_original_work",
+          "OriginalLearningDeliveryRetired::require_original_work",
+          "OriginalLearningWorkJoined::require_original_work"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_learning_normal_owners_binding",
+        "symbol": "OriginalRetiredLearningOwners::require_original_work",
+        "receiver_type": "OriginalRetiredLearningOwners",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "impl OriginalRetiredLearningOwners",
+          "OriginalLearningLoopRetired::require_original_work",
+          "OriginalLearningDeliveryRetired::require_original_work",
+          "OriginalLearningWorkJoined::require_original_work"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_joined.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_joined.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "048e8448309000673c1ce8723ee4f26c21ba29cfc503aa2c9adcd86d42f31525",
+      "new_row_identity_sha256": "9210d62650f87467d748701c72cb213a2588adc934f93c9326d66cfeedc42528"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_learning_normal_joined_binding",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "q24_learning_normal_joined_binding",
+        "symbol": "OriginalSameActorLearningJoined::require_original_phase",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "impl OriginalSameActorLearningJoined",
+          "OriginalSameActorCJoined::require_original_phase(&self.original, identity, gate)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+          "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_learning_normal_joined_binding",
+        "symbol": "OriginalSameActorLearningJoined::require_original_phase",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "impl OriginalSameActorLearningJoined",
+          "OriginalSameActorCJoined::require_original_phase(&self.original, identity, gate)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+          "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "f5ea40d1905ba0ad4a275f589a9d5aa2a644131342ae29199d7b262bb2cc51fa",
+      "new_row_identity_sha256": "8b2ea57556686c4602ef1b40e7533477dfc0df73327bf3946fe96da25e778702"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_learning_normal_joined_c",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "q24_learning_normal_joined_c",
+        "symbol": "OriginalSameActorLearningJoined::original_c_joined",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "fn original_c_joined(",
+          "&self.original"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_learning_normal_joined_c",
+        "symbol": "OriginalSameActorLearningJoined::original_c_joined",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "fn original_c_joined(",
+          "&self.original"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "224bca92b047cbbf49b1e3c3de21cf1c455fe9f02f43aa8ca334927254fdbff3",
+      "new_row_identity_sha256": "90f9e1768c759d74c44ee58fa54788d83f205d1fe33877a9509af79ef1e9a0dd"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_purpose_learning_owners_retained",
+      "purpose": "Reconcile actual implementation move and new concrete callers; preserve all other original callers.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "q24_purpose_learning_owners_retained",
+        "symbol": "OriginalRetiredLearningPurposes::require_original_work",
+        "receiver_type": "OriginalRetiredLearningPurposes",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "definition_markers": [
+          "fn require_original_work(",
+          "impl OriginalRetiredLearningPurposes",
+          "OriginalRetiredLearningOwners::require_original_work(&self.owners, work)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_purpose_learning_owners_retained",
+        "symbol": "OriginalRetiredLearningPurposes::require_original_work",
+        "receiver_type": "OriginalRetiredLearningPurposes",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "definition_markers": [
+          "fn require_original_work(",
+          "impl OriginalRetiredLearningPurposes",
+          "OriginalRetiredLearningOwners::require_original_work(&self.owners, work)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_purposes.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_purposes.rs"
+      ],
+      "removals": [
+        "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+      ],
+      "old_row_identity_sha256": "cb75887b36692d0d8e6a64520088ea1aecb5c8eeda5fd942c057f77a5896f911",
+      "new_row_identity_sha256": "7b8b9f6a4fd070dd9580c5d4d1e9432c907a2ab5558154ac25f8d20b6f48864f"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_purpose_learning_joined_close",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "q24_purpose_learning_joined_close",
+        "symbol": "OriginalSameActorLearningJoined::retire_original_root_purposes",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_root_purposes(",
+          "OriginalSameActorCJoined::retire_original_root_purposes(",
+          "Ok(OriginalSameActorLearningPurposesRetired { original })"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_purpose_learning_joined_close",
+        "symbol": "OriginalSameActorLearningJoined::retire_original_root_purposes",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_root_purposes(",
+          "OriginalSameActorCJoined::retire_original_root_purposes(",
+          "Ok(OriginalSameActorLearningPurposesRetired { original })"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "4849ad552d75d568a077ce1509a31d024cf09322c2bc3816b6b46f5e216ee669",
+      "new_row_identity_sha256": "e881b2a50c9edea32e1544bcc3aa5b7649078f3eb7da0c5824cc0bd29122902d"
+    },
+    {
+      "kind": "boundary",
+      "id": "product_file_holdout_original_open",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "product_file_holdout_original_open",
+        "symbol": "LockedFileFinalHoldoutProviderV1::open",
+        "receiver_type": "LockedFileFinalHoldoutProviderV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+        "definition_markers": [
+          "pub fn open(file: File, expected: &ProductFrozenEvaluationPlanV1)"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "product_file_holdout_original_open",
+        "symbol": "LockedFileFinalHoldoutProviderV1::open",
+        "receiver_type": "LockedFileFinalHoldoutProviderV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs",
+        "definition_markers": [
+          "pub fn open(file: File, expected: &ProductFrozenEvaluationPlanV1)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "8a48755084dcb20e78acab014cafee76927044247b390da2ccff812831ade128",
+      "new_row_identity_sha256": "71f6c40e380499a264ae4569eb320cb67c1a27a0960252d88cb1befd2617b866"
+    },
+    {
+      "kind": "boundary",
+      "id": "product_file_qualification_create",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "product_file_qualification_create",
+        "symbol": "LockedFileProductQualificationEvidenceSinkV1::create",
+        "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "definition_markers": [
+          "pub fn create(file: File, owner_binding: Digest32)"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "product_file_qualification_create",
+        "symbol": "LockedFileProductQualificationEvidenceSinkV1::create",
+        "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "definition_markers": [
+          "pub fn create(file: File, owner_binding: Digest32)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "c0f4163059631ba70ef4e9cdcff7dc352fca3a9d1becd2e2d21dc13981a388cb",
+      "new_row_identity_sha256": "b21acd86f8b2e39d1d06a7052f6cf6a20c6e6269447850557a4339b9fca0d0fe"
+    },
+    {
+      "kind": "boundary",
+      "id": "product_file_qualification_recover",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "product_file_qualification_recover",
+        "symbol": "LockedFileProductQualificationEvidenceSinkV1::recover",
+        "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "definition_markers": [
+          "pub fn recover("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "product_file_qualification_recover",
+        "symbol": "LockedFileProductQualificationEvidenceSinkV1::recover",
+        "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "definition_markers": [
+          "pub fn recover("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "2e95a9ed68a8cfcdcd1e771da281c434ebdccf1d2ede61e0a7f3df55b3e103e5",
+      "new_row_identity_sha256": "597899d32424d9155b4311fae9f155371938b7ab88cf89ff83f6b32823fb82ac"
+    },
+    {
+      "kind": "boundary",
+      "id": "product_file_qualification_readback",
+      "purpose": "Declare only the inspected actual new production callers; preserve every original caller.",
+      "changed_fields": [
+        "product_callers"
+      ],
+      "old_row": {
+        "id": "product_file_qualification_readback",
+        "symbol": "LockedFileProductQualificationEvidenceSinkV1::readback",
+        "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "definition_markers": [
+          "pub fn readback("
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "product_file_qualification_readback",
+        "symbol": "LockedFileProductQualificationEvidenceSinkV1::readback",
+        "receiver_type": "LockedFileProductQualificationEvidenceSinkV1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs",
+        "definition_markers": [
+          "pub fn readback("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+        ],
+        "caller_markers": []
+      },
+      "additions": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs"
+      ],
+      "removals": [],
+      "old_row_identity_sha256": "67f03baf1052fca1e24a4d0be6dd7853715cbc65266393dfcc3fa6ac826a2943",
+      "new_row_identity_sha256": "74a638dd817269fbd89ab7fcca67bac797b1077125ed26abbe1dded4a4e630e4"
+    },
+    {
+      "kind": "boundary",
+      "id": "q24_same_actor_run",
+      "purpose": "Replace two stale declaration markers with the actual owned Startup entry and its exact Embedded input / awaited result. No business-completion claim is inferred.",
+      "changed_fields": [
+        "definition_markers"
+      ],
+      "old_row": {
+        "id": "q24_same_actor_run",
+        "symbol": "AgentdOriginalSameActorPhaseStartupV1::run_original_phase",
+        "call_pattern": "(?:\\.\\s*|\\b[\\w:]+::)run_original_phase\\s*\\(",
+        "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "definition_markers": [
+          "pub async fn run_original_phase(",
+          "launch.run(config, arg0_paths).await?",
+          "original phase completion and physical owner join are not acknowledged"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "new_row": {
+        "id": "q24_same_actor_run",
+        "symbol": "AgentdOriginalSameActorPhaseStartupV1::run_original_phase",
+        "call_pattern": "(?:\\.\\s*|\\b[\\w:]+::)run_original_phase\\s*\\(",
+        "definition_path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "definition_markers": [
+          "pub async fn run_original_phase(",
+          "owner::OriginalPhaseRunOwner::start_original(",
+          "self, owner::OriginalPhaseSelectedBusiness::Embedded(Box::new(business)), arg0_paths,\n        )?.await"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      "old_row_identity_sha256": "d14e43c36a297759d6859586e22ef13b90f60a1f6333065eb4387224128afbcc",
+      "new_row_identity_sha256": "f092126778321ae0746239fdce86bb1d28122be7de63a4a90f27deac80233d91"
+    }
+  ],
+  "new_boundaries": [],
+  "new_protected": [],
+  "unchanged_lead_ids": [
+    "learning_original_q24_with_original_q24_stage_owners",
+    "root_same_actor_phase_seal",
+    "root_same_actor_phase_serve"
+  ],
+  "scope": "Twenty-six prior bounded leads were examined. Twenty-three old caller rows change; three remain byte-identical. One additional existing row replaces exactly two stale definition markers. No global absence is inferred from bounded source inspection.",
+  "merge_rule": "Apply complete boundary identity by ID and exact old/new owned fields. Keep every retained original caller and all unrelated concurrent callers. Remove only each explicitly listed path whose complete final file and move destination are bound in source evidence. Protected rows are untouched conjunctions; never select/replace them solely by path.",
+  "analysis_reconciler_js": "\nreturn function reconcileOriginalRows(raw, annex, Toml, U) {\n const parsed=Toml.parseToml(raw), current=parsed.value, ops=[], applied=[];\n const clone=x=>JSON.parse(JSON.stringify(x));\n for(const edit of annex.old_row_changes){\n  if(edit.kind!==\"boundary\")throw Error(\"only exact old boundary reconciliation permitted\");\n  const hits=current.boundary.map((row,index)=>({row,index})).filter(x=>x.row.id===edit.old_row.id);\n  if(hits.length!==1)throw Error(\"boundary identity is not unique: \"+edit.old_row.id);\n  const {row,index}=hits[0], next=clone(row);\n  for(const key of new Set([...Object.keys(row),...Object.keys(edit.old_row)])){\n   if(!edit.changed_fields.includes(key)&&!U.equal(row[key],edit.old_row[key]))throw Error(\"concurrent non-owned field conflict: \"+edit.old_row.id+\".\"+key);\n  }\n  for(const field of edit.changed_fields){\n   if(field===\"product_callers\"){\n    const old=edit.old_row[field], wanted=edit.new_row[field];\n    const removed=old.filter(p=>!wanted.includes(p)), added=wanted.filter(p=>!old.includes(p));\n    if(!U.equal(removed,edit.removals)||!U.equal(added,edit.additions))throw Error(\"semantic caller delta inconsistent\");\n    const kept=old.filter(p=>!removed.includes(p));\n    if(!kept.every(p=>row.product_callers.includes(p)))throw Error(\"unexplained original caller removal: \"+edit.old_row.id);\n    if(new Set(row.product_callers).size!==row.product_callers.length)throw Error(\"duplicate current caller\");\n    next.product_callers=row.product_callers.filter(p=>!removed.includes(p));\n    for(const p of added)if(!next.product_callers.includes(p))next.product_callers.push(p);\n   }else if(field===\"definition_markers\"){\n    if(U.equal(row[field],edit.new_row[field]))continue;\n    if(!U.equal(row[field],edit.old_row[field]))throw Error(\"definition-marker conflict: \"+edit.old_row.id);\n    next[field]=clone(edit.new_row[field]);\n   }else throw Error(\"unapproved field: \"+field);\n  }\n  const op=U.makeRowOp(raw,parsed,\"boundary\",index,next,edit.purpose);\n  if(op)ops.push(op);\n  applied.push({id:row.id,changed:!!op});\n }\n const post=U.applyExact(raw,ops), verified=Toml.parseToml(post).value;\n if(!U.equal(verified.protected_file,current.protected_file))throw Error(\"conjunctive protected rows changed\");\n if(!U.equal(verified.privileged_inventory,current.privileged_inventory))throw Error(\"required ID inventory changed\");\n if(!U.equal(verified.boundary.map(x=>x.id),current.boundary.map(x=>x.id)))throw Error(\"existing IDs/order changed\");\n for(const key of Object.keys(current))if(key!==\"boundary\"&&!U.equal(current[key],verified[key]))throw Error(\"top-level value changed\");\n return {post,ops,applied};\n};",
+  "helper_references": {
+    "toml": "e53b3c7beb51d71cf7f5afe76701909444feebd3",
+    "exact_row_tools": "25639e0cae8a6eb78c7ef3cce6a29968d5196d17"
+  },
+  "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "qualification": {
+    "native": false,
+    "original_checker": false,
+    "compiled": false,
+    "product_source_changes": 0,
+    "ref_changes": 0
+  }
+}

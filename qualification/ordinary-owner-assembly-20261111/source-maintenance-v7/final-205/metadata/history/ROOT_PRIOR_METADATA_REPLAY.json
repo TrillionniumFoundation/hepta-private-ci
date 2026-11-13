@@ -1,0 +1,2228 @@
+{
+  "scope": "Root exact reversible 30-operation replay and bounded V8 raw-required/masked-forbidden/order projection reflecting original checker protected-file rules. Function-pointer call patterns honored. Original full checker and global typed resolver NOT executed.",
+  "original_base": {
+    "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+    "rust_source": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "path": "CALLERS.toml",
+    "blob": "cec0af947a10465414faff8f4e755e023a7f892d",
+    "bytes": 891444,
+    "sha256": "5b5caf74a100c39c2d91efbc3abc035ea8dae4a796685c9ad1e54b4c9c41bc86",
+    "boundaries": 638,
+    "protected_files": 440
+  },
+  "original_post": {
+    "blob": "22f4071c9458fbcdb4b3decca73458b1e74e2081",
+    "bytes": 947111,
+    "sha256": "a1aec05cebe19cca2d36fd9e8840d150cee9d4bfc83350b85aa006141e3986fc",
+    "boundaries": 670,
+    "protected": 457,
+    "required_ids": 670,
+    "operations": 30
+  },
+  "current_rebase": {
+    "source": "76986a7eae272bc34912b709a8d060b6b06d8e3d",
+    "base_blob": "0a8e89e712c4a27f6fec8c75c774e2ca9f54b89a",
+    "post_blob": "355e9b882329e3d32f030bba4ebf32f1ee953588",
+    "bytes": 947402,
+    "sha256": "d6481043cbe19c8670c86f63789fcbf0954366c9db3a2ea8f90d5324915fe1a6",
+    "five_factory_markers_preserved": true
+  },
+  "old_caller_additions": [
+    {
+      "id": "root_prepared_fresh_session",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_original_writer_descriptor_chain",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_original_bound_native_lanes",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_scope_capture",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_original_private_sealed_bytes",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_capture_original",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_generation_deployment_original_inputs",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_publication_phase_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_initial_deployment_original_files",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_initial_deployment_original_inputs",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_initial_phase_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_original_peer_channel_until",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_phase_host",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_deadline_start",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_durable_scope",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_actual_a_claim",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_initial_retire",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_publication_cap",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_join_accept",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_learning_reserve",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_learning_open",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_model_reserve",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_model_open",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    },
+    {
+      "id": "root_same_actor_initial_service",
+      "added": [
+        "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"
+      ]
+    }
+  ],
+  "new_boundary_count": 32,
+  "boundary_count": 670,
+  "protected_count": 457,
+  "actual_new_caller_markers": [
+    {
+      "id": "root_phase_deployment_fresh_entry",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "markers": [
+        "\\bserve_fresh_original_deployment\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        7784
+      ]
+    },
+    {
+      "id": "root_phase_initial_pinned_current",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)original_phase_initial_current\\s*\\("
+      ],
+      "positions": [
+        6532
+      ]
+    },
+    {
+      "id": "root_phase_initial_actual_inputs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_bridge.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)original_phase_initial_inputs\\s*\\("
+      ],
+      "positions": [
+        980
+      ]
+    },
+    {
+      "id": "root_phase_current_descriptor",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "\\bopen_current_phase_descriptor\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        6621
+      ]
+    },
+    {
+      "id": "root_phase_current_actual_inputs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_bridge.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)original_current_phase_inputs\\s*\\("
+      ],
+      "positions": [
+        3549
+      ]
+    },
+    {
+      "id": "root_phase_actual_progress_apply",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "\\bapply_original_progress\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        6041,
+        10366
+      ]
+    },
+    {
+      "id": "root_retirement_scope_construct",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "\\bfrom_original_phase\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        16608
+      ]
+    },
+    {
+      "id": "root_retirement_lane_register",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)register_original_lane\\s*\\("
+      ],
+      "positions": [
+        6294
+      ]
+    },
+    {
+      "id": "root_retirement_lane_register",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)register_original_lane\\s*\\("
+      ],
+      "positions": [
+        5147
+      ]
+    },
+    {
+      "id": "root_retirement_lane_register",
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)register_original_lane\\s*\\("
+      ],
+      "positions": [
+        12900
+      ]
+    },
+    {
+      "id": "root_retirement_lane_register",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)register_original_lane\\s*\\("
+      ],
+      "positions": [
+        20086
+      ]
+    },
+    {
+      "id": "root_retirement_actual_current",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)retain_original_current\\s*\\("
+      ],
+      "positions": [
+        12339
+      ]
+    },
+    {
+      "id": "root_retirement_intent_authorize",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)authorize_original_retirement\\s*\\("
+      ],
+      "positions": [
+        12857
+      ]
+    },
+    {
+      "id": "root_retirement_intent_ack",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)acknowledge_original_intent\\s*\\("
+      ],
+      "positions": [
+        13626
+      ]
+    },
+    {
+      "id": "root_retirement_deadline_stop",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)stop_original_deadline_worker\\s*\\("
+      ],
+      "positions": [
+        19600
+      ]
+    },
+    {
+      "id": "root_retirement_deadline_watch",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "\\bwatch_original_deadline\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        18208
+      ]
+    },
+    {
+      "id": "root_retirement_workers_ack",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)acknowledge_original_workers\\s*\\("
+      ],
+      "positions": [
+        17264
+      ]
+    },
+    {
+      "id": "root_retirement_workers_ack_commit",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)mark_original_workers_acknowledged\\s*\\("
+      ],
+      "positions": [
+        18334
+      ]
+    },
+    {
+      "id": "root_retirement_request_admission",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "markers": [
+        "(?:\\.\\s*enter_original_request\\s*\\(|\\bOriginalRootRetirementLane\\s*::\\s*enter_original_request\\s*(?:\\(|\\)))"
+      ],
+      "positions": [
+        6629
+      ]
+    },
+    {
+      "id": "root_retirement_request_admission",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "markers": [
+        "(?:\\.\\s*enter_original_request\\s*\\(|\\bOriginalRootRetirementLane\\s*::\\s*enter_original_request\\s*(?:\\(|\\)))"
+      ],
+      "positions": [
+        5457
+      ]
+    },
+    {
+      "id": "root_retirement_request_admission",
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "markers": [
+        "(?:\\.\\s*enter_original_request\\s*\\(|\\bOriginalRootRetirementLane\\s*::\\s*enter_original_request\\s*(?:\\(|\\)))"
+      ],
+      "positions": [
+        4346
+      ]
+    },
+    {
+      "id": "root_retirement_request_admission",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "markers": [
+        "(?:\\.\\s*enter_original_request\\s*\\(|\\bOriginalRootRetirementLane\\s*::\\s*enter_original_request\\s*(?:\\(|\\)))"
+      ],
+      "positions": [
+        4305
+      ]
+    },
+    {
+      "id": "root_retirement_clean_eof",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)accept_original_clean_eof\\s*\\("
+      ],
+      "positions": [
+        7264
+      ]
+    },
+    {
+      "id": "root_retirement_clean_eof",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)accept_original_clean_eof\\s*\\("
+      ],
+      "positions": [
+        6246
+      ]
+    },
+    {
+      "id": "root_retirement_clean_eof",
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)accept_original_clean_eof\\s*\\("
+      ],
+      "positions": [
+        13273
+      ]
+    },
+    {
+      "id": "root_retirement_clean_eof",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)accept_original_clean_eof\\s*\\("
+      ],
+      "positions": [
+        20477
+      ]
+    },
+    {
+      "id": "root_retirement_five_service",
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_original_phase_lane_for_root_retirement\\s*\\("
+      ],
+      "positions": [
+        13641
+      ]
+    },
+    {
+      "id": "root_retirement_checkpoint_service",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_learning_checkpoint_for_root_retirement\\s*\\("
+      ],
+      "positions": [
+        15622
+      ]
+    },
+    {
+      "id": "root_retirement_model_service",
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_q24_model_factory_for_root_retirement\\s*\\("
+      ],
+      "positions": [
+        9440
+      ]
+    },
+    {
+      "id": "root_retirement_publication_service",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_generation_publication_for_root_retirement\\s*\\("
+      ],
+      "positions": [
+        14482
+      ]
+    },
+    {
+      "id": "root_retirement_model_bound",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_factory_for_retirement\\s*\\("
+      ],
+      "positions": [
+        14057
+      ]
+    },
+    {
+      "id": "root_retirement_publication_bound",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_publication_for_retirement\\s*\\("
+      ],
+      "positions": [
+        14361
+      ]
+    },
+    {
+      "id": "root_retirement_learning_bound",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_learning_for_retirement\\s*\\("
+      ],
+      "positions": [
+        13962
+      ]
+    },
+    {
+      "id": "root_retirement_five_bound",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "markers": [
+        "\\bserve_bound_phase_lanes_for_root_retirement\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        5025
+      ]
+    },
+    {
+      "id": "root_retirement_actual_phase_worker",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "markers": [
+        "\\bserve_original_phase_for_retirement\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        15783
+      ]
+    },
+    {
+      "id": "root_retirement_actual_host",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_original_same_actor_host_for_retirement\\s*\\("
+      ],
+      "positions": [
+        18535
+      ]
+    },
+    {
+      "id": "root_retirement_progress_serve",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)serve_for_original_root_retirement\\s*\\("
+      ],
+      "positions": [
+        18367
+      ]
+    },
+    {
+      "id": "root_retirement_peer_transfer",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "\\binto_original_parts\\s*(?:\\(|::\\s*<)"
+      ],
+      "positions": [
+        19407
+      ]
+    },
+    {
+      "id": "root_retirement_final_peer_ack",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)acknowledge_original_joined\\s*\\("
+      ],
+      "positions": [
+        20356
+      ]
+    },
+    {
+      "id": "root_phase_deployment_capture",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "markers": [
+        "(?:\\.\\s*|\\b[\\w:]+::)capture_original_phase\\s*\\("
+      ],
+      "positions": [
+        7304
+      ]
+    },
+    {
+      "id": "root_retirement_peer_eof_ordering",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "markers": [
+        "HostAuthorityPeerChannel::wait_for_original_peer_eof(&mut self.channel)"
+      ],
+      "positions": [
+        18737
+      ]
+    }
+  ],
+  "changed_protected_projections": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "kind": "existing",
+      "required": 3,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn from_stream(",
+          "start": 1424,
+          "end": 2520,
+          "positions": [
+            176,
+            212,
+            261,
+            301,
+            357,
+            418,
+            487,
+            598,
+            654,
+            706,
+            786,
+            866,
+            941,
+            1020
+          ]
+        },
+        {
+          "function": "fn from_stream_until(",
+          "start": 2760,
+          "end": 4362,
+          "positions": [
+            204,
+            240,
+            289,
+            329,
+            385,
+            446,
+            515,
+            626,
+            682,
+            734,
+            814,
+            885,
+            967,
+            1077,
+            1129,
+            1183,
+            1243,
+            1288,
+            1378,
+            1447,
+            1526
+          ]
+        },
+        {
+          "function": "fn request(",
+          "start": 4681,
+          "end": 6158,
+          "positions": [
+            110,
+            213,
+            390,
+            444,
+            512,
+            601,
+            707,
+            844,
+            1065,
+            1129,
+            1266,
+            1349,
+            1389,
+            1438
+          ]
+        },
+        {
+          "function": "fn exchange(",
+          "start": 7750,
+          "end": 8370,
+          "positions": [
+            188,
+            270,
+            347,
+            377,
+            456,
+            492,
+            532,
+            581
+          ]
+        },
+        {
+          "function": "fn exchange_inner(",
+          "start": 8377,
+          "end": 9697,
+          "positions": [
+            278,
+            419,
+            469,
+            598,
+            775,
+            837,
+            874,
+            914,
+            954,
+            1127,
+            1208,
+            1270,
+            1307
+          ]
+        },
+        {
+          "function": "fn wait_for_original_peer_eof(",
+          "start": 6561,
+          "end": 7345,
+          "positions": [
+            108,
+            208,
+            248,
+            284,
+            322,
+            391,
+            471,
+            536,
+            577,
+            773
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_generation_publication_until(",
+          "start": 2113,
+          "end": 3401,
+          "positions": [
+            537,
+            589,
+            647,
+            752,
+            868,
+            956,
+            1148,
+            1189
+          ]
+        },
+        {
+          "function": "fn serve_original_publication_channel(",
+          "start": 3408,
+          "end": 18339,
+          "positions": [
+            1112,
+            1386,
+            1590,
+            10350,
+            10663,
+            10746,
+            10961,
+            11304,
+            11677,
+            11726,
+            11791,
+            14477,
+            14666,
+            14803
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_q24_model_factory_until(",
+          "start": 2324,
+          "end": 3518,
+          "positions": [
+            457,
+            504,
+            554,
+            693,
+            815,
+            898,
+            1083,
+            1124
+          ]
+        },
+        {
+          "function": "fn serve_original_q24_model_channel(",
+          "start": 3525,
+          "end": 9672,
+          "positions": [
+            1013,
+            1257,
+            1580,
+            1660,
+            2307,
+            2828,
+            3803,
+            3882,
+            3999,
+            4175,
+            4341,
+            5764,
+            5896,
+            6030
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+      "kind": "new",
+      "required": 6,
+      "forbidden": 4,
+      "orders": [
+        [
+          3241,
+          4684,
+          4774,
+          4819,
+          4850,
+          4982,
+          5021,
+          5060,
+          5096,
+          5122,
+          5148,
+          5177,
+          5221,
+          5237,
+          5305,
+          5339
+        ],
+        [
+          14875,
+          14924,
+          15090,
+          15173,
+          15210,
+          15306,
+          15362,
+          15471,
+          15503,
+          15580
+        ],
+        [
+          15689,
+          15859,
+          16029,
+          16063,
+          16106
+        ],
+        [
+          16158,
+          16235
+        ]
+      ],
+      "functions": [
+        {
+          "function": "fn from_original_phase(",
+          "start": 3291,
+          "end": 4350,
+          "positions": [
+            165,
+            191,
+            241,
+            421,
+            582,
+            999,
+            1045
+          ]
+        },
+        {
+          "function": "fn register_original_lane(",
+          "start": 5406,
+          "end": 6238,
+          "positions": [
+            217,
+            269,
+            323,
+            382,
+            450,
+            550,
+            583,
+            604,
+            642,
+            668
+          ]
+        },
+        {
+          "function": "fn retain_original_current(",
+          "start": 6256,
+          "end": 7265,
+          "positions": [
+            253,
+            297,
+            387,
+            621,
+            647,
+            720,
+            815,
+            907,
+            928,
+            972
+          ]
+        },
+        {
+          "function": "fn authorize_original_retirement(",
+          "start": 7283,
+          "end": 8661,
+          "positions": [
+            207,
+            267,
+            328,
+            475,
+            595,
+            687,
+            728,
+            776,
+            812,
+            861,
+            1135,
+            1162,
+            1207,
+            1228,
+            1287,
+            1335
+          ]
+        },
+        {
+          "function": "fn acknowledge_original_intent(",
+          "start": 8679,
+          "end": 9250,
+          "positions": [
+            136,
+            196,
+            222,
+            288,
+            382,
+            424,
+            445,
+            489,
+            534
+          ]
+        },
+        {
+          "function": "fn require_original_intent(",
+          "start": 9268,
+          "end": 10187,
+          "positions": [
+            130,
+            186,
+            222,
+            380,
+            515,
+            635,
+            702,
+            739,
+            802,
+            896
+          ]
+        },
+        {
+          "function": "fn stop_original_deadline_worker(",
+          "start": 10205,
+          "end": 11227,
+          "positions": [
+            149,
+            220,
+            266,
+            330,
+            360,
+            440,
+            545,
+            592,
+            636,
+            750,
+            793,
+            822,
+            882,
+            968
+          ]
+        },
+        {
+          "function": "fn watch_original_deadline(",
+          "start": 11245,
+          "end": 11731,
+          "positions": [
+            80,
+            163,
+            209,
+            260,
+            305,
+            357,
+            391,
+            432
+          ]
+        },
+        {
+          "function": "fn acknowledge_original_workers(",
+          "start": 11749,
+          "end": 12344,
+          "positions": [
+            202,
+            255,
+            315,
+            341,
+            440,
+            532,
+            553
+          ]
+        },
+        {
+          "function": "fn mark_original_workers_acknowledged(",
+          "start": 12362,
+          "end": 12920,
+          "positions": [
+            154,
+            194,
+            254,
+            280,
+            366,
+            464,
+            499,
+            520
+          ]
+        },
+        {
+          "function": "fn enter_original_request(",
+          "start": 13133,
+          "end": 13716,
+          "positions": [
+            87,
+            159,
+            191,
+            273,
+            379,
+            499,
+            511
+          ]
+        },
+        {
+          "function": "fn accept_original_clean_eof(",
+          "start": 13886,
+          "end": 14870,
+          "positions": [
+            187,
+            243,
+            351,
+            421,
+            488,
+            596,
+            628,
+            649,
+            705,
+            736,
+            859,
+            880,
+            909
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_root_retirement_protocol.rs",
+      "kind": "new",
+      "required": 6,
+      "forbidden": 4,
+      "orders": [
+        [
+          1211,
+          1263,
+          1322,
+          1360,
+          1413,
+          1464,
+          1541,
+          1633,
+          1890,
+          2039,
+          2082,
+          2148,
+          2320,
+          2389,
+          2439
+        ],
+        [
+          4052,
+          5047,
+          5199,
+          5380,
+          5449,
+          5515
+        ]
+      ],
+      "functions": [
+        {
+          "function": "fn require_original(",
+          "start": 2811,
+          "end": 3487,
+          "positions": [
+            265,
+            301,
+            341,
+            406,
+            461,
+            496,
+            569
+          ]
+        },
+        {
+          "function": "fn require_original_request(",
+          "start": 4112,
+          "end": 4784,
+          "positions": [
+            149,
+            185,
+            221,
+            261,
+            311,
+            358,
+            407,
+            450,
+            508,
+            561
+          ]
+        },
+        {
+          "function": "fn require_digest(",
+          "start": 5639,
+          "end": 5927,
+          "positions": [
+            68,
+            129,
+            187
+          ]
+        },
+        {
+          "function": "fn encode_bounded(",
+          "start": 5930,
+          "end": 6232,
+          "positions": [
+            83,
+            144,
+            200,
+            292
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "kind": "new",
+      "required": 5,
+      "forbidden": 4,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_original_phase_for_retirement(",
+          "start": 1935,
+          "end": 6511,
+          "positions": [
+            458,
+            484,
+            613,
+            673,
+            930,
+            1022,
+            1064,
+            1106,
+            1188,
+            1610,
+            1747,
+            2486,
+            2517,
+            2941,
+            3090,
+            3410,
+            3443,
+            3475,
+            3710,
+            3947,
+            3977,
+            3993,
+            4023,
+            4073,
+            4166,
+            4464,
+            4496,
+            4543
+          ]
+        },
+        {
+          "function": "fn run_original_scoped_phase_for_retirement(",
+          "start": 6514,
+          "end": 14882,
+          "positions": [
+            683,
+            887,
+            1268,
+            1421,
+            2346,
+            2714,
+            2839,
+            3225,
+            3334,
+            3382,
+            3408,
+            3452,
+            3690,
+            3880,
+            3914,
+            3940,
+            4007,
+            4181,
+            4211,
+            4237,
+            4290,
+            4520,
+            4550,
+            4576,
+            4638,
+            4828,
+            4861,
+            4906,
+            5020,
+            5102,
+            5248,
+            5333,
+            5582,
+            5639,
+            5717,
+            5780,
+            6512,
+            6623,
+            6706,
+            7093,
+            7444,
+            7675,
+            7713,
+            7808,
+            7984,
+            8028,
+            8092,
+            8141,
+            8171,
+            8197,
+            8219
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_original_phase_lane_for_root_retirement(",
+          "start": 4808,
+          "end": 7399,
+          "positions": [
+            499,
+            545,
+            596,
+            1175,
+            1272,
+            1394,
+            1487,
+            1716,
+            1806,
+            1914,
+            1991,
+            2067,
+            2122,
+            2306,
+            2361,
+            2457,
+            2549
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_learning_checkpoint_for_root_retirement(",
+          "start": 3870,
+          "end": 6381,
+          "positions": [
+            473,
+            520,
+            590,
+            659,
+            809,
+            891,
+            1062,
+            1184,
+            1278,
+            1482,
+            1572,
+            1680,
+            1743,
+            1822,
+            2066,
+            2130,
+            2186,
+            2225,
+            2281,
+            2377,
+            2469
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_q24_model_factory_for_root_retirement(",
+          "start": 11884,
+          "end": 13374,
+          "positions": [
+            531,
+            578,
+            627,
+            718,
+            766,
+            888,
+            1017,
+            1116,
+            1301,
+            1374,
+            1448
+          ]
+        },
+        {
+          "function": "fn serve_original_q24_model_channel(",
+          "start": 3525,
+          "end": 9672,
+          "positions": [
+            526,
+            597,
+            648,
+            699,
+            720,
+            755,
+            809,
+            893,
+            926,
+            1078,
+            1257,
+            1580,
+            4175,
+            5896,
+            6030,
+            6078,
+            6131
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_generation_publication_for_root_retirement(",
+          "start": 18859,
+          "end": 20617,
+          "positions": [
+            766,
+            816,
+            873,
+            936,
+            978,
+            1094,
+            1228,
+            1338,
+            1530,
+            1603,
+            1677,
+            1716
+          ]
+        },
+        {
+          "function": "fn serve_original_publication_channel(",
+          "start": 3408,
+          "end": 18339,
+          "positions": [
+            602,
+            673,
+            724,
+            796,
+            831,
+            885,
+            969,
+            1002,
+            1153,
+            1590,
+            10961,
+            11304,
+            14666,
+            14803,
+            14862,
+            14915
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs",
+      "kind": "new",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_same_actor_phase_factory_for_retirement(",
+          "start": 8318,
+          "end": 10163,
+          "positions": [
+            453,
+            509,
+            588,
+            629,
+            673,
+            844,
+            979,
+            1071,
+            1115,
+            1695,
+            1759,
+            1803,
+            1829
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      "kind": "existing",
+      "required": 0,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_same_actor_phase_publication_for_retirement(",
+          "start": 11242,
+          "end": 15237,
+          "positions": [
+            731,
+            833,
+            895,
+            1215,
+            2775,
+            3087,
+            3179,
+            3233,
+            3832,
+            3905,
+            3945,
+            3971
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "kind": "existing",
+      "required": 1,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_same_actor_phase_learning_for_retirement(",
+          "start": 12833,
+          "end": 17706,
+          "positions": [
+            576,
+            957,
+            1007,
+            1116,
+            1172,
+            1225,
+            1468,
+            1529,
+            1857,
+            1901,
+            1949,
+            1975,
+            2029,
+            2185,
+            2237,
+            2613,
+            2713,
+            2790,
+            3638,
+            3676,
+            3722,
+            3907,
+            3943,
+            3989,
+            4188,
+            4228,
+            4419,
+            4455,
+            4487,
+            4701,
+            4767,
+            4817
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "kind": "existing",
+      "required": 1,
+      "forbidden": 0,
+      "orders": [
+        [
+          9935,
+          10219,
+          10349,
+          10388,
+          11180,
+          11221,
+          11325,
+          11354,
+          11423,
+          11452
+        ]
+      ],
+      "functions": [
+        {
+          "function": "fn serve_bound_phase_lanes_for_root_retirement(",
+          "start": 11571,
+          "end": 14726,
+          "positions": [
+            507,
+            547,
+            692,
+            726,
+            770,
+            865,
+            924,
+            1322,
+            1533,
+            2004,
+            2071,
+            2142,
+            2342,
+            2386,
+            2422,
+            2575,
+            2612,
+            2652,
+            2819,
+            2882,
+            2926,
+            3010,
+            3076,
+            3118
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "kind": "existing",
+      "required": 1,
+      "forbidden": 0,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_original_same_actor_host_for_retirement(",
+          "start": 10393,
+          "end": 17837,
+          "positions": [
+            227,
+            277,
+            315,
+            412,
+            593,
+            635,
+            706,
+            1433,
+            1508,
+            1583,
+            1992,
+            2707,
+            3582,
+            3748,
+            4646,
+            5382,
+            5755,
+            5913,
+            6123,
+            6765,
+            6802,
+            6842,
+            6888,
+            7046,
+            7087,
+            7127,
+            7160,
+            7215,
+            7334,
+            7384
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "kind": "new",
+      "required": 6,
+      "forbidden": 4,
+      "orders": [
+        [
+          20601,
+          20952,
+          20980,
+          20996,
+          21050,
+          21082,
+          21111,
+          21135
+        ]
+      ],
+      "functions": [
+        {
+          "function": "fn serve_fresh_original_deployment(",
+          "start": 3321,
+          "end": 9230,
+          "positions": [
+            298,
+            365,
+            418,
+            577,
+            656,
+            739,
+            821,
+            891,
+            1027,
+            1080,
+            1133,
+            1164,
+            1267,
+            1674,
+            1888,
+            1938,
+            1994,
+            2044,
+            2093,
+            2162,
+            2573,
+            2663,
+            2719,
+            2791,
+            2938,
+            3204,
+            3273,
+            3913,
+            3983,
+            4029,
+            4742,
+            5554,
+            5601,
+            5849
+          ]
+        },
+        {
+          "function": "fn require_deployment_files(",
+          "start": 9262,
+          "end": 9746,
+          "positions": [
+            63,
+            114,
+            171,
+            226,
+            325,
+            375,
+            437
+          ]
+        },
+        {
+          "function": "fn require_original_startup_deadline(",
+          "start": 9751,
+          "end": 10166,
+          "positions": [
+            106,
+            186,
+            267
+          ]
+        },
+        {
+          "function": "fn serve_deployment(",
+          "start": 10508,
+          "end": 13415,
+          "positions": [
+            196,
+            253,
+            387,
+            445,
+            900,
+            1213,
+            2283,
+            2428,
+            2482,
+            2519
+          ]
+        },
+        {
+          "function": "fn serve_deployment_for_root_retirement(",
+          "start": 15971,
+          "end": 20598,
+          "positions": [
+            274,
+            317,
+            426,
+            489,
+            608,
+            671,
+            904,
+            967,
+            1176,
+            1217,
+            1678,
+            2195,
+            2330,
+            2388,
+            2559,
+            2641,
+            2674,
+            2721,
+            2766,
+            2921,
+            3405,
+            3506,
+            3568,
+            3619,
+            3740,
+            3776,
+            3822,
+            3867,
+            3968,
+            4009,
+            4040,
+            4089,
+            4381,
+            4432,
+            4454,
+            4477,
+            4499
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "kind": "new",
+      "required": 2,
+      "forbidden": 2,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn serve_for_original_root_retirement(",
+          "start": 8674,
+          "end": 13942,
+          "positions": [
+            417,
+            464,
+            509,
+            565,
+            621,
+            686,
+            819,
+            1263,
+            1454,
+            1526,
+            1610,
+            1684,
+            2090,
+            2154,
+            2321,
+            2893,
+            2949,
+            3309,
+            3340,
+            3448,
+            3482,
+            3655,
+            3809,
+            3915,
+            3968,
+            4101,
+            4173,
+            4416,
+            4468,
+            4671,
+            4698,
+            4805,
+            4850,
+            4942,
+            4993,
+            5019
+          ]
+        },
+        {
+          "function": "fn into_original_parts(",
+          "start": 14835,
+          "end": 15735,
+          "positions": [
+            195,
+            252,
+            356,
+            413,
+            510,
+            612,
+            682,
+            778,
+            824
+          ]
+        },
+        {
+          "function": "fn acknowledge_original_joined(",
+          "start": 16559,
+          "end": 19084,
+          "positions": [
+            138,
+            205,
+            257,
+            411,
+            604,
+            690,
+            771,
+            846,
+            1050,
+            1102,
+            1300,
+            1327,
+            1596,
+            1663,
+            1760,
+            2178,
+            2383,
+            2395,
+            2462,
+            2514
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_phase_deployment.rs",
+      "kind": "new",
+      "required": 0,
+      "forbidden": 2,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn original_phase_initial_current(",
+          "start": 527,
+          "end": 915,
+          "positions": [
+            109,
+            160,
+            245,
+            350
+          ]
+        },
+        {
+          "function": "fn original_phase_initial_inputs(",
+          "start": 1618,
+          "end": 2042,
+          "positions": [
+            169,
+            217,
+            290,
+            361,
+            409
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_phase_deployment.rs",
+      "kind": "new",
+      "required": 2,
+      "forbidden": 2,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn open_current_phase_descriptor(",
+          "start": 1112,
+          "end": 2664,
+          "positions": [
+            205,
+            257,
+            328,
+            398,
+            438,
+            481,
+            532,
+            586,
+            778,
+            960,
+            1176,
+            1486
+          ]
+        },
+        {
+          "function": "fn original_current_phase_inputs(",
+          "start": 3443,
+          "end": 5413,
+          "positions": [
+            303,
+            377,
+            470,
+            540,
+            597,
+            621,
+            678,
+            727,
+            1198,
+            1287,
+            1374,
+            1459,
+            1540,
+            1643,
+            1758,
+            1877
+          ]
+        },
+        {
+          "function": "fn require_current_phase_observation(",
+          "start": 5467,
+          "end": 5886,
+          "positions": [
+            142,
+            187,
+            242,
+            355
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_bridge.rs",
+      "kind": "new",
+      "required": 0,
+      "forbidden": 3,
+      "orders": [],
+      "functions": [
+        {
+          "function": "fn apply_original_progress(",
+          "start": 359,
+          "end": 4573,
+          "positions": [
+            353,
+            395,
+            434,
+            473,
+            507,
+            622,
+            733,
+            831,
+            1013,
+            1205,
+            1421,
+            1766,
+            1907,
+            1981,
+            2053,
+            2142,
+            2303,
+            2408,
+            2589,
+            2780,
+            3002,
+            3177,
+            3300,
+            3409,
+            3534,
+            3716,
+            3908,
+            3988,
+            4181
+          ]
+        },
+        {
+          "function": "fn send_original_command(",
+          "start": 4576,
+          "end": 5279,
+          "positions": [
+            215,
+            241,
+            353,
+            515,
+            539,
+            575
+          ]
+        },
+        {
+          "function": "fn receive_original_acknowledgement(",
+          "start": 5293,
+          "end": 6051,
+          "positions": [
+            216,
+            285,
+            328,
+            393,
+            431,
+            465,
+            543,
+            590,
+            649
+          ]
+        },
+        {
+          "function": "fn require_original_acknowledgement(",
+          "start": 6065,
+          "end": 6939,
+          "positions": [
+            160,
+            228,
+            332,
+            429,
+            500,
+            535,
+            648,
+            710,
+            767,
+            785
+          ]
+        }
+      ]
+    }
+  ],
+  "actual_old_added_caller_markers": [
+    {
+      "id": "root_prepared_fresh_session",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "pattern": "\\bprepare_fresh_from_registered\\s*(?:\\(|::\\s*<)",
+      "matches": [
+        5513
+      ]
+    },
+    {
+      "id": "root_original_writer_descriptor_chain",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "pattern": "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)original_root_writer_descriptor\\s*\\(",
+      "matches": [
+        11430,
+        16897
+      ]
+    },
+    {
+      "id": "root_original_bound_native_lanes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "\\bbind_runtime_lanes\\s*\\(",
+      "matches": [
+        3052
+      ]
+    },
+    {
+      "id": "root_learning_original_scope_capture",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_learning_checkpoint\\s*\\(",
+      "matches": [
+        11615
+      ]
+    },
+    {
+      "id": "root_original_private_sealed_bytes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "\\bseal_bytes\\s*(?:\\(|::\\s*<)",
+      "matches": [
+        13026
+      ]
+    },
+    {
+      "id": "root_q24_factory_capture_original",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_q24_model_factory_offer\\s*\\(",
+      "matches": [
+        12293
+      ]
+    },
+    {
+      "id": "root_generation_deployment_original_inputs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_phase_deployment.rs",
+      "pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enrollment_inputs\\s*\\(",
+      "matches": [
+        5094
+      ]
+    },
+    {
+      "id": "root_initial_deployment_original_files",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_original_initial_deployment\\s*\\(",
+      "matches": [
+        6112
+      ]
+    },
+    {
+      "id": "root_initial_deployment_original_inputs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_phase_deployment.rs",
+      "pattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)initial_enrollment_inputs\\s*\\(",
+      "matches": [
+        1916
+      ]
+    },
+    {
+      "id": "root_original_peer_channel_until",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "pattern": "\\bfrom_stream_until\\s*(?:\\(|::\\s*<)",
+      "matches": [
+        5106,
+        9386
+      ]
+    },
+    {
+      "id": "root_same_actor_phase_host",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)serve_original_same_actor_host\\s*\\(",
+      "matches": [
+        12941
+      ]
+    },
+    {
+      "id": "root_same_actor_deadline_start",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs",
+      "pattern": "\\bat_original_service_start\\s*(?:\\(|::\\s*<)",
+      "matches": [
+        3763
+      ]
+    },
+    {
+      "id": "root_same_actor_durable_scope",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)mark_scoped_before_rights\\s*\\(",
+      "matches": [
+        12159
+      ]
+    },
+    {
+      "id": "root_same_actor_actual_a_claim",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)claim_same_actor_phase_after_original_a\\s*\\(",
+      "matches": [
+        9352
+      ]
+    },
+    {
+      "id": "root_same_actor_initial_retire",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)retire_original_phase_slot\\s*\\(",
+      "matches": [
+        9855
+      ]
+    },
+    {
+      "id": "root_same_actor_publication_cap",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "\\binto_same_actor_phase\\s*(?:\\(|::\\s*<)",
+      "matches": [
+        13656
+      ]
+    },
+    {
+      "id": "root_same_actor_join_accept",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "\\baccept_original_phase_join\\s*(?:\\(|::\\s*<)",
+      "matches": [
+        7935
+      ]
+    },
+    {
+      "id": "root_same_actor_learning_reserve",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)reserve_original_learning_profile_in_phase\\s*\\(",
+      "matches": [
+        10203
+      ]
+    },
+    {
+      "id": "root_same_actor_learning_open",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)open_original_learning_profile_in_phase\\s*\\(",
+      "matches": [
+        10520
+      ]
+    },
+    {
+      "id": "root_same_actor_model_reserve",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)reserve_original_phase_q24_model_factory\\s*\\(",
+      "matches": [
+        10804
+      ]
+    },
+    {
+      "id": "root_same_actor_model_open",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)open_original_phase_q24_model_reservation\\s*\\(",
+      "matches": [
+        11151
+      ]
+    },
+    {
+      "id": "root_same_actor_initial_service",
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs",
+      "pattern": "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_initial\\s*\\(",
+      "matches": [
+        3681
+      ]
+    }
+  ]
+}

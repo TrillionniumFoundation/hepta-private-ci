@@ -1,0 +1,2131 @@
+{
+  "schema_version": 1,
+  "kind": "learning-purpose-retirement-final-exact-callers-annex",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "frozen Git/static-only proposal; not installed or executed",
+  "path": "CALLERS.toml",
+  "base": {
+    "actual_source": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+    "actual_callers": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+    "prior_learning_annex": "39529d2d1b5735cb3045d49cda2fd08a2953c483",
+    "isolated_constructed_base": {
+      "git_blob": "464fd400c080092594d0faa1bfb44e31948d9d0f",
+      "bytes": 934112,
+      "sha256": "133904753ca569eb2627c59d7b1f5dbe6704cab3a9e496084616399368baa450",
+      "boundaries": 660,
+      "protected_files": 452,
+      "construction": "V45 cd24b18a3ade8ae0a400bb2d52a27ad67f928074 followed by the 13 exact operations in prior normal-Learning annex 39529d2d1b5735cb3045d49cda2fd08a2953c483. Other parallel annexes are not claimed present in this isolated postimage."
+    }
+  },
+  "post": {
+    "blob": "3b55f040c8dce74b8119fdf1da0306d5278e306d",
+    "bytes": 961949,
+    "sha256": "59946e5b332ec1b7e05f1f51b28d3a3b5baefffd3156535bb598ce36762c7ac8"
+  },
+  "operations": [
+    {
+      "kind": "replace_once",
+      "old": "[[boundary]]\nid = \"q24_learning_normal_identity\"\nsymbol = \"OriginalSameActorLearningWork::require_original_retirement_identity\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)require_original_retirement_identity\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs\"\ndefinition_markers = [\"fn require_original_retirement_identity(\",\"self.context.identity() != identity\",\"!Arc::ptr_eq(self.gate(), gate)\",\"self.gate().require_open()\"]\nproduct_callers = []\ncaller_markers = []\n\n",
+      "new": "[[boundary]]\nid = \"q24_learning_normal_identity\"\nsymbol = \"OriginalSameActorLearningWork::require_original_retirement_identity\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)require_original_retirement_identity\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs\"\ndefinition_markers = [\"fn require_original_retirement_identity(\",\"self.context.identity() != identity\",\"!Arc::ptr_eq(self.gate(), gate)\",\"self.gate().require_open()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\",\"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\",\"codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs\",\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"]\ncaller_markers = []\n\n",
+      "reason": "Exact actual purpose-release caller delta: q24_learning_normal_identity"
+    },
+    {
+      "kind": "replace_once",
+      "old": "[[boundary]]\nid = \"q24_learning_normal_delivery_binding\"\nsymbol = \"OriginalSameActorLearningWork::require_original_delivery_request\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)require_original_delivery_request\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs\"\ndefinition_markers = [\"fn require_original_delivery_request(\",\"request != &self.prepared.initial().request\",\"owners != &self.prepared.initial().owners\",\"validate_request(request, owners)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs\",\"codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs\"]\ncaller_markers = []\n\n",
+      "new": "[[boundary]]\nid = \"q24_learning_normal_delivery_binding\"\nsymbol = \"OriginalSameActorLearningWork::require_original_delivery_request\"\ncall_pattern = \"(?:\\\\.\\\\s*|\\\\b[\\\\w:]+::)require_original_delivery_request\\\\s*\\\\(\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs\"\ndefinition_markers = [\"fn require_original_delivery_request(\",\"request != &self.prepared.initial().request\",\"owners != &self.prepared.initial().owners\",\"validate_request(request, owners)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs\",\"codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs\",\"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\"]\ncaller_markers = []\n\n",
+      "reason": "Exact actual purpose-release caller delta: q24_learning_normal_delivery_binding"
+    },
+    {
+      "kind": "replace_once",
+      "old": "[[boundary]]\nid = \"q24_same_actor_learning_stage_work\"\nsymbol = \"OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs\"\ndefinition_markers = [\"fn require_original_same_actor_work(\",\"!Arc::ptr_eq(original, phase)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs\",\"codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs\",\"codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs\",\"codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs\",\"codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_][A-Za-z0-9_]*\\\\s*::\\\\s*)require_original_same_actor_work\\\\s*\\\\(\"\n\n",
+      "new": "[[boundary]]\nid = \"q24_same_actor_learning_stage_work\"\nsymbol = \"OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs\"\ndefinition_markers = [\"fn require_original_same_actor_work(\",\"!Arc::ptr_eq(original, phase)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs\",\"codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs\",\"codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs\",\"codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs\",\"codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs\",\"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_][A-Za-z0-9_]*\\\\s*::\\\\s*)require_original_same_actor_work\\\\s*\\\\(\"\n\n",
+      "reason": "Exact actual purpose-release caller delta: q24_same_actor_learning_stage_work"
+    },
+    {
+      "kind": "replace_once",
+      "old": "[[boundary]]\nid = \"root_generation_connection_original_binding\"\nsymbol = \"RootGenerationPublicationConnectionV1::original_launch_binding\"\nreceiver_type = \"RootGenerationPublicationConnectionV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_publication_connection.rs\"\ndefinition_markers = [\"pub(crate) fn original_launch_binding(\",\"(&self.original, &self.identity)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs\",\"codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs\",\"codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs\"]\ncaller_markers = []\n\n",
+      "new": "[[boundary]]\nid = \"root_generation_connection_original_binding\"\nsymbol = \"RootGenerationPublicationConnectionV1::original_launch_binding\"\nreceiver_type = \"RootGenerationPublicationConnectionV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_publication_connection.rs\"\ndefinition_markers = [\"pub(crate) fn original_launch_binding(\",\"(&self.original, &self.identity)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs\",\"codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs\",\"codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs\",\"codex-rs/hepta-agentd/src/root_generation_current_client.rs\"]\ncaller_markers = []\n\n",
+      "reason": "Exact actual purpose-release caller delta: root_generation_connection_original_binding"
+    },
+    {
+      "kind": "replace_once",
+      "old": "[[boundary]]\nid = \"root_original_q24_into_q24_learning_runtime\"\nsymbol = \"AgentdRootLearningInputsV1::into_q24_learning_runtime\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"\ndefinition_markers = [\"fn into_q24_learning_runtime\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/config_root_learning.rs\",\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs\"]\ncaller_markers = []\nreceiver_type = \"AgentdRootLearningInputsV1\"\n\n\n",
+      "new": "[[boundary]]\nid = \"root_original_q24_into_q24_learning_runtime\"\nsymbol = \"AgentdRootLearningInputsV1::into_q24_learning_runtime\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"\ndefinition_markers = [\"fn into_q24_learning_runtime\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/config_root_learning.rs\"]\ncaller_markers = []\nreceiver_type = \"AgentdRootLearningInputsV1\"\n\n\n",
+      "reason": "Exact actual purpose-release caller delta: root_original_q24_into_q24_learning_runtime"
+    },
+    {
+      "kind": "replace_once",
+      "old": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs\"\nrequired = [\"#[path = \\\"same_actor_q24_phase_learning_work.rs\\\"]\",\"#[path = \\\"same_actor_q24_phase_learning_worker.rs\\\"]\",\"pub(crate) use work::OriginalSameActorLearningCleanup;\",\"pub(crate) use work::OriginalSameActorLearningWork;\",\"pub(crate) use worker::OriginalSameActorLearningWorker;\",\"original: OriginalCellQ24LearningInputsV1,\",\"closing: CloseSameActorPhaseOnDrop,\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\",\"unsafe\",\".abort(\",\"File::open(\",\"UnixStream::connect(\",\"LearningIterationReceiptV1 {\",\".submit(\",\"TrainingNoUpdateV2\"]\nrequired_function_order = [\n  { function = \"fn new(\", sequence = [\"Arc::clone(scoped.context())\",\"CloseSameActorPhaseOnDrop::new(context.gate())\",\"OriginalSameActorRootContext::require_current(&context)?\",\"scoped.into_original_parts()?\",\"!Arc::ptr_eq(&context, &same_context)\",\"!Arc::ptr_eq(&original.prepared, &prepared)\",\"return Err(AgentdError::GenerationFenced(\",\"AgentdRootLearningInputsV1::require_prepared_q24(&learning, &original.prepared)?\",\"original.prepared.initial().owners.evidence_trust_digest\",\"original.verifier.trust_digest()\",\"!(1..=64).contains(&original.queue_capacity)\",\"OriginalSameActorLearningWork::from_original_scope(Arc::clone(&context), prepared)?\",\"OriginalSameActorRootContext::require_current(&context)?\",\"Ok(Self {\",\"original,\",\"work,\",\"closing,\"] },\n  { function = \"fn cleanup(\", sequence = [\"fn cleanup(\",\"self.work.cleanup()\"] },\n  { function = \"fn assemble(\", sequence = [\"OriginalSameActorRootContext::require_current(&self.context)?\",\"!(1..=64).contains(&successor_capacity)\",\"OriginalCellQ24LearningStageOwnersV1::from_original_same_actor_inputs(\",\"self.original,\",\"self.factory,\",\"Arc::clone(&self.work)\",\"AgentdRootLearningInputsV1::into_q24_learning_runtime(\",\"self.learning,\",\"Arc::clone(&owners)\",\"LearningIterationRuntimeBootstrapV1::with_retained_q24_source(\",\"self.retained,\",\"self.context.identity()\",\"prepare_original_same_actor_successor(\",\"self.context.successor_session()\",\"Arc::clone(self.context.gate())\",\"learning.take_circuit_delivery()\",\"OriginalSameActorRootContext::require_current(&self.context)?\",\"OriginalSameActorLearningWorker::from_original_parts(\",\"Arc::clone(&self.work)\",\"learning,\",\"delivery,\",\"pending,\",\"self.closing.disarm()\",\"Ok(PreparedLearningActivation {\"] },\n  { function = \"fn into_original_parts(\", sequence = [\"OriginalSameActorRootContext::require_current(&self.context)?\",\"Ok((\",\"self.handle,\",\"self.owners,\",\"self.publication,\",\"self.handoff,\",\"self.successor,\",\"self.worker,\"] },\n]\n\n",
+      "new": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs\"\nrequired = [\"#[path = \\\"same_actor_q24_phase_learning_work.rs\\\"]\",\"#[path = \\\"same_actor_q24_phase_learning_worker.rs\\\"]\",\"pub(crate) use work::OriginalSameActorLearningCleanup;\",\"pub(crate) use work::OriginalSameActorLearningWork;\",\"pub(crate) use worker::OriginalSameActorLearningWorker;\",\"original: OriginalCellQ24LearningInputsV1,\",\"closing: CloseSameActorPhaseOnDrop,\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\",\"unsafe\",\".abort(\",\"File::open(\",\"UnixStream::connect(\",\"LearningIterationReceiptV1 {\",\".submit(\",\"TrainingNoUpdateV2\"]\nrequired_function_order = [\n  { function = \"fn new(\", sequence = [\"Arc::clone(scoped.context())\",\"CloseSameActorPhaseOnDrop::new(context.gate())\",\"OriginalSameActorRootContext::require_current(&context)?\",\"scoped.into_original_parts()?\",\"!Arc::ptr_eq(&context, &same_context)\",\"!Arc::ptr_eq(&original.prepared, &prepared)\",\"return Err(AgentdError::GenerationFenced(\",\"AgentdRootLearningInputsV1::require_prepared_q24(&learning, &original.prepared)?\",\"original.prepared.initial().owners.evidence_trust_digest\",\"original.verifier.trust_digest()\",\"!(1..=64).contains(&original.queue_capacity)\",\"OriginalSameActorLearningWork::from_original_scope(Arc::clone(&context), prepared)?\",\"OriginalSameActorRootContext::require_current(&context)?\",\"Ok(Self {\",\"original,\",\"work,\",\"closing,\"] },\n  { function = \"fn cleanup(\", sequence = [\"fn cleanup(\",\"self.work.cleanup()\"] },\n  { function = \"fn assemble(\", sequence = [\"OriginalSameActorRootContext::require_current(&self.context)?\",\"!(1..=64).contains(&successor_capacity)\",\"OriginalCellQ24LearningStageOwnersV1::from_original_same_actor_inputs(\",\"self.original,\",\"self.factory,\",\"Arc::clone(&self.work)\",\"AgentdRootLearningInputsV1::into_original_retirable_learning_runtime(\",\"self.learning,\",\"Arc::clone(&owners)\",\"LearningIterationRuntimeBootstrapV1::with_retained_q24_source(\",\"self.retained,\",\"self.context.identity()\",\"prepare_original_same_actor_successor(\",\"self.context.successor_session()\",\"Arc::clone(self.context.gate())\",\"learning.take_circuit_delivery()\",\"OriginalSameActorRootContext::require_current(&self.context)?\",\"OriginalSameActorLearningWorker::from_original_parts(\",\"Arc::clone(&self.work)\",\"learning,\",\"delivery,\",\"pending,\",\"checkpoint,\",\"self.closing.disarm()\",\"Ok(PreparedLearningActivation {\"] },\n  { function = \"fn into_original_parts(\", sequence = [\"OriginalSameActorRootContext::require_current(&self.context)?\",\"Ok((\",\"self.handle,\",\"self.owners,\",\"self.publication,\",\"self.handoff,\",\"self.successor,\",\"self.worker,\"] },\n]\n\n",
+      "reason": "Retain original assembly ordering while binding actual retirable Root inputs and checkpoint owner transfer"
+    },
+    {
+      "kind": "replace_once",
+      "old": "[[boundary]]\nid = \"q24_learning_normal_owners_binding\"\nsymbol = \"OriginalRetiredLearningOwners::require_original_work\"\nreceiver_type = \"OriginalRetiredLearningOwners\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"\ndefinition_markers = [\"impl OriginalRetiredLearningOwners\",\"OriginalLearningLoopRetired::require_original_work\",\"OriginalLearningDeliveryRetired::require_original_work\",\"OriginalLearningWorkJoined::require_original_work\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs\"]\ncaller_markers = []\n\n",
+      "new": "[[boundary]]\nid = \"q24_learning_normal_owners_binding\"\nsymbol = \"OriginalRetiredLearningOwners::require_original_work\"\nreceiver_type = \"OriginalRetiredLearningOwners\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"\ndefinition_markers = [\"impl OriginalRetiredLearningOwners\",\"OriginalLearningLoopRetired::require_original_work\",\"OriginalLearningDeliveryRetired::require_original_work\",\"OriginalLearningWorkJoined::require_original_work\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs\",\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs\"]\ncaller_markers = []\n\n",
+      "reason": "Add the actual private child calling the original RetiredLearningOwners binding; preserve every original boundary field"
+    },
+    {
+      "kind": "replace_once",
+      "old": "required_boundary_ids = [\"root_registered_learning_checkpoint_writer\",\"root_original_learning_checkpoint_exchange\",\"supervisor_authorized_boot\",\"memory_production_writer_open\",\"cognitive_store_recovery_open\",\"cognitive_production_mutation_capability\",\"agentd_production_writer_host\",\"agentd_production_operation_runtime\",\"learning_artifact_owner_bootstrap\",\"learning_artifact_owner_restart\",\"learning_artifact_verified_current_view\",\"provider_effect_coordinator\",\"http_provider_effect_adapter\",\"final_use_open_state\",\"final_use_claim\",\"final_use_claim_raw\",\"final_use_delivery\",\"final_use_delivery_witness\",\"final_use_delivery_raw\",\"final_use_dispatch\",\"final_use_dispatch_witness\",\"final_use_dispatch_raw\",\"final_use_revocation_update\",\"final_use_approval_trust\",\"final_use_approval_verify\",\"final_use_revocation_feed_trust\",\"final_use_revocation_feed_apply\",\"final_use_revocation_convergence_trust\",\"final_use_revocation_convergence_verify\",\"bao_final_use_consumer\",\"bao_registered_consumer_new\",\"bao_final_use_host_new\",\"bao_registered_revocation_update\",\"bao_registered_final_use_host\",\"authority_lease_open_state\",\"authority_lease_put\",\"authority_lease_revoke\",\"authority_lease_prune\",\"authority_lease_epoch_advance\",\"authority_lease_verify_use\",\"authority_lease_delivery\",\"authority_lease_delivery_witness\",\"authority_lease_dispatch_raw\",\"authority_lease_dispatch_witness\",\"final_use_async_dispatch_fence\",\"automation_taskflow_provider_effect_bridge\",\"final_use_guarded_effect\",\"notes_original_pending_call_proof\",\"notes_original_operation_observation_proof\",\"notes_original_thread_prepare\",\"notes_original_writer_terminal_receipt\",\"memory_original_owner_current_publication\",\"memory_original_protected_current_readback\",\"original_authbus_human_delivery_read\",\"notes_original_human_turn_proof\",\"root_registered_human_text_writer\",\"root_registered_human_text_admission\",\"root_human_text_same_issuer_cas\",\"root_retained_human_text_lookup\",\"root_live_human_session_install\",\"root_original_human_text_verification\",\"notes_original_turn_unprepared_admission\",\"root_host_original_human_text_verification\",\"notes_original_human_text_verification\",\"root_prepared_fresh_session\",\"root_retained_native_ui_launch\",\"root_prepared_native_ui_execution\",\"root_material_capture_original_image\",\"root_material_verify_retained_image\",\"root_material_install_original_generation\",\"root_material_reopen_original_installation\",\"root_material_release_registered_custody\",\"root_material_fresh_registered_session\",\"root_material_recover_registered_session\",\"root_material_existing_session_open\",\"root_material_resume_registered_handoff\",\"root_material_current_observation_chain\",\"root_original_writer_descriptor_chain\",\"root_same_retained_service_serve\",\"root_registered_material_recovery\",\"root_registered_material_handoff_resume\",\"root_original_writer_purpose_send\",\"root_original_writer_purpose_receive\",\"agentd_original_root_writer_consume\",\"root_registered_writer_rotation\",\"native_original_operation_host_attach\",\"native_original_owner_current_ack\",\"native_original_terminal_history_observation\",\"root_original_authority_initialize\",\"root_original_writer_authorize\",\"root_same_registered_bootstrap_seal\",\"root_same_registered_bootstrap_capture\",\"root_original_physical_login_install\",\"root_original_writer_successor_shape\",\"root_original_issuer_writer_rotation\",\"root_physical_current_retired_adoption\",\"root_physical_recovery_retirement_admission\",\"root_physical_fresh_service_genesis\",\"root_physical_registered_checkpoint_genesis\",\"root_physical_current_backend_genesis\",\"root_registered_physical_current_observation\",\"root_original_two_descriptor_send\",\"root_original_two_descriptor_receive\",\"native_original_writer_terminal_observation\",\"native_original_writer_next_delivery_observation\",\"root_notes_original_startup_before\",\"root_notes_recovered_successor_startup_before\",\"root_notes_original_reserved_session_binding\",\"root_notes_registered_successor_policy_replace\",\"root_notes_original_issuer_policy_cas\",\"root_desktop_original_issuer_pair_policy_cas\",\"root_retained_native_ready_launch\",\"root_prepared_native_ready_execution\",\"root_prepared_native_ready_text_session\",\"root_original_bound_native_lanes\",\"root_original_bound_native_lane_acceptance\",\"root_original_ready_lane_bridge\",\"notes_original_retained_reference_projection\",\"desktop_original_retained_reference_projection\",\"memory_original_sender_read_only_cut\",\"notes_recorded_original_observation_proof\",\"notes_previous_recovery_typed_resolution\",\"root_live_admin_enable\",\"root_live_admin_mint\",\"root_live_admin_exchange\",\"root_live_admin_checked_dispatch\",\"root_live_admin_signed_artifact_verify\",\"root_live_admin_exact_issuer_head_revoke\",\"root_live_admin_fixed_notes_revoke_prepare\",\"root_live_admin_existing_effect_revoke\",\"root_live_admin_existing_signed_grant_revoke\",\"root_live_admin_same_service_signed_revoke\",\"root_live_admin_original_issue_observer_enable\",\"root_live_admin_original_issue_observation\",\"root_live_admin_original_bounded_lease_revoke\",\"root_live_admin_retained_artifact_observe\",\"root_live_admin_original_effect_state_observe\",\"root_live_admin_same_service_effect_state_observe\",\"agentd_original_registered_writer_custody\",\"agentd_original_recovered_writer_custody_factory\",\"agentd_original_root_handoff_unique_file\",\"calculator_previous_recovery_owner_target\",\"calculator_previous_recovery_host_attach\",\"calculator_previous_recovery_process_attach\",\"calculator_previous_recovery_runtime_selection\",\"calculator_previous_recovery_config_selection\",\"root_original_issuer_renewal_prepare\",\"root_original_issuer_renewal_commit\",\"root_desktop_original_startup_before\",\"root_desktop_recovered_successor_startup_before\",\"root_desktop_registered_successor_policy_replace\",\"desktop_previous_original_cut_selection\",\"desktop_previous_joint_config_selection\",\"memory_original_validated_target_retirement_ack\",\"memory_original_owner_current_readonly_receipt\",\"memory_original_notes_retirement_ack\",\"memory_original_calculator_retirement_ack\",\"memory_original_retirement_ack_commit\",\"authority_lease_exact_bounded_revoke\",\"root_live_admin_exact_issuer_revoke\",\"root_live_admin_committed_issuer_reply\",\"root_live_admin_exact_issuer_reply_record\",\"root_learning_explicit_registration\",\"root_learning_original_store_registration\",\"root_learning_original_store_reopen\",\"root_learning_original_owner_install\",\"root_learning_original_scope_seal\",\"root_learning_original_scope_capture\",\"root_learning_same_service_serve\",\"root_learning_registered_checkpoint_constructor\",\"root_learning_original_client_constructor\",\"root_learning_original_purpose_send\",\"root_learning_original_purpose_receive\",\"root_learning_original_handoff_consume\",\"root_learning_original_config_hold\",\"root_learning_original_stage_assembly\",\"root_learning_original_runtime_consume\",\"root_original_registered_ready_serve\",\"root_original_private_sealed_bytes\",\"root_learning_scoped_checkpoint_constructor\",\"root_learning_scoped_client_constructor\",\"root_learning_scoped_runtime_constructor\",\"learning_frozen_update_scope_constructor\",\"root_learning_scoped_profile_constructor\",\"root_learning_scoped_checkpoint_record\",\"learning_evidence_original_owner_constructor\",\"learning_evidence_original_owner_readback\",\"original_pinned_stream_explicit_uid\",\"cell_learning_evaluation_profile_freeze\",\"cell_learning_evaluation_receipt_prepare\",\"cell_learning_evaluation_original_readback\",\"generation_learning_original_stage_readback\",\"cell_original_evaluation_execution\",\"product_original_evaluation_execution\",\"root_learning_original_delivery_source\",\"root_learning_completed_circuit_source\",\"circuit_learning_exact_ack_retirement\",\"cell_completed_evaluation_readback\",\"product_completed_evaluation_readback\",\"cell_q24_single_head_training_plan\",\"cell_q24_single_head_candidate_validation\",\"cell_q24_native_training_fit\",\"cell_q24_original_training_observation\",\"learning_original_evaluator_attestation\",\"learning_original_evaluation_key\",\"circuit_feature_original_initial_publication\",\"circuit_feature_original_update_publication\",\"circuit_feature_guarded_private_cell\",\"circuit_feature_private_cell_writer\",\"circuit_feature_original_task_control\",\"circuit_q24_ordinary_profile_assembly\",\"circuit_feature_original_predecessor_recovery\",\"circuit_feature_acknowledged_readonly_history\",\"learning_original_training_receipt_create\",\"learning_original_training_receipt_recover\",\"learning_original_training_receipt_attest\",\"learning_original_training_receipt_readback\",\"cell_q24_original_training_execute\",\"cell_q24_original_training_pair_binding\",\"learning_original_training_stage_constructor\",\"learning_original_training_stage_execute\",\"learning_original_training_stage_readback\",\"learning_original_training_stage_attestation\",\"learning_original_training_snapshot_readback\",\"cell_q24_model_material_owner_create\",\"cell_q24_model_material_owner_recover\",\"cell_q24_model_material_owner_commit\",\"cell_q24_model_material_owner_readback\",\"learning_original_evaluation_receipt_create\",\"learning_original_evaluation_receipt_recover\",\"learning_original_evaluation_receipt_attest\",\"learning_original_evaluation_receipt_readback\",\"cell_q24_original_dataset_batch\",\"cell_q24_original_dataset_task\",\"circuit_feature_original_committed_decision\",\"cell_q24_original_dataset_revalidation\",\"cell_q24_original_dataset_capability\",\"cell_q24_original_trainer_dataset_capability\",\"cell_q24_original_dataset_freeze_create\",\"cell_q24_original_dataset_freeze_recover\",\"cell_q24_original_dataset_freeze_authorize\",\"cell_q24_original_dataset_freeze_readback\",\"root_q24_factory_explicit_reserve\",\"root_q24_factory_open_original\",\"root_q24_factory_install_original\",\"root_q24_factory_capture_original\",\"root_q24_factory_take_offer\",\"root_q24_factory_serve_original\",\"root_q24_factory_purpose_send\",\"root_q24_factory_purpose_receive\",\"root_q24_factory_original_handoff_connect\",\"root_q24_factory_original_constructor\",\"root_q24_factory_live_observation\",\"root_q24_factory_original_commit\",\"root_q24_factory_original_readback\",\"root_q24_factory_learning_scope\",\"root_q24_factory_local_policy\",\"root_q24_factory_original_material\",\"root_learning_live_profile_action\",\"learning_original_source_create\",\"learning_original_source_recover\",\"learning_original_source_attest_experience\",\"learning_original_source_read_experience\",\"learning_original_source_attest_dataset\",\"learning_original_source_read_dataset\",\"learning_original_source_files_create\",\"learning_original_source_files_recover\",\"learning_original_source_prepared_handoff\",\"cell_q24_original_native_create\",\"cell_q24_original_native_recover\",\"learning_original_training_require_original_pair\",\"learning_original_training_with_original_trainer\",\"learning_original_evaluation_require_original_training\",\"learning_original_evaluation_read_original_execution\",\"learning_original_generation_receipt_create\",\"learning_original_generation_receipt_recover\",\"learning_original_generation_receipt_attest_original_completion\",\"learning_original_generation_receipt_readback\",\"learning_original_generation_receipt_require_context\",\"learning_original_generation_receipt_observe_original_selection\",\"learning_original_local_policy_create\",\"learning_original_local_policy_recover\",\"learning_original_local_policy_attest_original_decision\",\"learning_original_local_policy_readback\",\"learning_original_local_policy_require_context\",\"learning_original_local_policy_policy_digest\",\"learning_original_q24_stage_from_original_owners\",\"learning_original_q24_stage_require_current\",\"learning_original_q24_stage_prepared\",\"learning_original_q24_model_dispatch\",\"learning_original_q24_evaluation_inputs\",\"learning_original_q24_generation_inputs\",\"learning_original_q24_source_inputs\",\"learning_original_q24_training_inputs\",\"learning_original_q24_policy_inputs\",\"root_original_q24_require_prepared_q24\",\"root_original_q24_into_q24_learning_runtime\",\"learning_original_q24_with_original_q24_stage_owners\",\"learning_original_q24_require_proposal_owner\",\"root_original_q24_stage_assembly\",\"production_original_q24_receive\",\"production_original_q24_assemble\",\"learning_original_feature_receipt_create\",\"learning_original_feature_receipt_recover\",\"learning_original_feature_source_capture\",\"learning_original_feature_source_binding\",\"learning_original_feature_source_observe\",\"learning_original_q24_stage_install_generation\",\"learning_original_feature_dataset_feedback\",\"q24_publication_original_b_manifest\",\"q24_publication_original_lane\",\"q24_publication_original_predecessor\",\"q24_publication_embedded_admission\",\"q24_publication_actual_artifact\",\"q24_publication_actual_preparation\",\"q24_publication_actual_final_use\",\"q24_publication_original_recovery\",\"learning_original_q24_evaluation_stage_require_training\",\"learning_original_q24_evaluation_stage_require_original_training_evidence\",\"learning_original_q24_evaluation_stage_read_execution\",\"learning_original_q24_evaluation_stage_qualification_request\",\"learning_original_q24_evaluation_stage_complete\",\"learning_original_q24_install_evaluation\",\"learning_original_q24_install_independent_evaluation\",\"learning_original_q24_install_published_generation\",\"learning_original_q24_training_files\",\"learning_original_q24_training_material_export\",\"learning_original_q24_training_material_assembly\",\"q24_publication_executable_feature_preflight\",\"learning_original_feature_objective_reply\",\"root_generation_publication_enable\",\"root_generation_publication_late_enroll\",\"root_generation_publication_original_registration\",\"root_generation_publication_original_serve\",\"root_generation_publication_profile_fence\",\"root_generation_current_original_broker_head\",\"root_generation_current_original_broker_prepare\",\"root_generation_current_original_broker_publish\",\"root_generation_current_from_original_root_publication\",\"root_generation_current_bound_selection\",\"root_generation_current_store_bridge\",\"root_generation_publication_original_stream\",\"root_generation_publication_purpose_send\",\"root_generation_publication_purpose_receive\",\"root_generation_publication_purpose_connect\",\"root_generation_journal_original_observer\",\"root_generation_journal_original_target\",\"root_artifact_original_reader_open\",\"root_artifact_original_withdrawal_bind\",\"root_artifact_original_current_read\",\"root_artifact_original_withdrawal_read\",\"artifact_writer_recover_original_withdrawal_frontier\",\"artifact_writer_install_original_withdrawal_frontier\",\"artifact_writer_require_original_withdrawal_frontier\",\"artifact_original_acknowledged_readback\",\"root_generation_original_artifact_selection\",\"root_generation_original_selection_recheck\",\"q24_root_artifact_qualified_phase\",\"q24_root_artifact_publication\",\"q24_root_artifact_publication_recovery\",\"q24_root_retained_phase\",\"q24_root_selection_adopted\",\"q24_root_selection_retained\",\"q24_root_current_connect\",\"q24_root_current_prepare\",\"q24_root_current_recover\",\"q24_root_shared_prepare_selected\",\"q24_root_shared_recover_selected\",\"root_original_final_use_observer_enrollment\",\"root_original_final_use_observer_retained_readback\",\"q24_task_original_ledger_open\",\"q24_task_original_ledger_resume\",\"q24_task_original_ledger_readback\",\"q24_task_original_outcome_submit\",\"q24_task_original_dataset_prepare\",\"q24_task_original_learning_prepare\",\"q24_task_original_ready_observe\",\"q24_task_original_ready_binding\",\"q24_task_original_runtime_install\",\"q24_task_original_profile_install\",\"q24_task_explicit_source_attach\",\"q24_task_original_readiness_observe\",\"q24_task_original_ready_enqueue\",\"q24_task_explicit_delivery_sources\",\"q24_task_original_outcome_preflight\",\"q24_task_original_learning_recover\",\"root_generation_connection_original_capture\",\"root_generation_connection_slot_take\",\"root_generation_connection_inputs_take\",\"root_generation_connection_launch_take\",\"root_generation_connection_live_session\",\"root_generation_connection_original_binding\",\"q24_training_original_dataset_readback\",\"q24_training_original_readback_export\",\"q24_training_original_readback_construct\",\"q24_training_original_readback\",\"q24_training_original_readback_owner\",\"q24_training_original_readback_cut\",\"evaluation_original_trainer_owner\",\"evaluation_original_trainer_cut\",\"evaluation_original_trainer_borrow\",\"evaluation_original_trainer_readback\",\"evaluation_original_sources_attest\",\"evaluation_original_sources_readback\",\"root_generation_publication_launch_handoff_take\",\"q24_retained_source_capture\",\"q24_retained_source_scope\",\"q24_retained_source_read\",\"q24_retained_source_ready\",\"q24_retained_source_outbox\",\"q24_retained_source_root_install\",\"q24_retained_source_state_install\",\"q24_retained_source_state_lookup\",\"q24_retained_source_reconcile\",\"q24_retained_source_admission\",\"q24_retained_original_ledger_capability\",\"q24_retained_prepared_original_ledger\",\"production_retained_q24_receive\",\"production_retained_q24_assemble\",\"production_retained_q24_capability_receive\",\"production_retained_q24_capability_assemble\",\"root_generation_deployment_capture\",\"root_generation_deployment_wait\",\"root_generation_deployment_original_inputs\",\"root_artifact_original_selection_files\",\"root_initial_original_writer_context\",\"root_initial_separate_purpose_enable\",\"root_initial_one_shot_enrollment\",\"root_initial_original_registration\",\"root_initial_original_serve\",\"root_initial_original_sticky_fence\",\"root_initial_purpose_send\",\"root_initial_purpose_receive\",\"root_initial_original_connection\",\"root_initial_original_stream\",\"root_initial_client_prepare\",\"root_initial_client_observe\",\"root_initial_client_publish\",\"root_initial_current_store_bridge\",\"root_initial_current_from_original_route\",\"root_initial_current_original_publish\",\"root_initial_complete_description\",\"root_initial_exact_retained_record\",\"root_initial_exact_published_record\",\"root_initial_entire_contract\",\"root_initial_actual_consumer_prepare\",\"root_initial_actual_consumer_recover\",\"root_initial_executable_feature_prepare\",\"root_initial_executable_feature_recover\",\"root_initial_actual_feature_publish\",\"root_initial_original_unwritten_target\",\"root_initial_complete_configuration\",\"root_initial_launch_handoff_take\",\"root_initial_deployment_original_files\",\"root_initial_deployment_capture\",\"root_initial_deployment_wait\",\"root_initial_deployment_original_inputs\",\"q24_successor_original_session_capture\",\"q24_successor_original_session_current\",\"q24_successor_same_root_connection\",\"q24_successor_model_factory_context\",\"q24_successor_root_current_context\",\"q24_successor_current_owner_context\",\"q24_successor_context_from_registered_root\",\"q24_successor_context_live\",\"q24_successor_aggregate_registration\",\"q24_successor_generation_notification\",\"q24_successor_original_generation_installed\",\"q24_successor_wait_original_generation\",\"q24_successor_wait_after_checkpoint\",\"q24_successor_actual_owner_install\",\"q24_successor_effect_cancellation\",\"q24_successor_actual_task_handle\",\"q24_successor_pending_runtime\",\"q24_successor_worker_bootstrap\",\"q24_successor_pending_handle\",\"q24_successor_actual_runtime\",\"q24_successor_root_prepare_request\",\"q24_successor_root_prepare_worker\",\"q24_successor_proof_current\",\"q24_successor_actual_prepare\",\"q24_successor_actual_publish\",\"q24_successor_running_admission\",\"q24_successor_execution_preflight\",\"q24_successor_original_channel\",\"q24_successor_launch_prepare\",\"q24_successor_config_install\",\"q24_successor_original_c_ingress\",\"q24_successor_handoff_request\",\"q24_successor_original_signed_finish\",\"q24_successor_slot_new\",\"agentd_original_late_writer_launch\",\"q24_successor_original_feedback_ledger\",\"agentd_original_late_writer_inputs_prepare\",\"agentd_original_late_writer_inputs_consume\",\"agentd_original_late_writer_cli_prepare\",\"agentd_original_late_writer_cli_consume\",\"fleet_original_readonly_snapshot\",\"authority_original_lease_metadata_observation\",\"authority_original_lease_metadata_revision\",\"authority_original_lease_metadata_finish\",\"root_original_issuer_metadata_observation\",\"root_original_issuer_metadata_proof\",\"root_original_issuer_metadata_revocations\",\"root_original_owner_channel_until\",\"root_original_peer_channel_until\",\"root_q24_factory_same_service_reserve\",\"root_original_final_use_frontier_until\",\"root_original_root_issuer_until\",\"root_original_observation_stream_until\",\"q24_same_actor_original_a_parts\",\"q24_same_actor_original_a_parts_consume\",\"q24_same_actor_original_route_pending\",\"q24_same_actor_original_a_install\",\"q24_same_actor_original_a_close\",\"q24_same_actor_original_a_quiescent\",\"q24_same_actor_original_a_release\",\"q24_same_actor_original_c_install\",\"q24_same_actor_original_ingress_admission\",\"q24_same_actor_original_admitted_task\",\"q24_same_actor_original_queue_admission\",\"q24_same_actor_original_worker_bootstrap\",\"root_learning_same_actor_client_until\",\"root_q24_same_actor_factory_constructor\",\"q24_same_actor_learning_builder\",\"q24_same_actor_learning_assemble\",\"q24_same_actor_learning_activation\",\"q24_same_actor_learning_work_construct\",\"q24_same_actor_learning_work_binding\",\"q24_same_actor_learning_prepared_binding\",\"q24_same_actor_learning_training_binding\",\"q24_same_actor_learning_effect_entry\",\"q24_same_actor_learning_blocking_reserve\",\"q24_same_actor_learning_blocking_handle\",\"q24_same_actor_learning_blocking_receive\",\"q24_same_actor_learning_terminal_join\",\"q24_same_actor_learning_stage_constructor\",\"q24_same_actor_learning_stage_work\",\"q24_same_actor_learning_generation_custody\",\"q24_same_actor_learning_aggregate_lane\",\"q24_same_actor_learning_training_constructor\",\"q24_same_actor_learning_training_execute\",\"q24_same_actor_learning_training_lane\",\"q24_same_actor_learning_local_decision\",\"q24_same_actor_learning_process_run\",\"q24_same_actor_learning_required_worker\",\"q24_same_actor_learning_required_run\",\"q24_same_actor_learning_route_custody\",\"q24_same_actor_training_checkpoint_notice\",\"q24_same_actor_evaluation_original_wait\",\"q24_same_actor_evaluation_install_begin\",\"q24_same_actor_evaluation_effect_entry\",\"q24_same_actor_evaluation_install_complete\",\"q24_same_actor_evaluation_aggregate_wait\",\"q24_same_actor_evaluation_aggregate_install\",\"q24_same_actor_evaluation_process_wait\",\"root_same_actor_phase_open\",\"root_same_actor_phase_fresh\",\"root_same_actor_phase_start\",\"root_same_actor_phase_seal\",\"root_same_actor_phase_serve\",\"root_same_actor_phase_host\",\"root_same_actor_deadline_start\",\"root_same_actor_deadline_receive\",\"root_same_actor_gate_construct\",\"root_same_actor_durable_reserve\",\"root_same_actor_durable_claim\",\"root_same_actor_durable_scope\",\"root_same_actor_actual_a_claim\",\"root_same_actor_initial_retire\",\"root_same_actor_initial_cap\",\"root_same_actor_initial_register\",\"root_same_actor_publication_cap\",\"root_same_actor_publication_register\",\"root_same_actor_scope_register\",\"root_same_actor_join_accept\",\"root_same_actor_worker_serve\",\"root_same_actor_lane_serve\",\"root_same_actor_issuer_bind\",\"root_same_actor_issuer_attachment\",\"root_same_actor_learning_reserve\",\"root_same_actor_learning_open\",\"root_same_actor_model_reserve\",\"root_same_actor_model_open\",\"root_same_actor_initial_until\",\"root_same_actor_learning_until\",\"root_same_actor_model_until\",\"root_same_actor_publication_until\",\"root_same_actor_initial_service\",\"root_same_actor_learning_service\",\"root_same_actor_model_service\",\"root_same_actor_receive_start\",\"root_same_actor_receive_inputs\",\"root_same_actor_context_current\",\"root_same_actor_scoped_descriptor\",\"root_same_actor_session_connect\",\"root_same_actor_session_activate\",\"root_same_actor_session_origin\",\"root_same_actor_grant_gate\",\"root_same_actor_send_start\",\"root_same_actor_send_scope\",\"root_same_actor_take_start_rights\",\"root_same_actor_take_scope_rights\",\"root_same_actor_retire_ack\",\"root_same_actor_join_after_a_drop\",\"root_same_actor_joined_parts\",\"root_same_actor_scope_receive\",\"root_same_actor_scope_parts\",\"root_same_actor_ticket_session\",\"root_same_actor_ticket_connect\",\"root_same_actor_initial_connect\",\"root_same_actor_publication_connect\",\"root_same_actor_initial_stream\",\"root_same_actor_scoped_stream\",\"root_same_actor_successor_capture\",\"root_same_actor_successor_origin\",\"root_same_actor_successor_scope_take\",\"q24_same_actor_successor_factory\",\"q24_same_actor_successor_task_parts\",\"q24_same_actor_artifact_publish\",\"q24_same_actor_current_connect\",\"q24_same_actor_startup\",\"q24_same_actor_run\",\"q24_same_actor_initial_install\",\"q24_same_actor_task_worker\",\"q24_same_actor_task_worker_run\",\"q24_same_actor_a_controller\",\"q24_same_actor_scoped_controller\",\"q24_same_actor_c_controller\",\"root_same_actor_initial_enroll\",\"root_same_actor_publication_enroll\",\"root_same_actor_publication_service\",\"root_same_actor_bound_five_lanes\",\"root_same_actor_issuer_effect_entry\",\"root_same_actor_checkpoint_effect\",\"root_same_actor_consumer_effect\",\"root_same_actor_learning_effect\",\"root_same_actor_checkpoint_until\",\"q24_learning_normal_identity\",\"q24_learning_normal_delivery_binding\",\"q24_learning_normal_terminal_snapshot\",\"q24_learning_normal_request\",\"q24_learning_normal_take_request\",\"q24_learning_normal_authorize_stop\",\"q24_learning_normal_take_stop\",\"q24_learning_normal_work_join\",\"q24_learning_normal_stop_binding\",\"q24_learning_normal_join_binding\",\"q24_learning_normal_loop_run\",\"q24_learning_normal_loop_binding\",\"q24_learning_normal_delivery_run\",\"q24_learning_normal_delivery_owner_binding\",\"q24_learning_normal_delivery_ack_cap\",\"q24_learning_normal_ack_binding\",\"q24_learning_normal_ack_create\",\"q24_learning_normal_owners_binding\",\"q24_learning_normal_joined_binding\",\"q24_learning_normal_joined_c\",\"q24_learning_normal_worker_run\",\"q24_learning_original_job_with_join_cause\"]",
+      "new": "required_boundary_ids = [\"root_registered_learning_checkpoint_writer\",\"root_original_learning_checkpoint_exchange\",\"supervisor_authorized_boot\",\"memory_production_writer_open\",\"cognitive_store_recovery_open\",\"cognitive_production_mutation_capability\",\"agentd_production_writer_host\",\"agentd_production_operation_runtime\",\"learning_artifact_owner_bootstrap\",\"learning_artifact_owner_restart\",\"learning_artifact_verified_current_view\",\"provider_effect_coordinator\",\"http_provider_effect_adapter\",\"final_use_open_state\",\"final_use_claim\",\"final_use_claim_raw\",\"final_use_delivery\",\"final_use_delivery_witness\",\"final_use_delivery_raw\",\"final_use_dispatch\",\"final_use_dispatch_witness\",\"final_use_dispatch_raw\",\"final_use_revocation_update\",\"final_use_approval_trust\",\"final_use_approval_verify\",\"final_use_revocation_feed_trust\",\"final_use_revocation_feed_apply\",\"final_use_revocation_convergence_trust\",\"final_use_revocation_convergence_verify\",\"bao_final_use_consumer\",\"bao_registered_consumer_new\",\"bao_final_use_host_new\",\"bao_registered_revocation_update\",\"bao_registered_final_use_host\",\"authority_lease_open_state\",\"authority_lease_put\",\"authority_lease_revoke\",\"authority_lease_prune\",\"authority_lease_epoch_advance\",\"authority_lease_verify_use\",\"authority_lease_delivery\",\"authority_lease_delivery_witness\",\"authority_lease_dispatch_raw\",\"authority_lease_dispatch_witness\",\"final_use_async_dispatch_fence\",\"automation_taskflow_provider_effect_bridge\",\"final_use_guarded_effect\",\"notes_original_pending_call_proof\",\"notes_original_operation_observation_proof\",\"notes_original_thread_prepare\",\"notes_original_writer_terminal_receipt\",\"memory_original_owner_current_publication\",\"memory_original_protected_current_readback\",\"original_authbus_human_delivery_read\",\"notes_original_human_turn_proof\",\"root_registered_human_text_writer\",\"root_registered_human_text_admission\",\"root_human_text_same_issuer_cas\",\"root_retained_human_text_lookup\",\"root_live_human_session_install\",\"root_original_human_text_verification\",\"notes_original_turn_unprepared_admission\",\"root_host_original_human_text_verification\",\"notes_original_human_text_verification\",\"root_prepared_fresh_session\",\"root_retained_native_ui_launch\",\"root_prepared_native_ui_execution\",\"root_material_capture_original_image\",\"root_material_verify_retained_image\",\"root_material_install_original_generation\",\"root_material_reopen_original_installation\",\"root_material_release_registered_custody\",\"root_material_fresh_registered_session\",\"root_material_recover_registered_session\",\"root_material_existing_session_open\",\"root_material_resume_registered_handoff\",\"root_material_current_observation_chain\",\"root_original_writer_descriptor_chain\",\"root_same_retained_service_serve\",\"root_registered_material_recovery\",\"root_registered_material_handoff_resume\",\"root_original_writer_purpose_send\",\"root_original_writer_purpose_receive\",\"agentd_original_root_writer_consume\",\"root_registered_writer_rotation\",\"native_original_operation_host_attach\",\"native_original_owner_current_ack\",\"native_original_terminal_history_observation\",\"root_original_authority_initialize\",\"root_original_writer_authorize\",\"root_same_registered_bootstrap_seal\",\"root_same_registered_bootstrap_capture\",\"root_original_physical_login_install\",\"root_original_writer_successor_shape\",\"root_original_issuer_writer_rotation\",\"root_physical_current_retired_adoption\",\"root_physical_recovery_retirement_admission\",\"root_physical_fresh_service_genesis\",\"root_physical_registered_checkpoint_genesis\",\"root_physical_current_backend_genesis\",\"root_registered_physical_current_observation\",\"root_original_two_descriptor_send\",\"root_original_two_descriptor_receive\",\"native_original_writer_terminal_observation\",\"native_original_writer_next_delivery_observation\",\"root_notes_original_startup_before\",\"root_notes_recovered_successor_startup_before\",\"root_notes_original_reserved_session_binding\",\"root_notes_registered_successor_policy_replace\",\"root_notes_original_issuer_policy_cas\",\"root_desktop_original_issuer_pair_policy_cas\",\"root_retained_native_ready_launch\",\"root_prepared_native_ready_execution\",\"root_prepared_native_ready_text_session\",\"root_original_bound_native_lanes\",\"root_original_bound_native_lane_acceptance\",\"root_original_ready_lane_bridge\",\"notes_original_retained_reference_projection\",\"desktop_original_retained_reference_projection\",\"memory_original_sender_read_only_cut\",\"notes_recorded_original_observation_proof\",\"notes_previous_recovery_typed_resolution\",\"root_live_admin_enable\",\"root_live_admin_mint\",\"root_live_admin_exchange\",\"root_live_admin_checked_dispatch\",\"root_live_admin_signed_artifact_verify\",\"root_live_admin_exact_issuer_head_revoke\",\"root_live_admin_fixed_notes_revoke_prepare\",\"root_live_admin_existing_effect_revoke\",\"root_live_admin_existing_signed_grant_revoke\",\"root_live_admin_same_service_signed_revoke\",\"root_live_admin_original_issue_observer_enable\",\"root_live_admin_original_issue_observation\",\"root_live_admin_original_bounded_lease_revoke\",\"root_live_admin_retained_artifact_observe\",\"root_live_admin_original_effect_state_observe\",\"root_live_admin_same_service_effect_state_observe\",\"agentd_original_registered_writer_custody\",\"agentd_original_recovered_writer_custody_factory\",\"agentd_original_root_handoff_unique_file\",\"calculator_previous_recovery_owner_target\",\"calculator_previous_recovery_host_attach\",\"calculator_previous_recovery_process_attach\",\"calculator_previous_recovery_runtime_selection\",\"calculator_previous_recovery_config_selection\",\"root_original_issuer_renewal_prepare\",\"root_original_issuer_renewal_commit\",\"root_desktop_original_startup_before\",\"root_desktop_recovered_successor_startup_before\",\"root_desktop_registered_successor_policy_replace\",\"desktop_previous_original_cut_selection\",\"desktop_previous_joint_config_selection\",\"memory_original_validated_target_retirement_ack\",\"memory_original_owner_current_readonly_receipt\",\"memory_original_notes_retirement_ack\",\"memory_original_calculator_retirement_ack\",\"memory_original_retirement_ack_commit\",\"authority_lease_exact_bounded_revoke\",\"root_live_admin_exact_issuer_revoke\",\"root_live_admin_committed_issuer_reply\",\"root_live_admin_exact_issuer_reply_record\",\"root_learning_explicit_registration\",\"root_learning_original_store_registration\",\"root_learning_original_store_reopen\",\"root_learning_original_owner_install\",\"root_learning_original_scope_seal\",\"root_learning_original_scope_capture\",\"root_learning_same_service_serve\",\"root_learning_registered_checkpoint_constructor\",\"root_learning_original_client_constructor\",\"root_learning_original_purpose_send\",\"root_learning_original_purpose_receive\",\"root_learning_original_handoff_consume\",\"root_learning_original_config_hold\",\"root_learning_original_stage_assembly\",\"root_learning_original_runtime_consume\",\"root_original_registered_ready_serve\",\"root_original_private_sealed_bytes\",\"root_learning_scoped_checkpoint_constructor\",\"root_learning_scoped_client_constructor\",\"root_learning_scoped_runtime_constructor\",\"learning_frozen_update_scope_constructor\",\"root_learning_scoped_profile_constructor\",\"root_learning_scoped_checkpoint_record\",\"learning_evidence_original_owner_constructor\",\"learning_evidence_original_owner_readback\",\"original_pinned_stream_explicit_uid\",\"cell_learning_evaluation_profile_freeze\",\"cell_learning_evaluation_receipt_prepare\",\"cell_learning_evaluation_original_readback\",\"generation_learning_original_stage_readback\",\"cell_original_evaluation_execution\",\"product_original_evaluation_execution\",\"root_learning_original_delivery_source\",\"root_learning_completed_circuit_source\",\"circuit_learning_exact_ack_retirement\",\"cell_completed_evaluation_readback\",\"product_completed_evaluation_readback\",\"cell_q24_single_head_training_plan\",\"cell_q24_single_head_candidate_validation\",\"cell_q24_native_training_fit\",\"cell_q24_original_training_observation\",\"learning_original_evaluator_attestation\",\"learning_original_evaluation_key\",\"circuit_feature_original_initial_publication\",\"circuit_feature_original_update_publication\",\"circuit_feature_guarded_private_cell\",\"circuit_feature_private_cell_writer\",\"circuit_feature_original_task_control\",\"circuit_q24_ordinary_profile_assembly\",\"circuit_feature_original_predecessor_recovery\",\"circuit_feature_acknowledged_readonly_history\",\"learning_original_training_receipt_create\",\"learning_original_training_receipt_recover\",\"learning_original_training_receipt_attest\",\"learning_original_training_receipt_readback\",\"cell_q24_original_training_execute\",\"cell_q24_original_training_pair_binding\",\"learning_original_training_stage_constructor\",\"learning_original_training_stage_execute\",\"learning_original_training_stage_readback\",\"learning_original_training_stage_attestation\",\"learning_original_training_snapshot_readback\",\"cell_q24_model_material_owner_create\",\"cell_q24_model_material_owner_recover\",\"cell_q24_model_material_owner_commit\",\"cell_q24_model_material_owner_readback\",\"learning_original_evaluation_receipt_create\",\"learning_original_evaluation_receipt_recover\",\"learning_original_evaluation_receipt_attest\",\"learning_original_evaluation_receipt_readback\",\"cell_q24_original_dataset_batch\",\"cell_q24_original_dataset_task\",\"circuit_feature_original_committed_decision\",\"cell_q24_original_dataset_revalidation\",\"cell_q24_original_dataset_capability\",\"cell_q24_original_trainer_dataset_capability\",\"cell_q24_original_dataset_freeze_create\",\"cell_q24_original_dataset_freeze_recover\",\"cell_q24_original_dataset_freeze_authorize\",\"cell_q24_original_dataset_freeze_readback\",\"root_q24_factory_explicit_reserve\",\"root_q24_factory_open_original\",\"root_q24_factory_install_original\",\"root_q24_factory_capture_original\",\"root_q24_factory_take_offer\",\"root_q24_factory_serve_original\",\"root_q24_factory_purpose_send\",\"root_q24_factory_purpose_receive\",\"root_q24_factory_original_handoff_connect\",\"root_q24_factory_original_constructor\",\"root_q24_factory_live_observation\",\"root_q24_factory_original_commit\",\"root_q24_factory_original_readback\",\"root_q24_factory_learning_scope\",\"root_q24_factory_local_policy\",\"root_q24_factory_original_material\",\"root_learning_live_profile_action\",\"learning_original_source_create\",\"learning_original_source_recover\",\"learning_original_source_attest_experience\",\"learning_original_source_read_experience\",\"learning_original_source_attest_dataset\",\"learning_original_source_read_dataset\",\"learning_original_source_files_create\",\"learning_original_source_files_recover\",\"learning_original_source_prepared_handoff\",\"cell_q24_original_native_create\",\"cell_q24_original_native_recover\",\"learning_original_training_require_original_pair\",\"learning_original_training_with_original_trainer\",\"learning_original_evaluation_require_original_training\",\"learning_original_evaluation_read_original_execution\",\"learning_original_generation_receipt_create\",\"learning_original_generation_receipt_recover\",\"learning_original_generation_receipt_attest_original_completion\",\"learning_original_generation_receipt_readback\",\"learning_original_generation_receipt_require_context\",\"learning_original_generation_receipt_observe_original_selection\",\"learning_original_local_policy_create\",\"learning_original_local_policy_recover\",\"learning_original_local_policy_attest_original_decision\",\"learning_original_local_policy_readback\",\"learning_original_local_policy_require_context\",\"learning_original_local_policy_policy_digest\",\"learning_original_q24_stage_from_original_owners\",\"learning_original_q24_stage_require_current\",\"learning_original_q24_stage_prepared\",\"learning_original_q24_model_dispatch\",\"learning_original_q24_evaluation_inputs\",\"learning_original_q24_generation_inputs\",\"learning_original_q24_source_inputs\",\"learning_original_q24_training_inputs\",\"learning_original_q24_policy_inputs\",\"root_original_q24_require_prepared_q24\",\"root_original_q24_into_q24_learning_runtime\",\"learning_original_q24_with_original_q24_stage_owners\",\"learning_original_q24_require_proposal_owner\",\"root_original_q24_stage_assembly\",\"production_original_q24_receive\",\"production_original_q24_assemble\",\"learning_original_feature_receipt_create\",\"learning_original_feature_receipt_recover\",\"learning_original_feature_source_capture\",\"learning_original_feature_source_binding\",\"learning_original_feature_source_observe\",\"learning_original_q24_stage_install_generation\",\"learning_original_feature_dataset_feedback\",\"q24_publication_original_b_manifest\",\"q24_publication_original_lane\",\"q24_publication_original_predecessor\",\"q24_publication_embedded_admission\",\"q24_publication_actual_artifact\",\"q24_publication_actual_preparation\",\"q24_publication_actual_final_use\",\"q24_publication_original_recovery\",\"learning_original_q24_evaluation_stage_require_training\",\"learning_original_q24_evaluation_stage_require_original_training_evidence\",\"learning_original_q24_evaluation_stage_read_execution\",\"learning_original_q24_evaluation_stage_qualification_request\",\"learning_original_q24_evaluation_stage_complete\",\"learning_original_q24_install_evaluation\",\"learning_original_q24_install_independent_evaluation\",\"learning_original_q24_install_published_generation\",\"learning_original_q24_training_files\",\"learning_original_q24_training_material_export\",\"learning_original_q24_training_material_assembly\",\"q24_publication_executable_feature_preflight\",\"learning_original_feature_objective_reply\",\"root_generation_publication_enable\",\"root_generation_publication_late_enroll\",\"root_generation_publication_original_registration\",\"root_generation_publication_original_serve\",\"root_generation_publication_profile_fence\",\"root_generation_current_original_broker_head\",\"root_generation_current_original_broker_prepare\",\"root_generation_current_original_broker_publish\",\"root_generation_current_from_original_root_publication\",\"root_generation_current_bound_selection\",\"root_generation_current_store_bridge\",\"root_generation_publication_original_stream\",\"root_generation_publication_purpose_send\",\"root_generation_publication_purpose_receive\",\"root_generation_publication_purpose_connect\",\"root_generation_journal_original_observer\",\"root_generation_journal_original_target\",\"root_artifact_original_reader_open\",\"root_artifact_original_withdrawal_bind\",\"root_artifact_original_current_read\",\"root_artifact_original_withdrawal_read\",\"artifact_writer_recover_original_withdrawal_frontier\",\"artifact_writer_install_original_withdrawal_frontier\",\"artifact_writer_require_original_withdrawal_frontier\",\"artifact_original_acknowledged_readback\",\"root_generation_original_artifact_selection\",\"root_generation_original_selection_recheck\",\"q24_root_artifact_qualified_phase\",\"q24_root_artifact_publication\",\"q24_root_artifact_publication_recovery\",\"q24_root_retained_phase\",\"q24_root_selection_adopted\",\"q24_root_selection_retained\",\"q24_root_current_connect\",\"q24_root_current_prepare\",\"q24_root_current_recover\",\"q24_root_shared_prepare_selected\",\"q24_root_shared_recover_selected\",\"root_original_final_use_observer_enrollment\",\"root_original_final_use_observer_retained_readback\",\"q24_task_original_ledger_open\",\"q24_task_original_ledger_resume\",\"q24_task_original_ledger_readback\",\"q24_task_original_outcome_submit\",\"q24_task_original_dataset_prepare\",\"q24_task_original_learning_prepare\",\"q24_task_original_ready_observe\",\"q24_task_original_ready_binding\",\"q24_task_original_runtime_install\",\"q24_task_original_profile_install\",\"q24_task_explicit_source_attach\",\"q24_task_original_readiness_observe\",\"q24_task_original_ready_enqueue\",\"q24_task_explicit_delivery_sources\",\"q24_task_original_outcome_preflight\",\"q24_task_original_learning_recover\",\"root_generation_connection_original_capture\",\"root_generation_connection_slot_take\",\"root_generation_connection_inputs_take\",\"root_generation_connection_launch_take\",\"root_generation_connection_live_session\",\"root_generation_connection_original_binding\",\"q24_training_original_dataset_readback\",\"q24_training_original_readback_export\",\"q24_training_original_readback_construct\",\"q24_training_original_readback\",\"q24_training_original_readback_owner\",\"q24_training_original_readback_cut\",\"evaluation_original_trainer_owner\",\"evaluation_original_trainer_cut\",\"evaluation_original_trainer_borrow\",\"evaluation_original_trainer_readback\",\"evaluation_original_sources_attest\",\"evaluation_original_sources_readback\",\"root_generation_publication_launch_handoff_take\",\"q24_retained_source_capture\",\"q24_retained_source_scope\",\"q24_retained_source_read\",\"q24_retained_source_ready\",\"q24_retained_source_outbox\",\"q24_retained_source_root_install\",\"q24_retained_source_state_install\",\"q24_retained_source_state_lookup\",\"q24_retained_source_reconcile\",\"q24_retained_source_admission\",\"q24_retained_original_ledger_capability\",\"q24_retained_prepared_original_ledger\",\"production_retained_q24_receive\",\"production_retained_q24_assemble\",\"production_retained_q24_capability_receive\",\"production_retained_q24_capability_assemble\",\"root_generation_deployment_capture\",\"root_generation_deployment_wait\",\"root_generation_deployment_original_inputs\",\"root_artifact_original_selection_files\",\"root_initial_original_writer_context\",\"root_initial_separate_purpose_enable\",\"root_initial_one_shot_enrollment\",\"root_initial_original_registration\",\"root_initial_original_serve\",\"root_initial_original_sticky_fence\",\"root_initial_purpose_send\",\"root_initial_purpose_receive\",\"root_initial_original_connection\",\"root_initial_original_stream\",\"root_initial_client_prepare\",\"root_initial_client_observe\",\"root_initial_client_publish\",\"root_initial_current_store_bridge\",\"root_initial_current_from_original_route\",\"root_initial_current_original_publish\",\"root_initial_complete_description\",\"root_initial_exact_retained_record\",\"root_initial_exact_published_record\",\"root_initial_entire_contract\",\"root_initial_actual_consumer_prepare\",\"root_initial_actual_consumer_recover\",\"root_initial_executable_feature_prepare\",\"root_initial_executable_feature_recover\",\"root_initial_actual_feature_publish\",\"root_initial_original_unwritten_target\",\"root_initial_complete_configuration\",\"root_initial_launch_handoff_take\",\"root_initial_deployment_original_files\",\"root_initial_deployment_capture\",\"root_initial_deployment_wait\",\"root_initial_deployment_original_inputs\",\"q24_successor_original_session_capture\",\"q24_successor_original_session_current\",\"q24_successor_same_root_connection\",\"q24_successor_model_factory_context\",\"q24_successor_root_current_context\",\"q24_successor_current_owner_context\",\"q24_successor_context_from_registered_root\",\"q24_successor_context_live\",\"q24_successor_aggregate_registration\",\"q24_successor_generation_notification\",\"q24_successor_original_generation_installed\",\"q24_successor_wait_original_generation\",\"q24_successor_wait_after_checkpoint\",\"q24_successor_actual_owner_install\",\"q24_successor_effect_cancellation\",\"q24_successor_actual_task_handle\",\"q24_successor_pending_runtime\",\"q24_successor_worker_bootstrap\",\"q24_successor_pending_handle\",\"q24_successor_actual_runtime\",\"q24_successor_root_prepare_request\",\"q24_successor_root_prepare_worker\",\"q24_successor_proof_current\",\"q24_successor_actual_prepare\",\"q24_successor_actual_publish\",\"q24_successor_running_admission\",\"q24_successor_execution_preflight\",\"q24_successor_original_channel\",\"q24_successor_launch_prepare\",\"q24_successor_config_install\",\"q24_successor_original_c_ingress\",\"q24_successor_handoff_request\",\"q24_successor_original_signed_finish\",\"q24_successor_slot_new\",\"agentd_original_late_writer_launch\",\"q24_successor_original_feedback_ledger\",\"agentd_original_late_writer_inputs_prepare\",\"agentd_original_late_writer_inputs_consume\",\"agentd_original_late_writer_cli_prepare\",\"agentd_original_late_writer_cli_consume\",\"fleet_original_readonly_snapshot\",\"authority_original_lease_metadata_observation\",\"authority_original_lease_metadata_revision\",\"authority_original_lease_metadata_finish\",\"root_original_issuer_metadata_observation\",\"root_original_issuer_metadata_proof\",\"root_original_issuer_metadata_revocations\",\"root_original_owner_channel_until\",\"root_original_peer_channel_until\",\"root_q24_factory_same_service_reserve\",\"root_original_final_use_frontier_until\",\"root_original_root_issuer_until\",\"root_original_observation_stream_until\",\"q24_same_actor_original_a_parts\",\"q24_same_actor_original_a_parts_consume\",\"q24_same_actor_original_route_pending\",\"q24_same_actor_original_a_install\",\"q24_same_actor_original_a_close\",\"q24_same_actor_original_a_quiescent\",\"q24_same_actor_original_a_release\",\"q24_same_actor_original_c_install\",\"q24_same_actor_original_ingress_admission\",\"q24_same_actor_original_admitted_task\",\"q24_same_actor_original_queue_admission\",\"q24_same_actor_original_worker_bootstrap\",\"root_learning_same_actor_client_until\",\"root_q24_same_actor_factory_constructor\",\"q24_same_actor_learning_builder\",\"q24_same_actor_learning_assemble\",\"q24_same_actor_learning_activation\",\"q24_same_actor_learning_work_construct\",\"q24_same_actor_learning_work_binding\",\"q24_same_actor_learning_prepared_binding\",\"q24_same_actor_learning_training_binding\",\"q24_same_actor_learning_effect_entry\",\"q24_same_actor_learning_blocking_reserve\",\"q24_same_actor_learning_blocking_handle\",\"q24_same_actor_learning_blocking_receive\",\"q24_same_actor_learning_terminal_join\",\"q24_same_actor_learning_stage_constructor\",\"q24_same_actor_learning_stage_work\",\"q24_same_actor_learning_generation_custody\",\"q24_same_actor_learning_aggregate_lane\",\"q24_same_actor_learning_training_constructor\",\"q24_same_actor_learning_training_execute\",\"q24_same_actor_learning_training_lane\",\"q24_same_actor_learning_local_decision\",\"q24_same_actor_learning_process_run\",\"q24_same_actor_learning_required_worker\",\"q24_same_actor_learning_required_run\",\"q24_same_actor_learning_route_custody\",\"q24_same_actor_training_checkpoint_notice\",\"q24_same_actor_evaluation_original_wait\",\"q24_same_actor_evaluation_install_begin\",\"q24_same_actor_evaluation_effect_entry\",\"q24_same_actor_evaluation_install_complete\",\"q24_same_actor_evaluation_aggregate_wait\",\"q24_same_actor_evaluation_aggregate_install\",\"q24_same_actor_evaluation_process_wait\",\"root_same_actor_phase_open\",\"root_same_actor_phase_fresh\",\"root_same_actor_phase_start\",\"root_same_actor_phase_seal\",\"root_same_actor_phase_serve\",\"root_same_actor_phase_host\",\"root_same_actor_deadline_start\",\"root_same_actor_deadline_receive\",\"root_same_actor_gate_construct\",\"root_same_actor_durable_reserve\",\"root_same_actor_durable_claim\",\"root_same_actor_durable_scope\",\"root_same_actor_actual_a_claim\",\"root_same_actor_initial_retire\",\"root_same_actor_initial_cap\",\"root_same_actor_initial_register\",\"root_same_actor_publication_cap\",\"root_same_actor_publication_register\",\"root_same_actor_scope_register\",\"root_same_actor_join_accept\",\"root_same_actor_worker_serve\",\"root_same_actor_lane_serve\",\"root_same_actor_issuer_bind\",\"root_same_actor_issuer_attachment\",\"root_same_actor_learning_reserve\",\"root_same_actor_learning_open\",\"root_same_actor_model_reserve\",\"root_same_actor_model_open\",\"root_same_actor_initial_until\",\"root_same_actor_learning_until\",\"root_same_actor_model_until\",\"root_same_actor_publication_until\",\"root_same_actor_initial_service\",\"root_same_actor_learning_service\",\"root_same_actor_model_service\",\"root_same_actor_receive_start\",\"root_same_actor_receive_inputs\",\"root_same_actor_context_current\",\"root_same_actor_scoped_descriptor\",\"root_same_actor_session_connect\",\"root_same_actor_session_activate\",\"root_same_actor_session_origin\",\"root_same_actor_grant_gate\",\"root_same_actor_send_start\",\"root_same_actor_send_scope\",\"root_same_actor_take_start_rights\",\"root_same_actor_take_scope_rights\",\"root_same_actor_retire_ack\",\"root_same_actor_join_after_a_drop\",\"root_same_actor_joined_parts\",\"root_same_actor_scope_receive\",\"root_same_actor_scope_parts\",\"root_same_actor_ticket_session\",\"root_same_actor_ticket_connect\",\"root_same_actor_initial_connect\",\"root_same_actor_publication_connect\",\"root_same_actor_initial_stream\",\"root_same_actor_scoped_stream\",\"root_same_actor_successor_capture\",\"root_same_actor_successor_origin\",\"root_same_actor_successor_scope_take\",\"q24_same_actor_successor_factory\",\"q24_same_actor_successor_task_parts\",\"q24_same_actor_artifact_publish\",\"q24_same_actor_current_connect\",\"q24_same_actor_startup\",\"q24_same_actor_run\",\"q24_same_actor_initial_install\",\"q24_same_actor_task_worker\",\"q24_same_actor_task_worker_run\",\"q24_same_actor_a_controller\",\"q24_same_actor_scoped_controller\",\"q24_same_actor_c_controller\",\"root_same_actor_initial_enroll\",\"root_same_actor_publication_enroll\",\"root_same_actor_publication_service\",\"root_same_actor_bound_five_lanes\",\"root_same_actor_issuer_effect_entry\",\"root_same_actor_checkpoint_effect\",\"root_same_actor_consumer_effect\",\"root_same_actor_learning_effect\",\"root_same_actor_checkpoint_until\",\"q24_learning_normal_identity\",\"q24_learning_normal_delivery_binding\",\"q24_learning_normal_terminal_snapshot\",\"q24_learning_normal_request\",\"q24_learning_normal_take_request\",\"q24_learning_normal_authorize_stop\",\"q24_learning_normal_take_stop\",\"q24_learning_normal_work_join\",\"q24_learning_normal_stop_binding\",\"q24_learning_normal_join_binding\",\"q24_learning_normal_loop_run\",\"q24_learning_normal_loop_binding\",\"q24_learning_normal_delivery_run\",\"q24_learning_normal_delivery_owner_binding\",\"q24_learning_normal_delivery_ack_cap\",\"q24_learning_normal_ack_binding\",\"q24_learning_normal_ack_create\",\"q24_learning_normal_owners_binding\",\"q24_learning_normal_joined_binding\",\"q24_learning_normal_joined_c\",\"q24_learning_normal_worker_run\",\"q24_learning_original_job_with_join_cause\",\"q24_purpose_checkpoint_ports\",\"q24_purpose_checkpoint_capture\",\"q24_purpose_checkpoint_idle\",\"q24_purpose_checkpoint_origin\",\"q24_purpose_checkpoint_close\",\"q24_purpose_runtime_assembly\",\"q24_purpose_model_close\",\"q24_purpose_stage_close\",\"q24_purpose_loop_close\",\"q24_purpose_learning_owners_close\",\"q24_purpose_learning_owners_retained\",\"q24_purpose_learning_joined_close\",\"q24_purpose_learning_retired_origin\",\"q24_purpose_publication_stream_close\",\"q24_purpose_current_client_close\",\"q24_purpose_current_store_close\",\"q24_purpose_current_owner_close\",\"q24_purpose_live_current_close\",\"q24_purpose_published_task_close\"]",
+      "reason": "Add exactly 19 actual purpose-release IDs; retain all 660 isolated V45+normal-Learning base IDs"
+    },
+    {
+      "kind": "replace_once",
+      "old": "se retirement::OriginalSameActorLearningJoined;\"]]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs\"\nrequired = [\"#[path = \\\"learning_iteration_same_actor_retirement.rs\\\"]\",\"mod retirement;\",\"pub(crate) use retirement::OriginalLearningLoopRetired;\"]\nforbidden = []\nrequired_order = [[\"mod retirement;\",\"pub(crate) use retirement::OriginalLearningLoopRetired;\"]]\n",
+      "new": "se retirement::OriginalSameActorLearningJoined;\"]]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs\"\nrequired = [\"#[path = \\\"learning_iteration_same_actor_retirement.rs\\\"]\",\"mod retirement;\",\"pub(crate) use retirement::OriginalLearningLoopRetired;\"]\nforbidden = []\nrequired_order = [[\"mod retirement;\",\"pub(crate) use retirement::OriginalLearningLoopRetired;\"]]\n\n# Actual retained Learning/Model/CURRENT shutdown under original Root Intent.\n# Existing joined-owner function guards retain their original unique extents.\n\n[[boundary]]\nid = \"q24_purpose_checkpoint_ports\"\nsymbol = \"AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners\"\nreceiver_type = \"AgentdLearningCheckpointClientV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs\"\ndefinition_markers = [\"fn with_original_retirable_stage_owners(\",\"Checkpoint::SameActorRootClient(client)\",\"Ok((ports, retirement))\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_checkpoint_capture\"\nsymbol = \"AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint\"\nreceiver_type = \"AgentdLearningCheckpointClientV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\"\ndefinition_markers = [\"fn into_original_retirable_checkpoint(\",\"!Arc::ptr_eq(phase.gate(), work.gate())\",\"work.require_original_delivery_request(\",\"if self.scope.is_none()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_checkpoint_idle\"\nsymbol = \"AgentdLearningCheckpointClientV1::lock_original_retirement_channel\"\nreceiver_type = \"AgentdLearningCheckpointClientV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\"\ndefinition_markers = [\"fn lock_original_retirement_channel(\",\".try_lock()\",\"if held.is_none()\",\"Ok(held)\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_checkpoint_origin\"\nsymbol = \"OriginalLearningCheckpointRetirement::require_original_work\"\nreceiver_type = \"OriginalLearningCheckpointRetirement\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\"\ndefinition_markers = [\"fn require_original_work(\",\"!Arc::ptr_eq(&self.work, work)\",\"work.require_original_retirement_identity(&self.identity, work.gate())\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs\",\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_checkpoint_close\"\nsymbol = \"OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent\"\nreceiver_type = \"OriginalLearningCheckpointRetirement\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\"\ndefinition_markers = [\"fn retire_original_checkpoint_after_root_intent(\",\"lock_original_retirement_channel(\",\"phase.shutdown_original_after_root_intent(intent)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_runtime_assembly\"\nsymbol = \"AgentdRootLearningInputsV1::into_original_retirable_learning_runtime\"\nreceiver_type = \"AgentdRootLearningInputsV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"\ndefinition_markers = [\"fn into_original_retirable_learning_runtime(\",\"crate::learning_iteration_channel_scoped_v2(\",\".with_original_circuit_learning_delivery(self.initial.request)?\",\".with_original_q24_stage_owners(stages)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_model_close\"\nsymbol = \"AgentdRootQ24ModelFactoryV1::retire_original_model_after_root_intent\"\nreceiver_type = \"AgentdRootQ24ModelFactoryV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs\"\ndefinition_markers = [\"fn retire_original_model_after_root_intent(\",\"self.fenced = true\",\"phase.shutdown_original_after_root_intent(intent)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_stage_close\"\nsymbol = \"OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose\"\nreceiver_type = \"OriginalCellQ24LearningStageOwnersV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs\"\ndefinition_markers = [\"fn retire_original_model_purpose(\",\"self.inner.lane.try_acquire()\",\"self.inner.owners.try_lock()\",\"self.inner.lane.close()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_loop_close\"\nsymbol = \"OriginalLearningLoopRetired::retire_original_model_purpose\"\nreceiver_type = \"OriginalLearningLoopRetired\"\ndefinition_path = \"codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs\"\ndefinition_markers = [\"fn retire_original_model_purpose(\",\"self.bootstrap.original_q24.as_ref()\",\"OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_learning_owners_close\"\nsymbol = \"OriginalRetiredLearningOwners::retire_original_root_purposes\"\nreceiver_type = \"OriginalRetiredLearningOwners\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"\ndefinition_markers = [\"fn retire_original_root_purposes(\",\"OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(\",\"Ok(OriginalRetiredLearningPurposes { owners: self })\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_learning_owners_retained\"\nsymbol = \"OriginalRetiredLearningPurposes::require_original_work\"\nreceiver_type = \"OriginalRetiredLearningPurposes\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs\"\ndefinition_markers = [\"fn require_original_work(\",\"impl OriginalRetiredLearningPurposes\",\"OriginalRetiredLearningOwners::require_original_work(&self.owners, work)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_learning_joined_close\"\nsymbol = \"OriginalSameActorLearningJoined::retire_original_root_purposes\"\nreceiver_type = \"OriginalSameActorLearningJoined\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"\ndefinition_markers = [\"fn retire_original_root_purposes(\",\"OriginalSameActorCJoined::retire_original_root_purposes(\",\"Ok(OriginalSameActorLearningPurposesRetired { original })\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_learning_retired_origin\"\nsymbol = \"OriginalSameActorLearningPurposesRetired::require_original_phase\"\nreceiver_type = \"OriginalSameActorLearningPurposesRetired\"\ndefinition_path = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs\"\ndefinition_markers = [\"fn require_original_phase(\",\"crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_publication_stream_close\"\nsymbol = \"OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent\"\nreceiver_type = \"OriginalPublicationStream\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_publication_stream.rs\"\ndefinition_markers = [\"fn retire_original_scoped_purpose_after_root_intent(\",\"phase.initial_retirement.is_some()\",\"phase.retired = true\",\"self.stream.shutdown(std::net::Shutdown::Both)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/root_generation_current_client.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_current_client_close\"\nsymbol = \"RootGenerationCurrentClient::retire_original_current_after_root_intent\"\nreceiver_type = \"RootGenerationCurrentClient\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_current_client.rs\"\ndefinition_markers = [\"fn retire_original_current_after_root_intent(\",\"self.connection.original_launch_binding().1 != identity\",\"self.fenced.swap(true, Ordering::AcqRel)\",\"self.lane.try_lock()\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_generation_current_store.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_current_store_close\"\nsymbol = \"CurrentStore::retire_original_root_client_after_intent\"\nreceiver_type = \"CurrentStore\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_generation_current_store.rs\"\ndefinition_markers = [\"fn retire_original_root_client_after_intent(\",\"Store::Root(original)\",\"RootGenerationCurrentClient::retire_original_current_after_root_intent(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_generation_current_root.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_current_owner_close\"\nsymbol = \"NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent\"\nreceiver_type = \"NeuronGenerationCurrentOwnerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_generation_current_root.rs\"\ndefinition_markers = [\"fn retire_original_root_purpose_after_intent(\",\"store::CurrentStore::retire_original_root_client_after_intent(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_generation_update_live.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_live_current_close\"\nsymbol = \"LiveGenerationCurrent::retire_original_current_purpose\"\nreceiver_type = \"LiveGenerationCurrent\"\ndefinition_path = \"codex-rs/hepta-agentd/src/neuron_generation_update_live.rs\"\ndefinition_markers = [\"fn retire_original_current_purpose(\",\"self.authorities.artifacts.try_lock()\",\"self.selected.try_lock()\",\"NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs\"]\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_purpose_published_task_close\"\nsymbol = \"PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent\"\nreceiver_type = \"PublishedCircuitFeatureTaskV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs\"\ndefinition_markers = [\"fn retire_original_root_current_after_intent(\",\"Publication::Update { .. }\",\"self.0.original.try_lock()\",\"LiveGenerationCurrent::retire_original_current_purpose(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs\"]\ncaller_markers = []\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs\"\nrequired = [\"pub(crate) struct OriginalLearningCheckpointRetirement {\",\"client: Arc<AgentdLearningCheckpointClientV1>\",\"work: Arc<OriginalSameActorLearningWork>\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = [[\"struct OriginalLearningCheckpointRetirement\",\"_closing: CloseSameActorPhaseOnDrop\",\"client: Arc<AgentdLearningCheckpointClientV1>\",\"identity: AgentdIdentity\",\"work: Arc<OriginalSameActorLearningWork>\"]]\nrequired_function_order = [\n  { function = \"fn lock_original_retirement_channel(\", sequence = [\"self\",\".channel\",\".try_lock()\",\".map_err(|_| refused(\",\"if held.is_none()\",\"return Err(refused(\",\"Ok(held)\"] },\n  { function = \"fn into_original_retirable_checkpoint(\", sequence = [\"work.original_failure_scope()\",\"work.require_original_retirement_identity(identity, work.gate())?\",\"self.phase.as_ref()\",\"!Arc::ptr_eq(phase.gate(), work.gate())\",\"return Err(refused(\",\"phase.require_open()?\",\"work.require_original_delivery_request(&self.initial.request, &self.initial.owners)?\",\"self.scope.is_none()\",\"return Err(refused(\",\"let client = Arc::new(self)\",\"OriginalLearningCheckpointRetirement {\",\"_closing: closing\",\"client: Arc::clone(&client)\",\"identity: identity.clone()\",\"work: Arc::clone(work)\",\"Ok((client, retirement))\"] },\n  { function = \"fn require_original_work(\", sequence = [\"!Arc::ptr_eq(&self.work, work)\",\"self.work.gate().close()\",\"work.gate().close()\",\"return Err(refused(\",\"work.require_original_retirement_identity(&self.identity, work.gate())\"] },\n  { function = \"fn retire_original_checkpoint_after_root_intent(\", sequence = [\"self.work.original_failure_scope()\",\"self.require_original_work(&self.work)?\",\"intent.require_original_origin(&self.identity, self.work.gate())?\",\"self.client.phase.as_ref()\",\"!Arc::ptr_eq(phase.gate(), self.work.gate())\",\"return Err(refused(\",\"AgentdLearningCheckpointClientV1::lock_original_retirement_channel(\",\"&self.client\",\")?\",\"held.as_ref()\",\"RootObservationStream::root_lifetime(&channel.transport)\",\"check_lifetime(root.get_ref())\",\".map_err(refused)?\",\"phase.shutdown_original_after_root_intent(intent)?\",\"check_lifetime(root.get_ref())\",\".map_err(refused)?\",\"intent.require_original_origin(&self.identity, self.work.gate())?\",\"drop(held)\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs\"\nrequired = [\"SameActorRootClient(Arc<AgentdLearningCheckpointClientV1>)\",\"Checkpoint::SameActorRootClient(client)\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn with_original_retirable_stage_owners(\", sequence = [\"OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(\",\"&stages, work,\",\".map_err(\",\"AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint(\",\"self, identity, work,\",\"let ports = Arc::new(CheckpointedIterationPorts {\",\"initial: client.initial.clone()\",\"checkpoint: Checkpoint::SameActorRootClient(client)\",\"stages,\",\"Ok((ports, retirement))\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"\nrequired = [\"pub(crate) fn into_original_retirable_learning_runtime(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn into_original_retirable_learning_runtime(\", sequence = [\"self.require_prepared_q24(stages.prepared())?\",\"work.require_original_retirement_identity(&self.identity, work.gate())?\",\"self.scope.ok_or_else(\",\"AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners(\",\"self.client,\",\"Arc::clone(&stages)\",\"&self.identity,\",\"work,\",\"crate::learning_iteration_channel_scoped_v2(\",\"self.identity.agent_id\",\"self.identity.spawn_generation\",\"self.initial.owners\",\"ports,\",\"verifier,\",\"capacity,\",\"scope,\",\".with_original_circuit_learning_delivery(self.initial.request)?\",\".with_original_q24_stage_owners(stages)?\",\"Ok((handle, bootstrap, checkpoint))\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs\"\nrequired = [\"checkpoint: OriginalLearningCheckpointRetirement,\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = [[\"struct OriginalSameActorLearningWorker\",\"context: Arc<OriginalSameActorRootContext>\",\"work: Arc<OriginalSameActorLearningWork>\",\"checkpoint: OriginalLearningCheckpointRetirement\",\"learning: LearningIterationRuntimeBootstrapV1\",\"delivery: CircuitLearningDeliveryRuntimeV1\",\"pending: PendingSuccessorOwner\",\"_closing: CloseSameActorPhaseOnDrop\"]]\nrequired_function_order = [\n  { function = \"fn from_original_parts(\", sequence = [\"CloseSameActorPhaseOnDrop::new(context.gate())\",\"OriginalSameActorRootContext::require_current(&context)?\",\"work.require_identity_and_gate(context.identity(), context.gate())?\",\"learning.require_identity(context.identity())?\",\"OriginalLearningCheckpointRetirement::require_original_work(&checkpoint, &work)?\",\"Ok(Self {\",\"context,\",\"work,\",\"checkpoint,\",\"learning,\",\"delivery,\",\"pending,\",\"_closing: closing\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs\"\nrequired = [\"pub(crate) struct OriginalRetiredLearningPurposes {\",\"pub(crate) struct OriginalSameActorLearningPurposesRetired {\",\"identity: AgentdIdentity,\",\"checkpoint: OriginalLearningCheckpointRetirement,\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\",\".abort(\",\"#[derive(Clone)]\",\"Deserialize\"]\nrequired_order = [[\"struct OriginalRetiredLearningOwners\",\"_closing: CloseSameActorPhaseOnDrop\",\"work: Arc<OriginalSameActorLearningWork>\",\"identity: AgentdIdentity\",\"checkpoint: OriginalLearningCheckpointRetirement\",\"learning: OriginalLearningLoopRetired\",\"delivery: OriginalLearningDeliveryRetired\",\"joined: OriginalLearningWorkJoined\"],[\"impl OriginalRetiredLearningOwners {\\n    pub(crate) fn require_original_work(\",\"!Arc::ptr_eq(&self.work, work)\",\"self.work.gate().close()\",\"work.gate().close()\",\"return Err(\",\"work.require_original_retirement_identity(&self.identity, work.gate())?\",\"OriginalLearningCheckpointRetirement::require_original_work(&self.checkpoint, work)?\",\"OriginalLearningLoopRetired::require_original_work(&self.learning, work)?\",\"OriginalLearningDeliveryRetired::require_original_work(&self.delivery, work)?\",\"OriginalLearningWorkJoined::require_original_work(&self.joined, work)\"],[\"impl OriginalRetiredLearningOwners {\\n    pub(crate) fn retire_original_root_purposes(\",\"OriginalRetiredLearningOwners::require_original_work(&self, &self.work)?\",\"intent.require_original_origin(&self.identity, self.work.gate())?\",\"OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(\",\"&self.checkpoint, intent,\",\"OriginalLearningLoopRetired::retire_original_model_purpose(\",\"&self.learning, intent, &self.identity, &self.work,\",\"intent.require_original_origin(&self.identity, self.work.gate())?\",\"Ok(OriginalRetiredLearningPurposes { owners: self })\"],[\"impl OriginalSameActorLearningJoined {\",\"fn retire_original_root_purposes(\",\"OriginalSameActorCJoined::retire_original_root_purposes(\",\"self.original, intent,\",\"Ok(OriginalSameActorLearningPurposesRetired { original })\"]]\nrequired_function_order = [\n  { function = \"fn run_original_retirable_lanes(\", sequence = [\"let OriginalSameActorLearningWorker {\",\"context,\",\"work,\",\"checkpoint,\",\"learning,\",\"work.join_original_normal_work(&learning, &delivery).await?\",\"let owners = OriginalRetiredLearningOwners {\",\"_closing: work.original_failure_scope()\",\"work: Arc::clone(&work)\",\"identity: context.identity().clone()\",\"checkpoint,\",\"learning,\",\"delivery,\",\"joined,\",\"OriginalRetiredLearningOwners::require_original_work(&owners, &work)?\",\"OriginalSameActorCQuiescence::finish_original_successor_join(\",\"quiescence, successor, owners,\",\"closing.disarm()\",\"Ok(OriginalSameActorLearningJoined { original })\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs\"\nrequired = [\"pub(crate) fn retire_original_model_after_root_intent(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_model_after_root_intent(\", sequence = [\"CloseSameActorPhaseOnDrop::new(gate)\",\"intent.require_original_origin(identity, gate)?\",\"self.phase.as_ref()\",\"!std::sync::Arc::ptr_eq(phase.gate(), gate) || self.fenced\",\"return Err(refused(\",\"phase.require_open().map_err(refused)?\",\"self.transport.as_ref()\",\"RootObservationStream::root_lifetime(transport)\",\"check_lifetime(root.get_ref()).map_err(refused)?\",\"self.fenced = true\",\"phase.shutdown_original_after_root_intent(intent)?\",\"check_lifetime(root.get_ref()).map_err(refused)?\",\"intent.require_original_origin(identity, gate)?\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs\"\nrequired = [\"pub(crate) fn retire_original_model_purpose(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_model_purpose(\", sequence = [\"work.original_failure_scope()\",\"work.require_original_retirement_identity(identity, work.gate())?\",\"intent.require_original_origin(identity, work.gate())?\",\"self.inner.same_actor_work.as_ref()\",\"!Arc::ptr_eq(original, work) || self.inner.cancelled.load(Ordering::Acquire)\",\"return Err(refused(\",\"self.inner.lane.try_acquire()\",\".map_err(\",\"self.inner.owners.try_lock()\",\".map_err(\",\"intent.require_original_origin(identity, work.gate())?\",\"if self.inner.cancelled.load(Ordering::Acquire)\",\"return Err(refused(\",\"self.inner.lane.close()\",\"AgentdRootQ24ModelFactoryV1::retire_original_model_after_root_intent(\",\"&mut owners.factory, intent, identity, work.gate(),\",\")?\",\"intent.require_original_origin(identity, work.gate())?\",\"drop(owners)\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs\"\nrequired = [\"pub(crate) fn retire_original_model_purpose(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_model_purpose(\", sequence = [\"OriginalLearningLoopRetired::require_original_work(self, work)?\",\"intent.require_original_origin(identity, work.gate())?\",\"self.bootstrap.original_q24.as_ref()\",\"OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose(\",\"owners, intent, identity, work,\",\")?\",\"intent.require_original_origin(identity, work.gate())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_generation_publication_stream.rs\"\nrequired = [\"retired: bool,\",\"retired: false,\",\"pub(crate) fn retire_original_scoped_purpose_after_root_intent(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_scoped_purpose_after_root_intent(\", sequence = [\"CloseSameActorPhaseOnDrop::new(gate)\",\"intent.require_original_origin(identity, gate)?\",\"self.phase.as_mut().ok_or_else(unavailable)?\",\"CloseSameActorPhaseOnDrop::new(&phase.gate)\",\"!std::sync::Arc::ptr_eq(&phase.gate, gate)\",\"phase.initial_retirement.is_some()\",\"phase.retired\",\"self.end != gate.deadline().instant()\",\"return Err(unavailable().into())\",\"phase.gate.require_open()?\",\"check_lifetime(&self.root)\",\".map_err(io::Error::other)?\",\"phase.retired = true\",\"self.stream.shutdown(std::net::Shutdown::Both)?\",\"check_lifetime(&self.root)\",\".map_err(io::Error::other)?\",\"intent.require_original_origin(identity, gate)?\",\"original_closing.disarm()\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_generation_current_client.rs\"\nrequired = [\"pub(crate) fn retire_original_current_after_root_intent(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_current_after_root_intent(\", sequence = [\"CloseSameActorPhaseOnDrop::new(gate)\",\"intent.require_original_origin(identity, gate)?\",\"self.connection.original_launch_binding().1 != identity\",\"self.fenced.swap(true, Ordering::AcqRel)\",\"return Err(uncertain())\",\"self.lane.try_lock().map_err(|_| uncertain())?\",\"held.as_mut().ok_or_else(uncertain)?\",\"OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent(\",\"&mut lane.stream, intent, identity, gate,\",\")?\",\"intent.require_original_origin(identity, gate)?\",\"drop(held)\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_generation_current_store.rs\"\nrequired = [\"pub(super) fn retire_original_root_client_after_intent(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_root_client_after_intent(\", sequence = [\"match &self.store\",\"Store::Root(original)\",\"RootGenerationCurrentClient::retire_original_current_after_root_intent(\",\"original, intent, identity, gate,\",\"_ =>\",\"gate.close()\",\"Err(invalid(\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_generation_current_root.rs\"\nrequired = [\"pub(crate) fn retire_original_root_purpose_after_intent(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_root_purpose_after_intent(\", sequence = [\"fn retire_original_root_purpose_after_intent(\",\"store::CurrentStore::retire_original_root_client_after_intent(\",\"&self.store, intent, identity, gate,\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/neuron_generation_update_live.rs\"\nrequired = [\"pub(crate) fn retire_original_current_purpose(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_current_purpose(\", sequence = [\"CloseSameActorPhaseOnDrop::new(gate)\",\"intent.require_original_origin(identity, gate)?\",\"self.authorities.artifacts.try_lock().map_err(invalid)?\",\"self.selected.try_lock().map_err(invalid)?\",\"NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent(\",\"&self.current, intent, identity, gate,\",\")?\",\"intent.require_original_origin(identity, gate)?\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs\"\nrequired = [\"pub(crate) fn retire_original_root_current_after_intent(\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn retire_original_root_current_after_intent(\", sequence = [\"CloseSameActorPhaseOnDrop::new(gate)\",\"intent.require_original_origin(identity, gate)?\",\"self.0.source.scope.agent_id.as_str() != identity.agent_id.as_str()\",\"!matches!(&self.0.publication, Publication::Update { .. })\",\"return Err(invalid(\",\"self.0.original.try_lock().map_err(invalid)?\",\"LiveGenerationCurrent::retire_original_current_purpose(\",\"&self.0.current, intent, identity, gate,\",\")?\",\"intent.require_original_origin(identity, gate)?\",\"closing.disarm()\",\"Ok(())\"] },\n]\n\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs\"\nrequired = [\"impl OriginalRetiredLearningPurposes {\",\"impl OriginalSameActorLearningPurposesRetired {\"]\nforbidden = [\"unsafe\",\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"Deserialize\",\"Serialize\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn require_original_work(\", sequence = [\"fn require_original_work(\",\"OriginalRetiredLearningOwners::require_original_work(&self.owners, work)\"] },\n  { function = \"fn require_original_phase(\", sequence = [\"fn require_original_phase(\",\"crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(\",\"&self.original, identity, gate,\"] },\n]\n",
+      "reason": "Append 19 actual typed boundaries and 15 protected rows, including the private proof-binding child; no old guards removed"
+    }
+  ],
+  "source_graph": {
+    "ordered_packets": [
+      "a057e64a38fbf551740f8575430b1464d43d98fc",
+      "bc50a65b06cc69e4e40da0f34920427d1dafa08e",
+      "80eba9e2fe56c10d91195f979c7e2fd45c70ac7b"
+    ],
+    "path_count": 21,
+    "operation_count": 44,
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "preimage": null,
+        "postimage": {
+          "blob": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+          "bytes": 5115,
+          "sha256": "f09ed8840d6c533a9b69e21c03a7559f6a5f67d2bc438da23c6a1855c53c415c"
+        },
+        "operation_count": 3,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "preimage": {
+          "blob": "c15095f1e98667efae9c366a8221d58d0a95a09d",
+          "bytes": 15023,
+          "sha256": "61e8bae856e7a8a5e337efdade1834a80c1253c9a6a02c20a7ae669245f6b767"
+        },
+        "postimage": {
+          "blob": "9a48409403cb3f751f59c7c00317c55d202b9d0a",
+          "bytes": 15160,
+          "sha256": "277d8cb71d84ec29400f8a7d00ab04bbe6e8cb0a7710cfce243fa9979ff082f1"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "preimage": {
+          "blob": "ac1bb467e112eab995c4fd4e757f4543e84b5bcb"
+        },
+        "postimage": {
+          "blob": "3b191d183d3bd13e3cdcdc6dad608425e29da8eb",
+          "bytes": 15017,
+          "sha256": "71968e738b385b49201cc14c12f9d47a1e4b3843d5f850c802fa6f12dd073d27"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+        "preimage": {
+          "blob": "8f54b20150252f6f119120810b1930ebb50d034d"
+        },
+        "postimage": {
+          "blob": "4fd09ce5ac09c0de4ba6cb98c65df2c032e6c115",
+          "bytes": 9587,
+          "sha256": "a24237d88ec4b45aa8e78411c7fe5740a9756e0ab91a2962e78f684278694110"
+        },
+        "operation_count": 5,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "preimage": {
+          "blob": "9cdfb8aa002232e67843093ab6dfb3b8a6184164"
+        },
+        "postimage": {
+          "blob": "2a77649e8cc24445f4e7936e596941927b4d5451",
+          "bytes": 11919,
+          "sha256": "41896a5f4e340c63d8bc4b395c00853dd18e5dd35854a80f581a95052e99cce0"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+        "preimage": {
+          "blob": "1b6d7aa4728c0ccad6d89a412368bc2143a3580a",
+          "bytes": 7255,
+          "sha256": "4a1594815b815b6dfaae58d0d3aad31d3b634d3cb066b890196038e3113e0748"
+        },
+        "postimage": {
+          "blob": "26c4d7d2120bd753f107db7d93827e30794ca3e0",
+          "bytes": 7487,
+          "sha256": "d5bfb96d2fbe363366e9479d5ab2916000c640683f5b31b5bdedf41a8f759c44"
+        },
+        "operation_count": 3,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "preimage": {
+          "blob": "d48009829d4dc0d1d19ef6806b311d3eb28eb654",
+          "bytes": 6298,
+          "sha256": "0d677c8bbe25f5674fc52d64e3d37d6cbfc62b23e0f8b96ce23afa791a6a4d53"
+        },
+        "postimage": {
+          "blob": "7fb771f554123b248d878ce8bc643c45019762d0",
+          "bytes": 6733,
+          "sha256": "c2038a33f48e3d152dcfeda5ce6deab4955bd5d57aaccd27b1e177c8826dc526"
+        },
+        "operation_count": 6,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "preimage": {
+          "blob": "7b5ab666ef7d2c67a1270a544cc5dd4e7c06f129",
+          "bytes": 14271,
+          "sha256": "3c5d921c59443dbef58a52bd2069b18fd0fd54770860dae8f61969efb763d72a"
+        },
+        "postimage": {
+          "blob": "ca68307fdf233666176933acc0285580708efe85",
+          "bytes": 16501,
+          "sha256": "455aee239c668062a813e13c5027522a29f0e2870de713b84c5ba71e44e096de"
+        },
+        "operation_count": 7,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "preimage": {
+          "blob": "8bdd6e546a039df5a72e5a117e1903b253f2d940",
+          "bytes": 2102,
+          "sha256": "05ffd97a453fd998c6da9d2e33126c48fce9c46bab7416be79e1ff5a21e7ebc4"
+        },
+        "postimage": {
+          "blob": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+          "bytes": 3842,
+          "sha256": "a1c3ea23772244e9b0c09a9db97ac88659bacd739e57fa06d9c701efa147c564"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "preimage": null,
+        "postimage": {
+          "blob": "c79dfccadac99fb2e987ab031491881233801254",
+          "bytes": 2389,
+          "sha256": "2942127c8606ad91e009e1b52d8d384409ed02daa48a73d2d6ca7f56aa79084a"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "preimage": {
+          "blob": "8c6b2f37c22576dd71bea2e842c1851f6d926bee",
+          "bytes": 30730,
+          "sha256": "46e46a40d48f62e3f3fdff1856580650835602a6915fbe0e0d10d1279713eb8f"
+        },
+        "postimage": {
+          "blob": "72ac61e5887858558142b38ee363cd0ebc6878d7",
+          "bytes": 30790,
+          "sha256": "1a28fff149e3f5efba57018b41cbef1fb6c78f6872308129266f211a52659887"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "preimage": {
+          "blob": "cef24b30a9a65fd40890fa66b2677ca0b0d23e83",
+          "bytes": 9624,
+          "sha256": "9ee1c815d50202cf400b3d531625b93170ba086be12be3c8db808fe569115f9c"
+        },
+        "postimage": {
+          "blob": "1b5784ecca33d8fc00d4ae63540d8804ff224292",
+          "bytes": 10415,
+          "sha256": "24a96f9572c1a0225ba7897980bfe81d50c4a9ed54daf0a8e45d341ee76cfee0"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "preimage": {
+          "blob": "1516f1bebd25fac58026e14ff824bbb02522fd8f",
+          "bytes": 13244,
+          "sha256": "ba3773137ee4fae2fb1d61f3d314754295ca6cbf5eede9fd2323bdeeefd2e602"
+        },
+        "postimage": {
+          "blob": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+          "bytes": 15007,
+          "sha256": "9a049f1e8ff7f5335f5c8a57bf85a3365d24220443a36a8c805244e13b960ce6"
+        },
+        "operation_count": 3,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "preimage": {
+          "blob": "c868a7eca4117f79f5f3e35ef1ecd3f0863184d9",
+          "bytes": 11018,
+          "sha256": "2ae54af7f5f5e63f6fbafb04b192e5f02e8b22954df7917f54047621eaca8b03"
+        },
+        "postimage": {
+          "blob": "dc30a2d9de377a3c43221470b408df64962b76db",
+          "bytes": 12385,
+          "sha256": "cc6543f7aecd7a18a7e3130ef58036f95f363d901b1057b9fb7790328525eb98"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+        "preimage": {
+          "blob": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+          "bytes": 5779,
+          "sha256": "12cd56df56fedf2a12a36dca8bb54e0981c90333fd34eeeaebfd738a6a6de8b9"
+        },
+        "postimage": {
+          "blob": "4d65369bd1c394ed6aeb2e45c7b0e2a6720ba7d7",
+          "bytes": 6626,
+          "sha256": "31dd7c6fe8d8ecffbc02ff6dcd0fd5abc1fd801c08dc8f50eadb4b64b19f9218"
+        },
+        "operation_count": 3,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+        "preimage": {
+          "blob": "c4641148de7fc97f4c35ad9efbd883c0da594881",
+          "bytes": 3732,
+          "sha256": "e3200c92d643139d5a5dd6c08bc958a53582ad9573a1635585d966f74a329d5e"
+        },
+        "postimage": {
+          "blob": "03d02251d457311fc0ac8e6ca6a5b909c2d0fe3d",
+          "bytes": 4177,
+          "sha256": "cf6054adf84eb59b014a111e99eeb5fed24ba186238e6864839bfefd6169a587"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "preimage": {
+          "blob": "23b86bf6aafc8fea35cc220fb987dbe2592b6f59"
+        },
+        "postimage": {
+          "blob": "1d522ce0553ebc30d8228fa46a41970ed8c589b5",
+          "bytes": 9935,
+          "sha256": "d6e42e07f54574355b74c99a5af76ff99892bb809f6688c8520d5ee3a664b3f7"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "preimage": {
+          "blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f"
+        },
+        "postimage": {
+          "blob": "60e50bd7db42d13a80df225044ca883c942ac899",
+          "bytes": 3328,
+          "sha256": "e34aa974d45ee547c1120367c4a1182e1286205222ca48b3cbf7e198ff2f6f3c"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs",
+        "preimage": {
+          "blob": "ee867a20921f65e7c17907aac8cf53a074cba426"
+        },
+        "postimage": {
+          "blob": "ae34b666ab9c7f83e446c23bf524cf10dee556fd",
+          "bytes": 13779,
+          "sha256": "48fd3041ab1f68349353b8faf085168e74eb32d3bfdc69217b54ad1175e8983d"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement_tests.rs",
+        "preimage": null,
+        "postimage": {
+          "blob": "4e7bbd87d48d8c0016a7690b82754be943a55d16",
+          "bytes": 3425,
+          "sha256": "f715831fa75cb8da3711c32c18609e10a35de1da84f4377113afd989fc97f016"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "preimage": null,
+        "postimage": {
+          "blob": "69ae313a6b592de998636cc8f7a39476525e0424",
+          "bytes": 888,
+          "sha256": "22c434605a778d1c65a703df528942878f17a37eae54c0204412088021b2c0a8"
+        },
+        "operation_count": 1,
+        "forward_reverse_exact": true,
+        "post_get_exact": true
+      }
+    ],
+    "predecessor_full_packet": "2d66c3546e60adaad37fd902e9dc6ff3bab20ff6",
+    "predecessor_note": "2d66 restates a057+bc50 only. Apply it plus80eba OR the three ordered packets, never both.",
+    "binding_split": "Only two new impls move verbatim to a private child. Original function-extent guards and their exact parent functions remain unique and unchanged."
+  },
+  "semantic": {
+    "changed_old_boundaries": [
+      {
+        "id": "q24_learning_normal_identity",
+        "symbol": "OriginalSameActorLearningWork::require_original_retirement_identity",
+        "old_callers": [],
+        "new_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+        ],
+        "added": [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+        ],
+        "removed": [],
+        "all_other_row_fields_unchanged": true
+      },
+      {
+        "id": "q24_learning_normal_delivery_binding",
+        "symbol": "OriginalSameActorLearningWork::require_original_delivery_request",
+        "old_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs"
+        ],
+        "new_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+        ],
+        "added": [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+        ],
+        "removed": [],
+        "all_other_row_fields_unchanged": true
+      },
+      {
+        "id": "q24_same_actor_learning_stage_work",
+        "symbol": "OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work",
+        "old_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"
+        ],
+        "new_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs"
+        ],
+        "added": [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs"
+        ],
+        "removed": [],
+        "all_other_row_fields_unchanged": true
+      },
+      {
+        "id": "root_generation_connection_original_binding",
+        "symbol": "RootGenerationPublicationConnectionV1::original_launch_binding",
+        "old_callers": [
+          "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+        ],
+        "new_callers": [
+          "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+        ],
+        "added": [
+          "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+        ],
+        "removed": [],
+        "all_other_row_fields_unchanged": true
+      },
+      {
+        "id": "root_original_q24_into_q24_learning_runtime",
+        "symbol": "AgentdRootLearningInputsV1::into_q24_learning_runtime",
+        "old_callers": [
+          "codex-rs/hepta-agentd/src/config_root_learning.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+        ],
+        "new_callers": [
+          "codex-rs/hepta-agentd/src/config_root_learning.rs"
+        ],
+        "added": [],
+        "removed": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+        ],
+        "all_other_row_fields_unchanged": true
+      },
+      {
+        "id": "q24_learning_normal_owners_binding",
+        "symbol": "OriginalRetiredLearningOwners::require_original_work",
+        "old_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+        ],
+        "new_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"
+        ],
+        "added": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"
+        ],
+        "removed": [],
+        "all_other_row_fields_unchanged": true
+      }
+    ],
+    "changed_old_protected_rows": [
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+        "reason": "Retain original assembly ordering while binding actual retirable Root inputs and checkpoint owner transfer"
+      }
+    ],
+    "new_boundaries": [
+      {
+        "id": "q24_purpose_checkpoint_ports",
+        "symbol": "AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners",
+        "receiver_type": "AgentdLearningCheckpointClientV1",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+        "definition_markers": [
+          "fn with_original_retirable_stage_owners(",
+          "Checkpoint::SameActorRootClient(client)",
+          "Ok((ports, retirement))"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_checkpoint_capture",
+        "symbol": "AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint",
+        "receiver_type": "AgentdLearningCheckpointClientV1",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "definition_markers": [
+          "fn into_original_retirable_checkpoint(",
+          "!Arc::ptr_eq(phase.gate(), work.gate())",
+          "work.require_original_delivery_request(",
+          "if self.scope.is_none()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_checkpoint_idle",
+        "symbol": "AgentdLearningCheckpointClientV1::lock_original_retirement_channel",
+        "receiver_type": "AgentdLearningCheckpointClientV1",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "definition_markers": [
+          "fn lock_original_retirement_channel(",
+          ".try_lock()",
+          "if held.is_none()",
+          "Ok(held)"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_checkpoint_origin",
+        "symbol": "OriginalLearningCheckpointRetirement::require_original_work",
+        "receiver_type": "OriginalLearningCheckpointRetirement",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "definition_markers": [
+          "fn require_original_work(",
+          "!Arc::ptr_eq(&self.work, work)",
+          "work.require_original_retirement_identity(&self.identity, work.gate())"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_checkpoint_close",
+        "symbol": "OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent",
+        "receiver_type": "OriginalLearningCheckpointRetirement",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_checkpoint_after_root_intent(",
+          "lock_original_retirement_channel(",
+          "phase.shutdown_original_after_root_intent(intent)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_runtime_assembly",
+        "symbol": "AgentdRootLearningInputsV1::into_original_retirable_learning_runtime",
+        "receiver_type": "AgentdRootLearningInputsV1",
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "definition_markers": [
+          "fn into_original_retirable_learning_runtime(",
+          "crate::learning_iteration_channel_scoped_v2(",
+          ".with_original_circuit_learning_delivery(self.initial.request)?",
+          ".with_original_q24_stage_owners(stages)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_model_close",
+        "symbol": "AgentdRootQ24ModelFactoryV1::retire_original_model_after_root_intent",
+        "receiver_type": "AgentdRootQ24ModelFactoryV1",
+        "definition_path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "definition_markers": [
+          "fn retire_original_model_after_root_intent(",
+          "self.fenced = true",
+          "phase.shutdown_original_after_root_intent(intent)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_stage_close",
+        "symbol": "OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose",
+        "receiver_type": "OriginalCellQ24LearningStageOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_model_purpose(",
+          "self.inner.lane.try_acquire()",
+          "self.inner.owners.try_lock()",
+          "self.inner.lane.close()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_loop_close",
+        "symbol": "OriginalLearningLoopRetired::retire_original_model_purpose",
+        "receiver_type": "OriginalLearningLoopRetired",
+        "definition_path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_model_purpose(",
+          "self.bootstrap.original_q24.as_ref()",
+          "OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_learning_owners_close",
+        "symbol": "OriginalRetiredLearningOwners::retire_original_root_purposes",
+        "receiver_type": "OriginalRetiredLearningOwners",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_root_purposes(",
+          "OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(",
+          "Ok(OriginalRetiredLearningPurposes { owners: self })"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_learning_owners_retained",
+        "symbol": "OriginalRetiredLearningPurposes::require_original_work",
+        "receiver_type": "OriginalRetiredLearningPurposes",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "definition_markers": [
+          "fn require_original_work(",
+          "impl OriginalRetiredLearningPurposes",
+          "OriginalRetiredLearningOwners::require_original_work(&self.owners, work)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_learning_joined_close",
+        "symbol": "OriginalSameActorLearningJoined::retire_original_root_purposes",
+        "receiver_type": "OriginalSameActorLearningJoined",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_root_purposes(",
+          "OriginalSameActorCJoined::retire_original_root_purposes(",
+          "Ok(OriginalSameActorLearningPurposesRetired { original })"
+        ],
+        "product_callers": [],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_learning_retired_origin",
+        "symbol": "OriginalSameActorLearningPurposesRetired::require_original_phase",
+        "receiver_type": "OriginalSameActorLearningPurposesRetired",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "definition_markers": [
+          "fn require_original_phase(",
+          "crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_publication_stream_close",
+        "symbol": "OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent",
+        "receiver_type": "OriginalPublicationStream",
+        "definition_path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "definition_markers": [
+          "fn retire_original_scoped_purpose_after_root_intent(",
+          "phase.initial_retirement.is_some()",
+          "phase.retired = true",
+          "self.stream.shutdown(std::net::Shutdown::Both)?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_current_client_close",
+        "symbol": "RootGenerationCurrentClient::retire_original_current_after_root_intent",
+        "receiver_type": "RootGenerationCurrentClient",
+        "definition_path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "definition_markers": [
+          "fn retire_original_current_after_root_intent(",
+          "self.connection.original_launch_binding().1 != identity",
+          "self.fenced.swap(true, Ordering::AcqRel)",
+          "self.lane.try_lock()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_current_store_close",
+        "symbol": "CurrentStore::retire_original_root_client_after_intent",
+        "receiver_type": "CurrentStore",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+        "definition_markers": [
+          "fn retire_original_root_client_after_intent(",
+          "Store::Root(original)",
+          "RootGenerationCurrentClient::retire_original_current_after_root_intent("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_current_owner_close",
+        "symbol": "NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent",
+        "receiver_type": "NeuronGenerationCurrentOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+        "definition_markers": [
+          "fn retire_original_root_purpose_after_intent(",
+          "store::CurrentStore::retire_original_root_client_after_intent("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_live_current_close",
+        "symbol": "LiveGenerationCurrent::retire_original_current_purpose",
+        "receiver_type": "LiveGenerationCurrent",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "definition_markers": [
+          "fn retire_original_current_purpose(",
+          "self.authorities.artifacts.try_lock()",
+          "self.selected.try_lock()",
+          "NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+        ],
+        "caller_markers": []
+      },
+      {
+        "id": "q24_purpose_published_task_close",
+        "symbol": "PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent",
+        "receiver_type": "PublishedCircuitFeatureTaskV1",
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "definition_markers": [
+          "fn retire_original_root_current_after_intent(",
+          "Publication::Update { .. }",
+          "self.0.original.try_lock()",
+          "LiveGenerationCurrent::retire_original_current_purpose("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+        ],
+        "caller_markers": []
+      }
+    ],
+    "new_protected_rows": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "required": [
+          "pub(crate) struct OriginalLearningCheckpointRetirement {",
+          "client: Arc<AgentdLearningCheckpointClientV1>",
+          "work: Arc<OriginalSameActorLearningWork>"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [
+          [
+            "struct OriginalLearningCheckpointRetirement",
+            "_closing: CloseSameActorPhaseOnDrop",
+            "client: Arc<AgentdLearningCheckpointClientV1>",
+            "identity: AgentdIdentity",
+            "work: Arc<OriginalSameActorLearningWork>"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn lock_original_retirement_channel(",
+            "sequence": [
+              "self",
+              ".channel",
+              ".try_lock()",
+              ".map_err(|_| refused(",
+              "if held.is_none()",
+              "return Err(refused(",
+              "Ok(held)"
+            ]
+          },
+          {
+            "function": "fn into_original_retirable_checkpoint(",
+            "sequence": [
+              "work.original_failure_scope()",
+              "work.require_original_retirement_identity(identity, work.gate())?",
+              "self.phase.as_ref()",
+              "!Arc::ptr_eq(phase.gate(), work.gate())",
+              "return Err(refused(",
+              "phase.require_open()?",
+              "work.require_original_delivery_request(&self.initial.request, &self.initial.owners)?",
+              "self.scope.is_none()",
+              "return Err(refused(",
+              "let client = Arc::new(self)",
+              "OriginalLearningCheckpointRetirement {",
+              "_closing: closing",
+              "client: Arc::clone(&client)",
+              "identity: identity.clone()",
+              "work: Arc::clone(work)",
+              "Ok((client, retirement))"
+            ]
+          },
+          {
+            "function": "fn require_original_work(",
+            "sequence": [
+              "!Arc::ptr_eq(&self.work, work)",
+              "self.work.gate().close()",
+              "work.gate().close()",
+              "return Err(refused(",
+              "work.require_original_retirement_identity(&self.identity, work.gate())"
+            ]
+          },
+          {
+            "function": "fn retire_original_checkpoint_after_root_intent(",
+            "sequence": [
+              "self.work.original_failure_scope()",
+              "self.require_original_work(&self.work)?",
+              "intent.require_original_origin(&self.identity, self.work.gate())?",
+              "self.client.phase.as_ref()",
+              "!Arc::ptr_eq(phase.gate(), self.work.gate())",
+              "return Err(refused(",
+              "AgentdLearningCheckpointClientV1::lock_original_retirement_channel(",
+              "&self.client",
+              ")?",
+              "held.as_ref()",
+              "RootObservationStream::root_lifetime(&channel.transport)",
+              "check_lifetime(root.get_ref())",
+              ".map_err(refused)?",
+              "phase.shutdown_original_after_root_intent(intent)?",
+              "check_lifetime(root.get_ref())",
+              ".map_err(refused)?",
+              "intent.require_original_origin(&self.identity, self.work.gate())?",
+              "drop(held)",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+        "required": [
+          "SameActorRootClient(Arc<AgentdLearningCheckpointClientV1>)",
+          "Checkpoint::SameActorRootClient(client)"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn with_original_retirable_stage_owners(",
+            "sequence": [
+              "OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(",
+              "&stages, work,",
+              ".map_err(",
+              "AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint(",
+              "self, identity, work,",
+              "let ports = Arc::new(CheckpointedIterationPorts {",
+              "initial: client.initial.clone()",
+              "checkpoint: Checkpoint::SameActorRootClient(client)",
+              "stages,",
+              "Ok((ports, retirement))"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "required": [
+          "pub(crate) fn into_original_retirable_learning_runtime("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn into_original_retirable_learning_runtime(",
+            "sequence": [
+              "self.require_prepared_q24(stages.prepared())?",
+              "work.require_original_retirement_identity(&self.identity, work.gate())?",
+              "self.scope.ok_or_else(",
+              "AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners(",
+              "self.client,",
+              "Arc::clone(&stages)",
+              "&self.identity,",
+              "work,",
+              "crate::learning_iteration_channel_scoped_v2(",
+              "self.identity.agent_id",
+              "self.identity.spawn_generation",
+              "self.initial.owners",
+              "ports,",
+              "verifier,",
+              "capacity,",
+              "scope,",
+              ".with_original_circuit_learning_delivery(self.initial.request)?",
+              ".with_original_q24_stage_owners(stages)?",
+              "Ok((handle, bootstrap, checkpoint))"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "required": [
+          "checkpoint: OriginalLearningCheckpointRetirement,"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [
+          [
+            "struct OriginalSameActorLearningWorker",
+            "context: Arc<OriginalSameActorRootContext>",
+            "work: Arc<OriginalSameActorLearningWork>",
+            "checkpoint: OriginalLearningCheckpointRetirement",
+            "learning: LearningIterationRuntimeBootstrapV1",
+            "delivery: CircuitLearningDeliveryRuntimeV1",
+            "pending: PendingSuccessorOwner",
+            "_closing: CloseSameActorPhaseOnDrop"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_parts(",
+            "sequence": [
+              "CloseSameActorPhaseOnDrop::new(context.gate())",
+              "OriginalSameActorRootContext::require_current(&context)?",
+              "work.require_identity_and_gate(context.identity(), context.gate())?",
+              "learning.require_identity(context.identity())?",
+              "OriginalLearningCheckpointRetirement::require_original_work(&checkpoint, &work)?",
+              "Ok(Self {",
+              "context,",
+              "work,",
+              "checkpoint,",
+              "learning,",
+              "delivery,",
+              "pending,",
+              "_closing: closing"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "required": [
+          "pub(crate) struct OriginalRetiredLearningPurposes {",
+          "pub(crate) struct OriginalSameActorLearningPurposesRetired {",
+          "identity: AgentdIdentity,",
+          "checkpoint: OriginalLearningCheckpointRetirement,"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          ".abort(",
+          "#[derive(Clone)]",
+          "Deserialize"
+        ],
+        "required_order": [
+          [
+            "struct OriginalRetiredLearningOwners",
+            "_closing: CloseSameActorPhaseOnDrop",
+            "work: Arc<OriginalSameActorLearningWork>",
+            "identity: AgentdIdentity",
+            "checkpoint: OriginalLearningCheckpointRetirement",
+            "learning: OriginalLearningLoopRetired",
+            "delivery: OriginalLearningDeliveryRetired",
+            "joined: OriginalLearningWorkJoined"
+          ],
+          [
+            "impl OriginalRetiredLearningOwners {\n    pub(crate) fn require_original_work(",
+            "!Arc::ptr_eq(&self.work, work)",
+            "self.work.gate().close()",
+            "work.gate().close()",
+            "return Err(",
+            "work.require_original_retirement_identity(&self.identity, work.gate())?",
+            "OriginalLearningCheckpointRetirement::require_original_work(&self.checkpoint, work)?",
+            "OriginalLearningLoopRetired::require_original_work(&self.learning, work)?",
+            "OriginalLearningDeliveryRetired::require_original_work(&self.delivery, work)?",
+            "OriginalLearningWorkJoined::require_original_work(&self.joined, work)"
+          ],
+          [
+            "impl OriginalRetiredLearningOwners {\n    pub(crate) fn retire_original_root_purposes(",
+            "OriginalRetiredLearningOwners::require_original_work(&self, &self.work)?",
+            "intent.require_original_origin(&self.identity, self.work.gate())?",
+            "OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(",
+            "&self.checkpoint, intent,",
+            "OriginalLearningLoopRetired::retire_original_model_purpose(",
+            "&self.learning, intent, &self.identity, &self.work,",
+            "intent.require_original_origin(&self.identity, self.work.gate())?",
+            "Ok(OriginalRetiredLearningPurposes { owners: self })"
+          ],
+          [
+            "impl OriginalSameActorLearningJoined {",
+            "fn retire_original_root_purposes(",
+            "OriginalSameActorCJoined::retire_original_root_purposes(",
+            "self.original, intent,",
+            "Ok(OriginalSameActorLearningPurposesRetired { original })"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn run_original_retirable_lanes(",
+            "sequence": [
+              "let OriginalSameActorLearningWorker {",
+              "context,",
+              "work,",
+              "checkpoint,",
+              "learning,",
+              "work.join_original_normal_work(&learning, &delivery).await?",
+              "let owners = OriginalRetiredLearningOwners {",
+              "_closing: work.original_failure_scope()",
+              "work: Arc::clone(&work)",
+              "identity: context.identity().clone()",
+              "checkpoint,",
+              "learning,",
+              "delivery,",
+              "joined,",
+              "OriginalRetiredLearningOwners::require_original_work(&owners, &work)?",
+              "OriginalSameActorCQuiescence::finish_original_successor_join(",
+              "quiescence, successor, owners,",
+              "closing.disarm()",
+              "Ok(OriginalSameActorLearningJoined { original })"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "required": [
+          "pub(crate) fn retire_original_model_after_root_intent("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_model_after_root_intent(",
+            "sequence": [
+              "CloseSameActorPhaseOnDrop::new(gate)",
+              "intent.require_original_origin(identity, gate)?",
+              "self.phase.as_ref()",
+              "!std::sync::Arc::ptr_eq(phase.gate(), gate) || self.fenced",
+              "return Err(refused(",
+              "phase.require_open().map_err(refused)?",
+              "self.transport.as_ref()",
+              "RootObservationStream::root_lifetime(transport)",
+              "check_lifetime(root.get_ref()).map_err(refused)?",
+              "self.fenced = true",
+              "phase.shutdown_original_after_root_intent(intent)?",
+              "check_lifetime(root.get_ref()).map_err(refused)?",
+              "intent.require_original_origin(identity, gate)?",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "required": [
+          "pub(crate) fn retire_original_model_purpose("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_model_purpose(",
+            "sequence": [
+              "work.original_failure_scope()",
+              "work.require_original_retirement_identity(identity, work.gate())?",
+              "intent.require_original_origin(identity, work.gate())?",
+              "self.inner.same_actor_work.as_ref()",
+              "!Arc::ptr_eq(original, work) || self.inner.cancelled.load(Ordering::Acquire)",
+              "return Err(refused(",
+              "self.inner.lane.try_acquire()",
+              ".map_err(",
+              "self.inner.owners.try_lock()",
+              ".map_err(",
+              "intent.require_original_origin(identity, work.gate())?",
+              "if self.inner.cancelled.load(Ordering::Acquire)",
+              "return Err(refused(",
+              "self.inner.lane.close()",
+              "AgentdRootQ24ModelFactoryV1::retire_original_model_after_root_intent(",
+              "&mut owners.factory, intent, identity, work.gate(),",
+              ")?",
+              "intent.require_original_origin(identity, work.gate())?",
+              "drop(owners)",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "required": [
+          "pub(crate) fn retire_original_model_purpose("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_model_purpose(",
+            "sequence": [
+              "OriginalLearningLoopRetired::require_original_work(self, work)?",
+              "intent.require_original_origin(identity, work.gate())?",
+              "self.bootstrap.original_q24.as_ref()",
+              "OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose(",
+              "owners, intent, identity, work,",
+              ")?",
+              "intent.require_original_origin(identity, work.gate())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "required": [
+          "retired: bool,",
+          "retired: false,",
+          "pub(crate) fn retire_original_scoped_purpose_after_root_intent("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_scoped_purpose_after_root_intent(",
+            "sequence": [
+              "CloseSameActorPhaseOnDrop::new(gate)",
+              "intent.require_original_origin(identity, gate)?",
+              "self.phase.as_mut().ok_or_else(unavailable)?",
+              "CloseSameActorPhaseOnDrop::new(&phase.gate)",
+              "!std::sync::Arc::ptr_eq(&phase.gate, gate)",
+              "phase.initial_retirement.is_some()",
+              "phase.retired",
+              "self.end != gate.deadline().instant()",
+              "return Err(unavailable().into())",
+              "phase.gate.require_open()?",
+              "check_lifetime(&self.root)",
+              ".map_err(io::Error::other)?",
+              "phase.retired = true",
+              "self.stream.shutdown(std::net::Shutdown::Both)?",
+              "check_lifetime(&self.root)",
+              ".map_err(io::Error::other)?",
+              "intent.require_original_origin(identity, gate)?",
+              "original_closing.disarm()",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "required": [
+          "pub(crate) fn retire_original_current_after_root_intent("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_current_after_root_intent(",
+            "sequence": [
+              "CloseSameActorPhaseOnDrop::new(gate)",
+              "intent.require_original_origin(identity, gate)?",
+              "self.connection.original_launch_binding().1 != identity",
+              "self.fenced.swap(true, Ordering::AcqRel)",
+              "return Err(uncertain())",
+              "self.lane.try_lock().map_err(|_| uncertain())?",
+              "held.as_mut().ok_or_else(uncertain)?",
+              "OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent(",
+              "&mut lane.stream, intent, identity, gate,",
+              ")?",
+              "intent.require_original_origin(identity, gate)?",
+              "drop(held)",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+        "required": [
+          "pub(super) fn retire_original_root_client_after_intent("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_root_client_after_intent(",
+            "sequence": [
+              "match &self.store",
+              "Store::Root(original)",
+              "RootGenerationCurrentClient::retire_original_current_after_root_intent(",
+              "original, intent, identity, gate,",
+              "_ =>",
+              "gate.close()",
+              "Err(invalid("
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+        "required": [
+          "pub(crate) fn retire_original_root_purpose_after_intent("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_root_purpose_after_intent(",
+            "sequence": [
+              "fn retire_original_root_purpose_after_intent(",
+              "store::CurrentStore::retire_original_root_client_after_intent(",
+              "&self.store, intent, identity, gate,"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "required": [
+          "pub(crate) fn retire_original_current_purpose("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_current_purpose(",
+            "sequence": [
+              "CloseSameActorPhaseOnDrop::new(gate)",
+              "intent.require_original_origin(identity, gate)?",
+              "self.authorities.artifacts.try_lock().map_err(invalid)?",
+              "self.selected.try_lock().map_err(invalid)?",
+              "NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent(",
+              "&self.current, intent, identity, gate,",
+              ")?",
+              "intent.require_original_origin(identity, gate)?",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "required": [
+          "pub(crate) fn retire_original_root_current_after_intent("
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn retire_original_root_current_after_intent(",
+            "sequence": [
+              "CloseSameActorPhaseOnDrop::new(gate)",
+              "intent.require_original_origin(identity, gate)?",
+              "self.0.source.scope.agent_id.as_str() != identity.agent_id.as_str()",
+              "!matches!(&self.0.publication, Publication::Update { .. })",
+              "return Err(invalid(",
+              "self.0.original.try_lock().map_err(invalid)?",
+              "LiveGenerationCurrent::retire_original_current_purpose(",
+              "&self.0.current, intent, identity, gate,",
+              ")?",
+              "intent.require_original_origin(identity, gate)?",
+              "closing.disarm()",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "required": [
+          "impl OriginalRetiredLearningPurposes {",
+          "impl OriginalSameActorLearningPurposesRetired {"
+        ],
+        "forbidden": [
+          "unsafe",
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey",
+          "Deserialize",
+          "Serialize"
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn require_original_work(",
+            "sequence": [
+              "fn require_original_work(",
+              "OriginalRetiredLearningOwners::require_original_work(&self.owners, work)"
+            ]
+          },
+          {
+            "function": "fn require_original_phase(",
+            "sequence": [
+              "fn require_original_phase(",
+              "crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(",
+              "&self.original, identity, gate,"
+            ]
+          }
+        ]
+      }
+    ],
+    "actual_new_call_edges": [
+      {
+        "id": "q24_purpose_checkpoint_ports",
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_checkpoint_capture",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_checkpoint_origin",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_checkpoint_origin",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_checkpoint_close",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_runtime_assembly",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_model_close",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_stage_close",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_loop_close",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_learning_owners_close",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_learning_owners_retained",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_learning_retired_origin",
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "kind": "actual call on explicit &OriginalSameActorLearningPurposesRetired parameter",
+        "instances": 2
+      },
+      {
+        "id": "q24_purpose_publication_stream_close",
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_current_client_close",
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_current_store_close",
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_current_owner_close",
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_live_current_close",
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      },
+      {
+        "id": "q24_purpose_published_task_close",
+        "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs",
+        "kind": "actual explicit type-qualified call"
+      }
+    ]
+  },
+  "other_owner_annex": {
+    "runtime_intent_origin_callers": [
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+      "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+    ],
+    "runtime_required_shutdown_callers": [
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs"
+    ],
+    "audit_c_joined_consume_callers": [
+      "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+    ],
+    "audit_c_purposes_binding_callers": [
+      "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"
+    ],
+    "note": "These are actual source edges for the corresponding authors' own rows, not extra broad callers. This annex does not overwrite their definitions."
+  },
+  "preservation": {
+    "original_boundary_count": 660,
+    "changed_existing_boundary_rows": 6,
+    "other_existing_boundary_rows_unchanged": 654,
+    "existing_protected_rows": 452,
+    "unchanged_existing_protected_rows": 451,
+    "changed_existing_protected_rows": 1,
+    "new_boundaries": 19,
+    "new_protected_rows": 15,
+    "final_boundaries": 679,
+    "final_protected_rows": 467,
+    "required_ids_exact": true,
+    "original_worker_retirement_row_exact": true,
+    "v45_stage_rows_exact": 4,
+    "actual_factory_guard_rows_exact": 1,
+    "source_files": 21,
+    "source_ops": 44,
+    "source_all_forward_reverse_and_get_exact": true,
+    "metadata_forward_reverse_exact": true,
+    "local_projection_checks": 32,
+    "local_projection_errors": [],
+    "original_checker_executed": false
+  },
+  "local_static_projection": {
+    "checker_source": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_order",
+        "markers": 5
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn lock_original_retirement_channel(",
+        "markers": 7,
+        "extent": [
+          1032,
+          1452
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn into_original_retirable_checkpoint(",
+        "markers": 16,
+        "extent": [
+          1470,
+          2673
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn require_original_work(",
+        "markers": 5,
+        "extent": [
+          2737,
+          3156
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_checkpoint_after_root_intent(",
+        "markers": 20,
+        "extent": [
+          3174,
+          4996
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn with_original_retirable_stage_owners(",
+        "markers": 10,
+        "extent": [
+          2979,
+          4029
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn into_original_retirable_learning_runtime(",
+        "markers": 19,
+        "extent": [
+          8092,
+          9722
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_order",
+        "markers": 8
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn from_original_parts(",
+        "markers": 13,
+        "extent": [
+          1341,
+          2260
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_order",
+        "markers": 8
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_order",
+        "markers": 10
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_order",
+        "markers": 9
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_order",
+        "markers": 5
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn run_original_retirable_lanes(",
+        "markers": 19,
+        "extent": [
+          6602,
+          16382
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_model_after_root_intent(",
+        "markers": 15,
+        "extent": [
+          1859,
+          3350
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_model_purpose(",
+        "markers": 21,
+        "extent": [
+          348,
+          2270
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_model_purpose(",
+        "markers": 7,
+        "extent": [
+          1870,
+          2606
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_scoped_purpose_after_root_intent(",
+        "markers": 20,
+        "extent": [
+          8896,
+          10440
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_current_after_root_intent(",
+        "markers": 14,
+        "extent": [
+          5767,
+          7116
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_root_client_after_intent(",
+        "markers": 7,
+        "extent": [
+          3785,
+          4482
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_root_purpose_after_intent(",
+        "markers": 3,
+        "extent": [
+          331,
+          758
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_current_purpose(",
+        "markers": 10,
+        "extent": [
+          3477,
+          4472
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn retire_original_root_current_after_intent(",
+        "markers": 12,
+        "extent": [
+          379,
+          1535
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn require_original_work(",
+        "markers": 2,
+        "extent": [
+          305,
+          517
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "scope": "new-purpose-row",
+        "kind": "required_function_order",
+        "function": "fn require_original_phase(",
+        "markers": 3,
+        "extent": [
+          585,
+          883
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_order",
+        "markers": 6
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_order",
+        "markers": 5
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_function_order",
+        "function": "fn require_original_work(",
+        "markers": 7,
+        "extent": [
+          2117,
+          3042
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_function_order",
+        "function": "fn require_original_phase(",
+        "markers": 2,
+        "extent": [
+          4586,
+          4831
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_function_order",
+        "function": "fn original_c_joined(",
+        "markers": 2,
+        "extent": [
+          4849,
+          4935
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_function_order",
+        "function": "fn run_original_retirable(",
+        "markers": 16,
+        "extent": [
+          4994,
+          6589
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "scope": "original-5959-row-verbatim",
+        "kind": "required_function_order",
+        "function": "fn run_original_retirable_lanes(",
+        "markers": 82,
+        "extent": [
+          6602,
+          16382
+        ]
+      }
+    ],
+    "errors": [],
+    "scope": "Pure JS known-function comment/literal masking and extent/order projection, not original checker execution, not a whole-repository typed caller index.",
+    "original_worker_row_sha256": "bcd62225856d6b914510d84cb9f71068372ec07bb4f414166f72ac5a0ef985ff",
+    "old_default_methods": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "method": "from_stream",
+        "bytes": 2498,
+        "sha256": "3d178bd2b6d731e9b32bbff19d478ed3032042cd788c22fe1fce5918cbc74dc4",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "method": "exchange",
+        "bytes": 1376,
+        "sha256": "6cdc25de3700fcdc567a03f8e90dffdbdbac986bd23611951bb71b0889de9a97",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "method": "wait",
+        "bytes": 1573,
+        "sha256": "723558fec84563705bc53f68286bd401c1acdd248b6073fb587313b437dd6785",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "method": "read",
+        "bytes": 602,
+        "sha256": "5781dca497e3a1b2cbcb32df1073ee6642a67190afcd350506289152f134ffe7",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "method": "write",
+        "bytes": 597,
+        "sha256": "d01b97b4fa5a3528caa8dc086fe051bb48c0daae06f8440aa5bf052bab6e65a5",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "from_original_stream",
+        "bytes": 2222,
+        "sha256": "b35fd9abcde543879ce384e60e36d4aa43162330e11f34115443133ba421fba9",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "scope",
+        "bytes": 114,
+        "sha256": "4370c81d8e6928697eb320bc7a4cd10831d018cbf279a8c10439b66a0c46819a",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "require_selection",
+        "bytes": 676,
+        "sha256": "087a9f076191e2d07e5f78d1e120458c4da47a70a224054fa270dda6d30208e4",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "require_successor_context",
+        "bytes": 995,
+        "sha256": "e718407e727031215dd91706911029d13612dd9e72a571682eb1eb2312f6ce09",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "fence",
+        "bytes": 163,
+        "sha256": "55f7362746a9ea3043db94a67c79b02493c1a829d693fa7af3e85fee7f7779e3",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "observe",
+        "bytes": 101,
+        "sha256": "47f24f6665c4e66a19e4c556323f9af9fea0eb4d74d91dadc6570b567b5139aa",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "replace",
+        "bytes": 2087,
+        "sha256": "70d3b67e398ed120ad0f80bd04e13a2f97ca8e36ab606ffbad796e229d5bf42e",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+        "method": "exchange",
+        "bytes": 1920,
+        "sha256": "f7206a3d6e4aaae693998a33c61d86df137990a0379446b215ae39acf80e8a97",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "method": "from_original_same_actor_handoff",
+        "bytes": 1079,
+        "sha256": "3bbe1b3234c3aacf8366998ac0f418f6cb8a88361e099ff86c50034125e00377",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "method": "original_phase_failure_scope",
+        "bytes": 204,
+        "sha256": "f21069b95724941518a7aefca7b97860405ae9715007a07349dc7212d1f62af4",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+        "method": "require_original_phase",
+        "bytes": 250,
+        "sha256": "b7a54f4fc7ed774e2c1bcf6a80d2cfa6ebc89b21e2fab8fc4fb0f96b5d8071c1",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "method": "connect",
+        "bytes": 3656,
+        "sha256": "034a2664b8d5b3bbdaaaf28a719ffcd7bd48e85efdbf4ec76a05994655aa5f85",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "method": "q24_model_scope",
+        "bytes": 407,
+        "sha256": "70ebf2f4ed18d10d74f69e79c460bd37f6ac43deafcbf9dfda595fb6020e80a3",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "method": "require_prepared_q24",
+        "bytes": 450,
+        "sha256": "6c64f41bf2982d2e83ef22f34e4878bb20e0307ddd94b8e4f186d7f861400781",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "method": "into_q24_learning_runtime",
+        "bytes": 677,
+        "sha256": "b7ce3d13217e6c146b4e534553c1f3a5500bd14ae2cf2f6029aa1dece762c507",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "method": "require_identity",
+        "bytes": 273,
+        "sha256": "e175333e35ad67c6799be01d0c82af414ebad7f4f0a65d0f1c569d69e6237fbc",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "method": "into_learning_runtime",
+        "bytes": 1241,
+        "sha256": "aa89ed928e7e168411f4ec2ab30b24877e50fbac5628125585a25b97be69796c",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "method": "new",
+        "bytes": 490,
+        "sha256": "2538cd7ebdfeffaef7ef1da8c1d523fc7ffa2c04fdd397b2cb40024602bc1f67",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "method": "new_initial",
+        "bytes": 500,
+        "sha256": "b61d414a68fd8f91e5c1e679b6e14d829bd63204b39d6b966744f9bc8629bacb",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "method": "from_publication",
+        "bytes": 802,
+        "sha256": "a3f89b3be276b67acfdc27e56626df0da8438d327b36e3c72b6a0dca19876722",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "method": "check_live",
+        "bytes": 2376,
+        "sha256": "c7df7eff804ea736a12e891a978a82d1dff0ab4e0b4b4372ae88ca78018e4ba3",
+        "exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+        "method": "drain_completed_task",
+        "bytes": 1628,
+        "sha256": "c4fdfaa07e6e0d232502ed73029165cf4851c68c368839ebadc9bc3dbce68339",
+        "exact": true
+      }
+    ]
+  },
+  "components": {
+    "source_packet": "bc50a65b06cc69e4e40da0f34920427d1dafa08e",
+    "tests": 3,
+    "executed": false,
+    "review": "da605962ffaef4c81c4e233f277872ea3e4b6a73",
+    "scope": "Actual populated Mutex/channel/FD/thread admission and refusal components only. No fabricated Intent, C completion, Root shutdown, or business proof."
+  },
+  "dependencies": {
+    "learning_normal_source": "5959a6d836df1f0fb32fa45ef282ec899847c6c2",
+    "c_normal_source": "ad5d950d11627ae7b44373d227348ef41e00439e",
+    "actual_c_purpose_consumer": "bce023f31547d4cab39996bb3463383d4d344119",
+    "actual_c_purpose_review": "547cdd2123a9b10aab93b46d0eba1bcd317a4097",
+    "actual_intent_gate": "9adb0605f1fffe5d00cac38554149e17c812549b",
+    "required_shutdown_gate": "1b86a2104bbf14bba1b44e409bcd411e52bda141",
+    "intent": "fcc069afa3cf4a48c600909f4342ac46a24c18de",
+    "actual_ack2_consumer": "c7f7a1c0031f352afe96ee989bbc933719d70995"
+  },
+  "retained_resources": [
+    "OriginalLearningCheckpointRetirement keeps the actual transport, required alias, pidfd, identity, same Work and armed failure guard.",
+    "OriginalRetiredLearningPurposes keeps the original Learning bootstrap/Stage/Delivery owners and actual terminal/ACK/Work-join facts.",
+    "Model keeps its original transport, required alias, files and model owner after the same socket is shut down.",
+    "Published C keeps actual journal, source/Cell/Ledger, live artifact/selected owners, Current store/client/lane/sequence and phase alias/guard.",
+    "Audit CPurposesRetired retains actual C/route/Work plus Learning owners. No terminal bundle is stored back in Work.",
+    "Intent and all armed owner bundles remain through real ACK2 and the separate held-pidfd Root exit. The writer File was transferred to daemon Config, not retained by Root Service."
+  ],
+  "source_bound_no_update_review": "8c8455d290fdac3b94c7a00ddb50fc9c107d56c5",
+  "superseded": {
+    "temporary_metadata_blob": "6595d31439a1fd3b303dac6990b743ada2de741f",
+    "reason": "Replaced by the original unique-function guard preserving private-child solution; never use this temporary object in final integration."
+  },
+  "qualification": {
+    "original_checker_run": false,
+    "native_run": false,
+    "formatter_run": false,
+    "product_installed": false,
+    "refs_changed": false,
+    "h_or_pty": false,
+    "business_counts": {
+      "ordinary_complete_chain": 0,
+      "positive_adoption_chain": 0,
+      "no_update_or_rollback_chain": 0
+    },
+    "same_actor_is_independent_c": false
+  },
+  "integration": "Apply the 9 exact/semantic operations after the prior39529 annex, preserving every other Root/B/C/runtime annex and every duplicate-path protected row as conjunction. The whole CALLERS postimage is an isolated review artifact, not a replacement for Root's699/474 partial union. The outer production consumer of LearningJoined::retire_original_root_purposes is not frozen yet; its product_callers stays []. Add only an actual later frozen caller."
+}

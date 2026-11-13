@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "root_independent_source_review_of_unbound_additional_gate_runner",
+  "status": "static_review_no_confirmed_local_blocker_unbound_and_unexecuted",
+  "root_reads": {
+    "initial_script": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+    "final_script": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+    "config": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+    "contract": "b39e60d30c5be6fbb8bbe0ad88ace4780b7dbb2c",
+    "source_provenance": "c3e536f0dbe712feba709dcb0d42e203d54eb2dd",
+    "initial_packet": "73b3e883e2fc7f756433ece6b796875def01d425"
+  },
+  "exact_postimage_replay": {
+    "initial": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+    "final": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+    "stages": [
+      {
+        "packet": "8d62fac00ff8062de782a16c3fe171c22a6d509c",
+        "pre": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+        "post": "d70e0a24f21caa29f9a73466ad077e02eee7f0ef",
+        "operations": 5,
+        "unique_forward_reverse": true
+      },
+      {
+        "packet": "0fff05f8b5ec8bb2c77d82a9f82350f269cffbfd",
+        "pre": "d70e0a24f21caa29f9a73466ad077e02eee7f0ef",
+        "post": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+        "operations": 6,
+        "unique_forward_reverse": true
+      }
+    ],
+    "exact_eleven_operations": true,
+    "fixed_nine_commands_match_contract": true,
+    "fixed_config_matches": true,
+    "unbound_refusal_before_mutation_and_dispatch": true,
+    "original_harness_untouched": true,
+    "python_or_native_executed": false
+  },
+  "findings": [
+    {
+      "issue": "A fixed per-operation relative wait budget was calculated before Popen and reused after child creation.",
+      "resolution": "0fff fixes an absolute operation_end from the original operation start and the original overall end/reserve; p.wait and p.communicate receive only remaining time after creation. No-time and late observations become fatal completion_unknown. A reaped leader is not signalled."
+    },
+    {
+      "issue": "The original fixed ten-second reap could extend a final Git read beyond the extra gate total end.",
+      "resolution": "The initial dedicated runner bounds kill helper wait by min(10,max(0,DEADLINE-now)); kill precedes reaping for the exact still-unreaped owned group. This is an explicit extra-runner change, not an original-harness change."
+    },
+    {
+      "issue": "A native JUnit file could change after its collector postcheck and before the next suite or final observation.",
+      "resolution": "8d62 retains the actual native identity/hash. The next suite checks it before exclusion, and finalization checks the last native report. Disappearance or replacement fails."
+    }
+  ],
+  "fixed_scope": {
+    "commands": 9,
+    "stages": [
+      "four_targeted_crates",
+      "four_complete_crates",
+      "one_complete_workspace"
+    ],
+    "just_test": true,
+    "locked": true,
+    "offline": true,
+    "retries": 0,
+    "original_profile_and_skip_behavior_preserved": true,
+    "command_literal_tables_verified_against_contract": true,
+    "full_workspace_has_no_package_or_filter_argument": true,
+    "unbound_refusal_before_filesystem_mutation_or_child_dispatch": true,
+    "original_harness_096b_modified": false,
+    "original_harness_096b_invoked": false,
+    "original_checker_or_helper_modified": false,
+    "additional_root_or_sudo_work": false,
+    "source_fmt_fix_or_ref_mutation": false,
+    "installation_or_environment_repair": false
+  },
+  "result_custody": {
+    "actual_producer_explicit": "hepta-extra-gates-reviewed-supervisor",
+    "directly_supervises_just_in_owned_group": true,
+    "no_nested_original_recorder_session": true,
+    "original_stdout_summary_parser_unchanged": true,
+    "original_junit_collector_683626_unchanged": true,
+    "fresh_native_report_required": true,
+    "each_suite_own_execution_log_report_binding_and_roster": true,
+    "missing_or_empty_selection_fails": true,
+    "unknown_completion_forbids_collector_or_more_tests": true,
+    "known_failure_stops_broader_stage": true,
+    "source_and_original_evidence_rechecked_before_final_success": true
+  },
+  "remaining_limits": [
+    "No Python parse, native command, build, test, original checker or qualification execution has occurred for this runner.",
+    "Final source head/tree/manifest/count, fresh work identity and actual same-source fixture evidence remain UNBOUND. The current empty fixture table cannot be accepted without a fixed reviewed dependency justification.",
+    "External tool observations hash the selected resolved launch files, which may be rustup proxies. Version commands run only at initial setup. This is not a hash of the complete installed toolchain or a claim of repeated final version execution.",
+    "The single absolute deadline bounds dispatch and waits. Synchronous filesystem/Popen operations are not hard-real-time; observed elapsed overrun fails. A local test-gate result never establishes business or physical daemon/Root completion.",
+    "Actual execution-channel launch identity must be reconciled before another job writes the existing shared operator target."
+  ],
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

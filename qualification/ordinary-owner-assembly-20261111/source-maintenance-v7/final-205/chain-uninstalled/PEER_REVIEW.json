@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-summary-chain-native-use-proposal",
+  "reviewer": "hepta_audit",
+  "verdict": "No confirmed local static blocker in the exact isolated proposal. Not an executed-test PASS or a successful native pair.",
+  "inputs": {
+    "manifest": "33746eddf59b10b9d4faab6e20482cb1b582e4b9",
+    "packet": "9801f64e0f4714995edc81f6bfa8be57f59f10d4",
+    "explanation": "76631fd5f5b62c668412a21fd909f8eec20f0fb9",
+    "fixed_chain_head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "product": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+    "tests": "a8c35861954c6b68dd2af5453fa1365020380217",
+    "spec": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543"
+  },
+  "detailed_review": {
+    "git_blob": "f4cff86e735d515c98eb8a6c6d0c551c00e058a5",
+    "bytes": 20095,
+    "sha256": "23a471dbfddf64c4d9bc51388377c2f8756bd2fb6fae19afee53ed5427156ed5"
+  },
+  "performed": [
+    "All six proposal blobs and three original sources GET/hash checked; 11 replacements unique forward and reverse, complete pre/post equality.",
+    "All three original paths and four unchanged reader dependencies independently GET at fixed Chain e338; four original producer paths independently GET at Hepta cbf6ca7.",
+    "Original structural review remains exactly 4,030 bytes, Git 51c1a4959dd673a3a35a2bffcd72adcb4a6e6014; all 14 old test bodies remain exact.",
+    "Read all new source/spec/test changes, original reader contracts, four original producer sources, and pinned fixture identities/heads."
+  ],
+  "conclusions": [
+    "The real main selects the new function only with complete readback+expected file/pin arguments; the original four-file mode retains its schema and result semantics.",
+    "The new function first calls both unchanged reviews. Local defer/retain selects the complete parent but preserves qualified Evaluation, UpdateCandidates and no_update=false. Native retained/adopted disposition cannot replace that decision.",
+    "Selection head and its tag-9 decision predecessor, operation/source run/receipt/artifact/full parent bundle, principal/agent/Cell and selected complete descriptor are actually joined. Original reader checks previous/target identity, generation/writer_epoch progression, complete manifests, expected owner/partition, publication and public grant bindings.",
+    "The sole appended NextUse/RetainedModelNextUse dictionary must exactly match the native target run, bundle, checkpoint, Selection, committed-step and cutover/publication. This is stronger than joining a few labels.",
+    "No pending work or delivery is required. Only then is acknowledged_use_observed set; model STOP is separate. Authority remains DENY_ALL/NOT_EXPORTED/HOLD_NO_GO and independent consumer, signatures, FinalUse and activation remain unaccepted.",
+    "Original native export APIs use the actual held journal/publication while the coordinator awaits NextUse. This review establishes their source contract, not a new ordinary invocation or independent consumer."
+  ],
+  "evidence_limits": [
+    "The three actual historical ACK fixture heads are unequal to the corresponding v4 Selection heads. Zero successful v4/native pairs are supplied, generated, tested or accepted.",
+    "The seven new controls are unexecuted refusal tests. Four partial-CLI test cases each omit one argument; their name is not evidence of exhaustive testing of all 14 partial subsets. The any/all expression statically covers all subsets.",
+    "No positive pair dynamically exercises later cross-record guards; source review cannot replace that missing execution.",
+    "Supplied hashes/expected records do not authenticate independent custody, signatures, freshness, cost completeness, current revocation or a live FinalUse owner."
+  ],
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer_verified": false,
+    "hepta_final_use_accepted": false,
+    "production_activation": false,
+    "daemon_and_root_restart_accepted": false
+  },
+  "boundaries": {
+    "chain_writes": 0,
+    "ref_changes": 0,
+    "h_or_pty": 0,
+    "native_or_python_or_tests": 0,
+    "original_checker": 0,
+    "evidence_writes": "Immutable Hepta review blobs only.",
+    "source_fix_for_confirmed_blocker": null
+  }
+}

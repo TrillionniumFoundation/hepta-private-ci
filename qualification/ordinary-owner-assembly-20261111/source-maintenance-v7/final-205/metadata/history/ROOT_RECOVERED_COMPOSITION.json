@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "kind": "root_recovered_partial_metadata_and_owned_annex_composition",
+  "historical_root_partial": {
+    "metadata": "8cba09dfccb110eaff66f65cddbed32d2122df13",
+    "manifest": "eb71d1b779d800ca807385a0c86e2e7bd2ba48da",
+    "boundaries": 718,
+    "protected": 489,
+    "evidence_commit": "9d808b13affa41b2aa62b4b268ab3fd6026023af",
+    "manifest_path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v5/PARTIAL_METADATA_MANIFEST.json",
+    "previous_union": "8da2bb60f3d029d26e198a11a20ed8f97c05824f",
+    "added_annex": "679e73c42779426427938e70a68e47220a9f7c11",
+    "historical_partial_review": "a8c4aee539203581a271405dbe0e1af9b6f7d3cc",
+    "historical_root_retirement_review": "c2af8754545dae4cdb4297148499efac5dcbbdea"
+  },
+  "owned_semantic_annex": "7ac44786c9837d4233fe47dec8dd2a60e6c38661",
+  "owned_authored_operations": "d8acbd854d6dc4838f8ddff45cf6c55706186b1e",
+  "owned_source_static_receipt": "8e746f31acfbdda023d210ebf877c62db17ed955",
+  "owned_helper": "25639e0cae8a6eb78c7ef3cce6a29968d5196d17",
+  "logical_union": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+  "exact_13_authored_row_compositions": [
+    {
+      "kind": "boundary",
+      "index": 372,
+      "identity": "q24_task_original_ledger_readback",
+      "purpose": "Append only actual new owned callers, preserving every old caller and all other boundary fields.",
+      "field_checks": [
+        {
+          "field": "product_callers",
+          "operation": "ordered_union_of_real_authored_additions",
+          "retained_root_callers": [],
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+          ]
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "boundary",
+      "index": 487,
+      "identity": "q24_successor_original_feedback_ledger",
+      "purpose": "Append only actual new owned callers, preserving every old caller and all other boundary fields.",
+      "field_checks": [
+        {
+          "field": "product_callers",
+          "operation": "ordered_union_of_real_authored_additions",
+          "retained_root_callers": [
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+          ],
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+          ]
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "boundary",
+      "index": 528,
+      "identity": "q24_same_actor_learning_work_binding",
+      "purpose": "Append only actual new owned callers, preserving every old caller and all other boundary fields.",
+      "field_checks": [
+        {
+          "field": "product_callers",
+          "operation": "ordered_union_of_real_authored_additions",
+          "retained_root_callers": [
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+            "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs",
+            "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs",
+            "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs",
+            "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs",
+            "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+          ],
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+          ]
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "boundary",
+      "index": 532,
+      "identity": "q24_same_actor_learning_blocking_reserve",
+      "purpose": "Append only actual new owned callers, preserving every old caller and all other boundary fields.",
+      "field_checks": [
+        {
+          "field": "product_callers",
+          "operation": "ordered_union_of_real_authored_additions",
+          "retained_root_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+          ],
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+          ]
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "boundary",
+      "index": 533,
+      "identity": "q24_same_actor_learning_blocking_handle",
+      "purpose": "Append only actual new owned callers, preserving every old caller and all other boundary fields.",
+      "field_checks": [
+        {
+          "field": "product_callers",
+          "operation": "ordered_union_of_real_authored_additions",
+          "retained_root_callers": [
+            "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+            "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"
+          ],
+          "added": [
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+            "codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"
+          ]
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "boundary",
+      "index": 547,
+      "identity": "q24_same_actor_learning_route_custody",
+      "purpose": "Exact actual one-time Work Option custody spelling; definition/symbol/caller set/receiver unchanged.",
+      "field_checks": [
+        {
+          "field": "definition_markers",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 343,
+      "identity": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "purpose": "Actual Retiring, JoinedRetirement and Retired states preserve every prior variant and ten original function sequences; new consumption paths receive separate guards.",
+      "field_checks": [
+        {
+          "field": "required",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 370,
+      "identity": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "purpose": "Admission rejects the actual new ClosingC/RetiredC states; fault close includes ClosingC. Existing A, origin, ticket, direct-handle and bootstrap sequences remain.",
+      "field_checks": [
+        {
+          "field": "required_function_order",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 382,
+      "identity": "codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs",
+      "purpose": "Same one-time actual Work attachment now stores its owned Option behind the route mutex; all former guards preserved.",
+      "field_checks": [
+        {
+          "field": "required_function_order",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 388,
+      "identity": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "purpose": "Preserves actual tickets+work accounting and adds conservative lock/empty handling. The inner Option is consumed only by the separately guarded synchronous C retirement; count zero does not establish completion.",
+      "field_checks": [
+        {
+          "field": "required",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        },
+        {
+          "field": "required_function_order",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 412,
+      "identity": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "purpose": "The same post-spawn Gate check moves into the actual inner constructor after constructing Session and synchronously retaining the original worker in external custody. Both actual refreshes now use the real registry. Original default/Drop/activation guards remain; private worker pause guards receive additional protection.",
+      "field_checks": [
+        {
+          "field": "required_function_order",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 421,
+      "identity": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "purpose": "Same real A and scoped calls; adds actual outer custody and synchronous terminal handoff before Runtime shutdown notification. Required worker does not return on C completion alone.",
+      "field_checks": [
+        {
+          "field": "required_function_order",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    },
+    {
+      "kind": "protected_file",
+      "index": 423,
+      "identity": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "purpose": "Actual typed retirable worker replaces old fault-only run. The same one pinned progress and one worker remain. Error selection now precedes close/cancel/join; original failure is preserved. Success requires real quiescence, terminal ACK and joins, which are separately guarded.",
+      "field_checks": [
+        {
+          "field": "required_function_order",
+          "operation": "exact_author_old_to_new",
+          "old_matches_root_partial": true
+        }
+      ],
+      "post_semantically_exact": true
+    }
+  ],
+  "all_other_partial_rows_unchanged": true,
+  "new_71_boundaries_exact_authored_rows": true,
+  "new_23_protected_conjuncts_exact_authored_rows": true,
+  "required_ids_only_exact_append": true,
+  "complete_parsed_union_equal": true,
+  "limitation": "This recovers concrete historical partial metadata and exactly reproduces its semantic composition with the original owned annex. It does not turn the newly derived cd24-to-0f0cc 54-operation byte bridge into the historical author's original packet; source-obligation reviews and the original full checker remain separate.",
+  "native_or_original_checker_executed": false,
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

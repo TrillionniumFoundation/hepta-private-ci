@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "additional_gate_native_junit_continuity_overlay",
+  "base_packet": "73b3e883e2fc7f756433ece6b796875def01d425",
+  "path": "extra_gate_runner.py",
+  "pre": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+  "post": "d70e0a24f21caa29f9a73466ad077e02eee7f0ef",
+  "post_bytes": 43887,
+  "post_sha256": "d649c4206a72fcb6f8e226735c024e076c1c5e9b35071a7b3a753438344cbbb1",
+  "ops": [
+    {
+      "old": "    \"immutable_artifacts\": [],\n",
+      "new": "    \"immutable_artifacts\": [], \"current_native_junit\": None,\n",
+      "reason": "store the actual most recent native report observation; no success synthesized"
+    },
+    {
+      "old": "    if os.path.lexists(report):\n        prior_data, prior_identity = physical_file_observation(report)\n",
+      "new": "    if R[\"current_native_junit\"] is not None and not os.path.lexists(report):\n        raise RuntimeError(\"the last observed native report disappeared before exclusion\")\n    if os.path.lexists(report):\n        prior_data, prior_identity = physical_file_observation(report)\n        if (R[\"current_native_junit\"] is not None\n                and prior_identity != R[\"current_native_junit\"]):\n            raise RuntimeError(\"the prior native report changed after its original collection\")\n",
+      "reason": "next command checks original last native identity/hash before treating it as old; no stale report silently accepted"
+    },
+    {
+      "old": "    if os.path.lexists(report):\n        raise RuntimeError(\"old or dangling native JUnit was not excluded\")\n\n    suite_started",
+      "new": "    if os.path.lexists(report):\n        raise RuntimeError(\"old or dangling native JUnit was not excluded\")\n    R[\"current_native_junit\"] = None\n\n    suite_started",
+      "reason": "clear the prior observation only after actual exclusion and absence"
+    },
+    {
+      "old": "        if native_after != native:\n            raise RuntimeError(\"native report changed during original collection\")\n",
+      "new": "        if native_after != native:\n            raise RuntimeError(\"native report changed during original collection\")\n        R[\"current_native_junit\"] = native_after\n",
+      "reason": "retain this real report identity/hash after the actual collection postcheck"
+    },
+    {
+      "old": "            for step in R[\"steps\"]:\n",
+      "new": "            if R[\"current_native_junit\"] is not None:\n                _, current_native = physical_file_observation(Path(R[\"current_native_junit\"][\"path\"]))\n                if current_native != R[\"current_native_junit\"]:\n                    raise RuntimeError(\"last native JUnit changed before final evidence verification\")\n            for step in R[\"steps\"]:\n",
+      "reason": "also validate the last native report at final evidence check"
+    }
+  ],
+  "config_unchanged": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+  "claim": "Five unique textual operations and whole-source forward/reverse equality. Only retaining/rechecking the same actual JUnit evidence between command phases and finalization; no time, tests, skip, source, permissions, or dispatch change.",
+  "execution": {
+    "python": 0,
+    "h": 0,
+    "native": 0,
+    "tests": 0,
+    "refs": 0
+  }
+}

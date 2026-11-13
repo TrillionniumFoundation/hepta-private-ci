@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "kind": "root_new_boundary125_retain_original_base_callers_semantic_delta",
+  "status": "STATIC_UNEXECUTED_SEMANTIC_INCREMENT_NOT_FULL_CALLERS",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "predecessor_boundary_proposal": "c73360c67ed6dcca55da2902abfd50baed08a646",
+  "source_manifest": "b2227120620c86ce7634e97a7b11dd74ab313489",
+  "source_packet": "fb8317d17e72aa71123a843250e60f383d1d85b5",
+  "reference_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "reference_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "changes": [
+    {
+      "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+      "expected_old_row": {
+        "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+        "symbol": "SameActorPhaseGate::retain_required_original_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+        "definition_markers": [
+          "pub(crate) fn retain_required_original_stream(\n        self: &Arc<Self>,\n        stream: &UnixStream,\n    ) -> io::Result<RequiredSameActorPhaseChannel> {"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+          "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+          "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+        ],
+        "caller_markers": [],
+        "receiver_type": "SameActorPhaseGate"
+      },
+      "new_row": {
+        "id": "root_ordinary_same_actor_phase_gate_retain_required_original_stream",
+        "symbol": "SameActorPhaseGate::retain_required_original_stream",
+        "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+        "definition_markers": [
+          "pub(crate) fn retain_required_original_stream(\n        self: &Arc<Self>,\n        stream: &UnixStream,\n    ) -> io::Result<RequiredSameActorPhaseChannel> {"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+          "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor.rs",
+          "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+          "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs"
+        ],
+        "caller_markers": [],
+        "receiver_type": "SameActorPhaseGate"
+      },
+      "change": "append exactly two source-proven original callers without changing the type, definition, markers or existing callers",
+      "source_delta": "fb8317d17e72aa71123a843250e60f383d1d85b5"
+    }
+  ],
+  "required_boundary_ids_changed": false,
+  "existing_id_changes": false,
+  "protected_file_changes": [],
+  "ignored_paths_changes": false,
+  "exact_reference_operation": {
+    "target": "JSON-rendered predecessor .rows array",
+    "old": "  {\n    \"id\": \"root_ordinary_same_actor_phase_gate_retain_required_original_stream\",\n    \"symbol\": \"SameActorPhaseGate::retain_required_original_stream\",\n    \"definition_path\": \"codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs\",\n    \"definition_markers\": [\n      \"pub(crate) fn retain_required_original_stream(\\n        self: &Arc<Self>,\\n        stream: &UnixStream,\\n    ) -> io::Result<RequiredSameActorPhaseChannel> {\"\n    ],\n    \"product_callers\": [\n      \"codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs\",\n      \"codex-rs/hepta-agentd/src/final_use_issuer.rs\",\n      \"codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs\",\n      \"codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs\"\n    ],\n    \"caller_markers\": [],\n    \"receiver_type\": \"SameActorPhaseGate\"\n  }",
+    "new": "  {\n    \"id\": \"root_ordinary_same_actor_phase_gate_retain_required_original_stream\",\n    \"symbol\": \"SameActorPhaseGate::retain_required_original_stream\",\n    \"definition_path\": \"codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs\",\n    \"definition_markers\": [\n      \"pub(crate) fn retain_required_original_stream(\\n        self: &Arc<Self>,\\n        stream: &UnixStream,\\n    ) -> io::Result<RequiredSameActorPhaseChannel> {\"\n    ],\n    \"product_callers\": [\n      \"codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs\",\n      \"codex-rs/hepta-agentd/src/final_use_issuer.rs\",\n      \"codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor.rs\",\n      \"codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs\",\n      \"codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs\",\n      \"codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs\"\n    ],\n    \"caller_markers\": [],\n    \"receiver_type\": \"SameActorPhaseGate\"\n  }",
+    "pre": {
+      "git_blob": "6494679059df5f9b68d3287dbab3e22d4cc8ac7f",
+      "bytes": 83470,
+      "sha256": "641349ec679aa466ce12eed66a4b12c10c42c02b807ac1e592005db5309d17e3"
+    },
+    "post": {
+      "git_blob": "40838de26eeceaa67767379ecaae72fae2cb64e5",
+      "bytes": 83628,
+      "sha256": "2f123c9c1b5963f0f5b97ea61fc384589cc103f250127fdf7990e77a23f12f62"
+    },
+    "forward_unique": true,
+    "reverse_unique": true,
+    "forward_full_equal": true,
+    "reverse_full_equal": true
+  },
+  "semantic_apply_js": "return function applyRetainCallerDelta(rows, expected, updated) {\n  const ix = rows.map((row, i) => row.id === expected.id ? i : -1).filter(i => i >= 0);\n  if (ix.length !== 1) throw new Error(\"expected one complete boundary row\");\n  const index = ix[0], current = rows[index];\n  const equal = (a,b) => JSON.stringify(a) === JSON.stringify(b);\n  const keys = new Set([...Object.keys(expected), ...Object.keys(current)]);\n  for (const key of keys) {\n    if (key !== \"product_callers\" && !equal(current[key], expected[key]))\n      throw new Error(\"unowned boundary field changed: \" + key);\n  }\n  if (!expected.product_callers.every(p => current.product_callers.includes(p)))\n    throw new Error(\"original declared caller disappeared\");\n  const result = rows.slice();\n  result[index] = { ...current, product_callers: [...new Set([...current.product_callers, ...updated.product_callers])].sort() };\n  return result;\n};",
+  "semantic_reference_equal": true,
+  "idempotent_second_apply_equal": true,
+  "original_evidence": {
+    "root_inventory": "564488f5cd1c034d56da9e2d42b54fe3fe1b92ae",
+    "selected_full_original_records": "ec39ae6f001ff076e4a3cef43cb1128b876c3ace",
+    "real_original_callers": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "pre": {
+          "git_blob": "1a80dd7743ed25557a32ba05b06953e6b777248c",
+          "bytes": 15759,
+          "sha256": "acf76f678d611bc6ede72cf8f78a1b05ebaf3edda3f1e2c091805575a58a8250"
+        },
+        "post": {
+          "git_blob": "74e69ea8381d36d659943ad6b09292cee9c34b61",
+          "bytes": 15814,
+          "sha256": "ef22476b8874c1c272524875a598aa2e89aebe763d32944d4b6a78e798b11b5c"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_same_actor.rs",
+        "source": {
+          "git_blob": "6ef608fb0cdcd8acbad836ff5dd80a8203272ab2",
+          "bytes": 2855,
+          "sha256": "9023ed1951f3d05b79d8a9c7a72d0c0ab02190141cac563ea679ac82ab59e05d"
+        },
+        "unchanged": true
+      }
+    ]
+  },
+  "rejected_unnecessary_change": {
+    "boundary": "root_ordinary_directory_identity",
+    "source_renamed": false,
+    "symbol_changed": false,
+    "false_caller_added": false,
+    "proof": "Exact original local_file_system.rs has two variable occurrences and zero matches for directory_identity\\\\s*\\\\(."
+  },
+  "projection": {
+    "rows": 125,
+    "source_files": 180,
+    "receiver_rows": 114,
+    "unknowns": 0,
+    "mismatches": 0,
+    "caller_edges": 213,
+    "matched_sites": 403
+  },
+  "limits": [
+    "The exact operation is a reproducible reference rows-array edit, not permission to replace any full CALLERS table.",
+    "Semantic merge preserves every prior caller and unrelated caller additions, every nonowned boundary field, all declarations and all conjunctive protected_file rows.",
+    "180-file pure V8 projection is bounded static evidence, not the original checker, compiler, native qualification or whole-repository typed-field inventory.",
+    "Original full-base identifier records are counts and complete path lists; method/trait/source semantics were separately inspected.",
+    "Keep all guards, including concurrent V45 raw spelling changes; resample actual formatted source only under Root integration."
+  ],
+  "authority": {
+    "h": false,
+    "native": false,
+    "PTY": false,
+    "refs": false,
+    "checker_changes": false,
+    "original_business_counts": [
+      0,
+      0,
+      0
+    ]
+  }
+}

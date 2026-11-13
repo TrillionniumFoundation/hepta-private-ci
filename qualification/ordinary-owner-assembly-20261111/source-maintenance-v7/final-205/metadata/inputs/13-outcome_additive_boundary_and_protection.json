@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "kind": "additive_actual_signed_outcome_raw_data_reconstruction_metadata",
+  "base_semantic_recipe": "291776cc203c29728e08b2589e684c0cac4047cb",
+  "base_counts": {
+    "boundaries": 1010,
+    "protected_conjuncts": 598
+  },
+  "required_boundary_ids_append": [
+    "same_actor_original_signed_outcome_data_into_original"
+  ],
+  "new_boundaries": [
+    {
+      "id": "same_actor_original_signed_outcome_data_into_original",
+      "symbol": "OriginalSignedOutcomeData::into_original",
+      "receiver_type": "OriginalSignedOutcomeData",
+      "definition_path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "definition_markers": [
+        "pub(super) struct OriginalSignedOutcomeData {",
+        "impl OriginalSignedOutcomeData {",
+        "pub(super) fn into_original(\n        self,\n    ) -> Result<(AuthenticatedOutcomeV1, SignedLearningEvidenceV1), AgentdError> {",
+        "let signed = SignedEvidenceData::original(&self.signed)?;",
+        "Ok((outcome, signed))"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs"
+      ],
+      "caller_markers": [
+        "OriginalSignedOutcomeData::into_original"
+      ]
+    }
+  ],
+  "new_protected": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "required": [
+        "pub(super) fn into_original(",
+        "#[serde(deny_unknown_fields)]",
+        "#[serde(deserialize_with = \"required_option\")]",
+        "#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\npub(super) struct OriginalSignedOutcomeData {",
+        "#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalOutcomeData {",
+        "#[derive(Deserialize, Serialize)]\n#[serde(deny_unknown_fields)]\nstruct OriginalOutcomeWatermarkData {",
+        "#[derive(Deserialize, Serialize)]\n#[serde(rename_all = \"snake_case\")]\nenum OriginalOutcomeTerminalityData {",
+        "#[serde(deserialize_with = \"required_option\")]\n    observed_at: Option<u64>,",
+        "#[serde(deserialize_with = \"required_option\")]\n    value_raw_q32: Option<i64>,",
+        "#[serde(deserialize_with = \"required_option\")]\n    censoring_reason: Option<String>,",
+        "#[serde(deserialize_with = \"required_option\")]\n    correction_predecessor: Option<String>,",
+        "#[serde(deserialize_with = \"required_option\")]\n    finalized_at: Option<u64>,"
+      ],
+      "forbidden": [
+        "SystemTime::now(",
+        "Instant::now(",
+        ".sign(",
+        "VerifiedLearningEvidenceV1 {",
+        "#[serde(default"
+      ],
+      "required_order": [
+        [
+          "pub(super) struct OriginalSignedOutcomeData {",
+          "\n    outcome: OriginalOutcomeData,\n    signed: SignedEvidenceData,\n}"
+        ],
+        [
+          "struct OriginalOutcomeData {",
+          "\n    record_id: String,\n    outcome_id: String,\n    episode_id: String,\n    observer: PrincipalData,\n    #[serde(deserialize_with =                  )]\n    observed_at: Option<u64>,\n                                                                         \n    #[serde(deserialize_with =                  )]\n    value_raw_q32: Option<i64>,\n    unit_profile_digest: [u8; 32],\n    support_digest: [u8; 32],\n    watermark: OriginalOutcomeWatermarkData,\n}"
+        ],
+        [
+          "struct OriginalOutcomeWatermarkData {",
+          "\n    latest_observable_at: u64,\n    expected_delay_profile_digest: [u8; 32],\n    terminality: OriginalOutcomeTerminalityData,\n    #[serde(deserialize_with =                  )]\n    censoring_reason: Option<String>,\n    #[serde(deserialize_with =                  )]\n    correction_predecessor: Option<String>,\n    #[serde(deserialize_with =                  )]\n    finalized_at: Option<u64>,\n}"
+        ],
+        [
+          "enum OriginalOutcomeTerminalityData {",
+          "\n    Pending,\n    Censored,\n    Terminal,\n}"
+        ]
+      ],
+      "required_function_order": [
+        {
+          "function": "fn into_original(",
+          "sequence": [
+            "fn into_original(",
+            "self,",
+            ") -> Result<(AuthenticatedOutcomeV1, SignedLearningEvidenceV1), AgentdError> {",
+            "let data = self.outcome;",
+            "let watermark = data.watermark;",
+            "let outcome = AuthenticatedOutcomeV1 {",
+            "record_id: StableId::new(data.record_id).map_err(deployment_error)?,",
+            "outcome_id: StableId::new(data.outcome_id).map_err(deployment_error)?,",
+            "episode_id: StableId::new(data.episode_id).map_err(deployment_error)?,",
+            "observer: PrincipalData::original(&data.observer)?,",
+            "observed_at: data.observed_at,",
+            "value: data.value_raw_q32.map(FixedQ32::from_raw),",
+            "unit_profile_digest: Digest32::from_array(data.unit_profile_digest),",
+            "support_digest: Digest32::from_array(data.support_digest),",
+            "watermark: OutcomeWatermarkV1 {",
+            "latest_observable_at: watermark.latest_observable_at,",
+            "expected_delay_profile_digest: Digest32::from_array(",
+            "watermark.expected_delay_profile_digest,",
+            "),",
+            "terminality: match watermark.terminality {",
+            "OriginalOutcomeTerminalityData::Pending => OutcomeTerminalityV1::Pending,",
+            "OriginalOutcomeTerminalityData::Censored => OutcomeTerminalityV1::Censored,",
+            "OriginalOutcomeTerminalityData::Terminal => OutcomeTerminalityV1::Terminal,",
+            "},",
+            "censoring_reason: watermark",
+            ".censoring_reason",
+            ".map(StableId::new)",
+            ".transpose()",
+            ".map_err(deployment_error)?,",
+            "correction_predecessor: watermark",
+            ".correction_predecessor",
+            ".map(StableId::new)",
+            ".transpose()",
+            ".map_err(deployment_error)?,",
+            "finalized_at: watermark.finalized_at,",
+            "},",
+            "};",
+            "let signed = SignedEvidenceData::original(&self.signed)?;",
+            "Ok((outcome, signed))",
+            "}"
+          ],
+          "top_level": [
+            "let data = self.outcome;",
+            "let watermark = data.watermark;",
+            "let outcome = AuthenticatedOutcomeV1 {",
+            "let signed = SignedEvidenceData::original(&self.signed)?;",
+            "Ok((outcome, signed))"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "required": [
+        "#[path = \"same_actor_q24_deployment_outcome_data.rs\"]\nmod outcome_data;"
+      ],
+      "forbidden": []
+    }
+  ],
+  "resulting_counts_before_other_new_annexes": {
+    "boundaries": 1011,
+    "required_boundary_ids": 1011,
+    "protected_conjuncts": 600
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "post": "d55f99b6457aded2a762e98bb80e207289de8fd6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs",
+      "post": "75fee38fb8331a667009f32bb5fe27a53624b582"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "post": "e1ea11bc5929f43760059df2f48217c8f3ef2f42"
+    }
+  ],
+  "existing_guard_resample_obligations": [
+    {
+      "origin": "c9815b6842ed51866a0ab058d1e9069cd60ef26b#new_protected:7",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "source_post": "e1ea11bc5929f43760059df2f48217c8f3ef2f42",
+      "changes": "The same two untrusted Outcome conversions now name the actual new data type explicitly. Re-sample their complete actual containing function. No condition/await/effect/return moved."
+    }
+  ],
+  "unchanged_pure_data_helpers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs",
+      "post": "964b3aac267d58ba06dd967623d653effbb57268",
+      "symbols": [
+        "PrincipalData::original",
+        "SignedEvidenceData::original",
+        "required_option"
+      ],
+      "classification": "Existing raw-data-only helpers remain byte-identical and keep existing visibility. The new caller is explicitly protected in the complete new adapter; no existing declared boundary row for these helpers was found in the entire 1010-row semantic plan."
+    }
+  ],
+  "preservation": [
+    "Additive only; no base row, forbidden, caller, receiver, ID or source-root changes.",
+    "The two protected rows are separate conjuncts; the existing parent-path protection is retained.",
+    "The new boundary covers data reconstruction only and does not certify signature authentication or business completion."
+  ],
+  "projection": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_outcome_data.rs",
+      "unique_function_guards": 1,
+      "complete_span_guards": 4,
+      "code_markers": 40,
+      "top_level_markers": 5
+    }
+  ],
+  "execution": "Pure V8 checks only; original checker/compiler not executed.",
+  "guard_successor": {
+    "previous_metadata": "d44dce76ae8e32fd2c867725cdb59b4befe96a56",
+    "change": "Only append exact raw derives/Serde attributes bound to each actual new type and each of the five nullable fields. All previous requirements, forbidden fields, functions, complete type spans, boundary and caller arrays preserved."
+  }
+}

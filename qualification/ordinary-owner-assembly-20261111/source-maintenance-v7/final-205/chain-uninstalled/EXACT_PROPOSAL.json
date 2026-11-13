@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "kind": "uninstalled-chain-heplcp04-native-use-source-proposal-exact-ops",
+  "evidence_repository": "TrillionniumFoundation/hepta-private-ci",
+  "target_repository": "TrillionniumFoundation/Trillionnium-Chain",
+  "target_ref_modified": false,
+  "target_base": {
+    "head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "base": "c84162378f34b9284e90587df4c466dfee3e193b",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "updated_at": "2026-11-12T06:54:02Z",
+    "tree": "876aa62d1ab49458d29e9168f4c69e7b47b8884b"
+  },
+  "actual_source_method": "Read original target files at fixed e338; create loose evidence blobs only in Hepta.",
+  "path_count": 3,
+  "operation_count": 11,
+  "files": [
+    {
+      "path": "scripts/cell_learning_local_decision_join.py",
+      "pre": {
+        "git_blob": "1409d50d835e12c32341a3e650f53191915b8030",
+        "bytes": 12027,
+        "sha256": "43b0c97b07cab4131003f668430d420ceedba1883ff2ec6458a789c646f80a83"
+      },
+      "post": {
+        "git_blob": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+        "bytes": 17912,
+        "sha256": "7da487406344e304065f5ff4abb668e96bc3d85d73fa7debe8c18eb2e217826e"
+      },
+      "operations": [
+        {
+          "before": "\"\"\"Read exact HEPLCP04 local-choice receipts without granting use authority.\n\nThe explicit profile preserves qualified Evaluation and UpdateCandidates even\nwhen local policy keeps the parent. The checkpoint contains receipt commitments,\nnot their signatures or a native-use export; no ACK or FinalUse is inferred.\n\"\"\"",
+          "after": "\"\"\"Read exact HEPLCP04 local-choice receipts without granting use authority.\n\nThe default profile preserves qualified Evaluation and UpdateCandidates when\nlocal policy keeps the parent. An explicit native-use mode also joins the\noriginal bounded export and its ACK. Public readback is not signature or\ncurrent-use authorization, and a same-actor new run is not independent C.\n\"\"\""
+        },
+        {
+          "before": "REPORT_SCHEMA = \"trnm-cell-learning-local-decision-structural-readback-v1\"\n",
+          "after": "REPORT_SCHEMA = \"trnm-cell-learning-local-decision-structural-readback-v1\"\nNATIVE_USE_REPORT_SCHEMA = \"trnm-cell-learning-local-decision-native-use-readback-v1\"\n"
+        },
+        {
+          "before": "\ndef main():\n",
+          "after": "\ndef review_native_local_decision_use(\n        selection_raw, completed_raw, root_profile_raw, readback_raw, *,\n        expected_selection_sha256, expected_completed_sha256, expected_root_profile_sha256,\n        expected_readback_sha256, frozen, expected):\n    \"\"\"Join an exact v4 continuation to an original acknowledged native use.\n\n    Local defer/retain keeps the qualified parent descriptor; it is not an\n    Evaluation or Proposal NoUpdate. The original native reader remains the\n    gate for publication, grant bindings, manifest, intent, journal and ACK.\n    Neither reader authenticates those public bytes or grants current use.\n    \"\"\"\n    prior = review_native_local_decision(\n        selection_raw, completed_raw, root_profile_raw,\n        expected_selection_sha256=expected_selection_sha256,\n        expected_completed_sha256=expected_completed_sha256,\n        expected_root_profile_sha256=expected_root_profile_sha256, frozen=frozen)\n    original = native.review_native_learning_use(\n        readback_raw, expected_readback_sha256=expected_readback_sha256, expected=expected)\n    native.require(not original[\"pending_work\"] and not original[\"pending_delivery\"],\n                   \"LOCAL_DECISION_NATIVE_ACK_PENDING\")\n\n    selection, replay = decode_native_local_checkpoint(selection_raw)\n    request = selection[\"request\"]\n    envelope = native.decode(readback_raw, native.MAX_WIRE)\n    _, payload = native.raw_json(envelope[\"payload_json\"])\n    retained = prior[\"retained_model\"]\n    native.require((payload[\"disposition\"] == \"retained_model\") == retained,\n                   \"LOCAL_DECISION_NATIVE_DISPOSITION\")\n    selected = selection[\"receipts\"][-1]\n    native.require(replay[\"head\"] == native.native_digest(payload[\"learning_head\"]) and\n                   selected[\"predecessor\"] == native.native_digest(payload[\"learning_decision_head\"]),\n                   \"LOCAL_DECISION_NATIVE_HEAD\")\n    native.require(\n        request[\"operation_id\"] == payload[\"learning_operation_id\"] and\n        request[\"source_run_id\"] == payload[\"source_run_id\"] and\n        request[\"completed_task_receipt\"] == native.native_digest(payload[\"source_task_receipt\"]) and\n        request[\"selected_artifact_digest\"] == native.native_digest(payload[\"source_selected_artifact\"]) and\n        legacy.bundle_digest(request[\"selected_bundle\"]) == native.native_digest(payload[\"source_selected_bundle\"]),\n        \"LOCAL_DECISION_NATIVE_SOURCE\")\n\n    _, publication = native.raw_json(payload[\"publication_json\"])\n    scope = publication[\"intent\"][\"target\"][\"scope\"]\n    native.require(request[\"principal_id\"] == native.native_digest(scope[\"principal_digest\"]) and\n                   request[\"agent_id\"] == scope[\"agent_id\"] and request[\"cell_id\"] == scope[\"cell_id\"],\n                   \"LOCAL_DECISION_NATIVE_SCOPE\")\n    use = payload[\"observation\"]\n    native.require(\n        selected[\"observation\"][\"selection_digest\"] == native.native_digest(use[\"selection_digest\"]) and\n        prior[\"selected_bundle_digest\"] == native.native_digest(use[\"bundle_digest\"]) ==\n        original[\"bundle_digest\"] == legacy.bundle_digest(prior[\"complete_version_descriptor\"]),\n        \"LOCAL_DECISION_NATIVE_SELECTION\")\n\n    observed = dict(tag=7 if retained else 6, state_partition=dict(\n        principal_id=native.native_digest(scope[\"principal_digest\"]),\n        agent_id=scope[\"agent_id\"], cell_id=scope[\"cell_id\"], run_id=scope[\"run_id\"]))\n    observed[\"retained_bundle\" if retained else \"candidate_bundle\"] = native.native_digest(use[\"bundle_digest\"])\n    for name in (\"checkpoint_digest\", \"selection_digest\", \"committed_step_receipt\",\n                 \"task_owner_publication\" if retained else \"state_cutover_receipt\"):\n        observed[name] = native.native_digest(use[name])\n    native.require(prior[\"final_observation\"] == observed, \"LOCAL_DECISION_NATIVE_NEXT_USE\")\n\n    result = dict(prior)\n    result.update(\n        schema=NATIVE_USE_REPORT_SCHEMA,\n        scope=\"pinned-heplcp04-root-scope-and-original-acknowledged-native-use-only\",\n        native_readback_sha256=expected_readback_sha256,\n        native_readback_review=original,\n        selection_to_native_use_bindings_consistent=True,\n        final_next_use_matches_original_actor=True,\n        acknowledged_use_observed=True,\n        model_stop_observed=original[\"model_stop_observed\"],\n        terminal_episode_observed=original[\"terminal_episode_observed\"])\n    return result\n\n\ndef main():\n"
+        },
+        {
+          "before": "def main():\n    parser = argparse.ArgumentParser(description=__doc__)\n    for name in (\"selection-checkpoint\", \"completed-checkpoint\", \"root-profile\", \"freeze\"):\n        parser.add_argument(\"--\" + name, type=Path, required=True)\n        parser.add_argument(\"--\" + name + \"-sha256\", required=True)\n    args = parser.parse_args()\n    frozen_raw = native.read_bounded(args.freeze, legacy.MAX_FREEZE)\n    native.require(native.sha(frozen_raw) == native.hex_digest(args.freeze_sha256), \"LEARNING_FREEZE_PIN\")\n    result = review_native_local_decision(\n        native.read_bounded(args.selection_checkpoint, legacy.MAX_CHECKPOINT),\n        native.read_bounded(args.completed_checkpoint, legacy.MAX_CHECKPOINT),\n        native.read_bounded(args.root_profile, scoped.MAX_PROFILE),\n        expected_selection_sha256=args.selection_checkpoint_sha256,\n        expected_completed_sha256=args.completed_checkpoint_sha256,\n        expected_root_profile_sha256=args.root_profile_sha256,\n        frozen=native.decode(frozen_raw, legacy.MAX_FREEZE))\n    print(json.dumps(result, sort_keys=True, separators=(\",\", \":\"), allow_nan=False))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+          "after": "def main():\n    parser = argparse.ArgumentParser(description=__doc__)\n    for name in (\"selection-checkpoint\", \"completed-checkpoint\", \"root-profile\", \"freeze\"):\n        parser.add_argument(\"--\" + name, type=Path, required=True)\n        parser.add_argument(\"--\" + name + \"-sha256\", required=True)\n    for name in (\"readback\", \"expected\"):\n        parser.add_argument(\"--\" + name, type=Path)\n        parser.add_argument(\"--\" + name + \"-sha256\")\n    args = parser.parse_args()\n    native_arguments = (args.readback, args.readback_sha256, args.expected, args.expected_sha256)\n    native_mode = any(value is not None for value in native_arguments)\n    native.require(not native_mode or all(value is not None for value in native_arguments),\n                   \"LOCAL_DECISION_NATIVE_ARGUMENTS\")\n    frozen_raw = native.read_bounded(args.freeze, legacy.MAX_FREEZE)\n    native.require(native.sha(frozen_raw) == native.hex_digest(args.freeze_sha256), \"LEARNING_FREEZE_PIN\")\n    selection_raw = native.read_bounded(args.selection_checkpoint, legacy.MAX_CHECKPOINT)\n    completed_raw = native.read_bounded(args.completed_checkpoint, legacy.MAX_CHECKPOINT)\n    profile_raw = native.read_bounded(args.root_profile, scoped.MAX_PROFILE)\n    frozen = native.decode(frozen_raw, legacy.MAX_FREEZE)\n    if native_mode:\n        expected_raw = native.read_bounded(args.expected, native.MAX_EXPECTED)\n        native.require(native.sha(expected_raw) == native.hex_digest(args.expected_sha256), \"EXPECTATIONS_PIN\")\n        result = review_native_local_decision_use(\n            selection_raw, completed_raw, profile_raw, native.read_bounded(args.readback, native.MAX_WIRE),\n            expected_selection_sha256=args.selection_checkpoint_sha256,\n            expected_completed_sha256=args.completed_checkpoint_sha256,\n            expected_root_profile_sha256=args.root_profile_sha256,\n            expected_readback_sha256=args.readback_sha256, frozen=frozen,\n            expected=native.decode(expected_raw, native.MAX_EXPECTED))\n    else:\n        result = review_native_local_decision(\n            selection_raw, completed_raw, profile_raw,\n            expected_selection_sha256=args.selection_checkpoint_sha256,\n            expected_completed_sha256=args.completed_checkpoint_sha256,\n            expected_root_profile_sha256=args.root_profile_sha256, frozen=frozen)\n    print(json.dumps(result, sort_keys=True, separators=(\",\", \":\"), allow_nan=False))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        }
+      ],
+      "static_replay": {
+        "forward_equal": true,
+        "reverse_equal": true,
+        "forward_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "path": "scripts/test_cell_learning_local_decision_join.py",
+      "pre": {
+        "git_blob": "02515dcb1b33afae4b350a7272db662402819064",
+        "bytes": 18325,
+        "sha256": "db5b90dd8efc48564776d48e17012408ac1e4ec00779da9563cd6502a1729e2d"
+      },
+      "post": {
+        "git_blob": "a8c35861954c6b68dd2af5453fa1365020380217",
+        "bytes": 25676,
+        "sha256": "02783df48bfac4457f7dc6596c0c521da02563f573bf223354087cb63883ea7e"
+      },
+      "operations": [
+        {
+          "before": "The encoder below is used only for hostile mutations, never native evidence.\n",
+          "after": "The encoder below is used only for hostile mutations, never native evidence.\nThe native-use extension rejects unrelated original historical exports; this\nsuite does not fabricate a successful HEPLCP04/native-use pair or business C.\n"
+        },
+        {
+          "before": "from test_cell_learning_iteration_join import MutationWriter\n",
+          "after": "from test_cell_adoption_readback import encode_payload\nfrom test_cell_learning_iteration_join import MutationWriter\n"
+        },
+        {
+          "before": "NATIVE_FIXTURE_SHA256 = \"b873d6f0606100ec8a3246548009b6afda5aa9fbc55e2bd85a4c6fed7fd81a46\"\n",
+          "after": "NATIVE_FIXTURE_SHA256 = \"b873d6f0606100ec8a3246548009b6afda5aa9fbc55e2bd85a4c6fed7fd81a46\"\nNATIVE_USE_MANIFEST_SHA256 = \"46adda249f068efc216898b6fba1cae567b018de1bce0f25a1e6804526a4e966\"\n"
+        },
+        {
+          "before": "\n\nif __name__ == \"__main__\":\n",
+          "after": "\n    def native_case(self, phase):\n        \"\"\"Load unchanged historical exports only as unrelated rejection inputs.\"\"\"\n        directory = ROOT / \"evidence/cell-adoption-20261108/native-readbacks\"\n        manifest_raw = (directory / \"fixture-manifest.json\").read_bytes()\n        self.assertEqual(native.sha(manifest_raw), NATIVE_USE_MANIFEST_SHA256)\n        manifest = json.loads(manifest_raw)\n        self.assertEqual(manifest[\"scope\"], \"original-native-engineering-fixtures-not-production\")\n        entry = manifest[\"exports\"][phase]\n        raw = (directory / entry[\"file\"]).read_bytes()\n        expected_raw = (directory / (phase + \".expected.json\")).read_bytes()\n        self.assertEqual((len(raw), native.sha(raw)), (entry[\"bytes\"], entry[\"sha256\"]))\n        self.assertEqual((len(expected_raw), native.sha(expected_raw)),\n                         (entry[\"fixture_expected_bytes\"], entry[\"fixture_expected_sha256\"]))\n        return raw, expected_raw\n\n    def review_native_use(self, index, raw, expected_raw, **pins):\n        selection, completed, profile, frozen = self.inputs(index)\n        return local.review_native_local_decision_use(\n            selection, completed, profile, raw,\n            expected_selection_sha256=native.sha(selection),\n            expected_completed_sha256=native.sha(completed),\n            expected_root_profile_sha256=native.sha(profile),\n            expected_readback_sha256=pins.get(\"readback\", native.sha(raw)),\n            frozen=frozen, expected=json.loads(expected_raw))\n\n    def test_native_use_requires_the_original_export_byte_pin(self):\n        raw, expected = self.native_case(\"retained_acked\")\n        with self.assertRaisesRegex(ValueError, \"NATIVE_READBACK_PIN\"):\n            self.review_native_use(1, raw, expected, readback=\"00\" * 32)\n\n    def test_actual_pending_native_exports_cannot_ack_any_local_choice(self):\n        for index, phase in ((0, \"adopted_pending\"), (1, \"retained_pending\"), (2, \"retained_pending\")):\n            raw, expected = self.native_case(phase)\n            with self.subTest(index=index), self.assertRaisesRegex(ValueError, \"LOCAL_DECISION_NATIVE_ACK_PENDING\"):\n                self.review_native_use(index, raw, expected)\n\n    def test_actual_acked_old_iteration_exports_cannot_join_v4_heads(self):\n        # These are real old native export bytes, not synthesized v4 evidence.\n        # Their independent native review cannot attach them to a new tag-9 cut.\n        for index, phase in ((0, \"adopted_acked\"), (1, \"retained_acked\"), (2, \"retained_acked\")):\n            raw, expected = self.native_case(phase)\n            with self.subTest(index=index), self.assertRaisesRegex(ValueError, \"LOCAL_DECISION_NATIVE_HEAD\"):\n                self.review_native_use(index, raw, expected)\n\n    def test_native_disposition_cannot_override_defer_retain_or_adopt(self):\n        for index, phase in ((0, \"retained_acked\"), (1, \"adopted_acked\"), (2, \"adopted_acked\")):\n            raw, expected = self.native_case(phase)\n            with self.subTest(index=index), self.assertRaisesRegex(ValueError, \"LOCAL_DECISION_NATIVE_DISPOSITION\"):\n                self.review_native_use(index, raw, expected)\n\n    def test_native_use_keeps_the_original_deny_all_guard(self):\n        raw, expected = self.native_case(\"retained_acked\")\n        payload = json.loads(json.loads(raw)[\"payload_json\"])\n        for field, value in ((\"authority\", \"ALLOW\"), (\"current_permission\", \"EXPORTED\")):\n            altered = copy.deepcopy(payload)\n            altered[field] = value\n            # A hostile rehash reaches the original authority guard; it does\n            # not manufacture a successful export, grant or completion proof.\n            with self.subTest(field=field), self.assertRaisesRegex(ValueError, \"NATIVE_AUTHORITY_ESCALATION\"):\n                self.review_native_use(1, encode_payload(altered), expected)\n\n    def test_native_cli_refuses_every_partial_optional_input_group(self):\n        selection, completed, profile, frozen = self.inputs(1)\n        raw, expected = self.native_case(\"retained_acked\")\n        with tempfile.TemporaryDirectory() as directory:\n            files = {\"selection-checkpoint\": selection, \"completed-checkpoint\": completed,\n                     \"root-profile\": profile, \"freeze\": wire(frozen), \"readback\": raw, \"expected\": expected}\n            command = [sys.executable, \"-B\", str(ROOT / \"scripts/cell_learning_local_decision_join.py\")]\n            for name, data in files.items():\n                (Path(directory) / name).write_bytes(data)\n                if name not in (\"readback\", \"expected\"):\n                    command.extend((\"--\" + name, str(Path(directory) / name),\n                                    \"--\" + name + \"-sha256\", native.sha(data)))\n            optional = [(\"--readback\", str(Path(directory) / \"readback\")),\n                        (\"--readback-sha256\", native.sha(raw)),\n                        (\"--expected\", str(Path(directory) / \"expected\")),\n                        (\"--expected-sha256\", native.sha(expected))]\n            for missing in range(len(optional)):\n                arguments = [value for index, pair in enumerate(optional) if index != missing for value in pair]\n                refused = subprocess.run(command + arguments, capture_output=True, timeout=15)\n                with self.subTest(missing=missing):\n                    self.assertNotEqual(refused.returncode, 0)\n                    self.assertIn(b\"LOCAL_DECISION_NATIVE_ARGUMENTS\", refused.stderr)\n            self.assertEqual(sorted(path.name for path in Path(directory).iterdir()), sorted(files))\n\n    def test_native_cli_calls_the_exact_join_and_checks_expectation_bytes(self):\n        selection, completed, profile, frozen = self.inputs(1)\n        raw, expected = self.native_case(\"retained_acked\")\n        with tempfile.TemporaryDirectory() as directory:\n            files = {\"selection-checkpoint\": selection, \"completed-checkpoint\": completed,\n                     \"root-profile\": profile, \"freeze\": wire(frozen), \"readback\": raw, \"expected\": expected}\n            command = [sys.executable, \"-B\", str(ROOT / \"scripts/cell_learning_local_decision_join.py\")]\n            for name, data in files.items():\n                path = Path(directory) / name\n                path.write_bytes(data)\n                command.extend((\"--\" + name, str(path), \"--\" + name + \"-sha256\", native.sha(data)))\n            refused = subprocess.run(command, capture_output=True, timeout=15)\n            self.assertNotEqual(refused.returncode, 0)\n            self.assertIn(b\"LOCAL_DECISION_NATIVE_HEAD\", refused.stderr)\n            self.assertEqual(refused.stdout, b\"\")\n            bad_pin = list(command)\n            bad_pin[bad_pin.index(\"--expected-sha256\") + 1] = \"00\" * 32\n            refused = subprocess.run(bad_pin, capture_output=True, timeout=15)\n            self.assertNotEqual(refused.returncode, 0)\n            self.assertIn(b\"EXPECTATIONS_PIN\", refused.stderr)\n            self.assertEqual(sorted(path.name for path in Path(directory).iterdir()), sorted(files))\n\n\nif __name__ == \"__main__\":\n"
+        }
+      ],
+      "static_replay": {
+        "forward_equal": true,
+        "reverse_equal": true,
+        "forward_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "path": "docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+      "pre": {
+        "git_blob": "231a2200510edb81efed565a4563f768105de677",
+        "bytes": 4387,
+        "sha256": "feee555af4bb6d8620c6a3e6d6ef7196c8a580860723e78653a3e5d58f80c6fc"
+      },
+      "post": {
+        "git_blob": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543",
+        "bytes": 9631,
+        "sha256": "0a8bbc7b2632cc7395b03230c1e3d34617d37cacff097bf3c2239cc6e79b51b6"
+      },
+      "operations": [
+        {
+          "before": "This profile does not consume the original native-use export. It therefore\nreports acknowledged_use_observed=false and grants no use authorization.\nA same-actor different-run observation does not establish independent C.\nAll training, cost, installation, settlement, independent-consumer and FinalUse\nqualification fields remain false; authority is DENY_ALL and status HOLD_NO_GO.\n",
+          "after": "The default four-input profile does not consume a native-use export. It retains\nits original schema and acknowledged_use_observed=false. The separate explicit\nnative-use profile below can report a structurally matching acknowledged use;\nneither profile grants use authorization.\n\nA same-actor different-run observation does not establish independent C.\nAll training, cost, installation, settlement, independent-consumer and FinalUse\nqualification fields remain false; authority is DENY_ALL and status HOLD_NO_GO.\n"
+        },
+        {
+          "before": "## Reproduction\n",
+          "after": "## Explicit native-use join\n\nSupplying both --readback and --expected, each with its -sha256 pin, selects\ntrnm-cell-learning-local-decision-native-use-readback-v1. Every one of these\nfour optional arguments must be present together. A partial group is refused;\nomitting all four preserves the original structural profile.\n\nThe CLI calls review_native_local_decision_use. That function first calls the\nunchanged review_native_local_decision and then the unchanged original\ncell_adoption_readback.review_native_learning_use. The second reader validates\nthe exact native export envelope, payload commitment, complete manifest,\noriginal publication and public grant bindings, intent, committed step,\njournal observation and expected inputs. This proposal does not alter that\nreader or the existing HEPLCP02 completion/scope readers.\n\nThe additional join requires all of the following:\n\n1. No native pending work or pending delivery. Model STOP and a terminal\n   episode remain separately reported; an ACK is not either fact.\n2. Native retained/adopted disposition agrees with the actual tag-9 choice.\n   DeferCandidate and RetainParent use the complete parent descriptor while\n   no_update remains false; AdoptCandidate uses the trained candidate.\n3. The native learning head equals the exact Selection-cut head. Its decision\n   head equals that Selection receipt's predecessor, including LocalDecisionV2.\n4. Original learning operation, source run, completed task receipt, selected\n   artifact and complete parent bundle match the frozen request.\n5. The publication target has the same original principal, agent and Cell.\n   Its new run and every final use field must match the completed observation.\n6. The Selection digest and selected bundle match the native observation,\n   native manifest and complete selected version descriptor.\n7. The sole appended NextUse or RetainedModelNextUse observation equals the\n   original native checkpoint, committed step and cutover/publication values.\n\nOnly then does the new report set acknowledged_use_observed=true. That flag\ndescribes the consistency of the supplied original bytes. It does not\nauthenticate their custody, signatures, freshness or external producer.\nAll authority and business-qualification refusals from the structural report\nremain intact, including independent_consumer_verified=false,\nhepta_final_use_accepted=false and production_activation=false.\n\n### Actual native producer contract\n\nThe relevant original Hepta source was read at\ncbf6ca7dd619589be3e9e98755f185d34d0f7413. The paths below are under\ncodex-rs/hepta-agentd/src:\n\n| Source | Git blob | Exact responsibility |\n| --- | --- | --- |\n| neuron_generation_learning_runtime.rs | de50528a4245324360b465cc93bc25519255f2ea | The existing bounded actor exposes read_learning_next_use_readback and read_learning_updated_next_use_readback. |\n| neuron_generation_learning_readback.rs | 3a8d21d2c5d10154f746ae781dacffaa6de23a36 | export_next_use derives use from the actual held journal/publication, captures the Selection head/predecessor, and retains DENY_ALL/NOT_EXPORTED. |\n| neuron_generation_update_learning.rs | 88c5ec9658ef561af3658f5a73f8bfa7f89d9243 | The retained path requires the actual next-task bundle to equal the complete original parent, exact original owner progression and OwnerDrainedSameModel. |\n| neuron_generation_update_adopted_learning.rs | 6ed28321bbc1b51b442445b70ff4794b88d1af50 | The adopted path requires the qualified selected candidate, actual model-reset publication and both complete manifest contracts. |\n\nThose are real export APIs, not a new authority issuer or evidence that an\nordinary deployment has invoked them. The local CLI is an explicit read-only\nconsumer. This change does not install an ordinary runtime caller, obtain\nsigned tag-9/Selection/NextUse attestations, issue a grant, or prove an\nindependent consumer adopted a published artifact.\n\nThe existing HEPLCP04 corpus contains synthetic policy/Selection/NextUse\nobservations emitted through the original codec/coordinator. The existing\nnative-use corpus is a separate historical engineering run. They cannot be\njoined into a positive record by relabeling or rehashing. Seven added controls\nuse unchanged historical exports as refusal inputs: wrong pins, pending ACK,\ncross-iteration heads, incompatible disposition, attempted authority\nescalation, partial CLI arguments and exact CLI expectation/join refusal.\nNo successful HEPLCP04/native-use pair is manufactured by the tests.\n\nA later qualification run must capture the actual v4 Selection cut, the original\nnative export while that coordinator awaits NextUse, and the single completed\ncontinuation, together with independently supplied original freeze, Root scope\nand native expectations. This proposal supplies no such new execution record.\nThe ordinary_complete_chain / positive_adoption_chain /\nno_update_or_rollback_chain acceptance counts remain 0 / 0 / 0. Independent C\nand actual daemon plus Root OS restart remain unaccepted.\n\n## Reproduction\n"
+        },
+        {
+          "before": "The new CLI requires four complete file/pin pairs:\n--selection-checkpoint, --completed-checkpoint, --root-profile, --freeze,\neach with its corresponding -sha256. It prints one structural report and\ndoes not write a file, invoke a model, sign, adopt, dispatch or pay.\n",
+          "after": "The default CLI requires four complete file/pin pairs:\n--selection-checkpoint, --completed-checkpoint, --root-profile, --freeze,\neach with its corresponding -sha256. The explicit native-use mode adds both\n--readback/--readback-sha256 and --expected/--expected-sha256. Both modes print\none read-only report and do not write a file, invoke a model, sign, adopt,\ndispatch or pay.\n"
+        }
+      ],
+      "static_replay": {
+        "forward_equal": true,
+        "reverse_equal": true,
+        "forward_occurrences": [
+          1,
+          1,
+          1
+        ],
+        "reverse_occurrences": [
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

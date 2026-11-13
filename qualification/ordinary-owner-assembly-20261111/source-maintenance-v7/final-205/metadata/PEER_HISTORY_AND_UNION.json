@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "kind": "independent_final_CALLERS_origin_obligation_short_review",
+  "reviewer": "/root/chain_nextuse",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "target": "CALLERS.toml",
+  "status": "STATIC_REVIEW_COMPLETE_NO_CONFIRMED_LOCAL_METADATA_BLOCKER",
+  "conclusion_zh": "已独立核对实际 cd24 → 历史逻辑 0f0cc → 最终 0f0b 的全部旧行、来源和阶段变更。在本次完整元数据审查及明确限定的 20 源核验范围内，未发现无法解释的旧义务丢失、来源冲突、forbidden 数组削弱或同路径保护被覆盖。此结论不是原 checker、完整源码 caller 闭集或 native 验收通过。",
+  "detail": {
+    "git_blob": "e15136ac6cc2da312affb93f01996761ef15cb7d",
+    "bytes": 1017595,
+    "sha256": "162c883030ca5fe8b87098d8e8327395a4ba3c089a46e341f61938a05a07445e",
+    "create_get_exact": true,
+    "historical_source_pin_list_count": 13
+  },
+  "reviewed_tables": [
+    {
+      "pin": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+      "role": "actual checkout pre",
+      "boundaries": 638,
+      "protected": 440
+    },
+    {
+      "pin": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+      "role": "historical logical union",
+      "boundaries": 789,
+      "protected": 512
+    },
+    {
+      "pin": "0f0b4c835de967f90263ae9041865f5ac431615e",
+      "role": "final candidate",
+      "boundaries": 1011,
+      "protected": 600,
+      "bytes": 2151753,
+      "sha256": "00638bab13775377cc15a1e08aa24110d17039160b0678fae69d6476d87306fc"
+    }
+  ],
+  "source_basis": {
+    "commit": "f9615a668f0d3a8c584a304389c4ce4c69701123",
+    "tree": "089e8d49790bb0944cfcd83f7b10f3bb94786b43",
+    "manifest": "848a82a966e4cab54b5410c5e4d2fe0dd7fde616",
+    "file_count": 204,
+    "installed_metadata_pre": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074"
+  },
+  "byte_bridges": [
+    {
+      "original": "586e6360a778a9f826308820ddcbc731a9f9c3d1",
+      "clarified": "800c2f32753919f6356e822776b5b0ac18248fdd",
+      "ops": 54,
+      "old_rows": 1078,
+      "raw_preserved": 1026,
+      "raw_changed": 52,
+      "semantic_changed": 51,
+      "semantic_changes": {
+        "boundary": 39,
+        "protected": 12
+      },
+      "raw_only_protected": 439,
+      "unique_forward_reverse_exact": true
+    },
+    {
+      "pin": "e1968353409e0cc9e2e45c5b4ce0a95eec1952d2",
+      "ops": 94,
+      "old_rows": 1301,
+      "raw_preserved": 1209,
+      "raw_changed": 92,
+      "semantic_changed": 92,
+      "unique_forward_reverse_exact": true
+    }
+  ],
+  "byte_review_method": [
+    "Recomputed each original row's kind/index/identity, exact raw range and SHA256, canonical full-row fingerprint and changed fields.",
+    "Verified every operation's unique old/new anchor and exact forward/reverse recovery; both bridges total 148 operations.",
+    "Checked original boundary-ID ordering, required-ID append semantics, declaration/required equality, original protected-row ordering and header invariants.",
+    "The clarified first bridge changes only narrative fields. Its 54 operations, 1,078-row ledger and field changes are identical to the earlier bridge."
+  ],
+  "first_bridge_historical_authority": {
+    "derived_bridge_limit": "The first byte bridge is newly derived in this round. Exact byte replay does not by itself provide historical semantic authorization.",
+    "original_annexes": [
+      "bfc8c51e436767fdcde970194f58fa769e2deef3",
+      "22c1f044d6a61fbe9da64a620991c04ff9f5dd19",
+      "39529d2d1b5735cb3045d49cda2fd08a2953c483",
+      "679e73c42779426427938e70a68e47220a9f7c11",
+      "d8acbd854d6dc4838f8ddff45cf6c55706186b1e"
+    ],
+    "historical_semantic_delta": "7ac44786c9837d4233fe47dec8dd2a60e6c38661",
+    "historical_tables": [
+      {
+        "pin": "8da2bb60f3d029d26e198a11a20ed8f97c05824f",
+        "boundaries": 699,
+        "protected": 474
+      },
+      {
+        "pin": "8cba09dfccb110eaff66f65cddbed32d2122df13",
+        "boundaries": 718,
+        "protected": 489
+      }
+    ],
+    "independent_reconstruction": "Replayed the isolated author packets, then merged their exact semantic edits and additions. The 699/474 and 718/489 row data match the historical tables; starting from actual 8cba, the 6 boundary and 7 protected edits, 71/23 additions and required-ID append reproduce the entire parsed 0f0cc document, including array order.",
+    "preservation": "Caller ordered union preserves existing Root extras. Every other replacement requires exact old-row identity. No path-keyed replacement is used for protected rows.",
+    "old_positive_guard_changes": 12,
+    "new_original_origins": {
+      "boundaries": 151,
+      "protected": 72
+    },
+    "independent_supporting_root_proof": "df27b9fee41f67ba32917976226be78c0f9be0fa",
+    "historical_limit": "The recovered historical records are static/partial reviews and do not constitute a historical whole-checker PASS."
+  },
+  "complete_final_semantic_reconstruction": {
+    "final_recipe": "a6d3c7c53b914d3609c45968dcb8513219d96c5c",
+    "all_25_recipe_inputs_Git_bytes_SHA256_verified": true,
+    "initial_semantic_prepare": {
+      "boundaries": 1010,
+      "protected": 598,
+      "seven_inputs_verified": true
+    },
+    "exact_eight_stage_order": [
+      {
+        "pin": "18b8e0ca81e26c0a09fa623c19d0c5bc3232674f",
+        "boundary_updates": 56,
+        "protected_updates": 0,
+        "changed_rows": 56,
+        "unchanged_revalidated_rows": 0
+      },
+      {
+        "pin": "85885737a60604b11fea9aa198473df424d7dfc8",
+        "boundary_updates": 0,
+        "protected_updates": 50,
+        "changed_rows": 50,
+        "unchanged_revalidated_rows": 0
+      },
+      {
+        "pin": "a13a9a437bcaebf95ab6cb3bda5d97ae49a4e91b",
+        "boundary_updates": 0,
+        "protected_updates": 3,
+        "changed_rows": 3,
+        "unchanged_revalidated_rows": 0
+      },
+      {
+        "pin": "7583c283d2d861bb6c3ade0fea58a6f223c0e2cd",
+        "boundary_updates": 0,
+        "protected_updates": 69,
+        "changed_rows": 60,
+        "unchanged_revalidated_rows": 9
+      },
+      {
+        "pin": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+        "boundary_updates": 2,
+        "protected_updates": 8,
+        "changed_rows": 10,
+        "unchanged_revalidated_rows": 0
+      },
+      {
+        "pin": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+        "boundary_updates": 0,
+        "protected_updates": 1,
+        "changed_rows": 1,
+        "unchanged_revalidated_rows": 0
+      },
+      {
+        "pin": "780619c2a09dbd8978b438b5f7b4d8f23f08e389",
+        "boundary_updates": 0,
+        "protected_updates": 1,
+        "changed_rows": 1,
+        "unchanged_revalidated_rows": 0
+      },
+      {
+        "pin": "16ad1ae4f00e964e1a8ae40ff656b6406f218818",
+        "boundary_updates": 0,
+        "protected_updates": 12,
+        "changed_rows": 12,
+        "unchanged_revalidated_rows": 0
+      }
+    ],
+    "manual_row_receipts": 202,
+    "changed_receipts": 193,
+    "unchanged_revalidations": 9,
+    "last_addition": {
+      "pin": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+      "boundaries": 1,
+      "protected": 2
+    },
+    "final_all_rows_and_header_semantically_exact": true,
+    "fingerprints": {
+      "boundaries": "cea38cb7531707fea2261be25c38e52103057d0decf3ab3690d1d93ea8761c33",
+      "protected": "3ec4f042f20b8ae30833a8ba37aa4187b01b2a1e56654f0f9073cb5dd01c189e",
+      "header": "91c2e68218c66bf766546f91a81430f36e53f21c29baf12723c3ccd6c16ee3ff"
+    }
+  },
+  "complete_negative_and_origin_preservation": {
+    "author_proof": "fde301027476a8c480275838f6c6b3f70ab6d8a4",
+    "forbidden_rows_checked": 600,
+    "actual_old_440_exact": true,
+    "logical_old_512_exact": true,
+    "introduced_88_exact": true,
+    "array_order_and_duplicate_values_retained": true,
+    "distinct_paths": 447,
+    "multiple_conjunct_paths": 105,
+    "maximum_conjuncts_on_one_path": 7,
+    "independent_conjunct_identity_retained": true,
+    "final_added_origins": {
+      "total": 310,
+      "boundaries": 222,
+      "protected": 88
+    },
+    "added_boundary_sources": {
+      "e6da": 58,
+      "App": 38,
+      "Root": 125,
+      "Outcome": 1
+    },
+    "added_protected_sources": {
+      "e6da": 26,
+      "App": 15,
+      "Root": 45,
+      "Outcome": 2
+    },
+    "no_path_map_overwrite": true
+  },
+  "positive_obligation_findings": [
+    "All 12 old protected-row semantic changes in the first bridge map to the original Root/Learning/custody annexes; the remaining raw-only row change has identical parsed semantics.",
+    "The two completed-source caller markers were not discarded: both remain in the original delivery runtime's unique fn run required_function_order, at the actual narrower scope. The original caller is retained alongside the concrete new callers.",
+    "The two historical caller removals correspond to the actual retirable Learning runtime and worker entry points; these replacements are declared and protected. This is a source-bound migration, not a global absence claim.",
+    "Later PhaseWatch custody, concrete UFCS, selected pure DTO visibility and twelve Shared/result-cell guard changes are explicitly represented as semantic successors.",
+    "Learning Work and Bootstrap's old join_locked function obligations are transferred to actual Shared constructors and synchronous result-lock helpers. Original errors, gate checks, pending/output ownership and release order remain protected; the separate unchanged Work conjunct is retained."
+  ],
+  "focused_source_evidence": {
+    "files": 20,
+    "protected_conjuncts": 43,
+    "raw_required": 171,
+    "unique_function_projections": 176,
+    "file_orders": 64,
+    "function_order_markers": 3092,
+    "projection_failures": 0,
+    "source_blobs_Git_bytes_SHA256_verified": true,
+    "method": "Direct actual-source inspection and pure V8 masked-body/function-order projection.",
+    "limit": "Only the listed 20 current source files are independently source-projected here. This is not a whole-repository receiver/caller proof, and the original checker and typed helper were not run."
+  },
+  "confirmed_blocking_findings": [],
+  "restrictions_observed": {
+    "h_PTY_or_native_calls": 0,
+    "original_checker_executions": 0,
+    "product_source_mutations": 0,
+    "refs_or_PR_mutations": 0,
+    "installed_metadata": false,
+    "qualification_PASS_claim": false,
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  },
+  "remaining_requirement": "The original full checker and authorized native gates must execute against the complete fixed candidate. Execution-channel unavailability, Draft status and existing 0/0/0 acceptance counts are not changed by this static review."
+}

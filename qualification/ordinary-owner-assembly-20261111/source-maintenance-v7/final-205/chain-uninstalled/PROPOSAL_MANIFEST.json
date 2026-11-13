@@ -1,0 +1,426 @@
+{
+  "schema_version": 1,
+  "kind": "isolated-chain-native-use-join-proposal-manifest",
+  "status": "uninstalled-unexecuted-Hepta-evidence-only",
+  "target_repository": "TrillionniumFoundation/Trillionnium-Chain",
+  "evidence_repository": "TrillionniumFoundation/hepta-private-ci",
+  "chain_ref_or_api_mutations": false,
+  "hepta_ref_mutations": false,
+  "h_native_or_test_execution": false,
+  "final_target_guard": {
+    "head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "base": "c84162378f34b9284e90587df4c466dfee3e193b",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "updated_at": "2026-11-12T06:54:02Z",
+    "tree": "876aa62d1ab49458d29e9168f4c69e7b47b8884b"
+  },
+  "final_target_guard_original_response": {
+    "git_blob": "fa17286002db342c3d2738bd1914c12dee88c028",
+    "bytes": 31127,
+    "sha256": "e0268bd201c2a72cbfc3cd4b9fb64ac84e22cca7ac474acc5b38f6d7969acf0a"
+  },
+  "exact_source_packet": {
+    "git_blob": "9801f64e0f4714995edc81f6bfa8be57f59f10d4",
+    "bytes": 28024,
+    "sha256": "6e6dac42156e681e474964c4e0862b47c1ddc40ad2cb5906e4c0df4a6473ea23"
+  },
+  "source_bound_review": {
+    "git_blob": "76631fd5f5b62c668412a21fd909f8eec20f0fb9",
+    "bytes": 7410,
+    "sha256": "cd87c8b2b78a219897b4e8ca6089e66d73a60b451495ea3bf02c973a4c9c52f3"
+  },
+  "proposed_files": [
+    {
+      "path": "scripts/cell_learning_local_decision_join.py",
+      "pre": {
+        "git_blob": "1409d50d835e12c32341a3e650f53191915b8030",
+        "bytes": 12027,
+        "sha256": "43b0c97b07cab4131003f668430d420ceedba1883ff2ec6458a789c646f80a83"
+      },
+      "post": {
+        "git_blob": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+        "bytes": 17912,
+        "sha256": "7da487406344e304065f5ff4abb668e96bc3d85d73fa7debe8c18eb2e217826e"
+      },
+      "operation_count": 4,
+      "static_replay": {
+        "forward_equal": true,
+        "reverse_equal": true,
+        "forward_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "pre_and_post_available_in_evidence_repository": true
+    },
+    {
+      "path": "scripts/test_cell_learning_local_decision_join.py",
+      "pre": {
+        "git_blob": "02515dcb1b33afae4b350a7272db662402819064",
+        "bytes": 18325,
+        "sha256": "db5b90dd8efc48564776d48e17012408ac1e4ec00779da9563cd6502a1729e2d"
+      },
+      "post": {
+        "git_blob": "a8c35861954c6b68dd2af5453fa1365020380217",
+        "bytes": 25676,
+        "sha256": "02783df48bfac4457f7dc6596c0c521da02563f573bf223354087cb63883ea7e"
+      },
+      "operation_count": 4,
+      "static_replay": {
+        "forward_equal": true,
+        "reverse_equal": true,
+        "forward_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse_occurrences": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "pre_and_post_available_in_evidence_repository": true
+    },
+    {
+      "path": "docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+      "pre": {
+        "git_blob": "231a2200510edb81efed565a4563f768105de677",
+        "bytes": 4387,
+        "sha256": "feee555af4bb6d8620c6a3e6d6ef7196c8a580860723e78653a3e5d58f80c6fc"
+      },
+      "post": {
+        "git_blob": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543",
+        "bytes": 9631,
+        "sha256": "0a8bbc7b2632cc7395b03230c1e3d34617d37cacff097bf3c2239cc6e79b51b6"
+      },
+      "operation_count": 3,
+      "static_replay": {
+        "forward_equal": true,
+        "reverse_equal": true,
+        "forward_occurrences": [
+          1,
+          1,
+          1
+        ],
+        "reverse_occurrences": [
+          1,
+          1,
+          1
+        ]
+      },
+      "pre_and_post_available_in_evidence_repository": true
+    }
+  ],
+  "permissions": {
+    "agents": {
+      "path": "AGENTS.md",
+      "git_blob": "daadb4de994624fd8ee740547a81c07034698955",
+      "bytes": 1416,
+      "sha256": "082d3f5d3d134efe1273f3bd1cc28a9d41db41be6f8996de8cc9545386094631"
+    },
+    "original_preflight": "Root reported original unchanged preflight PASS at e338; this subagent did not execute it.",
+    "chain_write_channel": "Required ProfHepta/HeptaRuntime local GitHub channel remains unverified; gh unavailable was reported by Root. No substitute write to Chain.",
+    "reusable_source_plan": {
+      "path": "docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+      "git_blob": "2e94efb60da8c5e0e306b387eea046879e3dd851",
+      "read_scope": "Targeted relevant source-ownership and final-composition sections; not a claim of complete plan audit."
+    },
+    "portability_inventory": {
+      "path": "config/portability-inventory-v1.json",
+      "git_blob": "94b92f2a4877036ea3929a83f90ba3bbe8ca2ae3"
+    },
+    "source_footprint": "Only current Python reader, its tests and its specification. No retired consensus/runtime component is restored."
+  },
+  "unchanged_reader_dependencies": [
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "source": "e338c000f26e9357ed33213624da787a3a009ed9",
+      "path": "scripts/cell_adoption_readback.py",
+      "git_blob": "47c94dfbf1ea9752439a09b29f750f27a1e4e3b8",
+      "bytes": 29721,
+      "sha256": "4574c8ba129eeac23f8c217d2fe3c25d0a8c659f38ec3449b87186a33486d4dc",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "source": "e338c000f26e9357ed33213624da787a3a009ed9",
+      "path": "scripts/cell_learning_iteration_join.py",
+      "git_blob": "58fe5b64c02758b646f16e8e4c0c47f67aee7e15",
+      "bytes": 23114,
+      "sha256": "b602e6217b9ec2bb143c141ea02e27ec666ef75ddf993eb794c23eb3ded5da7d",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "source": "e338c000f26e9357ed33213624da787a3a009ed9",
+      "path": "scripts/cell_learning_scope_join.py",
+      "git_blob": "f7468e21fd937694bef29db932ed2dcad82c8d0f",
+      "bytes": 7849,
+      "sha256": "b1bb0873ac3f49676b6ae00e5cdb35f2a25002986d8477be751dc746ce4c040e",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "source": "e338c000f26e9357ed33213624da787a3a009ed9",
+      "path": "scripts/cell_learning_completion_join.py",
+      "git_blob": "e07f53316ef74242375467ba26d00692213685eb",
+      "bytes": 6806,
+      "sha256": "db90de5c974565c874a8d34679de907d6214bc84a6294c3ec5466c7e28eb4ed0",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "source": "e338c000f26e9357ed33213624da787a3a009ed9",
+      "path": "scripts/test_cell_adoption_readback.py",
+      "git_blob": "e560f35de0d6896a0abc8d62506074cba7efddfb",
+      "bytes": 19436,
+      "sha256": "0cb9c8d37c924b54af2497ebf4571c1e3c63bfa00f7987206d1232a1b6e643f2",
+      "modified": false
+    }
+  ],
+  "unchanged_native_producer_contracts": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "source": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+      "git_blob": "de50528a4245324360b465cc93bc25519255f2ea",
+      "bytes": 9822,
+      "sha256": "7e2da259231d6d1ee4c67925507e99838a0ef31ae2a710384ccfc158d2aa293e",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "source": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+      "git_blob": "3a8d21d2c5d10154f746ae781dacffaa6de23a36",
+      "bytes": 9908,
+      "sha256": "b9b4b255ee1d159921aa6224ae0e47771c739d608ae5835057340cbfc5eec856",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "source": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_learning.rs",
+      "git_blob": "88c5ec9658ef561af3658f5a73f8bfa7f89d9243",
+      "bytes": 10989,
+      "sha256": "ec97e2306834d53307c11d6fa1148f08d869b9b6837c071ee2f497222ff38830",
+      "modified": false
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "source": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "git_blob": "6ed28321bbc1b51b442445b70ff4794b88d1af50",
+      "bytes": 14369,
+      "sha256": "7a8a983d82d9ae9d0d902028e32b64007a5ba767763c792a7ddada9eceadd053",
+      "modified": false
+    }
+  ],
+  "original_fixture_pins": [
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/adopted_acked.json",
+      "git_blob": "137f3bc9f670eba808b3974a38f0fb4dc3c96683",
+      "bytes": 13520,
+      "sha256": "69a80c932903c1685b7db9f83d544ef403da0c668f95480ce447c7aa955ab31c"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/adopted_acked.expected.json",
+      "git_blob": "9534e87a865eadebfe10d484be1e5d04c678ac92",
+      "bytes": 1698,
+      "sha256": "3a0fcb59cf75f157c5795653a01efb639962a256e5248b5b3bd5e922f6833159"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/adopted_pending.json",
+      "git_blob": "16a720277087b0a8bb9bddfb69a9aadc4d478548",
+      "bytes": 13823,
+      "sha256": "3b3fe72584f128f369c18cd7dae0697ee93beca3404ace106ccd8446ede60f00"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/adopted_pending.expected.json",
+      "git_blob": "5a29d42a04c317e683fd9fcb7ca54e308c7fadb1",
+      "bytes": 1698,
+      "sha256": "103f03c24811f7ba8ad230ad2aaa40ca64389f9b2ad4947f80f6963aac52cebe"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/retained_acked.json",
+      "git_blob": "06c676816dc32aabb7e8a4d7dd36a1842c15d76e",
+      "bytes": 11821,
+      "sha256": "67c11f0a957098a5db4c433452cffb1070bd7c220c18e947f9f7b7fe65e55d47"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/retained_acked.expected.json",
+      "git_blob": "5df2ed9c788fed1e9858f3852b991aed043fe620",
+      "bytes": 1631,
+      "sha256": "a38464656f5bfc372701cbdb5b7de0bd118500db42e2a88f74f186d2b6454d2b"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/retained_pending.json",
+      "git_blob": "540c19b65b735983de5034f6f0d75c86a7f99450",
+      "bytes": 12149,
+      "sha256": "8908ec58db9af8942f7215112cfae02ec93ab3bb36fe4fbfcc25bcd2bdd08fe8"
+    },
+    {
+      "path": "evidence/cell-adoption-20261108/native-readbacks/retained_pending.expected.json",
+      "git_blob": "7ea075f312ed6d4fd854bc28d1016dd3da148334",
+      "bytes": 1631,
+      "sha256": "9db742282463927d3ed5a484f85142f877333352f851839785d3bc31372c16f3"
+    }
+  ],
+  "original_v4_fixture": {
+    "path": "evidence/heplcp04-interop-20261111/native-fixture.json",
+    "git_blob": "a7b65cfaa17582dfeccea1c28f859f3d10669898",
+    "bytes": 106963,
+    "sha256": "b873d6f0606100ec8a3246548009b6afda5aa9fbc55e2bd85a4c6fed7fd81a46",
+    "scope": "Original codec/coordinator with synthetic policy/Selection/NextUse; not business execution."
+  },
+  "native_fixture_manifest": {
+    "path": "evidence/cell-adoption-20261108/native-readbacks/fixture-manifest.json",
+    "git_blob": "10a3add900929448c59a05930d76fd7e78bfe0d2",
+    "bytes": 6165,
+    "sha256": "46adda249f068efc216898b6fba1cae567b018de1bce0f25a1e6804526a4e966",
+    "scope": "Unchanged historical native engineering fixtures; expectations not deployment authority."
+  },
+  "new_entry": {
+    "definition": "scripts/cell_learning_local_decision_join.py::review_native_local_decision_use",
+    "actual_proposed_cli_caller": "scripts/cell_learning_local_decision_join.py::main",
+    "unchanged_structural_entry": "review_native_local_decision",
+    "unchanged_native_entry": "cell_adoption_readback.review_native_learning_use",
+    "optional_cli_group": [
+      "--readback",
+      "--readback-sha256",
+      "--expected",
+      "--expected-sha256"
+    ],
+    "partial_group": "LOCAL_DECISION_NATIVE_ARGUMENTS",
+    "success_schema": "trnm-cell-learning-local-decision-native-use-readback-v1",
+    "code_scope": "Concrete offline CLI consumer only; no ordinary runtime caller or independent C is asserted.",
+    "ordinary_runtime_caller_established": false
+  },
+  "assurance": {
+    "authority": "DENY_ALL",
+    "current_permission": "NOT_EXPORTED",
+    "qualification": "HOLD_NO_GO",
+    "no_update_remains_false_for_all_three_local_choices": true,
+    "independent_consumer_verified": false,
+    "hepta_final_use_accepted": false,
+    "production_activation": false,
+    "native_origin_authenticated": false,
+    "learning_signatures_verified": false,
+    "no_new_positive_native_pair_created": true,
+    "original_acceptance_counts": {
+      "ordinary_complete_chain": 0,
+      "positive_adoption_chain": 0,
+      "no_update_or_rollback_chain": 0
+    },
+    "actual_daemon_and_root_os_restart_accepted": false
+  },
+  "tests": {
+    "old": [
+      "test_all_native_cuts_and_24_original_signing_payloads_match",
+      "test_three_choices_keep_qualification_closed_and_never_relabel_no_update",
+      "test_original_legacy_reader_remains_closed_to_v4_and_new_reader_rejects_relabels",
+      "test_boundaries_reject_nonbytes_truncation_trailing_data_and_excess_receipts",
+      "test_unknown_disposition_and_zero_policy_reason_are_refused",
+      "test_rehashed_proposal_candidate_and_selected_bundle_substitution_are_refused",
+      "test_evaluator_cannot_issue_local_choice_and_original_owners_bind_every_tail",
+      "test_choice_cannot_skip_selection_repeat_it_or_follow_no_update",
+      "test_wrong_selected_version_and_foreign_next_task_are_refused_even_after_rehash",
+      "test_wrong_use_kind_and_changed_operation_time_predecessor_are_refused",
+      "test_expired_receipt_cannot_become_current_by_rehashing",
+      "test_external_byte_pins_and_exact_original_receipt_prefix_are_mandatory",
+      "test_frozen_request_and_original_root_scope_cannot_be_relabelled",
+      "test_cli_has_only_readback_output_and_requires_all_four_pins"
+    ],
+    "added": [
+      "test_native_use_requires_the_original_export_byte_pin",
+      "test_actual_pending_native_exports_cannot_ack_any_local_choice",
+      "test_actual_acked_old_iteration_exports_cannot_join_v4_heads",
+      "test_native_disposition_cannot_override_defer_retain_or_adopt",
+      "test_native_use_keeps_the_original_deny_all_guard",
+      "test_native_cli_refuses_every_partial_optional_input_group",
+      "test_native_cli_calls_the_exact_join_and_checks_expectation_bytes"
+    ],
+    "all": [
+      "test_all_native_cuts_and_24_original_signing_payloads_match",
+      "test_three_choices_keep_qualification_closed_and_never_relabel_no_update",
+      "test_original_legacy_reader_remains_closed_to_v4_and_new_reader_rejects_relabels",
+      "test_boundaries_reject_nonbytes_truncation_trailing_data_and_excess_receipts",
+      "test_unknown_disposition_and_zero_policy_reason_are_refused",
+      "test_rehashed_proposal_candidate_and_selected_bundle_substitution_are_refused",
+      "test_evaluator_cannot_issue_local_choice_and_original_owners_bind_every_tail",
+      "test_choice_cannot_skip_selection_repeat_it_or_follow_no_update",
+      "test_wrong_selected_version_and_foreign_next_task_are_refused_even_after_rehash",
+      "test_wrong_use_kind_and_changed_operation_time_predecessor_are_refused",
+      "test_expired_receipt_cannot_become_current_by_rehashing",
+      "test_external_byte_pins_and_exact_original_receipt_prefix_are_mandatory",
+      "test_frozen_request_and_original_root_scope_cannot_be_relabelled",
+      "test_cli_has_only_readback_output_and_requires_all_four_pins",
+      "test_native_use_requires_the_original_export_byte_pin",
+      "test_actual_pending_native_exports_cannot_ack_any_local_choice",
+      "test_actual_acked_old_iteration_exports_cannot_join_v4_heads",
+      "test_native_disposition_cannot_override_defer_retain_or_adopt",
+      "test_native_use_keeps_the_original_deny_all_guard",
+      "test_native_cli_refuses_every_partial_optional_input_group",
+      "test_native_cli_calls_the_exact_join_and_checks_expectation_bytes"
+    ]
+  },
+  "verification": {
+    "mode": "pure V8 exact bytes and source inspection only",
+    "executed_original_checker": false,
+    "executed_python": false,
+    "executed_native": false,
+    "compiled_or_typechecked": false,
+    "tests_run": false,
+    "old_test_methods_preserved": true,
+    "old_test_count": 14,
+    "new_refusal_test_count": 7,
+    "original_structural_review_byte_exact": {
+      "git_blob": "51c1a4959dd673a3a35a2bffcd72adcb4a6e6014",
+      "bytes": 4030,
+      "sha256": "423b248d60d3d5de0af7a3c39a2d707d7340828ff416cdafbd9ca768fec6804c"
+    },
+    "unrelated_fixture_heads": [
+      {
+        "choice": "AdoptCandidate",
+        "phase": "adopted_acked",
+        "original_v4_selection_head": "3773436a0d1c89aa67cf380996a1a1f8b68d7ae9c197ccb2bbd5b75834a7703a",
+        "original_native_export_head": "6fda3e92952be692295bdc62b96bb6c79a6ce5b89a2d9c1863e755aff81fe9e8",
+        "unequal": true
+      },
+      {
+        "choice": "DeferCandidate",
+        "phase": "retained_acked",
+        "original_v4_selection_head": "2828ea72b1d1c125638db06621bdf47e35cbc14fd8ec264c148ca0dae77981be",
+        "original_native_export_head": "296d5de2036f6e9fc6aae1991ff730d058c2fb0a79286d2ab09ad298a2b3461a",
+        "unequal": true
+      },
+      {
+        "choice": "RetainParent",
+        "phase": "retained_acked",
+        "original_v4_selection_head": "a50de1fbbb53064886897a60c01d9b95b9ec7cf891a6457c37ac96bbd8cab335",
+        "original_native_export_head": "296d5de2036f6e9fc6aae1991ff730d058c2fb0a79286d2ab09ad298a2b3461a",
+        "unequal": true
+      }
+    ]
+  },
+  "limitations": [
+    "No Python/native/original-checker/test execution and no Chain installation.",
+    "Successful exact v4/native-use join remains unexercised by an actual newly captured native pair.",
+    "Fixture-derived pins are not trusted deployment materials.",
+    "FinalUse authority, live revocation and independent consumption cannot be inferred from the readback.",
+    "The original repository workflows and historical failure outcomes are unchanged."
+  ]
+}

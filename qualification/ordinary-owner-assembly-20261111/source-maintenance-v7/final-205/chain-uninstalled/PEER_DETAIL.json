@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-chain-heplcp04-native-use-isolated-proposal",
+  "reviewer": "hepta_audit",
+  "verdict": "No confirmed local static blocker in the fixed three-file proposal. This is not an executed-test PASS, an accepted native pair, an installation approval, or business qualification.",
+  "scope": {
+    "target_repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "fixed_target_head": "e338c000f26e9357ed33213624da787a3a009ed9",
+    "fixed_target_tree": "876aa62d1ab49458d29e9168f4c69e7b47b8884b",
+    "evidence_repository": "TrillionniumFoundation/hepta-private-ci",
+    "proposal_manifest": "33746eddf59b10b9d4faab6e20482cb1b582e4b9",
+    "exact_packet": "9801f64e0f4714995edc81f6bfa8be57f59f10d4",
+    "explanation": "76631fd5f5b62c668412a21fd909f8eec20f0fb9",
+    "no_chain_writes": true,
+    "no_ref_changes": true,
+    "no_h_pty_native_or_tests": true,
+    "git_scope": "GET fixed original files/blobs in Chain and Hepta; write only this immutable review in Hepta. The captured Draft/PR state is historical, not a freshly asserted live PR state."
+  },
+  "exact_verification": {
+    "files": [
+      {
+        "path": "scripts/cell_learning_local_decision_join.py",
+        "pre": {
+          "git_blob": "1409d50d835e12c32341a3e650f53191915b8030",
+          "bytes": 12027,
+          "sha256": "43b0c97b07cab4131003f668430d420ceedba1883ff2ec6458a789c646f80a83"
+        },
+        "post": {
+          "git_blob": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+          "bytes": 17912,
+          "sha256": "7da487406344e304065f5ff4abb668e96bc3d85d73fa7debe8c18eb2e217826e"
+        },
+        "forward_unique_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse_unique_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "full_exact_forward_reverse": true
+      },
+      {
+        "path": "scripts/test_cell_learning_local_decision_join.py",
+        "pre": {
+          "git_blob": "02515dcb1b33afae4b350a7272db662402819064",
+          "bytes": 18325,
+          "sha256": "db5b90dd8efc48564776d48e17012408ac1e4ec00779da9563cd6502a1729e2d"
+        },
+        "post": {
+          "git_blob": "a8c35861954c6b68dd2af5453fa1365020380217",
+          "bytes": 25676,
+          "sha256": "02783df48bfac4457f7dc6596c0c521da02563f573bf223354087cb63883ea7e"
+        },
+        "forward_unique_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "reverse_unique_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "full_exact_forward_reverse": true
+      },
+      {
+        "path": "docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+        "pre": {
+          "git_blob": "231a2200510edb81efed565a4563f768105de677",
+          "bytes": 4387,
+          "sha256": "feee555af4bb6d8620c6a3e6d6ef7196c8a580860723e78653a3e5d58f80c6fc"
+        },
+        "post": {
+          "git_blob": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543",
+          "bytes": 9631,
+          "sha256": "0a8bbc7b2632cc7395b03230c1e3d34617d37cacff097bf3c2239cc6e79b51b6"
+        },
+        "forward_unique_counts": [
+          1,
+          1,
+          1
+        ],
+        "reverse_unique_counts": [
+          1,
+          1,
+          1
+        ],
+        "full_exact_forward_reverse": true
+      }
+    ],
+    "fixed_chain_path_checks": [
+      {
+        "path": "scripts/cell_learning_local_decision_join.py",
+        "sha": "1409d50d835e12c32341a3e650f53191915b8030",
+        "actual": "1409d50d835e12c32341a3e650f53191915b8030",
+        "exact_cached": true,
+        "bytes": 12027
+      },
+      {
+        "path": "scripts/test_cell_learning_local_decision_join.py",
+        "sha": "02515dcb1b33afae4b350a7272db662402819064",
+        "actual": "02515dcb1b33afae4b350a7272db662402819064",
+        "exact_cached": true,
+        "bytes": 18325
+      },
+      {
+        "path": "docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+        "sha": "231a2200510edb81efed565a4563f768105de677",
+        "actual": "231a2200510edb81efed565a4563f768105de677",
+        "exact_cached": true,
+        "bytes": 4387
+      },
+      {
+        "path": "scripts/cell_adoption_readback.py",
+        "sha": "47c94dfbf1ea9752439a09b29f750f27a1e4e3b8",
+        "actual": "47c94dfbf1ea9752439a09b29f750f27a1e4e3b8",
+        "exact_cached": true,
+        "bytes": 29721
+      },
+      {
+        "path": "scripts/cell_learning_iteration_join.py",
+        "sha": "58fe5b64c02758b646f16e8e4c0c47f67aee7e15",
+        "actual": "58fe5b64c02758b646f16e8e4c0c47f67aee7e15",
+        "exact_cached": true,
+        "bytes": 23114
+      },
+      {
+        "path": "scripts/cell_learning_scope_join.py",
+        "sha": "f7468e21fd937694bef29db932ed2dcad82c8d0f",
+        "actual": "f7468e21fd937694bef29db932ed2dcad82c8d0f",
+        "exact_cached": true,
+        "bytes": 7849
+      },
+      {
+        "path": "scripts/cell_learning_completion_join.py",
+        "sha": "e07f53316ef74242375467ba26d00692213685eb",
+        "actual": "e07f53316ef74242375467ba26d00692213685eb",
+        "exact_cached": true,
+        "bytes": 6806
+      }
+    ],
+    "original_structural_function": {
+      "bytes": 4030,
+      "git": "51c1a4959dd673a3a35a2bffcd72adcb4a6e6014",
+      "sha256": "423b248d60d3d5de0af7a3c39a2d707d7340828ff416cdafbd9ca768fec6804c",
+      "exact": true
+    },
+    "old_test_methods": 14,
+    "old_test_bodies_all_exact": true,
+    "added_test_methods": 7,
+    "unchanged_readers": "The original native, iteration, scope and completion readers were GET at fixed e338, matched the declared immutable pins, and were read. None is in the proposal operation set.",
+    "producer_source_path_checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+        "sha": "de50528a4245324360b465cc93bc25519255f2ea",
+        "actual": "de50528a4245324360b465cc93bc25519255f2ea",
+        "exact_cached": true,
+        "bytes": 9822
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+        "sha": "3a8d21d2c5d10154f746ae781dacffaa6de23a36",
+        "actual": "3a8d21d2c5d10154f746ae781dacffaa6de23a36",
+        "exact_cached": true,
+        "bytes": 9908
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_learning.rs",
+        "sha": "88c5ec9658ef561af3658f5a73f8bfa7f89d9243",
+        "actual": "88c5ec9658ef561af3658f5a73f8bfa7f89d9243",
+        "exact_cached": true,
+        "bytes": 10989
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+        "sha": "6ed28321bbc1b51b442445b70ff4794b88d1af50",
+        "actual": "6ed28321bbc1b51b442445b70ff4794b88d1af50",
+        "exact_cached": true,
+        "bytes": 14369
+      }
+    ],
+    "method": "Pure V8 UTF-8/Git/SHA checks, literal operation replay, source reading and restricted fixture field inspection. No Python import, AST compilation, native verifier, tests, Cargo, formatter or original checker was executed."
+  },
+  "semantic_findings": [
+    {
+      "area": "Actual CLI entry and default preservation",
+      "finding": "main keeps the four required file/pin pairs and calls the original structural function when all four new arguments are absent. The original four-file reads, bounds, freeze decode, arguments, schema, refusal fields and JSON output are retained; only help text and the explicitly selected mode are added. The new readback/expected paths and pins form an all-or-none group. Native expectations are bounded and hash-checked before decode; readback bytes use the original bounded reader and its native SHA check. The new function is called from main, not an orphan helper."
+    },
+    {
+      "area": "Original guards precede the join",
+      "finding": "review_native_local_decision_use first executes the unchanged structural review, then native.review_native_learning_use. Structural replay requires qualified Evaluation and UpdateCandidates, exactly one tag-9 local decision, separate Selection, and one exact final continuation with identical prior receipts/request/owners. Root scope binds the original initial freeze and constrains the trained candidate even for retain/defer. Native validation keeps exact fields, duplicate-key/nonfinite refusal, payload commitment, expected pins, manifest/publication/grant-binding/intent/receipt/journal checks, and DENY_ALL/NOT_EXPORTED."
+    },
+    {
+      "area": "No fake NoUpdate",
+      "finding": "The original v4 replay rejects Evaluation/Proposal NoUpdate in this profile. AdoptCandidate selects the trained candidate; DeferCandidate and RetainParent select the complete original parent while no_update remains false, evaluation_disposition remains qualified and proposal_disposition remains update_candidates. Native retained_model must agree with that actual tag-9 choice, rather than cause it."
+    },
+    {
+      "area": "Iteration and ancestor binding",
+      "finding": "Both native learning_head and learning_decision_head must equal the Selection cut's recomputed head and its predecessor, respectively. Operation ID, source run, completed task receipt, selected artifact and digest of the full frozen parent descriptor must equal native fields. The legacy bundle digest commits artifact ID, generation, all required/optional component pins, rollback predecessor and complete training lineage; the candidate path checks parent generation+1, exact rollback/source bundle and dataset/evaluation profile. This is not a join on a label or a partial version identifier."
+    },
+    {
+      "area": "Full target identity and owner progression",
+      "finding": "The new join matches principal digest, agent and Cell with the publication target. The unchanged native reader binds previous/target principal/agent/Cell, previous run to source_run_id, distinct target run/task, generation and writer_epoch increments, exact expected task/frontier/manifest/owner checkpoint/partition, publication Selection, genesis and public FinalUse grant bindings. The original retained path enforces equal complete manifest identity and owner_drained_same_model; adoption enforces changed complete manifest and the original reset receipt. These are supplied-data relations, not signature or current-authorization validation."
+    },
+    {
+      "area": "Selection and complete final observation",
+      "finding": "Selection digest and selected bundle are matched across the v4 receipt, native observation, native manifest review and digest of the selected full descriptor. The final observation is compared as an entire dictionary, including tag, all four target partition fields, chosen bundle, checkpoint, Selection, committed-step receipt, and the disposition-specific cutover or task-owner-publication digest. The exact single-appended-receipt structural guard remains in force."
+    },
+    {
+      "area": "ACK meaning and authority limits",
+      "finding": "Both native pending_work and pending_delivery must be false before the join. Only after all joins does the new report set acknowledged_use_observed=true; STOP and terminal episode are copied separately from the original reader. The flag describes historical supplied-byte consistency, not an authenticated delivery event, independent consumer, current permission, or physical execution. All original false authentication/qualification flags are copied, including independent_consumer_verified, hepta_final_use_accepted and production_activation; DENY_ALL, NOT_EXPORTED and HOLD_NO_GO remain."
+    },
+    {
+      "area": "Producer API is real, deployment reachability is unproved",
+      "finding": "The four original producer sources at fixed Hepta cbf6ca7 were read and hash-bound. The bounded actor exposes retained/adopted readback methods. export_next_use uses the held journal/publication, retrieves the actual intent receipt and observed checkpoint, exports the coordinator at Selection/awaiting NextUse and does a final require_current. Native retained/adopted checks agree with the proposed Selection-head/predecessor ordering and full parent/candidate relation. This does not establish a newly executed producer invocation or an ordinary deployed caller."
+    }
+  ],
+  "fixture_and_test_evidence": {
+    "fixtures_read": "Four original historical native exports and their four expectations, their manifest, original v4 fixture, and encode_payload helper were GET/hash checked. The native manifest explicitly labels fixture-derived expectations and historical engineering scope. The v4 fixture marks real training/evaluation/next-use and production authority false.",
+    "native_fixture_pins": [
+      {
+        "sha": "10a3add900929448c59a05930d76fd7e78bfe0d2",
+        "bytes": 6165,
+        "sha256": "46adda249f068efc216898b6fba1cae567b018de1bce0f25a1e6804526a4e966"
+      },
+      {
+        "sha": "137f3bc9f670eba808b3974a38f0fb4dc3c96683",
+        "bytes": 13520,
+        "sha256": "69a80c932903c1685b7db9f83d544ef403da0c668f95480ce447c7aa955ab31c"
+      },
+      {
+        "sha": "9534e87a865eadebfe10d484be1e5d04c678ac92",
+        "bytes": 1698,
+        "sha256": "3a0fcb59cf75f157c5795653a01efb639962a256e5248b5b3bd5e922f6833159"
+      },
+      {
+        "sha": "16a720277087b0a8bb9bddfb69a9aadc4d478548",
+        "bytes": 13823,
+        "sha256": "3b3fe72584f128f369c18cd7dae0697ee93beca3404ace106ccd8446ede60f00"
+      },
+      {
+        "sha": "5a29d42a04c317e683fd9fcb7ca54e308c7fadb1",
+        "bytes": 1698,
+        "sha256": "103f03c24811f7ba8ad230ad2aaa40ca64389f9b2ad4947f80f6963aac52cebe"
+      },
+      {
+        "sha": "06c676816dc32aabb7e8a4d7dd36a1842c15d76e",
+        "bytes": 11821,
+        "sha256": "67c11f0a957098a5db4c433452cffb1070bd7c220c18e947f9f7b7fe65e55d47"
+      },
+      {
+        "sha": "5df2ed9c788fed1e9858f3852b991aed043fe620",
+        "bytes": 1631,
+        "sha256": "a38464656f5bfc372701cbdb5b7de0bd118500db42e2a88f74f186d2b6454d2b"
+      },
+      {
+        "sha": "540c19b65b735983de5034f6f0d75c86a7f99450",
+        "bytes": 12149,
+        "sha256": "8908ec58db9af8942f7215112cfae02ec93ab3bb36fe4fbfcc25bcd2bdd08fe8"
+      },
+      {
+        "sha": "7ea075f312ed6d4fd854bc28d1016dd3da148334",
+        "bytes": 1631,
+        "sha256": "9db742282463927d3ed5a484f85142f877333352f851839785d3bc31372c16f3"
+      },
+      {
+        "sha": "a7b65cfaa17582dfeccea1c28f859f3d10669898",
+        "bytes": 106963,
+        "sha256": "b873d6f0606100ec8a3246548009b6afda5aa9fbc55e2bd85a4c6fed7fd81a46"
+      },
+      {
+        "sha": "e560f35de0d6896a0abc8d62506074cba7efddfb",
+        "bytes": 19436,
+        "sha256": "0cb9c8d37c924b54af2497ebf4571c1e3c63bfa00f7987206d1232a1b6e643f2"
+      }
+    ],
+    "actual_head_comparisons": [
+      {
+        "choice": "AdoptCandidate",
+        "selection_tail_head": "3773436a0d1c89aa67cf380996a1a1f8b68d7ae9c197ccb2bbd5b75834a7703a",
+        "native_head": "6fda3e92952be692295bdc62b96bb6c79a6ce5b89a2d9c1863e755aff81fe9e8",
+        "equal": false
+      },
+      {
+        "choice": "DeferCandidate",
+        "selection_tail_head": "2828ea72b1d1c125638db06621bdf47e35cbc14fd8ec264c148ca0dae77981be",
+        "native_head": "296d5de2036f6e9fc6aae1991ff730d058c2fb0a79286d2ab09ad298a2b3461a",
+        "equal": false
+      },
+      {
+        "choice": "RetainParent",
+        "selection_tail_head": "a50de1fbbb53064886897a60c01d9b95b9ec7cf891a6457c37ac96bbd8cab335",
+        "native_head": "296d5de2036f6e9fc6aae1991ff730d058c2fb0a79286d2ab09ad298a2b3461a",
+        "equal": false
+      }
+    ],
+    "actual_pending_shapes": [
+      {
+        "phase": "adopted_acked",
+        "blob": "137f3bc9f670eba808b3974a38f0fb4dc3c96683",
+        "learning_head": "6fda3e92952be692295bdc62b96bb6c79a6ce5b89a2d9c1863e755aff81fe9e8",
+        "decision_head": "5d7a8d64a15c50f7583c1e2738877d2ef2956cc55663cf64e6bc09e567c8c281",
+        "disposition": "adopted_model_reset",
+        "pending_work": false,
+        "pending_delivery": false,
+        "authority": "DENY_ALL",
+        "current_permission": "NOT_EXPORTED"
+      },
+      {
+        "phase": "adopted_pending",
+        "blob": "16a720277087b0a8bb9bddfb69a9aadc4d478548",
+        "learning_head": "6fda3e92952be692295bdc62b96bb6c79a6ce5b89a2d9c1863e755aff81fe9e8",
+        "decision_head": "5d7a8d64a15c50f7583c1e2738877d2ef2956cc55663cf64e6bc09e567c8c281",
+        "disposition": "adopted_model_reset",
+        "pending_work": false,
+        "pending_delivery": true,
+        "authority": "DENY_ALL",
+        "current_permission": "NOT_EXPORTED"
+      },
+      {
+        "phase": "retained_acked",
+        "blob": "06c676816dc32aabb7e8a4d7dd36a1842c15d76e",
+        "learning_head": "296d5de2036f6e9fc6aae1991ff730d058c2fb0a79286d2ab09ad298a2b3461a",
+        "decision_head": "a957954b1f59e0f56131cf31fc13e96d51e82783b811e3ef2a13fb696ebcf711",
+        "disposition": "retained_model",
+        "pending_work": false,
+        "pending_delivery": false,
+        "authority": "DENY_ALL",
+        "current_permission": "NOT_EXPORTED"
+      },
+      {
+        "phase": "retained_pending",
+        "blob": "540c19b65b735983de5034f6f0d75c86a7f99450",
+        "learning_head": "296d5de2036f6e9fc6aae1991ff730d058c2fb0a79286d2ab09ad298a2b3461a",
+        "decision_head": "a957954b1f59e0f56131cf31fc13e96d51e82783b811e3ef2a13fb696ebcf711",
+        "disposition": "retained_model",
+        "pending_work": false,
+        "pending_delivery": true,
+        "authority": "DENY_ALL",
+        "current_permission": "NOT_EXPORTED"
+      }
+    ],
+    "fields_only": "The seven top-level expected/payload/observation/intent/manifest/generation/snapshot field inventories match the unchanged native reader for all four historical exports. This is not a run of that reader.",
+    "all_three_acked_pairs_have_unequal_selection_heads": true,
+    "successful_v4_native_pairs_supplied_or_created": 0,
+    "controls": "14 original methods remain byte-exact. Seven new methods assert refusal for a wrong native pin, pending output, historical-v4 head mismatch, incompatible disposition, hostile authority rehash, partial optional arguments and CLI expectation/head refusal. They neither mock a successful native reader nor synthesize a positive pair.",
+    "coverage_precision": "The method named test_native_cli_refuses_every_partial_optional_input_group actually enumerates four cases with exactly one missing argument, not all fourteen nonempty incomplete subsets. The product any/all condition statically rejects all fourteen. No test is claimed executed. Existing negative fixtures also do not dynamically exercise successful head matching followed by later source/scope/descriptor/final-observation joins."
+  },
+  "qualification": {
+    "status": "Uninstalled, unexecuted source proposal; evidence checkpoint only.",
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer_verified": false,
+    "native_origin_authenticated": false,
+    "learning_signatures_verified": false,
+    "hepta_final_use_accepted": false,
+    "production_activation": false,
+    "actual_daemon_and_root_os_restart_accepted": false,
+    "source_changes_recommended_for_a_confirmed_blocker": null,
+    "remaining_requirements": [
+      "A future qualification record must capture a genuinely matching v4 Selection cut, original native export while awaiting NextUse, and single completed continuation; none is supplied here.",
+      "Freeze/Root/native expectations require independent original custody; the reader does not create or authenticate it.",
+      "Original reader limits remain, including no grant-signature validation, no reconstructed native request digest, no live revocation/freshness or cost completeness proof.",
+      "Real independent consumption, ordinary execution, model efficacy, FinalUse, process restart and acceptance remain outside this proposal.",
+      "Chain AGENTS write-channel requirements remain unchanged. No Chain product tree, commit, ref or workflow is authorized or changed by this review."
+    ]
+  }
+}

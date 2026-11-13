@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "additional_gate_fixed_operation_end_overlay",
+  "base_packet": "73b3e883e2fc7f756433ece6b796875def01d425",
+  "required_prior_overlay": "8d62fac00ff8062de782a16c3fe171c22a6d509c",
+  "path": "extra_gate_runner.py",
+  "pre": "d70e0a24f21caa29f9a73466ad077e02eee7f0ef",
+  "post": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+  "post_bytes": 45089,
+  "post_sha256": "da5ad3bedb7563b2e103be90424e56ced675096719c2d077bf8f21faf3eab716",
+  "ops": [
+    {
+      "old": "    progress(label);budget=remaining(timeout)\n",
+      "new": "    progress(label);budget=remaining(timeout)\n    operation_end = min(start + timeout, DEADLINE - EVIDENCE_RESERVE_SECONDS)\n    if operation_end <= time.monotonic():\n        raise TimeoutError(\"fixed command deadline expired before child creation\")\n",
+      "reason": "freeze exact command end from its original start and same total end before Popen"
+    },
+    {
+      "old": "        try: code=p.wait(timeout=budget)\n",
+      "new": "        try:\n            wait_budget = max(0, operation_end - time.monotonic())\n            if wait_budget <= 0:\n                raise subprocess.TimeoutExpired(args, budget)\n            code = p.wait(timeout=wait_budget)\n            if time.monotonic() > operation_end:\n                raise subprocess.TimeoutExpired(args, budget)\n",
+      "reason": "Popen elapsed time is charged; no remaining interval and late observation are failed timeouts"
+    },
+    {
+      "old": "            kill_owned_group_before_reap(p);code=p.returncode\n",
+      "new": "            if p.returncode is None:\n                kill_owned_group_before_reap(p)\n            else:\n                R.setdefault(\"reaped_group_cleanup_unknown\",[]).append({\"command\":args,\"pid\":p.pid,\"operation_end\":operation_end})\n            code=p.returncode\n",
+      "reason": "do not signal a reaped/reusable PID after a late wait result; unknown remains fatal"
+    },
+    {
+      "old": "\"owned_leader_pid\":p.pid,\"created_pgid\":p.pid,\"leader_reaped\":p.returncode is not None,\"exit_code\":code,",
+      "new": "\"owned_leader_pid\":p.pid,\"created_pgid\":p.pid,\"leader_reaped\":p.returncode is not None,\"operation_end_monotonic\":operation_end,\"exit_code\":code,",
+      "reason": "record the actual frozen per-command absolute end"
+    },
+    {
+      "old": "def git_read(*args,cwd=None):\n    if FINALIZING:\n        budget=min(30,EVIDENCE_DEADLINE-time.monotonic())\n        if budget<=0: raise TimeoutError(\"separate evidence cleanup budget exhausted\")\n    else: budget=remaining(120)\n",
+      "new": "def git_read(*args,cwd=None):\n    read_started = time.monotonic()\n    if FINALIZING:\n        operation_end = min(read_started + 30, EVIDENCE_DEADLINE)\n    else:\n        operation_end = min(read_started + 120, DEADLINE - EVIDENCE_RESERVE_SECONDS)\n    budget = operation_end - time.monotonic()\n    if budget <= 0:\n        raise TimeoutError(\"fixed Git read deadline expired before child creation\")\n",
+      "reason": "freeze each Git read end before Popen; final read shares the same original total deadline"
+    },
+    {
+      "old": "    try: output,error=p.communicate(timeout=budget)\n",
+      "new": "    try:\n        wait_budget = max(0, operation_end - time.monotonic())\n        if wait_budget <= 0:\n            raise subprocess.TimeoutExpired(argv, budget)\n        output,error=p.communicate(timeout=wait_budget)\n        if time.monotonic() > operation_end:\n            raise subprocess.TimeoutExpired(argv, budget, output=output, stderr=error)\n",
+      "reason": "charge Popen to fixed Git read deadline; retain original bytes if completion is observed late"
+    }
+  ],
+  "config_unchanged": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+  "coverage": "Popen creation consumes the same frozen operation interval; command and Git read wait only remaining original time. Any no-time/late return is completion_unknown failure. Already-reaped leader is never signaled; still-unreaped exact owned group is killed before the bounded reap. Original source harness 096b and supervisor origin 447e remain untouched.",
+  "provenance_change": "command and git_read are no longer claimed as whole-byte reused helpers; their exact modifications are listed here. The fixed one-end kill wait delta was already in base packet.",
+  "execution": {
+    "python": 0,
+    "h": 0,
+    "native": 0,
+    "cargo": 0,
+    "tests": 0,
+    "refs": 0
+  }
+}

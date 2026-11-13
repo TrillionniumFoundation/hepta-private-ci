@@ -1,0 +1,883 @@
+{
+  "schema_version": 1,
+  "kind": "root_complete_tree_diff_final_205_metadata_candidate",
+  "base_commit": "f9615a668f0d3a8c584a304389c4ce4c69701123",
+  "base_tree": "089e8d49790bb0944cfcd83f7b10f3bb94786b43",
+  "initial_tree": "3c976ad7de7323951f67c88e486799b5f75b37c0",
+  "source_changes": 1,
+  "qualification_changes": 92,
+  "complete_diff": [
+    {
+      "path": "CALLERS.toml",
+      "old": {
+        "sha": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "0f0b4c835de967f90263ae9041865f5ac431615e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/FINAL_SOURCE_MANIFEST.json",
+      "old": {
+        "sha": "848a82a966e4cab54b5410c5e4d2fe0dd7fde616",
+        "mode": "100644",
+        "type": "blob"
+      },
+      "new": {
+        "sha": "443d5295721bd5399d86e54bc3b3a879fc4ec6da",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/AUTHOR_STATIC_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "76631fd5f5b62c668412a21fd909f8eec20f0fb9",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/EXACT_PROPOSAL.json",
+      "old": null,
+      "new": {
+        "sha": "9801f64e0f4714995edc81f6bfa8be57f59f10d4",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/PEER_DETAIL.json",
+      "old": null,
+      "new": {
+        "sha": "f4cff86e735d515c98eb8a6c6d0c551c00e058a5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/PEER_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "6ff1af8862f0a826ddb710f3a6c8716ed4e74d25",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/post/docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+      "old": null,
+      "new": {
+        "sha": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/post/scripts/cell_learning_local_decision_join.py",
+      "old": null,
+      "new": {
+        "sha": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/post/scripts/test_cell_learning_local_decision_join.py",
+      "old": null,
+      "new": {
+        "sha": "a8c35861954c6b68dd2af5453fa1365020380217",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/pre/docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+      "old": null,
+      "new": {
+        "sha": "231a2200510edb81efed565a4563f768105de677",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/pre/scripts/cell_learning_local_decision_join.py",
+      "old": null,
+      "new": {
+        "sha": "1409d50d835e12c32341a3e650f53191915b8030",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/pre/scripts/test_cell_learning_local_decision_join.py",
+      "old": null,
+      "new": {
+        "sha": "02515dcb1b33afae4b350a7272db662402819064",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/PROPOSAL_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "33746eddf59b10b9d4faab6e20482cb1b582e4b9",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/BASE_PROPOSAL.json",
+      "old": null,
+      "new": {
+        "sha": "73b3e883e2fc7f756433ece6b796875def01d425",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/CONFIG_UNBOUND.json",
+      "old": null,
+      "new": {
+        "sha": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/DESIGN_UNBOUND.json",
+      "old": null,
+      "new": {
+        "sha": "b39e60d30c5be6fbb8bbe0ad88ace4780b7dbb2c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/FIXED_OPERATION_DEADLINE_DELTA.json",
+      "old": null,
+      "new": {
+        "sha": "0fff05f8b5ec8bb2c77d82a9f82350f269cffbfd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/HELPER_PROVENANCE.json",
+      "old": null,
+      "new": {
+        "sha": "c3e536f0dbe712feba709dcb0d42e203d54eb2dd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/history/BASE_UNBOUND_RUNNER.py",
+      "old": null,
+      "new": {
+        "sha": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/history/JUNIT_CONTINUITY_UNBOUND_RUNNER.py",
+      "old": null,
+      "new": {
+        "sha": "d70e0a24f21caa29f9a73466ad077e02eee7f0ef",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/INDEX.json",
+      "old": null,
+      "new": {
+        "sha": "7e8714fc1af4c7893a176c7353850aaa301366dd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/NATIVE_JUNIT_CONTINUITY_DELTA.json",
+      "old": null,
+      "new": {
+        "sha": "8d62fac00ff8062de782a16c3fe171c22a6d509c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_JUNIT_COLLECTOR.py",
+      "old": null,
+      "new": {
+        "sha": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_MAINTENANCE_SUPERVISOR.py",
+      "old": null,
+      "new": {
+        "sha": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_QUALIFICATION_HARNESS.py",
+      "old": null,
+      "new": {
+        "sha": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_TERMINAL_COUNT_PARSER_SOURCE.py",
+      "old": null,
+      "new": {
+        "sha": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_V46_OPERATOR_CONFIG.json",
+      "old": null,
+      "new": {
+        "sha": "d9866416acc15c77ee91033deae01d714b2d04ec",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/PEER_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "2bfc9e1b13e04db16a45d3d519c5f46f60d25aa5",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/ROOT_HELPER_SPAN_PROOF.json",
+      "old": null,
+      "new": {
+        "sha": "02f3f49d1de279b1d086d5c75f08829ea03742fa",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/ROOT_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "08757f74b7f1a7c8c35f3585c2f888118a62b63d",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/SOURCE_TEST_GATE_PLAN.md",
+      "old": null,
+      "new": {
+        "sha": "2184502d3759dd655840b987bb7c980863eadc89",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/UNBOUND_EXTRA_GATE_RUNNER.py",
+      "old": null,
+      "new": {
+        "sha": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/FULLCALLER_EXEC.json",
+      "old": null,
+      "new": {
+        "sha": "d1a3709ed007608deb09dff58e4d5b15ec4a4078",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/ORDINARY_EXEC.json",
+      "old": null,
+      "new": {
+        "sha": "d9e383f75e1a9eafb7fe808b185e7c67dc47a26c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/RESULT.json",
+      "old": null,
+      "new": {
+        "sha": "39644ad60327fbcc4c5841e126e0e2a5b827a153",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/ROOT_EXEC.json",
+      "old": null,
+      "new": {
+        "sha": "107f25db317630c6105f2a1ea1ccfd644be1fc1b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/INDEX.json",
+      "old": null,
+      "new": {
+        "sha": "26b5b364283c1c6cdd220a837e43cede31ec361e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/BRIDGE_GENERATOR.js",
+      "old": null,
+      "new": {
+        "sha": "5ac4a6c3e0845ba9acdeb0289f79efb5b1fb15dc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/CALLER_PROJECTION.json",
+      "old": null,
+      "new": {
+        "sha": "cf0dc30e30d82b05b4b1b340067de8aba6021499",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/GUARD_PRIMITIVES.js",
+      "old": null,
+      "new": {
+        "sha": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/GUARD_PROJECTION.json",
+      "old": null,
+      "new": {
+        "sha": "a027d050cbdd9d72d0db7cde595ccb67a7ded1d1",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_71_23_SEMANTIC.json",
+      "old": null,
+      "new": {
+        "sha": "7ac44786c9837d4233fe47dec8dd2a60e6c38661",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_ORIGINAL_HELPER.js",
+      "old": null,
+      "new": {
+        "sha": "25639e0cae8a6eb78c7ef3cce6a29968d5196d17",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_ORIGINAL_OPERATIONS.json",
+      "old": null,
+      "new": {
+        "sha": "d8acbd854d6dc4838f8ddff45cf6c55706186b1e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_STATIC_RECEIPT.json",
+      "old": null,
+      "new": {
+        "sha": "8e746f31acfbdda023d210ebf877c62db17ed955",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ORIGINAL_ANNEX_22C1.json",
+      "old": null,
+      "new": {
+        "sha": "22c1f044d6a61fbe9da64a620991c04ff9f5dd19",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ORIGINAL_ANNEX_3952.json",
+      "old": null,
+      "new": {
+        "sha": "39529d2d1b5735cb3045d49cda2fd08a2953c483",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ORIGINAL_ANNEX_BFC8.json",
+      "old": null,
+      "new": {
+        "sha": "bfc8c51e436767fdcde970194f58fa769e2deef3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_ADDED_LEARNING_ANNEX.json",
+      "old": null,
+      "new": {
+        "sha": "679e73c42779426427938e70a68e47220a9f7c11",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PARTIAL_699_474.toml",
+      "old": null,
+      "new": {
+        "sha": "8da2bb60f3d029d26e198a11a20ed8f97c05824f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PARTIAL_718_489.toml",
+      "old": null,
+      "new": {
+        "sha": "8cba09dfccb110eaff66f65cddbed32d2122df13",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PARTIAL_MANIFEST.json",
+      "old": null,
+      "new": {
+        "sha": "eb71d1b779d800ca807385a0c86e2e7bd2ba48da",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PRIOR_METADATA_REPLAY.json",
+      "old": null,
+      "new": {
+        "sha": "c2af8754545dae4cdb4297148499efac5dcbbdea",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PRIOR_SOURCE_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "a8c4aee539203581a271405dbe0e1af9b6f7d3cc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_RECOVERED_COMPOSITION.json",
+      "old": null,
+      "new": {
+        "sha": "df27b9fee41f67ba32917976226be78c0f9be0fa",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/00-prepare-base.toml",
+      "old": null,
+      "new": {
+        "sha": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/01-prepare-own.json",
+      "old": null,
+      "new": {
+        "sha": "e6da443d18aefcfb345a222cdbc025195271af72",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/02-prepare-app.json",
+      "old": null,
+      "new": {
+        "sha": "40133ee467b53d972b93c5753e9142fadf100d45",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/03-prepare-rootRows.json",
+      "old": null,
+      "new": {
+        "sha": "c73360c67ed6dcca55da2902abfd50baed08a646",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/04-prepare-rootGuards.json",
+      "old": null,
+      "new": {
+        "sha": "c9815b6842ed51866a0ab058d1e9069cd60ef26b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/05-prepare-oldDelta.json",
+      "old": null,
+      "new": {
+        "sha": "aef2b970a711ff839cc6bb046fdaf72cf757ac59",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/06-prepare-retained_stream_real_caller_successor.json",
+      "old": null,
+      "new": {
+        "sha": "2cb1164a8d3c5e89946ac273e5e10249ac3f300e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/07-actual_checkout_metadata.toml",
+      "old": null,
+      "new": {
+        "sha": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/08-semantic_prepare_generator.js",
+      "old": null,
+      "new": {
+        "sha": "eca89aa4bfff94d81346a3345974ea6c7ffd07c3",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/09-exact_toml_parser.js",
+      "old": null,
+      "new": {
+        "sha": "14b43d87cc460df3b0a2d4b5c5d178c3bff44ddf",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/10-actual_source_finalizer.js",
+      "old": null,
+      "new": {
+        "sha": "f1131dc120e8c0df210723a9fa228c4c42893534",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/11-actual_to_logical_exact_bridge.json",
+      "old": null,
+      "new": {
+        "sha": "800c2f32753919f6356e822776b5b0ac18248fdd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/12-logical_to_final_exact_bridge.json",
+      "old": null,
+      "new": {
+        "sha": "e1968353409e0cc9e2e45c5b4ce0a95eec1952d2",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/13-outcome_additive_boundary_and_protection.json",
+      "old": null,
+      "new": {
+        "sha": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/14-actual_204_source_manifest.json",
+      "old": null,
+      "new": {
+        "sha": "848a82a966e4cab54b5410c5e4d2fe0dd7fde616",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/15-all_forbidden_conjunction_and_added_origin_ledger.json",
+      "old": null,
+      "new": {
+        "sha": "fde301027476a8c480275838f6c6b3f70ab6d8a4",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/16-final_metadata_candidate.toml",
+      "old": null,
+      "new": {
+        "sha": "0f0b4c835de967f90263ae9041865f5ac431615e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/17-stage-boundary_updates.json",
+      "old": null,
+      "new": {
+        "sha": "18b8e0ca81e26c0a09fa623c19d0c5bc3232674f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/18-stage-guard_updates.json",
+      "old": null,
+      "new": {
+        "sha": "85885737a60604b11fea9aa198473df424d7dfc8",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/19-stage-row_delta.json",
+      "old": null,
+      "new": {
+        "sha": "a13a9a437bcaebf95ab6cb3bda5d97ae49a4e91b",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/20-stage-row_delta.json",
+      "old": null,
+      "new": {
+        "sha": "7583c283d2d861bb6c3ade0fea58a6f223c0e2cd",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/21-stage-row_delta.json",
+      "old": null,
+      "new": {
+        "sha": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/22-stage-row_delta.json",
+      "old": null,
+      "new": {
+        "sha": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/23-stage-row_delta.json",
+      "old": null,
+      "new": {
+        "sha": "780619c2a09dbd8978b438b5f7b4d8f23f08e389",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/24-stage-row_delta.json",
+      "old": null,
+      "new": {
+        "sha": "16ad1ae4f00e964e1a8ae40ff656b6406f218818",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/NINETEEN_SITE_SELECTOR.js",
+      "old": null,
+      "new": {
+        "sha": "7a73be0590d32e92ed34dc53e71f1155e100073a",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/NINETEEN_SITE_SEMANTIC_RECIPE.json",
+      "old": null,
+      "new": {
+        "sha": "84702e0f1f9f1354a7ab24447acc6027c7921adc",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_HISTORY_AND_UNION_DETAIL.json",
+      "old": null,
+      "new": {
+        "sha": "e15136ac6cc2da312affb93f01996761ef15cb7d",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_HISTORY_AND_UNION.json",
+      "old": null,
+      "new": {
+        "sha": "6174f54e0e9374fc4f49a1519a92bf2a6fd4372c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_SHARED_SITES_DETAIL.json",
+      "old": null,
+      "new": {
+        "sha": "432e1264ad9ff88960ce9ca418b9ec93442f38b6",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_SHARED_SITES.md",
+      "old": null,
+      "new": {
+        "sha": "2d154dbf69d12f793da747f8d9b39a580c798530",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/REPLAY_GENERATOR.js",
+      "old": null,
+      "new": {
+        "sha": "5497562cdf985cbc54b242554a59953255d43e4d",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/REPLAY_RECIPE.json",
+      "old": null,
+      "new": {
+        "sha": "a6d3c7c53b914d3609c45968dcb8513219d96c5c",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/ROOT_REVIEW.json",
+      "old": null,
+      "new": {
+        "sha": "894facbd743f5199f3cb1e04c64d73aee23587cf",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/SOURCE_ANALYSIS_PRIMITIVES.js",
+      "old": null,
+      "new": {
+        "sha": "644659241f86f20f933958acffea6ded4900c3fa",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/SOURCE_INVENTORY.json",
+      "old": null,
+      "new": {
+        "sha": "5743a1b075190b98b49c7864526ade4b9b5c3d4e",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/README.md",
+      "old": null,
+      "new": {
+        "sha": "0ae968eda103cd07923314e6739c17c0f70f3831",
+        "mode": "100644",
+        "type": "blob"
+      }
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/STATUS.json",
+      "old": null,
+      "new": {
+        "sha": "c63cf4fbe0303b6f439e7d5ab20743132f8c848f",
+        "mode": "100644",
+        "type": "blob"
+      }
+    }
+  ],
+  "unexpected_paths": [],
+  "final_source_manifest": {
+    "blob": "443d5295721bd5399d86e54bc3b3a879fc4ec6da",
+    "bytes": 59789,
+    "sha256": "d987abdabd2f0a00dd4406023ddbc5d951b417afbd4959b9b5a17e880340f1d7"
+  },
+  "unchanged_204_source_rows": true,
+  "root_metadata_review": {
+    "blob": "894facbd743f5199f3cb1e04c64d73aee23587cf",
+    "bytes": 11814,
+    "sha256": "17173e53f5521ac6e42e4f57b1a02e6dbd63009e43a93671a5556e4d1942e558"
+  },
+  "archive_index": {
+    "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/INDEX.json",
+    "blob": "26b5b364283c1c6cdd220a837e43cede31ec361e",
+    "bytes": 34601,
+    "sha256": "ff4efa69c9bba120b45d79bdc6387184dc35740cc676af764e976adf3997d812",
+    "role": "complete archive payload index"
+  },
+  "original_checker_run": false,
+  "current_native_result": false,
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "note": "This exact full tree delta precedes adding this proof at its own new qualification path. The final tree must have exactly this delta plus this proof blob; Root checks that before commit/ref publication."
+}

@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "kind": "unbound_dedicated_extra_gate_runner_proposal",
+  "status": "NOT_LAUNCHABLE_UNBOUND_AND_NOT_EXECUTED",
+  "contract": "b39e60d30c5be6fbb8bbe0ad88ace4780b7dbb2c",
+  "provenance": "c3e536f0dbe712feba709dcb0d42e203d54eb2dd",
+  "runner": {
+    "blob": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+    "bytes": 43066,
+    "sha256": "8ebb9b5ac06404766b9ca176226fcd0b2f4a5354f2d0387e20546d4034ccd578"
+  },
+  "config": {
+    "blob": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+    "bytes": 1346,
+    "sha256": "051579324a0823be464bcf5bf0694ca634a5f2b6a6bd9bf801d2e9ae611f68d4"
+  },
+  "fixed_source_binding": "Intentionally unbound despite later candidate notifications. Root must exact-bind the reviewed final source/config/work/fixtures before any launch; this proposal fails before path mutation or child creation.",
+  "original_harness": {
+    "blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 50167,
+    "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+    "unchanged": true,
+    "invoked": false
+  },
+  "direct_command_supervision": {
+    "inherited": [
+      {
+        "name": "supervisor_interrupt",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "55f5928074c324d502666c5e401dd8e4bba00a5e8f70cf0f8f4cab6dc0f3af1c",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "sha",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "a8b57be447894f6c5e977a8fd97eb55870b73b5e8e2202552ed7dda44471ae4b",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "blob",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "ae4039ffca0a93c079522b4a7d40246279edc18124c37b77fc3c6901edec5e17",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "read_bytes",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "699951df7034b667a3bb777c03dfca501a3ddbf98a02857bdd91c4a254b99a78",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "save",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "202d5fe7679017e80bf89aa51e5898a0f29715ea982fc5971a4451cec0c7018f",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "progress",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "017543d62427d52f561e64b0b1f2d62206bd60000cc461945aa93382eb8f6e5a",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "kill_owned_group_before_reap",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "6f5b2446a9ee6897df79d9e5f67bd2c6794ec90cbf2f2561156b83a6e9e807a0",
+        "exact_original_span": false,
+        "surrounding_composition_blank_lines_not_part_of_claim": true,
+        "old": "def kill_owned_group_before_reap(p):\n    # The exact session/group was just created by us. Kill before reaping its leader.\n    # A timeout remains fatal and completion-unknown; this does not certify every descendant's exit.\n    try: os.killpg(p.pid,signal.SIGKILL)\n    except ProcessLookupError: pass\n    try: p.wait(timeout=10)\n    except subprocess.TimeoutExpired: pass\n",
+        "new": "def kill_owned_group_before_reap(p):\n    # The exact session/group was just created by us. Kill before reaping its leader.\n    # A timeout remains fatal and completion-unknown; this does not certify every descendant's exit.\n    try: os.killpg(p.pid,signal.SIGKILL)\n    except ProcessLookupError: pass\n    reap_budget = min(10, max(0, DEADLINE - time.monotonic()))\n    try: p.wait(timeout=reap_budget)\n    except subprocess.TimeoutExpired: pass\n"
+      },
+      {
+        "name": "command",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "f69248bccc311aa4be56a27ea1542e09405bb2137615b7697d114a525d1ca461",
+        "exact_original_span": false,
+        "surrounding_composition_blank_lines_not_part_of_claim": true,
+        "old": "def command(label,args,timeout,cwd=None,required=True):\n    if FINALIZING: raise RuntimeError(\"new work is forbidden during evidence cleanup\")\n    start=time.monotonic(); log=RECORDS/(label+\".log\")\n    progress(label);budget=remaining(timeout)\n    with open(log,\"xb\") as output:\n        try: p=subprocess.Popen(args,cwd=cwd or SOURCE,env=env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)\n        except BaseException as error:\n            R[\"completion_unknown\"]=True\n            R.setdefault(\"child_creation_unknown\",[]).append({\"label\":label,\"command\":args,\"error_type\":type(error).__name__,\"error\":str(error)})\n            save(\"progress.json\",R)\n            raise\n        timeout_hit=False\n        try: code=p.wait(timeout=budget)\n        except subprocess.TimeoutExpired:\n            timeout_hit=True;R[\"completion_unknown\"]=True\n            R.setdefault(\"timed_out_commands\",[]).append(label)\n            kill_owned_group_before_reap(p);code=p.returncode\n        except BaseException as error:\n            R[\"completion_unknown\"]=True\n            aborted={\"label\":label,\"command\":args,\"cwd\":str(cwd or SOURCE),\"log_path\":str(log),\"error_type\":type(error).__name__,\"error\":str(error),\"leader_returncode\":p.returncode}\n            if p.returncode is None:\n                kill_owned_group_before_reap(p)\n                aborted[\"owned_group_kill_requested_before_reap\"]=True\n            else:\n                aborted[\"group_cleanup_not_attempted_after_leader_reap\"]=True\n            R.setdefault(\"aborted_commands\",[]).append(aborted)\n            save(label+\".aborted.json\",aborted);save(\"progress.json\",R)\n            raise\n    step={\"label\":label,\"command\":args,\"cwd\":str(cwd or SOURCE),\"exit_code\":code,\"timed_out\":timeout_hit,\"elapsed_seconds\":time.monotonic()-start,\"log_path\":str(log),\"log_may_be_incomplete\":timeout_hit}\n    R[\"steps\"].append(step);save(label+\".execution.json\",step);save(\"progress.json\",R)\n    data=read_bytes(log)\n    step[\"log\"]={\"path\":str(log),\"bytes\":len(data),\"sha256\":sha(data),\"git_blob\":blob(data)}\n    save(label+\".execution.json\",step);save(\"progress.json\",R)\n    print(json.dumps({\"completed\":label,\"exit_code\":code,\"timed_out\":timeout_hit,\"log_bytes\":len(data)},sort_keys=True),flush=True)\n    if timeout_hit: raise TimeoutError(\"owned command timed out; no subsequent work/capture/publication may assume completion: \"+label)\n    if required and code!=0: raise RuntimeError(\"source maintenance command failed: \"+label)\n    return code,data\n",
+        "new": "def command(label,args,timeout,cwd=None,required=True):\n    if FINALIZING: raise RuntimeError(\"new work is forbidden during evidence cleanup\")\n    start=time.monotonic(); log=RECORDS/(label+\".log\")\n    progress(label);budget=remaining(timeout)\n    with open(log,\"xb\") as output:\n        try: p=subprocess.Popen(args,cwd=cwd or SOURCE,env=env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)\n        except BaseException as error:\n            R[\"completion_unknown\"]=True\n            R.setdefault(\"child_creation_unknown\",[]).append({\"label\":label,\"command\":args,\"error_type\":type(error).__name__,\"error\":str(error)})\n            save(\"progress.json\",R)\n            raise\n        timeout_hit=False\n        try: code=p.wait(timeout=budget)\n        except subprocess.TimeoutExpired:\n            timeout_hit=True;R[\"completion_unknown\"]=True\n            R.setdefault(\"timed_out_commands\",[]).append(label)\n            kill_owned_group_before_reap(p);code=p.returncode\n        except BaseException as error:\n            R[\"completion_unknown\"]=True\n            aborted={\"label\":label,\"command\":args,\"cwd\":str(cwd or SOURCE),\"log_path\":str(log),\"error_type\":type(error).__name__,\"error\":str(error),\"leader_returncode\":p.returncode}\n            if p.returncode is None:\n                kill_owned_group_before_reap(p)\n                aborted[\"owned_group_kill_requested_before_reap\"]=True\n            else:\n                aborted[\"group_cleanup_not_attempted_after_leader_reap\"]=True\n            R.setdefault(\"aborted_commands\",[]).append(aborted)\n            save(label+\".aborted.json\",aborted);save(\"progress.json\",R)\n            raise\n    step={\"label\":label,\"command\":args,\"cwd\":str(cwd or SOURCE),\"owned_leader_pid\":p.pid,\"created_pgid\":p.pid,\"leader_reaped\":p.returncode is not None,\"exit_code\":code,\"timed_out\":timeout_hit,\"elapsed_seconds\":time.monotonic()-start,\"log_path\":str(log),\"log_may_be_incomplete\":timeout_hit}\n    R[\"steps\"].append(step);save(label+\".execution.json\",step);save(\"progress.json\",R)\n    data=read_bytes(log)\n    step[\"log\"]={\"path\":str(log),\"bytes\":len(data),\"sha256\":sha(data),\"git_blob\":blob(data)}\n    save(label+\".execution.json\",step);save(\"progress.json\",R)\n    print(json.dumps({\"completed\":label,\"exit_code\":code,\"timed_out\":timeout_hit,\"log_bytes\":len(data)},sort_keys=True),flush=True)\n    if timeout_hit: raise TimeoutError(\"owned command timed out; no subsequent work/capture/publication may assume completion: \"+label)\n    if required and code!=0: raise RuntimeError(\"source maintenance command failed: \"+label)\n    return code,data\n"
+      },
+      {
+        "name": "retain_git_read_failure",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "99153c87acc6660aa04e6cfc3c7c39c8235ceb501f29ef3d5e776029eb6fd540",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "git_read",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "c1edbbbb566594bb67ced0ed4ebe2ff26bdc5e7420bf8e5e52949bcf73a19c39",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      },
+      {
+        "name": "identity",
+        "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+        "old_sha256": "b1ac852cc604bf468bcf72bdb6a30cc7a80564500da2fbe686259d252496710c",
+        "exact_original_span": true,
+        "surrounding_composition_blank_lines_not_part_of_claim": true
+      }
+    ],
+    "remaining_delta": {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "old": "def remaining(maximum):\n    value=min(maximum,DEADLINE-time.monotonic())\n    if value<=0: raise TimeoutError(\"source maintenance overall budget exhausted\")\n    return value\n",
+      "new": "def remaining(maximum):\n    reserve = 0 if FINALIZING else EVIDENCE_RESERVE_SECONDS\n    value = min(maximum, DEADLINE - time.monotonic() - reserve)\n    if value <= 0:\n        raise TimeoutError(\"single additional-gate absolute budget exhausted\")\n    return value\n",
+      "reason": "Reserve the fixed final 120 seconds INSIDE the one <=27000-second absolute end."
+    },
+    "kill_delta_reason": "Chain peer identified final git_read plus old fixed 10-second reap could overrun the absolute end. New reap wait is min(10,max(0,DEADLINE-monotonic())); same actual group gets SIGKILL before direct-leader reap. Unknown stays fatal, including when no time remains to reap. No subsequent test/collector is dispatched.",
+    "command_delta_reason": "Only normal-record fields owned_leader_pid, created_pgid, leader_reaped are added to the original command body. No command dispatch/control change beyond the shared remaining and kill helper deltas.",
+    "no_nested_recorder_session": true,
+    "no_new_capability_probes": true
+  },
+  "original_test_suite_adaptation": {
+    "source_origin": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "old": "def test_suite(name, arguments, root=False, root_env=None):\n    report = SOURCE / \"codex-rs/target/nextest/local/junit.xml\"\n    if report.exists():\n        report.rename(RECORDS / (name + \".prior-junit-excluded.xml\"))\n    if report.exists():\n        raise RuntimeError(\"old JUnit was not excluded\")\n    command = [\"just\", \"test\", \"--locked\", \"--offline\", *arguments,\n               \"--retries\", \"0\", \"--success-output\", \"final\", \"--failure-output\", \"final\"]\n    error = None\n    observed = None\n    try:\n        observed = recorded(name, command, timeout=7200, minimum=17 if root else 1,\n                            root=root, root_env=root_env, check=False)\n    except BaseException as exc:\n        error = exc\n    finally:\n        if root:\n            try:\n                if result.get(\"completion_unknown\"):\n                    raise RuntimeError(\"preserve live/unknown Root records without chown\")\n                restore_record_ownership(name + \"-record-ownership\")\n            except BaseException as exc:\n                result[\"errors\"].append(\"Root evidence ownership: \" + repr(exc))\n                if error is None:\n                    error = exc\n    if result.get(\"completion_unknown\"):\n        # Preserve the recorder and live report in place for reconciliation.\n        # Do not launch even the collector while the original may still write.\n        raise RuntimeError(\"unknown original completion; JUnit collection and follow-up stopped\")\n    collection = raw(name + \"-junit\", [\n        \"python3\", \"scripts/hepta_ci_junit.py\", \"--execution\",\n        str(RECORDS / (name + \".execution.json\")), \"--junit\", str(report),\n        \"--output\", str(RECORDS / (name + \".junit.xml\")),\n    ], SOURCE, timeout=120, check=False)\n    summary_path = RECORDS / (name + \".junit.summary.json\")\n    if summary_path.exists():\n        summary = json.loads(summary_path.read_text())\n        save(name + \".collection-binding.json\", {\n            \"summary\": file_digest(summary_path),\n            \"native_junit\": file_digest(report) if report.is_file() else None,\n            \"collector_command_exit\": collection[\"exit_code\"],\n        })\n    else:\n        summary = {}\n    if collection[\"exit_code\"] != 0 or summary.get(\"status\") != \"passed\":\n        result[\"errors\"].append(name + \" original JUnit collection failed\")\n    retained = RECORDS / (name + \".junit.xml\")\n    if retained.is_file():\n        parsed = ET.parse(retained).getroot()\n        cases = list(parsed.iter(\"testcase\"))\n        executed = [c for c in cases if c.find(\"skipped\") is None]\n        names = [c.attrib[\"name\"] for c in executed]\n        failed = sum(c.find(\"failure\") is not None for c in cases)\n        errors = sum(c.find(\"error\") is not None for c in cases)\n        counts = {\"total\": len(cases), \"executed\": len(executed),\n                  \"passed\": len(executed)-failed-errors, \"failed\": failed, \"errors\": errors,\n                  \"skipped\": len(cases)-len(executed)}\n        save(name + \".counts.json\", counts)\n        result[name + \"_counts\"] = counts\n        if root:\n            save(\"root-parent-coverage.json\", {\"expected\": PARENTS, \"observed\": names})\n            if sorted(names) != sorted(PARENTS) or len(names) != 17:\n                result[\"errors\"].append(\"Root executed roster differs from exact seventeen parents\")\n    else:\n        result[\"errors\"].append(name + \" lacks retained native JUnit\")\n    if observed is None or not observed[1]:\n        result[\"errors\"].append(name + \" original test execution failed\")\n    if error is not None:\n        raise error\n    clean()\n\n",
+    "new": "def test_suite(spec):\n    name = spec[\"id\"]\n    command_args = spec[\"command\"]\n    if R[\"completion_unknown\"] or FINALIZING:\n        raise RuntimeError(\"new test dispatch forbidden after unknown completion or finalization\")\n    before = clean()\n    check_tools()\n    R[\"suite_results\"][name][\"status\"] = \"preparing\"\n    progress(name + \"-prepare\")\n    report = SOURCE / \"codex-rs/target/nextest/local/junit.xml\"\n    if report.resolve(strict=False) != report:\n        raise RuntimeError(\"native local JUnit path was redirected\")\n    if os.path.lexists(report):\n        prior_data, prior_identity = physical_file_observation(report)\n        prior = RECORDS / (name + \".prior-junit-excluded.xml\")\n        if os.path.lexists(prior):\n            raise RuntimeError(\"prior report archive already exists\")\n        report.rename(prior)\n        retained = retain_immutable(prior)\n        if retained[\"sha256\"] != prior_identity[\"sha256\"]:\n            raise RuntimeError(\"prior report changed while being excluded\")\n        save(name + \".prior-junit-excluded.json\", prior_identity)\n    if os.path.lexists(report):\n        raise RuntimeError(\"old or dangling native JUnit was not excluded\")\n\n    suite_started = time.monotonic()\n    record = {\n        \"schema_version\": 1, \"producer\": \"hepta-extra-gates-reviewed-supervisor\",\n        \"status_scope\": \"actual process plus terminal summary; JUnit gate is separate\",\n        \"source_sha\": C[\"head\"], \"tested_sha\": C[\"head\"], \"lane\": \"source-head\",\n        \"extra_attempt\": C[\"attempt\"], \"suite_id\": name,\n        \"command\": command_args, \"working_directory\": str(SOURCE),\n        \"before\": collector_identity(before), \"started_at\": datetime.now(timezone.utc).isoformat(),\n        \"status\": \"running\", \"command_exit_code\": None,\n    }\n    execution_path = RECORDS / (name + \".execution.json\")\n    if os.path.lexists(execution_path):\n        raise RuntimeError(\"execution record already belongs to another invocation\")\n    save(name + \".execution.json\", record)\n    R[\"suite_results\"][name][\"status\"] = \"running\"\n    try:\n        code, data = command(name + \"-command\", command_args,\n                             C[\"overall_timeout_seconds\"], required=False)\n    except BaseException as error:\n        record.update(status=\"incomplete\", elapsed_seconds=time.monotonic() - suite_started,\n                      finished_at=datetime.now(timezone.utc).isoformat(),\n                      error_type=type(error).__name__, error=str(error),\n                      completion_unknown=R[\"completion_unknown\"])\n        save(name + \".execution.json\", record)\n        R[\"suite_results\"][name].update(status=\"incomplete\", error=str(error))\n        raise\n    after = identity(SOURCE)\n    passed, failed = observed_test_counts(data.decode(\"utf-8\", errors=\"replace\"))\n    normalized_exit = code if code >= 0 else 128 - code\n    process_passed = (code == 0 and passed > 0 and failed == 0\n                      and before == after and not R[\"completion_unknown\"])\n    record.update(\n        status=\"passed\" if process_passed else \"failed\",\n        exit_code=normalized_exit if not process_passed and normalized_exit else (0 if process_passed else 1),\n        command_exit_code=code, after=collector_identity(after),\n        elapsed_seconds=time.monotonic() - suite_started,\n        timed_out=False, output_limit_exceeded=False, minimum_tests=1,\n        observed_passed_tests=passed, observed_failed_tests=failed,\n        finished_at=datetime.now(timezone.utc).isoformat(),\n        log_file=name + \"-command.log\", log_bytes=len(data), log_sha256=sha(data),\n        direct_supervisor_record=name + \"-command.execution.json\",\n    )\n    save(name + \".execution.json\", record)\n    raw_log = retain_immutable(RECORDS / record[\"log_file\"])\n    if raw_log[\"sha256\"] != record[\"log_sha256\"] or raw_log[\"bytes\"] != record[\"log_bytes\"]:\n        raise RuntimeError(\"original command log changed after observation\")\n    if before != after:\n        raise RuntimeError(\"source changed during the actual additional test command\")\n    if R[\"completion_unknown\"]:\n        raise RuntimeError(\"unknown completion forbids even the JUnit collector\")\n\n    native = None\n    native_error = None\n    try:\n        _, native = physical_file_observation(report)\n    except (OSError, RuntimeError) as error:\n        native_error = str(error)\n    collect_args = [\"python3\", \"scripts/hepta_ci_junit.py\", \"--execution\",\n                    str(execution_path), \"--junit\", str(report), \"--output\",\n                    str(RECORDS / (name + \".junit.xml\"))]\n    collection_code, _ = command(name + \"-junit\", collect_args, 120, required=False)\n    summary_path = RECORDS / (name + \".junit.summary.json\")\n    summary = json.loads(read_bytes(summary_path)) if summary_path.is_file() else {}\n    retained_path = RECORDS / (name + \".junit.xml\")\n    counts = None\n    coverage = {\"missing_families\": [], \"missing_exact_tests\": []}\n    retained_pin = None\n    if retained_path.is_file():\n        retained_bytes = read_bytes(retained_path)\n        retained_pin = retain_immutable(retained_path)\n        if native is None or retained_pin[\"sha256\"] != native[\"sha256\"]:\n            raise RuntimeError(\"retained JUnit differs from this actual native report\")\n        # The unchanged collector rejects declarations and invalid XML before\n        # retaining it. Only its checked statuses permit interpretation here.\n        if summary.get(\"status\") in (\"passed\", \"retained-failed\"):\n            parsed = ET.fromstring(retained_bytes)\n            cases = list(parsed.iter(\"testcase\"))\n            executed = [c for c in cases if c.find(\"skipped\") is None]\n            names = [c.attrib[\"name\"] for c in executed]\n            failures = sum(c.find(\"failure\") is not None for c in cases)\n            errors = sum(c.find(\"error\") is not None for c in cases)\n            counts = {\"total\": len(cases), \"executed\": len(executed),\n                      \"passed\": len(executed) - failures - errors,\n                      \"failed\": failures, \"errors\": errors,\n                      \"skipped\": len(cases) - len(executed)}\n            coverage[\"missing_families\"] = [\n                family for family in spec[\"required_families\"]\n                if not any(n.startswith(family) for n in names)\n            ]\n            coverage[\"missing_exact_tests\"] = [\n                required for required in spec[\"required_exact_tests\"] if required not in names\n            ]\n            save(name + \".roster.json\", {\n                \"executed_names\": names,\n                \"cases\": [{\"name\": c.attrib.get(\"name\"), \"classname\": c.attrib.get(\"classname\"),\n                           \"skipped\": c.find(\"skipped\") is not None,\n                           \"failure\": c.find(\"failure\") is not None,\n                           \"error\": c.find(\"error\") is not None} for c in cases],\n                \"coverage\": coverage,\n                \"skip_limit\": \"Keep original ignored/platform filters and printed environment early returns; executed test return is not business execution proof.\",\n            })\n    if native is not None:\n        _, native_after = physical_file_observation(report)\n        if native_after != native:\n            raise RuntimeError(\"native report changed during original collection\")\n    if summary_path.is_file():\n        retain_immutable(summary_path)\n    binding = {\"native\": native, \"native_error\": native_error,\n               \"execution\": retain_immutable(execution_path),\n               \"retained\": retained_pin, \"collection_exit_code\": collection_code,\n               \"summary_status\": summary.get(\"status\"), \"counts\": counts,\n               \"coverage\": coverage}\n    save(name + \".collection-binding.json\", binding)\n    if counts is not None:\n        save(name + \".counts.json\", counts)\n    clean()\n    check_tools()\n    gate_passed = (process_passed and collection_code == 0\n                   and summary.get(\"status\") == \"passed\"\n                   and counts is not None and counts[\"executed\"] > 0\n                   and not coverage[\"missing_families\"]\n                   and not coverage[\"missing_exact_tests\"])\n    R[\"suite_results\"][name].update(\n        status=\"passed\" if gate_passed else \"failed\",\n        command_exit_code=code, collection_exit_code=collection_code,\n        counts=counts, coverage=coverage, execution=str(execution_path),\n    )\n    if not gate_passed:\n        R[\"errors\"].append({\"suite\": name, \"actual_test_or_collection_failed\": True})\n    save(\"progress.json\", R)\n    return gate_passed\n",
+    "comparison_scope": "These complete old/new function bodies each occur once in their respective actual source. This is an operator-only evidence adapter, not a patch to the original harness.",
+    "maintained": [
+      "just test --locked --offline, explicit --retries 0, original local profile and success/failure final output",
+      "exclude prior native local JUnit before actual dispatch; reject dangling or redirected report path",
+      "retain real exit and nonzero failure; fresh XML collector is the original unchanged 683626 file",
+      "known completion required before collector; original stdout parser counts must match fresh XML",
+      "zero executed tests or missing report are failures; preserve ignored/skipped and original early-return caveat",
+      "same clean source and fixed helper/checker bytes before and after; full original physical snapshot before/final",
+      "all original raw logs and each new execution/XML/summary retained with full hashes and final rechecks"
+    ],
+    "removed_only_original_root_branches": [
+      "root flag, UID0 wrapper/env, sudo/chown record ownership path",
+      "seventeen ignored Root parent selector/roster and Root-specific fixtures",
+      "original seven-package suite scheduling (kept unchanged in its separate harness)"
+    ],
+    "added_for_this_gate": [
+      "one embedded immutable nine-suite table and required targeted-family/exact-test coverage",
+      "own explicit producer/schema adapter, not an asserted original hepta_ci_exec result",
+      "per-report actual identity before/after collection, exclusive unique archives and final evidence hash rechecks",
+      "known-completion nonzero failures recorded within a stage, no wider stage after failure",
+      "all nine required commands must actually pass; not-run entries never count as PASS"
+    ]
+  },
+  "unchanged_count_parser": {
+    "origin": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "sha256": "93fc49efa13f2d83d70f8966722367a67ea0542505e9c54ecbd8fb6603f7d84b",
+    "exact_origin_span": true
+  },
+  "unchanged_physical_snapshot": {
+    "origin": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "sha256": "5abf38bf27da1278ca1cda124acb3e3c2ff3fe35a25ae20f88bf1b71461d7313",
+    "exact_origin_span": true
+  },
+  "collector": {
+    "path": "scripts/hepta_ci_junit.py",
+    "blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+    "unchanged": true
+  },
+  "original_environment": {
+    "config": "d9866416acc15c77ee91033deae01d714b2d04ec",
+    "operator_only": true,
+    "root_target_unused": true,
+    "preserve_HOME_and_skips": true,
+    "extra_inherited_binary_prefix_cleared": "NEXTEST_BIN_EXE_ as well as original CARGO_BIN_EXE_; only reviewed fixed current-source fixtures may be re-injected"
+  },
+  "restrictions": {
+    "no_source_mutation": true,
+    "no_fmt_fix": true,
+    "no_original_checker_execution": true,
+    "no_original_harness_execution": true,
+    "no_ref_operations": true,
+    "no_sudo": true,
+    "no_installation": true,
+    "no_credentials_repair": true,
+    "no_arbitrary_config_commands": true,
+    "no_retry": true,
+    "no_all_features": true,
+    "no_run_ignored_all": true
+  },
+  "known_limits": [
+    "Proposal was not parsed or executed by Python, Cargo, h or native; pure V8 construction and byte provenance only. Peer review and actual binding are still required.",
+    "One absolute scheduling/wait deadline is enforced; synchronous local filesystem operations cannot be claimed hard-real-time. Observed total-budget overrun fails the gate.",
+    "Original v5 direct-command evidence and owned-PGID behavior do not prove escaped descendants' physical termination; unknown never certifies source or test success.",
+    "Final fixed fixture evidence may be an empty external injection table only when Root's frozen dependency review supports it. No current helper binary or prior test result is implicitly trusted.",
+    "Environment-returned test successes remain visible as raw output; the runner cannot convert them into actual integration/business execution evidence."
+  ],
+  "execution": {
+    "h": 0,
+    "native": 0,
+    "cargo": 0,
+    "python": 0,
+    "tests": 0,
+    "refs": 0
+  }
+}

@@ -1,0 +1,674 @@
+{
+  "schema_version": 1,
+  "kind": "final_205_source_metadata_and_evidence_archive",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": {
+    "commit": "f9615a668f0d3a8c584a304389c4ce4c69701123",
+    "tree": "089e8d49790bb0944cfcd83f7b10f3bb94786b43"
+  },
+  "source_manifest": {
+    "blob": "443d5295721bd5399d86e54bc3b3a879fc4ec6da",
+    "bytes": 59789,
+    "sha256": "d987abdabd2f0a00dd4406023ddbc5d951b417afbd4959b9b5a17e880340f1d7"
+  },
+  "source_file_count": 205,
+  "product_source_changes_from_parent": [
+    {
+      "path": "CALLERS.toml",
+      "pre": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+      "post": "0f0b4c835de967f90263ae9041865f5ac431615e"
+    }
+  ],
+  "preceding_204_entries_exact": true,
+  "artifact_count": 90,
+  "artifacts": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/00-prepare-base.toml",
+      "blob": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+      "bytes": 1204984,
+      "sha256": "f202f39b02ec74689cebe25af4963af62496c226760caeec32f25aa64c6e6709",
+      "role": "semantic_prepare:base"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/01-prepare-own.json",
+      "blob": "e6da443d18aefcfb345a222cdbc025195271af72",
+      "bytes": 409662,
+      "sha256": "96c4fdd758921de0389cef7e77bb9deb5ddcc97d960ba346861eaebfa70e717c",
+      "role": "semantic_prepare:own"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/02-prepare-app.json",
+      "blob": "40133ee467b53d972b93c5753e9142fadf100d45",
+      "bytes": 178896,
+      "sha256": "f8d94609b4a62346803db5e2fe62ae90902dc1c1da50e6bbc45979155c003217",
+      "role": "semantic_prepare:app"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/03-prepare-rootRows.json",
+      "blob": "c73360c67ed6dcca55da2902abfd50baed08a646",
+      "bytes": 152497,
+      "sha256": "02cec8e6ce8b8f1101b025ce81018259b1905f54c7b235af4e25506e53a1f812",
+      "role": "semantic_prepare:rootRows"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/04-prepare-rootGuards.json",
+      "blob": "c9815b6842ed51866a0ab058d1e9069cd60ef26b",
+      "bytes": 452752,
+      "sha256": "f4ef78d3f66a01bfe0540798b0bb9afad0df00f332a65c125f13a7889997cd90",
+      "role": "semantic_prepare:rootGuards"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/05-prepare-oldDelta.json",
+      "blob": "aef2b970a711ff839cc6bb046fdaf72cf757ac59",
+      "bytes": 55482,
+      "sha256": "d9b9cf4de7945d04e59c9dc2b4945bda1a6203a2b5840f130aeaa14fdd6b7a5f",
+      "role": "semantic_prepare:oldDelta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/06-prepare-retained_stream_real_caller_successor.json",
+      "blob": "2cb1164a8d3c5e89946ac273e5e10249ac3f300e",
+      "bytes": 9018,
+      "sha256": "27002f03a5001e93d0037fc6921f69d82e30775ce18e4e0876c1c366ce8b530f",
+      "role": "semantic_prepare:retained_stream_real_caller_successor"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/07-actual_checkout_metadata.toml",
+      "blob": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+      "bytes": 891809,
+      "sha256": "561ee83c6451ea1f8e584f7c281fd56a3d7907b084c287eaae256044382308cd",
+      "role": "actual_checkout_metadata"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/08-semantic_prepare_generator.js",
+      "blob": "eca89aa4bfff94d81346a3345974ea6c7ffd07c3",
+      "bytes": 21508,
+      "sha256": "d8d8be17ae59e08cd2311a26b3dbff335b83a2d4cb7d995058c5edbf5b7ced52",
+      "role": "semantic_prepare_generator"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/09-exact_toml_parser.js",
+      "blob": "14b43d87cc460df3b0a2d4b5c5d178c3bff44ddf",
+      "bytes": 6634,
+      "sha256": "4a47fc7fdc9fb7e478212a64dfcf2215973e6751eb28fcf22731b8f12033c20a",
+      "role": "exact_toml_parser"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/10-actual_source_finalizer.js",
+      "blob": "f1131dc120e8c0df210723a9fa228c4c42893534",
+      "bytes": 9605,
+      "sha256": "276b78bfecfab717bc699232c530706e6caae61b2432f940bdebf6ff739397a7",
+      "role": "actual_source_finalizer"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/11-actual_to_logical_exact_bridge.json",
+      "blob": "800c2f32753919f6356e822776b5b0ac18248fdd",
+      "bytes": 1205969,
+      "sha256": "3247e3fd8003617e58b6e6c129c983b0daa72242ea45c21500d75c58612e633d",
+      "role": "actual_to_logical_exact_bridge"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/12-logical_to_final_exact_bridge.json",
+      "blob": "e1968353409e0cc9e2e45c5b4ce0a95eec1952d2",
+      "bytes": 2907068,
+      "sha256": "d309353d6c0bb86efd98fddafa21657e721347665d51308d993b64fb7eaa57c9",
+      "role": "logical_to_final_exact_bridge"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/13-outcome_additive_boundary_and_protection.json",
+      "blob": "74aa68fe1d20a6bfea82ab7ef9e1644af5cb22d7",
+      "bytes": 9456,
+      "sha256": "f8986e9c3a1e057e97c3531b9b855f04340f0fc7f0a13edd6fcb5285e01e0361",
+      "role": "outcome_additive_boundary_and_protection"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/14-actual_204_source_manifest.json",
+      "blob": "848a82a966e4cab54b5410c5e4d2fe0dd7fde616",
+      "bytes": 59524,
+      "sha256": "0383a5f7f145aa1c0d21b7a8d603fcae3ecf6c7032f3e64b6848063b2c4ef471",
+      "role": "actual_204_source_manifest"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/15-all_forbidden_conjunction_and_added_origin_ledger.json",
+      "blob": "fde301027476a8c480275838f6c6b3f70ab6d8a4",
+      "bytes": 565646,
+      "sha256": "622875fccfbde723cd158eacdc5d99af730665f4c93cf683f80a114659db5a6c",
+      "role": "all_forbidden_conjunction_and_added_origin_ledger"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/16-final_metadata_candidate.toml",
+      "blob": "0f0b4c835de967f90263ae9041865f5ac431615e",
+      "bytes": 2151753,
+      "sha256": "00638bab13775377cc15a1e08aa24110d17039160b0678fae69d6476d87306fc",
+      "role": "final_metadata_candidate"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/17-stage-boundary_updates.json",
+      "blob": "18b8e0ca81e26c0a09fa623c19d0c5bc3232674f",
+      "bytes": 142234,
+      "sha256": "4364da16fe580cf28354b414294f9dca5ccc8e51e4cf0922b546edb4a21d9bb9",
+      "role": "ordered_actual_source_literal_or_semantic_delta:boundary_updates"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/18-stage-guard_updates.json",
+      "blob": "85885737a60604b11fea9aa198473df424d7dfc8",
+      "bytes": 1306197,
+      "sha256": "ae00ec8173b46766da714b83dda58f8b76481dbd9b440709278b5d50365a2ad9",
+      "role": "ordered_actual_source_literal_or_semantic_delta:guard_updates"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/19-stage-row_delta.json",
+      "blob": "a13a9a437bcaebf95ab6cb3bda5d97ae49a4e91b",
+      "bytes": 74741,
+      "sha256": "f923366350ed09257b7d7eb5869c907a64260b866f78256aca3c3231fb70b347",
+      "role": "ordered_actual_source_literal_or_semantic_delta:row_delta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/20-stage-row_delta.json",
+      "blob": "7583c283d2d861bb6c3ade0fea58a6f223c0e2cd",
+      "bytes": 3215354,
+      "sha256": "24a11f30a91fee7ce9e5e4d2c632ba4f2c85a38ef0bd0567f2e0393a8f9850c7",
+      "role": "ordered_actual_source_literal_or_semantic_delta:row_delta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/21-stage-row_delta.json",
+      "blob": "875d82d02dc1d1dec4d2f9737f4ddcd912cde20f",
+      "bytes": 188820,
+      "sha256": "ffc5f9fd0916b9a1788d4b23e16031bd7e35728134d9feb7414d4747b7db5d70",
+      "role": "ordered_actual_source_literal_or_semantic_delta:row_delta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/22-stage-row_delta.json",
+      "blob": "86eaf98f248cda36fa591edd5fc541f9a5a96309",
+      "bytes": 58987,
+      "sha256": "52833b4b78552622236471719a0d7746ceeabdfe5fa607b9fac9f60b560d727f",
+      "role": "ordered_actual_source_literal_or_semantic_delta:row_delta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/23-stage-row_delta.json",
+      "blob": "780619c2a09dbd8978b438b5f7b4d8f23f08e389",
+      "bytes": 82109,
+      "sha256": "48de2b1c205bb798c5a04f5a4a78ee3e61fb13c9cf2e6a2d8a33d415192661ac",
+      "role": "ordered_actual_source_literal_or_semantic_delta:row_delta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/inputs/24-stage-row_delta.json",
+      "blob": "16ad1ae4f00e964e1a8ae40ff656b6406f218818",
+      "bytes": 944088,
+      "sha256": "d063ba4a64904561697c1346d821f7bbe1dc2bd421a6f80f7963a61b074f2c70",
+      "role": "ordered_actual_source_literal_or_semantic_delta:row_delta"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/REPLAY_RECIPE.json",
+      "blob": "a6d3c7c53b914d3609c45968dcb8513219d96c5c",
+      "bytes": 13649,
+      "sha256": "cfbbb926be97f5f50840fcd81fcd34d62acb75bbdf248ae809db8cb154ab472b",
+      "role": "complete final metadata recipe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/REPLAY_GENERATOR.js",
+      "blob": "5497562cdf985cbc54b242554a59953255d43e4d",
+      "bytes": 6532,
+      "sha256": "f8a784b5201c4e33cb95cdac7e85c51424f462a84aec0fbfb1e29ea2a9d1e294",
+      "role": "complete metadata replay pure JS"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/ROOT_REVIEW.json",
+      "blob": "894facbd743f5199f3cb1e04c64d73aee23587cf",
+      "bytes": 11814,
+      "sha256": "17173e53f5521ac6e42e4f57b1a02e6dbd63009e43a93671a5556e4d1942e558",
+      "role": "root independent replay and source scope review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_SHARED_SITES.md",
+      "blob": "2d154dbf69d12f793da747f8d9b39a580c798530",
+      "bytes": 11578,
+      "sha256": "ed8b7fc7265bdd866aa308c1e1122b840e3a2898fcd47f765da762fa7b00400d",
+      "role": "independent Shared-site obligations review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_SHARED_SITES_DETAIL.json",
+      "blob": "432e1264ad9ff88960ce9ca418b9ec93442f38b6",
+      "bytes": 49861,
+      "sha256": "0381772e309f3feeaba9f98c3946dab78a48e855d507d5c0631e307f12ad4012",
+      "role": "independent actual guard detail"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/GUARD_PROJECTION.json",
+      "blob": "a027d050cbdd9d72d0db7cde595ccb67a7ded1d1",
+      "bytes": 1794045,
+      "sha256": "19430e70e7cef33fad47082a4adab638bad5d04e1082a34ed368dbbe8a0245db",
+      "role": "bounded final guard projection"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/CALLER_PROJECTION.json",
+      "blob": "cf0dc30e30d82b05b4b1b340067de8aba6021499",
+      "bytes": 666226,
+      "sha256": "73a68ea389572a633b582a9f09b35d5218fa03897609c4b11c1b51a999c1f4ac",
+      "role": "bounded final caller projection"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/SOURCE_INVENTORY.json",
+      "blob": "5743a1b075190b98b49c7864526ade4b9b5c3d4e",
+      "bytes": 96294,
+      "sha256": "fc1825ade2909bc48cad539d9c8b90536a0709a851926965ca5ab04296598e47",
+      "role": "204 exact source inventory and 201/178 scan policy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/BRIDGE_GENERATOR.js",
+      "blob": "5ac4a6c3e0845ba9acdeb0289f79efb5b1fb15dc",
+      "bytes": 4471,
+      "sha256": "6124220257e7c7811d5ce15914de9d673765c767f560a1ff06abf82caa9123ec",
+      "role": "exact bridge derivation"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/GUARD_PRIMITIVES.js",
+      "blob": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+      "bytes": 13481,
+      "sha256": "7b122c8a3c91495efa1e148fcb7890c17a9938694bb3c6293bf635c1c90be187",
+      "role": "bounded guard projection primitives"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/SOURCE_ANALYSIS_PRIMITIVES.js",
+      "blob": "644659241f86f20f933958acffea6ded4900c3fa",
+      "bytes": 24579,
+      "sha256": "3ee2dcc580f52f0da31a5df832bf9beb357d315204f7555fc2e162ae898e02f0",
+      "role": "source analysis primitives"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/NINETEEN_SITE_SEMANTIC_RECIPE.json",
+      "blob": "84702e0f1f9f1354a7ab24447acc6027c7921adc",
+      "bytes": 201237,
+      "sha256": "560f25aa2eea2b3cb137f7d17a7aa3b63a77e131bea5bfa45d22b3ac8e2304f9",
+      "role": "19 wait sites/13 guards source adaptation"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/NINETEEN_SITE_SELECTOR.js",
+      "blob": "7a73be0590d32e92ed34dc53e71f1155e100073a",
+      "bytes": 7418,
+      "sha256": "76cb0ad56d0fb63fcb483183899194532a89f7377406ce62f84c4a03b3194c1d",
+      "role": "actual masked source selectors"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PARTIAL_MANIFEST.json",
+      "blob": "eb71d1b779d800ca807385a0c86e2e7bd2ba48da",
+      "bytes": 6598,
+      "sha256": "fc915fcada422b7d39021c2c4b86c4da2904b8d926e72d5df1b328b7edb3c9d3",
+      "role": "historical partial metadata manifest"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PARTIAL_718_489.toml",
+      "blob": "8cba09dfccb110eaff66f65cddbed32d2122df13",
+      "bytes": 1034491,
+      "sha256": "5251a0a1b9d8af823fe4c4a989036a4c410aef2bc53ab74936e44efaa748d552",
+      "role": "historical root partial"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PARTIAL_699_474.toml",
+      "blob": "8da2bb60f3d029d26e198a11a20ed8f97c05824f",
+      "bytes": 1006654,
+      "sha256": "6da0789256cd220b6929df22b243489329926b20593a770f7722ae00b8320e33",
+      "role": "historical previous partial"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_ADDED_LEARNING_ANNEX.json",
+      "blob": "679e73c42779426427938e70a68e47220a9f7c11",
+      "bytes": 180052,
+      "sha256": "540fe7bb0b2305c34f2a3f524d67530ad9ee00fd8754c7fac4c1b1293aa72ec9",
+      "role": "original learning annex"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PRIOR_SOURCE_REVIEW.json",
+      "blob": "a8c4aee539203581a271405dbe0e1af9b6f7d3cc",
+      "bytes": 5011,
+      "sha256": "a0e43690494ccc59cba29ad0b7605f3e23c58f5c246702878904c4238b2821f9",
+      "role": "historical root source review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_PRIOR_METADATA_REPLAY.json",
+      "blob": "c2af8754545dae4cdb4297148499efac5dcbbdea",
+      "bytes": 52267,
+      "sha256": "1cde3768b63a30905f804b9449252da9f029158d5b3eada6120cfe928b12d221",
+      "role": "historical root metadata replay"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_71_23_SEMANTIC.json",
+      "blob": "7ac44786c9837d4233fe47dec8dd2a60e6c38661",
+      "bytes": 278072,
+      "sha256": "6586b4e21f39538c99729b91820e1633f827ce144954cf653008eb1d59a8904c",
+      "role": "original Hepta semantic changes"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_ORIGINAL_OPERATIONS.json",
+      "blob": "d8acbd854d6dc4838f8ddff45cf6c55706186b1e",
+      "bytes": 286075,
+      "sha256": "746e64e625dfd4862752a7dfb728049188f04faf918eb0591a492279629154d0",
+      "role": "original Hepta operations on standalone baseline"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_STATIC_RECEIPT.json",
+      "blob": "8e746f31acfbdda023d210ebf877c62db17ed955",
+      "bytes": 347116,
+      "sha256": "cd05531ea4575e8825c08c940dedc158d98fa167ac4122b056c23acff66833f1",
+      "role": "original bounded source receipt"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/HEPTA_ORIGINAL_HELPER.js",
+      "blob": "25639e0cae8a6eb78c7ef3cce6a29968d5196d17",
+      "bytes": 20686,
+      "sha256": "cdc3512cc77e3618f87119261eab4320d906baafe416396ae5d6c97dad230aa3",
+      "role": "original bounded projection helper"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ROOT_RECOVERED_COMPOSITION.json",
+      "blob": "df27b9fee41f67ba32917976226be78c0f9be0fa",
+      "bytes": 10764,
+      "sha256": "d0336ba8d1bed6f5257e651e8891a5d210d884ed6150b5b31f3a0e1fe498f131",
+      "role": "root exact historical 13-row union composition"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ORIGINAL_ANNEX_BFC8.json",
+      "blob": "bfc8c51e436767fdcde970194f58fa769e2deef3",
+      "bytes": 117116,
+      "sha256": "0ac018c85dff14c6db91d87b358995dd480474d9ffb7bace9c1ffdbfae7a048b",
+      "role": "original historical annex"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ORIGINAL_ANNEX_22C1.json",
+      "blob": "22c1f044d6a61fbe9da64a620991c04ff9f5dd19",
+      "bytes": 344990,
+      "sha256": "94332782182e94eb3ab957c988564e3aca2ea6cd28aa0d9d6c5452dce60a2226",
+      "role": "original historical annex"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/history/ORIGINAL_ANNEX_3952.json",
+      "blob": "39529d2d1b5735cb3045d49cda2fd08a2953c483",
+      "bytes": 142932,
+      "sha256": "1f43f36cc53930e278569c68b962260141cca25564b10c7e1fa443b43af3d187",
+      "role": "original historical annex"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/INDEX.json",
+      "blob": "7e8714fc1af4c7893a176c7353850aaa301366dd",
+      "bytes": 9702,
+      "sha256": "d34abef1796e1bed74740b1b49b32d04f13c1c8132a091686aad624710e44ee4",
+      "role": "independently reviewed extra runner complete index"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/ROOT_HELPER_SPAN_PROOF.json",
+      "blob": "02f3f49d1de279b1d086d5c75f08829ea03742fa",
+      "bytes": 3929,
+      "sha256": "a2c8dfba77e56126f41fabeb8219f8c1f70ea5881e12fdc886fe299789cc8c2a",
+      "role": "root exact helper provenance verification"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/UNBOUND_EXTRA_GATE_RUNNER.py",
+      "blob": "9e33ff1a0896ddf1ae540c8a6c26777e461b20d4",
+      "bytes": 45089,
+      "sha256": "da5ad3bedb7563b2e103be90424e56ced675096719c2d077bf8f21faf3eab716",
+      "role": "final_runner"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/CONFIG_UNBOUND.json",
+      "blob": "44abec1baaae59cb1ff504cd3a5111b0583948c6",
+      "bytes": 1346,
+      "sha256": "051579324a0823be464bcf5bf0694ca634a5f2b6a6bd9bf801d2e9ae611f68d4",
+      "role": "unbound_config"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/ROOT_REVIEW.json",
+      "blob": "08757f74b7f1a7c8c35f3585c2f888118a62b63d",
+      "bytes": 5178,
+      "sha256": "4a5a85c9584ec7ad17a911a11d09391484c2502949d2e00297e98b0471fae969",
+      "role": "root_independent_review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/PEER_REVIEW.json",
+      "blob": "2bfc9e1b13e04db16a45d3d519c5f46f60d25aa5",
+      "bytes": 18227,
+      "sha256": "9cd52120319055cb0a0d67ff2a4cdfb7cd3e70cb5bb2711cefa9d07230851048",
+      "role": "chain_independent_review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/BASE_PROPOSAL.json",
+      "blob": "73b3e883e2fc7f756433ece6b796875def01d425",
+      "bytes": 29102,
+      "sha256": "c73964216395ec103f97cf7de4d9e4863b4efa341da7b8ec6a064ea6c38a9cb2",
+      "role": "base_source_packet"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/NATIVE_JUNIT_CONTINUITY_DELTA.json",
+      "blob": "8d62fac00ff8062de782a16c3fe171c22a6d509c",
+      "bytes": 3270,
+      "sha256": "184980e72e321cb07d3a962aae5491eabcf5f6a9c1d67d02f359f4ef363f7ef1",
+      "role": "native_junit_continuity_overlay"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/FIXED_OPERATION_DEADLINE_DELTA.json",
+      "blob": "0fff05f8b5ec8bb2c77d82a9f82350f269cffbfd",
+      "bytes": 4455,
+      "sha256": "e690845e8a5aa00c03a9a499ca240ed6c4385e4170167309f12166899387ca3e",
+      "role": "fixed_operation_deadline_overlay"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/history/BASE_UNBOUND_RUNNER.py",
+      "blob": "6cce8fc79b7e04e9318fd38a859170900204dac8",
+      "bytes": 43066,
+      "sha256": "8ebb9b5ac06404766b9ca176226fcd0b2f4a5354f2d0387e20546d4034ccd578",
+      "role": "base_proposal_source"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/history/JUNIT_CONTINUITY_UNBOUND_RUNNER.py",
+      "blob": "d70e0a24f21caa29f9a73466ad077e02eee7f0ef",
+      "bytes": 43887,
+      "sha256": "d649c4206a72fcb6f8e226735c024e076c1c5e9b35071a7b3a753438344cbbb1",
+      "role": "intermediate_source"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/DESIGN_UNBOUND.json",
+      "blob": "b39e60d30c5be6fbb8bbe0ad88ace4780b7dbb2c",
+      "bytes": 18250,
+      "sha256": "87461cdc80c61bf304d13f875af47d95612005089bb936703152fbf22b050b90",
+      "role": "binding_design"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/HELPER_PROVENANCE.json",
+      "blob": "c3e536f0dbe712feba709dcb0d42e203d54eb2dd",
+      "bytes": 20662,
+      "sha256": "468f02aaa72927ca887b96ecb7115ab2dd51ed915b51d9f961cf3f8547a4ab17",
+      "role": "helper_origin_source_spans"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/SOURCE_TEST_GATE_PLAN.md",
+      "blob": "2184502d3759dd655840b987bb7c980863eadc89",
+      "bytes": 14913,
+      "sha256": "f54f0db2302ef6d2aa08a8cac4c352653c3925b1939fae27862af531b7106a18",
+      "role": "source_test_gate_plan"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_QUALIFICATION_HARNESS.py",
+      "blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "bytes": 50167,
+      "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+      "role": "original_unmodified_qualification_harness"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_V46_OPERATOR_CONFIG.json",
+      "blob": "d9866416acc15c77ee91033deae01d714b2d04ec",
+      "bytes": 3524,
+      "sha256": "b5897d001f17ad7226d3ff29812e94634c4cf8b81171d4869551782b48fbd1ef",
+      "role": "original_operator_configuration"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_MAINTENANCE_SUPERVISOR.py",
+      "blob": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "bytes": 18684,
+      "sha256": "51700c6c620252280a279526b53ff7e9a07b52ca2d6cdbab7ed9114ce64e89a3",
+      "role": "original_supervisor_source"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_JUNIT_COLLECTOR.py",
+      "blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec",
+      "role": "original_junit_collector"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/extra-gates/origins/ORIGINAL_TERMINAL_COUNT_PARSER_SOURCE.py",
+      "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+      "role": "original_terminal_count_parser_file"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_HISTORY_AND_UNION.json",
+      "blob": "6174f54e0e9374fc4f49a1519a92bf2a6fd4372c",
+      "bytes": 10703,
+      "sha256": "b2607be16ca50fdd66ee67d76a47c48026f9a8cd1101d36f7a365897ce1d6cb1",
+      "role": "independent full metadata origin and bounded source review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/metadata/PEER_HISTORY_AND_UNION_DETAIL.json",
+      "blob": "e15136ac6cc2da312affb93f01996761ef15cb7d",
+      "bytes": 1017595,
+      "sha256": "162c883030ca5fe8b87098d8e8327395a4ba3c089a46e341f61938a05a07445e",
+      "role": "complete peer historical and semantic replay detail"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/RESULT.json",
+      "blob": "39644ad60327fbcc4c5841e126e0e2a5b827a153",
+      "bytes": 3961,
+      "sha256": "f79e0d44a28836678405cfe2723b5b065e89a6490aa03f0b21880a7af264e3df",
+      "role": "historical V46 overall result on cbf source"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/ROOT_EXEC.json",
+      "blob": "107f25db317630c6105f2a1ea1ccfd644be1fc1b",
+      "bytes": 3965,
+      "sha256": "0a4b3c378e6a76c560d14cafa67444f5b04cbcc4cdbe7322c1ead476f4a57246",
+      "role": "historical V46 Root execution"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/ORDINARY_EXEC.json",
+      "blob": "d9e383f75e1a9eafb7fe808b185e7c67dc47a26c",
+      "bytes": 1870,
+      "sha256": "383416c126002b68a5d1ddd1ef30d7d51cce64a2b86fb6403de4cf253e9886f3",
+      "role": "historical V46 ordinary execution"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/historical-v46/FULLCALLER_EXEC.json",
+      "blob": "d1a3709ed007608deb09dff58e4d5b15ec4a4078",
+      "bytes": 1458,
+      "sha256": "246b47266b8cd43f4a9df2aba962026eb749b1806e61d44ddd36cc687bb3af81",
+      "role": "historical V46 full caller execution"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/PROPOSAL_MANIFEST.json",
+      "blob": "33746eddf59b10b9d4faab6e20482cb1b582e4b9",
+      "bytes": 18303,
+      "sha256": "1191d695fb8a89e47d3e79d3cd82f89b44c5b68fe834422d526a20264933eff1",
+      "role": "Hepta-only uninstalled Chain proposal manifest"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/EXACT_PROPOSAL.json",
+      "blob": "9801f64e0f4714995edc81f6bfa8be57f59f10d4",
+      "bytes": 28024,
+      "sha256": "6e6dac42156e681e474964c4e0862b47c1ddc40ad2cb5906e4c0df4a6473ea23",
+      "role": "uninstalled Chain exact source proposal"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/PEER_REVIEW.json",
+      "blob": "6ff1af8862f0a826ddb710f3a6c8716ed4e74d25",
+      "bytes": 4309,
+      "sha256": "ce7266f448408ea6666ffb93918f9ccb1af83c53b4b97e387d2bff2c5209fa5d",
+      "role": "Chain proposal peer review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/PEER_DETAIL.json",
+      "blob": "f4cff86e735d515c98eb8a6c6d0c551c00e058a5",
+      "bytes": 20095,
+      "sha256": "23a471dbfddf64c4d9bc51388377c2f8756bd2fb6fae19afee53ed5427156ed5",
+      "role": "Chain proposal detailed static replay"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/pre/scripts/cell_learning_local_decision_join.py",
+      "blob": "1409d50d835e12c32341a3e650f53191915b8030",
+      "bytes": 12027,
+      "sha256": "43b0c97b07cab4131003f668430d420ceedba1883ff2ec6458a789c646f80a83",
+      "role": "uninstalled Chain pre source image"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/post/scripts/cell_learning_local_decision_join.py",
+      "blob": "dabf403b0988de6a6dad9ad198ac22cad1542fa8",
+      "bytes": 17912,
+      "sha256": "7da487406344e304065f5ff4abb668e96bc3d85d73fa7debe8c18eb2e217826e",
+      "role": "uninstalled Chain post source image"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/pre/scripts/test_cell_learning_local_decision_join.py",
+      "blob": "02515dcb1b33afae4b350a7272db662402819064",
+      "bytes": 18325,
+      "sha256": "db5b90dd8efc48564776d48e17012408ac1e4ec00779da9563cd6502a1729e2d",
+      "role": "uninstalled Chain pre source image"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/post/scripts/test_cell_learning_local_decision_join.py",
+      "blob": "a8c35861954c6b68dd2af5453fa1365020380217",
+      "bytes": 25676,
+      "sha256": "02783df48bfac4457f7dc6596c0c521da02563f573bf223354087cb63883ea7e",
+      "role": "uninstalled Chain post source image"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/pre/docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+      "blob": "231a2200510edb81efed565a4563f768105de677",
+      "bytes": 4387,
+      "sha256": "feee555af4bb6d8620c6a3e6d6ef7196c8a580860723e78653a3e5d58f80c6fc",
+      "role": "uninstalled Chain pre source image"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/post/docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md",
+      "blob": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543",
+      "bytes": 9631,
+      "sha256": "0a8bbc7b2632cc7395b03230c1e3d34617d37cacff097bf3c2239cc6e79b51b6",
+      "role": "uninstalled Chain post source image"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/chain-uninstalled/AUTHOR_STATIC_REVIEW.json",
+      "blob": "76631fd5f5b62c668412a21fd909f8eec20f0fb9",
+      "bytes": 7410,
+      "sha256": "cd87c8b2b78a219897b4e8ca6089e66d73a60b451495ea3bf02c973a4c9c52f3",
+      "role": "original proposal author bounded static review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/README.md",
+      "blob": "0ae968eda103cd07923314e6739c17c0f70f3831",
+      "bytes": 9543,
+      "sha256": "14ae792b42a418a28f614a33fa32d87d58ffcdec0eeaeccf44a80015ee7878ac",
+      "role": "current candidate status and review entry point"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/final-205/STATUS.json",
+      "blob": "c63cf4fbe0303b6f439e7d5ab20743132f8c848f",
+      "bytes": 4840,
+      "sha256": "75c465a8932236bf7eb67879a6afaa15e2302ab8f32d56642a568dcecd533830",
+      "role": "machine-readable current candidate status"
+    }
+  ],
+  "index_and_tree_proof_self_hash_exclusion": true,
+  "status": "source_only_unqualified",
+  "current_native_result": null,
+  "original_business_acceptance": [
+    0,
+    0,
+    0
+  ],
+  "required_execution_order": [
+    "reconcile original v10 start identity before shared-target use",
+    "complete authorized maintenance and capture exact actual source postimages",
+    "rebind affected metadata if source changes",
+    "original frozen checker/native qualification plus separately bound Core/AppServer/MCP gates including full-workspace just test",
+    "ordinary task-driven positive/NoUpdate-or-rollback and independent consumer/real OS restart acceptance"
+  ],
+  "draft_only": true,
+  "pr_source_advanced": false,
+  "chain_proposal_installed": false
+}
