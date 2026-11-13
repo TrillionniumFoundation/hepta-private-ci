@@ -8,8 +8,10 @@
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::panic::AssertUnwindSafe;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::OrganDriverBindingV1;
@@ -197,11 +199,21 @@ impl OrganHandlerRegistryV1 {
                     binding.driver.clone(),
                 ));
             };
-            let handler = (registered.factory)(&organ.id).map_err(|fault| {
-                OrganHandlerRegistryError::Factory {
-                    driver: binding.driver.clone(),
-                    fault,
+            let factory_result =
+                std::panic::catch_unwind(AssertUnwindSafe(|| (registered.factory)(&organ.id)));
+            let handler = match factory_result {
+                Ok(result) => result,
+                Err(_) => {
+                    let code = match StableId::new("organ.callback.factory-panic") {
+                        Ok(code) => code,
+                        Err(_) => organ.id.clone(),
+                    };
+                    Err(OrganHandlerFaultV1::new(code))
                 }
+            }
+            .map_err(|fault| OrganHandlerRegistryError::Factory {
+                driver: binding.driver.clone(),
+                fault,
             })?;
             let actual = handler.id().clone();
             if actual != organ.id {
@@ -213,6 +225,26 @@ impl OrganHandlerRegistryV1 {
             handlers.push(handler);
         }
         OrganHostV1::new(graph, handlers).map_err(Into::into)
+    }
+
+    /// Replace a healthy read-only composition with its exact successor.
+    ///
+    /// All predecessor handlers must be Ready before any candidate factory is
+    /// invoked. Quarantined or stopped predecessors require the existing
+    /// explicit recovery path; this method cannot restore owner state. Graph,
+    /// binding and digest checks precede construction, and the host's existing
+    /// start/drain path publishes only after successful predecessor cleanup.
+    pub fn replace_host(
+        &self,
+        host: &mut OrganHostV1,
+        expected: Generation,
+        graph: OrganGraphsV1,
+        bindings: &[OrganDriverBindingV1],
+    ) -> Result<(), OrganHandlerRegistryError> {
+        host.validate_read_only_successor(expected, graph.generation)?;
+        let candidate = self.create_host(graph, bindings)?;
+        host.activate_healthy_registry_successor(candidate)?;
+        Ok(())
     }
 }
 
