@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-n256-symbolic-roster-request-v1",
+  "identity": "hcsn-n256-symbolic-roster-20261113-c06d-001",
+  "base_merge_commit": "7b1251736eea311bcc322c38626f6a45d35eefaf",
+  "source_freeze_commit": "266dfe6da7b9f643d8d85d0bcb49b2e6c525f307",
+  "inputs": {
+    "metadata": "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json",
+    "state": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json",
+    "phase": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json",
+    "npz_b64": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64"
+  },
+  "allowed": [
+    "symbolic_packet_schedule",
+    "integer_coordinate_enumeration",
+    "stdlib_hash_and_archive_readback"
+  ],
+  "forbidden": [
+    "dynamic_state_propagation",
+    "spatial_operator",
+    "matrix_exponential",
+    "oracle_numeric_call",
+    "torch",
+    "backward",
+    "optimizer",
+    "training"
+  ],
+  "expected": {
+    "interior_nodes": 255,
+    "capsules": 14,
+    "packet_tuples": 185,
+    "coordinate_spans": 625,
+    "fp64_coordinate_denominator": 18225028,
+    "largest_capsule_coordinates": 3444164
+  },
+  "historical_N256_export_present": false,
+  "new_export_only": true,
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

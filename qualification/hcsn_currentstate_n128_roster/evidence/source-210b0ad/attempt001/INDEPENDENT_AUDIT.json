@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn-authentic-n128-roster-independent-audit-v1",
+  "status": "PASS",
+  "input_sha256": {
+    "law": "7a4b7485bf224b5e343f2c17fccf4ea7ca2dfdd06121810d16c503134f9e92fb",
+    "json": "8f4f77b8ba2bc1d1e3012f64ce9614711d178503601878e091b3db8e7eadaf09",
+    "npz": "fda047c1a8fce3cc042246b5249859cd0a0ba449647460ba9e0a39592386ff7d"
+  },
+  "npz_members": {
+    "active.npy": [
+      [
+        129
+      ],
+      "f15609b8044d50293404b1aa7daa9375eaf2080cb226a46a2507a7d1df84fa48",
+      "828dbdb1fd1ad4a72f8fe2f81929bd6f3daba029f688d8e8abb993551d26441a"
+    ],
+    "content.npy": [
+      [
+        129,
+        4
+      ],
+      "5c79294e14e2a27309d24439c81fa3056c39206ccbf92a6c189b5fd918ce98a5",
+      "723d22ad300db522a8b5ac02b373fe94c51eb083b3c7405c9c943900864f3b23"
+    ],
+    "nodes.npy": [
+      [
+        129
+      ],
+      "2dc4a7d543d91ea7d5bf136d6f4c00a3f30a574f0f13a4c79d4462f207f63cdb",
+      "ece51b6f792ec3c3ca13a0773dd85921c5bc4290505d903bc32cae10fddc0f3a"
+    ]
+  },
+  "capsules": 14,
+  "packet_tuples": 185,
+  "coordinate_spans": 625,
+  "fp64_coordinate_denominator": 4623492,
+  "coordinate_identity_sha256": "1f874854559eea2d1eb6ac846428d5b2e3ffebabd569db4f066929e3564d6a3b",
+  "transition_segments": 45,
+  "independently_reconstructed_segments": 45,
+  "cold_restore_events": 1,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "execution_key": null,
+  "admission": "HOLD_NO_NUMERICAL_EXECUTION",
+  "all_closed": false
+}

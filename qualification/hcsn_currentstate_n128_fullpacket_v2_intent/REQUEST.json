@@ -1,0 +1,78 @@
+{
+  "schema": "hcsn-currentstate-n128-fullpacket-v2-request-v1",
+  "identity": "hcsn-currentstate-n128-fullpacket-v2-intent-20261112-c06d",
+  "stage": "source-bound admission HOLD; no numerical execution",
+  "execution_key": "UNASSIGNED_UNTIL_SOURCE_ORACLE_SERIALIZER_AND_RESOURCE_CLEAR",
+  "schedule": {
+    "warm": [
+      "0",
+      ".001",
+      ".02",
+      ".16",
+      ".2",
+      ".201",
+      ".28",
+      ".36"
+    ],
+    "coarse": [
+      "0",
+      ".2",
+      ".36"
+    ],
+    "cold": [
+      ".201",
+      ".28",
+      ".36"
+    ],
+    "readouts": 14,
+    "capsules": 14,
+    "warm_cold_byte_pairs": 3
+  },
+  "full_state_denominators": {
+    "float64_packet_coordinates": 4623492,
+    "raw_float64_bytes": 36987936,
+    "largest_capsule_float64_coordinates": 870084,
+    "largest_capsule_raw_bytes": 6960672,
+    "candidate_and_oracle_raw_float_bytes": 73975872,
+    "readout_scalar_comparisons": 18900,
+    "unique_reference_readout_scalars": 10800
+  },
+  "predeclared_work_caps": {
+    "candidate_expm": 460,
+    "oracle_expm": 460,
+    "total_expm": 920,
+    "candidate_segments": 45,
+    "oracle_segments": 45,
+    "total_segments": 90,
+    "optimizer_steps": 0,
+    "torch_calls": 0,
+    "training_calls": 0
+  },
+  "proposed_resource_envelope_not_admitted": {
+    "candidate_process_AS_bytes": 2147483648,
+    "oracle_process_AS_bytes": 2147483648,
+    "parent_process_AS_bytes": 536870912,
+    "total_CPU_hard_seconds": 900,
+    "wall_hard_seconds": 1200,
+    "canonical_archive_bytes": 268435456,
+    "cumulative_logical_packet_bytes": 201326592,
+    "per_capsule_raw_bytes": 8388608
+  },
+  "stop_before_execution_unless": [
+    "candidate v2 structured core frozen and remotely read back",
+    "canonical binary serializer and cold loader frozen and remotely read back",
+    "independent unreduced dense oracle frozen and remotely read back",
+    "full packet-coordinate comparator and all negative controls frozen",
+    "host and ancestor-cgroup allocation, concurrency, and calendar explicitly reserved",
+    "resource envelope independently reviewed against all process and artifact copies",
+    "one execution identity and key frozen"
+  ],
+  "historical_nontransfer": [
+    "#6249 lacks coarse per-coordinate raw and independent cold-final raw",
+    "#6250 is a separate small finite continuation identity",
+    "#6247 near800 returned-mass errors exceed 1 percent",
+    "#6251 is static intent only with zero dynamics"
+  ],
+  "admission": "HOLD_NO_EXECUTION",
+  "all_closed": false
+}
