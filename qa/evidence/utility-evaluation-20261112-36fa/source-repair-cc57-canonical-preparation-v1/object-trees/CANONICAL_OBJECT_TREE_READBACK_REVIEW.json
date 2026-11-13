@@ -1,0 +1,122 @@
+{
+  "format": "hepta-246d-repair-four-Git-trees-actual-readback-v1",
+  "status": "IMMUTABLE_OBJECTS_CREATED_AND_FULL_GET_VERIFIED_NOT_A_SOURCE_COMMIT",
+  "base_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "base_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "expected_candidate_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "leaf_count": 15188,
+  "actual_trees": [
+    {
+      "path": "qa/b4-no-bypass",
+      "sha": "7779ed81d7de95213e2c328a9b0e857a346cefd1",
+      "actual_entries": 64,
+      "all_actual_entry_values_and_order_equal": true,
+      "actual_truncated": false,
+      "create_and_get_sha_equal": true,
+      "qualification": false
+    },
+    {
+      "path": ".github",
+      "sha": "37fc4888835d4e4d4650e261f24f7d2a309ffde3",
+      "actual_entries": 13,
+      "all_actual_entry_values_and_order_equal": true,
+      "actual_truncated": false,
+      "create_and_get_sha_equal": true,
+      "qualification": false
+    },
+    {
+      "path": "qa",
+      "sha": "18528f68329ef3d084f4c4fb1d2cbdc1ea4b76f3",
+      "actual_entries": 5,
+      "all_actual_entry_values_and_order_equal": true,
+      "actual_truncated": false,
+      "create_and_get_sha_equal": true,
+      "qualification": false
+    },
+    {
+      "path": "",
+      "sha": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+      "actual_entries": 56,
+      "all_actual_entry_values_and_order_equal": true,
+      "actual_truncated": false,
+      "create_and_get_sha_equal": true,
+      "qualification": false
+    }
+  ],
+  "source_blobs": [
+    {
+      "after": {
+        "bytes": 13072,
+        "git_blob": "c3257329caece666950db2041a8e9f47acf5c129",
+        "sha256": "5c9663a527f8d1d926546747a430b5d9b6cbe5102b696c2e81ddcbb1c1bb17b1"
+      },
+      "before": {
+        "bytes": 12891,
+        "git_blob": "4d9a0f0ab6c4e738d879c52f60f039bfd2d45bbc",
+        "sha256": "129365df7a87fd2b90f92254f4968017baaf4e50126f65c08259c51852ba918f"
+      },
+      "mode": "100644",
+      "path": ".github/blob-size-allowlist.txt"
+    },
+    {
+      "after": {
+        "bytes": 1577765,
+        "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+        "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+      },
+      "before": {
+        "bytes": 1577681,
+        "git_blob": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+        "sha256": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb"
+      },
+      "mode": "100644",
+      "path": "CALLERS.toml"
+    },
+    {
+      "after": {
+        "bytes": 10965,
+        "git_blob": "6aa44ad7984ce7af5cb6fd5f67f781cd658b238e",
+        "sha256": "54cd24db176f41407f270da16357a74e759deb0043a5d37862a3b825a78fc415"
+      },
+      "before": {
+        "bytes": 10942,
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 24713,
+        "git_blob": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+        "sha256": "c9ee98b559be8f646b49d4408ed45345bb33b0f1e44116693dc3b7b82ccb0464"
+      },
+      "before": {
+        "bytes": 24442,
+        "git_blob": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+        "sha256": "343f666445888fca75e8304823911bb3e1ea54502f7d5ce7b689b60779961dd5"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 28123,
+        "git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+        "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e"
+      },
+      "before": {
+        "bytes": 27811,
+        "git_blob": "0ef4dc5b862c8e684697775d3469823537961005",
+        "sha256": "528221475bae004ea46aa7d16e86595294a86254589083f08d240f7ad1377939"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py"
+    }
+  ],
+  "source_blob_full_readback_ledger": "b8bd0655d938538f88b6c69dfc50a41b038ac2c0",
+  "local_comparison_correction": "Initial JSON.stringify comparison treated object key ordering as significant and rejected equivalent first-tree entry objects. A Python dict/value comparison confirmed all 64 entries and entry order exactly equal; final review compares explicit (path,mode,type,sha) tuples. No source/gate verdict or original API response was changed.",
+  "actual_format_result_not_inferred": true,
+  "commit_ref_PR_or_H_actions": false
+}

@@ -1,0 +1,103 @@
+{
+  "actual_bootstrap": {
+    "bytes": 5711,
+    "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+    "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+  },
+  "actual_process_input": {
+    "bytes": 622334,
+    "git_blob": "60e6b8d8b12523318410b8f60d7626a7fdc1643e",
+    "sha256": "533af37aa8b89e19dbd6bf40a1c99bf50c56e3256904b2e74faca4d39e72c666"
+  },
+  "actual_stdin": {
+    "bytes": 616256,
+    "git_blob": "024cd821e6d756b15f504513e035ab51f69e0762",
+    "sha256": "93c09aad043e9a7447627e89b235ea4d8362c918914e56f34760fd6d0a766380"
+  },
+  "all_bootstrap_helpers_and_control_bytes_unchanged": true,
+  "approved_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "approved_physical_tree_after_apply": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "baseline_inventory": {
+    "bytes": 5611184,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+  },
+  "budgets": {
+    "evidence": 300,
+    "fmt": 900,
+    "outer": 2100,
+    "preflight_apply": 600
+  },
+  "cwd": "/home/qian-qi",
+  "decision": "APPROVE_EXACT_ONE_NATIVE_REQUEST",
+  "executable": "/usr/bin/python3",
+  "execution_conditions": [
+    "native_ci_audit alone dispatches these exact seven-field request bytes once",
+    "retain admission, normal terminal, original complete result, all actual postimages and full source/Git/input audits",
+    "if admission or state is uncertain reconcile the same idempotency/job; do not launch a second main",
+    "any changed request, source baseline or partial result requires a new concrete review; no budget or assertion relaxation"
+  ],
+  "failed_source_result_reclassified": false,
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "format": "hepta-root-exact-source-repair-final-format-launch-approval-v1",
+  "four_raw_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2057,
+      "git_blob": "baafb1a5f302f129716ae01ed24dea7b3bf3b5c1",
+      "sha256": "a05f349b0691b37087527f6b22dad15b3e6850088abd5a88b971f970306399dc"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2209423,
+      "git_blob": "35debe83e69774f855ed198d35edaa762ae09573",
+      "sha256": "4e735b9402495886f079f5b35026bdc54e56e7ebb1bd179e3de07c25854ce29b"
+    },
+    "SOURCE_GATES_NORMAL.original.json": {
+      "bytes": 952,
+      "git_blob": "bcc7b94d9f9f721f6592632db5a6408468014270",
+      "sha256": "6499d8231230665037a977da78fe840177325f93b2b1e62f30a146251895d906"
+    },
+    "driver.py": {
+      "bytes": 28621,
+      "git_blob": "9101b44fb2ab24ae41a1344425dd74b536a40de4",
+      "sha256": "0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228"
+    }
+  },
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-source-repair-246d-final-fmt-v1",
+  "launch_manifest": {
+    "bytes": 3179,
+    "git_blob": "97bc93d5f88e98090267e20d3b5413d655e34ac3",
+    "sha256": "8a3b67acfc734a0b111cf3d21bf1d8b8a8899545fed5b9bef9a7cdc5231689e3"
+  },
+  "native_execution_dispatched_by_this_review": false,
+  "original_EX_global_build_guard_environment_and_complete_audits_preserved": true,
+  "outer_seconds": 2100,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "retry_or_rollback_authorized": false,
+  "root_input_review": {
+    "bytes": 3297,
+    "git_blob": "d653a08991fde52f1b09f8cef90d8149a67ae0cd",
+    "sha256": "60f28b8fba31ea15339f37d435939888619de74e3df4ec0eb52b08c2e5abf2ca"
+  },
+  "seven_request_fields_only": true,
+  "source_precondition": {
+    "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "status": "",
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "stdin_below_original_one_mib_limit": true,
+  "template_only_two_none_pins_replaced": true,
+  "tests_or_fix_or_ref_updates_authorized": false
+}

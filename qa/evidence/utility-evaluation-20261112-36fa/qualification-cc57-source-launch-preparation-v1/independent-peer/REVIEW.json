@@ -1,0 +1,81 @@
+{
+  "H_calls": 0,
+  "all_eight_decoded_payloads_equal_fixed_file_bytes_and_pins": true,
+  "approval_and_dispatch_remain_Root_and_native": "This is static peer review only, not a run, staging success, or source qualification. Root binds exact launch, native is sole executor. Original 246d failed run remains failed; no old result transfers to cc57.",
+  "create_only_bounds_identity_fsync_original_behavior_unchanged": true,
+  "exact_eight_file_layout": [
+    "qualification-admission.py",
+    "source-gates-wrapper.py",
+    "native-wrapper.py",
+    "native-driver.original.py",
+    "PLAN.original.json",
+    "APPROVED_QUALIFICATION_INPUT.json",
+    "APPROVED_SOURCE_GATES_CONFIG.json",
+    "CANONICAL_ALIGNMENT_NORMAL.original.json"
+  ],
+  "exact_inverse_assignment_changes_restore_entire_old_bytes": [
+    "BASE",
+    "PINS"
+  ],
+  "five_function_source_and_AST_unchanged": [
+    "check:8",
+    "identity:12",
+    "real_parents:16",
+    "retain:24",
+    "stamp:34"
+  ],
+  "format": "hepta-cc57-source-bootstrap-independent-narrow-peer-v1",
+  "host_executable_cwd_timeout_unchanged": {
+    "cwd": "/home/qian-qi",
+    "executable": "/usr/bin/python3",
+    "host": "desktop",
+    "timeout_seconds": 7200
+  },
+  "native_or_source_writes": false,
+  "new_bootstrap": {
+    "bytes": 6316,
+    "git_blob": "0c317ffdb1f76b027c4eeabd0a61e561929d93e3",
+    "sha256": "fa265b08dfab42384778e979cf71653d1d089bc14e397ca52f9ead2ff2814a5e"
+  },
+  "new_stdin": {
+    "bytes": 124652,
+    "git_blob": "30e5ccddc28853a19eb8b0cebf2811ce8ef3da00",
+    "sha256": "897f0c029d64f0ad70af3dd7216a0d7733af6792c08ee41ee049ab7d300f8b24"
+  },
+  "new_typed": {
+    "bytes": 131345,
+    "git_blob": "2153b3aba2bfcaaa44123e53ec370004c22d66dd",
+    "sha256": "a75a1c40a743997daf2b374cd6a10e75846cc25698af84a5472e9c965923d190"
+  },
+  "no_new_env_field": true,
+  "old_bootstrap": {
+    "bytes": 6316,
+    "git_blob": "d6b2df2a5753c2703242ef036fc8088b3333dd5b",
+    "sha256": "85d4fea1209029176a0b4c89d571fb9d58338c59da4affb1c36b22822d68fff4"
+  },
+  "only_three_input_pins_and_payloads_changed": [
+    "APPROVED_QUALIFICATION_INPUT.json",
+    "APPROVED_SOURCE_GATES_CONFIG.json",
+    "CANONICAL_ALIGNMENT_NORMAL.original.json"
+  ],
+  "original_b92_5118_wrappers_not_modified": true,
+  "qualification_main_or_gate_execution": false,
+  "reviewed_at_utc": "2026-11-12T23:53:55.121130+00:00",
+  "source_wrapper_execution_outside_staging_try_and_tail_unchanged": true,
+  "status": "NO_BLOCKING_DIFFERENCE_WITHIN_REVIEWED_SCOPE",
+  "three_changed_payloads_equal_actual_root_approved_inputs": true,
+  "typed_changed_fields": [
+    "args",
+    "stdin",
+    "idempotency_key"
+  ],
+  "typed_fields": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "stdin",
+    "idempotency_key",
+    "timeout_seconds"
+  ]
+}

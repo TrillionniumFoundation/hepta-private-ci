@@ -1,0 +1,103 @@
+{
+  "actual_fmt_Git_state": {
+    "bytes": 489,
+    "git_blob": "c81a713647d2b0d39eded736f681bc3058139682",
+    "sha256": "21f7d6e2b6c00369df7c9b04b2cee028c851a21a69fcdafdc75ee7c21f4fd0ef"
+  },
+  "actual_fmt_normal": {
+    "bytes": 955,
+    "git_blob": "b20a78f43e34fa72937df40d09d782f792a2f873",
+    "sha256": "c7e92ac3e26262c0bcc0707ae138ed873c2b2221d98a4c6c5f7889fd5ff923eb"
+  },
+  "actual_fmt_postimage_review": "109785d5727862cbb05d665e65b444b761e1c837",
+  "actual_fmt_result": {
+    "bytes": 7097,
+    "git_blob": "6cb1b8d6af25907ca0fea5d9bd0f787062dbef94",
+    "sha256": "f0a8fd1bb8b6b3b4aa71cf5e9a0683cb4d4e0d7b532cc0cde43bedff4244544f"
+  },
+  "after_expected_only": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "inventory": {
+      "bytes": 5611184,
+      "filesystem_entries": 15188,
+      "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+      "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "all_46_functions_byte_identical_to_original_canonical_driver": true,
+  "automatic_retry_or_rollback_authorized": false,
+  "before": {
+    "commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "head_raw_sha256": "b9574db38f4d8ea2988f352f2296104aaefb1322806c2e96a785828cef7ff26f",
+      "index_bytes": 2072488,
+      "index_sha256": "edccb2d6e1f0b2d2169ef64959948c08217a9c640a675d1d6dc48da9c23fc82d",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    },
+    "inventory": {
+      "bytes": 5611436,
+      "filesystem_entries": 15188,
+      "git_blob": "44e2588e8e3fc7f1f93d65d0191cefd801712217",
+      "sha256": "cf8e6251416d41265528e7e4fbb9a9cd7a9502e02694dc2544c8c2acc0cf3606",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    ],
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "budgets_seconds": {
+    "action": 600,
+    "outer": 900,
+    "record": 180
+  },
+  "canonical_objects": {
+    "all_exact_reconstructed_and_verified": true,
+    "blobs": 5,
+    "commit": 1,
+    "trees": 4
+  },
+  "canonical_packet": {
+    "bytes": 2220779,
+    "git_blob": "173cddd5b019c8d137adc42989f1075d5ebda6ec",
+    "sha256": "d311e33a4800352ca8de1634560208952b02463b9daaff5a52a05fa55afc1d78"
+  },
+  "clean_inventory_is_expected_not_yet_observed": true,
+  "clean_projection_only_changes_source_identity_and_index_bindings": true,
+  "config": {
+    "bytes": 3758,
+    "git_blob": "3647755a0c05e818e5a13bea6047346ce7a3eb39",
+    "sha256": "f3c3b9c9df1197e9c9d6cc2ae163eb83d8aaeac273dd1ba8335d3121878167dc"
+  },
+  "decision": "APPROVED_INPUTS_PENDING_EXACT_TYPED_LAUNCH",
+  "dirty_inventory_exact_recovered_from_actual_pins": true,
+  "driver": {
+    "bytes": 46102,
+    "git_blob": "4952e13c052d9e83d448d09897ff9c09c31552c5",
+    "sha256": "d2c9ad9ab7f0339853936d8138650bbf08978884051c976597fd82b7f3714f19"
+  },
+  "format": "hepta-root-source-repair-canonical-input-approval-v1",
+  "full_metadata_and_object_scope_audits_preserved": true,
+  "native_alignment_already_executed": false,
+  "only_four_driver_constants_changed": [
+    "CONTROL",
+    "OLD",
+    "OLD_TREE",
+    "OLD_PARENTS"
+  ],
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "same_EX_lock_and_global_active_build_guard_preserved": true,
+  "scope": "Import exact ten immutable objects, verify both complete snapshots, align index and detached HEAD by expected-old CAS. Physical source bytes/modes and source branch refs stay outside mutation scope.",
+  "source_ref_updated": false
+}

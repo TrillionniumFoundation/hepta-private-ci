@@ -1,0 +1,97 @@
+{
+  "actual_canonical_job": "1a1d223a60b-2564-1ca3",
+  "actual_canonical_result": {
+    "bytes": 138945,
+    "git_blob": "c374e3029f0fa8fa4f66d6e311c6841785db63b5",
+    "sha256": "1c058f83bb69579f7d039a401ab1e94cd0fb25529dc8d8dc7f91a73c9fbb75fe"
+  },
+  "allowed_execution": "Sole native_ci_audit executor may dispatch this exact request once and reconcile this same key/request if transport outcome is Unknown. Complete source clone/freeze and all three original gates only.",
+  "bootstrap": {
+    "bytes": 6316,
+    "git_blob": "0c317ffdb1f76b027c4eeabd0a61e561929d93e3",
+    "sha256": "fa265b08dfab42384778e979cf71653d1d089bc14e397ca52f9ead2ff2814a5e"
+  },
+  "candidate_manifest": {
+    "bytes": 4621,
+    "git_blob": "ec4c918daccb86f39d9d61a0544df1f31a614278",
+    "sha256": "5d2f40bb8b15e61131bad3d0274252d6a04ac02e87cf6000ef71e54d29e5b2b8"
+  },
+  "cwd": "/home/qian-qi",
+  "decision": "APPROVE_ONLY_THIS_EXACT_SOURCE_GATE_REQUEST",
+  "environment_override_added": false,
+  "exact_eight_input_pins": {
+    "APPROVED_QUALIFICATION_INPUT.json": {
+      "bytes": 10960,
+      "git_blob": "2a19b2b6b27f885dc3791897dad8c9e51f305ae0",
+      "sha256": "7fec117538bed151be59fdf90ed889f8840ae88832a658aab0d9a8b74b6d38ab"
+    },
+    "APPROVED_SOURCE_GATES_CONFIG.json": {
+      "bytes": 820,
+      "git_blob": "b312db80c69df6479436a1ae20ad7c716d699f89",
+      "sha256": "14b00eb4f614036e58a19c8a2ba087c421fc8d8f57bb562a7b226721159097b9"
+    },
+    "CANONICAL_ALIGNMENT_NORMAL.original.json": {
+      "bytes": 953,
+      "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+      "sha256": "084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83"
+    },
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification-admission.py": {
+      "bytes": 14294,
+      "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+      "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+    },
+    "source-gates-wrapper.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "exact_inverse_BASE_and_PINS_restores_complete_prior_bootstrap": true,
+  "executable": "/usr/bin/python3",
+  "five_fixed_inputs_full_byte_identical": true,
+  "format": "hepta-root-cc57-exact-source-launch-approval-v1",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-final-source-gates-cc57-v1",
+  "native_or_source_commands_dispatched_by_this_offline_review": false,
+  "native_wrapper_staged_but_not_executed_by_this_request": true,
+  "original_all_guards_and_failure_retention_unchanged": true,
+  "original_gate_budgets_seconds": {
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "outer_seconds": 7200,
+  "prior_246d_failed_source_result_retained": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "request": {
+    "bytes": 131345,
+    "git_blob": "2153b3aba2bfcaaa44123e53ec370004c22d66dd",
+    "sha256": "a75a1c40a743997daf2b374cd6a10e75846cc25698af84a5472e9c965923d190"
+  },
+  "separate_native_main_approval_required_after_complete_source_result": true,
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_ref_readback_verified": true,
+  "source_wrapper_exec_outside_staging_try": true,
+  "stdin": {
+    "bytes": 124652,
+    "git_blob": "30e5ccddc28853a19eb8b0cebf2811ce8ef3da00",
+    "sha256": "897f0c029d64f0ad70af3dd7216a0d7733af6792c08ee41ee049ab7d300f8b24"
+  },
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+}

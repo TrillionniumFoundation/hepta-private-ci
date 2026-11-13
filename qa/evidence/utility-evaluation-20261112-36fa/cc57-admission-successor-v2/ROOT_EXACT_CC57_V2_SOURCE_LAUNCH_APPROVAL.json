@@ -1,0 +1,108 @@
+{
+  "H_or_main_dispatched_by_this_review": false,
+  "actual_data_predicates_accepted": 19,
+  "authorized_action": "Dispatch the exact3ebc277 request once in its freshv2 control directory. If transport admission is Unknown, reconcile only the same exact request/key. Retain all actual outcomes.",
+  "bootstrap": {
+    "bytes": 6316,
+    "git_blob": "43aab05122c70c99733a33f445957fe0a8b364a5",
+    "sha256": "ab2be45f3ce569489497336aa0cfbbc157dbd3bfc38268c1a010396b4953c6a5"
+  },
+  "decision": "APPROVE_ONLY_THIS_EXACT_REVISED_SOURCE_REQUEST",
+  "exact_eight_input_pins": {
+    "APPROVED_QUALIFICATION_INPUT.json": {
+      "bytes": 10960,
+      "git_blob": "9cd798c77f3cf9f3139c4f0b345bcc3be2b894da",
+      "sha256": "38169c3726baaf32eb55218bbb3e274d2f40d4957630b253d5d31bad48828365"
+    },
+    "APPROVED_SOURCE_GATES_CONFIG.json": {
+      "bytes": 820,
+      "git_blob": "a6dbed0b4eea650f1af616df5dd1e9719475dff4",
+      "sha256": "f9bab5b64869c5b8a51545a73c6d1fe7e14767ead25239e8e8b718ff73f5c61c"
+    },
+    "CANONICAL_ALIGNMENT_NORMAL.original.json": {
+      "bytes": 953,
+      "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+      "sha256": "084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83"
+    },
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification-admission.py": {
+      "bytes": 14294,
+      "git_blob": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+      "sha256": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c"
+    },
+    "source-gates-wrapper.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "execution_owner": "native_ci_audit only",
+  "format": "hepta-root-cc57-v2-exact-source-launch-approval-v1",
+  "fresh_source_ref_readback": {
+    "bytes": 1935,
+    "git_blob": "6185e638b59888ef17931b29e280a6182d4ad8bc",
+    "sha256": "ef1ce0a3cae82d8d93bc51459b0febfd0290709f90f638ccbc02e0ea3466b246"
+  },
+  "idempotency_key": "hepta-utility-36fa-final-source-gates-cc57-v2",
+  "independent_all_data_predicate_peer": {
+    "bytes": 21720,
+    "git_blob": "c6d24464c1dcbccbbfa952d0a8b0754b67083361",
+    "sha256": "fb452429016cd6527750a69876261b3951eba0bc82544ae71655b22bf3da23ce"
+  },
+  "live_requirements_still_mandatory": [
+    "same original source coordination lock",
+    "current raw Git identity equals actual canonical proof",
+    "current complete source inventory13d3",
+    "unchanged original inputs/runtime/tool/resource guards",
+    "no active or unknown foreign matching build process",
+    "original5118 full three source gates600/300/4800"
+  ],
+  "native_main_approved": false,
+  "native_main_requires_separate_actual_complete_source_PASS_review": true,
+  "old_v1_all_actual_errors_preserved": true,
+  "old_v1_job": "1a1d2325df6-2564-1cae",
+  "old_v1_source_driver_main_entered": false,
+  "old_v1_wrapper_status": "unknown",
+  "only_admission_code_change": "Three exact formatter ancestry constants are updated to actual1c98. All other admission bytes and the V5/5118/b92/plan/source/native wrappers remain unchanged.",
+  "outer_seconds": 7200,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "request": {
+    "bytes": 131345,
+    "git_blob": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0",
+    "sha256": "55c9acefda3fe004b6b29e407256e89a1e99fd5e372b2ca04bf4b27a6f7687f4"
+  },
+  "root_full_byte_and_whitelist_review": {
+    "bytes": 6950,
+    "git_blob": "51a585ab757e17044ac0b2ce4a4c97bcfdf82c56",
+    "sha256": "cb46568aa7c8d591d0699350b4f69abbb84ccb901ae02cc21d49784035a6373f"
+  },
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_gate_budgets_seconds": {
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "source_or_ref_mutation_by_this_review": false,
+  "stdin": {
+    "bytes": 124652,
+    "git_blob": "e4e626db2874fd88ffb51543a82d2a967ca9839f",
+    "sha256": "b30ddac33317738824c4a9b761e86573c32921477af46bfdd581adf42bbf65ca"
+  },
+  "synthetic_negative_predicates_rejected": 46,
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+}

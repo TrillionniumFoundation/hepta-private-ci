@@ -1,0 +1,62 @@
+{
+  "actual_final_format_identity": {
+    "parents": [
+      "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    ],
+    "source_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "actual_launch_ok": true,
+  "actual_reused": false,
+  "actual_stdout": {
+    "bytes": 704,
+    "git_blob": "01e6dddfbf5b43eba01026a1a2623a913d141b91",
+    "sha256": "0c385d2b87ec224d6bfbbebefc541e06e6a18e610029d11ecabe575b3b473920"
+  },
+  "actual_stdout_final_event": {
+    "driver_main_entered": false,
+    "driver_returncode": null,
+    "error": "RuntimeError: actual final original format prerequisite",
+    "final_evidence_error": "ValueError: unchanged detached HEAD/no refs",
+    "finished_at": "2026-11-12T23:58:00.568847+00:00",
+    "format": "hepta-final-source-gates-handoff-v1",
+    "qualification": false,
+    "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "started_at": "2026-11-12T23:58:00.486353+00:00",
+    "status": "unknown",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "admission_original_control": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+  "at": "2026-11-13T00:00:15.282033+00:00",
+  "exact_final_format_proof": {
+    "bytes": 7097,
+    "git_blob": "6cb1b8d6af25907ca0fea5d9bd0f787062dbef94",
+    "path": "/tmp/hepta-36fa-source-repair-finalfmt-launch-v1/RESULT.original.json",
+    "sha256": "f0a8fd1bb8b6b3b4aa71cf5e9a0683cb4d4e0d7b532cc0cde43bedff4244544f"
+  },
+  "final_evidence_error_scope": "First identity check rejects before m.HEAD/m.TREE are changed to current cfg. Original finally calls finish/git_state under the old expected HEAD; actual source change is not established by that error. No new physical source observation is claimed here.",
+  "format": "hepta-cc57-source-attempt1-known-entry-rejection-v1",
+  "job_id": "1a1d2325df6-2564-1cae",
+  "native_main_started": false,
+  "normal_terminal": {
+    "at_unix_ms": 1794527880607,
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "original_admission_timeout_preserved": true,
+  "repair_or_retry_performed": false,
+  "same_exact_reconciliation": true,
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_gate_driver_main_entered": false,
+  "static_rejected_literal_identity": {
+    "parents": [
+      "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    ],
+    "source_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "source_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+  }
+}

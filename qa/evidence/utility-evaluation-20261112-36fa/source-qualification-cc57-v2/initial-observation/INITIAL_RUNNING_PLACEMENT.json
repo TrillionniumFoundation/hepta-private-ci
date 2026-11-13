@@ -1,0 +1,67 @@
+{
+  "actual_first_gate_start": "2026-11-13T00:09:29.500753+00:00",
+  "actual_status": "running",
+  "files": [
+    {
+      "bytes": 679,
+      "git_blob": "0f711189058e4feeaffce4a4f8d82892f05d6cee",
+      "git_full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/ACTUAL_ADMISSION_READBACK.json",
+      "path": "source-qualification-cc57-v2/initial-observation/ACTUAL_ADMISSION_READBACK.json",
+      "proof_local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/ACTUAL_ADMISSION_READBACK.json.GITHUB.original.json",
+      "sha256": "4d29ae41cd826e07b3211baf9f9efed668735e45236ce5437f2fc2c06f4153b0"
+    },
+    {
+      "bytes": 7746,
+      "git_blob": "068b95e618fdc934cd27b3f85b5313baeda6520a",
+      "git_full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/MAIN_ADMISSION.original.json",
+      "path": "source-qualification-cc57-v2/initial-observation/MAIN_ADMISSION.original.json",
+      "proof_local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/MAIN_ADMISSION.original.json.GITHUB.original.json",
+      "sha256": "3a58bc5807f50fea7296e43b651dfa0c9561ea53510830fbac73163c698825e6"
+    },
+    {
+      "bytes": 598,
+      "git_blob": "621343e375e32ed3cf802c329207a574d40afc74",
+      "git_full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/MAIN_DISPATCH_INTENT.json",
+      "path": "source-qualification-cc57-v2/initial-observation/MAIN_DISPATCH_INTENT.json",
+      "proof_local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/MAIN_DISPATCH_INTENT.json.GITHUB.original.json",
+      "sha256": "c075d31dcc1f28f703a7ffa4807f4f3015c7c7571af146f3aa89ae3550cfa75a"
+    },
+    {
+      "bytes": 662,
+      "git_blob": "0b86f589718c89fb6f03277460c1bc2afbb88854",
+      "git_full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/STATUS_01.original.json",
+      "path": "source-qualification-cc57-v2/initial-observation/STATUS_01.original.json",
+      "proof_local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/STATUS_01.original.json.GITHUB.original.json",
+      "sha256": "a3c771ea8e91d9ee7a4191c900c48e7b7fc640fd12f12884c0c907eea5d2fad9"
+    },
+    {
+      "bytes": 444,
+      "git_blob": "37a00afe2181836ac54425d4c4c4514a6f2a9c13",
+      "git_full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/STDOUT.part-0000000000-0000000444.log",
+      "path": "source-qualification-cc57-v2/initial-observation/STDOUT.part-0000000000-0000000444.log",
+      "proof_local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/STDOUT.part-0000000000-0000000444.log.GITHUB.original.json",
+      "sha256": "50dd699febbf11acc6420aaceab986d3eedbe009613700d429dc70307650f100"
+    },
+    {
+      "bytes": 1931,
+      "git_blob": "3562a0889084b92a23f714c13487a3b466e00453",
+      "git_full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/STDOUT_READ_01.original.json",
+      "path": "source-qualification-cc57-v2/initial-observation/STDOUT_READ_01.original.json",
+      "proof_local_path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/STDOUT_READ_01.original.json.GITHUB.original.json",
+      "sha256": "0fd494606c555f579b2a3687ef4669b821c3fb8107c4d242222ff7b1d1d9d582"
+    }
+  ],
+  "first_gate": "source-closure",
+  "format": "hepta-cc57-v2-source-initial-running-observation-v1",
+  "frozen_at": "2026-11-13T00:12:42.637441+00:00",
+  "job_id": "1a1d23c92f3-2564-1cb4",
+  "native_main_started": false,
+  "scope": "Only these first six retained originals; stdout is a complete 0..444 snapshot, not final process output. Later gate results and terminal observations are excluded. Prior v1 Unknown remains unchanged.",
+  "timeout_seconds": 600
+}

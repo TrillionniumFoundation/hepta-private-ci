@@ -1,0 +1,154 @@
+{
+  "baseline_local_only": {
+    "callPattern": null,
+    "id": "learning_original_training_bootstrap_recover",
+    "productCallers": [],
+    "receiverMethods": [],
+    "receiverType": "OriginalCellQ24TrainingBootstrapOwnerV1",
+    "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody"
+  },
+  "cases": [
+    {
+      "case": "actual_type_qualified",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs']",
+      "injected_source": "\nfn injected_readback_authority() { let _ = OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody(custody, config, dataset, cancellation); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "declared_host_alias_qualified",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs']",
+      "injected_source": "\nuse crate::OriginalCellQ24TrainingBootstrapOwnerV1 as Host;\nfn injected_readback_authority() { let _ = Host::recover_original_custody(custody, config, dataset, cancellation); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "explicit_typed_receiver_lexical",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs']",
+      "injected_source": "\nfn injected_readback_authority(owner: &OriginalCellQ24TrainingBootstrapOwnerV1) { owner.recover_original_custody(); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "actual_type_qualified",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs']",
+      "injected_source": "\nfn injected_readback_authority() { let _ = OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody(custody, config, dataset, cancellation); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "declared_host_alias_qualified",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs']",
+      "injected_source": "\nuse crate::OriginalCellQ24TrainingBootstrapOwnerV1 as Host;\nfn injected_readback_authority() { let _ = Host::recover_original_custody(custody, config, dataset, cancellation); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "explicit_typed_receiver_lexical",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs']",
+      "injected_source": "\nfn injected_readback_authority(owner: &OriginalCellQ24TrainingBootstrapOwnerV1) { owner.recover_original_custody(); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "actual_type_qualified",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs']",
+      "injected_source": "\nfn injected_readback_authority() { let _ = OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody(custody, config, dataset, cancellation); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "declared_host_alias_qualified",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs']",
+      "injected_source": "\nuse crate::OriginalCellQ24TrainingBootstrapOwnerV1 as Host;\nfn injected_readback_authority() { let _ = Host::recover_original_custody(custody, config, dataset, cancellation); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "status": "rejected_by_original_boundary"
+    },
+    {
+      "case": "explicit_typed_receiver_lexical",
+      "error": "learning_original_training_bootstrap_recover: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs']",
+      "injected_source": "\nfn injected_readback_authority(owner: &OriginalCellQ24TrainingBootstrapOwnerV1) { owner.recover_original_custody(); }\n",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "status": "rejected_by_original_boundary"
+    }
+  ],
+  "does_not_test_candidate_protected_row_fix": true,
+  "explicit_typed_receiver_caveat": "The recovery function is associated, not a Rust instance method. This case probes the conservative lexical detector only. All snippets are uncompiled source mutations.",
+  "format": "hepta-training-readonly-custody-scoped-boundary-mechanism-v1",
+  "full_gate_status": "not_run_by_this_review",
+  "input_bytes_unchanged": true,
+  "inventory_pin": {
+    "bytes": 5611184,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+  },
+  "original_verifier_unchanged": true,
+  "rejected_cases": 9,
+  "rust_compilation_or_execution": false,
+  "scope": "Original boundary function over four pinned files; not the complete source collector or a full gate.",
+  "source_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_index_paths": [
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+  ],
+  "source_pins": {
+    "CALLERS.toml": {
+      "bytes": 1577681,
+      "git_blob": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+      "sha256": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs": {
+      "bytes": 8073,
+      "git_blob": "3eeb581ffafbd80957dcf87ad02923f27d8acb29",
+      "sha256": "2759b72edb54f738ccda6fb49f8d45754badf7d467bc7c8a47638787d84ceb6a"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs": {
+      "bytes": 7779,
+      "git_blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "sha256": "7ad1512d08b9f49b0bcdc949081638ad714c96761ba74e89845d8b8ff9a02d23"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs": {
+      "bytes": 4792,
+      "git_blob": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "sha256": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs": {
+      "bytes": 9196,
+      "git_blob": "bc335ec8347176510dea0ae425ff5ac42b099eea",
+      "sha256": "be568062c8aeb35296278194d2a16095379900698d5ba2e520f708abbb1770d9"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs": {
+      "bytes": 10825,
+      "git_blob": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "sha256": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs": {
+      "bytes": 3137,
+      "git_blob": "fae852c8a1d5022347e632787172b99f9d119307",
+      "sha256": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c"
+    },
+    "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py": {
+      "bytes": 18845,
+      "git_blob": "037473646bab83b6baa296470ca402eea3f5fdbe",
+      "sha256": "286b82aec687bc71ba6897870e9f5a0c20cbd03f1ef5366895bccc7a8175aeb7"
+    },
+    "qa/b4-no-bypass/test_original_training_readback_source_closure.py": {
+      "bytes": 21451,
+      "git_blob": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+      "sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e"
+    },
+    "scripts/hepta_typed_callers.py": {
+      "bytes": 7759,
+      "git_blob": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+      "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2"
+    },
+    "scripts/verify_hepta_callers.py": {
+      "bytes": 38402,
+      "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    }
+  },
+  "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+}

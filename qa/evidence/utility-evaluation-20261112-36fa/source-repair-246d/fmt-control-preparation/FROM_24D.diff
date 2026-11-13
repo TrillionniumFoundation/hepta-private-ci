@@ -1,0 +1,230 @@
+--- 24d705376fe042f040d87b6a5fc72a67780b01fa
++++ source-repair-246d-HOLD
+@@ -21,25 +21,29 @@
+ import types
+ 
+ EVIDENCE = Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1')
+-CONTROL = EVIDENCE / 'final-nonrust-fmt-control-v2'
++CONTROL = EVIDENCE / 'source-repair-246d-fmt-control-v1'
+ CONFIG = CONTROL / 'APPROVED_CONFIG.json'
+-OUT = EVIDENCE / 'final-nonrust-fmt-v2'
++OUT = EVIDENCE / 'source-repair-246d-fmt-v1'
+ LOCK = EVIDENCE / 'SOURCE_COORDINATION.lock'
+ LOCK_ID = {'device': 2050, 'inode': 50139448, 'uid': 1000, 'mode': 384, 'nlink': 1}
+ V5 = EVIDENCE / 'driver-v5.py'
+ V5_PIN = {'bytes': 63007, 'sha256': 'ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431', 'git_blob': '6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735'}
+ V5_CONFIG = EVIDENCE / 'APPROVED_CONFIG_V5.json'
+ V5_CONFIG_PIN = {'bytes': 9668, 'sha256': '47acb8e9130d497035fad7b90ec0a9c4d0b3277e71c6b9392b75a7107d4599e1', 'git_blob': 'a66ab71a3504f29240da6048ca2c45ca3735e89b'}
+-CAPTURE = EVIDENCE / 'postformat-handoff-v5-v1'
+-CAPTURE_RESULT_PIN = {'bytes': 22007, 'sha256': '9ef6b7201eadf1a77ca3a5fda9943f75e7202dedd5b725ad64d22ffdd23a6283', 'git_blob': 'aef06c019dd96f2a8e493fa524e09183a4b215bf'}
+-CAPTURE_NORMAL_PIN = {'bytes': 909, 'sha256': '1ad13e624fa88b3509d5519c26335c92449d803ff775f8f14068d65dbbfb106e', 'git_blob': '8146d2ad99259a1965038f01dd3f8f186cd3e5a0'}
+-CAPTURE_JOB = '1a1d1880477-2564-1c56'
++CURRENT_HEAD = '246d8cb614770252ee42029a5c014f2a4904176a'
++CURRENT_TREE = 'd5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087'
++CURRENT_PARENTS = ['9c4a11f61d30e9cc352bf44d56c98909d202a55d']
++CANONICAL_ALIGNMENT = {'job_id': '1a1d1ddc8e4-2564-1c83', 'result': {'bytes': 368586, 'git_blob': '2678be6c23d00696d356e988120887a61f88bfab', 'sha256': '33cd2a23b1bd4a4b7b8ec5d41b5658d3149d701e7096cea00aee6f5d9f2f82c7'}, 'result_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1/run/RESULT.json', 'supervisor': {'bytes': 910, 'git_blob': '879685b4776ef2f9237587ae20cc8916391504de', 'sha256': '70b7c7ab7c5b895d9fea60f88aa87d7f7ae8aed70483cf83b4ec788a17a68886'}, 'supervisor_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/CANONICAL_ALIGNMENT_NORMAL.original.json'}
++SOURCE_RUN = Path('/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1')
++SOURCE_JOB = '1a1d1e83bd4-2564-1c86'
++SOURCE_PROOFS = {'handoff': {'path': 'source-handoff/RESULT.json', 'bytes': 692, 'sha256': 'd79599e089c55e8b688bc6098d79d02662c5d7bb736400858cdd2427677ba6d8', 'git_blob': '110ab48579e159301900daa663d289964a63bc34'}, 'original_run': {'path': 'source-handoff/ORIGINAL_RUN_RESULT.json', 'bytes': 5082, 'sha256': '4dd23d14599d591b3fa7593797bc8d5d32e2f3e0a440f835774f9419e63b24b1', 'git_blob': '96ca7c7728c7ac3944782abc0d219dd75a8b9f75'}, 'git_after': {'path': 'source-handoff/admission/GIT_STATE.after.json', 'bytes': 489, 'sha256': '21f7d6e2b6c00369df7c9b04b2cee028c851a21a69fcdafdc75ee7c21f4fd0ef', 'git_blob': 'c81a713647d2b0d39eded736f681bc3058139682'}, 'full_comparison': {'path': 'source-handoff/admission/FULL_PHYSICAL_COMPARISON.json', 'bytes': 204, 'sha256': '0e95afa2a439a0d8ecfbdbd120564dfd5acf9d21eab1e47af2a50754438d717c', 'git_blob': '54cc9f6894944027a22b0d8f7ea16a2c978a1d74'}}
++SOURCE_NORMAL_PIN = {'bytes': 952, 'sha256': '6499d8231230665037a977da78fe840177325f93b2b1e62f30a146251895d906', 'git_blob': 'bcc7b94d9f9f721f6592632db5a6408468014270'}
++REPAIR_PATHS = ['.github/blob-size-allowlist.txt', 'CALLERS.toml', 'qa/b4-no-bypass/test_original_circuit_observer_source_closure.py', 'qa/b4-no-bypass/test_original_selection_readback_source_closure.py', 'qa/b4-no-bypass/test_resident_root_source_closure.py']
+ V5_JOB = '1a1d16f37be-2564-1c4a'
+-BASELINE = {'bytes': 5614211, 'sha256': '3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f', 'git_blob': '1563de8825fc183d345d10d03e68d79b2d9211ca'}
+-BASELINE_TREE = '65b898bad23cd58c7f6fd53fafe618f9cf9562dc'
++BASELINE = {'bytes': 5611184, 'sha256': 'df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e', 'git_blob': '663373f936c2ff130aec96ad34654cc9811773c2'}
++BASELINE_TREE = CURRENT_TREE
+ V5_RESULT_PIN = {'bytes': 15927, 'sha256': '50d43cf8e2b3070733405e646f96eb8e17c7e0734cf8f1a7f4b065e68b463e6c', 'git_blob': '28fd9e0970a977881971a3e5c2ddaf73f69a58a0'}
+ V5_NORMAL_PIN = {'bytes': 956, 'sha256': 'c313aece99eb8d3d7eb95c9d4997b81808c8404062371ab3dc52abb9badcd675', 'git_blob': '2bb8699bae213bd97926beb6589df08e7813c79a'}
+-V5_GIT_PIN = {'bytes': 489, 'sha256': 'e8ec74c83f7f671727d417e722da27a1337e70b0ef14b3a0481bd5d0ef609e14', 'git_blob': 'be108e81e8becd1b6dd3f4cac302b5f855d51b41'}
+ PREFLIGHT_SECONDS = 600
+ RECORD_SECONDS = 300
+ FMT_SECONDS = 900
+@@ -69,6 +73,7 @@
+     module.__file__ = str(V5)
+     exec(compile(raw, str(V5), 'exec'), module.__dict__)
+     module.OUT = OUT
++    module.HEAD = CURRENT_HEAD; module.TREE = CURRENT_TREE; module.PARENTS = CURRENT_PARENTS
+     module.record_remaining = RECORD_SECONDS
+     module.result = {'format': 'hepta-reviewed-nonrust-final-format-result-v1', 'status': 'HOLD',
+                      'source_repo': str(module.REPO), 'source_commit': module.HEAD,
+@@ -92,29 +97,89 @@
+     return fields(s)
+ 
+ 
+-def prove_actual_capture(m):
+-    raw = m.read_input(CAPTURE / 'RESULT.json', CAPTURE_RESULT_PIN)
+-    observed = m.parse(raw)
+-    terminal_raw = m.read_input(CONTROL / 'CAPTURE_NORMAL.original.json', CAPTURE_NORMAL_PIN)
+-    terminal = m.parse_supervisor(terminal_raw)
+-    m.check(terminal['job_id'] == CAPTURE_JOB, 'actual capture supervisor job')
+-    m.check(observed['status'] == 'CAPTURED_ACTUAL_POSTFMT_REVIEW_REQUIRED'
+-            and observed['source_changed'] is False and observed['qualification'] is False
+-            and observed['source_write_authorized'] is False and observed['tests_dispatched'] == 0
+-            and observed['captured_paths'] == 73 and observed['complete_inventory'] == BASELINE
+-            and observed['actual_physical_tree'] == BASELINE_TREE and observed['maintenance_job'] == V5_JOB,
+-            'actual complete postformat capture')
+-    m.check({x['check']: x['status'] for x in observed['final_audits']} ==
+-            {'full_source_git_and_lock': 'verified', 'all_original_inputs': 'verified'}, 'complete capture final audits')
+-    m.write('CAPTURE_RESULT.original.json', raw); m.write('CAPTURE_NORMAL.original.json', terminal_raw)
+-    packet_pin = {key: observed['capture_packet'][key] for key in ('bytes', 'sha256', 'git_blob')}
+-    compressed = m.read_input(CAPTURE / 'ACTUAL_73_FILES.json.gz', packet_pin)
+-    packet_raw = gzip.decompress(compressed)
+-    m.pin_bytes(packet_raw, observed['capture_packet']['raw'], 'complete actual capture packet')
+-    packet = m.parse(packet_raw)
+-    m.check(packet['source_identity'] == observed['source_identity'] and len(packet['files']) == 73,
+-            'actual capture source identity')
+-    return observed, packet
++def prove_actual_clean_source(m):
++    """Require the real clean alignment and preserve the completed FAILED gate."""
++    aligned_raw = m.read_input(Path(CANONICAL_ALIGNMENT['result_path']), CANONICAL_ALIGNMENT['result'])
++    aligned = m.parse(aligned_raw)
++    normal_raw = m.read_input(Path(CANONICAL_ALIGNMENT['supervisor_path']), CANONICAL_ALIGNMENT['supervisor'])
++    normal = m.parse_supervisor(normal_raw)
++    m.check(normal['job_id'] == CANONICAL_ALIGNMENT['job_id']
++            and aligned['format'] == 'hepta-final-canonical-alignment-result-v1'
++            and aligned['status'] == 'CANONICAL_SOURCE_ALIGNED_CLEAN_ONLY'
++            and aligned['source_repo'] == str(m.REPO)
++            and aligned['qualification'] is False
++            and aligned['physical_source_writes_dispatched'] == 0
++            and aligned['cargo_or_formatter_started'] is False
++            and aligned['test_commands_dispatched'] == 0
++            and aligned['remote_ref_updates'] is False
++            and aligned['source_branch_refs_updated'] is False
++            and aligned['automatic_retry'] is False, 'actual normal clean canonical alignment')
++    m.check({r['check']: r['status'] for r in aligned['final_audits']} ==
++            {'source': 'verified', 'git': 'verified', 'inputs': 'verified'}, 'complete canonical audits')
++    after = aligned['after']
++    m.check(after['commit'] == CURRENT_HEAD and after['tree'] == CURRENT_TREE
++            and after['parents'] == CURRENT_PARENTS
++            and all(after['inventory'][key] == value for key, value in BASELINE.items())
++            and after['inventory']['tracked_entries'] == after['inventory']['filesystem_entries'] == 15188,
++            'actual canonical full clean source identity')
++    m.check(all(aligned['actual'][key] is True for key in (
++            'complete_source_clean', 'detached', 'index_equals_tree', 'normal_stat_refresh_verified',
++            'physical_bytes_unchanged', 'physical_modes_unchanged')), 'actual complete canonical properties')
++    m.write('CANONICAL_ALIGNMENT.RESULT.original.json', aligned_raw)
++    m.write('CANONICAL_ALIGNMENT.NORMAL.original.json', normal_raw)
++    values = {}
++    for name, item in SOURCE_PROOFS.items():
++        raw = m.read_input(SOURCE_RUN / item['path'], item)
++        values[name] = m.parse(raw)
++        m.write('FAILED_SOURCE.'+name+'.original.json', raw)
++    terminal_raw = m.read_input(CONTROL / 'SOURCE_GATES_NORMAL.original.json', SOURCE_NORMAL_PIN)
++    outer = m.parse(terminal_raw)
++    m.check(('resultType' not in outer or outer['resultType'] == 'complete')
++            and outer.get('isError') is False and len(outer.get('content', [])) == 1
++            and outer['content'][0].get('type') == 'text', 'actual failed-source terminal SDK')
++    terminal = m.parse(outer['content'][0]['text'].encode())
++    m.check(terminal.get('job_id') == SOURCE_JOB and terminal.get('state') == 'failed'
++            and terminal.get('exit_code') == 1 and terminal.get('timed_out') is False
++            and terminal.get('cancelled') is False and terminal.get('automatic_retry') is False
++            and terminal.get('output_complete') is True and terminal.get('output_durable') is True
++            and terminal.get('terminal_publication_confirmed') is True
++            and not any(terminal.get('log_truncated', {}).values()), 'known complete failed source terminal, never PASS')
++    handoff = values['handoff']; run = values['original_run']
++    m.check(handoff['format'] == 'hepta-final-source-gates-handoff-v1'
++            and handoff['status'] == handoff['original_run_status'] == 'failed'
++            and handoff['source'] == CURRENT_HEAD and handoff['tree'] == CURRENT_TREE
++            and handoff['qualification'] is False and handoff['driver_main_entered'] is True
++            and handoff['driver_returncode'] == 1
++            and handoff['actual_origin_full_physical_observation'] == {
++                'extra_physical_entries': 0, 'full_physical_bytes_equal': True,
++                'original_source_rows_unchanged': True}, 'actual failed source run with unchanged origin')
++    expected = ['source-closure', 'self-test', 'verify']
++    m.check(run['schema'] == 'hepta.utility.desktop-source-gates.v1'
++            and run['source_sha'] == CURRENT_HEAD and run['source_tree'] == CURRENT_TREE
++            and run['status'] == 'failed' and run['actual_A_B_C_qualification'] is False
++            and run['attempted'] == run['entrypoints_started'] == expected and run['not_run'] == []
++            and [(r['gate'], r['status']) for r in run['gates']] ==
++                [('source-closure', 'failed'), ('self-test', 'passed'), ('verify', 'passed')],
++            'all original source gates completed; closure failure is retained')
++    for row in run['gates']:
++        m.check(row['source_sha'] == CURRENT_HEAD and row['source_changed'] is False
++                and row['before_inventory_sha256'] == row['after_inventory_sha256'] ==
++                    '4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b'
++                and row['execution_error'] is None and row['record_read_error'] is None
++                and row['after_inventory_error'] is None
++                and row['lifecycle'] == {'attempted': True, 'entrypoint_started': True,
++                                        'package': 'completed', 'terminal_observed': True},
++                'complete original gate evidence without source changes')
++    m.check(values['git_after'] == after['git_state']
++            and values['full_comparison']['full_bytes_equal'] is True
++            and values['full_comparison']['original_rows_identical'] is True
++            and values['full_comparison']['additional_physical_entries'] == [],
++            'source-run actual origin Git and physical source still equal the clean alignment')
++    m.write('FAILED_SOURCE.NORMAL.original.json', terminal_raw)
++    m.result['previous_source_gate_status'] = 'failed'
++    m.result['previous_source_gate_job'] = SOURCE_JOB
++    m.result['failed_source_result_retained_without_reclassification'] = True
++    return aligned
+ 
+ 
+ def prepare(m, control, original):
+@@ -127,7 +192,7 @@
+             'exact thin and unchanged original driver pins')
+     m.check(control['source_repo'] == str(m.REPO) and control['head'] == m.HEAD and control['head_tree'] == m.TREE
+             and control['baseline_inventory'] == BASELINE and control['baseline_physical_tree'] == BASELINE_TREE,
+-            'HEAD identity and actual dirty baseline remain separate')
++            'actual clean canonical HEAD and complete physical baseline')
+     m.check(control['fmt_argv'] == m.FMT and control['fmt_seconds'] == FMT_SECONDS
+             and control['preflight_seconds'] == PREFLIGHT_SECONDS and control['record_seconds'] == RECORD_SECONDS,
+             'original formatter argv and unchanged budgets')
+@@ -141,7 +206,7 @@
+     old_cfg_raw = m.read_input(V5_CONFIG, V5_CONFIG_PIN)
+     m.cfg = m.parse(old_cfg_raw)  # Only original environment admission consumes this historic config.
+     m.write('V5_APPROVED_CONFIG.original.json', old_cfg_raw)
+-    captured, capture_packet = prove_actual_capture(m)
++    aligned = prove_actual_clean_source(m)
+     v5_raw = m.read_input(EVIDENCE / 'run-v5' / 'RESULT.json', V5_RESULT_PIN)
+     v5 = m.parse(v5_raw)
+     normal_raw = m.read_input(EVIDENCE / 'postformat-capture-control-v1' / 'V5_NORMAL_SUPERVISOR.original.json', V5_NORMAL_PIN)
+@@ -165,15 +230,16 @@
+     m.execute_module = m.load_module(Path(m.source_entry_snapshots[helper_pin['path']]['path']), helper_pin,
+                                      'hepta_final_format_original_execute_logged')
+     m.initial_git_state = m.git_state()
+-    old_git = m.parse(m.read_input(EVIDENCE / 'run-v5' / 'final.git-state.json', V5_GIT_PIN))
+-    m.check(m.initial_git_state == old_git, 'exact original Git state unchanged after V5')
++    m.check(m.initial_git_state == aligned['after']['git_state'], 'exact current Git state unchanged after source gates')
+     m.jwrite('SOURCE_GIT_STATE.before.json', m.initial_git_state)
+     m.initial_inventory = m.inventory_module.inventory(m.REPO)
+-    m.pin_bytes(m.initial_inventory, BASELINE, 'actual complete dirty baseline')
++    m.pin_bytes(m.initial_inventory, BASELINE, 'actual complete clean canonical baseline')
+     m.gzrecord('SOURCE.before.inventory.json.gz', m.initial_inventory)
+     snapshot = m.parse(m.initial_inventory)
+-    m.check(snapshot['source'] == captured['source_identity'] and snapshot['tracked_entries'] == 15188
+-            and snapshot['filesystem_entries'] == 15188, 'actual full baseline source identity and counts')
++    m.check(snapshot['source'] == {'head': CURRENT_HEAD, 'tree': CURRENT_TREE, 'status': ''}
++            and snapshot['tracked_entries'] == snapshot['filesystem_entries'] == 15188
++            and all(row.get('matches_index') is True for row in snapshot['files']),
++            'actual complete clean source identity and all index-bound leaves')
+     leaves = m.actual_leaf_map(m.initial_inventory)
+     m.check(len(leaves) == 15188 and m.merkle(leaves) == BASELINE_TREE, 'actual complete physical baseline tree')
+     m.latest_inventory = m.initial_inventory
+@@ -190,7 +256,7 @@
+             m.raw_cache[row['working_blob']] = raw
+             dirty.append({'row': row, 'raw_base64': base64.b64encode(raw).decode()})
+     m.gzrecord('INITIAL_DIRTY_PREIMAGES.json.gz', m.jbytes({'files': dirty, 'source_inventory': BASELINE}))
+-    m.result['actual_capture_job'] = CAPTURE_JOB
++    m.result['actual_canonical_alignment_job'] = CANONICAL_ALIGNMENT['job_id']
+     m.result['actual_maintenance_job'] = V5_JOB
+     m.result['fmt_base'] = m.check_fmt_base()
+     m.initial_environment = m.environment_preflight()
+@@ -198,15 +264,12 @@
+     m.write('NONRUST_PACKET.original.json', packet_raw)
+     packet = m.parse(packet_raw)
+     m.check(packet['format'] == 'hepta-reviewed-nonrust-source-apply-v1'
+-            and packet['source_identity'] == captured['source_identity'] and packet['base_inventory'] == BASELINE
++            and packet['source_identity'] == snapshot['source'] and packet['base_inventory'] == BASELINE
+             and packet['base_physical_tree'] == BASELINE_TREE, 'ordinary reviewed packet exact baseline')
+     changes = packet['changes']
+     paths = [row['path'] for row in changes]
+-    safe = {row['path'] for row in capture_packet['files'] if
+-            row['path'] in ('CALLERS.toml', '.github/blob-size-allowlist.txt') or
+-            (row['path'].startswith('qa/b4-no-bypass/') and row['path'].endswith('.py'))}
+-    m.check(paths == sorted(set(paths)) and paths == control['allowed_paths'] and paths
+-            and set(paths) <= safe, 'exact approved existing non-Rust paths only')
++    m.check(paths == sorted(set(paths)) and paths == control['allowed_paths'] == REPAIR_PATHS,
++            'only the five reviewed existing non-Rust source-repair paths')
+     rows = {row['path']: row for row in snapshot['files']}
+     expected = dict(leaves)
+     for item in changes:

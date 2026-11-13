@@ -1,0 +1,471 @@
+{
+  "audited_source_file_count": 59,
+  "callers": {
+    "boundaries": 569,
+    "bytes": 1577765,
+    "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+    "interpretation": "actual declared product consumer edges; empty rows corroborate inspected startup/library paths, not permission to add dummy callers",
+    "protected_files": 422,
+    "selected_original_rows": [
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+        "id": "root_learning_original_purpose_send",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+        ],
+        "symbol": "send_root_learning_handoff"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+        "id": "root_learning_original_purpose_receive",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs"
+        ],
+        "symbol": "receive_root_learning_handoff"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+        "id": "root_learning_original_stage_assembly",
+        "product_callers": [],
+        "symbol": "AgentdConfig::with_root_learning_stage_owners"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "id": "root_learning_original_runtime_consume",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/config_root_learning.rs"
+        ],
+        "symbol": "AgentdRootLearningInputsV1::into_learning_runtime"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "id": "learning_original_material_command_custody",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
+        ],
+        "symbol": "OriginalCellQ24MaterialCommandOwnerV1::from_original_pair"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "id": "learning_original_material_command_serve_experience_commands",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24MaterialCommandOwnerV1::serve_experience_commands"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+        "id": "learning_original_material_command_serve_dataset_commands",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24MaterialCommandOwnerV1::serve_dataset_commands"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "id": "learning_original_selector_command_owner_serve",
+        "product_callers": [],
+        "symbol": "OriginalCircuitSelectionCommandOwnerV1::serve_commands"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "id": "learning_original_training_bootstrap_create",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "id": "learning_original_training_bootstrap_recover",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "id": "learning_original_training_bootstrap_serve",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::serve_commands"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "id": "learning_original_next_use_command_owner_serve",
+        "product_callers": [],
+        "symbol": "OriginalCircuitNextUseCommandOwnerV1::serve_commands"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "id": "learning_original_candidate_bootstrap_serve",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24TrainingBootstrapOwnerV1::serve_candidate_material_readback"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+        "id": "root_resident_original_register",
+        "product_callers": [],
+        "symbol": "register_host_resident_learning_v3"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_registration_create",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
+        ],
+        "symbol": "RootResidentLearningRegistrationV3::register_original_root"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_registration_recover",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs"
+        ],
+        "symbol": "RootResidentLearningRegistrationV3::recover_original_root"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_runtime_consume",
+        "product_callers": [],
+        "symbol": "RootResidentLearningRegistrationV3::into_runtime"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+        "id": "root_resident_late_enrollment_config",
+        "product_callers": [],
+        "symbol": "AgentdConfig::with_root_resident_learning_enrollment"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+        "id": "root_resident_late_enrollment_submit",
+        "product_callers": [],
+        "symbol": "AgentdRootResidentEnrollmentV3::enroll_original_root"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_create",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_candidate_runtime_consume",
+        "product_callers": [],
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+        "id": "learning_retained_version_ordinary_serve",
+        "product_callers": [],
+        "symbol": "OriginalCircuitRetainedVersionHostV1::serve_original_ordinary"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+        "id": "learning_original_model_command_host_create",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24ModelCommandHostV1::from_original_bootstrap"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+        "id": "learning_original_model_command_host_serve",
+        "product_callers": [],
+        "symbol": "OriginalCellQ24ModelCommandHostV1::serve_commands"
+      },
+      {
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "id": "learning_retained_version_evaluated_host_create",
+        "product_callers": [],
+        "symbol": "OriginalCircuitRetainedVersionHostV1::from_original_evaluated_owners"
+      }
+    ],
+    "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+  },
+  "exact_changed_paths_from_246d": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "executions": {
+    "Cargo": 0,
+    "H": 0,
+    "real_tasks": 0,
+    "repository_code_import_or_main": 0,
+    "source_gates": 0
+  },
+  "findings": [
+    {
+      "classification": "UNIMPLEMENTED_PRODUCT_ASSEMBLY_REQUIRING_ORIGINAL_PROVIDER_CONTRACT",
+      "conclusion": "Current ordinary handoff carries checkpoint+Root pidfd only; real stage-owner bundle is not a config field or existing startup variable.",
+      "evidence": [
+        "production_launcher.rs::receive",
+        "production_launcher.rs::run",
+        "config_root_learning.rs::with_root_learning_stage_owners",
+        "root_production_learning_handoff.rs::receive_learning_packet"
+      ],
+      "id": "assembly-agentd"
+    },
+    {
+      "classification": "UNIMPLEMENTED_PRODUCT_ASSEMBLY_REQUIRING_ORIGINAL_PROVIDER_CONTRACT",
+      "conclusion": "Root resident factory and actual A-outbox late enrollment exist, but no inspected product producer assembles/serves the required role bundle. Agentd/local and resident modes must not consume the same bundle twice.",
+      "evidence": [
+        "authority_host_learning_resident.rs::into_candidate_runtime",
+        "config_resident_learning.rs",
+        "resident_learning_delivery.rs",
+        "bin/hepta-authority-host.rs"
+      ],
+      "id": "assembly-resident"
+    },
+    {
+      "classification": "MECHANISM_IMPLEMENTED_REAL_OUTCOME_UNKNOWN",
+      "conclusion": "Original four/five/six-cut evaluated-retention continuation is present; full prefix, original T/E/current/publication/S/C and once-only checks remain. Legacy three/four/five-cut and Candidate Adopt refusal remain distinct.",
+      "id": "evaluated-noupdate"
+    },
+    {
+      "classification": "NOT_DEMONSTRATED_IN_REVIEWED_MATERIALS",
+      "conclusion": "No reviewed artifact supplies an executable nonfixture A/B/C instance plus original permissions, deployable model materials and independent observations. This is bounded absence, not a global search result.",
+      "id": "real-inputs"
+    },
+    {
+      "classification": "NARROW_EXISTING_SCOPE_FULL_COST_UNKNOWN",
+      "conclusion": "TaskLedgersBeforeFinalHoldout excludes later estimator/signature/publication overhead. Immutable failed/cancelled/unknown-preserving ledger mechanism exists, but full externally frozen metering/allocation/reward contract and observations are not supplied by reviewed artifacts.",
+      "id": "costs"
+    }
+  ],
+  "format": "hepta-real-utility-original-owner-input-review-v1",
+  "full_inventory": {
+    "bytes": 5611184,
+    "files": 15188,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "local_path": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json",
+    "provenance": "previous expected projection independently matched actual canonical readback by Root; no new native read in this audit",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "historical_reference_files": [
+    {
+      "bytes": 5297,
+      "file": "COMPLETE_PROFILE_PREPARATION_README.md",
+      "git_blob": "431391dd1d18806d054c5134ea687233c3e60f84",
+      "sha256": "bd051447f658a92ad791e2ad6f8ac926980867b493c9460f1d38b91a9f9be8b6",
+      "use": "historical context only; source/qualification claims rechecked or not inherited"
+    },
+    {
+      "bytes": 15990,
+      "file": "INDEPENDENT_SEMANTIC_CHECKLIST.md",
+      "git_blob": "4519f6278f8225894d4db1c19181b3de6db0d726",
+      "sha256": "53cbb140d0d0bfc8c13c9cc5173e612fd447a739bcf91d8c9ab052582dba4bfa",
+      "use": "historical context only; source/qualification claims rechecked or not inherited"
+    },
+    {
+      "bytes": 43313,
+      "file": "ORDINARY_INTEGRATION_ADDENDUM_E8B6.md",
+      "git_blob": "4ed4850e4b9b8f604a7b81257a5cc41612228f70",
+      "sha256": "7043ec7bbaf167cc634bee8d8166d63f7b7dbd247549e67b73669fcf76abfc59",
+      "use": "historical context only; source/qualification claims rechecked or not inherited"
+    },
+    {
+      "bytes": 20632,
+      "file": "ORDINARY_INTEGRATION_MAP.md",
+      "git_blob": "2059d041fd450c99a04b657eb7d9d04afc2a85db",
+      "sha256": "2cfd2782cf3d9a59d06b0dc6b52985c00b3509688e53843268a2fa5381019715",
+      "use": "historical context only; source/qualification claims rechecked or not inherited"
+    },
+    {
+      "bytes": 17798,
+      "file": "UTILITY_REQUIREMENT_COVERAGE_A8C41.md",
+      "git_blob": "db12282eec3d34eab42d6c5150e1e7874799e242",
+      "sha256": "0c33e11116b91ea157d6b1051b749bc63c84d9ab136fed67ef02a60a8a2d3414",
+      "use": "historical context only; source/qualification claims rechecked or not inherited"
+    }
+  ],
+  "mechanism_tests_static_catalog": [
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "e16820f8bab3027ab74490f942a34c7ee5470739",
+      "methods_lexically_located": [
+        {
+          "line": 29,
+          "name": "resident_root_formatter_and_original_registration_pin_both_scopes",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 111,
+          "name": "resident_root_reissued_intent_cannot_create_another_operation_namespace",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 153,
+          "name": "resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 225,
+          "name": "resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 287,
+          "name": "resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 332,
+          "name": "resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 382,
+          "name": "resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+          "nearby_ignore_attribute": true
+        },
+        {
+          "line": 406,
+          "name": "resident_root_structured_uncertain_allows_only_same_operation_readback",
+          "nearby_ignore_attribute": true
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs"
+    },
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "1b53321056d492b63fed06f97b0932618dbcbf79",
+      "methods_lexically_located": [
+        {
+          "line": 33,
+          "name": "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 122,
+          "name": "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+          "nearby_ignore_attribute": false
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs"
+    },
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "8d94ddd4a3ed4ea9552a6e58caaf4f6100fdc4d5",
+      "methods_lexically_located": [],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs"
+    },
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19",
+      "methods_lexically_located": [
+        {
+          "line": 18,
+          "name": "evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 83,
+          "name": "evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 136,
+          "name": "evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 182,
+          "name": "evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 259,
+          "name": "evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 288,
+          "name": "evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+          "nearby_ignore_attribute": false
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs"
+    },
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "639f3d799c69a54c4583ee24ce87956ec149a07f",
+      "methods_lexically_located": [],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs"
+    },
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "c889bb7b6eecedf6c09c97e0cd5f738f2016c23a",
+      "methods_lexically_located": [
+        {
+          "line": 9,
+          "name": "evaluated_version_cold_reads_exact_four_cut_without_publication_or_retry",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 60,
+          "name": "evaluated_version_cold_requires_current_original_evaluation",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 90,
+          "name": "evaluated_version_cold_later_b_withdrawal_removes_reader_for_new_connections",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 137,
+          "name": "evaluated_version_cold_artifact_failure_never_admits_selection_reader",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 184,
+          "name": "evaluated_version_cold_rejects_original_training_prefix_without_b",
+          "nearby_ignore_attribute": false
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs"
+    },
+    {
+      "executed_by_this_audit": false,
+      "git_blob": "890d49ab68d14d1a89038278664f02fa9e05f7b9",
+      "methods_lexically_located": [
+        {
+          "line": 164,
+          "name": "learning_bundle_requires_same_original_writer_peer_identity_and_fixed_lane",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 203,
+          "name": "learning_bundle_refuses_other_agent_initial_operation_and_profile_bytes",
+          "nearby_ignore_attribute": false
+        },
+        {
+          "line": 222,
+          "name": "scoped_learning_handoff_requires_its_complete_original_profile",
+          "nearby_ignore_attribute": false
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs"
+    }
+  ],
+  "previous_full_inventory": {
+    "bytes": 5611184,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "local_path": "/tmp/hepta-36fa-final-source-preparation-v2/CANONICAL_CLEAN_INVENTORY.expected.json",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e",
+    "source": {
+      "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "status": "",
+      "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    }
+  },
+  "production_source_changes": [],
+  "real_authorized_complete_chains_demonstrated_in_reviewed_materials": 0,
+  "runtime_authorization_artifacts_created": [],
+  "rust_source_changes_from_246d": [],
+  "scope_limits": [
+    "Does not inherit any previous qualification or synthetic test PASS.",
+    "Does not classify engineering failures or Unknown as Objective Fraud.",
+    "No default framework, future receipt, fixture-based credential replacement, or dummy product caller was added.",
+    "HOLD is a producer/consumer integration specification, not an implemented or compiled patch."
+  ],
+  "source": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_rows_file": "VERIFIED_SOURCE_ROWS.json",
+  "status": "READ_ONLY_REVIEW_AND_UNIMPLEMENTED_ASSEMBLY_HOLD"
+}

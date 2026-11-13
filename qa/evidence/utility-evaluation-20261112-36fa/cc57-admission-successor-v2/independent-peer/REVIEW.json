@@ -1,0 +1,771 @@
+{
+  "actual_canonical_result": {
+    "bytes": 138945,
+    "git_blob": "c374e3029f0fa8fa4f66d6e311c6841785db63b5",
+    "sha256": "1c058f83bb69579f7d039a401ab1e94cd0fb25529dc8d8dc7f91a73c9fbb75fe"
+  },
+  "actual_format_result": {
+    "bytes": 7097,
+    "git_blob": "6cb1b8d6af25907ca0fea5d9bd0f787062dbef94",
+    "sha256": "f0a8fd1bb8b6b3b4aa71cf5e9a0683cb4d4e0d7b532cc0cde43bedff4244544f"
+  },
+  "actual_normal_proofs": [
+    {
+      "exact_complete_normal_terminal": true,
+      "identity": {
+        "bytes": 955,
+        "git_blob": "b20a78f43e34fa72937df40d09d782f792a2f873",
+        "sha256": "c7e92ac3e26262c0bcc0707ae138ed873c2b2221d98a4c6c5f7889fd5ff923eb"
+      },
+      "job_id": "1a1d2107dce-2564-1c98",
+      "proof": "final_format"
+    },
+    {
+      "exact_complete_normal_terminal": true,
+      "identity": {
+        "bytes": 953,
+        "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+        "sha256": "084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83"
+      },
+      "job_id": "1a1d223a60b-2564-1ca3",
+      "proof": "canonical_alignment"
+    }
+  ],
+  "actual_qualified_task_chains_proved": 0,
+  "all_data_only_admission_checks": [
+    {
+      "accepted_actual": true,
+      "line": 112,
+      "reason": "actual final source"
+    },
+    {
+      "accepted_actual": true,
+      "line": 112,
+      "reason": "actual final tree"
+    },
+    {
+      "accepted_actual": true,
+      "line": 113,
+      "reason": "actual final commit parents"
+    },
+    {
+      "accepted_actual": true,
+      "line": 114,
+      "reason": "complete current source membership"
+    },
+    {
+      "accepted_actual": true,
+      "line": 116,
+      "reason": "original reviewed qualification plan"
+    },
+    {
+      "accepted_actual": true,
+      "line": 118,
+      "reason": "actual final original format prerequisite"
+    },
+    {
+      "accepted_actual": true,
+      "line": 129,
+      "reason": "actual final-format physical tree is the canonical qualification subject"
+    },
+    {
+      "accepted_actual": true,
+      "line": 133,
+      "reason": "one final fmt only"
+    },
+    {
+      "accepted_actual": true,
+      "line": 135,
+      "reason": "unchanged final-format command and budget"
+    },
+    {
+      "accepted_actual": true,
+      "line": 137,
+      "reason": "actual final fmt normal command terminal"
+    },
+    {
+      "accepted_actual": true,
+      "line": 140,
+      "reason": "complete actual final-format audits"
+    },
+    {
+      "accepted_actual": true,
+      "line": 143,
+      "reason": "actual final formatter postimages individually reviewed"
+    },
+    {
+      "accepted_actual": true,
+      "line": 147,
+      "reason": "actual clean canonical alignment only"
+    },
+    {
+      "accepted_actual": true,
+      "line": 156,
+      "reason": "complete actual alignment audits"
+    },
+    {
+      "accepted_actual": true,
+      "line": 165,
+      "reason": "actual canonical SHA/tree/parents"
+    },
+    {
+      "accepted_actual": true,
+      "line": 167,
+      "reason": "actual final canonical full inventory identity"
+    },
+    {
+      "accepted_actual": true,
+      "line": 169,
+      "reason": "actual complete physical source and normal canonical index"
+    },
+    {
+      "accepted_actual": true,
+      "line": 173,
+      "reason": "canonical proof refers to this exact actual final fmt"
+    },
+    {
+      "accepted_actual": true,
+      "line": 180,
+      "reason": "all final tracked files"
+    }
+  ],
+  "budgets_unchanged": {
+    "native_outer": 45000,
+    "self-test": 300,
+    "source-closure": 600,
+    "source_outer": 7200,
+    "verify": 4800
+  },
+  "format": "hepta-cc57-admission-successor-independent-peer-v2",
+  "full_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "historical_anchor_interpretation": "Only the exact actual fmt parent9c4 remains; old9c4/ee42/[86dd] formatter tuple is removed. C0F is the intentionally retained fmt base. V5/inventory/plan pins identify unchanged original control modules.",
+  "inverse_three_replacements_restore_entire_original_bytes": true,
+  "native_compact_expected_digest_unchanged_projection_only": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+  "negative_data_predicate_probes": [
+    {
+      "field": [
+        "source_commit"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "source_tree"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "parents"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "format"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "status"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "source_repo"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "qualification"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "fix_dispatched"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "test_commands_dispatched"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "attempted_commands"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "not_run_commands"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "source_ref_updates"
+      ],
+      "guard": "actual final original format prerequisite",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual_final_source",
+        "complete"
+      ],
+      "guard": "actual final-format physical tree is the canonical qualification subject",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "git_metadata_unchanged"
+      ],
+      "guard": "actual final-format physical tree is the canonical qualification subject",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual_final_source",
+        "postimages",
+        "all_actual_physical_tree"
+      ],
+      "guard": "actual final-format physical tree is the canonical qualification subject",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual_final_source",
+        "postimages",
+        "all_actual_physical_leaf_count"
+      ],
+      "guard": "actual final-format physical tree is the canonical qualification subject",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "stages",
+        0,
+        "argv"
+      ],
+      "guard": "unchanged final-format command and budget",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "stages",
+        0,
+        "timeout_seconds"
+      ],
+      "guard": "unchanged final-format command and budget",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "stages",
+        0,
+        "execution",
+        "returncode"
+      ],
+      "guard": "actual final fmt normal command terminal",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "stages",
+        0,
+        "execution",
+        "timed_out"
+      ],
+      "guard": "actual final fmt normal command terminal",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "stages",
+        0,
+        "execution",
+        "output_limit_exceeded"
+      ],
+      "guard": "actual final fmt normal command terminal",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "final_audits",
+        0,
+        "status"
+      ],
+      "guard": "complete actual final-format audits",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "formatter_changed_paths"
+      ],
+      "guard": "actual final formatter postimages individually reviewed",
+      "record": "fmt",
+      "rejected": true
+    },
+    {
+      "field": [
+        "format"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "status"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "source_repo"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "physical_source_writes_dispatched"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "cargo_or_formatter_started"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "test_commands_dispatched"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "source_branch_refs_updated"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "remote_ref_updates"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "automatic_retry"
+      ],
+      "guard": "actual clean canonical alignment only",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "final_audits",
+        0,
+        "status"
+      ],
+      "guard": "complete actual alignment audits",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "after",
+        "commit"
+      ],
+      "guard": "actual canonical SHA/tree/parents",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "after",
+        "tree"
+      ],
+      "guard": "actual canonical SHA/tree/parents",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "after",
+        "parents"
+      ],
+      "guard": "actual canonical SHA/tree/parents",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "after",
+        "inventory",
+        "sha256"
+      ],
+      "guard": "actual final canonical full inventory identity",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "final_format",
+        "job_id"
+      ],
+      "guard": "canonical proof refers to this exact actual final fmt",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "final_format",
+        "result",
+        "git_blob"
+      ],
+      "guard": "canonical proof refers to this exact actual final fmt",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "final_format",
+        "supervisor",
+        "git_blob"
+      ],
+      "guard": "canonical proof refers to this exact actual final fmt",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual",
+        "physical_bytes_unchanged"
+      ],
+      "guard": "actual complete physical source and normal canonical index",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual",
+        "physical_modes_unchanged"
+      ],
+      "guard": "actual complete physical source and normal canonical index",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual",
+        "complete_source_clean"
+      ],
+      "guard": "actual complete physical source and normal canonical index",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual",
+        "detached"
+      ],
+      "guard": "actual complete physical source and normal canonical index",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual",
+        "index_equals_tree"
+      ],
+      "guard": "actual complete physical source and normal canonical index",
+      "record": "aligned",
+      "rejected": true
+    },
+    {
+      "field": [
+        "actual",
+        "normal_stat_refresh_verified"
+      ],
+      "guard": "actual complete physical source and normal canonical index",
+      "record": "aligned",
+      "rejected": true
+    }
+  ],
+  "negative_probe_count": 46,
+  "not_executed_or_claimed": [
+    "No Admission constructor, acquire_and_validate, finish, wrapper main, H, source gate, native gate, Git command, source/ref write.",
+    "No new live lock/Git/physical/tool/environment observation. Actual runtime still must reacquire the original lock, read current full source/raw Git, and enforce all original checks.",
+    "Recovered13d3 bytes match actual aligned RESULT; they are not a second native full read or actual native compact snapshot."
+  ],
+  "old_first_predicate_rejects_actual_format": true,
+  "only_three_AST_constant_changes": [
+    {
+      "after": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "before": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "line": 121
+    },
+    {
+      "after": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+      "before": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+      "line": 122
+    },
+    {
+      "after": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "before": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "line": 123
+    }
+  ],
+  "original_admission": {
+    "bytes": 14294,
+    "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+    "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+  },
+  "prior_failure_and_review_scope": "Prior cc57 v1 actual Unknown and secondary error remain unchanged. Bootstrap-only peer16f0 correctly bounded byte differences but did not test the retained admission ancestry. This review adds the missing actual-format and canonical-data seam checks; no old PASS is relabeled.",
+  "qualification": false,
+  "qualification_cfg_exact_whitelist_diff": [
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/qualification-admission.py",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/qualification-admission.py",
+      "path": "/admission_path"
+    },
+    {
+      "after": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+      "before": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+      "path": "/admission_pin/git_blob"
+    },
+    {
+      "after": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c",
+      "before": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f",
+      "path": "/admission_pin/sha256"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/CANONICAL_ALIGNMENT_NORMAL.original.json",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/CANONICAL_ALIGNMENT_NORMAL.original.json",
+      "path": "/canonical_alignment/supervisor_path"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/native-driver.original.py",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/native-driver.original.py",
+      "path": "/native_driver_path"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/PLAN.original.json",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/PLAN.original.json",
+      "path": "/plan_path"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/native-records",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/native-records",
+      "path": "/records"
+    },
+    {
+      "after": "/run/hepta-utility-36fa-final-cc57-v2",
+      "before": "/run/hepta-utility-36fa-final-cc57-v1",
+      "path": "/root_parent"
+    },
+    {
+      "after": "hepta-utility-36fa-native-cc57-v2",
+      "before": "hepta-utility-36fa-native-cc57-v1",
+      "path": "/run_identity"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/APPROVED_SOURCE_GATES_CONFIG.json",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/APPROVED_SOURCE_GATES_CONFIG.json",
+      "path": "/source_gates_config_path"
+    },
+    {
+      "after": "a6dbed0b4eea650f1af616df5dd1e9719475dff4",
+      "before": "b312db80c69df6479436a1ae20ad7c716d699f89",
+      "path": "/source_gates_config_pin/git_blob"
+    },
+    {
+      "after": "f9bab5b64869c5b8a51545a73c6d1fe7e14767ead25239e8e8b718ff73f5c61c",
+      "before": "14b00eb4f614036e58a19c8a2ba087c421fc8d8f57bb562a7b226721159097b9",
+      "path": "/source_gates_config_pin/sha256"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/source-handoff",
+      "path": "/source_gates_handoff_records"
+    }
+  ],
+  "remaining_historical_anchors": [
+    {
+      "line": 20,
+      "value": "c0f78493f815780f68b9bf5e390a21314d79311f"
+    },
+    {
+      "line": 17,
+      "value": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735"
+    },
+    {
+      "line": 18,
+      "value": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "line": 19,
+      "value": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+    },
+    {
+      "line": 121,
+      "value": "246d8cb614770252ee42029a5c014f2a4904176a"
+    },
+    {
+      "line": 122,
+      "value": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    },
+    {
+      "line": 123,
+      "value": "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    }
+  ],
+  "reviewed_at_utc": "2026-11-13T00:07:15.894962+00:00",
+  "runtime_guards_and_complete_original_proofs_unchanged": true,
+  "source_cfg_exact_whitelist_diff": [
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records",
+      "before": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v1/source-gates-records",
+      "path": "/records"
+    },
+    {
+      "after": "hepta-utility-36fa-source-gates-cc57-v2",
+      "before": "hepta-utility-36fa-source-gates-cc57-v1",
+      "path": "/run_identity"
+    },
+    {
+      "after": "/home/qian-qi/hepta-utility-36fa-source-gates-cc57-v2",
+      "before": "/home/qian-qi/hepta-utility-36fa-source-gates-cc57-v1",
+      "path": "/source_checkout"
+    }
+  ],
+  "source_control_pins_match_recovered_actual_canonical_inventory": [
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "path": "AGENTS.md"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "path": "justfile"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "path": "scripts/run-nextest.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "path": "codex-rs/.config/nextest.toml"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "path": "scripts/hepta_ci_exec.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "path": "scripts/hepta_ci_junit.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+      "path": "scripts/hepta_cell_test_helpers.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+      "path": "scripts/hepta_c_observer_coverage.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "path": "scripts/format.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "path": "scripts/just-shell.py"
+    },
+    {
+      "exact_canonical_inventory_row_matches": true,
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "path": "codex-rs/rust-toolchain.toml"
+    }
+  ],
+  "status": "NO_BLOCKING_DATA_PREDICATE_OR_CHANGE_SCOPE_ISSUE",
+  "successor_admission": {
+    "bytes": 14294,
+    "git_blob": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+    "sha256": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c"
+  }
+}

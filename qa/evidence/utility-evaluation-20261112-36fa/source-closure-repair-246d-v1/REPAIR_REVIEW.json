@@ -1,0 +1,434 @@
+{
+  "QA": [
+    {
+      "after": {
+        "bytes": 10965,
+        "git_blob": "6aa44ad7984ce7af5cb6fd5f67f781cd658b238e",
+        "sha256": "54cd24db176f41407f270da16357a74e759deb0043a5d37862a3b825a78fc415"
+      },
+      "all_definition_names_preserved": true,
+      "all_other_definition_source_and_AST_unchanged": true,
+      "before": {
+        "bytes": 10942,
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+      },
+      "changed_function_definitions": [],
+      "exact_inverse_restores_entire_original_file_and_AST": true,
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "test_method_count_before_and_after": 6
+    },
+    {
+      "after": {
+        "bytes": 24713,
+        "git_blob": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+        "sha256": "c9ee98b559be8f646b49d4408ed45345bb33b0f1e44116693dc3b7b82ccb0464"
+      },
+      "all_definition_names_preserved": true,
+      "all_other_definition_source_and_AST_unchanged": true,
+      "before": {
+        "bytes": 24442,
+        "git_blob": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+        "sha256": "343f666445888fca75e8304823911bb3e1ea54502f7d5ce7b689b60779961dd5"
+      },
+      "changed_function_definitions": [
+        "OriginalSelectionReadbackClosureTests.test_wire_purpose_action_sequence_and_original_context_cannot_change"
+      ],
+      "exact_inverse_restores_entire_original_file_and_AST": true,
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "test_method_count_before_and_after": 9
+    },
+    {
+      "after": {
+        "bytes": 28123,
+        "git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+        "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e"
+      },
+      "all_definition_names_preserved": true,
+      "all_other_definition_source_and_AST_unchanged": true,
+      "before": {
+        "bytes": 27811,
+        "git_blob": "0ef4dc5b862c8e684697775d3469823537961005",
+        "sha256": "528221475bae004ea46aa7d16e86595294a86254589083f08d240f7ad1377939"
+      },
+      "changed_function_definitions": [],
+      "exact_inverse_restores_entire_original_file_and_AST": true,
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "test_method_count_before_and_after": 10
+    }
+  ],
+  "actual_original_source_gate": {
+    "raw": {
+      "bytes": 118496,
+      "git_blob": "f84b983ace7dfd3dbe8de0a3972274d0f8a930e3",
+      "sha256": "f51a3e278d6e5072b0c13b94c2279eaa890419e8445af5e12eb9021565ecb29f"
+    },
+    "raw_488_explicit_OK_4_failed_methods_6_failure_entries_492_total": true,
+    "runner": {
+      "bytes": 1536,
+      "git_blob": "081aa2fc65417aef3a6aa1306e30a7f12b9bfe2a",
+      "sha256": "67ee72fe1d087fbff3794627973ae3552744c76963cb4add9b348e85b1742569"
+    },
+    "runner_486_passed_6_failed_preserved": true,
+    "status": "FAILED"
+  },
+  "allowlist": {
+    "delta": "\n# Original Trainer readonly adapters reject actual custody recovery; exact reviewed inventory.\nsha256:13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec CALLERS.toml\n",
+    "original_complete_bytes_are_prefix": true
+  },
+  "base_inventory": {
+    "bytes": 5611184,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+  },
+  "base_source": {
+    "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "status": "",
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "callers": {
+    "after": {
+      "bytes": 1577765,
+      "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+      "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+    },
+    "all_boundary_caller_authority_fields_unchanged": true,
+    "before": {
+      "bytes": 1577681,
+      "git_blob": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+      "sha256": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb"
+    },
+    "boundaries_before_after": 569,
+    "inverse_restores_entire_original_TOML": true,
+    "matcher_verifier_and_typed_helper_unchanged": true,
+    "only_three_additive_complete_identifiers": [
+      {
+        "after_forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          ".sign(",
+          "sign_original(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "wire::Action::Execute",
+          "recover_original",
+          "pub peer:",
+          "pub material:",
+          "pub initial_binding:",
+          "pub dataset:",
+          "pub training:",
+          "pub context:",
+          "pub binding:",
+          "recover_original_custody"
+        ],
+        "before_forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          ".sign(",
+          "sign_original(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "wire::Action::Execute",
+          "recover_original",
+          "pub peer:",
+          "pub material:",
+          "pub initial_binding:",
+          "pub dataset:",
+          "pub training:",
+          "pub context:",
+          "pub binding:"
+        ],
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "zero_based_row": 386
+      },
+      {
+        "after_forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          ".sign(",
+          "sign_original(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "wire::Action::Execute",
+          "self.cancellation",
+          "execution_requested",
+          "bootstrap_lane",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "::from_original_",
+          "::recover_",
+          "pub now:",
+          "recover_original_custody"
+        ],
+        "before_forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          ".sign(",
+          "sign_original(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "wire::Action::Execute",
+          "self.cancellation",
+          "execution_requested",
+          "bootstrap_lane",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "::from_original_",
+          "::recover_",
+          "pub now:"
+        ],
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+        "zero_based_row": 387
+      },
+      {
+        "after_forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          ".sign(",
+          "sign_original(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "wire::Action::Execute",
+          "self.cancellation",
+          "execution_requested",
+          "bootstrap_lane",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "::from_original_",
+          "::recover_",
+          "pub now:",
+          "recover_original_custody"
+        ],
+        "before_forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          ".sign(",
+          "sign_original(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "wire::Action::Execute",
+          "self.cancellation",
+          "execution_requested",
+          "bootstrap_lane",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "::from_original_",
+          "::recover_",
+          "pub now:"
+        ],
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+        "zero_based_row": 388
+      }
+    ],
+    "protected_rows_before_after": 422
+  },
+  "expected_after_leaf_count": 15188,
+  "expected_after_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "files_changed": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "format": "hepta-246d-five-file-repair-byte-AST-and-local-diagnostic-review-v1",
+  "independent_training_peer": {
+    "limitation": "The uncompiled Host no-argument injection is a static protection attack, not proof of runtime authority acquisition. The added complete identifier is an actual authority API and remains behind independent empty caller boundaries 353/354. No general recover-prefix detection claim.",
+    "report_git_blob": "edb5d3f56e224d95ab86f71ed0c2495aaa347993",
+    "scoped_nine_typed_checks_git_blob": "86b27d8511396f485f605f71d13ea97c926e1cec"
+  },
+  "local_diagnostic": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "-v",
+      "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order",
+      "test_original_selection_readback_source_closure.OriginalSelectionReadbackClosureTests.test_wire_purpose_action_sequence_and_original_context_cannot_change",
+      "test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap",
+      "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+    ],
+    "exact_original_inputs_with_only_five_approved_overlays": true,
+    "input_count": 32,
+    "input_projection_before_after_equal": true,
+    "raw": {
+      "bytes": 1035,
+      "git_blob": "067ccf85f126f04812d26d9daf16a09799231d1d",
+      "sha256": "eb1caa8c657d1e5fcb1021c0d9e9590abdc272c64ebb5f32457026b3e009c5d2"
+    },
+    "result": {
+      "bytes": 1248,
+      "git_blob": "2ea6771594c596fca328704b37dc688353e13bb4",
+      "sha256": "a3cc5925aad9c52395b093d4c03233bcbb9a3cdaf37372d242ba07c0ed78ec6d"
+    },
+    "result_summary": {
+      "elapsed_seconds": 4.019102693004243,
+      "error": null,
+      "finished_at": "2026-11-12T23:10:54.455817+00:00",
+      "format": "hepta-local-original-four-method-diagnostic-result-v1",
+      "full_source_qualification": false,
+      "methods": [
+        "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order",
+        "test_original_selection_readback_source_closure.OriginalSelectionReadbackClosureTests.test_wire_purpose_action_sequence_and_original_context_cannot_change",
+        "test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap",
+        "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+      ],
+      "raw": {
+        "bytes": 1035,
+        "git_blob": "067ccf85f126f04812d26d9daf16a09799231d1d",
+        "sha256": "eb1caa8c657d1e5fcb1021c0d9e9590abdc272c64ebb5f32457026b3e009c5d2"
+      },
+      "real_task_chains": 0,
+      "returncode": 0,
+      "source_inputs_unchanged": true,
+      "started_at": "2026-11-12T23:10:50.436712+00:00",
+      "status": "passed_scoped_diagnostic",
+      "timed_out": false
+    },
+    "scope": "Only the four actual failing original methods, each with its unmodified class setup, against exact required files. This is a partial source fixture and is not a full-source collector or qualification run."
+  },
+  "native_schema_packet": {
+    "bytes": 2209423,
+    "git_blob": "35debe83e69774f855ed198d35edaa762ae09573",
+    "sha256": "4e735b9402495886f079f5b35026bdc54e56e7ebb1bd179e3de07c25854ce29b"
+  },
+  "not_performed": [
+    "H/native/Cargo",
+    "complete source-closure",
+    "complete caller gate on repaired source",
+    "source activation",
+    "commit/ref/PR mutation"
+  ],
+  "original_preparation_manifest_unchanged": {
+    "bytes": 6650,
+    "git_blob": "2c5ac17667053597ee9111445da45164afd849ae",
+    "sha256": "36bb9a7cb7295269f0a9219123d0bb38a01d7badb06bcbd8400732c567332085"
+  },
+  "real_authorized_A_B_C_chains": 0,
+  "status": "REVIEWED_PROPOSAL_WITH_SCOPED_FOUR_METHOD_PASS_NOT_QUALIFICATION",
+  "training_QA": {
+    "bytes": 21451,
+    "bytes_unchanged": true,
+    "git_blob": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+    "original_seven_mutations_for_each_three_readonly_paths_preserved": true,
+    "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+    "sha256": "2e35426be55dc8d8f3ef214bd621cb5c54462a5f882086d434dfb69fc6b5e15e"
+  }
+}

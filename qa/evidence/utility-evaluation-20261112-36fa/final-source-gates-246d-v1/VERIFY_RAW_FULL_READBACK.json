@@ -1,0 +1,74 @@
+{
+  "format": "hepta-source-verify-raw-original-lossless-readback-v1",
+  "bytes": 270271,
+  "sha256": "08c2581603596639efa11ba523a8af93a376449decd2b7b1d92acaf647811c05",
+  "git_blob_sha": "7b5c618309e8fe20bd15f1a91f136f934aa654a2",
+  "actual_chunks": [
+    {
+      "sdk": "VERIFY_RAW_0_READ.original.json",
+      "chunk_sha256": "68f3f20f97f3edb60b3ec474dd62e66ca67328572c719fe604ea5d29a3f5f27a",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/verify/verify.log",
+      "size": 270271,
+      "version": "2050:50794690:270271:1794523923348618455:1794523930161423013"
+    },
+    {
+      "sdk": "VERIFY_RAW_65536_READ_RETRY01.original.json",
+      "chunk_sha256": "18a756b2a8c7d12f74cf9f261c58bcd44e8a1c487bc97e15732d1e1a1f4d0e64",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/verify/verify.log",
+      "size": 270271,
+      "version": "2050:50794690:270271:1794523923348618455:1794523930161423013"
+    },
+    {
+      "sdk": "VERIFY_RAW_131072_READ_RETRY01.original.json",
+      "chunk_sha256": "401de88c00e797bd5f65e7de4ec86bad7e18e10da1c5dbdc4bf9b07420a46989",
+      "eof": false,
+      "next_offset": 196608,
+      "offset": 131072,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/verify/verify.log",
+      "size": 270271,
+      "version": "2050:50794690:270271:1794523923348618455:1794523930161423013"
+    },
+    {
+      "sdk": "VERIFY_RAW_196608_READ_RETRY01.original.json",
+      "chunk_sha256": "c7afa0fb96eed3017f31c11a1c1d8d3aa5a11f2775877d7e51911c1e4ad04137",
+      "eof": false,
+      "next_offset": 262144,
+      "offset": 196608,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/verify/verify.log",
+      "size": 270271,
+      "version": "2050:50794690:270271:1794523923348618455:1794523930161423013"
+    },
+    {
+      "sdk": "VERIFY_RAW_TAIL_READ.original.json",
+      "chunk_sha256": "a9387784924fa1845739640f992431bfef20d2ca66e77e3766f73c28c0813806",
+      "eof": true,
+      "next_offset": 270271,
+      "offset": 262144,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/source-gates-records/verify/verify.log",
+      "size": 270271,
+      "version": "2050:50794690:270271:1794523923348618455:1794523930161423013"
+    }
+  ],
+  "retained_transport_failures": [
+    "VERIFY_RAW_65536_READ.original.json",
+    "VERIFY_RAW_131072_READ.original.json",
+    "VERIFY_RAW_196608_READ.original.json"
+  ],
+  "command_repeated": false,
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "top_level_counts": {
+    "authorityGranted": false,
+    "boundaries": 569,
+    "privilegedInventory": 569,
+    "protectedFiles": 422,
+    "rustFilesScanned": 6619,
+    "schema": "hepta.caller-proof-receipt.v2",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+  }
+}

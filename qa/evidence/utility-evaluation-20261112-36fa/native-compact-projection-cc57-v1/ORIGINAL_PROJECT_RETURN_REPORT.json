@@ -1,0 +1,88 @@
+{
+  "actual_alignment_observed_by_this_script": false,
+  "actual_native_snapshot_observed": false,
+  "algorithm": {
+    "content": "Use the pinned expected full row's bytes, SHA256 and working_blob. No source file was read or newly hashed by this projection.",
+    "gzip": "No gzip identity is predicted. Original b92 gzip headers can vary; the required inventory hash covers the uncompressed JSON array.",
+    "membership": "Original git ls-files plus nonignored untracked paths; in this pinned expected clean full inventory every physical file is indexed, so the union is exactly its 15188 paths.",
+    "mode": "Symlink => 120000; regular file => 100755 if any physical execute bit is set, otherwise 100644.",
+    "row_fields": [
+      "path",
+      "mode",
+      "bytes",
+      "sha256",
+      "blob"
+    ],
+    "serializer": "json.dumps(rows, sort_keys=True, separators=(',', ':')).encode(); default ensure_ascii=True; no terminal LF.",
+    "sort": "Sort unique raw Git path bytes. All current paths are ASCII; source-relative path strings retain those bytes."
+  },
+  "format": "hepta-final-native-compact-inventory-projection-v1",
+  "full_expected_input": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "gate_or_test_driver_main_calls": 0,
+  "native_compact_expected": {
+    "bytes": 3530181,
+    "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+    "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "native_or_H_or_git_commands": 0,
+  "native_snapshot_expected_value": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "files": 15188,
+    "inventory_sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "original_snapshot_algorithm_pins": {
+    "b92": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "reviewed_native_wrapper": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    }
+  },
+  "requirements_before_use": [
+    "Root must receive the actual normal canonical-alignment terminal and complete audits.",
+    "Its actual full inventory identity must match this exact 5611184-byte input pin; a predicted tree alone is insufficient.",
+    "The reviewed native wrapper must still run its original source-before snapshot from the actual checkout and compare its own exact HEAD/tree/status/count/hash against the bound expected values.",
+    "The unchanged b92 focused/all drivers must still take and retain their own actual original snapshots and require before/after equality.",
+    "Source gates must first create and freeze their original shared/no-hardlinks independent clone. That clone's permissions/full-inventory hash can differ from the writable origin; do not substitute the clone hash.",
+    "Generated ignored JUnit/output files after native execution must remain explicit in the separate final full-physical observation."
+  ],
+  "scope_difference": {
+    "full_5118": "Object with source HEAD/tree/status, counts, and every physical source file plus every index entry. Rows retain permissions, kind, index mode/blob, working blob, stability and index-match flags; ignored physical outputs are visible. Serializer ends with LF.",
+    "native_b92_and_wrapper": "Array of tracked and nonignored-untracked rows only. It omits ignored outputs and full permission/stability/index fields. Source HEAD/tree/status/count live in a separate summary. Array serializer has no LF.",
+    "not_substitutable": "Full SHA256 df891018... and projected native SHA256 describe different byte formats and scope. Neither may be relabeled as the other."
+  },
+  "source_expected": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_files_read_or_written": 0,
+  "source_membership": {
+    "all_indexed": true,
+    "all_stable": true,
+    "all_working_blobs_equal_index": true,
+    "ascii_paths": 15188,
+    "git_modes": {
+      "100644": 15097,
+      "100755": 90,
+      "120000": 1
+    },
+    "kinds": {
+      "file": 15187,
+      "symlink": 1
+    },
+    "rows": 15188,
+    "untracked_or_ignored_file_rows": 0
+  },
+  "status": "PROJECTION_ONLY_NOT_ACTUAL_NATIVE_OBSERVATION"
+}

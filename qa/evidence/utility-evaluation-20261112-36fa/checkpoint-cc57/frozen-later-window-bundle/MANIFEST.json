@@ -1,0 +1,82 @@
+{
+  "README_unchanged": true,
+  "Root_must_review_and_publish": true,
+  "actions": {
+    "H": false,
+    "PR": false,
+    "commit_creation": false,
+    "refs": false,
+    "source_edit": false,
+    "test_or_gate_execution": false,
+    "tree_creation": false
+  },
+  "all_new_files_complete_readback_verified": true,
+  "all_old3033_path_SHA_values_unchanged": true,
+  "artifact_pins": {
+    "FULL_FILEMAP.json": {
+      "bytes": 383067,
+      "git_blob": "cf42f7a6caf239bf618c4387898ced1d077d9f12",
+      "sha256": "c19d02b5f2fccb75e281c418046f9235d32f6f07d09f51f06039eb1c32d642f3"
+    },
+    "INCREMENTAL_FILEMAP.json": {
+      "bytes": 27669,
+      "git_blob": "0e5954066b0d4f842cfb4cb8a821d8a8345b6e12",
+      "sha256": "3952dc654af5a00666a4e6a9b67b15c6c2d4ebdd3621c2edb46df215fc7dbda3"
+    },
+    "PLACEMENT.json": {
+      "bytes": 184190,
+      "git_blob": "1f8d7aa37cdb119275c159bbba36723f9d0aeebc",
+      "sha256": "6918cbff94c17fc734805f21b99a794ea532f9f4e969682b255ce7eeddaab9a5"
+    },
+    "VERIFIED_INCREMENTAL_ENTRIES.json": {
+      "bytes": 177196,
+      "git_blob": "92621e5c3536893fa919c30ce6087a15337e8582",
+      "sha256": "8a8a5e9ce1519419ae54a212df8462c91818e67564d130f96fabd5ba7a970497"
+    }
+  },
+  "base": {
+    "prepared_files": 3033,
+    "prepared_map": {
+      "bytes": 355401,
+      "git_blob": "24d87c93c886fdb9b9f87ddfe41a4fdb8687b0bd",
+      "sha256": "653b35a2bc85255f712a71b75a257b66cfcb38b252f118945e112e1252b02439"
+    },
+    "published_2841_commit": "64b921b3f6031d515883a7ca506207932da3997f",
+    "published_2841_leaf": "dd01bc90b0c8a7671df8327fa6f11adf61a1fedd"
+  },
+  "cutoff_utc": "2026-11-12T23:59:13.736011+00:00",
+  "files_unique_by_path": true,
+  "format": "hepta-post3033-frozen-append-preparation-manifest-v1",
+  "increment": 218,
+  "large_raw_originals": {
+    "count": 2,
+    "no_native_gzip_observation_claim": true,
+    "published_as": "four exact gzip/base64 transport parts plus original-three-pin manifest",
+    "raw_originals_complete_Git_content_verified": true
+  },
+  "maximum_new_published_file_bytes": 355401,
+  "new_published_unique_blobs": 213,
+  "outer_metadata_sidecars": {
+    "count": 5,
+    "in_own_map": false,
+    "next_append_may_archive_by_exact_actual_full_readback_pins": true
+  },
+  "payload_count": 212,
+  "preparation_review": {
+    "bytes": 8873,
+    "git_blob": "7143c21d426e8adde48ebf32d90f967d651b6b60",
+    "sha256": "f5e9746db6ed84f1cae84b61c638ed99569b2d987e461c2f46171d597aa8c040"
+  },
+  "prepared_full_count": 3251,
+  "preservation": {
+    "actual_1c98_terminal": "later window only; apply/fmt succeeded, tests0",
+    "actual_1ca3_terminal": "canonical snapshot/index/HEAD aligned; not source/native qualification",
+    "hosted_CI": "four GET originals + one review; zero counts, pending, not PASS",
+    "native_compact": "projection only",
+    "new_cc57_source_gate_admission_or_result": "explicitly outside this window",
+    "original_246d_failure": "retained; never replaced by repairs or canonical alignment",
+    "source_cc57_publication": "actual CAS plus first stale PR read and second exact read retained"
+  },
+  "status": "VERIFIED_APPEND_ONLY_PREPARATION_NOT_PUBLISHED",
+  "verification_metadata_count": 6
+}

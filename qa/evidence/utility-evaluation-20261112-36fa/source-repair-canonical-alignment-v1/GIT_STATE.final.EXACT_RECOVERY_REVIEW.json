@@ -1,0 +1,38 @@
+{
+  "all_original_identity_fields_equal": true,
+  "at": "2026-11-12T23:56:30.092637+00:00",
+  "failed_standalone_reads_preserved": [
+    {
+      "bytes": 266,
+      "file": "GIT_STATE.final.json.READ_01.original.json",
+      "git_blob": "b2a6e9f57ab010496aa685cb94d0f6a11d5dc964",
+      "sha256": "6251ca6e015b5f24b147033793af7f2a7cdd380a78c4fcdab8a5e84897a6313b"
+    },
+    {
+      "bytes": 218,
+      "file": "GIT_STATE.final.json.READ_02.original.json",
+      "git_blob": "e8e86c429b2e427364a3b1bcf758592f0e6eb624",
+      "sha256": "ad8312d604defde90b0bd93069932a5ad9a9603d6b200acf3564de4554a36a78"
+    }
+  ],
+  "format": "hepta-exact-original-git-state-recovery-v1",
+  "original_artifact": {
+    "bytes": 489,
+    "git_blob": "3018efa03be950aa1fdc6dbe91eb9a7672bff396",
+    "name": "GIT_STATE.final.json",
+    "sha256": "87430f67e38a65192dc1a71f50c6d8bbc026611c1bb20ba1f27e4e06dd84ea40"
+  },
+  "recovered": {
+    "bytes": 489,
+    "git_blob": "3018efa03be950aa1fdc6dbe91eb9a7672bff396",
+    "sha256": "87430f67e38a65192dc1a71f50c6d8bbc026611c1bb20ba1f27e4e06dd84ea40"
+  },
+  "recovered_file": "GIT_STATE.final.exact-recovered.json",
+  "scope": "Single deterministic serialization of actual RESULT.after.git_state; exact original artifact bytes and hashes matched. No new H read, execution, source mutation or qualification.",
+  "serialization": "json.dumps(sort_keys=True,separators=(comma,colon)) + LF, UTF-8",
+  "source_result": {
+    "bytes": 138945,
+    "git_blob": "c374e3029f0fa8fa4f66d6e311c6841785db63b5",
+    "sha256": "1c058f83bb69579f7d039a401ab1e94cd0fb25529dc8d8dc7f91a73c9fbb75fe"
+  }
+}

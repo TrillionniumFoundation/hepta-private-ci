@@ -1,0 +1,78 @@
+def jbytes(x):
+    return (json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode("utf-8")
+
+def gzrecord(name, raw):
+    gz = gzip.compress(raw, mtime=0)
+    check(gzip.decompress(gz) == raw, "record gzip roundtrip")
+    meta = write(name, gz)
+    meta.update(raw_bytes=len(raw), raw_sha256=sha256(raw), raw_git_blob=oid("blob",raw))
+    meta["parts"] = []
+    for i, off in enumerate(range(0,len(gz),262144),1):
+        part = gz[off:off+262144]
+        item = write(name+".part-%03d.b64"%i, base64.b64encode(part)+b"\n")
+        item.update(decoded_offset=off, decoded_bytes=len(part), decoded_sha256=sha256(part))
+        meta["parts"].append(item)
+    return meta
+
+def archive_transition(name,before,after):
+    b={x["path"]:x for x in parse(before)["files"]}
+    a={x["path"]:x for x in parse(after)["files"]}
+    changes=[];reader=None
+    try:
+        for path in sorted(set(b)|set(a)):
+            previous=b.get(path);current=a.get(path)
+            if previous==current:continue
+            old=None;new=None
+            if previous is not None and previous["kind"]!="missing":
+                check(previous["kind"] in ("file","symlink") and previous.get("stable") is True,
+                      "supported stable previous source leaf")
+                value=previous["working_blob"]
+                old=raw_cache.get(value)
+                if old is None:
+                    check(previous.get("matches_index") is True,"missing exact previous retained postimage: "+path)
+                    if reader is None:reader=OriginalBlobReader(name+"-preimages")
+                    old=reader.get(value)
+                check(len(old)==previous["bytes"] and sha256(old)==previous["sha256"] and oid("blob",old)==value,
+                      "exact before bytes for "+path)
+            if current is not None and current["kind"]!="missing":
+                check(current["kind"] in ("file","symlink") and current.get("stable") is True,
+                      "supported stable actual source leaf")
+                new=read_actual_leaf(path,current)
+                raw_cache[current["working_blob"]]=new
+            changes.append({"path":path,"before":previous,"after":current,
+                            "before_raw_base64":None if old is None else base64.b64encode(old).decode("ascii"),
+                            "after_raw_base64":None if new is None else base64.b64encode(new).decode("ascii")})
+    finally:
+        if reader is not None:reader.close()
+    packet={"format":"hepta-maintenance-actual-source-transition-v1","stage":name,
+            "source_commit_unchanged":HEAD,"base_inventory_sha256":sha256(before),
+            "after_inventory_sha256":sha256(after),"changes":changes,
+            "all_physical_changes_including_untracked_or_ignored_are_recorded":True,
+            "qualification":False}
+    gzrecord(name+".postimages.json.gz",jbytes(packet))
+    patch=git("-c","diff.autoRefreshIndex=false","diff","--binary","--full-index","--no-ext-diff","--no-textconv",
+              "--no-renames","HEAD","--")
+    write(name+".HEAD-working.patch",patch)
+    source_map=actual_leaf_map(after)
+    observation={"change_count":len(changes),"paths":[x["path"] for x in changes],
+                 "all_actual_physical_leaf_count":len(source_map),"all_actual_physical_tree":merkle(source_map),
+                 "tree_scope":"Every supported physical source leaf, including untracked/ignored files; no Git tree/ref was written.",
+                 "HEAD_working_patch_bytes":len(patch),"HEAD_working_patch_sha256":sha256(patch),
+                 "untracked_are_in_exact_transition_packet":True}
+    jwrite(name+".postimages-summary.json",observation)
+    return observation
+
+def capture_source(name,before):
+    global latest_inventory
+    after=inventory_module.inventory(REPO)
+    gzrecord(name+".inventory.json.gz",after)
+    state=git_state()
+    jwrite(name+".git-state.json",state)
+    check(state==initial_git_state,"Git HEAD/index/config/refs changed during maintenance")
+    summary=archive_transition(name,before,after)
+    again=inventory_module.inventory(REPO)
+    gzrecord(name+".inventory-after-retention.json.gz",again)
+    check(after==again,"source changed while exact postimages were being retained")
+    latest_inventory=after
+    return {"complete":True,"inventory":{"bytes":len(after),"sha256":sha256(after),"git_blob":oid("blob",after)},
+            "postimages":summary}

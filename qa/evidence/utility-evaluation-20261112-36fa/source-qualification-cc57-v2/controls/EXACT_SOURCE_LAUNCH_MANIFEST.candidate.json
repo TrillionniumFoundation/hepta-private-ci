@@ -1,0 +1,85 @@
+{
+  "bootstrap": {
+    "bytes": 6316,
+    "git_blob": "43aab05122c70c99733a33f445957fe0a8b364a5",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/SOURCE_BOOTSTRAP.candidate.py",
+    "sha256": "ab2be45f3ce569489497336aa0cfbbc157dbd3bfc38268c1a010396b4953c6a5"
+  },
+  "diff": {
+    "bytes": 3293,
+    "git_blob": "d32c4bfe1c49dd92da5b69e8b7cc5da3bd2e4ab7",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/ACTUAL_CC57_V1_TO_V2.diff",
+    "sha256": "ed7734b9e9bc876c938252deafc2bf986702180ca4bdb286ff2b4c9e956e9ccd"
+  },
+  "dispatch": false,
+  "eight_input_pins": {
+    "APPROVED_QUALIFICATION_INPUT.json": {
+      "bytes": 10960,
+      "git_blob": "9cd798c77f3cf9f3139c4f0b345bcc3be2b894da",
+      "sha256": "38169c3726baaf32eb55218bbb3e274d2f40d4957630b253d5d31bad48828365"
+    },
+    "APPROVED_SOURCE_GATES_CONFIG.json": {
+      "bytes": 820,
+      "git_blob": "a6dbed0b4eea650f1af616df5dd1e9719475dff4",
+      "sha256": "f9bab5b64869c5b8a51545a73c6d1fe7e14767ead25239e8e8b718ff73f5c61c"
+    },
+    "CANONICAL_ALIGNMENT_NORMAL.original.json": {
+      "bytes": 953,
+      "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+      "sha256": "084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83"
+    },
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification-admission.py": {
+      "bytes": 14294,
+      "git_blob": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+      "sha256": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c"
+    },
+    "source-gates-wrapper.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "exact_launch_approval": null,
+  "format": "hepta-cc57-v2-source-exact-candidate-manifest-v1",
+  "generator": {
+    "bytes": 9006,
+    "git_blob": "eba5213dc6caa988604bf42b6fd95c32338a3e84",
+    "sha256": "83b39317903497b8ac777944b5141c59d7809e1616df8f4f2af78046565c278c"
+  },
+  "idempotency_key": "hepta-utility-36fa-final-source-gates-cc57-v2",
+  "outer_seconds": 7200,
+  "review": {
+    "bytes": 6477,
+    "git_blob": "2f58c8198e87651eaf357667d7bb7eb3866e37a1",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/STATIC_REVIEW.json",
+    "sha256": "827640fef122221a7a90fcd548f351702fe98528b69218cdebeb4f0a66f9dde1"
+  },
+  "status": "HOLD_AWAITING_ROOT_EXACT_LAUNCH_APPROVAL",
+  "stdin": {
+    "bytes": 124652,
+    "git_blob": "e4e626db2874fd88ffb51543a82d2a967ca9839f",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/SOURCE_STDIN.candidate.json",
+    "sha256": "b30ddac33317738824c4a9b761e86573c32921477af46bfdd581adf42bbf65ca"
+  },
+  "typed_request": {
+    "bytes": 131345,
+    "git_blob": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/SOURCE_PROCESS_INPUT.candidate.json",
+    "sha256": "55c9acefda3fe004b6b29e407256e89a1e99fd5e372b2ca04bf4b27a6f7687f4"
+  }
+}

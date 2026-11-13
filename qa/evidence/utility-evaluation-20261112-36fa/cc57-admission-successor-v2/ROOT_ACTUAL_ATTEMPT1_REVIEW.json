@@ -1,0 +1,31 @@
+{
+  "actual_full_source_equality_after_rejection": "unknown; no full baseline reached",
+  "actual_job": "1a1d2325df6-2564-1cae",
+  "diagnosis": "The5208 final-format prerequisite fixes9c4/ee42/[86dd], whereas independently verified1c98 formatter result6cb identifies246d/d564/[9c4]. The secondary finalizer error occurs before the qualified HEAD is assigned and does not establish source mutation.",
+  "errors_retained": {
+    "first": "RuntimeError: actual final original format prerequisite",
+    "secondary": "ValueError: unchanged detached HEAD/no refs"
+  },
+  "format": "hepta-root-cc57-source-admission-attempt1-review-v1",
+  "native_tests_started": false,
+  "original_source_gates_started": false,
+  "original_source_guard_not_disabled": true,
+  "prior_source_failure_retained": true,
+  "real_qualified_task_chains": 0,
+  "result": {
+    "bytes": 522,
+    "git_blob": "171e45f701c04443a6addbf2017e6b20a672884d",
+    "sha256": "805a8c3fc7d335b49b948170030d0d87ef5cc0e384aeaf63a9dfeccfb8ce842f"
+  },
+  "source_commit_unchanged_by_successor_preparation": true,
+  "source_driver_main_entered": false,
+  "supervisor": {
+    "bytes": 949,
+    "git_blob": "c25cd439b9726501269d40d5c0eebc4dd1405e4b",
+    "sha256": "0c74fdfab8315cb6d80265f03d65e693522b40c108833c57a1075e95189c8877"
+  },
+  "supervisor_exit_code": 1,
+  "supervisor_state": "failed",
+  "supervisor_timeout": false,
+  "wrapper_qualification_status": "unknown"
+}

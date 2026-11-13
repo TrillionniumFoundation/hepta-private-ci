@@ -1,0 +1,155 @@
+{
+  "candidate_diff": {
+    "bytes": 13920,
+    "git_blob": "10c9aadf44e5162aa13d812105f6470ba14ea166",
+    "sha256": "a3c3424a17a1b18793b56db47dc3f14d1098f17cdfd8446cea5e21748040546b"
+  },
+  "candidate_expected_after_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "candidate_manifest": {
+    "bytes": 6650,
+    "git_blob": "2c5ac17667053597ee9111445da45164afd849ae",
+    "sha256": "36bb9a7cb7295269f0a9219123d0bb38a01d7badb06bcbd8400732c567332085"
+  },
+  "candidate_packet": {
+    "bytes": 2209325,
+    "git_blob": "bade35cfabded0a0db3451d758e8316034cabec6",
+    "sha256": "c18566ac882c18008ea03a0926a8734187466b1987abc969eda5042a13c24c88"
+  },
+  "candidate_semantics": [
+    {
+      "change": "CALLERS.toml",
+      "decision": "Accept three additive complete-identifier prohibitions only.",
+      "detailed_peer_report": "edb5d3f56e224d95ab86f71ed0c2495aaa347993",
+      "evidence": "Exactly protected indices386,387,388 append recover_original_custody. Every old marker/order/function guard and every other TOML value is unchanged; 569 boundaries,422 rows, authority and caller sets remain identical. The actual public recovery API and sibling Fresh factory remain under empty boundaries354/353.",
+      "limit": "This repairs the real protected-list gap, not a formatting mismatch. Whole-token markers are not a general recover_* or from_original_* prefix rule.",
+      "training_qa": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b unchanged; all seven attacks over each of three files and baseline/assertRaises remain."
+    },
+    {
+      "change": "Observer QA",
+      "decision": "Accept the exact expected function-set addition.",
+      "evidence": "Only fn require_profile( is added to FUNCTIONS[OWNER]. The same original per-sequence deletion loop now reaches the pre-existing protected function entry; all nine class methods are byte/AST unchanged.",
+      "limit": "The existing Sources default method returns Ok(()). The change records that actual existing method; it adds no runtime qualification or authorization and makes no claim that the default is a new substantive profile check."
+    },
+    {
+      "change": "Selection QA",
+      "changed_class_method": "test_wire_purpose_action_sequence_and_original_context_cannot_change",
+      "decision": "Accept the two attack-marker translations and one additional domain mutation.",
+      "evidence": "Actual operation(context) uses if context.evaluated.is_some() { evaluated domain } else { OPERATION }. The old None/Some match-arm spellings no longer exist. The replacement markers delete the actual legacy fallback and evaluated condition respectively. A same-length readback-to-readbacK domain mutation adds an attack. The original helper, baseline validation, all other assertions, complete collector/ignored inputs and cache rules are unchanged.",
+      "unchanged_class_methods": 11
+    },
+    {
+      "change": "Root QA",
+      "decision": "Accept the existing actual Root case FQN addition; do not relax counts.",
+      "evidence": "The exact246d workflow08ffc5c603a4c950cca285ed2b1e479508d8b5ed contains the added UID0 final-use late-B-loss FQN once. The original six issuer entries remain ordered; the list becomes seven. All twelve class methods, uniqueness/subset checks and exact 7+len(ROOT_CASES)+len(ROOT_ISSUER_CASES) equation remain unchanged. The workflow itself is unchanged.",
+      "limit": "This source inventory assertion does not execute the ignored UID0 Rust case."
+    },
+    {
+      "change": "Blob-size allowance",
+      "decision": "Accept one additive exact final CALLERS SHA256 line.",
+      "evidence": "All existing allowance bytes are an exact prefix. The sole new allowance is SHA25613a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec for CALLERS.toml. Generic size policy is unchanged."
+    }
+  ],
+  "executed_by_this_review": "Offline byte/hash/TOML/AST/Merkle comparison and immutable proof reads only; no H, source edits, original driver main, formatter, Cargo, test or full gate.",
+  "formal_launch_conditions": [
+    "Do not pass the candidate REPAIR_PACKET directly to the native driver: its proposal schema is intentionally different.",
+    "Create a separate hepta-reviewed-nonrust-source-apply-v1 packet, retaining all five changes exactly; map base_commit/base_tree to actual source_identity={head246d,treeD564,status empty}/base_physical_tree, and expected_after_tree to expected_after_physical_tree. Preserve baseline inventory and count15188. Re-pin the resulting complete bytes.",
+    "Bind the actual derived packet pin and b7b357c07b5539769a068c6b9b009629f5612d1e after-tree to formal config with the exact five allowed paths, unchanged source/control pins and budgets; Root alone supplies final approval/review identities.",
+    "The currently reviewed HOLD contains null packet/after-tree/review pins and false approval. This review does not authorize its execution.",
+    "Retain the actual formatter terminal, full inventory, raw Git and all postimages. Any formatter drift still requires source/fence review and a new frozen exact source. The repaired source must later run the original full qualification entrances; neither old gate results nor the local four-method result supplies that PASS."
+  ],
+  "format": "hepta-246d-five-file-repair-and-successor-independent-review-v1",
+  "leaf_count": 15188,
+  "not_execution_approval": true,
+  "reviewer": "evaluation_audit",
+  "scoped_evidence_reviewed": {
+    "four_original_failed_methods_preserved": true,
+    "full_source_or_runtime_qualification": false,
+    "observed_status": "passed_scoped_diagnostic",
+    "ordinary_original_four_method_result": {
+      "bytes": 1248,
+      "git_blob": "2ea6771594c596fca328704b37dc688353e13bb4",
+      "sha256": "a3cc5925aad9c52395b093d4c03233bcbb9a3cdaf37372d242ba07c0ed78ec6d"
+    },
+    "repeat_execution_by_this_candidate_review": false,
+    "returncode": 0,
+    "separate_custody_local_mechanism": "86b27d8511396f485f605f71d13ea97c926e1cec records nine earlier original-boundary probes over a deliberately limited four-file index; it is not the full collector.",
+    "timed_out": false
+  },
+  "source_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "static_byte_review": {
+    "bytes": 5991,
+    "git_blob": "815d0bd8a8cf573c8c1b9e5efae35cfe1d90dc57",
+    "sha256": "8025af9d3527bcead70f0519594046345aa5ac0d8112824a30a6c3f132c5e00f"
+  },
+  "static_preservation": {
+    "changed_qa_class_methods": 1,
+    "deleted_or_added_test_methods": 0,
+    "five_after_bytes_equal_packet_and_proposal_files": true,
+    "five_preimages_match_exact_full_canonical_inventory": true,
+    "full_15188_leaf_merkle_base_and_after_exact": true,
+    "generated_diff_equals_original_REPAIR_diff": true,
+    "qa_class_methods_byte_and_AST_identical": 32,
+    "qa_class_methods_in_three_changed_files": 33,
+    "rust_production_or_test_bytes_changed": false,
+    "source_verifier_typed_helper_gate_budget_or_full_collector_changed": false
+  },
+  "status": "NO_REMAINING_SPECIFIC_SEMANTIC_BLOCKER_IN_REVIEWED_CANDIDATE_AND_HOLD_DRIVER",
+  "successor_control": {
+    "budgets": {
+      "fmt_seconds": 900,
+      "preflight_apply_seconds": 600,
+      "record_seconds": 300,
+      "typed_outer_seconds_required": 2100
+    },
+    "changed_definitions": [
+      "module_from_original",
+      "prepare"
+    ],
+    "concurrency_and_integrity": "Original exclusive same-inode coordination lock, live global build/formatter guard, unchanged environment/tool/material/space checks, source-entry snapshots, full source and raw Git equality, actual postimages and original-input final audits remain enforced.",
+    "current_baseline": "Actual detached246d/d564 with all15188 clean indexed physical leaves and exact fullinventory663373/df891018; initial raw Git must still equal the actual canonical-after state. The historical dirty V5/SH73 baseline is no longer used as current source.",
+    "current_source_proof_pins": {
+      "full_comparison": "54cc9f6894944027a22b0d8f7ea16a2c978a1d74",
+      "git_after": "c81a713647d2b0d39eded736f681bc3058139682",
+      "handoff": "110ab48579e159301900daa663d289964a63bc34",
+      "normal": "bcc7b94d9f9f721f6592632db5a6408468014270",
+      "original_run": "96ca7c7728c7ac3944782abc0d219dd75a8b9f75"
+    },
+    "diff": {
+      "bytes": 17981,
+      "git_blob": "bd806cf256834ea36ec06d9926b6f4a5bfafaad0",
+      "sha256": "975bf509da399b904998a006ba3d0f71869ea1f0339f59bac4d9d02eeba78863"
+    },
+    "driver": {
+      "bytes": 28621,
+      "git_blob": "9101b44fb2ab24ae41a1344425dd74b536a40de4",
+      "sha256": "0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228"
+    },
+    "failure_handling": "Any partial write/attempted-command exception remains UNKNOWN; known formatter failure stays failed, unverified final audit downgrades to UNKNOWN. Source writes/formatting alone never set qualification or freeze_approved.",
+    "formatter_scope": "Only original just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f,900seconds. No new fix/test command; original recorder/stage/final audit behavior preserved.",
+    "mutation_scope": "The exact five existing100644 paths only; immediate before-pin checks and atomic sibling replacement, per-path attempted/completed records, no rollback. Complete after-apply leaf map must equal the independently derived approved tree. No deletion/new path/permission/Rust/HEAD/index/ref change is admitted.",
+    "old_runtime_scope": "The immutable V5 driver/config and successful historical maintenance result are retained solely for unchanged original environment/source-entry/recording behavior. Their success is not inherited as qualification of the new candidate.",
+    "original": {
+      "bytes": 22679,
+      "git_blob": "24d705376fe042f040d87b6a5fc72a67780b01fa",
+      "sha256": "a0cb7e886255c53e34f21002051209580bdb8e2089d4a892f6789ae95d15ea04"
+    },
+    "previous_failure_scope": "Actual pinned source-run proof was independently read: closure failed, self-test passed, verify passed; outer failed/exit1/complete/non-timeout. The driver requires and archives these exact facts, plus actual unchanged origin Git/fullphysical. It records previous_source_gate_status=failed and never changes it to PASS.",
+    "replaced_function": {
+      "prove_actual_capture": "prove_actual_clean_source"
+    },
+    "unchanged_definitions": [
+      "apply_packet",
+      "first_read",
+      "identity",
+      "lock_identity",
+      "main",
+      "retain_terminal"
+    ],
+    "waiting_config": {
+      "bytes": 1808,
+      "git_blob": "caf8b84a97dc56ec6dfe1a0320afd1977092dffe",
+      "sha256": "bdebc4a5641be8df8b4ac2b5af577dc8e8764db299d2e0e0db7b11b25c323699"
+    }
+  }
+}

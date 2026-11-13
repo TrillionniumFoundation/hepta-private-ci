@@ -1,0 +1,65 @@
+{
+  "actual_artifact_manifest": {
+    "bytes": 62965,
+    "git_blob": "ea898b88fbb0e4a83a94b01d7b9fbfbe56dde7bf",
+    "sha256": "9a05c5017ac52da29e78b954da246f3d8d719edc548461e9bedf551179a3cf80"
+  },
+  "format": "hepta-246d-actual-inventory-gzip-parts-exact-recovery-v1",
+  "gzip": {
+    "bytes": 1261632,
+    "git_blob": "82578372e4a519fa8e8294f40480ca96c01dfc71",
+    "name": "final.inventory.json.gz",
+    "sha256": "22df79abd256e097c4e577cca9d21c624426db41c02fde76e1ec42d6237f7d39"
+  },
+  "native_commands_executed": false,
+  "parts": [
+    {
+      "bytes": 349529,
+      "git_blob": "18ea7a2bdfe70347d87fa75f921f9ec0700fded5",
+      "name": "final.inventory.json.gz.part-001.b64",
+      "sha256": "02bbaf7111a5ca1d3391b9ed1ffec1e3755e60bed60fc3214fecc7e7fdcebb47"
+    },
+    {
+      "bytes": 349529,
+      "git_blob": "32e066c7c6947bc75a328dd4d26013d198a665f6",
+      "name": "final.inventory.json.gz.part-002.b64",
+      "sha256": "d6d8c698730e1dedfe6e7248ca4301913364b47b3763f7d069de7e2d5371dc42"
+    },
+    {
+      "bytes": 349529,
+      "git_blob": "d2b1d377e533487dc5c606cc69db4eb5c23a1eff",
+      "name": "final.inventory.json.gz.part-003.b64",
+      "sha256": "adab26c44c182cf213f7e3dd002dbe4cc111afe4b3021d48138eb1feb0f69915"
+    },
+    {
+      "bytes": 349529,
+      "git_blob": "6282262757c9fcabf67fee4b61ccb14ed2b0c6a6",
+      "name": "final.inventory.json.gz.part-004.b64",
+      "sha256": "26d7e2f4064f274f6d666d38332ad8a85b41cb0f927e7bd8b0e0a91cb7775541"
+    },
+    {
+      "bytes": 284077,
+      "git_blob": "0209af780035ea795209887b4e0ab4b922be1057",
+      "name": "final.inventory.json.gz.part-005.b64",
+      "sha256": "71650b9ee1c8fe18adc6d2dae2b0de0eccbb8f41b7830d275da11f6c3e8eb075"
+    }
+  ],
+  "provenance": "The raw inventory had already matched native original bytes/SHA256/Git identity. One standard gzip level-9 mtime-zero encoding and its original 262144-byte parts independently match every observed original ARTIFACTS identity, including each decoded offset and SHA256. This is exact-byte recovery, not another native full read.",
+  "qualification": false,
+  "raw": {
+    "bytes": 5611436,
+    "git_blob": "44e2588e8e3fc7f1f93d65d0191cefd801712217",
+    "sha256": "cf8e6251416d41265528e7e4fbb9a9cd7a9502e02694dc2544c8c2acc0cf3606"
+  },
+  "reconstruction": "Base64-decode the five listed text parts separately, concatenate in order, verify gzip identity, gunzip once, verify raw identity. The same bytes are mapped to all listed original inventory paths; no synthetic new observation is claimed.",
+  "same_original_inventory_bytes_at_paths": [
+    "apply.after.inventory.json.gz",
+    "apply.after.inventory-after-retention.json.gz",
+    "fmt.after.inventory.json.gz",
+    "fmt.after.inventory-after-retention.json.gz",
+    "final.inventory.json.gz",
+    "final.inventory-after-retention.json.gz"
+  ],
+  "source_mutation": false,
+  "status": "EXACT_ORIGINAL_RAW_GZIP_AND_ALL_FIVE_ENCODED_PARTS_MATCH"
+}

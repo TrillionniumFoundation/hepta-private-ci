@@ -1,0 +1,87 @@
+diff --git a/.github/blob-size-allowlist.txt b/.github/blob-size-allowlist.txt
+index 4d9a0f0ab6c4e738d879c52f60f039bfd2d45bbc..c3257329caece666950db2041a8e9f47acf5c129 100644
+--- a/.github/blob-size-allowlist.txt
++++ b/.github/blob-size-allowlist.txt
+@@ -111,3 +111,6 @@ sha256:d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903 CALLERS.
+ 
+ # Actual evaluated ordinary owner source protections and exact retained caller inventory.
+ sha256:51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb CALLERS.toml
++
++# Original Trainer readonly adapters reject actual custody recovery; exact reviewed inventory.
++sha256:13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec CALLERS.toml
+diff --git a/CALLERS.toml b/CALLERS.toml
+index fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6..db00e6d39c00e67b2454ee0bba05151aa4e1fac1 100644
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -10329,7 +10329,7 @@ required_function_order = [{ function = "fn validate_config(", sequence = ["Lear
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs"
+ required = ["const OPERATION: &str =\n    \"runtime.learning.original-q24-training.readback.v1\";", "pub struct OriginalCellQ24TrainingReadbackConnectionV1 {", "\n    peer: HostAuthorityPeerChannel,", "\n    material: OriginalCellQ24MaterialReceiptConfigV1,", "\n    initial_binding: Digest32,", "pub(in crate::learning_iteration_evidence_client) struct OriginalTrainingReadbackV1 {", "\n    peer: Option<HostAuthorityPeerChannel>,", "\n    dataset: OriginalCellQ24MaterialCommandReceiptV1,", "\n    training: OriginalCellQ24TrainingCommandReceiptV1,", "\n    context: OriginalCellQ24TrainingCommandContextV1,", "\n    binding: Digest32,", "b\"hepta.agentd.original-q24-training-readback.v1\\0\""]
+-forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "recover_original", "pub peer:", "pub material:", "pub initial_binding:", "pub dataset:", "pub training:", "pub context:", "pub binding:"]
++forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "recover_original", "pub peer:", "pub material:", "pub initial_binding:", "pub dataset:", "pub training:", "pub context:", "pub binding:", "recover_original_custody"]
+ required_function_order = [
+   { function = "fn from_original_stream(", sequence = ["let (initial_binding, started_at) =", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "if peer.actor_id != material.initial.owners.trainer", "return Err(Error::Binding(", "let channel = original_owner_command_channel_v1(", "stream", "AgentdRootAuthorityPeer {", "pid: peer.pid", "boot_id: peer.boot_id", "process_start_ticks: peer.process_start_ticks", "peer.uid", "original_owner_pidfd", "timeout", "lifetime", "channel.check_peer_lifetime()?;", "let (after, current) =", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "if current < started_at || after != initial_binding", "return Err(Error::Binding(", "Ok(Self {", "peer: channel", "material", "initial_binding"], top_level = ["let (initial_binding, started_at) =", "if peer.actor_id != material.initial.owners.trainer", "let channel = original_owner_command_channel_v1(", "channel.check_peer_lifetime()?;", "let (after, current) =", "if current < started_at || after != initial_binding", "Ok(Self {"] },
+   { function = "fn bind_original_training(", sequence = ["self,", "dataset: OriginalCellQ24MaterialCommandReceiptV1", "training: OriginalCellQ24TrainingCommandReceiptV1", "let started_at = now()?;", "let context = OriginalCellQ24TrainingCommandContextV1 {", "dataset: dataset.snapshot().clone()", "scope: self.material.scope.clone()", "verifier: self.material.verifier.clone()", "if context.validate()? != self.material.initial", "return Err(Error::Binding(", "let binding = binding(&context)?;", "self.peer.check_peer_lifetime()?;", "let (original, current) =", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(", "&self.material", "let verified_at =", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "&dataset", "&self.material", "if current < started_at || verified_at < current || original != self.initial_binding", "return Err(Error::Binding(", "let verified = wire::authenticate_receipt(", "&context", "training.receipt.clone()", "training.attestation.clone()", "verified_at", "if verified != training", "return Err(Error::Binding(", "let reader = OriginalTrainingReadbackV1 {", "peer: Some(self.peer)", "next_request_id: 1", "material: self.material", "dataset,", "training,", "context,", "binding,", "Ok(LearningIterationEvidenceClientV1 {", "channel: Mutex::new(None)", "command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Training(", "reader"], top_level = ["let started_at = now()?;", "let context = OriginalCellQ24TrainingCommandContextV1 {", "if context.validate()? != self.material.initial", "let binding = binding(&context)?;", "self.peer.check_peer_lifetime()?;", "let (original, current) =", "let verified_at =", "if current < started_at || verified_at < current || original != self.initial_binding", "let verified = wire::authenticate_receipt(", "if verified != training", "let reader = OriginalTrainingReadbackV1 {", "Ok(LearningIterationEvidenceClientV1 {"] },
+@@ -10342,7 +10342,7 @@ required_function_order = [
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"
+ required = ["OriginalCellQ24TrainingCommandOwnerV1<TW, RW>"]
+-forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "self.cancellation", "execution_requested", "bootstrap_lane", "OriginalCellQ24DatasetCommandReadbackV1::readback(", "::from_original_", "::recover_", "pub now:"]
++forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "self.cancellation", "execution_requested", "bootstrap_lane", "OriginalCellQ24DatasetCommandReadbackV1::readback(", "::from_original_", "::recover_", "pub now:", "recover_original_custody"]
+ required_function_order = [
+   { function = "fn serve_original_training_readback(", sequence = ["Arc::clone(&self.connections)", ".try_acquire_owned()", ".map_err(|_| Error::Busy)?;", "let mut channel = original_owner_command_channel_v1(", "stream,", "consumer,", "consumer_uid,", "original_consumer_pidfd,", "timeout,", "lifetime,", "tokio::task::spawn_blocking(move || {", "let _permit = permit;", "self.serve_original_training_readback_channel(&mut channel)", ".await", ".map_err(|_| Error::CommitUncertain)?"], top_level = ["let permit =", "let mut channel = original_owner_command_channel_v1(", "tokio::task::spawn_blocking(move || {"] },
+   { function = "fn serve_original_training_readback_channel(", sequence = ["for request_id in 1..=128_u64", "if !channel.exchange(|bytes| {", "self.original_training_readback_response(bytes, request_id)", ".map_err(|_| HostIssuerTransportError::InvalidRequest)", "return Ok(request_id - 1);", "Err(Error::Unavailable)"], top_level = ["for request_id in 1..=128_u64", "Err(Error::Unavailable)"] },
+@@ -10352,7 +10352,7 @@ required_function_order = [
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs"
+ required = ["OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"]
+-forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "self.cancellation", "execution_requested", "bootstrap_lane", "OriginalCellQ24DatasetCommandReadbackV1::readback(", "::from_original_", "::recover_", "pub now:"]
++forbidden = ["SigningKey", "SignedLearningEvidenceV1 {", "File::open", "OpenOptions", "UnixStream::connect", "UnixListener", "HostAuthorityPeerChannel::from_stream", ".sign(", "sign_original(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".claim(", ".complete(", ".compare_and_swap(", "impl Clone", "derive(Clone", "dyn Fn", "impl Fn", "permit_all", "if false", "unwrap_or", "State::Starting", "State::Ready(", "std::mem::replace", "build_original_owner(", "wire::Action::Execute", "self.cancellation", "execution_requested", "bootstrap_lane", "OriginalCellQ24DatasetCommandReadbackV1::readback(", "::from_original_", "::recover_", "pub now:", "recover_original_custody"]
+ required_function_order = [
+   { function = "fn serve_original_training_readback(", sequence = ["Arc::clone(&self.connections)", ".try_acquire_owned()", ".map_err(|_| Error::Busy)?;", "let mut channel = original_owner_command_channel_v1(", "stream,", "consumer,", "consumer_uid,", "original_consumer_pidfd,", "timeout,", "lifetime,", ".map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;", "tokio::task::spawn_blocking(move || {", "let _permit = permit;", "self.serve_original_training_readback_channel(&mut channel)", ".await", ".map_err(|_| Error::Uncertain)?"], top_level = ["let permit =", "let mut channel = original_owner_command_channel_v1(", "tokio::task::spawn_blocking(move || {"] },
+   { function = "fn serve_original_training_readback_channel(", sequence = ["for request_id in 1..=128_u64", "if !channel", ".exchange(|bytes| {", "self.original_training_readback_response(bytes, request_id)", ".map_err(|_| HostIssuerTransportError::InvalidRequest)", ".map_err(OriginalCellQ24TrainingCommandErrorV1::from)?", "return Ok(request_id - 1);", "Err(Error::Uncertain)"], top_level = ["for request_id in 1..=128_u64", "Err(Error::Uncertain)"] },
+diff --git a/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py b/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
+index 2f0f2187964f6ee34383696b2d1d1ff2984fc3d9..6aa44ad7984ce7af5cb6fd5f67f781cd658b238e 100644
+--- a/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
++++ b/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
+@@ -40,7 +40,7 @@ FUNCTIONS = {
+         "fn attest_original_completion(", "fn attest_original_remote_completion(",
+         "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
+         "fn read_remote_next_use(", "fn original_command_profile(",
+-        "fn into_command_owner(",
++        "fn into_command_owner(", "fn require_profile(",
+     },
+     BINDING: {
+         "fn validate_config(", "fn authenticate_predecessors(", "fn receipt(",
+diff --git a/qa/b4-no-bypass/test_original_selection_readback_source_closure.py b/qa/b4-no-bypass/test_original_selection_readback_source_closure.py
+index 701576c41fdd1043778a026221ed09f3fcbb2e92..1901452c88fb7ad5df8b7950bc099c10835351e6 100644
+--- a/qa/b4-no-bypass/test_original_selection_readback_source_closure.py
++++ b/qa/b4-no-bypass/test_original_selection_readback_source_closure.py
+@@ -270,8 +270,13 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
+             with self.subTest(marker=marker):
+                 replacement = marker.replace("!=", "==") if "!=" in marker else marker.replace("!", "", 1)
+                 self.mutate(CLIENT, "fn require_request(", marker, replacement)
+-        self.mutate(CLIENT, "fn operation(", "None => OPERATION")
+-        self.mutate(CLIENT, "fn operation(", "Some(_)")
++        self.mutate(CLIENT, "fn operation(", "} else {\n        OPERATION\n    }")
++        self.mutate(CLIENT, "fn operation(", "context.evaluated.is_some()")
++        self.mutate(
++            CLIENT, "fn operation(",
++            '"runtime.learning.original-circuit-evaluated-selection.readback.v1"',
++            '"runtime.learning.original-circuit-evaluated-selection.readbacK.v1"',
++        )
+ 
+     def test_service_checks_read_only_request_before_the_same_original_owner(self):
+         guard = "readonly::require_request(&request, &self.context, request_id, now()?)?;"
+diff --git a/qa/b4-no-bypass/test_resident_root_source_closure.py b/qa/b4-no-bypass/test_resident_root_source_closure.py
+index 0ef4dc5b862c8e684697775d3469823537961005..c9c4ed3e54a1c24f298d7c16a461e344828ac71f 100644
+--- a/qa/b4-no-bypass/test_resident_root_source_closure.py
++++ b/qa/b4-no-bypass/test_resident_root_source_closure.py
+@@ -118,6 +118,7 @@ ROOT_ISSUER_CASES = [
+     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
++    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+ ]
+ 
+ class ResidentRootSourceClosureTests(unittest.TestCase):

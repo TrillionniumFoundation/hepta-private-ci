@@ -1,0 +1,26 @@
+{
+  "base_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order",
+    "test_original_selection_readback_source_closure.OriginalSelectionReadbackClosureTests.test_wire_purpose_action_sequence_and_original_context_cannot_change",
+    "test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap",
+    "test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+  ],
+  "complete_source_gate": false,
+  "cwd": "/tmp/hepta-36fa-source-closure-246d-diagnosis-v1/targeted-proposal-source/qa/b4-no-bypass",
+  "format": "hepta-local-original-four-method-diagnostic-v1",
+  "native_Cargo_or_H": false,
+  "proposal_manifest": {
+    "bytes": 6650,
+    "git_blob": "2c5ac17667053597ee9111445da45164afd849ae",
+    "sha256": "36bb9a7cb7295269f0a9219123d0bb38a01d7badb06bcbd8400732c567332085"
+  },
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "scope": "Only the four original failure methods and their original class setup. Partial exact source is sufficient for these protected-file methods, never used as a closed-world collector or full source gate.",
+  "timeout_seconds": 600
+}

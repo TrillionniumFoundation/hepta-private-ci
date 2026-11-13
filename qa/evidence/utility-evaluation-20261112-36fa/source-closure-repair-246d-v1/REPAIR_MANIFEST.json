@@ -1,0 +1,148 @@
+{
+  "actual_original_failure": {
+    "raw": {
+      "bytes": 118496,
+      "git_blob": "f84b983ace7dfd3dbe8de0a3972274d0f8a930e3",
+      "sha256": "f51a3e278d6e5072b0c13b94c2279eaa890419e8445af5e12eb9021565ecb29f"
+    },
+    "raw_method_counts": {
+      "failed_methods": 4,
+      "failure_entries": 6,
+      "ok": 488,
+      "total": 492
+    },
+    "unchanged_runner_counts": {
+      "failed": 6,
+      "passed": 486
+    }
+  },
+  "base_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "base_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "changes": [
+    {
+      "after": {
+        "bytes": 10965,
+        "git_blob": "6aa44ad7984ce7af5cb6fd5f67f781cd658b238e",
+        "sha256": "54cd24db176f41407f270da16357a74e759deb0043a5d37862a3b825a78fc415"
+      },
+      "before": {
+        "bytes": 10942,
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+      },
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "rationale": "Add the already-protected private Sources::require_profile to the exact expected function set. Existing per-sequence mutation loop now attacks its original full-body sequence too; no old expected entry or mutation is removed."
+    },
+    {
+      "after": {
+        "bytes": 24713,
+        "git_blob": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+        "sha256": "c9ee98b559be8f646b49d4408ed45345bb33b0f1e44116693dc3b7b82ccb0464"
+      },
+      "before": {
+        "bytes": 24442,
+        "git_blob": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+        "sha256": "343f666445888fca75e8304823911bb3e1ea54502f7d5ce7b689b60779961dd5"
+      },
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "rationale": "Translate both original branch-deletion attacks from stale match-arm spellings to the exact pinned if/else body. Legacy fallback removal and evaluated-condition removal both remain. Add one same-length evaluated-return-domain mutation; original mutation helper and all other purpose/action/context assertions are unchanged."
+    },
+    {
+      "after": {
+        "bytes": 28123,
+        "git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+        "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e"
+      },
+      "before": {
+        "bytes": 27811,
+        "git_blob": "0ef4dc5b862c8e684697775d3469823537961005",
+        "sha256": "528221475bae004ea46aa7d16e86595294a86254589083f08d240f7ad1377939"
+      },
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "rationale": "Append the actual already-registered UID0 issuer case FQN. Keep the original six issuer cases, all Root cases, uniqueness/subset assertions and exact 7+len(ROOT_CASES)+len(ROOT_ISSUER_CASES) equality; no count relaxation."
+    },
+    {
+      "after": {
+        "bytes": 1577765,
+        "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+        "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+      },
+      "before": {
+        "bytes": 1577681,
+        "git_blob": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+        "sha256": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb"
+      },
+      "path": "CALLERS.toml",
+      "rationale": "Three additive complete-identifier prohibitions restore the existing three readonly custody-recovery attacks. Original whole-token matcher, all old forbidden markers and every caller/boundary/authority field remain unchanged. This is not a general recover-prefix detector or evidence of runtime authority acquisition."
+    },
+    {
+      "after": {
+        "bytes": 13072,
+        "git_blob": "c3257329caece666950db2041a8e9f47acf5c129",
+        "sha256": "5c9663a527f8d1d926546747a430b5d9b6cbe5102b696c2e81ddcbb1c1bb17b1"
+      },
+      "before": {
+        "bytes": 12891,
+        "git_blob": "4d9a0f0ab6c4e738d879c52f60f039bfd2d45bbc",
+        "sha256": "129365df7a87fd2b90f92254f4968017baaf4e50126f65c08259c51852ba918f"
+      },
+      "path": ".github/blob-size-allowlist.txt",
+      "rationale": "Append only the exact new CALLERS SHA256 exception; all historical exceptions and the generic size limit remain unchanged."
+    }
+  ],
+  "encoded_parts": [
+    {
+      "bytes": 262145,
+      "git_blob": "ca7bab534db3688a02e38af70406cae1720018b5",
+      "name": "REPAIR_PACKET.json.gz.part001.b64",
+      "sha256": "bb05f1ee6b4ff595fa11a8fe26e5aa3a11d09813f148929df73757734c5d7fa0"
+    },
+    {
+      "bytes": 262145,
+      "git_blob": "4fc34ad469d1015e7a8d3fa83b08efe0c1aa11ac",
+      "name": "REPAIR_PACKET.json.gz.part002.b64",
+      "sha256": "9f3ce4445e8247dcbb192deae48a827a4e520a8c1ca496f3c756f115e74b87b5"
+    },
+    {
+      "bytes": 49541,
+      "git_blob": "4d27773caa3c2cc31125932f0d3e63c080a21c95",
+      "name": "REPAIR_PACKET.json.gz.part003.b64",
+      "sha256": "7d3a36c6a983fdc0709215cfc38df0740cc54dbb0a49a073f2cabf2bdf84ef39"
+    }
+  ],
+  "exact_new_root_issuer_case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+  "expected_after_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "format": "hepta-246d-source-closure-repair-review-v1",
+  "gzip": {
+    "bytes": 430369,
+    "git_blob": "2164101bcfe0c0885432127a0e67d04da6bbec58",
+    "sha256": "2242b0238b34900a5cdad48a47df6117ee1cf83e582cff9ee2c7fa21601e2915"
+  },
+  "invariants": {
+    "Rust_source_changed": false,
+    "commit_ref_PR_activated": false,
+    "deadlines_budgets_collector_scopes_or_retry_changed": false,
+    "native_H_or_Cargo_executed": false,
+    "new_test_methods": 0,
+    "old_test_methods_removed": 0,
+    "protected_changes": "only three additive forbidden full identifiers at386/387/388",
+    "qualification_claim": false,
+    "training_test_bytes_changed": false,
+    "unchanged_boundaries": 569,
+    "unchanged_protected_row_count": 422,
+    "verifier_or_typed_helper_changed": false,
+    "workflow_changed": false
+  },
+  "leaf_count": 15188,
+  "packet": {
+    "bytes": 2209325,
+    "git_blob": "bade35cfabded0a0db3451d758e8316034cabec6",
+    "sha256": "c18566ac882c18008ea03a0926a8734187466b1987abc969eda5042a13c24c88"
+  },
+  "patch": {
+    "bytes": 13920,
+    "git_blob": "10c9aadf44e5162aa13d812105f6470ba14ea166",
+    "sha256": "a3c3424a17a1b18793b56db47dc3f14d1098f17cdfd8446cea5e21748040546b"
+  },
+  "status": "PREPARED_NOT_ACTIVATED_NOT_YET_TESTED"
+}

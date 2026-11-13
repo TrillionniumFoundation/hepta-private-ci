@@ -1,0 +1,24 @@
+--- 765ada67a33f4d9aeaf29c9c522898057083cafb
++++ source-repair-canonical-alignment-v1-HOLD
+@@ -9,7 +9,7 @@
+ import shutil, signal, stat, struct, subprocess, sys, time, traceback, types, zlib
+ 
+ REPO = pathlib.Path('/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1')
+-CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1')
++CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/source-repair-canonical-alignment-v1')
+ OUT = CONTROL / 'run'
+ CONFIG = CONTROL / 'APPROVED_CONFIG.json'
+ PACKET = CONTROL / 'CANONICAL_PACKET.json'
+@@ -17,9 +17,9 @@
+ LOCK_ID = {'device':2050,'inode':50139448,'uid':1000,'mode':384,'nlink':1}
+ INVENTORY = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py')
+ GIT = '/usr/bin/git'
+-OLD = '9c4a11f61d30e9cc352bf44d56c98909d202a55d'
+-OLD_TREE = 'ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7'
+-OLD_PARENTS = ['86dd56a930277e0d1aef3e475e35c2b5d60b43b7']
++OLD = '246d8cb614770252ee42029a5c014f2a4904176a'
++OLD_TREE = 'd5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087'
++OLD_PARENTS = ['9c4a11f61d30e9cc352bf44d56c98909d202a55d']
+ NEW = NEW_TREE = NEW_PARENTS = None
+ LEAVES = 15188
+ ACTION_SECONDS = 600

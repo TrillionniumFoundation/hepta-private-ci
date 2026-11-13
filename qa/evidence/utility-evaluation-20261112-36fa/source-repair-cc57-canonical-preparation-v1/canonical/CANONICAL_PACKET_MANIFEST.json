@@ -1,0 +1,110 @@
+{
+  "actual_before_inventory": {
+    "bytes": 5611436,
+    "filesystem_entries": 15188,
+    "git_blob": "44e2588e8e3fc7f1f93d65d0191cefd801712217",
+    "sha256": "cf8e6251416d41265528e7e4fbb9a9cd7a9502e02694dc2544c8c2acc0cf3606",
+    "tracked_entries": 15188
+  },
+  "actual_final_format_result": {
+    "bytes": 7097,
+    "git_blob": "6cb1b8d6af25907ca0fea5d9bd0f787062dbef94",
+    "sha256": "f0a8fd1bb8b6b3b4aa71cf5e9a0683cb4d4e0d7b532cc0cde43bedff4244544f"
+  },
+  "actual_final_git_state": {
+    "bytes": 489,
+    "git_blob": "c81a713647d2b0d39eded736f681bc3058139682",
+    "sha256": "21f7d6e2b6c00369df7c9b04b2cee028c851a21a69fcdafdc75ee7c21f4fd0ef"
+  },
+  "authentic_raw_commit": {
+    "bytes": 916,
+    "git_blob": "9320a0edafa9e2a9fd1ca73120d609851e4afcc3",
+    "sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "sha256": "9bf2f19821b3007a29d446967ccc8a025e2ac671f1e0301c8e71b37848d72e48",
+    "type": "commit"
+  },
+  "canonical_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "canonical_parents": [
+    "246d8cb614770252ee42029a5c014f2a4904176a"
+  ],
+  "canonical_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "expected_after_inventory": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "tracked_entries": 15188
+  },
+  "expected_after_inventory_limit": "Prediction using the unchanged original compact serializer. Native must independently produce these exact bytes after its index/HEAD operation; no observed clean cc57 source is claimed.",
+  "format": "hepta-canonical-alignment-packet-manifest-v1",
+  "native_alignment_started": false,
+  "objects": {
+    "blob": 5,
+    "commit": 1,
+    "total": 10,
+    "tree": 4
+  },
+  "original_artifact_manifest": {
+    "bytes": 62965,
+    "git_blob": "ea898b88fbb0e4a83a94b01d7b9fbfbe56dde7bf",
+    "sha256": "9a05c5017ac52da29e78b954da246f3d8d719edc548461e9bedf551179a3cf80"
+  },
+  "packet": {
+    "bytes": 2220779,
+    "git_blob": "173cddd5b019c8d137adc42989f1075d5ebda6ec",
+    "sha256": "d311e33a4800352ca8de1634560208952b02463b9daaff5a52a05fa55afc1d78"
+  },
+  "packet_gzip": {
+    "bytes": 436045,
+    "git_blob": "1c6ef7b7b9a1556a1bc4c0e9452850623ea007f2",
+    "sha256": "646b658ed02e38ccc75fed19bedb97c0fc0cf418eb852f27170962c3f9287fe8"
+  },
+  "packet_parts": [
+    {
+      "decoded": {
+        "bytes": 196605,
+        "git_blob": "b81b6aa059fa80b477bf95215ff409d83863411d",
+        "sha256": "c7138c3d4585ae1123ac71d6abcaf126ebec8f9d62f7d2949bbc34ad3d5e39fd"
+      },
+      "encoded": {
+        "bytes": 262141,
+        "git_blob": "0ecea09f8df82ccb9af6ba84d21fc418888317b8",
+        "sha256": "a44ad24d982ef069105f434e97cf877d1aafa92d8677fa140a7cbfe92c8e5ae4"
+      },
+      "gzip_offset": 0,
+      "path": "CANONICAL_PACKET.json.gz.part001.b64"
+    },
+    {
+      "decoded": {
+        "bytes": 196605,
+        "git_blob": "be77daf36741bbcf7d9f5aee1f0cadfd32c4f9c3",
+        "sha256": "5327e5657fd16fdaba93cfbef641dcfad4f72fbb9f0f1b8483d1310eaa19ccd9"
+      },
+      "encoded": {
+        "bytes": 262141,
+        "git_blob": "80195df2cc27e50be8830ee0f452d85df3d4c3f5",
+        "sha256": "73cf6bd413e66e04085b0d8201ac71ce3356c5c68a4cfe4f9e7e1250c2b33081"
+      },
+      "gzip_offset": 196605,
+      "path": "CANONICAL_PACKET.json.gz.part002.b64"
+    },
+    {
+      "decoded": {
+        "bytes": 42835,
+        "git_blob": "f95ce919165c641fdf8114a192ec5759221a3dd7",
+        "sha256": "d969e3e3c3ee5d85318d527aa72cda8bf03de5567729e8139ef3f6a37c8e7354"
+      },
+      "encoded": {
+        "bytes": 57117,
+        "git_blob": "68824879844b0f055e558822a96275e6dedd45a6",
+        "sha256": "ef374ca4eb8129afca21f762db9c981e111bfdb9ae513d9e43a1214746794670"
+      },
+      "gzip_offset": 393210,
+      "path": "CANONICAL_PACKET.json.gz.part003.b64"
+    }
+  ],
+  "physical_source_bytes_and_modes_unchanged_in_projection": true,
+  "qualification": false,
+  "source_branch_ref_updated": false,
+  "status": "authentic_commit_and_packet_prepared_native_alignment_not_started"
+}

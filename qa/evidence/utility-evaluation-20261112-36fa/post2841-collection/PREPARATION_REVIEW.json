@@ -1,0 +1,139 @@
+{
+  "base": {
+    "all_four_saved_tree_reads_raw_Git_recomputed": true,
+    "commit": "64b921b3f6031d515883a7ca506207932da3997f",
+    "files": 2841,
+    "leaf": "dd01bc90b0c8a7671df8327fa6f11adf61a1fedd",
+    "saved_commit_ref_and_PR_body_pins_verified": true
+  },
+  "base_README_archive": "checkpoints/README_2841FILES_BEFORE_POST2841_INCREMENT.md",
+  "cutoff_input_record": {
+    "bytes": 161216,
+    "git_blob": "aef00d80f339e1dd89a4e41d239bb3873658a420",
+    "sha256": "27c59bf6d3d97fc7af5306c1f01d6320dd2e291173e6d9ba1a242d2f47161e20"
+  },
+  "exact_inventory_recovery": {
+    "canonical14_already_in_base_not_added_again": true,
+    "gzip": {
+      "bytes": 1261385,
+      "git_blob": "506003ca0074bfac9910d5f5ed17d569840c6101",
+      "sha256": "8fc1c31b8fcba0e92c8685817415fa62aed0238145fd5e9f99eca1bc932b0888"
+    },
+    "is_native_compact_snapshot": false,
+    "is_new_physical_observation": false,
+    "original_references_verified": [
+      {
+        "manifest": "source-closure.retained-manifest.original.json",
+        "original_path": "source-after.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      },
+      {
+        "manifest": "source-closure.retained-manifest.original.json",
+        "original_path": "source-before.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      },
+      {
+        "manifest": "self-test.retained-manifest.original.json",
+        "original_path": "source-after.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      },
+      {
+        "manifest": "self-test.retained-manifest.original.json",
+        "original_path": "source-before.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      },
+      {
+        "manifest": "verify.retained-manifest.original.json",
+        "original_path": "source-after.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      },
+      {
+        "manifest": "verify.retained-manifest.original.json",
+        "original_path": "source-before.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      },
+      {
+        "manifest": "run.retained-manifest.original.json",
+        "original_path": "source-baseline.inventory.json",
+        "raw_and_all_five_parts_equal": true
+      }
+    ],
+    "raw": {
+      "bytes": 5611184,
+      "git_blob": "0220ed81a008f07f5a3ca418c6fda53012931fa3",
+      "sha256": "4db429ba1d54aa7ed6d6ad199694b7410d654ee7f788a631d7f392d7552fc79b"
+    },
+    "source_files": 15188,
+    "unique_encoded_parts": 5
+  },
+  "format": "hepta-post2841-frozen-evidence-review-v1",
+  "frozen_input_cutoff_utc": "2026-11-12T23:28:14.670813+00:00",
+  "frozen_payload_readback_ledger": "READBACK_LEDGER.json",
+  "newer_repair_at_cutoff": {
+    "actual_admission_verified": true,
+    "job": "1a1d2107dce-2564-1c98",
+    "note": "Later outcomes are deliberately outside this fixed evidence cutoff. Approval/admission is not a result or qualification.",
+    "result_included": false,
+    "terminal_included": false
+  },
+  "payload": {
+    "bytes": 7231798,
+    "categories": {
+      "actual2841_publication_original": 20,
+      "approved_request_or_actual_admission_not_terminal": 7,
+      "checkpoint_only_admission_not_terminal": 1,
+      "completed_source_job_original_or_transport_record": 77,
+      "exact_recovery_not_new_physical_observation": 7,
+      "historical_parser_attempt_preserved_not_authoritative_failure_count": 4,
+      "immutable_2841_readme_archive": 1,
+      "independent_peer_review": 7,
+      "independent_peer_review_placement": 2,
+      "lossless_original_API_response_encoding": 3,
+      "peer_derived_completed_upload_ledger_not_raw_API_payload": 2,
+      "reviewed_source_repair_preparation_index": 1,
+      "reviewed_source_repair_preparation_or_scoped_diagnostic": 27,
+      "root_verification_ledger": 3,
+      "root_verified_source_repair_control": 10,
+      "successor_format_control_preparation": 9
+    },
+    "files": 181,
+    "fresh_entire_GitHub_content_comparisons": 128,
+    "old_path_replacements": [],
+    "saved_original_entire_GitHub_response_comparisons": 53,
+    "unverified": 0
+  },
+  "publication_constraints": {
+    "H_invoked": false,
+    "PR_updated": false,
+    "README_old_value_preserved": true,
+    "commits_created": false,
+    "refs_updated": false,
+    "root_may_replace_README_after_review": true,
+    "root_must_review_and_publish": true,
+    "source_changed": false,
+    "tests_or_gates_executed": false,
+    "trees_created": false
+  },
+  "scope_of_new_reviews": "Static source/control reviews and the already-recorded scoped diagnostic only; no new gate execution.",
+  "source_qualification": {
+    "actual_qualified_task_chain_outcomes": 0,
+    "commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "job": "1a1d1e83bd4-2564-1c86",
+    "native_qualification_started_in_this_scope": false,
+    "original_failure_not_reclassified": true,
+    "overall": "failed",
+    "parser_distinction": "The six failure entries occur in four failed methods; all original runner and raw records are retained.",
+    "source_closure_original_runner": {
+      "failure_entries": 6,
+      "passed": 486,
+      "tests": 492
+    },
+    "stages": [
+      "source-closure failed",
+      "caller self-test passed",
+      "full caller verification passed"
+    ],
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "status": "VERIFIED_APPEND_ONLY_PREPARATION_NOT_PUBLISHED"
+}

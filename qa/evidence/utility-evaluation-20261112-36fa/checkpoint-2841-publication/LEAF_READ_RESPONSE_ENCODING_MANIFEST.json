@@ -1,0 +1,47 @@
+{
+  "format": "hepta-lossless-original-api-response-v1",
+  "gzip": {
+    "bytes": 250722,
+    "git_blob": "44593e7c4a74c0d320fe420057075ff431c19d43",
+    "sha256": "fd7274db355607eeb74a518171e19ec3a0452d4ef4d944921b0091627cb99e64"
+  },
+  "new_API_observation": false,
+  "original_API_response_reserialized": false,
+  "original_local": "/tmp/hepta-36fa-after2793-20261112/leaf.READ.response.json",
+  "parts": [
+    {
+      "decoded": {
+        "bytes": 196608,
+        "git_blob": "10662b35a285fdfbd218b24ff1c1bcc8dac45ac5",
+        "sha256": "3a9956277980f3e5d0e8f1f9759242cd2b1d14a38391f91d5e02936a78918237"
+      },
+      "decoded_offset": 0,
+      "encoded": {
+        "bytes": 262145,
+        "git_blob": "767a36cf1c90080346012e4c4e4e2b3f8c1c527b",
+        "sha256": "ef0a950c788e48bdfefadd8963c2f136354984f45eb191721df96ba5c4f85a48"
+      },
+      "name": "leaf.READ.response.original.json.gz.part001.b64"
+    },
+    {
+      "decoded": {
+        "bytes": 54114,
+        "git_blob": "bc8b08b10b859246295f4def6e5eb06a128f1ea7",
+        "sha256": "36bff111c10a88bdec3b6b1817ed9ca2317096421a5b57ff74090c28f09fca9b"
+      },
+      "decoded_offset": 196608,
+      "encoded": {
+        "bytes": 72153,
+        "git_blob": "3d3a9733d48cd66398aa8c63346f1b955c85938c",
+        "sha256": "f543859987c2bbc216aa2f8d8aafe942843b451bf104473d86ce2c1b5114b9f6"
+      },
+      "name": "leaf.READ.response.original.json.gz.part002.b64"
+    }
+  ],
+  "raw": {
+    "bytes": 2015182,
+    "git_blob": "d7db0f052112d782cb4eba895d11e905dc71eaac",
+    "sha256": "370c8b9aed88ab9f6fab71a354dbaf4e4171f1452254bd0626c34c2dc31db4f4"
+  },
+  "reconstruction": "Strip each part terminal LF, decode each base64 separately, concatenate, gunzip once; verify all identities."
+}

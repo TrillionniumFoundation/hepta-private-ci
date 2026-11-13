@@ -1,0 +1,181 @@
+{
+  "acyclic_metadata": "Payload manifests/ledger describe the fixed payload. Outer maps/placement/manifest are not members of their own map; archive them in a later window if desired.",
+  "base": {
+    "map": {
+      "bytes": 355401,
+      "git_blob": "24d87c93c886fdb9b9f87ddfe41a4fdb8687b0bd",
+      "sha256": "653b35a2bc85255f712a71b75a257b66cfcb38b252f118945e112e1252b02439"
+    },
+    "prepared_files": 3033,
+    "prior_cutoff_unchanged": true,
+    "prior_five_bundle_sidecars_archived_as_historical_metadata": true,
+    "prior_manifest": "adcb7e63012652c16833adfa0c92c35d5cb2d7ec",
+    "published_2841_commit": "64b921b3f6031d515883a7ca506207932da3997f",
+    "published_2841_leaf": "dd01bc90b0c8a7671df8327fa6f11adf61a1fedd"
+  },
+  "cutoff_utc": "2026-11-12T23:59:13.736011+00:00",
+  "failure_preservation": {
+    "all_old3033_paths_unchanged": true,
+    "first_220_byte_timeout_retained": true,
+    "first_PR_old_head_and_second_readonly_cc57_head_retained": true,
+    "initial_result_directory_missing_retained": true,
+    "same_exact_key_reconciliation_retained": true,
+    "two_standalone_Git_state_read_failures_retained": true
+  },
+  "format": "hepta-post3033-append-only-integrity-review-v1",
+  "hosted_CI": {
+    "PASS_claim": false,
+    "actual_GET_originals": 4,
+    "all_four_counts": 0,
+    "combined_status": "pending",
+    "files": 5,
+    "finished_at": "2026-11-12 23:53:54 UTC",
+    "review_files": 1,
+    "started_at": "2026-11-12 23:53:53 UTC"
+  },
+  "initial_review_is_historical": "The initial140-row review preceded explicit extra handoffs; final selected payload is212. Neither original review nor prior3033 cutoff was overwritten.",
+  "large_originals": {
+    "complete_bytes_and_original_three_pins_retained": true,
+    "count": 2,
+    "fresh_or_saved_original_complete_Git_content_matches": true,
+    "offline_transport_not_native_compression_observation": true,
+    "raw_published_paths_omitted_only_for_size": true,
+    "transport_parts": 4
+  },
+  "payload": {
+    "bytes": 10614327,
+    "categories": {
+      "actual_1c98_native_completed_placement": 1,
+      "actual_1c98_native_original": 35,
+      "actual_1c98_postimages_exact_recovery": 14,
+      "actual_1c98_recovery_completed_metadata": 3,
+      "actual_PR_body_update_after_source_publication": 4,
+      "actual_completed_1ca3_original_or_control": 34,
+      "actual_source_publication_not_qualification": 8,
+      "actual_timestamped_hosted_CI_observation_not_PASS": 5,
+      "bounded_lossless_transport_of_actual_large_input": 4,
+      "canonical_cc57_completed_metadata": 2,
+      "canonical_cc57_preparation_or_actual_inventory_recovery": 30,
+      "completed_1ca3_immutable_placement": 1,
+      "independent_static_peer_actual_persistence": 1,
+      "independent_static_peer_not_execution": 1,
+      "large_actual_original_lossless_transport_manifest": 1,
+      "native_compact_projection_completed_placement": 1,
+      "native_compact_projection_not_execution": 12,
+      "prepared_cc57_source_launch_completed_placement": 1,
+      "prepared_cc57_source_launch_not_execution": 17,
+      "prior3033_immutable_bundle_sidecar": 5,
+      "root_actual_1c98_review": 1,
+      "root_actual_canonical_object_API_or_review": 9,
+      "root_exact_source_launch_approval_not_execution": 2,
+      "root_verified_control_or_approval": 16,
+      "root_verified_upload_ledger": 4
+    },
+    "content_aliases": [
+      {
+        "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+        "paths": [
+          "qualification-cc57-source-launch-preparation-v1/inputs/CANONICAL_ALIGNMENT_NORMAL.original.json",
+          "source-repair-canonical-alignment-v1/STATUS_01.original.json"
+        ],
+        "reason": "Distinct original provenance/stage placements retained; same immutable object reused."
+      },
+      {
+        "git_blob": "0572a33403e5222a5274e15767d9b78bf909eff1",
+        "paths": [
+          "source-repair-246d/actual-1c98-postimages-exact-recovery-v1/recovered/apply.after.postimages-summary.json",
+          "source-repair-246d/actual-1c98-postimages-exact-recovery-v1/recovered/final.postimages-summary.json"
+        ],
+        "reason": "Distinct original provenance/stage placements retained; same immutable object reused."
+      },
+      {
+        "git_blob": "2a19b2b6b27f885dc3791897dad8c9e51f305ae0",
+        "paths": [
+          "cc57-qualification-root-inputs-v1/APPROVED_FINAL_QUALIFICATION_INPUT.json",
+          "qualification-cc57-source-launch-preparation-v1/inputs/APPROVED_QUALIFICATION_INPUT.json"
+        ],
+        "reason": "Distinct original provenance/stage placements retained; same immutable object reused."
+      },
+      {
+        "git_blob": "b312db80c69df6479436a1ae20ad7c716d699f89",
+        "paths": [
+          "cc57-qualification-root-inputs-v1/APPROVED_FINAL_SOURCE_GATES_CONFIG.json",
+          "qualification-cc57-source-launch-preparation-v1/inputs/APPROVED_SOURCE_GATES_CONFIG.json"
+        ],
+        "reason": "Distinct original provenance/stage placements retained; same immutable object reused."
+      },
+      {
+        "git_blob": "fdc6f89a6521dfeb243d20c17e18faed515f5cbc",
+        "paths": [
+          "source-repair-246d/actual-1c98-postimages-exact-recovery-v1/recovered/fmt.after.postimages.json.gz.part-001.b64",
+          "source-repair-246d-final-fmt-v1/terminal/fmt.after.postimages.json.gz.part-001.b64"
+        ],
+        "reason": "Distinct original provenance/stage placements retained; same immutable object reused."
+      }
+    ],
+    "distinct_blobs": 207,
+    "files": 212,
+    "full_readback_methods": {
+      "fresh_complete_UTF8_fetch": 143,
+      "fresh_lossless_binary_companion_and_exact_raw_Git_creation": 2,
+      "saved_original_complete_fetch_bytes": 67
+    },
+    "largest_published_payload_bytes": 355401,
+    "old_path_replacements": [],
+    "unverified": 0
+  },
+  "preparation_actions": {
+    "H": false,
+    "PR_update": false,
+    "README_replacement": false,
+    "commit_creation": false,
+    "ref_update": false,
+    "source_edit": false,
+    "tests_or_gates": false,
+    "tree_creation": false
+  },
+  "recovery_and_projection_boundaries": {
+    "13d3_full_inventory": "Prepared clean inventory later matched actual1ca3 RESULT; original preparation files remain unchanged and keep their original labels.",
+    "actual_1c98_postimages": "Exact raw/gzip/parts identities previously matched native ARTIFACTS; independently archived here, no second H read.",
+    "cf8e_full_inventory": "Exact recovery of actual1c98 dirty physical inventory, not a second native observation.",
+    "native_compact_projection": "Projection only; no actual native compact snapshot is proved by this append.",
+    "standalone_git_state": "Two original read failures retained; 489B exact serializer recovery remains explicitly recovery, not a native second read."
+  },
+  "resolved_preparation_read_errors": {
+    "all_errors_accounted_for": true,
+    "count": 2,
+    "scope": "Two attempts to read binary gzip as UTF-8 failed locally. They were not native failures or missing artifacts. Strict fresh base64 companion decoding and exact original binary Git-create SHA verification completed instead."
+  },
+  "root_must_independently_review_merkle_and_publish": true,
+  "source_outcomes": {
+    "absence_from_this_window_is_not_a_claim_about_later_runtime_state": true,
+    "actual_1c98": "Five non-Rust repairs applied; original fmt returned0 with no additional format changes; tests0.",
+    "actual_1ca3": "Canonical snapshot/index/HEAD alignment succeeded; three audits verified; not qualification.",
+    "actual_cc57_source_publication": {
+      "actual_PR_head_readback_equal": true,
+      "actual_ref_readback_equal": true,
+      "draft": true,
+      "expected_old_CAS": true,
+      "force": false,
+      "format": "hepta-cc57-source-ref-publication-review-v1",
+      "fresh_source_gates_started": false,
+      "initial_PR_read_head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "later_readonly_PR_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "merged": false,
+      "native_tests_started": false,
+      "previous_source": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "published_source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "qualification": false,
+      "real_qualified_task_chains": 0,
+      "ref_update_repeated": false,
+      "root_canonical_review": "adfe029e9fdd198bee9d6e1b319afc3b530296c4",
+      "sole_parent": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+    },
+    "actual_qualified_ordinary_task_chains_proved_by_this_package": 0,
+    "cc57_new_source_gate_admission_or_result_in_this_window": false,
+    "native_qualification_admission_or_result_in_this_window": false,
+    "prior_246d_source_gate": "FAILED preserved; no result borrowed for cc57"
+  },
+  "status": "VERIFIED_PREPARATION_NOT_PUBLISHED"
+}

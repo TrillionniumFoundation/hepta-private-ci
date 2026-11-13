@@ -1,0 +1,86 @@
+{
+  "H_main_dispatched": false,
+  "action_seconds": 600,
+  "all_template_functions_byte_identical": true,
+  "compressed_canonical_packet": {
+    "bytes": 436045,
+    "git_blob": "1c6ef7b7b9a1556a1bc4c0e9452850623ea007f2",
+    "sha256": "646b658ed02e38ccc75fed19bedb97c0fc0cf418eb852f27170962c3f9287fe8"
+  },
+  "control_directory": "/home/qian-qi/hepta-utility-36fa-evidence/source-repair-canonical-alignment-v1",
+  "cwd": "/home/qian-qi",
+  "executable": "/usr/bin/python3",
+  "files": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 3758,
+      "git_blob": "3647755a0c05e818e5a13bea6047346ce7a3eb39",
+      "local": "/tmp/hepta-36fa-source-repair-canonical-alignment-v1/APPROVED_CONFIG.json",
+      "sha256": "f3c3b9c9df1197e9c9d6cc2ae163eb83d8aaeac273dd1ba8335d3121878167dc"
+    },
+    "CANONICAL_PACKET.json": {
+      "bytes": 2220779,
+      "git_blob": "173cddd5b019c8d137adc42989f1075d5ebda6ec",
+      "local": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_PACKET.json",
+      "sha256": "d311e33a4800352ca8de1634560208952b02463b9daaff5a52a05fa55afc1d78"
+    },
+    "FINAL_FORMAT_NORMAL.original.json": {
+      "bytes": 955,
+      "git_blob": "b20a78f43e34fa72937df40d09d782f792a2f873",
+      "local": "/tmp/hepta-36fa-source-repair-finalfmt-launch-v1/STATUS_01.original.json",
+      "sha256": "c7e92ac3e26262c0bcc0707ae138ed873c2b2221d98a4c6c5f7889fd5ff923eb"
+    },
+    "driver.py": {
+      "bytes": 46102,
+      "git_blob": "4952e13c052d9e83d448d09897ff9c09c31552c5",
+      "local": "/tmp/hepta-36fa-source-repair-canonical-alignment-v1/driver.HOLD.py",
+      "sha256": "d2c9ad9ab7f0339853936d8138650bbf08978884051c976597fd82b7f3714f19"
+    }
+  },
+  "format": "hepta-source-repair-canonical-exact-launch-preparation-v1",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-source-repair-canonical-alignment-v1",
+  "outer_timeout_seconds": 900,
+  "outputs": {
+    "ACTUAL_BOOTSTRAP.py": {
+      "bytes": 5720,
+      "git_blob": "13963075b37d38b1ef88fd7d3e76201b2318dbbe",
+      "sha256": "e6dd088ef698449150d9a110bdbf10f2d15511ab4428c2379977348017dbefb9"
+    },
+    "ACTUAL_PROCESS_INPUT.json": {
+      "bytes": 655471,
+      "git_blob": "87bdc70f82bc46f94bcce496559c9805bf764b89",
+      "sha256": "d15e1528129c039a2e532d9c0dc5e6f195f054b8a8c3d8ec98a691905f7631f5"
+    },
+    "ACTUAL_STDIN.json": {
+      "bytes": 649367,
+      "git_blob": "0759627c86e63158f8180b949bc81c0260069455",
+      "sha256": "6f01fbfcc0f28a1968ee830e10b029e3aca738d7bc1bcd7bbf7276ba96751c25"
+    },
+    "APPROVED_CONFIG.original.json": {
+      "bytes": 3758,
+      "git_blob": "3647755a0c05e818e5a13bea6047346ce7a3eb39",
+      "sha256": "f3c3b9c9df1197e9c9d6cc2ae163eb83d8aaeac273dd1ba8335d3121878167dc"
+    }
+  },
+  "qualification": false,
+  "record_seconds": 180,
+  "ref_updates": 0,
+  "source_input_approval": "f1ee3fb63411132fc3dd57717684ecce8fd794b3",
+  "source_writes": 0,
+  "status": "SEALED_WAIT_ROOT_EXACT_LAUNCH_APPROVAL",
+  "template": {
+    "bytes": 5427,
+    "git_blob": "2376de66891f3a78e7586ca2c2cd88c38104b47a",
+    "sha256": "09748362755842f16e7f83d0319a6ca810125008a1dbad20f27c1afced3fe028"
+  },
+  "template_change": "Only the two previously-null fixed pins.",
+  "typed_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "exact_match_count": 1,
+  "limit": "Exact original raw commit bytes are recovered by the independent official Git commit SHA. This is not a new raw server read and creates no commit or ref.",
+  "official_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "official_metadata": {
+    "bytes": 4660,
+    "git_blob": "9d894996149deacfbd9f7bde347539bcbab0901d",
+    "sha256": "b0253aab645ea7f44dc1242ff421461e38d66bf62dc7d27d9dbbbb135217348a"
+  },
+  "original_parent_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "original_parent_raw": {
+    "bytes": 845,
+    "git_blob": "b7b45b320a31676787a6aff3980849738ec22a2e",
+    "sha256": "1b2bd54cb7055eeada8d0c3f771a5546206ae310dbaa31a1d9cabc329aa637b9"
+  },
+  "raw_bytes": {
+    "bytes": 916,
+    "git_blob": "9320a0edafa9e2a9fd1ca73120d609851e4afcc3",
+    "sha256": "9bf2f19821b3007a29d446967ccc8a025e2ac671f1e0301c8e71b37848d72e48"
+  },
+  "status": "exact_official_commit_identity_recovered",
+  "trials": [
+    {
+      "bytes": 916,
+      "commit_sha": "2f4c4c6a703b5d8983867e693372a47c5fceb147",
+      "matches_official_identity": false,
+      "offset": "+0000",
+      "terminal_lf": false
+    },
+    {
+      "bytes": 917,
+      "commit_sha": "61b27004e084c05bf6fb145f42dafb7004bf31c8",
+      "matches_official_identity": false,
+      "offset": "+0000",
+      "terminal_lf": true
+    },
+    {
+      "bytes": 916,
+      "commit_sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "matches_official_identity": true,
+      "offset": "-0500",
+      "terminal_lf": false
+    },
+    {
+      "bytes": 917,
+      "commit_sha": "c08dd7c8a65cdc8ef009d26f6cf319aca9bec3ad",
+      "matches_official_identity": false,
+      "offset": "-0500",
+      "terminal_lf": true
+    }
+  ]
+}

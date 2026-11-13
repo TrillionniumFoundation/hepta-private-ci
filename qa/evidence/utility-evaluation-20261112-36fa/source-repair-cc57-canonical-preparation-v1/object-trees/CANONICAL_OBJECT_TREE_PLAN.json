@@ -1,0 +1,1828 @@
+{
+  "actual_formatter_outcome_required_before_canonical_commit": true,
+  "base_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "base_inventory": {
+    "bytes": 5611184,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+  },
+  "base_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "commit_ref_PR_or_H_actions": false,
+  "expected_candidate_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "format": "hepta-246d-repair-five-blob-four-tree-immutable-object-plan-v1",
+  "leaf_count": 15188,
+  "source_blob_identities": [
+    {
+      "after": {
+        "bytes": 13072,
+        "git_blob": "c3257329caece666950db2041a8e9f47acf5c129",
+        "sha256": "5c9663a527f8d1d926546747a430b5d9b6cbe5102b696c2e81ddcbb1c1bb17b1"
+      },
+      "before": {
+        "bytes": 12891,
+        "git_blob": "4d9a0f0ab6c4e738d879c52f60f039bfd2d45bbc",
+        "sha256": "129365df7a87fd2b90f92254f4968017baaf4e50126f65c08259c51852ba918f"
+      },
+      "mode": "100644",
+      "path": ".github/blob-size-allowlist.txt"
+    },
+    {
+      "after": {
+        "bytes": 1577765,
+        "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+        "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+      },
+      "before": {
+        "bytes": 1577681,
+        "git_blob": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+        "sha256": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb"
+      },
+      "mode": "100644",
+      "path": "CALLERS.toml"
+    },
+    {
+      "after": {
+        "bytes": 10965,
+        "git_blob": "6aa44ad7984ce7af5cb6fd5f67f781cd658b238e",
+        "sha256": "54cd24db176f41407f270da16357a74e759deb0043a5d37862a3b825a78fc415"
+      },
+      "before": {
+        "bytes": 10942,
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 24713,
+        "git_blob": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+        "sha256": "c9ee98b559be8f646b49d4408ed45345bb33b0f1e44116693dc3b7b82ccb0464"
+      },
+      "before": {
+        "bytes": 24442,
+        "git_blob": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+        "sha256": "343f666445888fca75e8304823911bb3e1ea54502f7d5ce7b689b60779961dd5"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 28123,
+        "git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+        "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e"
+      },
+      "before": {
+        "bytes": 27811,
+        "git_blob": "0ef4dc5b862c8e684697775d3469823537961005",
+        "sha256": "528221475bae004ea46aa7d16e86595294a86254589083f08d240f7ad1377939"
+      },
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py"
+    }
+  ],
+  "source_change_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "status": "PREPARED_OBJECTS_NOT_A_SOURCE_COMMIT_OR_QUALIFICATION",
+  "trees_in_dependency_order": [
+    {
+      "after": {
+        "entries": [
+          {
+            "mode": "100644",
+            "path": "KERNEL_AUTHORITY_BOUNDARIES.json",
+            "sha": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_artifact_publication_readback_source_closure.py",
+            "sha": "dc325a92cf4c59d4101a5b393d29bbc17f13c9c1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_cell_generation_physical_current_source_closure.py",
+            "sha": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_cell_learning_evaluation_source_closure.py",
+            "sha": "271ae3f628e4e75a5f3bc21989b5cde763dfdc5f",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_circuit_selection_owner_source_closure.py",
+            "sha": "0a4e6b6414c35aac7fdf8230c5494bf2d9552ea2",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_current_caller_migrations.py",
+            "sha": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_next_use_source_closure.py",
+            "sha": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_published_read_source_closure.py",
+            "sha": "b9d8241d3ade2189b36d4122f1175c500fd8a723",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_retention_source_closure.py",
+            "sha": "369cfa0646d7598f7934e6131712c70dbe5969c6",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_selection_source_closure.py",
+            "sha": "776e861fe82c208f6f61af73208a2bff263239ef",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_generation_learning_evidence_source_closure.py",
+            "sha": "d817779c00689c384a24309ae77b488575274db1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_kernel_authority_closed_world.py",
+            "sha": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_learning_checkpoint_source_closure.py",
+            "sha": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_learning_evaluation_recovery_source_closure.py",
+            "sha": "8d607e733cf950165475cd80b9e3a080b13ed949",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_artifact_channel_source_closure.py",
+            "sha": "44704d85cc2b23ed99b9f067591bcddba315adec",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_candidate_material_source_closure.py",
+            "sha": "079d53e9e5e149f108f992417024b20c4a35d183",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_candidate_stage_source_closure.py",
+            "sha": "a8b366ff752ddd52f6bf2a06a60c0ca9b0529370",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_circuit_experience_v2_source_closure.py",
+            "sha": "430088028179f0c28a5dccdb15d05ad748754da1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_circuit_observer_source_closure.py",
+            "sha": "6aa44ad7984ce7af5cb6fd5f67f781cd658b238e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_host_source_closure.py",
+            "sha": "3a5242a01e2ad3d213d71323076bfe6661d4c36c",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_panel_source_closure.py",
+            "sha": "4da0873c757803beb46256d84e27e63b12991347",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_provider_source_closure.py",
+            "sha": "6b7e5887b39117398119e58a7aa1f6867c741574",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_receipt_owner_source_closure.py",
+            "sha": "53e51a594b88edc30e020dada9713196bd14ff77",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_retention_guard_source_closure.py",
+            "sha": "71647b7319f629667de3c485212bfab7fbdd808e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluator_readback_source_closure.py",
+            "sha": "0f15813c3f2f98f756c67e6de8374994a20fcad5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_execution_evidence_source_closure.py",
+            "sha": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_execution_owner_source_closure.py",
+            "sha": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_holdout_current_source_closure.py",
+            "sha": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_learning_owner_source_closure.py",
+            "sha": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_command_source_closure.py",
+            "sha": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_evidence_source_closure.py",
+            "sha": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_owner_source_closure.py",
+            "sha": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_source_peer_source_closure.py",
+            "sha": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_model_host_source_closure.py",
+            "sha": "ce3db0359b0542c7cbd010d131ea35c4f8eccd27",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_model_root_source_closure.py",
+            "sha": "e29b774f6a54229acf05d237c7d00b0bef5608fb",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_model_selection_source_closure.py",
+            "sha": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_next_use_command_source_closure.py",
+            "sha": "63c0ab0ff9e24bc96fe77a7559940dd6467d5748",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_no_update_stage_source_closure.py",
+            "sha": "daf7be67eb98a2213b794e8c7d6fefee808fd322",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_published_read_source_closure.py",
+            "sha": "e56bcaeea85ed4749c75898b2df3519a1cb18368",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_qualification_owner_source_closure.py",
+            "sha": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_readback_host_source_closure.py",
+            "sha": "1d772218970e69276b7aeea1a500d81ca26dfe48",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_retained_owner_readback_source_closure.py",
+            "sha": "e4795876083d972b5a655a743edcefc42f9bd1f1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_selection_readback_source_closure.py",
+            "sha": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_selector_command_source_closure.py",
+            "sha": "1e768e18b8e5471874d7a739a453cdd30f3e2346",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_bootstrap_source_closure.py",
+            "sha": "037473646bab83b6baa296470ca402eea3f5fdbe",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_command_source_closure.py",
+            "sha": "76f0d48e9150ec50c64ad8a25b46b66bf8a4096b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_initial_connection_source_closure.py",
+            "sha": "d5b602ec3fd1f212b7a5fa11d7481677440efe5b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_owner_source_closure.py",
+            "sha": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_readback_source_closure.py",
+            "sha": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_snapshot_source_closure.py",
+            "sha": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_source_capture_source_closure.py",
+            "sha": "6d0aee2f77f295024fbccb12493f15c77ad67a9a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_q24_dataset_source_closure.py",
+            "sha": "fd4d918a4dd06ba0d5fdb1157045f42d38934e3b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_q24_model_proposal_source_closure.py",
+            "sha": "ea4db2d35de8ec8d4b7ae8a3adec8aef4ea17966",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_q24_training_plan_source_closure.py",
+            "sha": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_resident_candidate_stage_source_closure.py",
+            "sha": "bd4f03a6fbb9741fc05ff6d02fe9646a6e035cbc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_resident_evaluated_retention_source_closure.py",
+            "sha": "fcac2b103dae7c46942c74863e5d4a748e505ac2",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_resident_root_source_closure.py",
+            "sha": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_retained_publication_source_closure.py",
+            "sha": "9a842a0ab2f1703fe45648e8db01104cdd8447c3",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_retained_version_issuer_source_closure.py",
+            "sha": "d756a549e3ce6846769680b09912167809015455",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_root_admin_source_closure.py",
+            "sha": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_root_learning_bootstrap_source_closure.py",
+            "sha": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_root_learning_scope_source_closure.py",
+            "sha": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_training_no_update_source_closure.py",
+            "sha": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_verify_hepta_callers.py",
+            "sha": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+            "type": "blob"
+          }
+        ],
+        "raw_base64": "MTAwNjQ0IEtFUk5FTF9BVVRIT1JJVFlfQk9VTkRBUklFUy5qc29uAHFWy95GkgG1wMCgAsrMC3boXKwuMTAwNjQ0IHRlc3RfYXJ0aWZhY3RfcHVibGljYXRpb25fcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkA3DJaks9MWdQQGls5PSm7wX8TycExMDA2NDQgdGVzdF9jZWxsX2dlbmVyYXRpb25fcGh5c2ljYWxfY3VycmVudF9zb3VyY2VfY2xvc3VyZS5weQAOSde7FU9L90CHBDfxjhH/VU0zszEwMDY0NCB0ZXN0X2NlbGxfbGVhcm5pbmdfZXZhbHVhdGlvbl9zb3VyY2VfY2xvc3VyZS5weQAnGuP2KOTnWl87whmJtc3nY9/cXzEwMDY0NCB0ZXN0X2NpcmN1aXRfc2VsZWN0aW9uX293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AApOa2QUw1qsf9+CMMVJS/LZVS6iMTAwNjQ0IHRlc3RfY3VycmVudF9jYWxsZXJfbWlncmF0aW9ucy5weQAlcoWbT2cpgjXWVzhR0Mpsb/xWMjEwMDY0NCB0ZXN0X2V2YWx1YXRlZF9uZXh0X3VzZV9zb3VyY2VfY2xvc3VyZS5weQCKCfDXdXl7nvSvJroP5eMsK0/SNDEwMDY0NCB0ZXN0X2V2YWx1YXRlZF9wdWJsaXNoZWRfcmVhZF9zb3VyY2VfY2xvc3VyZS5weQC52CQdOt4hibNtQSLxF1xQD9inIzEwMDY0NCB0ZXN0X2V2YWx1YXRlZF9yZXRlbnRpb25fc291cmNlX2Nsb3N1cmUucHkANpz6BkbXWY95NOYTFxLHDb5ZacYxMDA2NDQgdGVzdF9ldmFsdWF0ZWRfc2VsZWN0aW9uX3NvdXJjZV9jbG9zdXJlLnB5AHduhh/oLCCPb2GvcyCKK/8mMjnvMTAwNjQ0IHRlc3RfZ2VuZXJhdGlvbl9sZWFybmluZ19ldmlkZW5jZV9zb3VyY2VfY2xvc3VyZS5weQDYF3ecAGicOEokMJrne0iFdSdNsTEwMDY0NCB0ZXN0X2tlcm5lbF9hdXRob3JpdHlfY2xvc2VkX3dvcmxkLnB5ALlPshMns4AVzTvHqXOhAJFjl7o9MTAwNjQ0IHRlc3RfbGVhcm5pbmdfY2hlY2twb2ludF9zb3VyY2VfY2xvc3VyZS5weQDbLfboozlu/7bq6aLz8yKRhtfxbzEwMDY0NCB0ZXN0X2xlYXJuaW5nX2V2YWx1YXRpb25fcmVjb3Zlcnlfc291cmNlX2Nsb3N1cmUucHkAjWB+czz5UBZUdc2AueOggLE+2UkxMDA2NDQgdGVzdF9vcmlnaW5hbF9hcnRpZmFjdF9jaGFubmVsX3NvdXJjZV9jbG9zdXJlLnB5AERwTYXMKyPtmbnwZ1kbzdujFa3sMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2FuZGlkYXRlX21hdGVyaWFsX3NvdXJjZV9jbG9zdXJlLnB5AAedU+nl4UnxCPmSQXAksgxKNdGDMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2FuZGlkYXRlX3N0YWdlX3NvdXJjZV9jbG9zdXJlLnB5AKizZv91Ld1S9r8qBqYMDKmwUpNwMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2lyY3VpdF9leHBlcmllbmNlX3YyX3NvdXJjZV9jbG9zdXJlLnB5AEMAiAKBefDCil3M2xXQWtdIdU2hMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2lyY3VpdF9vYnNlcnZlcl9zb3VyY2VfY2xvc3VyZS5weQBqpErXmEznr1y2/V9n94HNZYsjjjEwMDY0NCB0ZXN0X29yaWdpbmFsX2V2YWx1YXRpb25faG9zdF9zb3VyY2VfY2xvc3VyZS5weQA6UkKgHirT0hPXEyMHa/5mYdTDbDEwMDY0NCB0ZXN0X29yaWdpbmFsX2V2YWx1YXRpb25fcGFuZWxfc291cmNlX2Nsb3N1cmUucHkATaCHPHV4A760YlbYTifmOxKZE0cxMDA2NDQgdGVzdF9vcmlnaW5hbF9ldmFsdWF0aW9uX3Byb3ZpZGVyX3NvdXJjZV9jbG9zdXJlLnB5AGt+WIezkRc5gRnlinqh9oZ8dBV0MTAwNjQ0IHRlc3Rfb3JpZ2luYWxfZXZhbHVhdGlvbl9yZWNlaXB0X293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AFPlGllLiO3DDgINralxMZa9FP93MTAwNjQ0IHRlc3Rfb3JpZ2luYWxfZXZhbHVhdGlvbl9yZXRlbnRpb25fZ3VhcmRfc291cmNlX2Nsb3N1cmUucHkAcWR7cxn2KWZ948SFISv6t/vdgI4xMDA2NDQgdGVzdF9vcmlnaW5hbF9ldmFsdWF0b3JfcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkADxWBPD8vmPdWxn5t6DdJlKIPytUxMDA2NDQgdGVzdF9vcmlnaW5hbF9leGVjdXRpb25fZXZpZGVuY2Vfc291cmNlX2Nsb3N1cmUucHkAhXCsrG5eBUENH5vshE6BJdkA6kQxMDA2NDQgdGVzdF9vcmlnaW5hbF9leGVjdXRpb25fb3duZXJfc291cmNlX2Nsb3N1cmUucHkAJcajFVlOmXuCzfNuAz9jfxUT67IxMDA2NDQgdGVzdF9vcmlnaW5hbF9ob2xkb3V0X2N1cnJlbnRfc291cmNlX2Nsb3N1cmUucHkArVHbcZH4VQPjpDKOVbNP5C95/PcxMDA2NDQgdGVzdF9vcmlnaW5hbF9sZWFybmluZ19vd25lcl9zb3VyY2VfY2xvc3VyZS5weQC6ZfjOvzkndoGyiBLqCjTELDfqjjEwMDY0NCB0ZXN0X29yaWdpbmFsX21hdGVyaWFsX2NvbW1hbmRfc291cmNlX2Nsb3N1cmUucHkAZMO12yBxqDugPLNmTtpZXHPOPiwxMDA2NDQgdGVzdF9vcmlnaW5hbF9tYXRlcmlhbF9ldmlkZW5jZV9zb3VyY2VfY2xvc3VyZS5weQA2cn/uQaVavk9J3nF6Tg8svEXQ+DEwMDY0NCB0ZXN0X29yaWdpbmFsX21hdGVyaWFsX293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AB8akmAquCs7IXhvGvjm2owRdJ1eMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfbWF0ZXJpYWxfc291cmNlX3BlZXJfc291cmNlX2Nsb3N1cmUucHkANKAd9zJOuLbVHStKGMsAo2ril8kxMDA2NDQgdGVzdF9vcmlnaW5hbF9tb2RlbF9ob3N0X3NvdXJjZV9jbG9zdXJlLnB5AM49sDWbBULHy9AQ0THqNcT47M0nMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfbW9kZWxfcm9vdF9zb3VyY2VfY2xvc3VyZS5weQDim3dPalQims8F0jfH0AsL71YI+zEwMDY0NCB0ZXN0X29yaWdpbmFsX21vZGVsX3NlbGVjdGlvbl9zb3VyY2VfY2xvc3VyZS5weQBvxR7tgEeS1PAJaX928tPCClyYJzEwMDY0NCB0ZXN0X29yaWdpbmFsX25leHRfdXNlX2NvbW1hbmRfc291cmNlX2Nsb3N1cmUucHkAY8CrD/niS8lv53p1WZQN1kZ9V0gxMDA2NDQgdGVzdF9vcmlnaW5hbF9ub191cGRhdGVfc3RhZ2Vfc291cmNlX2Nsb3N1cmUucHkA2ve+Z+uYoiE7eU6MfW/v7oCP0yIxMDA2NDQgdGVzdF9vcmlnaW5hbF9wdWJsaXNoZWRfcmVhZF9zb3VyY2VfY2xvc3VyZS5weQDla8ruqF7UdJx1iYst81GaHLGDaDEwMDY0NCB0ZXN0X29yaWdpbmFsX3F1YWxpZmljYXRpb25fb3duZXJfc291cmNlX2Nsb3N1cmUucHkAplYUxbsE09IrAHITqUwg8xi/c7QxMDA2NDQgdGVzdF9vcmlnaW5hbF9yZWFkYmFja19ob3N0X3NvdXJjZV9jbG9zdXJlLnB5AB13IhiXDmkna3ruoaUA2Byibf5IMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfcmV0YWluZWRfb3duZXJfcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkA5HlYdgg9lytaZVp0PtzvxC+b0fExMDA2NDQgdGVzdF9vcmlnaW5hbF9zZWxlY3Rpb25fcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkAGQFFLIj7etXfi3lQvAmcEINTUeYxMDA2NDQgdGVzdF9vcmlnaW5hbF9zZWxlY3Rvcl9jb21tYW5kX3NvdXJjZV9jbG9zdXJlLnB5AB52jhi45UcYdNenOaRTzdMPPiNGMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfdHJhaW5pbmdfYm9vdHN0cmFwX3NvdXJjZV9jbG9zdXJlLnB5AAN0c2Rrq4O2uqKWRwykAu6j9f2+MTAwNjQ0IHRlc3Rfb3JpZ2luYWxfdHJhaW5pbmdfY29tbWFuZF9zb3VyY2VfY2xvc3VyZS5weQB28NSOkVDsUMZK2KJbRrZr+KQJazEwMDY0NCB0ZXN0X29yaWdpbmFsX3RyYWluaW5nX2luaXRpYWxfY29ubmVjdGlvbl9zb3VyY2VfY2xvc3VyZS5weQDVtgLsP9HyErel+hHXSBZ3RA7+WzEwMDY0NCB0ZXN0X29yaWdpbmFsX3RyYWluaW5nX293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AMN1E/X+UpjsxGGLOoGSNOfX9XxCMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfdHJhaW5pbmdfcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkAvooa/6+g7ntxgHJf/F0ASwqPn2sxMDA2NDQgdGVzdF9vcmlnaW5hbF90cmFpbmluZ19zbmFwc2hvdF9zb3VyY2VfY2xvc3VyZS5weQBCSkFCDxrJs8ik2CeGLaq6XrM4ZjEwMDY0NCB0ZXN0X29yaWdpbmFsX3RyYWluaW5nX3NvdXJjZV9jYXB0dXJlX3NvdXJjZV9jbG9zdXJlLnB5AG0K7i938pUCT7zLEkk/Fcd61nqaMTAwNjQ0IHRlc3RfcTI0X2RhdGFzZXRfc291cmNlX2Nsb3N1cmUucHkA/U2Rik3Qa6DV/bEVcEX0LTiTTjsxMDA2NDQgdGVzdF9xMjRfbW9kZWxfcHJvcG9zYWxfc291cmNlX2Nsb3N1cmUucHkA6k2y013o7I1LeuijreyK706heWYxMDA2NDQgdGVzdF9xMjRfdHJhaW5pbmdfcGxhbl9zb3VyY2VfY2xvc3VyZS5weQCtBYbdrc4lZtcFrg9XAR3GcuwtazEwMDY0NCB0ZXN0X3Jlc2lkZW50X2NhbmRpZGF0ZV9zdGFnZV9zb3VyY2VfY2xvc3VyZS5weQC9TwOm+7l0H8Bf9tAv6WRqbgNcvDEwMDY0NCB0ZXN0X3Jlc2lkZW50X2V2YWx1YXRlZF9yZXRlbnRpb25fc291cmNlX2Nsb3N1cmUucHkA/KwrED2ufEaULHSGPl1KdI5QWsIxMDA2NDQgdGVzdF9yZXNpZGVudF9yb290X3NvdXJjZV9jbG9zdXJlLnB5AMnE7T5UocJPKY18FqRh40SCiscfMTAwNjQ0IHRlc3RfcmV0YWluZWRfcHVibGljYXRpb25fc291cmNlX2Nsb3N1cmUucHkAmoQqCrLxcD/kVkjo2wEQTN2ER8MxMDA2NDQgdGVzdF9yZXRhaW5lZF92ZXJzaW9uX2lzc3Vlcl9zb3VyY2VfY2xvc3VyZS5weQDXVqVJ485oRnaWgLCZEhZ4CQFUVTEwMDY0NCB0ZXN0X3Jvb3RfYWRtaW5fc291cmNlX2Nsb3N1cmUucHkA/cq/Set6p6yYJ86K1azk6mI0KYIxMDA2NDQgdGVzdF9yb290X2xlYXJuaW5nX2Jvb3RzdHJhcF9zb3VyY2VfY2xvc3VyZS5weQAtD0vXBfsBWVSdm7HxPULT23SvxDEwMDY0NCB0ZXN0X3Jvb3RfbGVhcm5pbmdfc2NvcGVfc291cmNlX2Nsb3N1cmUucHkABQvSJ8xu98nPmr27BFV8MwrKgsQxMDA2NDQgdGVzdF90cmFpbmluZ19ub191cGRhdGVfc291cmNlX2Nsb3N1cmUucHkAmiNMc9xjgstYauoBcivAccAQ4KUxMDA2NDQgdGVzdF92ZXJpZnlfaGVwdGFfY2FsbGVycy5weQCopS1cpLoA1RDrJMdjoyvHxHcVkw==",
+        "raw_bytes": 4756,
+        "raw_sha256": "ec9f3a72b1546050dbc535fa7ee5e035ba150aeaedbd22be8eef2a9648cf7623",
+        "sha": "7779ed81d7de95213e2c328a9b0e857a346cefd1"
+      },
+      "before": {
+        "entries": [
+          {
+            "mode": "100644",
+            "path": "KERNEL_AUTHORITY_BOUNDARIES.json",
+            "sha": "7156cbde469201b5c0c0a002cacc0b76e85cac2e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_artifact_publication_readback_source_closure.py",
+            "sha": "dc325a92cf4c59d4101a5b393d29bbc17f13c9c1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_cell_generation_physical_current_source_closure.py",
+            "sha": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_cell_learning_evaluation_source_closure.py",
+            "sha": "271ae3f628e4e75a5f3bc21989b5cde763dfdc5f",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_circuit_selection_owner_source_closure.py",
+            "sha": "0a4e6b6414c35aac7fdf8230c5494bf2d9552ea2",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_current_caller_migrations.py",
+            "sha": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_next_use_source_closure.py",
+            "sha": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_published_read_source_closure.py",
+            "sha": "b9d8241d3ade2189b36d4122f1175c500fd8a723",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_retention_source_closure.py",
+            "sha": "369cfa0646d7598f7934e6131712c70dbe5969c6",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_evaluated_selection_source_closure.py",
+            "sha": "776e861fe82c208f6f61af73208a2bff263239ef",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_generation_learning_evidence_source_closure.py",
+            "sha": "d817779c00689c384a24309ae77b488575274db1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_kernel_authority_closed_world.py",
+            "sha": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_learning_checkpoint_source_closure.py",
+            "sha": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_learning_evaluation_recovery_source_closure.py",
+            "sha": "8d607e733cf950165475cd80b9e3a080b13ed949",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_artifact_channel_source_closure.py",
+            "sha": "44704d85cc2b23ed99b9f067591bcddba315adec",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_candidate_material_source_closure.py",
+            "sha": "079d53e9e5e149f108f992417024b20c4a35d183",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_candidate_stage_source_closure.py",
+            "sha": "a8b366ff752ddd52f6bf2a06a60c0ca9b0529370",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_circuit_experience_v2_source_closure.py",
+            "sha": "430088028179f0c28a5dccdb15d05ad748754da1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_circuit_observer_source_closure.py",
+            "sha": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_host_source_closure.py",
+            "sha": "3a5242a01e2ad3d213d71323076bfe6661d4c36c",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_panel_source_closure.py",
+            "sha": "4da0873c757803beb46256d84e27e63b12991347",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_provider_source_closure.py",
+            "sha": "6b7e5887b39117398119e58a7aa1f6867c741574",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_receipt_owner_source_closure.py",
+            "sha": "53e51a594b88edc30e020dada9713196bd14ff77",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluation_retention_guard_source_closure.py",
+            "sha": "71647b7319f629667de3c485212bfab7fbdd808e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_evaluator_readback_source_closure.py",
+            "sha": "0f15813c3f2f98f756c67e6de8374994a20fcad5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_execution_evidence_source_closure.py",
+            "sha": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_execution_owner_source_closure.py",
+            "sha": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_holdout_current_source_closure.py",
+            "sha": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_learning_owner_source_closure.py",
+            "sha": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_command_source_closure.py",
+            "sha": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_evidence_source_closure.py",
+            "sha": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_owner_source_closure.py",
+            "sha": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_material_source_peer_source_closure.py",
+            "sha": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_model_host_source_closure.py",
+            "sha": "ce3db0359b0542c7cbd010d131ea35c4f8eccd27",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_model_root_source_closure.py",
+            "sha": "e29b774f6a54229acf05d237c7d00b0bef5608fb",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_model_selection_source_closure.py",
+            "sha": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_next_use_command_source_closure.py",
+            "sha": "63c0ab0ff9e24bc96fe77a7559940dd6467d5748",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_no_update_stage_source_closure.py",
+            "sha": "daf7be67eb98a2213b794e8c7d6fefee808fd322",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_published_read_source_closure.py",
+            "sha": "e56bcaeea85ed4749c75898b2df3519a1cb18368",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_qualification_owner_source_closure.py",
+            "sha": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_readback_host_source_closure.py",
+            "sha": "1d772218970e69276b7aeea1a500d81ca26dfe48",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_retained_owner_readback_source_closure.py",
+            "sha": "e4795876083d972b5a655a743edcefc42f9bd1f1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_selection_readback_source_closure.py",
+            "sha": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_selector_command_source_closure.py",
+            "sha": "1e768e18b8e5471874d7a739a453cdd30f3e2346",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_bootstrap_source_closure.py",
+            "sha": "037473646bab83b6baa296470ca402eea3f5fdbe",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_command_source_closure.py",
+            "sha": "76f0d48e9150ec50c64ad8a25b46b66bf8a4096b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_initial_connection_source_closure.py",
+            "sha": "d5b602ec3fd1f212b7a5fa11d7481677440efe5b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_owner_source_closure.py",
+            "sha": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_readback_source_closure.py",
+            "sha": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_snapshot_source_closure.py",
+            "sha": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_original_training_source_capture_source_closure.py",
+            "sha": "6d0aee2f77f295024fbccb12493f15c77ad67a9a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_q24_dataset_source_closure.py",
+            "sha": "fd4d918a4dd06ba0d5fdb1157045f42d38934e3b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_q24_model_proposal_source_closure.py",
+            "sha": "ea4db2d35de8ec8d4b7ae8a3adec8aef4ea17966",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_q24_training_plan_source_closure.py",
+            "sha": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_resident_candidate_stage_source_closure.py",
+            "sha": "bd4f03a6fbb9741fc05ff6d02fe9646a6e035cbc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_resident_evaluated_retention_source_closure.py",
+            "sha": "fcac2b103dae7c46942c74863e5d4a748e505ac2",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_resident_root_source_closure.py",
+            "sha": "0ef4dc5b862c8e684697775d3469823537961005",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_retained_publication_source_closure.py",
+            "sha": "9a842a0ab2f1703fe45648e8db01104cdd8447c3",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_retained_version_issuer_source_closure.py",
+            "sha": "d756a549e3ce6846769680b09912167809015455",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_root_admin_source_closure.py",
+            "sha": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_root_learning_bootstrap_source_closure.py",
+            "sha": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_root_learning_scope_source_closure.py",
+            "sha": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_training_no_update_source_closure.py",
+            "sha": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "test_verify_hepta_callers.py",
+            "sha": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+            "type": "blob"
+          }
+        ],
+        "raw_base64": "MTAwNjQ0IEtFUk5FTF9BVVRIT1JJVFlfQk9VTkRBUklFUy5qc29uAHFWy95GkgG1wMCgAsrMC3boXKwuMTAwNjQ0IHRlc3RfYXJ0aWZhY3RfcHVibGljYXRpb25fcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkA3DJaks9MWdQQGls5PSm7wX8TycExMDA2NDQgdGVzdF9jZWxsX2dlbmVyYXRpb25fcGh5c2ljYWxfY3VycmVudF9zb3VyY2VfY2xvc3VyZS5weQAOSde7FU9L90CHBDfxjhH/VU0zszEwMDY0NCB0ZXN0X2NlbGxfbGVhcm5pbmdfZXZhbHVhdGlvbl9zb3VyY2VfY2xvc3VyZS5weQAnGuP2KOTnWl87whmJtc3nY9/cXzEwMDY0NCB0ZXN0X2NpcmN1aXRfc2VsZWN0aW9uX293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AApOa2QUw1qsf9+CMMVJS/LZVS6iMTAwNjQ0IHRlc3RfY3VycmVudF9jYWxsZXJfbWlncmF0aW9ucy5weQAlcoWbT2cpgjXWVzhR0Mpsb/xWMjEwMDY0NCB0ZXN0X2V2YWx1YXRlZF9uZXh0X3VzZV9zb3VyY2VfY2xvc3VyZS5weQCKCfDXdXl7nvSvJroP5eMsK0/SNDEwMDY0NCB0ZXN0X2V2YWx1YXRlZF9wdWJsaXNoZWRfcmVhZF9zb3VyY2VfY2xvc3VyZS5weQC52CQdOt4hibNtQSLxF1xQD9inIzEwMDY0NCB0ZXN0X2V2YWx1YXRlZF9yZXRlbnRpb25fc291cmNlX2Nsb3N1cmUucHkANpz6BkbXWY95NOYTFxLHDb5ZacYxMDA2NDQgdGVzdF9ldmFsdWF0ZWRfc2VsZWN0aW9uX3NvdXJjZV9jbG9zdXJlLnB5AHduhh/oLCCPb2GvcyCKK/8mMjnvMTAwNjQ0IHRlc3RfZ2VuZXJhdGlvbl9sZWFybmluZ19ldmlkZW5jZV9zb3VyY2VfY2xvc3VyZS5weQDYF3ecAGicOEokMJrne0iFdSdNsTEwMDY0NCB0ZXN0X2tlcm5lbF9hdXRob3JpdHlfY2xvc2VkX3dvcmxkLnB5ALlPshMns4AVzTvHqXOhAJFjl7o9MTAwNjQ0IHRlc3RfbGVhcm5pbmdfY2hlY2twb2ludF9zb3VyY2VfY2xvc3VyZS5weQDbLfboozlu/7bq6aLz8yKRhtfxbzEwMDY0NCB0ZXN0X2xlYXJuaW5nX2V2YWx1YXRpb25fcmVjb3Zlcnlfc291cmNlX2Nsb3N1cmUucHkAjWB+czz5UBZUdc2AueOggLE+2UkxMDA2NDQgdGVzdF9vcmlnaW5hbF9hcnRpZmFjdF9jaGFubmVsX3NvdXJjZV9jbG9zdXJlLnB5AERwTYXMKyPtmbnwZ1kbzdujFa3sMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2FuZGlkYXRlX21hdGVyaWFsX3NvdXJjZV9jbG9zdXJlLnB5AAedU+nl4UnxCPmSQXAksgxKNdGDMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2FuZGlkYXRlX3N0YWdlX3NvdXJjZV9jbG9zdXJlLnB5AKizZv91Ld1S9r8qBqYMDKmwUpNwMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2lyY3VpdF9leHBlcmllbmNlX3YyX3NvdXJjZV9jbG9zdXJlLnB5AEMAiAKBefDCil3M2xXQWtdIdU2hMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfY2lyY3VpdF9vYnNlcnZlcl9zb3VyY2VfY2xvc3VyZS5weQAvDyGHlk9u40ODaWstHR/ymE/D2TEwMDY0NCB0ZXN0X29yaWdpbmFsX2V2YWx1YXRpb25faG9zdF9zb3VyY2VfY2xvc3VyZS5weQA6UkKgHirT0hPXEyMHa/5mYdTDbDEwMDY0NCB0ZXN0X29yaWdpbmFsX2V2YWx1YXRpb25fcGFuZWxfc291cmNlX2Nsb3N1cmUucHkATaCHPHV4A760YlbYTifmOxKZE0cxMDA2NDQgdGVzdF9vcmlnaW5hbF9ldmFsdWF0aW9uX3Byb3ZpZGVyX3NvdXJjZV9jbG9zdXJlLnB5AGt+WIezkRc5gRnlinqh9oZ8dBV0MTAwNjQ0IHRlc3Rfb3JpZ2luYWxfZXZhbHVhdGlvbl9yZWNlaXB0X293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AFPlGllLiO3DDgINralxMZa9FP93MTAwNjQ0IHRlc3Rfb3JpZ2luYWxfZXZhbHVhdGlvbl9yZXRlbnRpb25fZ3VhcmRfc291cmNlX2Nsb3N1cmUucHkAcWR7cxn2KWZ948SFISv6t/vdgI4xMDA2NDQgdGVzdF9vcmlnaW5hbF9ldmFsdWF0b3JfcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkADxWBPD8vmPdWxn5t6DdJlKIPytUxMDA2NDQgdGVzdF9vcmlnaW5hbF9leGVjdXRpb25fZXZpZGVuY2Vfc291cmNlX2Nsb3N1cmUucHkAhXCsrG5eBUENH5vshE6BJdkA6kQxMDA2NDQgdGVzdF9vcmlnaW5hbF9leGVjdXRpb25fb3duZXJfc291cmNlX2Nsb3N1cmUucHkAJcajFVlOmXuCzfNuAz9jfxUT67IxMDA2NDQgdGVzdF9vcmlnaW5hbF9ob2xkb3V0X2N1cnJlbnRfc291cmNlX2Nsb3N1cmUucHkArVHbcZH4VQPjpDKOVbNP5C95/PcxMDA2NDQgdGVzdF9vcmlnaW5hbF9sZWFybmluZ19vd25lcl9zb3VyY2VfY2xvc3VyZS5weQC6ZfjOvzkndoGyiBLqCjTELDfqjjEwMDY0NCB0ZXN0X29yaWdpbmFsX21hdGVyaWFsX2NvbW1hbmRfc291cmNlX2Nsb3N1cmUucHkAZMO12yBxqDugPLNmTtpZXHPOPiwxMDA2NDQgdGVzdF9vcmlnaW5hbF9tYXRlcmlhbF9ldmlkZW5jZV9zb3VyY2VfY2xvc3VyZS5weQA2cn/uQaVavk9J3nF6Tg8svEXQ+DEwMDY0NCB0ZXN0X29yaWdpbmFsX21hdGVyaWFsX293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AB8akmAquCs7IXhvGvjm2owRdJ1eMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfbWF0ZXJpYWxfc291cmNlX3BlZXJfc291cmNlX2Nsb3N1cmUucHkANKAd9zJOuLbVHStKGMsAo2ril8kxMDA2NDQgdGVzdF9vcmlnaW5hbF9tb2RlbF9ob3N0X3NvdXJjZV9jbG9zdXJlLnB5AM49sDWbBULHy9AQ0THqNcT47M0nMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfbW9kZWxfcm9vdF9zb3VyY2VfY2xvc3VyZS5weQDim3dPalQims8F0jfH0AsL71YI+zEwMDY0NCB0ZXN0X29yaWdpbmFsX21vZGVsX3NlbGVjdGlvbl9zb3VyY2VfY2xvc3VyZS5weQBvxR7tgEeS1PAJaX928tPCClyYJzEwMDY0NCB0ZXN0X29yaWdpbmFsX25leHRfdXNlX2NvbW1hbmRfc291cmNlX2Nsb3N1cmUucHkAY8CrD/niS8lv53p1WZQN1kZ9V0gxMDA2NDQgdGVzdF9vcmlnaW5hbF9ub191cGRhdGVfc3RhZ2Vfc291cmNlX2Nsb3N1cmUucHkA2ve+Z+uYoiE7eU6MfW/v7oCP0yIxMDA2NDQgdGVzdF9vcmlnaW5hbF9wdWJsaXNoZWRfcmVhZF9zb3VyY2VfY2xvc3VyZS5weQDla8ruqF7UdJx1iYst81GaHLGDaDEwMDY0NCB0ZXN0X29yaWdpbmFsX3F1YWxpZmljYXRpb25fb3duZXJfc291cmNlX2Nsb3N1cmUucHkAplYUxbsE09IrAHITqUwg8xi/c7QxMDA2NDQgdGVzdF9vcmlnaW5hbF9yZWFkYmFja19ob3N0X3NvdXJjZV9jbG9zdXJlLnB5AB13IhiXDmkna3ruoaUA2Byibf5IMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfcmV0YWluZWRfb3duZXJfcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkA5HlYdgg9lytaZVp0PtzvxC+b0fExMDA2NDQgdGVzdF9vcmlnaW5hbF9zZWxlY3Rpb25fcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkAcBV2xB/dEEN3igJiIe0J8/y7LpIxMDA2NDQgdGVzdF9vcmlnaW5hbF9zZWxlY3Rvcl9jb21tYW5kX3NvdXJjZV9jbG9zdXJlLnB5AB52jhi45UcYdNenOaRTzdMPPiNGMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfdHJhaW5pbmdfYm9vdHN0cmFwX3NvdXJjZV9jbG9zdXJlLnB5AAN0c2Rrq4O2uqKWRwykAu6j9f2+MTAwNjQ0IHRlc3Rfb3JpZ2luYWxfdHJhaW5pbmdfY29tbWFuZF9zb3VyY2VfY2xvc3VyZS5weQB28NSOkVDsUMZK2KJbRrZr+KQJazEwMDY0NCB0ZXN0X29yaWdpbmFsX3RyYWluaW5nX2luaXRpYWxfY29ubmVjdGlvbl9zb3VyY2VfY2xvc3VyZS5weQDVtgLsP9HyErel+hHXSBZ3RA7+WzEwMDY0NCB0ZXN0X29yaWdpbmFsX3RyYWluaW5nX293bmVyX3NvdXJjZV9jbG9zdXJlLnB5AMN1E/X+UpjsxGGLOoGSNOfX9XxCMTAwNjQ0IHRlc3Rfb3JpZ2luYWxfdHJhaW5pbmdfcmVhZGJhY2tfc291cmNlX2Nsb3N1cmUucHkAvooa/6+g7ntxgHJf/F0ASwqPn2sxMDA2NDQgdGVzdF9vcmlnaW5hbF90cmFpbmluZ19zbmFwc2hvdF9zb3VyY2VfY2xvc3VyZS5weQBCSkFCDxrJs8ik2CeGLaq6XrM4ZjEwMDY0NCB0ZXN0X29yaWdpbmFsX3RyYWluaW5nX3NvdXJjZV9jYXB0dXJlX3NvdXJjZV9jbG9zdXJlLnB5AG0K7i938pUCT7zLEkk/Fcd61nqaMTAwNjQ0IHRlc3RfcTI0X2RhdGFzZXRfc291cmNlX2Nsb3N1cmUucHkA/U2Rik3Qa6DV/bEVcEX0LTiTTjsxMDA2NDQgdGVzdF9xMjRfbW9kZWxfcHJvcG9zYWxfc291cmNlX2Nsb3N1cmUucHkA6k2y013o7I1LeuijreyK706heWYxMDA2NDQgdGVzdF9xMjRfdHJhaW5pbmdfcGxhbl9zb3VyY2VfY2xvc3VyZS5weQCtBYbdrc4lZtcFrg9XAR3GcuwtazEwMDY0NCB0ZXN0X3Jlc2lkZW50X2NhbmRpZGF0ZV9zdGFnZV9zb3VyY2VfY2xvc3VyZS5weQC9TwOm+7l0H8Bf9tAv6WRqbgNcvDEwMDY0NCB0ZXN0X3Jlc2lkZW50X2V2YWx1YXRlZF9yZXRlbnRpb25fc291cmNlX2Nsb3N1cmUucHkA/KwrED2ufEaULHSGPl1KdI5QWsIxMDA2NDQgdGVzdF9yZXNpZGVudF9yb290X3NvdXJjZV9jbG9zdXJlLnB5AA703FuGLI5oRpd3XTRpgjU3lhAFMTAwNjQ0IHRlc3RfcmV0YWluZWRfcHVibGljYXRpb25fc291cmNlX2Nsb3N1cmUucHkAmoQqCrLxcD/kVkjo2wEQTN2ER8MxMDA2NDQgdGVzdF9yZXRhaW5lZF92ZXJzaW9uX2lzc3Vlcl9zb3VyY2VfY2xvc3VyZS5weQDXVqVJ485oRnaWgLCZEhZ4CQFUVTEwMDY0NCB0ZXN0X3Jvb3RfYWRtaW5fc291cmNlX2Nsb3N1cmUucHkA/cq/Set6p6yYJ86K1azk6mI0KYIxMDA2NDQgdGVzdF9yb290X2xlYXJuaW5nX2Jvb3RzdHJhcF9zb3VyY2VfY2xvc3VyZS5weQAtD0vXBfsBWVSdm7HxPULT23SvxDEwMDY0NCB0ZXN0X3Jvb3RfbGVhcm5pbmdfc2NvcGVfc291cmNlX2Nsb3N1cmUucHkABQvSJ8xu98nPmr27BFV8MwrKgsQxMDA2NDQgdGVzdF90cmFpbmluZ19ub191cGRhdGVfc291cmNlX2Nsb3N1cmUucHkAmiNMc9xjgstYauoBcivAccAQ4KUxMDA2NDQgdGVzdF92ZXJpZnlfaGVwdGFfY2FsbGVycy5weQCopS1cpLoA1RDrJMdjoyvHxHcVkw==",
+        "raw_bytes": 4756,
+        "raw_sha256": "2d4d50db6f483dbe27681e538191934c4ff5debc3459c8cc578b8b2f6e18889f",
+        "sha": "bf320a3a4763e82319d8634cdfd1b9eca26e7b01"
+      },
+      "path": "qa/b4-no-bypass"
+    },
+    {
+      "after": {
+        "entries": [
+          {
+            "mode": "100644",
+            "path": "CODEOWNERS",
+            "sha": "3cdd8ba1d65052147a0ec2225f4fb12a513c73d3",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "ISSUE_TEMPLATE",
+            "sha": "f3a63cac470ce1d3f50c2c5e3150217494349e62",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "actions",
+            "sha": "ee95035049d3fa683e244e8c14b74a0e63844afc",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "blob-size-allowlist.txt",
+            "sha": "c3257329caece666950db2041a8e9f47acf5c129",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "codex-cli-splash.png",
+            "sha": "d0f50e55bd2fb212496fb874718ab1eee82add11",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "codex",
+            "sha": "57f90b539239b66ac264f07e7d48ce2d820ed11f",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "dependabot.yaml",
+            "sha": "9eeb8f102855108025b0812f52efb8c8fac26f93",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "dotslash-argument-comment-lint-config.json",
+            "sha": "19a2a4803c013d8d524a3bcf21e4be746c331957",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "dotslash-config.json",
+            "sha": "78ea6b37e6fe914fdd5f476681e0d76e174060f1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "dotslash-zsh-config.json",
+            "sha": "2c2b11eec597298410cd0e265aa4bdf222f12ce9",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "fixtures",
+            "sha": "acfa090deae06870e8206e80b9ab5f5682fe4dd8",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "scripts",
+            "sha": "0f15c5b36698069747b1bc2b1d24ab8628330f22",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "workflows",
+            "sha": "378247f9669992f86541c49f2b9cfe9ce5cf7dae",
+            "type": "tree"
+          }
+        ],
+        "raw_base64": "MTAwNjQ0IENPREVPV05FUlMAPN2LodZQUhR6DsIiX0+xKlE8c9M0MDAwMCBJU1NVRV9URU1QTEFURQDzpjysRwzh0/UMLF4xUCF0lDSeYjQwMDAwIGFjdGlvbnMA7pUDUEnT+mg+JE6MFLdKDmOESvwxMDA2NDQgYmxvYi1zaXplLWFsbG93bGlzdC50eHQAwyVzKcrs5maVDbIEGo6fR6z1wSkxMDA2NDQgY29kZXgtY2xpLXNwbGFzaC5wbmcA0PUOVb0vshJJb7h0cYqx7ugq3RE0MDAwMCBjb2RleABX+QtTkjm2asJk8H59SM4tgg7RHzEwMDY0NCBkZXBlbmRhYm90LnlhbWwAnuuPEChVEIAlsIEvUu+4yPrCb5MxMDA2NDQgZG90c2xhc2gtYXJndW1lbnQtY29tbWVudC1saW50LWNvbmZpZy5qc29uABmipIA8AT2NUko7zyHkvnRsMxlXMTAwNjQ0IGRvdHNsYXNoLWNvbmZpZy5qc29uAHjqazfm/pFP3V9HZoHg124XQGDxMTAwNjQ0IGRvdHNsYXNoLXpzaC1jb25maWcuanNvbgAsKxHuxZcphBDNDiZapL3yIvEs6TQwMDAwIGZpeHR1cmVzAKz6CQ3q4Ghw6CBugLmrX1aC/k3YNDAwMDAgc2NyaXB0cwAPFcWzZpgGl0exvCsdJKuGKDMPIjQwMDAwIHdvcmtmbG93cwA3gkf5ZpmS+GVBxJ8rnP6c5c99rg==",
+        "raw_bytes": 562,
+        "raw_sha256": "d5bd5418312c1a037ae84978405d1be66ea7f19f4066b703ab3439feba1beeb4",
+        "sha": "37fc4888835d4e4d4650e261f24f7d2a309ffde3"
+      },
+      "before": {
+        "entries": [
+          {
+            "mode": "100644",
+            "path": "CODEOWNERS",
+            "sha": "3cdd8ba1d65052147a0ec2225f4fb12a513c73d3",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "ISSUE_TEMPLATE",
+            "sha": "f3a63cac470ce1d3f50c2c5e3150217494349e62",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "actions",
+            "sha": "ee95035049d3fa683e244e8c14b74a0e63844afc",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "blob-size-allowlist.txt",
+            "sha": "4d9a0f0ab6c4e738d879c52f60f039bfd2d45bbc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "codex-cli-splash.png",
+            "sha": "d0f50e55bd2fb212496fb874718ab1eee82add11",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "codex",
+            "sha": "57f90b539239b66ac264f07e7d48ce2d820ed11f",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "dependabot.yaml",
+            "sha": "9eeb8f102855108025b0812f52efb8c8fac26f93",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "dotslash-argument-comment-lint-config.json",
+            "sha": "19a2a4803c013d8d524a3bcf21e4be746c331957",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "dotslash-config.json",
+            "sha": "78ea6b37e6fe914fdd5f476681e0d76e174060f1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "dotslash-zsh-config.json",
+            "sha": "2c2b11eec597298410cd0e265aa4bdf222f12ce9",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "fixtures",
+            "sha": "acfa090deae06870e8206e80b9ab5f5682fe4dd8",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "scripts",
+            "sha": "0f15c5b36698069747b1bc2b1d24ab8628330f22",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "workflows",
+            "sha": "378247f9669992f86541c49f2b9cfe9ce5cf7dae",
+            "type": "tree"
+          }
+        ],
+        "raw_base64": "MTAwNjQ0IENPREVPV05FUlMAPN2LodZQUhR6DsIiX0+xKlE8c9M0MDAwMCBJU1NVRV9URU1QTEFURQDzpjysRwzh0/UMLF4xUCF0lDSeYjQwMDAwIGFjdGlvbnMA7pUDUEnT+mg+JE6MFLdKDmOESvwxMDA2NDQgYmxvYi1zaXplLWFsbG93bGlzdC50eHQATZoPCrbE5zjYecUvYPA5v9LUW7wxMDA2NDQgY29kZXgtY2xpLXNwbGFzaC5wbmcA0PUOVb0vshJJb7h0cYqx7ugq3RE0MDAwMCBjb2RleABX+QtTkjm2asJk8H59SM4tgg7RHzEwMDY0NCBkZXBlbmRhYm90LnlhbWwAnuuPEChVEIAlsIEvUu+4yPrCb5MxMDA2NDQgZG90c2xhc2gtYXJndW1lbnQtY29tbWVudC1saW50LWNvbmZpZy5qc29uABmipIA8AT2NUko7zyHkvnRsMxlXMTAwNjQ0IGRvdHNsYXNoLWNvbmZpZy5qc29uAHjqazfm/pFP3V9HZoHg124XQGDxMTAwNjQ0IGRvdHNsYXNoLXpzaC1jb25maWcuanNvbgAsKxHuxZcphBDNDiZapL3yIvEs6TQwMDAwIGZpeHR1cmVzAKz6CQ3q4Ghw6CBugLmrX1aC/k3YNDAwMDAgc2NyaXB0cwAPFcWzZpgGl0exvCsdJKuGKDMPIjQwMDAwIHdvcmtmbG93cwA3gkf5ZpmS+GVBxJ8rnP6c5c99rg==",
+        "raw_bytes": 562,
+        "raw_sha256": "9b4b45fba235d4a5d4cc18f0698525f8d0e77e9a32866d3c77998bf9c899c9de",
+        "sha": "6d3b29d82fcd736bc714d7e4e748f5a579aba57d"
+      },
+      "path": ".github"
+    },
+    {
+      "after": {
+        "entries": [
+          {
+            "mode": "40000",
+            "path": "b4-no-bypass",
+            "sha": "7779ed81d7de95213e2c328a9b0e857a346cefd1",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "evidence",
+            "sha": "9f0281912b9d852b43bb4c6578f7bdc2cdaa7549",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "fault-matrix",
+            "sha": "afe5dbb1d856e6f05c97b9d72312e2617408053c",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "performance",
+            "sha": "58fa444cfc90d490e9c3f632b3f73a3f7db0ec60",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "vertical-slice",
+            "sha": "44cab0ede0094e775f0926fa925f63d6c037d6eb",
+            "type": "tree"
+          }
+        ],
+        "raw_base64": "NDAwMDAgYjQtbm8tYnlwYXNzAHd57YHX3pUhPiwyipsOhXo0bO/RNDAwMDAgZXZpZGVuY2UAnwKBkSudhStDu0xlePe9ws2qdUk0MDAwMCBmYXVsdC1tYXRyaXgAr+XbsdhW5vBcl7nXIxLiYXQIBTw0MDAwMCBwZXJmb3JtYW5jZQBY+kRM/JDUkOnD9jKz9zo/fbDsYDQwMDAwIHZlcnRpY2FsLXNsaWNlAETKsO3gCU53Xwkm+pJfY9bAN9br",
+        "raw_bytes": 192,
+        "raw_sha256": "9cecc3c04c75f324e581b2dcfcba6207fc315e1ea038adbc92aaa622e3041505",
+        "sha": "18528f68329ef3d084f4c4fb1d2cbdc1ea4b76f3"
+      },
+      "before": {
+        "entries": [
+          {
+            "mode": "40000",
+            "path": "b4-no-bypass",
+            "sha": "bf320a3a4763e82319d8634cdfd1b9eca26e7b01",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "evidence",
+            "sha": "9f0281912b9d852b43bb4c6578f7bdc2cdaa7549",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "fault-matrix",
+            "sha": "afe5dbb1d856e6f05c97b9d72312e2617408053c",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "performance",
+            "sha": "58fa444cfc90d490e9c3f632b3f73a3f7db0ec60",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "vertical-slice",
+            "sha": "44cab0ede0094e775f0926fa925f63d6c037d6eb",
+            "type": "tree"
+          }
+        ],
+        "raw_base64": "NDAwMDAgYjQtbm8tYnlwYXNzAL8yCjpHY+gjGdhjTN/RueyibnsBNDAwMDAgZXZpZGVuY2UAnwKBkSudhStDu0xlePe9ws2qdUk0MDAwMCBmYXVsdC1tYXRyaXgAr+XbsdhW5vBcl7nXIxLiYXQIBTw0MDAwMCBwZXJmb3JtYW5jZQBY+kRM/JDUkOnD9jKz9zo/fbDsYDQwMDAwIHZlcnRpY2FsLXNsaWNlAETKsO3gCU53Xwkm+pJfY9bAN9br",
+        "raw_bytes": 192,
+        "raw_sha256": "9dd9d5b4cdca9f93abf7f6795c54c693c7607f72167407664c66b69d9944cf3a",
+        "sha": "1156f0ae4ea28d7f3dc18c180fe19bb40c39f905"
+      },
+      "path": "qa"
+    },
+    {
+      "after": {
+        "entries": [
+          {
+            "mode": "100644",
+            "path": ".bazelignore",
+            "sha": "42da641f9d7e45ea9ecaa0f2eba0f783ffca596d",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".bazelrc",
+            "sha": "59c6850487b948779389a481de5161c64fd21ff5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".bazelversion",
+            "sha": "b13d146a7b02b96e4c30340e69388d539c9721be",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".codespellignore",
+            "sha": "9e6e911207df68e9adeb40c6899d90f312d64a6a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".codespellrc",
+            "sha": "067b425b100b765ae4f6407527c91f7053cc4bad",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": ".codex",
+            "sha": "4697cb070366598c6ef529811515c255f4369f3f",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": ".devcontainer",
+            "sha": "d930c4761f5bc87ba6308f0e78a93d4a911025a1",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": ".g1",
+            "sha": "67598d14cb17933af7bc6eac148f54b4fc54ce59",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": ".gitattributes",
+            "sha": "17da38650745923743630d38d3eb0327b7a55d1f",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": ".github",
+            "sha": "37fc4888835d4e4d4650e261f24f7d2a309ffde3",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": ".gitignore",
+            "sha": "dbcd8633154a13966c231033a6c07ad8be169c73",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".markdownlint-cli2.yaml",
+            "sha": "15b472c61cb73bf14f6c327266e479229f555eca",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".npmrc",
+            "sha": "4153fe87bb5f08b63514128adf30f1643ef3f1fc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".prettierignore",
+            "sha": "538bdc7f1658482073bb2cee8f2cd82f8c1bb13c",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".prettierrc.toml",
+            "sha": "4c58c583e5fa327928190f625a1095a9c4d9e72f",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": ".vscode",
+            "sha": "b26f3b4bbfa530719068fbf14ad6ea3a4b502b33",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": ".worktreeinclude",
+            "sha": "74824b01f957d689559c85d750538ac39b36b0ed",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "AGENTS.md",
+            "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "BUILD.bazel",
+            "sha": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "CALLERS.toml",
+            "sha": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "CHANGELOG.md",
+            "sha": "2eb564c560a4c85507169a26637f6bce59f7e1fb",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "LICENSE",
+            "sha": "4606e72e042564097e8780d66c1d4dcb611869bd",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "MODULE.bazel",
+            "sha": "f3e7c21d9e7d54c0ac371caf17fe170c356bdf34",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "MODULE.bazel.lock",
+            "sha": "1565448430312c7fb7537a48f97e9cd2da945df3",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "NOTICE",
+            "sha": "2805899d56d0332d175cfc613c67d45d6f006db7",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "README.md",
+            "sha": "c50c614f45063a46ffd7ab8ab1999c7251c8892a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "SECURITY.md",
+            "sha": "29a9b903df5da8e789d685efe8012fa4edd775e5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "announcement_tip.toml",
+            "sha": "79c0daea761e0f634960dd39e2dff6bdbfd02f63",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "apps",
+            "sha": "c2ed6666fb6d722d05526bea0e693f3b429b9445",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "archive",
+            "sha": "537c09e0cc980c97d992673890fb98f147a933c5",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "bazel",
+            "sha": "a63126a6c952997f9c09561b7bbe666ac61ef23a",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "codex-cli",
+            "sha": "8a51d813d1387f192cc66bb9feade5e12675a3f7",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "codex-rs",
+            "sha": "f66df22bbc1558d29f72e20942faf4d54a325baf",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "defs.bzl",
+            "sha": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "docs",
+            "sha": "af76060eea2887827bf7aa6320dae9fad54e92e1",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "evidence",
+            "sha": "2786862dd5ff8baea11cbba8a12b257bac5f33e0",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "experiments",
+            "sha": "bad6b71102ddeff0f1396dee65246e5c746fa15c",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "external",
+            "sha": "6717a894bfc52f7908d89aedeb0003e8eb660eec",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "flake.lock",
+            "sha": "3b96f5c60d1c9c0ce6475400ee3c82d0a45f14d1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "flake.nix",
+            "sha": "7943d3cdacc23207c8dc222917a315b0d34272b5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "justfile",
+            "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "package.json",
+            "sha": "a65950c26b698be87208ab644ee1c464f7759b55",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "patches",
+            "sha": "ad76fe0e407216af8ec351cd218be86594e2458b",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "pnpm-lock.yaml",
+            "sha": "48ba7c7f117e999a649fb66e4bb5c57e76243101",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "pnpm-workspace.yaml",
+            "sha": "49e7da14d39923ae45ce36669932753e53d06258",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "proposals",
+            "sha": "75887434b6b1c7c8773749347ad3f226cdd29cbf",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "qa",
+            "sha": "18528f68329ef3d084f4c4fb1d2cbdc1ea4b76f3",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "qualification",
+            "sha": "bc5f43e2f6612a3f69eabd8912c74fa80e700d9b",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "rbe.bzl",
+            "sha": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "scratch",
+            "sha": "65b649147864de2851b5a9e4ddfaa3bc93e0fb77",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "scripts",
+            "sha": "7bbd23a96d10b7f3b00f48cb142cca64905a970a",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "sdk",
+            "sha": "03867fb100b45ae6b18fc56b3e517dbd2c0bdb47",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "third_party",
+            "sha": "b7078ccdf97d138cafdebecca0515f4dbcab47dd",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "tools",
+            "sha": "118399106aac089a8a164e83467b546e1a231ba9",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "workspace_root_test_launcher.bat.tpl",
+            "sha": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "workspace_root_test_launcher.sh.tpl",
+            "sha": "4606fd8b15274f3e52aca493a34f32264d124c06",
+            "type": "blob"
+          }
+        ],
+        "raw_base64": "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",
+        "raw_bytes": 2155,
+        "raw_sha256": "3a61b95ffbba234283d547e7c29f8264851f0e5465b2c86edc992b996c746900",
+        "sha": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+      },
+      "before": {
+        "entries": [
+          {
+            "mode": "100644",
+            "path": ".bazelignore",
+            "sha": "42da641f9d7e45ea9ecaa0f2eba0f783ffca596d",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".bazelrc",
+            "sha": "59c6850487b948779389a481de5161c64fd21ff5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".bazelversion",
+            "sha": "b13d146a7b02b96e4c30340e69388d539c9721be",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".codespellignore",
+            "sha": "9e6e911207df68e9adeb40c6899d90f312d64a6a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".codespellrc",
+            "sha": "067b425b100b765ae4f6407527c91f7053cc4bad",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": ".codex",
+            "sha": "4697cb070366598c6ef529811515c255f4369f3f",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": ".devcontainer",
+            "sha": "d930c4761f5bc87ba6308f0e78a93d4a911025a1",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": ".g1",
+            "sha": "67598d14cb17933af7bc6eac148f54b4fc54ce59",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": ".gitattributes",
+            "sha": "17da38650745923743630d38d3eb0327b7a55d1f",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": ".github",
+            "sha": "6d3b29d82fcd736bc714d7e4e748f5a579aba57d",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": ".gitignore",
+            "sha": "dbcd8633154a13966c231033a6c07ad8be169c73",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".markdownlint-cli2.yaml",
+            "sha": "15b472c61cb73bf14f6c327266e479229f555eca",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".npmrc",
+            "sha": "4153fe87bb5f08b63514128adf30f1643ef3f1fc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".prettierignore",
+            "sha": "538bdc7f1658482073bb2cee8f2cd82f8c1bb13c",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": ".prettierrc.toml",
+            "sha": "4c58c583e5fa327928190f625a1095a9c4d9e72f",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": ".vscode",
+            "sha": "b26f3b4bbfa530719068fbf14ad6ea3a4b502b33",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": ".worktreeinclude",
+            "sha": "74824b01f957d689559c85d750538ac39b36b0ed",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "AGENTS.md",
+            "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "BUILD.bazel",
+            "sha": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "CALLERS.toml",
+            "sha": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "CHANGELOG.md",
+            "sha": "2eb564c560a4c85507169a26637f6bce59f7e1fb",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "LICENSE",
+            "sha": "4606e72e042564097e8780d66c1d4dcb611869bd",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "MODULE.bazel",
+            "sha": "f3e7c21d9e7d54c0ac371caf17fe170c356bdf34",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "MODULE.bazel.lock",
+            "sha": "1565448430312c7fb7537a48f97e9cd2da945df3",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "NOTICE",
+            "sha": "2805899d56d0332d175cfc613c67d45d6f006db7",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "README.md",
+            "sha": "c50c614f45063a46ffd7ab8ab1999c7251c8892a",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "SECURITY.md",
+            "sha": "29a9b903df5da8e789d685efe8012fa4edd775e5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "announcement_tip.toml",
+            "sha": "79c0daea761e0f634960dd39e2dff6bdbfd02f63",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "apps",
+            "sha": "c2ed6666fb6d722d05526bea0e693f3b429b9445",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "archive",
+            "sha": "537c09e0cc980c97d992673890fb98f147a933c5",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "bazel",
+            "sha": "a63126a6c952997f9c09561b7bbe666ac61ef23a",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "codex-cli",
+            "sha": "8a51d813d1387f192cc66bb9feade5e12675a3f7",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "codex-rs",
+            "sha": "f66df22bbc1558d29f72e20942faf4d54a325baf",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "defs.bzl",
+            "sha": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "docs",
+            "sha": "af76060eea2887827bf7aa6320dae9fad54e92e1",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "evidence",
+            "sha": "2786862dd5ff8baea11cbba8a12b257bac5f33e0",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "experiments",
+            "sha": "bad6b71102ddeff0f1396dee65246e5c746fa15c",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "external",
+            "sha": "6717a894bfc52f7908d89aedeb0003e8eb660eec",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "flake.lock",
+            "sha": "3b96f5c60d1c9c0ce6475400ee3c82d0a45f14d1",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "flake.nix",
+            "sha": "7943d3cdacc23207c8dc222917a315b0d34272b5",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "justfile",
+            "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "package.json",
+            "sha": "a65950c26b698be87208ab644ee1c464f7759b55",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "patches",
+            "sha": "ad76fe0e407216af8ec351cd218be86594e2458b",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "pnpm-lock.yaml",
+            "sha": "48ba7c7f117e999a649fb66e4bb5c57e76243101",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "pnpm-workspace.yaml",
+            "sha": "49e7da14d39923ae45ce36669932753e53d06258",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "proposals",
+            "sha": "75887434b6b1c7c8773749347ad3f226cdd29cbf",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "qa",
+            "sha": "1156f0ae4ea28d7f3dc18c180fe19bb40c39f905",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "qualification",
+            "sha": "bc5f43e2f6612a3f69eabd8912c74fa80e700d9b",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "rbe.bzl",
+            "sha": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+            "type": "blob"
+          },
+          {
+            "mode": "40000",
+            "path": "scratch",
+            "sha": "65b649147864de2851b5a9e4ddfaa3bc93e0fb77",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "scripts",
+            "sha": "7bbd23a96d10b7f3b00f48cb142cca64905a970a",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "sdk",
+            "sha": "03867fb100b45ae6b18fc56b3e517dbd2c0bdb47",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "third_party",
+            "sha": "b7078ccdf97d138cafdebecca0515f4dbcab47dd",
+            "type": "tree"
+          },
+          {
+            "mode": "40000",
+            "path": "tools",
+            "sha": "118399106aac089a8a164e83467b546e1a231ba9",
+            "type": "tree"
+          },
+          {
+            "mode": "100644",
+            "path": "workspace_root_test_launcher.bat.tpl",
+            "sha": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+            "type": "blob"
+          },
+          {
+            "mode": "100644",
+            "path": "workspace_root_test_launcher.sh.tpl",
+            "sha": "4606fd8b15274f3e52aca493a34f32264d124c06",
+            "type": "blob"
+          }
+        ],
+        "raw_base64": "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",
+        "raw_bytes": 2155,
+        "raw_sha256": "27f2a852c570e895965132c5c73a99fe06e8871f3fcd16a929ce54e3be4bfba5",
+        "sha": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+      },
+      "path": ""
+    }
+  ]
+}

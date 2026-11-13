@@ -1,0 +1,63 @@
+{
+  "H_calls": 0,
+  "approved_source_paths_waiting_final_packet": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "budget_changes": false,
+  "budgets": {
+    "H_outer": 2100,
+    "fmt": 900,
+    "preflight": 600,
+    "record": 300
+  },
+  "changed_definitions": [
+    "module_from_original",
+    "prepare"
+  ],
+  "code_preparation_only": true,
+  "diff": {
+    "bytes": 17981,
+    "git_blob": "bd806cf256834ea36ec06d9926b6f4a5bfafaad0",
+    "sha256": "975bf509da399b904998a006ba3d0f71869ea1f0339f59bac4d9d02eeba78863"
+  },
+  "driver": {
+    "bytes": 28621,
+    "git_blob": "9101b44fb2ab24ae41a1344425dd74b536a40de4",
+    "sha256": "0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228"
+  },
+  "driver_main_executed": false,
+  "exact_source": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "new_control": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/source-repair-246d-fmt-control-v1",
+  "new_output": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/source-repair-246d-fmt-v1",
+  "original_driver": {
+    "bytes": 22679,
+    "git_blob": "24d705376fe042f040d87b6a5fc72a67780b01fa",
+    "sha256": "a0cb7e886255c53e34f21002051209580bdb8e2089d4a892f6789ae95d15ea04"
+  },
+  "replaced_definitions": {
+    "prove_actual_capture": "prove_actual_clean_source"
+  },
+  "source_writes": 0,
+  "static_call_scope": "Unchanged original V5 environment/capture/stage/finalize helpers; only fmt is dispatched, never main/initial_preflight/fix. This successor preserves the known failed source gate and cannot assert qualification.",
+  "test_commands": 0,
+  "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "unchanged_definitions": [
+    "identity",
+    "first_read",
+    "lock_identity",
+    "apply_packet",
+    "retain_terminal",
+    "main"
+  ],
+  "whole_physical_source": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e",
+    "tracked_entries": 15188
+  }
+}

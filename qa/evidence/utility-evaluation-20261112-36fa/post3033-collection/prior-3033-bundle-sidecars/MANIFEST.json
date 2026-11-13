@@ -1,0 +1,68 @@
+{
+  "actual_qualified_task_chains": 0,
+  "all_2841_old_paths_and_objects_preserved": true,
+  "base": {
+    "commit": "64b921b3f6031d515883a7ca506207932da3997f",
+    "count": 2841,
+    "leaf": "dd01bc90b0c8a7671df8327fa6f11adf61a1fedd"
+  },
+  "bundle_sidecars": [
+    {
+      "bytes": 98678,
+      "git_blob": "19db0bcfd483dc34679d7bb97b49adffe683755b",
+      "local": "/tmp/hepta-36fa-post2841-evidence-preparation-v1/VERIFIED_INCREMENTAL_ENTRIES.json",
+      "name": "VERIFIED_INCREMENTAL_ENTRIES.json",
+      "sha256": "999cd474803f6cc76b13b942dcb68f5325f69e4728b416a5aed3c7a4f8cc4b35"
+    },
+    {
+      "bytes": 21688,
+      "git_blob": "220946c65d72cb11077a250e6ebdb34f96e7c33d",
+      "local": "/tmp/hepta-36fa-post2841-evidence-preparation-v1/INCREMENTAL_FILEMAP.json",
+      "name": "INCREMENTAL_FILEMAP.json",
+      "sha256": "eff0ac3b8ea94575ced14c82f67c9730d4f54e73dc8dfa1fb8c9bd2411fc5096"
+    },
+    {
+      "bytes": 355401,
+      "git_blob": "24d87c93c886fdb9b9f87ddfe41a4fdb8687b0bd",
+      "local": "/tmp/hepta-36fa-post2841-evidence-preparation-v1/FULL_FILEMAP.json",
+      "name": "FULL_FILEMAP.json",
+      "sha256": "653b35a2bc85255f712a71b75a257b66cfcb38b252f118945e112e1252b02439"
+    },
+    {
+      "bytes": 103145,
+      "git_blob": "bc9b71ecb07063bfaf4a92e0efd76be02e17a257",
+      "local": "/tmp/hepta-36fa-post2841-evidence-preparation-v1/PLACEMENT.json",
+      "name": "PLACEMENT.json",
+      "sha256": "720df32baa8701452076d364b6f8af9e69dc4c4738749fd384f2a2e7faa077c7"
+    }
+  ],
+  "exact_recovery_not_new_observation": true,
+  "format": "hepta-post2841-evidence-preparation-manifest-v1",
+  "frozen_cutoff_utc": "2026-11-12T23:28:14.670813+00:00",
+  "frozen_observation_payload_files": 181,
+  "native_qualification_started_in_this_scope": false,
+  "new_repair_state_at_cutoff": "1a1d2107dce-2564-1c98 admitted; terminal not collected in this frozen increment",
+  "no_H_source_edits_tests_trees_commits_refs_PR_actions": true,
+  "old_README_archive": "checkpoints/README_2841FILES_BEFORE_POST2841_INCREMENT.md",
+  "old_README_retained_in_full_map": true,
+  "payload_review": {
+    "bytes": 5381,
+    "git_blob": "a4805d0e6a35f5c0943f2c3051db337a8cf2e4b6",
+    "sha256": "4fec005218a3680578fe1862905c8f2e0818137b8cdf38a988c474c9de628ffa"
+  },
+  "proposed_full_file_count": 3033,
+  "publication_files_added": 192,
+  "raw_file_representation_changes": {
+    "leaf_API_response": "Original full 2 MB response is stored in lossless bounded parts with all raw/gzip/part identities.",
+    "two_oversized_inputs": "Original verified Git blobs retained; source-repair-246d/fmt-launch/ENCODED_ORIGINAL_INPUTS.json binds six lossless parts. No raw byte or observation changed."
+  },
+  "reuse_of_archived_records": "Original create/readback response bodies were compared exactly where available; the remaining whole contents were freshly fetched and matched. Existing immutable blobs were not unnecessarily recreated.",
+  "root_final_README_and_Merkle_review_required": true,
+  "source_actual_gate_status_at_cutoff": "246d: source-closure FAIL, caller self-test PASS, full caller verification PASS; overall FAIL",
+  "source_parser_scope": "Raw full logs and original runner counts remain authoritative; derived failure indexes/old parser attempts are separately retained without replacing the original records.",
+  "status": "READY_FOR_ROOT_REVIEW_AND_PUBLICATION_ONLY",
+  "verification_methods": {
+    "fresh_entire_GitHub_blob_fetch_equal": 141,
+    "saved_original_entire_GitHub_readback_equal": 51
+  }
+}

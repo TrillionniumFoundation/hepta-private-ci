@@ -1,0 +1,11 @@
+{
+  "actual_admission_field": "job.id",
+  "actual_status_field": "job_id",
+  "adaptation": "Use observed job.id and compare all returned explicit request fields. No original native request or evidence bytes changed.",
+  "first_observation": "KeyError: job_id at verify_actual_canonical.py line37 before any output review or ref mutation",
+  "format": "hepta-root-offline-canonical-verifier-schema-observation-v1",
+  "native_dispatch": false,
+  "qualification": false,
+  "source_ref_updated": false,
+  "timeout_echo": "Admission job object does not echo timeout_seconds. The sealed exact request independently pins900 seconds."
+}

@@ -1,0 +1,82 @@
+{
+  "format": "hepta-cc57-canonical-evidence-metadata-readback-completion-v1",
+  "all_four_metadata_files_actually_created_and_fully_read_back": true,
+  "files": [
+    {
+      "name": "ARCHIVE_INDEX.json",
+      "bytes": 11517,
+      "sha256": "03a6156773f9922a878bf2979a438ceebfa508222905dbb064c5aca7ebfda8e8",
+      "git_blob": "a37080b66425492ba59e2e3e1bd9cddee94f3c4e",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a37080b66425492ba59e2e3e1bd9cddee94f3c4e"
+        },
+        "isError": false
+      },
+      "actual_full_fetch_content_equal": true
+    },
+    {
+      "name": "ARCHIVE_COMPLETION.json",
+      "bytes": 11925,
+      "sha256": "64e5be9a4517df105d2f64921c5367ab5f8449a46bbf9973f187f50c10e99913",
+      "git_blob": "ff8f51b4b33130c8297ab1b1ea59f66f37745632",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ff8f51b4b33130c8297ab1b1ea59f66f37745632"
+        },
+        "isError": false
+      },
+      "actual_full_fetch_content_equal": true
+    },
+    {
+      "name": "README.md",
+      "bytes": 3293,
+      "sha256": "72557013722674a76dff9fecc5197232ea4842bc4ed565eab93b0d75aac4b8eb",
+      "git_blob": "45015fd2b80e13ef83b1b367e7feadbb47c3cbf9",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "45015fd2b80e13ef83b1b367e7feadbb47c3cbf9"
+        },
+        "isError": false
+      },
+      "actual_full_fetch_content_equal": true
+    },
+    {
+      "name": "PLACEMENT.json",
+      "bytes": 15952,
+      "sha256": "b8442cad3b3232e9acee639a2a1a3b340a19d2a8657984c05026d3f681089f2c",
+      "git_blob": "d6831caa1756723a75d258891b4f40cd36b5ab8a",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "d6831caa1756723a75d258891b4f40cd36b5ab8a"
+        },
+        "isError": false
+      },
+      "actual_full_fetch_content_equal": true
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "base_inventory": {
+    "bytes": 5611184,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+  },
+  "base_physical_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "expected_after_leaf_count": 15188,
+  "expected_after_physical_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "format": "hepta-246d-repair-native-schema-derivation-v1",
+  "gzip": {
+    "bytes": 430431,
+    "git_blob": "77a6ed2c81ae51e3c9181ad5f63a19aa815e2c76",
+    "name": "NONRUST_APPLY_PACKET.json.gz",
+    "sha256": "2478ec462c8ae600c1c240ca3a420620090fe3275705794d9457180f68252080"
+  },
+  "native_or_H_execution": false,
+  "original_preparation_manifest": {
+    "bytes": 6650,
+    "git_blob": "2c5ac17667053597ee9111445da45164afd849ae",
+    "sha256": "36bb9a7cb7295269f0a9219123d0bb38a01d7badb06bcbd8400732c567332085"
+  },
+  "packet": {
+    "bytes": 2209423,
+    "git_blob": "35debe83e69774f855ed198d35edaa762ae09573",
+    "name": "NONRUST_APPLY_PACKET.json",
+    "sha256": "4e735b9402495886f079f5b35026bdc54e56e7ebb1bd179e3de07c25854ce29b"
+  },
+  "parts": [
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 0,
+      "decoded_sha256": "559d0e43fb92d6c4d70f76e256153d95d82d0a6e99f48d6e0531c07cba739e3e",
+      "git_blob": "045b3f9265bad5a219b79934a3a16c1309853c16",
+      "name": "NONRUST_APPLY_PACKET.json.gz.part001.b64",
+      "sha256": "1007e3730a41f4048f64ae254682896b8b571fdbcbe500e1789e7e1182efc05c"
+    },
+    {
+      "bytes": 262145,
+      "decoded_bytes": 196608,
+      "decoded_offset": 196608,
+      "decoded_sha256": "54d64fd160484b3e43303fcb19c85bb66a461d72d4fb025f3f2786b78bade3bc",
+      "git_blob": "e1d450a4f9260a869039fecf8c6cb3fa8faea7d0",
+      "name": "NONRUST_APPLY_PACKET.json.gz.part002.b64",
+      "sha256": "3295eb51efdb9b949d7b64573f03c254dd95fa3dd96943edc76241fb32a30754"
+    },
+    {
+      "bytes": 49621,
+      "decoded_bytes": 37215,
+      "decoded_offset": 393216,
+      "decoded_sha256": "6a273d4f0293751b0c96e17f84682b1779deebcabb8640ffb9c4a36b32a1361d",
+      "git_blob": "8168e432116ac62c930640dd15604329b434b9a0",
+      "name": "NONRUST_APPLY_PACKET.json.gz.part003.b64",
+      "sha256": "5e5a64bafb2c61ae99decba4290e8bd41401d55e27a163c7550314f018f8e797"
+    }
+  ],
+  "qualification": false,
+  "reconstruction": "In listed order remove the trailing LF from each ASCII base64 part, base64-decode each separately, concatenate the decoded bytes, verify the gzip identity, gunzip once, then verify raw JSON identity. No JSON reserialization is needed for reconstruction.",
+  "source_identity": {
+    "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "status": "",
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "source_proposal": {
+    "bytes": 2209325,
+    "git_blob": "bade35cfabded0a0db3451d758e8316034cabec6",
+    "sha256": "c18566ac882c18008ea03a0926a8734187466b1987abc969eda5042a13c24c88"
+  },
+  "status": "PREPARED_NOT_ACTIVATED_REQUIRES_ROOT_APPROVAL",
+  "transformation": "Schema-only rename/rearrangement of top-level fields and explicit clean source identity from the exact original complete inventory. All five change objects, preimages, postimages, modes and base64 strings remain JSON-equal; no source content changed."
+}

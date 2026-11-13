@@ -1,0 +1,48 @@
+{
+  "actual_command_elapsed_seconds": 372.61202359199524,
+  "actual_command_exit_code": 1,
+  "actual_command_returncode": 1,
+  "actual_runner_exit_code": 1,
+  "cause": null,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "diagnostic_scope": "Offline static analysis after exact complete raw arrives. No H, running clone mutation, gate rerun, timeout change, assertion deletion or source publication.",
+  "format": "hepta-246d-source-closure-initial-observed-record-v1",
+  "independent_method_counts": null,
+  "local_record_identity": {
+    "bytes": 1536,
+    "git_blob": "081aa2fc65417aef3a6aa1306e30a7f12b9bfe2a",
+    "sha256": "67ee72fe1d087fbff3794627973ae3552744c76963cb4add9b348e85b1742569"
+  },
+  "raw_expected_from_original_record_and_manifest": {
+    "encoding": "identity",
+    "original_bytes": 118496,
+    "original_path": "source-closure.json.3c3fba02c31c41b48f86c54d6161de00.log",
+    "original_sha256": "f51a3e278d6e5072b0c13b94c2279eaa890419e8445af5e12eb9021565ecb29f",
+    "parts": [
+      {
+        "bytes": 118496,
+        "git_blob_sha": "f84b983ace7dfd3dbe8de0a3972274d0f8a930e3",
+        "path": "retained/source-closure.json.3c3fba02c31c41b48f86c54d6161de00.log.part0000",
+        "sha256": "f51a3e278d6e5072b0c13b94c2279eaa890419e8445af5e12eb9021565ecb29f"
+      }
+    ]
+  },
+  "raw_full_readback_at_this_review": false,
+  "runner_reported_counts": {
+    "failed": 6,
+    "passed": 486
+  },
+  "source_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "timed_out": false
+}

@@ -1,0 +1,140 @@
+{
+  "H_or_main_dispatched": false,
+  "actual_final_format": {
+    "bytes": 7097,
+    "git_blob": "6cb1b8d6af25907ca0fea5d9bd0f787062dbef94",
+    "sha256": "f0a8fd1bb8b6b3b4aa71cf5e9a0683cb4d4e0d7b532cc0cde43bedff4244544f"
+  },
+  "actual_format_parents": [
+    "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+  ],
+  "actual_format_source_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "actual_format_source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "actual_prior_attempt_job": "1a1d2325df6-2564-1cae",
+  "actual_prior_attempt_result": {
+    "bytes": 522,
+    "git_blob": "171e45f701c04443a6addbf2017e6b20a672884d",
+    "sha256": "805a8c3fc7d335b49b948170030d0d87ef5cc0e384aeaf63a9dfeccfb8ce842f"
+  },
+  "exact_three_ast_constant_changes": [
+    {
+      "line": 121,
+      "new": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "old": "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    },
+    {
+      "line": 122,
+      "new": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+      "old": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+    },
+    {
+      "line": 123,
+      "new": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "old": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    }
+  ],
+  "first_error": "RuntimeError: actual final original format prerequisite",
+  "format": "hepta-cc57-exact-admission-ancestry-successor-v2",
+  "full_inventory": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "tracked_entries": 15188
+  },
+  "inverse_three_replacements_restores_full_original_bytes": true,
+  "native_outer_seconds": 45000,
+  "new_admission": {
+    "bytes": 14294,
+    "git_blob": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+    "sha256": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c"
+  },
+  "new_control": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2",
+  "no_predicate_removed_or_bypassed": true,
+  "old_admission": {
+    "bytes": 14294,
+    "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+    "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+  },
+  "original_V5_5118_b92_wrappers_plan_runtime_guards_unchanged": true,
+  "original_fixture_or_owner_substitution": false,
+  "original_predicate_rejects_actual_1c98": true,
+  "prior_attempt_status": "unknown; original source driver main never entered",
+  "qualification": false,
+  "qualification_input": {
+    "bytes": 10960,
+    "git_blob": "9cd798c77f3cf9f3139c4f0b345bcc3be2b894da",
+    "sha256": "38169c3726baaf32eb55218bbb3e274d2f40d4957630b253d5d31bad48828365"
+  },
+  "real_qualified_task_chains": 0,
+  "review_correction": "Prior bootstrap byte/AST comparisons did not detect the retained historical formatter ancestry in admission5208. Root and the static compatibility review failed to validate that seam; both prior approvals and actual Unknown are retained.",
+  "scope_of_probes": "Offline evaluation of the exact existing prerequisite expression against an already-observed formatter result and12 single-field synthetic corruptions; no source/native test gate or new real outcome.",
+  "secondary_error": "ValueError: unchanged detached HEAD/no refs",
+  "secondary_error_limit": "The old maintenance HEAD expectation was still installed because admission failed before assigning the qualified source. It is not evidence of an actual source change. No fresh full-source equality is claimed from this rejected admission.",
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_config": {
+    "bytes": 820,
+    "git_blob": "a6dbed0b4eea650f1af616df5dd1e9719475dff4",
+    "sha256": "f9bab5b64869c5b8a51545a73c6d1fe7e14767ead25239e8e8b718ff73f5c61c"
+  },
+  "source_gate_limits": {
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "source_or_ref_mutation": false,
+  "source_outer_seconds": 7200,
+  "status": "PREPARED_ACTUAL_ANCESTRY_CORRECTED_PENDING_PEER_AND_EXACT_LAUNCH_REVIEW",
+  "successor_predicate_accepts_actual_1c98": true,
+  "synthetic_negative_predicate_probes": [
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "wrong_source_commit"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "wrong_source_tree"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "wrong_parents"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "wrong_schema"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "failed_status"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "wrong_source_repo"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "qualification_claim"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "fix_started"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "test_started"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "extra_command"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "missing_fmt"
+    },
+    {
+      "predicate_returned": false,
+      "synthetic_negative_probe": "ref_updated"
+    }
+  ],
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+}

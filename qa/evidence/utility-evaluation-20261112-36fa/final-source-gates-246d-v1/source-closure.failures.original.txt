@@ -1,0 +1,56 @@
+FAIL: test_each_source_role_and_clock_constraint_remains_present_in_order (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py", line 145, in test_each_source_role_and_clock_constraint_remains_present_in_order
+    self.assertEqual({row["function"] for row in functions}, expected)
+AssertionError: Items in the first set but not the second:
+'fn require_profile('
+
+
+FAIL: test_wire_purpose_action_sequence_and_original_context_cannot_change (test_original_selection_readback_source_closure.OriginalSelectionReadbackClosureTests.test_wire_purpose_action_sequence_and_original_context_cannot_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_selection_readback_source_closure.py", line 273, in test_wire_purpose_action_sequence_and_original_context_cannot_change
+    self.mutate(CLIENT, "fn operation(", "None => OPERATION")
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_selection_readback_source_closure.py", line 123, in mutate
+    self.assertEqual(body.count(marker), 1, (path, function, marker))
+AssertionError: 0 != 1 : ('codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', 'fn operation(', 'None => OPERATION')
+
+
+FAIL: test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap (test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap) (path='codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', inserted='let custody = Host::recover_original_custody();')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_training_readback_source_closure.py", line 349, in test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap
+    self.assert_protected_rejects(
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_training_readback_source_closure.py", line 105, in assert_protected_rejects
+    with self.assertRaises(PROOF.VerificationFailure):
+AssertionError: VerificationFailure not raised
+
+
+FAIL: test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap (test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap) (path='codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs', inserted='let custody = Host::recover_original_custody();')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_training_readback_source_closure.py", line 349, in test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap
+    self.assert_protected_rejects(
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_training_readback_source_closure.py", line 105, in assert_protected_rejects
+    with self.assertRaises(PROOF.VerificationFailure):
+AssertionError: VerificationFailure not raised
+
+
+FAIL: test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap (test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap) (path='codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs', inserted='let custody = Host::recover_original_custody();')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_training_readback_source_closure.py", line 349, in test_read_only_adapters_cannot_gain_execution_signing_reconnection_or_bootstrap
+    self.assert_protected_rejects(
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_original_training_readback_source_closure.py", line 105, in assert_protected_rejects
+    with self.assertRaises(PROOF.VerificationFailure):
+AssertionError: VerificationFailure not raised
+
+
+FAIL: test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-utility-36fa-source-gates-246d-v1/qa/b4-no-bypass/test_resident_root_source_closure.py", line 393, in test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof
+    self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES))
+AssertionError: 33 != 32
+

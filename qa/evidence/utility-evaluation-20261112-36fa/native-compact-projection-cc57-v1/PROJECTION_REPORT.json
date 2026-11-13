@@ -1,0 +1,255 @@
+{
+  "H_or_native_or_Git_commands": 0,
+  "commit_or_ref_changes": false,
+  "compact_expected": {
+    "bytes": 3530181,
+    "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+    "name": "NATIVE_COMPACT_INVENTORY.projected.json",
+    "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "complete_mapping": {
+    "all_five_fields_exactly_mapped": true,
+    "all_paths_preserved": true,
+    "content": "Original full row bytes, SHA256 and working Git blob; every working/index blob matches and every full row is stable.",
+    "mode": "Original symlink/physical execute-bit rule, checked equal to the full inventory index mode.",
+    "row_fields": [
+      "path",
+      "mode",
+      "bytes",
+      "sha256",
+      "blob"
+    ],
+    "rows": 15188,
+    "serializer": "json.dumps(rows, sort_keys=True, separators=(',', ':')).encode(); default ensure_ascii=True; no terminal LF.",
+    "sort": "Unique raw Git path bytes; all 15188 paths are ASCII.",
+    "source_files_read_or_written": 0
+  },
+  "derived_transport": {
+    "gzip": {
+      "bytes": 1169929,
+      "git_blob": "f43cea3a84e407442ecec3c1ca9e2ad7266d553e",
+      "name": "NATIVE_COMPACT_INVENTORY.projected.json.gz",
+      "sha256": "e8c4c27a0ec7679c60c0d48f1a51b030d58e8b864aba8f36f5331772d3b13e83"
+    },
+    "original_b92_native_gzip_identity_not_predicted": true,
+    "parts": [
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 0,
+        "decoded_sha256": "36ef94daf6a9908db260269040bffb00f04757904337fd75fe55a5e6c9d5aee4",
+        "git_blob": "65451e31c6a484c1f1abc804deda285c23eae79b",
+        "name": "NATIVE_COMPACT_INVENTORY.projected.json.gz.part-001.b64",
+        "sha256": "195d3a0c85e0eab5f6b28dfdea9f238b271564b69b083a5281a35d9ff4b39fae"
+      },
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 262144,
+        "decoded_sha256": "59d3ac47d951c5917e35a37b7aeb82e7ce5405a3cdbfb8aa5e5875cf6676ad80",
+        "git_blob": "33e81bacf1e8505103a2bef368b44c4fde51d83c",
+        "name": "NATIVE_COMPACT_INVENTORY.projected.json.gz.part-002.b64",
+        "sha256": "ee4a8434be1bbde21fba1d46dfffe80d0792c50f359386219fc53648b62e24f6"
+      },
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 524288,
+        "decoded_sha256": "c4296ee9303a4003f15ff84baf87feff7611d1cde673cb9c1e1c4cf6ef1875d2",
+        "git_blob": "226e37299f59f792dca9e9286ab46b680f72a92d",
+        "name": "NATIVE_COMPACT_INVENTORY.projected.json.gz.part-003.b64",
+        "sha256": "8cfdb650b4cf380a42f1c579e47061996bdc8216d7d3996146d316f5833790b3"
+      },
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 786432,
+        "decoded_sha256": "5015bd38ada08f47820d1a7df52ac7190a0ba9c58550281883736a34aa2450ab",
+        "git_blob": "687839c931d8a1b25e63fe5083730c6d7dddb687",
+        "name": "NATIVE_COMPACT_INVENTORY.projected.json.gz.part-004.b64",
+        "sha256": "4ebe9c7f7f5e0c1fb4f08ea37df99cf9bec4402953087f77f1636846f822a7c3"
+      },
+      {
+        "bytes": 161805,
+        "decoded_bytes": 121353,
+        "decoded_offset": 1048576,
+        "decoded_sha256": "711457747d5e74be6f8c35b6e2bda6fcb5e248899a4604167572fea6de78695a",
+        "git_blob": "680eba76c89dcf51d9a785aa3e99d01f59db060f",
+        "name": "NATIVE_COMPACT_INVENTORY.projected.json.gz.part-005.b64",
+        "sha256": "d139aa87a7178144b99757499ca9196b123a5a6c1853a7f4de9ad00532aecbc1"
+      }
+    ],
+    "reconstruction": "Decode each base64 text part separately, concatenate in listed order, verify the derived gzip, gunzip, verify the complete compact JSON identity. Native gates bind the uncompressed inventory hash; these transport gzip bytes are not a native snapshot."
+  },
+  "format": "hepta-cc57-original-native-compact-projection-report-v1",
+  "full_expected_input": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "gate_or_Cargo_tests_executed": 0,
+  "historical_compact_comparison": {
+    "before": {
+      "bytes": 3530181,
+      "git_blob": "7e48e7b0441e61c3cfb0707070a5a2564be60155",
+      "sha256": "2fa7277b524b57b91c4517655ea086ad0314a4a33df0d47ed230d8afb931a62a"
+    },
+    "changed_rows": [
+      {
+        "after": {
+          "blob": "c3257329caece666950db2041a8e9f47acf5c129",
+          "bytes": 13072,
+          "mode": "100644",
+          "path": ".github/blob-size-allowlist.txt",
+          "sha256": "5c9663a527f8d1d926546747a430b5d9b6cbe5102b696c2e81ddcbb1c1bb17b1"
+        },
+        "before": {
+          "blob": "4d9a0f0ab6c4e738d879c52f60f039bfd2d45bbc",
+          "bytes": 12891,
+          "mode": "100644",
+          "path": ".github/blob-size-allowlist.txt",
+          "sha256": "129365df7a87fd2b90f92254f4968017baaf4e50126f65c08259c51852ba918f"
+        },
+        "path": ".github/blob-size-allowlist.txt"
+      },
+      {
+        "after": {
+          "blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+          "bytes": 1577765,
+          "mode": "100644",
+          "path": "CALLERS.toml",
+          "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+        },
+        "before": {
+          "blob": "fc5738ff863cd7923e7feb2d1f3b48e94c60cdc6",
+          "bytes": 1577681,
+          "mode": "100644",
+          "path": "CALLERS.toml",
+          "sha256": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb"
+        },
+        "path": "CALLERS.toml"
+      },
+      {
+        "after": {
+          "blob": "6aa44ad7984ce7af5cb6fd5f67f781cd658b238e",
+          "bytes": 10965,
+          "mode": "100644",
+          "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+          "sha256": "54cd24db176f41407f270da16357a74e759deb0043a5d37862a3b825a78fc415"
+        },
+        "before": {
+          "blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+          "bytes": 10942,
+          "mode": "100644",
+          "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+          "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+        },
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py"
+      },
+      {
+        "after": {
+          "blob": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+          "bytes": 24713,
+          "mode": "100644",
+          "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+          "sha256": "c9ee98b559be8f646b49d4408ed45345bb33b0f1e44116693dc3b7b82ccb0464"
+        },
+        "before": {
+          "blob": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+          "bytes": 24442,
+          "mode": "100644",
+          "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+          "sha256": "343f666445888fca75e8304823911bb3e1ea54502f7d5ce7b689b60779961dd5"
+        },
+        "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+      },
+      {
+        "after": {
+          "blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+          "bytes": 28123,
+          "mode": "100644",
+          "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "sha256": "5320babc661f676a0635e44e1f94222c118d8c68d10a33c6559929adec83758e"
+        },
+        "before": {
+          "blob": "0ef4dc5b862c8e684697775d3469823537961005",
+          "bytes": 27811,
+          "mode": "100644",
+          "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "sha256": "528221475bae004ea46aa7d16e86595294a86254589083f08d240f7ad1377939"
+        },
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py"
+      }
+    ],
+    "only_five_approved_source_rows_change": true,
+    "same_order_modes_and_membership": true,
+    "unchanged_rows": 15183
+  },
+  "historical_literal_note": "The byte-identical original function return includes the explanatory literal df891018... from its prior input. It is preserved in ORIGINAL_PROJECT_RETURN_REPORT.json. The current full_expected_input and source_expected fields in both reports are the new 13d3... and cc57 pins; no interchangeability of full/compact/clone formats is claimed.",
+  "only_external_input_global_rebindings": {
+    "FULL_PIN": {
+      "after": {
+        "bytes": 5611184,
+        "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+        "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+      },
+      "before": {
+        "bytes": 5611184,
+        "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+        "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e"
+      }
+    },
+    "SOURCE": {
+      "after": {
+        "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+        "status": "",
+        "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+      },
+      "before": {
+        "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+        "status": "",
+        "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+      }
+    }
+  },
+  "original_function_code_objects_unchanged": true,
+  "original_function_return_report_preserved": {
+    "bytes": 4605,
+    "git_blob": "75638b75be08bfb8206b11ee24f5fbdefd25cb6f",
+    "name": "ORIGINAL_PROJECT_RETURN_REPORT.json",
+    "sha256": "fb3e27fbbdc0b728f3cf1863672b3de86eec94c1adb7348c9fe2de6509301bc9"
+  },
+  "original_main_executed": false,
+  "original_projection_script_byte_pin": {
+    "bytes": 9314,
+    "git_blob": "9d9d81fd59ddd9876321f8abf9ed389e76d5445c",
+    "sha256": "44f424f6a27d265afcde1896b2e67c959dcb73277f02feb48a023591ac6c4065"
+  },
+  "original_script_copy_unchanged": true,
+  "qualification": false,
+  "requirements": [
+    "Actual normal canonical alignment and all complete audits must be observed.",
+    "Its actual full source inventory must match the exact current 13d3... input identity.",
+    "The original native snapshot must then run from the actual checkout and independently match commit/tree/status/count and this compact uncompressed SHA256.",
+    "Original b92 before/after snapshots, full source observations, gates, budgets and ignored-output reporting remain required."
+  ],
+  "snapshot_expected": {
+    "bytes": 237,
+    "git_blob": "9904f4aee09457e8b2352583c4f288a976b8378f",
+    "name": "NATIVE_SNAPSHOT.projected.json",
+    "sha256": "c6a0596e587b0a8c3d459d86fad39085bcb8f1ebd7eaf5f1d1e71221b55caa34"
+  },
+  "snapshot_expected_value": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "files": 15188,
+    "inventory_sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_expected": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "status": "EXPECTED_PROJECTION_ONLY_NOT_ACTUAL_ALIGNMENT_OR_NATIVE_SNAPSHOT"
+}

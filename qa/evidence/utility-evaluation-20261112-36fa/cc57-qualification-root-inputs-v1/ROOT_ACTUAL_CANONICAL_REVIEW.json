@@ -1,0 +1,122 @@
+{
+  "actual_job_id": "1a1d223a60b-2564-1ca3",
+  "actual_normal": {
+    "bytes": 953,
+    "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+    "sha256": "084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83"
+  },
+  "actual_reconciliation": {
+    "bytes": 7173,
+    "git_blob": "b65fe90dade8b6f49adb193e63ebf98546eadc1c",
+    "sha256": "aef22a0cab73667591c5819e631adb77aa945deb15fd95b693d729b8ea18944b"
+  },
+  "actual_reconciliation_reused": false,
+  "actual_result": {
+    "bytes": 138945,
+    "git_blob": "c374e3029f0fa8fa4f66d6e311c6841785db63b5",
+    "sha256": "1c058f83bb69579f7d039a401ab1e94cd0fb25529dc8d8dc7f91a73c9fbb75fe"
+  },
+  "after": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "head_raw_sha256": "c5cda15b2712092074c1870ef8056b4b4fa3b838684353c9f17def139b4b8f5b",
+      "index_bytes": 2072488,
+      "index_sha256": "8aa01d8697bae54ef7bb659f7c898181039006350f29982c971e1ab99284eec0",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+    },
+    "inventory": {
+      "bytes": 5611184,
+      "filesystem_entries": 15188,
+      "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+      "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "all_15188_physical_rows_bytes_modes_stable": true,
+  "all_commands_normal_zero": true,
+  "before": {
+    "commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "head_raw_sha256": "b9574db38f4d8ea2988f352f2296104aaefb1322806c2e96a785828cef7ff26f",
+      "index_bytes": 2072488,
+      "index_sha256": "edccb2d6e1f0b2d2169ef64959948c08217a9c640a675d1d6dc48da9c23fc82d",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    },
+    "inventory": {
+      "bytes": 5611436,
+      "filesystem_entries": 15188,
+      "git_blob": "44e2588e8e3fc7f1f93d65d0191cefd801712217",
+      "sha256": "cf8e6251416d41265528e7e4fbb9a9cd7a9502e02694dc2544c8c2acc0cf3606",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    ],
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "complete_command_count": 56,
+  "exact_request": {
+    "bytes": 655471,
+    "git_blob": "87bdc70f82bc46f94bcce496559c9805bf764b89",
+    "sha256": "d15e1528129c039a2e532d9c0dc5e6f195f054b8a8c3d8ec98a691905f7631f5"
+  },
+  "final_audits": [
+    {
+      "check": "source",
+      "finished_at": "2026-11-12T23:42:23.335086+00:00",
+      "started_at": "2026-11-12T23:42:18.881193+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "git",
+      "finished_at": "2026-11-12T23:42:26.166206+00:00",
+      "started_at": "2026-11-12T23:42:23.335108+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "inputs",
+      "finished_at": "2026-11-12T23:42:26.195338+00:00",
+      "started_at": "2026-11-12T23:42:26.166232+00:00",
+      "status": "verified"
+    }
+  ],
+  "first_transport_timeout_retained": {
+    "bytes": 220,
+    "git_blob": "a86ee6a2b442235832ef53c92b64aa4d0acde5f5",
+    "sha256": "0a7c2099d9b16294c109f910b9f6279fff5ddd120f46c5de08346a444f0b7f6f"
+  },
+  "five_index_changes": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "format": "hepta-root-actual-cc57-canonical-alignment-review-v1",
+  "full_inventory_recovery": "Exact original-serializer bytes match actual native RESULT in all three identities. This is lossless recovery, not a second native full read.",
+  "git_metadata_change_count": 23,
+  "mutation_intent_count": 14,
+  "native_tests_started": false,
+  "object_batch_schema": "The single original object-batch terminal reports observed returncode0 and all16449 objects, with no separate timed_out key;55 ordinary command terminals explicitly report timed_outfalse.",
+  "previous_246d_source_failure_retained": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "scope": "Canonical snapshot and explicit commit anchors; no whole-history fsck claim.",
+  "source_gates_passed": false,
+  "source_ref_publication_ready": true,
+  "status": "CANONICAL_SOURCE_ALIGNED_CLEAN_INDEPENDENTLY_REVIEWED"
+}

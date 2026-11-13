@@ -1,0 +1,72 @@
+{
+  "all_old3033_paths_will_remain_identical": true,
+  "base3033": {
+    "map": {
+      "bytes": 355401,
+      "git_blob": "24d87c93c886fdb9b9f87ddfe41a4fdb8687b0bd",
+      "sha256": "653b35a2bc85255f712a71b75a257b66cfcb38b252f118945e112e1252b02439"
+    },
+    "old_paths": 3033,
+    "prepared_map_not_a_new_published_commit": true,
+    "prior_manifest": "adcb7e63012652c16833adfa0c92c35d5cb2d7ec"
+  },
+  "categories": {
+    "actual_1c98_native_completed_placement": 1,
+    "actual_1c98_native_original": 35,
+    "actual_1c98_postimages_exact_recovery": 14,
+    "actual_1c98_recovery_completed_metadata": 3,
+    "actual_source_publication_not_qualification": 8,
+    "canonical_cc57_completed_metadata": 2,
+    "canonical_cc57_preparation_or_actual_inventory_recovery": 30,
+    "native_compact_projection_completed_placement": 1,
+    "native_compact_projection_not_execution": 12,
+    "prior3033_immutable_bundle_sidecar": 5,
+    "root_actual_1c98_review": 1,
+    "root_actual_canonical_object_API_or_review": 9,
+    "root_verified_control_or_approval": 16,
+    "root_verified_upload_ledger": 3
+  },
+  "content_aliases_preserved": [
+    {
+      "git_blob": "0572a33403e5222a5274e15767d9b78bf909eff1",
+      "paths": [
+        "source-repair-246d/actual-1c98-postimages-exact-recovery-v1/recovered/apply.after.postimages-summary.json",
+        "source-repair-246d/actual-1c98-postimages-exact-recovery-v1/recovered/final.postimages-summary.json"
+      ],
+      "retained_because": "Distinct original stage/provenance/placement names; reuse one immutable blob without repeating its upload."
+    },
+    {
+      "git_blob": "fdc6f89a6521dfeb243d20c17e18faed515f5cbc",
+      "paths": [
+        "source-repair-246d/actual-1c98-postimages-exact-recovery-v1/recovered/fmt.after.postimages.json.gz.part-001.b64",
+        "source-repair-246d-final-fmt-v1/terminal/fmt.after.postimages.json.gz.part-001.b64"
+      ],
+      "retained_because": "Distinct original stage/provenance/placement names; reuse one immutable blob without repeating its upload."
+    }
+  ],
+  "duplicate_new_same_path_entries": 0,
+  "explicitly_not_selected": [
+    "Still-active canonical native job1ca3 records until Root gives a fixed handoff",
+    "New source/native qualification runs",
+    "Mutable active-checkpoint files",
+    "Any README replacement"
+  ],
+  "format": "hepta-post3033-initial-dedup-integrity-review-v1",
+  "no_H_source_test_ref_tree_commit_PR_actions": true,
+  "old_exact_entries_reused": 13,
+  "old_path_replacements": [],
+  "oversized_inputs_requiring_lossless_encoding": [],
+  "raw_bytes_selected": 8363956,
+  "reviewed_at_utc": "2026-11-12T23:51:16.333838+00:00",
+  "root_lists": [
+    "/tmp/hepta-36fa-after2841-20261112/ROOT_INITIAL_VERIFIED_UPLOADS.json",
+    "/tmp/hepta-36fa-after2841-20261112/ROOT_INPUT_VERIFIED_UPLOADS.json",
+    "/tmp/hepta-36fa-after2841-20261112/ROOT_LAUNCH_VERIFIED_UPLOADS.json",
+    "/tmp/hepta-36fa-after2841-20261112/ROOT_CANONICAL_INPUT_VERIFIED_UPLOADS.json",
+    "/tmp/hepta-36fa-after2841-20261112/ROOT_CANONICAL_LAUNCH_VERIFIED_UPLOADS.json",
+    "/tmp/hepta-36fa-after2841-20261112/ROOT_CC57_QUALIFICATION_VERIFIED_UPLOADS.json"
+  ],
+  "selected_payload_count": 140,
+  "status": "LOCAL_IDENTITIES_VERIFIED_PENDING_FINAL_READBACK_AND_CUTOFF",
+  "unique_blob_count": 138
+}

@@ -1,0 +1,27 @@
+{
+  "corrected_index": {
+    "bytes": 452142,
+    "git_blob": "0598c953a60e4e9f36de944227271851df07571f",
+    "sha256": "5aa12546c273e8ccce3de55a567c611ec0011374a02acc798d939d09e5d961a7"
+  },
+  "encoded": {
+    "bytes": 56629,
+    "git_blob": "f252736c3bc527dcb67970c9c043026708ef6941",
+    "name": "RAW_FAILURE_INDEX.initial-fqn-labels.json.gz.b64",
+    "sha256": "42342905602090700788c5b98550f51b1845e265d95ab6a71edfed9a0a15f536"
+  },
+  "format": "hepta-original-derived-parser-draft-retention-v1",
+  "gzip": {
+    "bytes": 42471,
+    "git_blob": "0199ab2dfdfd2bbdbf011a6b132c70c1139b6259",
+    "sha256": "55c09049b34845844cb5203fdc5425a0e28c0b33f207604743a2a736011146d2"
+  },
+  "raw": {
+    "bytes": 508891,
+    "git_blob": "80bdf6c27a461df927203a13235bf3d1ad31355b",
+    "sha256": "0c5ede40f7382621334a72d11451505e227f8920acee061066f9d39de1d6bf87"
+  },
+  "reason": "Initial parser redundantly appended the method name to an already-full unittest FQN. The later corrected derived index uses the full parenthesized FQN. Original raw logs and verdicts are unchanged.",
+  "reconstruction": "Strip trailing LF, base64-decode, gunzip, verify original raw bytes/SHA/Git.",
+  "status": "SUPERSEDED_DERIVED_DRAFT_NOT_GATE_RECORD"
+}

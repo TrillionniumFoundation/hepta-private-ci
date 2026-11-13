@@ -1,0 +1,52 @@
+{
+  "actual_alignment_proof": {
+    "bytes": 138945,
+    "git_blob": "c374e3029f0fa8fa4f66d6e311c6841785db63b5",
+    "sha256": "1c058f83bb69579f7d039a401ab1e94cd0fb25529dc8d8dc7f91a73c9fbb75fe"
+  },
+  "complete_physical_identity_equal_actual_after": true,
+  "exact_fmt_and_normal_pins_equal_actual_originals": true,
+  "format": "hepta-cc57-native-executor-static-consumer-compatibility-v1",
+  "formatter_changed_paths": [],
+  "local_controls_exist_and_checked": [
+    {
+      "bytes": 14294,
+      "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+      "local": "/tmp/hepta-36fa-final-qualification-hold-v1/qualification-admission.HOLD.py",
+      "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+    },
+    {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "local": "/tmp/hepta-36fa-final-qualification-hold-v1/native-driver.original.py",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "local": "/tmp/hepta-36fa-final-qualification-hold-v1/source-gates-wrapper.HOLD.py",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  ],
+  "native_paths": "Original inventory/V5/source and immutable proof paths were read by actual canonical/format jobs; fresh 8 staged control paths are intentionally created by the approved future bootstrap. This is not a new host-wide existence observation.",
+  "original_gate_budgets_unchanged": {
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "qualification": false,
+  "qualification_input": {
+    "bytes": 10960,
+    "git_blob": "2a19b2b6b27f885dc3791897dad8c9e51f305ae0",
+    "sha256": "7fec117538bed151be59fdf90ed889f8840ae88832a658aab0d9a8b74b6d38ab"
+  },
+  "runtime_guard_exactly_equal_previous_approved_246d_input": true,
+  "scope": "Static cloud read only; no native launch, no H path probe, no tests or source writes.",
+  "source_and_parent_identity_equal": true,
+  "source_config": {
+    "bytes": 820,
+    "git_blob": "b312db80c69df6479436a1ae20ad7c716d699f89",
+    "sha256": "14b00eb4f614036e58a19c8a2ba087c421fc8d8f57bb562a7b226721159097b9"
+  },
+  "source_execution_authorization": "Wait for Root final sealed exact request approval"
+}
