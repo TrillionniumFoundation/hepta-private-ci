@@ -243,9 +243,9 @@ class RootDataRefusalClosureTests(unittest.TestCase):
                 return source[:offset] + "\nHostAuthorityFrontierStore::open(root, owner);\n" + source[offset:]
             self.check_mutation(path, escape)
         self.check_mutation(PIN, lambda source: source.replace(
-            "        RootHistoricalSourcePinV1::capture(",
+            "        let result = RootHistoricalSourcePinV1::capture(",
             "        HistoricalCircuitTaskSourceV1::open(unregistered);\n"
-            "        RootHistoricalSourcePinV1::capture(", 1
+            "        let result = RootHistoricalSourcePinV1::capture(", 1
         ))
 
     def test_final_primary_readback_and_actual_receipt_stay_inside_arm(self):
