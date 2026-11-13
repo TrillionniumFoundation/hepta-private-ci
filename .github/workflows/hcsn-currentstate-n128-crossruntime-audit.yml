@@ -1,0 +1,64 @@
+name: HCSN N128 cross-runtime original-byte audit
+on:
+  push:
+    branches:
+      - evidence/hcsn-n128-thirdcycle-crossruntime-audit-20261113-c06d
+permissions:
+  contents: read
+concurrency:
+  group: hcsn-n128-thirdcycle-crossruntime-readonly-audit-20261113-c06d-001
+  cancel-in-progress: false
+jobs:
+  readonly-original-byte-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CANDIDATE_COMMIT: ${{ github.sha }}
+      EXPECTED_BRANCH: evidence/hcsn-n128-thirdcycle-crossruntime-audit-20261113-c06d
+      GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci-tools
+      - name: Bind exact source before audit imports
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_COMMIT"
+          git merge-base --is-ancestor ce0fc3e2b3f618b8e5b06b606f25735f87414fa7 HEAD
+          root="$RUNNER_TEMP/hcsn-n128-crossruntime-audit"
+          mkdir "$root"
+          package="qualification/hcsn_currentstate_n128_crossruntime_audit"
+          python -B "$package/static_inspector.py" --package "$package" --output "$root/STATIC-ADMISSION.json"
+      - name: Apply exact repository format gate
+        run: |
+          cd codex-rs
+          just fmt --base ce0fc3e2b3f618b8e5b06b606f25735f87414fa7
+          cd ..
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Compare original bytes without numerical execution
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/hcsn-n128-crossruntime-audit"
+          package="qualification/hcsn_currentstate_n128_crossruntime_audit"
+          /usr/bin/time -v -o "$root/audit.time" prlimit --as=536870912 --cpu=120 -- python -B "$package/audit.py" --package "$package" --output "$root/RESULT.json"
+          python -B "$package/verify.py" --package "$package" --result "$root/RESULT.json" --output "$root/INDEPENDENT-REVIEW.json"
+      - name: Confirm checkout remained immutable
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hcsn-n128-thirdcycle-crossruntime-audit-attempt001-originals
+          path: ${{ runner.temp }}/hcsn-n128-crossruntime-audit
+          if-no-files-found: error
