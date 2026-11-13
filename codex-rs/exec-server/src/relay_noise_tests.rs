@@ -3,16 +3,21 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Result;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCResponse;
 use codex_exec_server_protocol::RequestId;
+use futures::FutureExt;
 use futures::SinkExt;
 use futures::StreamExt;
 use pretty_assertions::assert_eq;
 use tokio::net::TcpListener;
+use tokio::net::TcpStream;
 use tokio::sync::Notify;
 use tokio::time::timeout;
+use tokio_tungstenite::MaybeTlsStream;
+use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::accept_async;
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
@@ -254,6 +259,50 @@ async fn pending_harness_key_validation_does_not_block_new_handshakes() -> Resul
     Ok(())
 }
 
+async fn wait_for_validation_calls(
+    harness_websocket: &mut WebSocketStream<MaybeTlsStream<TcpStream>>,
+    calls: &AtomicUsize,
+    expected: usize,
+    prefetched_reset: &mut Option<Message>,
+) -> Result<()> {
+    timeout(Duration::from_secs(1), async {
+        while calls.load(Ordering::SeqCst) != expected {
+            // Keep serving the peer's unchanged Ping/Pong deadline while the
+            // validator is pending. Counter polling alone never reads a Ping.
+            tokio::select! {
+                _ = tokio::task::yield_now() => {}
+                message = harness_websocket.next() => match message {
+                    Some(Ok(Message::Ping(_))) => harness_websocket.flush().await?,
+                    Some(Ok(Message::Pong(_) | Message::Frame(_))) => {}
+                    Some(Ok(message @ Message::Binary(_))) => {
+                        if prefetched_reset.is_some() {
+                            anyhow::bail!("more than one frame arrived during validation {expected}");
+                        }
+                        *prefetched_reset = Some(message);
+                    }
+                    Some(Ok(message)) => anyhow::bail!(
+                        "unexpected frame while waiting for validation {expected}: {message:?}"
+                    ),
+                    Some(Err(error)) => return Err(error.into()),
+                    None => anyhow::bail!(
+                        "environment closed before validation {expected} started"
+                    ),
+                }
+            }
+        }
+        Ok::<_, anyhow::Error>(())
+    })
+    .await
+    .with_context(|| {
+        format!(
+            "validation {expected} did not start within 1s; observed {} calls",
+            calls.load(Ordering::SeqCst)
+        )
+    })?
+    .with_context(|| format!("serve keepalive while waiting for validation {expected}"))?;
+    Ok(())
+}
+
 #[tokio::test]
 async fn duplicate_handshakes_exhaust_failure_budget() -> Result<()> {
     let listener = TcpListener::bind("127.0.0.1:0").await?;
@@ -267,7 +316,7 @@ async fn duplicate_handshakes_exhaust_failure_budget() -> Result<()> {
     let harness_identity = NoiseChannelIdentity::generate()?;
     let calls = Arc::new(AtomicUsize::new(0));
     let release = Arc::new(Notify::new());
-    let environment_task = tokio::spawn(run_multiplexed_environment(
+    let mut environment_task = tokio::spawn(run_multiplexed_environment(
         environment_websocket,
         ConnectionProcessor::new(ExecServerRuntimePaths::new(
             std::env::current_exe()?,
@@ -282,73 +331,125 @@ async fn duplicate_handshakes_exhaust_failure_budget() -> Result<()> {
         },
     ));
 
-    let stream_id = "stream-1";
-    let prologue = noise_channel_prologue(ENVIRONMENT_ID, EXECUTOR_REGISTRATION_ID, stream_id);
-    let (_handshake, request) = InitiatorHandshake::start(
-        &harness_identity,
-        &environment_identity.public_key(),
-        &prologue,
-        b"authorization",
-    )?;
-    let frame = RelayMessageFrame::handshake(stream_id.to_string(), request);
-    let encoded = encode_relay_message_frame(&frame);
-    harness_websocket
-        .send(Message::Binary(encoded.clone().into()))
-        .await?;
-    timeout(Duration::from_secs(1), async {
-        while calls.load(Ordering::SeqCst) != 1 {
-            tokio::task::yield_now().await;
-        }
-    })
-    .await?;
-
-    for attempt in 1..MAX_FAILED_NOISE_HANDSHAKES {
-        if attempt > 1 {
-            harness_websocket
-                .send(Message::Binary(encoded.clone().into()))
-                .await?;
-            timeout(Duration::from_secs(1), async {
-                while calls.load(Ordering::SeqCst) != attempt {
-                    tokio::task::yield_now().await;
-                }
-            })
-            .await?;
-        }
+    let mut environment_joined = false;
+    let outcome = std::panic::AssertUnwindSafe(async {
+        let mut prefetched_reset = None;
+        let stream_id = "stream-1";
+        let prologue = noise_channel_prologue(ENVIRONMENT_ID, EXECUTOR_REGISTRATION_ID, stream_id);
+        let (_handshake, request) = InitiatorHandshake::start(
+            &harness_identity,
+            &environment_identity.public_key(),
+            &prologue,
+            b"authorization",
+        )?;
+        let frame = RelayMessageFrame::handshake(stream_id.to_string(), request);
+        let encoded = encode_relay_message_frame(&frame);
         harness_websocket
             .send(Message::Binary(encoded.clone().into()))
-            .await?;
-        let payload = timeout(Duration::from_secs(1), async {
-            loop {
-                match harness_websocket.next().await {
-                    Some(Ok(Message::Binary(payload))) => break Ok(payload),
-                    Some(Ok(Message::Ping(_) | Message::Pong(_) | Message::Frame(_))) => {}
-                    Some(Ok(message)) => anyhow::bail!("expected reset frame, got {message:?}"),
-                    Some(Err(error)) => break Err(error.into()),
-                    None => anyhow::bail!("environment closed before sending reset"),
-                }
-            }
-        })
-        .await??;
-        let reset = decode_relay_message_frame(payload.as_ref())?;
-        assert_eq!(reset.stream_id, stream_id);
-        assert_eq!(reset.validate()?, RelayFrameBodyKind::Reset);
-    }
+            .await
+            .context("send initial handshake before validation starts")?;
+        wait_for_validation_calls(&mut harness_websocket, &calls, 1, &mut prefetched_reset).await?;
 
-    harness_websocket
-        .send(Message::Binary(encoded.clone().into()))
-        .await?;
-    timeout(Duration::from_secs(1), async {
-        while calls.load(Ordering::SeqCst) != MAX_FAILED_NOISE_HANDSHAKES {
-            tokio::task::yield_now().await;
+        for attempt in 1..MAX_FAILED_NOISE_HANDSHAKES {
+            if attempt > 1 {
+                harness_websocket
+                    .send(Message::Binary(encoded.clone().into()))
+                    .await
+                    .with_context(|| format!("send handshake for validation attempt {attempt}"))?;
+                wait_for_validation_calls(
+                    &mut harness_websocket,
+                    &calls,
+                    attempt,
+                    &mut prefetched_reset,
+                )
+                .await?;
+            }
+            harness_websocket
+                .send(Message::Binary(encoded.clone().into()))
+                .await
+                .with_context(|| format!("send duplicate for failure {attempt}"))?;
+            let payload = timeout(Duration::from_secs(1), async {
+                loop {
+                    let message = match prefetched_reset.take() {
+                        Some(message) => Some(Ok(message)),
+                        None => harness_websocket.next().await,
+                    };
+                    match message {
+                        Some(Ok(Message::Binary(payload))) => break Ok(payload),
+                        Some(Ok(Message::Ping(_) | Message::Pong(_) | Message::Frame(_))) => {}
+                        Some(Ok(message)) => anyhow::bail!("expected reset frame, got {message:?}"),
+                        Some(Err(error)) => break Err(error.into()),
+                        None => anyhow::bail!("environment closed before sending reset"),
+                    }
+                }
+            })
+            .await
+            .with_context(|| format!("wait for reset after duplicate {attempt}"))?
+            .with_context(|| format!("read reset after duplicate {attempt}"))?;
+            let reset = decode_relay_message_frame(payload.as_ref())
+                .with_context(|| format!("decode reset after duplicate {attempt}"))?;
+            assert_eq!(reset.stream_id, stream_id);
+            assert_eq!(reset.validate()?, RelayFrameBodyKind::Reset);
         }
-    })
-    .await?;
-    harness_websocket
-        .send(Message::Binary(encoded.into()))
+
+        harness_websocket
+            .send(Message::Binary(encoded.clone().into()))
+            .await
+            .context("send final handshake before failure-budget exhaustion")?;
+        wait_for_validation_calls(
+            &mut harness_websocket,
+            &calls,
+            MAX_FAILED_NOISE_HANDSHAKES,
+            &mut prefetched_reset,
+        )
         .await?;
-    timeout(Duration::from_secs(1), environment_task).await??;
+        harness_websocket
+            .send(Message::Binary(encoded.into()))
+            .await
+            .context("send final duplicate to exhaust the failure budget")?;
+        let completion = timeout(Duration::from_secs(1), &mut environment_task)
+            .await
+            .context("failure-budget exhaustion should stop the environment within 1s")?;
+        environment_joined = true;
+        let reason = completion.context("environment task failed after budget exhaustion")?;
+        eprintln!("failure-budget environment disconnect reason: {reason:?}");
+        Ok::<_, anyhow::Error>(())
+    })
+    .catch_unwind()
+    .await;
+
     release.notify_waiters();
-    Ok(())
+    let cleanup = if environment_joined {
+        Ok(())
+    } else {
+        environment_task.abort();
+        match timeout(Duration::from_secs(1), &mut environment_task).await {
+            Ok(Ok(reason)) => {
+                eprintln!("failed fixture environment disconnect reason: {reason:?}");
+                Ok(())
+            }
+            Ok(Err(error)) if error.is_cancelled() => Ok(()),
+            Ok(Err(error)) => Err(anyhow::Error::from(error).context("join environment cleanup")),
+            Err(error) => {
+                Err(anyhow::Error::from(error).context("environment cleanup exceeded 1s"))
+            }
+        }
+    };
+    match outcome {
+        Ok(Ok(())) => cleanup,
+        Ok(Err(error)) => {
+            if let Err(cleanup_error) = cleanup {
+                return Err(error.context(format!("fixture cleanup failed: {cleanup_error:#}")));
+            }
+            Err(error)
+        }
+        Err(panic) => {
+            if let Err(error) = cleanup {
+                eprintln!("fixture cleanup failed after panic: {error:#}");
+            }
+            std::panic::resume_unwind(panic)
+        }
+    }
 }
 
 #[tokio::test]
