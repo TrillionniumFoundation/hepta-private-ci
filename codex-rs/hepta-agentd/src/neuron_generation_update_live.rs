@@ -214,6 +214,16 @@ impl LiveGenerationCurrent {
         Ok(guard)
     }
 
+    fn trace_initial_failure(&self, phase: &'static str, detail: std::fmt::Arguments<'_>) {
+        if matches!(&self.publication, RetainedPublication::Initial(_)) {
+            use std::io::Write;
+            let _ = writeln!(
+                std::io::stderr(),
+                "original Initial current failure: phase={phase}; {detail}"
+            );
+        }
+    }
+
     fn check_live(&self) -> Result<(), CellGenerationErrorV2> {
         // Lock order is artifact owner -> selected payload -> FinalUse owner.
         // The update coordinator temporarily rebinds its terminal old journal
@@ -222,10 +232,19 @@ impl LiveGenerationCurrent {
             .authorities
             .artifacts
             .lock_initial()
+            .inspect_err(|error| {
+                self.trace_initial_failure(
+                    "artifact_owner",
+                    format_args!("class={}", current_error_class(error)),
+                )
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         let mut selected = self
             .selected
             .lock()
+            .inspect_err(|_| {
+                self.trace_initial_failure("selected_lock", format_args!("class=Poisoned"))
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         artifacts
             .readback()
@@ -235,8 +254,17 @@ impl LiveGenerationCurrent {
                 self.authorities
                     .clock
                     .now_unix_ms()
+                    .inspect_err(|error| {
+                        self.trace_initial_failure("clock", format_args!("class={error}"))
+                    })
                     .map_err(|_| CellGenerationErrorV2::Unavailable)?,
             )
+            .inspect_err(|error| {
+                self.trace_initial_failure(
+                    "artifact_revalidation",
+                    format_args!("class={}", current_error_class(error)),
+                )
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         self.authorities
             .final_use
@@ -245,6 +273,9 @@ impl LiveGenerationCurrent {
                 &self.expected,
                 self.publication.witness(),
             )
+            .inspect_err(|error| {
+                self.trace_initial_failure("retained_final_use", format_args!("class={error}"))
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         Ok(())
     }
@@ -266,10 +297,33 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
         if binding != self.publication.target() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        self.current.check_current(binding)?;
+        let before = self.current.check_current(binding);
+        before.inspect_err(|error| {
+            self.trace_initial_failure("control_before", format_args!("class={error}"))
+        })?;
         self.check_live()?;
         // CURRENT/authority I/O cannot make an earlier Control sample fresh.
-        self.current.check_current(binding)
+        let after = self.current.check_current(binding);
+        after.inspect_err(|error| {
+            self.trace_initial_failure("control_after", format_args!("class={error}"))
+        })
+    }
+}
+
+fn current_error_class(error: &AgentdError) -> &'static str {
+    match error {
+        AgentdError::Invalid(_) => "Invalid",
+        AgentdError::GenerationFenced(_) => "GenerationFenced",
+        AgentdError::CognitiveWriteRuntimeUnavailable => "CognitiveWriteRuntimeUnavailable",
+        AgentdError::Protocol(_) => "Protocol",
+        AgentdError::Overloaded { .. } => "Overloaded",
+        AgentdError::Fleet(_) => "Fleet",
+        AgentdError::Automation(_) => "Automation",
+        AgentdError::Io(_) => "Io",
+        AgentdError::Json(_) => "Json",
+        AgentdError::ProductionWriter(_) => "ProductionWriter",
+        AgentdError::ProductionCognitiveMutation(_) => "ProductionCognitiveMutation",
+        AgentdError::CognitiveStore(_) => "CognitiveStore",
     }
 }
 

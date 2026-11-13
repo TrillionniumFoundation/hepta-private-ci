@@ -141,6 +141,7 @@ impl RootGenerationInitialClient {
             Some(head) => Ok(head),
             None => {
                 self.fence();
+                initial_failure("observe_head_absent", None, format_args!("class=Absent"));
                 Err(uncertain())
             }
         }
@@ -184,23 +185,37 @@ impl RootGenerationInitialClient {
 
     fn exchange(&self, command: Command) -> Result<Option<CurrentHead>, AgentdError> {
         if self.fenced.load(Ordering::Acquire) {
+            initial_failure("already_fenced", None, format_args!("class=Fenced"));
             return Err(uncertain());
         }
-        if self
-            .connection
-            .require_original_publication_session()
-            .is_err()
-        {
+        if let Err(error) = self.connection.require_original_publication_session() {
             self.fence();
+            initial_failure(
+                "session_before",
+                None,
+                format_args!("class={}", initial_error_class(&error)),
+            );
             return Err(uncertain());
         }
-        let mut held = self.lane.try_lock().map_err(|_| {
+        let mut held = self.lane.try_lock().map_err(|error| {
             self.fenced.store(true, Ordering::Release);
+            let class = match error {
+                std::sync::TryLockError::WouldBlock => "WouldBlock",
+                std::sync::TryLockError::Poisoned(_) => "Poisoned",
+            };
+            initial_failure("lane_try_lock", None, format_args!("class={class}"));
             uncertain()
         })?;
-        let mut lane = held.take().ok_or_else(uncertain)?;
+        let mut lane = held.take().ok_or_else(uncertain).inspect_err(|_| {
+            initial_failure("lane_absent", None, format_args!("class=Absent"));
+        })?;
         let request_id = lane.sequence;
-        lane.sequence = request_id.checked_add(1).ok_or_else(uncertain)?;
+        lane.sequence = request_id
+            .checked_add(1)
+            .ok_or_else(uncertain)
+            .inspect_err(|_| {
+                initial_failure("sequence", Some(request_id), format_args!("class=Overflow"));
+            })?;
         let request = Request {
             schema: 1,
             purpose: PURPOSE.into(),
@@ -210,9 +225,46 @@ impl RootGenerationInitialClient {
         };
         let raw = lane
             .stream
-            .exchange(&serde_json::to_vec(&request).map_err(|_| uncertain())?)
+            .exchange(
+                &serde_json::to_vec(&request)
+                    .inspect_err(|error| {
+                        initial_failure(
+                            "encode_request",
+                            Some(request_id),
+                            format_args!("class={:?}", error.classify()),
+                        );
+                    })
+                    .map_err(|_| uncertain())?,
+            )
+            .inspect_err(|error| {
+                // This stream's errors contain only fixed framing phases,
+                // kernel I/O classes, lengths and poll/deadline fields.
+                initial_failure(
+                    "frame_exchange",
+                    Some(request_id),
+                    format_args!(
+                        "io_kind={:?}; os_error={:?}; detail={error}",
+                        error.kind(),
+                        error.raw_os_error()
+                    ),
+                );
+            })
             .map_err(|_| uncertain())?;
-        let response: Response = serde_json::from_slice(&raw).map_err(|_| uncertain())?;
+        let response: Response = serde_json::from_slice(&raw)
+            .inspect_err(|error| {
+                // Do not log serde's Display: it can contain a peer's value.
+                initial_failure(
+                    "decode_reply",
+                    Some(request_id),
+                    format_args!(
+                        "class={:?}; line={}; column={}",
+                        error.classify(),
+                        error.line(),
+                        error.column()
+                    ),
+                );
+            })
+            .map_err(|_| uncertain())?;
         if response.schema != 1
             || response.purpose != PURPOSE
             || response.request_id != request_id
@@ -220,19 +272,58 @@ impl RootGenerationInitialClient {
             || response.mode != self.mode
             || self.fenced.load(Ordering::Acquire)
         {
+            initial_failure(
+                "reply_binding_or_fence",
+                Some(request_id),
+                format_args!("class=Mismatch"),
+            );
             return Err(uncertain());
         }
-        validate_head(&self.profile, response.head.as_ref())?;
-        if self
-            .connection
-            .require_original_publication_session()
-            .is_err()
-        {
+        validate_head(&self.profile, response.head.as_ref()).inspect_err(|error| {
+            initial_failure(
+                "validate_head",
+                Some(request_id),
+                format_args!("class={}", initial_error_class(error)),
+            );
+        })?;
+        if let Err(error) = self.connection.require_original_publication_session() {
             self.fenced.store(true, Ordering::Release);
+            initial_failure(
+                "session_after",
+                Some(request_id),
+                format_args!("class={}", initial_error_class(&error)),
+            );
             return Err(uncertain());
         }
         *held = Some(lane);
         Ok(response.head)
+    }
+}
+
+// Failure-only diagnostics for the original Initial lane. Never log a
+// request, reply, profile, signature, key, path or environment value.
+fn initial_failure(phase: &'static str, request_id: Option<u64>, detail: std::fmt::Arguments<'_>) {
+    use std::io::Write;
+    let _ = writeln!(
+        std::io::stderr(),
+        "original Initial client failure: phase={phase}; request_id={request_id:?}; {detail}"
+    );
+}
+
+fn initial_error_class(error: &AgentdError) -> &'static str {
+    match error {
+        AgentdError::Invalid(_) => "Invalid",
+        AgentdError::GenerationFenced(_) => "GenerationFenced",
+        AgentdError::CognitiveWriteRuntimeUnavailable => "CognitiveWriteRuntimeUnavailable",
+        AgentdError::Protocol(_) => "Protocol",
+        AgentdError::Overloaded { .. } => "Overloaded",
+        AgentdError::Fleet(_) => "Fleet",
+        AgentdError::Automation(_) => "Automation",
+        AgentdError::Io(_) => "Io",
+        AgentdError::Json(_) => "Json",
+        AgentdError::ProductionWriter(_) => "ProductionWriter",
+        AgentdError::ProductionCognitiveMutation(_) => "ProductionCognitiveMutation",
+        AgentdError::CognitiveStore(_) => "CognitiveStore",
     }
 }
 
