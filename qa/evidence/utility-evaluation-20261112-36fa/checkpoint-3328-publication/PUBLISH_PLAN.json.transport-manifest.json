@@ -1,0 +1,35 @@
+{
+  "compression_created_locally_for_transport": true,
+  "encoding": "base64 of contiguous gzip bytes, each ASCII file has one terminal LF",
+  "format": "hepta-lossless-original-evidence-transport-v1",
+  "gzip": {
+    "bytes": 123314,
+    "git_blob": "04a8b6dc00b313834bceb38651c1625f939d428f",
+    "sha256": "c5ff7a92352b14858fc2a51862c4fb0f46e795ec9576018a269095f474b31e83"
+  },
+  "not_a_new_native_read": true,
+  "original_local_path": "/tmp/hepta-36fa-cc57-evidence-publication-v1/PUBLISH_PLAN.json",
+  "original_observation_preserved_in_raw": true,
+  "parts": [
+    {
+      "decoded": {
+        "bytes": 123314,
+        "git_blob": "04a8b6dc00b313834bceb38651c1625f939d428f",
+        "sha256": "c5ff7a92352b14858fc2a51862c4fb0f46e795ec9576018a269095f474b31e83"
+      },
+      "encoded": {
+        "bytes": 164421,
+        "git_blob": "52b361cf1bc58d82ac675bbe96685183a771fcee",
+        "sha256": "d38c3760a7bc8a319f39e51fcf1bed62982459f2acfc3924057acbcc09523f4e"
+      },
+      "offset": 0,
+      "path": "checkpoint-3328-publication/PUBLISH_PLAN.json.part-001.gz.b64"
+    }
+  ],
+  "raw": {
+    "bytes": 519233,
+    "git_blob": "7900aa83b40b152f69ca2a1925c819ec46bba72e",
+    "sha256": "9066e5e9f7d66e09f6084b688457af6652f95a32ce2111b4f5abaa2737c5d995"
+  },
+  "recovery": "Strip only terminal whitespace, strict base64-decode parts in order, concatenate, then gzip-decompress. Verify all raw and transport identities."
+}

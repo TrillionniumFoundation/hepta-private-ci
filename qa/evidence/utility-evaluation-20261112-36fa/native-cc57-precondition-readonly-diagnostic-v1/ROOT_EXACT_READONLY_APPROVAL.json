@@ -1,0 +1,49 @@
+{
+  "action_seconds": 45,
+  "actual_failed_snapshot": "6c28a1e1291c9c96879718e6c1b81028f9fa12c9ba358123090852d5b6e72b8f",
+  "argv": [
+    "/usr/bin/git",
+    "--no-optional-locks",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.untrackedCache=false",
+    "-C",
+    "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "for-each-ref",
+    "--format=%(refname) %(objectname)"
+  ],
+  "at": "2026-11-13T01:06:03.094918+00:00",
+  "classification": "Read-only evidence gathering; success is not qualification and cannot reclassify the failed original native attempt.",
+  "decision": "APPROVED_EXACT_READONLY_DIAGNOSTIC_ONLY",
+  "expected_snapshot": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+  "failed_native_job_id": "1a1d26326ac-2564-1cd4",
+  "format": "hepta-root-exact-readonly-precondition-diagnostic-approval-v1",
+  "git_command_max_seconds": 10,
+  "known_actual_head_matches": true,
+  "known_actual_new_ref_points_to_same_cc57": true,
+  "known_index_changed_but_writer_unknown": true,
+  "new_native_main_approved": false,
+  "no_environment_override": true,
+  "observer_seconds": 60,
+  "plan": {
+    "bytes": 1468,
+    "git_blob": "b0db2670a8fcf4ffbed6e8fc63f24fba30f0c543",
+    "sha256": "5cca7d47952468a278d6ccfe7d148c63099a0af9bb694dc304702e31cc7c033e"
+  },
+  "real_qualified_task_chain_outcomes": 0,
+  "request": {
+    "bytes": 10586,
+    "git_blob": "35c079aadf583d980b0d7946ad51092f06a13b6c",
+    "sha256": "22eaf1ab1bfd443fb8d79eb68b1be95cf77dbd8ffd23727666d40ec80035e8b0"
+  },
+  "restoration_or_refs_removal_approved": false,
+  "same_exact_request_and_key_on_transport_unknown_only": true,
+  "scope": "One exact original read-only Git for-each-ref command on the fixed task repository and full stable reads of three fixed completed evidence files. Recover exact expected native rows from the original full source inventory; compare all row identities to the failed native post-snapshot. Preserve complete refs bytes and lossless complete diff. No repair, source/record/ref/index/permission write, Cargo, formatter, gate, native-main rerun or foreign process action.",
+  "script": {
+    "bytes": 10196,
+    "git_blob": "52191e833a5519c28cfdc26cd51da2acee022d0a",
+    "sha256": "fe7f284eaf59c221d95245adda7cc8e59eea30ce86ed6800711400a2a6a7e027"
+  },
+  "source_job_id": "1a1d23c92f3-2564-1cb4"
+}

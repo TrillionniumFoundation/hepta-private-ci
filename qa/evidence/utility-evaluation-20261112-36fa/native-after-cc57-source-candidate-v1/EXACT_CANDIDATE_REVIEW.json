@@ -1,0 +1,68 @@
+{
+  "changes": "Only SOURCE_SUCCESS three None values replaced by exact saved originals; stdin source_supervisor_base64 now exact STATUS_05. No other code/request field or budget changes.",
+  "files": [
+    {
+      "bytes": 9986,
+      "git_blob": "1e3402a037b259f44213ac6de487e6d91cc6b445",
+      "name": "NATIVE_BOOTSTRAP.candidate.py",
+      "path": "/tmp/hepta-36fa-native-after-cc57-source-candidate-v1/NATIVE_BOOTSTRAP.candidate.py",
+      "sha256": "5da0dca2d11dd1ed2f4479d918cfe25726771f110a6350b4ddefdbd38bb6d694"
+    },
+    {
+      "bytes": 1360,
+      "git_blob": "e1e3cc496944d04c55e1b4b566fea154f430e2b0",
+      "name": "NATIVE_STDIN.candidate.json",
+      "path": "/tmp/hepta-36fa-native-after-cc57-source-candidate-v1/NATIVE_STDIN.candidate.json",
+      "sha256": "08f652b9e014aa1772d57d90e9dc42830a585e7dfdd9685de702e273ae4e4a83"
+    },
+    {
+      "bytes": 11743,
+      "git_blob": "69e8bf972d313dffdd38c7a2b8af44dec2b2138f",
+      "name": "NATIVE_PROCESS_INPUT.candidate.json",
+      "path": "/tmp/hepta-36fa-native-after-cc57-source-candidate-v1/NATIVE_PROCESS_INPUT.candidate.json",
+      "sha256": "b37065209a31f1682e46a908b2a2290ddfec0d8ea81d4a72ced3e49e91d724ca"
+    },
+    {
+      "bytes": 910,
+      "git_blob": "9699177f1df4a74039f40b65ce1aad8f54e6fd26",
+      "name": "FROM_HOLD.diff",
+      "path": "/tmp/hepta-36fa-native-after-cc57-source-candidate-v1/FROM_HOLD.diff",
+      "sha256": "d5689d558116a189ebee7dbf815c4964343a06d3eb90bcf0f1b9129e744f31b1"
+    }
+  ],
+  "five_functions_byte_equal": true,
+  "format": "hepta-final-native-exact-candidate-readback-v1",
+  "inverse_entire_bootstrap_equal": true,
+  "native_launch_performed": false,
+  "original_execution_tail_byte_equal": true,
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "root_final_evidence_review_still_required": true,
+  "source_job_id": "1a1d23c92f3-2564-1cb4",
+  "source_success": {
+    "original_run_result": {
+      "bytes": 5082,
+      "git_blob": "0f5f9a8332255d4c7341b58207725254e4c34c76",
+      "sha256": "43fed7f7ed12a8dde409891132be0b876d7594f85072f441a4c5dfc8011f9083"
+    },
+    "result": {
+      "bytes": 692,
+      "git_blob": "d52e6d9a85fed924ea3b29fad1d22347d5732a34",
+      "sha256": "6a18c716d85035f6dfbed2a73df36244694bceced63450bad4a19bce3ac3615c"
+    },
+    "supervisor": {
+      "bytes": 954,
+      "git_blob": "851a18c3063d40c1208b198d02bc875b052a83d7",
+      "sha256": "a119569c3460e6e5fcd434c4e1144864bbf0bed38811cb77e3a8563307d88109"
+    }
+  },
+  "status": "WAITING_ROOT_EXACT_LAUNCH_APPROVAL",
+  "timeout_seconds": 45000
+}

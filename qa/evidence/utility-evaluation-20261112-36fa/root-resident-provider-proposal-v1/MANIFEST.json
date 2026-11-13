@@ -1,0 +1,193 @@
+{
+  "artifacts": [
+    {
+      "bytes": 314937,
+      "git_blob": "0d42484181e34c178a04c934737cdb99adbaca0d",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "4b7c4405eb5405c6067e43ef56e00bcd4c2792ac709207dca5c5e26c3bd47af1"
+    },
+    {
+      "bytes": 35203,
+      "git_blob": "0ca673da726b1e80bf58f95707daa922b6691a94",
+      "path": "changes.patch",
+      "sha256": "c10f380b4f23953bb9bb9848b89ceaba5c36895dcb7971bd7d581de489f14c4c"
+    },
+    {
+      "bytes": 10905,
+      "git_blob": "68fa5706ce916ae0eb719e774a9ac2ca41877f3c",
+      "path": "SOURCE_REFERENCES.json",
+      "sha256": "4fe09615b523848f59dc9cf8f725972ecad1e45aae1adc5dc25b517c7f8e61db"
+    },
+    {
+      "bytes": 2460,
+      "git_blob": "6cd777d582b08733a564a88227f970d4dcb3e2ca",
+      "path": "STATIC_BYTE_REVIEW.json",
+      "sha256": "b9421e47d4121cf95847b5b6a57134794d4b2a1283ce3d2d7815f9d1145d7836"
+    },
+    {
+      "bytes": 5381,
+      "git_blob": "2f17d2b74ca4a5d5c6a821debdd9d7cc91007547",
+      "path": "STRUCTURAL_REGISTRATION_PLAN.json",
+      "sha256": "b790d111c2204f21de86e798ee36a4085044fc7d3a7fba71c88d53d2a081a1c5"
+    },
+    {
+      "bytes": 11884,
+      "git_blob": "5108e6e84037b2b67407c9168b2b7ee1ddfb588d",
+      "path": "README.md",
+      "sha256": "390e22617c7f5bd12249100e21276e75e2892dd22b0f78559f74b7eb3cb06bc4"
+    },
+    {
+      "bytes": 9283,
+      "git_blob": "23399bd6d466797880efbe73e3172f8bf6cd39e4",
+      "path": "VALIDATION_DESIGN.md",
+      "sha256": "2ef44e8049b35c8931f45ec3f45a80d1c50dbb0acbed04a36abab2e9f3dd06bd"
+    },
+    {
+      "bytes": 14056,
+      "git_blob": "b04b3be6ab4690e702f5a4d2f11cd32028da2936",
+      "path": "build_proposal.py",
+      "sha256": "05ca45c4db082a37771e49a7a2e951b64fdcd454a0be3adb1ab92250fe1b29e3"
+    }
+  ],
+  "expected_candidate_leaf_count": 15192,
+  "expected_preformat_candidate_tree": "b517d3b110c13538780b9ccd743b9706098829fb",
+  "format": "hepta-original-root-provider-proposal-manifest-v1",
+  "mechanism_tests_executed": 0,
+  "real_task_chains": 0,
+  "remaining_engineering": [
+    "independent source/authority peer review",
+    "original scoped formatter/compile and exact postformat CALLERS/protected/QA/allowlist integration",
+    "real original-owner service integration cases from VALIDATION_DESIGN, without canned role results",
+    "all unchanged original qualification gates on the new exact published source"
+  ],
+  "remaining_external_inputs": [
+    "actual completed A and original Root execution/readback intent with exact registered lease",
+    "ten distinct original Root-targeted stream/pidfd pairs and their real process metadata",
+    "independently trusted original material/protocol/loaded-model/verifier objects",
+    "actual A/successor Root client peer and legal late-enrollment host integration",
+    "independent B/retention outcomes, accessible licensed model material and full frozen cost ledger",
+    "actual new C consumption, daemon and Root cold-recovery observations"
+  ],
+  "runtime_or_qualification_claims": [],
+  "source": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_changes": [
+    {
+      "after": {
+        "bytes": 7038,
+        "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+        "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+      },
+      "before": null,
+      "lines_after": 139,
+      "lines_before": 0,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "after": {
+        "bytes": 8197,
+        "git_blob": "41ad5a933ad6a169b62ae216bde159e56800ed3c",
+        "sha256": "6b9f30ad0e65aa584e6fb5bf5892edfce7cbb4dedbded013b079c2b68bdb54b2"
+      },
+      "before": {
+        "bytes": 7941,
+        "git_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+        "sha256": "c99ed381b8c36a7123b5c8b90033759480b078ef8f4adfeb71c45d30ad182907"
+      },
+      "lines_after": 207,
+      "lines_before": 202,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs"
+    },
+    {
+      "after": {
+        "bytes": 12663,
+        "git_blob": "76aaefe1917059fd4004ac938357ce4aed8d8320",
+        "sha256": "1f4b7658e0bb6f8bc59932cf00c9d2b80056af389d1433b3790ecf866ab4ef6a"
+      },
+      "before": {
+        "bytes": 12252,
+        "git_blob": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+        "sha256": "1e3e48412677a08d9e993613c305c9abf95571627819699229f4449e96a62631"
+      },
+      "lines_after": 291,
+      "lines_before": 282,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    },
+    {
+      "after": {
+        "bytes": 71577,
+        "git_blob": "30c5911842286a68bb09a7238c3b7ad1417f8fbd",
+        "sha256": "edb410fcd20a3e3f7ca714a75b50ec2785933ce4d32c33294824a7a29737f2ef"
+      },
+      "before": {
+        "bytes": 70987,
+        "git_blob": "b46baf3d8280114c937799f0430942ec3863afa8",
+        "sha256": "bd9f28b05983696d103ec1dcfa0d8d1e94beeec5de3ff9390ebdd1fee4e379a0"
+      },
+      "lines_after": 1526,
+      "lines_before": 1514,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after": {
+        "bytes": 12564,
+        "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+        "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a"
+      },
+      "before": null,
+      "lines_after": 257,
+      "lines_before": 0,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "after": {
+        "bytes": 6195,
+        "git_blob": "1dc042509e0590efc135c1cf89acdb7cfbf331c0",
+        "sha256": "b92c3d06393f686e1fa6c47959ca9db53868a17375cfc733967fe9fcdd8c027e"
+      },
+      "before": null,
+      "lines_after": 130,
+      "lines_before": 0,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 5029,
+        "git_blob": "955040ae66c1682ead7b7b8dda5379993eb59eb5",
+        "sha256": "9ef39e5c43d879218df8ad98546c31e1a329f8ec55991f7a460a348392ea2254"
+      },
+      "before": null,
+      "lines_after": 101,
+      "lines_before": 0,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "after": {
+        "bytes": 9613,
+        "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+        "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+      },
+      "before": {
+        "bytes": 9366,
+        "git_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+        "sha256": "652ab0c4177d5105bc55b2a7ba2308eb53483ead3b454647bd958caf285f89ed"
+      },
+      "lines_after": 259,
+      "lines_before": 253,
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+    }
+  ],
+  "status": "HOLD_PENDING_PEER_FORMAT_COMPILE_INTEGRATION_AND_ORIGINAL_GATES",
+  "storage": "Git-backed repository proposal; no Library duplicate or active source write"
+}

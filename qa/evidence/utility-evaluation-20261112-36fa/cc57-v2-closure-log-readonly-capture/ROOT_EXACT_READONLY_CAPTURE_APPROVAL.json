@@ -1,0 +1,45 @@
+{
+  "at": "2026-11-13T00:31:56.503617+00:00",
+  "decision": "APPROVED_EXACT_READONLY_CAPTURE_ONLY",
+  "fixed_original_raw_identity": {
+    "bytes": 111500,
+    "git_blob": "f14a6b0634263946e08dec05d8416f3b6232fb3d",
+    "sha256": "372c9a6a3a9bb6431aa8113a1198992a15e151d669f24546387d334cd0ca6ec9"
+  },
+  "format": "hepta-root-exact-readonly-observation-approval-v1",
+  "mode_guard_note": "Strict 0400 guard is retained; a mismatch may only fail this observer, never mutate the file or alter the gate outcome.",
+  "native_main_authorized": false,
+  "observer_timeout_seconds": 60,
+  "plan": {
+    "bytes": 926,
+    "git_blob": "c21333e52a09e9fe931f454b5a92e152789ab032",
+    "sha256": "02fae6417268ec7171a840f16d82476ea3588c8f8e0ef537543727f024d2313a"
+  },
+  "real_task_chain_qualification": false,
+  "receipt": {
+    "bytes": 1481,
+    "git_blob": "899934c8bf359fe294b10802bfc4469872c15b86",
+    "sha256": "792953f7b370a85af32d584539a34d3835292cc49e3f3d00f7861458fdb6bd26"
+  },
+  "request": {
+    "bytes": 2713,
+    "git_blob": "00f0b238e960374bcef86f1b9d2850fb78632e55",
+    "sha256": "7c9a6045819b1d8a5825cc3524aadf2f15ff5c7651e9d1bf4a08e74d7c340cbc"
+  },
+  "retained_manifest": {
+    "bytes": 8985,
+    "git_blob": "2aa7248d6d79c8f2b50e8e52ec58a6356f4f679f",
+    "sha256": "3253d4af9d0a8f7ebb4165e315f5381558414da5f307ff5c1e805c4615b23fc4"
+  },
+  "review": "Root read complete script/request; checked AST Git blob prefix contains a single NUL byte, exact typed fields and fixed expected identity against actual original receipt plus retained manifest.",
+  "same_exact_request_and_key_only_on_transport_uncertainty": true,
+  "scope": "One bounded O_RDONLY|O_NOFOLLOW read of the existing original source-closure raw log. Verify fixed account, directory/file types, owner, link count,0400 mode, size, stable stat, byte length, SHA256 and Git blob. Lossless gzip stdout transport only. No source writes, subprocess, gate, test, Cargo or native qualification main. Normal existing H supervisor logging only.",
+  "script": {
+    "bytes": 2436,
+    "git_blob": "bcb5fc3147795e475befce42edcda0c12a1f147b",
+    "sha256": "76a9ae584b2a13db6830f9cd6ba00bd8524adf252bb6eb33dead7afb219423e0"
+  },
+  "source_gates_rerun_authorized": false,
+  "source_job_id": "1a1d23c92f3-2564-1cb4",
+  "source_sha": "cc57c7198db6293ccca562253c42fffbe2a04633"
+}

@@ -1,0 +1,58 @@
+{
+  "at": "2026-11-13T00:57:37.259317+00:00",
+  "behavioral_test_outcomes_observed": 0,
+  "behavioral_tests_started": false,
+  "cause_not_yet_identified": true,
+  "classification": "Original native wrapper preflight FAILED, before any behavioral test. It is not a completed test comparison or utility Ineligible/NoUpdate. The original unknown_missing_before comparison is preserved.",
+  "complete_stdout": {
+    "bytes": 1013,
+    "git_blob": "28eee0eb6ff0bac1287785c76ccd057e60498251",
+    "sha256": "4026cd193a79eccd084c35a022ae605918c975f83e63cdc96f7e4e4b3fbcfa33"
+  },
+  "format": "hepta-root-native-first-preflight-refusal-review-v1",
+  "frozen_expected_native_compact_sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+  "native_job_id": "1a1d26326ac-2564-1cd4",
+  "new_main_or_retry_authorized": false,
+  "next_step": "Read raw current task-repository Git state and the completed post-snapshot original; compare to frozen exact records before proposing any mutation.",
+  "original_error": "ValueError: unchanged detached HEAD/no refs",
+  "original_exit_code": 1,
+  "original_full_physical_evidence_error": "ValueError: unchanged detached HEAD/no refs",
+  "original_source_comparison": "unknown_missing_before",
+  "original_supervisor_state": "failed",
+  "original_wrapper_status": "failed",
+  "originals": {
+    "MAIN_ADMISSION.original.json": {
+      "bytes": 11513,
+      "git_blob": "d899d02a75524ba7120533f0b3450360c63fb990",
+      "sha256": "0510dc7d791a15e73238539ae0f2e22e6930d1c2e7d718ba54afc259bda0a75a"
+    },
+    "MAIN_DISPATCH_INTENT.json": {
+      "bytes": 669,
+      "git_blob": "0e649dd370330411d776aa2f180e305794e89951",
+      "sha256": "190ee225db0241b8be45a01e73b57065b3a17d70a151a67c37668b0c6c2e368e"
+    },
+    "STATUS_01.original.json": {
+      "bytes": 951,
+      "git_blob": "76da4534adfad29388ebd8360c078f9218efa001",
+      "sha256": "d811621f07ab298e12327ccdde78a405e0389a26868597c0a58feb773fbb7b83"
+    },
+    "STDOUT_READ_01.original.json": {
+      "bytes": 3784,
+      "git_blob": "14d3d3a0b2a766dadb3149795081a8a6c8375137",
+      "sha256": "b6845a53146947822678e06e967045f54ca0fb94be6cb8f19d59855daeed4397"
+    }
+  },
+  "post_snapshot_matches_frozen_digest": false,
+  "real_qualified_task_chain_outcomes": 0,
+  "source_after_original": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "files": 15188,
+    "inventory_sha256": "6c28a1e1291c9c96879718e6c1b81028f9fa12c9ba358123090852d5b6e72b8f",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_before": null,
+  "source_or_ref_repair_authorized_by_this_review": false,
+  "stages": [],
+  "verified_static_detail": "The actual a8be admission sets m.HEAD=cfg[source] and m.TREE=cfg[tree] before the first m.git_state(). The failing check requires exact raw HEAD bytes and an empty ref enumeration; source_after commit/status does not prove either the raw HEAD encoding or empty refs. Historical stale-HEAD attribution is not established."
+}

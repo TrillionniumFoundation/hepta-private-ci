@@ -1,0 +1,42 @@
+{
+  "at_utc": "2026-11-13T01:26:20.435295+00:00",
+  "base_count": 3454,
+  "complete_failed_native_snapshot_transport_verified": true,
+  "filemaps": {
+    "FULL_FILEMAP.json": {
+      "bytes": 427386,
+      "git_blob": "a18e6489707efdabe4539bcb16bb3b3c1e1dc5c5",
+      "sha256": "84445b8ba0ba66ea0093fdba39a2ba466bd7c1acd06c7b462088fd046c51b5aa"
+    },
+    "INCREMENTAL_FILEMAP.json": {
+      "bytes": 20401,
+      "git_blob": "8b159694708bc13362dc47defe9be0c32ac659e0",
+      "sha256": "28ef8e1391bbc873fcbe6f36a55e479d7899a4dc722743d699987abd2a255743"
+    },
+    "VERIFIED_INCREMENTAL_ENTRIES.json": {
+      "bytes": 159888,
+      "git_blob": "331fb2a27f1229f7950c9f2943381eca104d9d9e",
+      "sha256": "e1e9165e3288e0eff19d54d5e978c426c6eaf59a7804f6b212192b126d1fa7fb"
+    }
+  },
+  "format": "hepta-post3454-verified-append-only-window-v1",
+  "largest_payload_bytes": 406988,
+  "local_save_error_preserved": "/tmp/hepta-36fa-post3454-evidence-preparation-v1/LOCAL_READBACK_SAVE_FIRST_ERROR.json",
+  "merged_count": 3623,
+  "native_first_attempt": "Precondition failed, zero behavior stages, unknown_missing_before retained.",
+  "new_paths": 169,
+  "new_source_or_native_execution_inferred": false,
+  "old_paths_changed": [],
+  "old_readme_unchanged": true,
+  "proof_counts": {
+    "current_root_complete_sdk": 72,
+    "previous_complete_sdk": 93,
+    "same_blob_in_verified_base": 4
+  },
+  "provider": "Source-only v1 proposal and bounded independent static review. New v2 work excluded.",
+  "real_task_chains": 0,
+  "sidecars_not_self_included": true,
+  "source_H_refs_or_PR_mutations": false,
+  "source_gates": "Three actual source gates passed and originals reviewed; no hosted CI or native behavioral pass inferred.",
+  "status": "COMPLETE_IMMUTABLE_GIT_READBACK_REVIEW_NO_REF_PUBLICATION"
+}

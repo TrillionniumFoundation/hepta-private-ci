@@ -1,0 +1,21 @@
+{
+  "base_evidence_head": "15673f01e5248efdecd00fcb06a58ae3dd45d2c0",
+  "base_file_count": 3328,
+  "excluded_later_handoffs": [
+    "complete source-closure and verify raw payloads delivered after this fixed collection selection",
+    "large full-inventory recovery and later original-path/stat read confirmations",
+    "future native launch or execution records",
+    "unfinished provider follow-up"
+  ],
+  "final_metadata_only_may_be_added": true,
+  "format": "hepta-post3328-explicit-collection-cutoff-v1",
+  "frozen_at_utc": "2026-11-13T00:42:58.452787+00:00",
+  "payload_paths": 118,
+  "root_instruction": "Freeze this window first; later raw/full-inventory and native launch materials will be a separate append-only window.",
+  "selected_lists": [
+    "SELECTED_ROWS_INITIAL.json",
+    "SELECTED_ROWS_SUPPLEMENT_001.json",
+    "SELECTED_ROWS_SUPPLEMENT_002.json"
+  ],
+  "source_refs_PR_H_tests_untouched": true
+}

@@ -1,0 +1,160 @@
+{
+  "all_rows_match_index": true,
+  "at": "2026-11-13T00:41:42.124678+00:00",
+  "file_rows": 15188,
+  "format": "hepta-root-clone-inventory-exact-material-proposal-v1",
+  "gzip": {
+    "bytes": 1261386,
+    "git_blob": "3f5b564193cf96f37eb08ec8628b8078f412176f",
+    "sha256": "512a5066f06bf76fae70762ba17009a9cb62c0a78dd5ed57070e40cf1852d4f4"
+  },
+  "native_full_read_completed": false,
+  "native_main_approved": false,
+  "parts": [
+    {
+      "encoded": {
+        "bytes": 349529,
+        "git_blob": "e7057c5d48e1123605ea81c578fd3b46d15b613b",
+        "sha256": "303c6e9984810d717ee747fc8bdd3d864c7796af2211a70891dda69e127afec7"
+      },
+      "path": "clone.inventory.json.gz.part-001.b64",
+      "raw_part": {
+        "bytes": 262144,
+        "git_blob": "a18066c72322f93b1531f4caff89c5b44eb98e51",
+        "sha256": "029cf17a4ae8ca9e83b1838c8cabfb02d6f60e861a6cecf5ee44e031edf90c31"
+      }
+    },
+    {
+      "encoded": {
+        "bytes": 349529,
+        "git_blob": "4f38f12073476af8b0aa678ecbf0c5c48bccd594",
+        "sha256": "a9bf12b7f449d5e32c3341cc3b65dd3dbca933371e6c820c2c7b5407dea593ae"
+      },
+      "path": "clone.inventory.json.gz.part-002.b64",
+      "raw_part": {
+        "bytes": 262144,
+        "git_blob": "ac3c7788b0312a7a585a4e2774a505c5bb92e7af",
+        "sha256": "e95f96638a804b8a163589c831677a6079296cd279e6571243bc8bb9a8f12f30"
+      }
+    },
+    {
+      "encoded": {
+        "bytes": 349529,
+        "git_blob": "6725477a82f5ee4b721f0428de98d16154a16132",
+        "sha256": "c5a79ba3ddc7a8c1f324bda6307910366ff55bac65eb4afe7bd8b046a6753c62"
+      },
+      "path": "clone.inventory.json.gz.part-003.b64",
+      "raw_part": {
+        "bytes": 262144,
+        "git_blob": "829e0e0c80b5a4b41ac756ced21d594892bab1fb",
+        "sha256": "f13fc89f8161d763732a7c32cfd9e4f7acd7271ce4246bf01db3d08ff00c64c5"
+      }
+    },
+    {
+      "encoded": {
+        "bytes": 349529,
+        "git_blob": "94ede0e8c53bef4af15deaa893ee87bb4362a344",
+        "sha256": "925c205a289a474281320e3596b775a2084c986b86b0c6b6773c5fa49cf8ebd8"
+      },
+      "path": "clone.inventory.json.gz.part-004.b64",
+      "raw_part": {
+        "bytes": 262144,
+        "git_blob": "c641f65fac80633d17a585fc4e14093e383088b4",
+        "sha256": "3600f7aeca64fbc8ad553cb4d68f6dc22cd2d82101aca07002531e5387019264"
+      }
+    },
+    {
+      "encoded": {
+        "bytes": 283749,
+        "git_blob": "270d3931636fafcfda90b2baa50c70edcae60b92",
+        "sha256": "35761c3e015e898eff6b48ab8755981198742a6ec9f2f8bd934a372896eb98e0"
+      },
+      "path": "clone.inventory.json.gz.part-005.b64",
+      "raw_part": {
+        "bytes": 212810,
+        "git_blob": "bf4193721a76a53879c1f6150cd40065c5525a59",
+        "sha256": "de43e5ccd61cf28fdb43c821e8b48ee741a1c8e880fd96a14c4ecb6ec4e35e32"
+      }
+    }
+  ],
+  "qualification": false,
+  "raw": {
+    "bytes": 5611184,
+    "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+    "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+  },
+  "reconstruction": "Decode each .b64 strictly and concatenate in listed order; decompress gzip once; exact raw byte/SHA/Git identities. Bytes reconstructed from full actual canonical source material and original freeze semantics, matching all original retained manifest parts. A new native full-file read is pending and not inferred from this offline calculation.",
+  "seven_original_inventory_manifests": [
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/run-retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 9272,
+        "git_blob": "f3a36d4c7dc69f38a4b5c35621b6a6de7478f323",
+        "sha256": "0bc5ded5c5fe6c8294e1a3e3dce8c56acfab11ff39f3e9d94bd729f7c34f218f"
+      },
+      "original_path": "source-baseline.inventory.json"
+    },
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/source-closure/retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 8985,
+        "git_blob": "2aa7248d6d79c8f2b50e8e52ec58a6356f4f679f",
+        "sha256": "3253d4af9d0a8f7ebb4165e315f5381558414da5f307ff5c1e805c4615b23fc4"
+      },
+      "original_path": "source-after.inventory.json"
+    },
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/source-closure/retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 8985,
+        "git_blob": "2aa7248d6d79c8f2b50e8e52ec58a6356f4f679f",
+        "sha256": "3253d4af9d0a8f7ebb4165e315f5381558414da5f307ff5c1e805c4615b23fc4"
+      },
+      "original_path": "source-before.inventory.json"
+    },
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/self-test/retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 8379,
+        "git_blob": "59fe11de077ca82bd72e11790955479c49e27e99",
+        "sha256": "a1d0ac9a05f55080eb98a8132f4752f223517c8c4eb281a9aba9eec41f6732a8"
+      },
+      "original_path": "source-after.inventory.json"
+    },
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/self-test/retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 8379,
+        "git_blob": "59fe11de077ca82bd72e11790955479c49e27e99",
+        "sha256": "a1d0ac9a05f55080eb98a8132f4752f223517c8c4eb281a9aba9eec41f6732a8"
+      },
+      "original_path": "source-before.inventory.json"
+    },
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/verify/retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 8373,
+        "git_blob": "96a72d44ce17b800b2ec97c126804e5d60dbaff3",
+        "sha256": "8b4791ef46d5c6cfc25a9aaea63417e683e5751fcf78dc87fe8aa8945e71cf35"
+      },
+      "original_path": "source-after.inventory.json"
+    },
+    {
+      "every_original_part_byte_identity_equal": true,
+      "manifest": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/stage-originals/verify/retained-manifest.json",
+      "manifest_pin": {
+        "bytes": 8373,
+        "git_blob": "96a72d44ce17b800b2ec97c126804e5d60dbaff3",
+        "sha256": "8b4791ef46d5c6cfc25a9aaea63417e683e5751fcf78dc87fe8aa8945e71cf35"
+      },
+      "original_path": "source-before.inventory.json"
+    }
+  ],
+  "status": "EXACT_ALL_MANIFEST_PART_IDENTITIES_MATCH_NATIVE_FULL_READ_PENDING"
+}

@@ -1,0 +1,43 @@
+{
+  "claim": "Seven source paths were missing in the completed 1cd4 snapshot; the other 15181 recorded rows match the 1cb4 original projection. The one additional current ref is independently observed. No source/index/ref repair performed.",
+  "format": "hepta-native-precondition-readonly-diagnostic-full-readback-v1",
+  "job_id": "1a1d27152aa-2564-1ce4",
+  "normal_terminal": {
+    "bytes": 954,
+    "git_blob": "e6de9f9bf3169b7e10571f90fe11aabbaa8acb9c",
+    "sha256": "44f97e95647501a1987a62f2657e373c7e22e934488c29c9abdd71b00d964c8e"
+  },
+  "original_diff": {
+    "bytes": 3259,
+    "git_blob": "5ca1a28c507d5f38710cbac9fe11b67418e98214",
+    "sha256": "a1a08baf2d09fb5f7764e173aa8e18cdb1376cd6ee2a71cfee6ec9c0c56b2571"
+  },
+  "original_diff_gzip": {
+    "bytes": 931,
+    "git_blob": "de105a368c2c46531c86ba723b5ecaf7915fb78c",
+    "sha256": "68ebbf2b7a4095972df5ba46da6aa239078c34ce72bac20ba794dfa8b8bdfdf2"
+  },
+  "qualification": false,
+  "refs_original_stdout": {
+    "bytes": 98,
+    "git_blob": "55ba1fc9d630c15836793adfd886b9dacb26f762",
+    "sha256": "75c63de4f10366401f8eeefcf68874d35d75495adf64d2d144f21e22c4413141"
+  },
+  "stdout": {
+    "bytes": 5315,
+    "git_blob": "51866fcd97cce67daf3dffc62320127014f110be",
+    "sha256": "a84d39ef3763361c0aafebf2776a90d78f85cbdcae5b7a52982c66a73a3bf17e"
+  },
+  "stdout_contiguous_interval": [
+    0,
+    5315
+  ],
+  "stdout_eof": true,
+  "stdout_hex_equals_text": true,
+  "stdout_read_sdk": {
+    "bytes": 17402,
+    "git_blob": "c4ab43cd0f42f99fe82a63cdfa9cec27aff53f79",
+    "sha256": "5ed418393e4a420407ffbef2c160ec7922b7db2d24275938c9bce9879c0795b0"
+  },
+  "writer_or_cause": "Unknown"
+}

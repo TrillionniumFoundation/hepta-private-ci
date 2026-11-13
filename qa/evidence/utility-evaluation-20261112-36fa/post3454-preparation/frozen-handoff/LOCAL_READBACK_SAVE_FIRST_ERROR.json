@@ -1,0 +1,11 @@
+{
+  "format": "hepta-local-git-readback-save-observation-v1",
+  "action": "Save complete Git blob fetch response for source proposal packet 0d42484181e34c178a04c934737cdb99adbaca0d",
+  "tool_error": "exec-server rejected request: Argument list too long (os error 7)",
+  "Git_fetch_completed_before_save_error": true,
+  "local_output_file_created": false,
+  "cause": "The remaining SDK fields were larger than assumed; a single shell argument exceeded the process argument limit.",
+  "resolution": "Preserve this observation and save the immutable same-blob response with bounded chunks. No source, qualification, native process or gate was affected.",
+  "native_calls": 0,
+  "test_changes": false
+}

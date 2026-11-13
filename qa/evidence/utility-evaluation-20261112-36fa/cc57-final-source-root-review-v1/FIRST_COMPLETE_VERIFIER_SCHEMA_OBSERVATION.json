@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-13T00:49:19.062395+00:00",
+  "final_review_written": false,
+  "format": "hepta-root-local-verifier-first-schema-observation-v1",
+  "full_physical_inventory_actual_schema": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "tracked_entries": 15188
+  },
+  "native_calls": 0,
+  "observed_error": "AssertionError at line86 comparing a three-field byte identity dictionary to the frozen full_physical_inventory dictionary without projecting its fields",
+  "original_observation_identity": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "permission_text_correction": "0400/0500 is the observed current clone mapping, confirmed by all original byte and part hashes and native full reads. The original freeze function only removes write bits; its function alone does not explain the clone creation permissions. Earlier offline proposal text overgeneralized this derivation and is retained.",
+  "script_git_blob": "c16451c48aa4d7d9c6143013b2ada43631938c91",
+  "source_or_gate_execution": false
+}

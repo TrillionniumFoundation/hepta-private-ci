@@ -1,0 +1,34 @@
+{
+  "actual_original_gate_manifests_hash_equal": true,
+  "at": "2026-11-13T00:40:51.088617+00:00",
+  "first_offline_serializer_observation": {
+    "bytes": 5611183,
+    "expected_match": false,
+    "no_H_or_source_execution": true,
+    "sha256": "c92ea8c44e22d7bb073981b7af28eaaac395db9c1480a5ddae469107a835db31",
+    "terminal_lf_omitted": true
+  },
+  "format": "hepta-root-offline-clone-byte-reconstruction-proposal-v1",
+  "gzip_mtime0_level9": {
+    "bytes": 1261386,
+    "git_blob": "3f5b564193cf96f37eb08ec8628b8078f412176f",
+    "sha256": "512a5066f06bf76fae70762ba17009a9cb62c0a78dd5ed57070e40cf1852d4f4"
+  },
+  "native_current_raw_received": false,
+  "native_full_read_identity_required": true,
+  "projection": {
+    "bytes": 5611184,
+    "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+    "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+  },
+  "regular_file_mode_changes": 15187,
+  "scope": "Expected exact bytes reconstructed offline only. This is not a gate execution or independent observation. May be paired with new immutable original-file full-read identity and manifest/parts proofs to avoid retransmitting identical bytes.",
+  "source_file": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json",
+  "source_pin": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "symlink_rows_unchanged": 1,
+  "transformation": "Original documented freeze rule: regular files lose all non-owner/read-only write bits; executable regulars become0500 and other regulars0400. All15188 rows/content/index identities/source fields otherwise unchanged. Symlink0777 unchanged. Exact compact sorted JSON plus one terminal LF."
+}

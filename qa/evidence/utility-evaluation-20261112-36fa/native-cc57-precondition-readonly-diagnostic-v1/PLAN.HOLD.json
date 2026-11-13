@@ -1,0 +1,32 @@
+{
+  "budgets": {
+    "action_deadline_seconds": 45,
+    "observer_outer_seconds": 60,
+    "readonly_git_max_seconds": 10
+  },
+  "cargo_or_tests": false,
+  "main_executed": false,
+  "native_job": "1a1d26326ac-2564-1cd4",
+  "original_source_job": "1a1d23c92f3-2564-1cb4",
+  "output": "JSON report; original Git stdout/stderr base64 and full row-difference gzip/base64 with all identities. No actual worktree content or credentials.",
+  "projection": {
+    "bytes": 3530181,
+    "files": 15188,
+    "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+    "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "request": {
+    "bytes": 10586,
+    "git_blob": "35c079aadf583d980b0d7946ad51092f06a13b6c",
+    "sha256": "22eaf1ab1bfd443fb8d79eb68b1be95cf77dbd8ffd23727666d40ec80035e8b0"
+  },
+  "scope": "One original read-only for-each-ref command in the fixed task repository, plus complete stable reads of the completed native summary/snapshot gzip and successful source final inventory gzip. Produce complete row differences and actual raw refs bytes, no source/content/index/refs writes or repair.",
+  "script": {
+    "bytes": 10196,
+    "git_blob": "52191e833a5519c28cfdc26cd51da2acee022d0a",
+    "sha256": "fe7f284eaf59c221d95245adda7cc8e59eea30ce86ed6800711400a2a6a7e027"
+  },
+  "source_writes": false,
+  "status": "HOLD_AWAITING_ROOT_EXACT_APPROVAL",
+  "validation": "AST parse and compile-only; no diagnostic main or H execution"
+}

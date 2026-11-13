@@ -1,0 +1,54 @@
+{
+  "actual_observation_still_required": true,
+  "at": "2026-11-13T00:43:59.548779+00:00",
+  "clone_raw": {
+    "bytes": 5611184,
+    "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+    "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+  },
+  "decision": "APPROVED_EXACT_READONLY_NINE_ORIGINALS_OBSERVER",
+  "fixed_paths": [
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-baseline.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-closure/source-before.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-closure/source-after.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/self-test/source-before.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/self-test/source-after.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/verify/source-before.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/verify/source-after.inventory.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/admission/SOURCE_INITIAL.complete.inventory.json.gz",
+    "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/admission/SOURCE_FINAL.complete.inventory.json.gz"
+  ],
+  "format": "hepta-root-exact-inventory-observer-approval-v1",
+  "full_contents_retransmitted": false,
+  "gate_rerun_approved": false,
+  "native_main_approved": false,
+  "no_environment_override": true,
+  "observer_timeout_seconds": 60,
+  "origin_raw": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "original_retained_parts_match": true,
+  "plan": {
+    "bytes": 4778,
+    "git_blob": "c680a09523111bbd29f834be32cf73799e3cf6f0",
+    "sha256": "55e1ad1c958c6f9cf5872f0a83d2fdca23d9b8951aee0d42546b44840dee18fc"
+  },
+  "qualification": false,
+  "request": {
+    "bytes": 8928,
+    "git_blob": "29ca02e17ba0e1375383aaa29477a29dbb524ec7",
+    "sha256": "c949166d28cd4faabeeed7bb35eec477860173a92e30a619ae411ac05f71024d"
+  },
+  "reviewed_expected_bytes_available_in_full": true,
+  "same_exact_request_and_key_on_transport_unknown_only": true,
+  "scope": "Nine existing completed immutable evidence originals only. Complete bounded O_RDONLY|O_NOFOLLOW read of each with fixed UID, regular-file type, nlink, size,0400/0600mode and stable before/after/outside stat; verify full raw/gzip identities and exact equality among seven clone copies and two origin copies. Output identity/stat and existing-part identities only. No source/record/permission writes, subprocess, gate or native main.",
+  "script": {
+    "bytes": 8616,
+    "git_blob": "c7891ee9047b94938128faec6234fe817fb5ab2b",
+    "sha256": "792afa96488f35d5d7d855d57c652028912d803a227cd2e246932b2a24e291a5"
+  },
+  "source_job_id": "1a1d23c92f3-2564-1cb4",
+  "source_sha": "cc57c7198db6293ccca562253c42fffbe2a04633"
+}

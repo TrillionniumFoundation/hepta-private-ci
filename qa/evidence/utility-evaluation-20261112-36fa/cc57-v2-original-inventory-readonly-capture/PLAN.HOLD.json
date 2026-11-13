@@ -1,0 +1,121 @@
+{
+  "format": "hepta-source-inventory-readonly-capture-plan-v1",
+  "helpers_identity_stamp_exact_original_closure_capture": true,
+  "items": [
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "run",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-baseline.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "source-closure-before",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-closure/source-before.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "source-closure-after",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-closure/source-after.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "self-test-before",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/self-test/source-before.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "self-test-after",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/self-test/source-after.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "verify-before",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/verify/source-before.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 5611184,
+        "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+        "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+      },
+      "kind": "clone_raw",
+      "label": "verify-after",
+      "mode": 256,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/verify/source-after.inventory.json"
+    },
+    {
+      "expected": {
+        "bytes": 1261372,
+        "git_blob": "42856a2c0402f43d9e2113a4b99b876998a87853",
+        "sha256": "f305af89b78f8cc0facb73c71b778061349a20ee7ee0a39ecaecd882faecfe50"
+      },
+      "kind": "origin_gzip",
+      "label": "origin-initial",
+      "mode": 384,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/admission/SOURCE_INITIAL.complete.inventory.json.gz"
+    },
+    {
+      "expected": {
+        "bytes": 1261372,
+        "git_blob": "42856a2c0402f43d9e2113a4b99b876998a87853",
+        "sha256": "f305af89b78f8cc0facb73c71b778061349a20ee7ee0a39ecaecd882faecfe50"
+      },
+      "kind": "origin_gzip",
+      "label": "origin-final",
+      "mode": 384,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/admission/SOURCE_FINAL.complete.inventory.json.gz"
+    }
+  ],
+  "large_bytes_transfer": "Only full-read identity/stat/whole-gzip and original-part pins; Root keeps exact lossless reconstruction separately.",
+  "local_ast_compile_only": true,
+  "original_timeout_seconds": 60,
+  "permission_changes": false,
+  "qualification": false,
+  "record_files_read": 9,
+  "script": {
+    "bytes": 8616,
+    "git_blob": "c7891ee9047b94938128faec6234fe817fb5ab2b",
+    "sha256": "792afa96488f35d5d7d855d57c652028912d803a227cd2e246932b2a24e291a5"
+  },
+  "source_files_read": 0,
+  "source_gate_rerun": false,
+  "source_job_id": "1a1d23c92f3-2564-1cb4",
+  "status": "HOLD_WAITING_ROOT_EXACT_APPROVAL",
+  "writes": false
+}

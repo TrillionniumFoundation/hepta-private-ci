@@ -1,0 +1,132 @@
+{
+  "all_13_original_readonly_commands_returned_zero": true,
+  "all_25_original_input_pins_match": true,
+  "at": "2026-11-13T00:49:31.312807+00:00",
+  "caller_authority_granted": false,
+  "caller_boundaries": 569,
+  "clone_inventory": {
+    "bytes": 5611184,
+    "git_blob": "99a901cbfb56ee462c195ab500f7a6c83eccb4da",
+    "sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a"
+  },
+  "complete_inventory_file_rows_each": 15188,
+  "extra_origin_physical_entries": 0,
+  "format": "hepta-root-complete-actual-source-review-v1",
+  "gates": [
+    {
+      "elapsed_seconds": 401.1443105158396,
+      "gate": "source-closure",
+      "manifest": {
+        "bytes": 8985,
+        "git_blob": "2aa7248d6d79c8f2b50e8e52ec58a6356f4f679f",
+        "sha256": "3253d4af9d0a8f7ebb4165e315f5381558414da5f307ff5c1e805c4615b23fc4"
+      },
+      "raw": {
+        "bytes": 111500,
+        "git_blob": "f14a6b0634263946e08dec05d8416f3b6232fb3d",
+        "sha256": "372c9a6a3a9bb6431aa8113a1198992a15e151d669f24546387d334cd0ca6ec9"
+      },
+      "receipt": {
+        "bytes": 1481,
+        "git_blob": "899934c8bf359fe294b10802bfc4469872c15b86",
+        "sha256": "792953f7b370a85af32d584539a34d3835292cc49e3f3d00f7861458fdb6bd26"
+      },
+      "status": "passed"
+    },
+    {
+      "elapsed_seconds": 12.698749995790422,
+      "gate": "self-test",
+      "manifest": {
+        "bytes": 8379,
+        "git_blob": "59fe11de077ca82bd72e11790955479c49e27e99",
+        "sha256": "a1d0ac9a05f55080eb98a8132f4752f223517c8c4eb281a9aba9eec41f6732a8"
+      },
+      "raw": {
+        "bytes": 48,
+        "git_blob": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+        "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+      },
+      "receipt": {
+        "bytes": 391,
+        "git_blob": "67e177f2fb33b15f3999ff59604d4799b9ec2e8b",
+        "sha256": "e19c1122344dacbb03810da6d5c997bae95102d5edca66ef77aaeada4c836a97"
+      },
+      "status": "passed"
+    },
+    {
+      "elapsed_seconds": 517.8690228138585,
+      "gate": "verify",
+      "manifest": {
+        "bytes": 8373,
+        "git_blob": "96a72d44ce17b800b2ec97c126804e5d60dbaff3",
+        "sha256": "8b4791ef46d5c6cfc25a9aaea63417e683e5751fcf78dc87fe8aa8945e71cf35"
+      },
+      "raw": {
+        "bytes": 270271,
+        "git_blob": "7b5c618309e8fe20bd15f1a91f136f934aa654a2",
+        "sha256": "08c2581603596639efa11ba523a8af93a376449decd2b7b1d92acaf647811c05"
+      },
+      "receipt": {
+        "bytes": 392,
+        "git_blob": "3f77ca759d071405642096ed1a3cdb543facb77c",
+        "sha256": "f3a82a131ebbefbdc93496aa6ad5a4e95519b0822467622e0628b52651c5325e"
+      },
+      "status": "passed"
+    }
+  ],
+  "inventory_observer_job": "1a1d25d4534-2564-1cd2",
+  "inventory_observer_normal": {
+    "bytes": 954,
+    "git_blob": "73535567354028f1e2c5492f68edfa3479f8265d",
+    "sha256": "c7035cef25de8748fa53108d3014d32c97c24966109e5f3d3824f8684aab5815"
+  },
+  "inventory_observer_original_stdout": {
+    "bytes": 7518,
+    "git_blob": "9b6fb5237a3fcc4d39c32211e7bc0d160d96d340",
+    "sha256": "5078700f08acbbea76dc47011a8e577c45a32040859cdb09eb6a561c373938aa"
+  },
+  "native_main_approved_by_this_report": false,
+  "native_qualification_completed": false,
+  "origin_git_before_after_and_canonical_equal": true,
+  "origin_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "original_retained_inventory_parts_verified": 35,
+  "original_run_result": {
+    "bytes": 5082,
+    "git_blob": "0f5f9a8332255d4c7341b58207725254e4c34c76",
+    "sha256": "43fed7f7ed12a8dde409891132be0b876d7594f85072f441a4c5dfc8011f9083"
+  },
+  "original_source_budgets_seconds": {
+    "outer": 7200,
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "prior_failed_or_unknown_attempts_preserved": true,
+  "protected_rows": 422,
+  "raw_inventory_transfer_scope": "Full original files were read on native host with stable-stat and complete byte identities. Full material is exactly reconstructed from already obtained canonical bytes using this clone observed0400/0500 regular-file permission mapping; all original gzip and part identities match. The original freeze function removes write bits only, so the permission mapping is not inferred from that function alone. Large full contents were not retransmitted. This is not a second native run.",
+  "real_qualified_task_chain_outcomes": 0,
+  "rust_files_scanned": 6619,
+  "separately_full_read_original_clone_records": 7,
+  "separately_full_read_original_origin_gzip_records": 2,
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_closure_explicit_passed_methods": 492,
+  "source_closure_failed_methods": 0,
+  "source_gate_reexecution_for_recovery": false,
+  "source_handoff": {
+    "bytes": 692,
+    "git_blob": "d52e6d9a85fed924ea3b29fad1d22347d5732a34",
+    "sha256": "6a18c716d85035f6dfbed2a73df36244694bceced63450bad4a19bce3ac3615c"
+  },
+  "source_job_id": "1a1d23c92f3-2564-1cb4",
+  "source_normal": {
+    "bytes": 954,
+    "git_blob": "851a18c3063d40c1208b198d02bc875b052a83d7",
+    "sha256": "a119569c3460e6e5fcd434c4e1144864bbf0bed38811cb77e3a8563307d88109"
+  },
+  "status": "SOURCE_GATES_PASSED_AND_ORIGINALS_REVIEWED",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+}

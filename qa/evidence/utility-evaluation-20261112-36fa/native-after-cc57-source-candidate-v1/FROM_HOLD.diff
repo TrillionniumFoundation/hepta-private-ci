@@ -1,0 +1,16 @@
+--- fcd164-HOLD
++++ actual-three-pins-candidate
+@@ -5,10 +5,10 @@
+ SOURCE_SUCCESS = {
+     'job_id': '1a1d23c92f3-2564-1cb4',
+     'result_path': str(BASE / 'source-handoff' / 'RESULT.json'),
+-    'result': None,
++    'result': {'bytes': 692, 'sha256': '6a18c716d85035f6dfbed2a73df36244694bceced63450bad4a19bce3ac3615c', 'git_blob': 'd52e6d9a85fed924ea3b29fad1d22347d5732a34'},
+     'original_run_result_path': str(BASE / 'source-handoff' / 'ORIGINAL_RUN_RESULT.json'),
+-    'original_run_result': None,
+-    'supervisor': None,
++    'original_run_result': {'bytes': 5082, 'sha256': '43fed7f7ed12a8dde409891132be0b876d7594f85072f441a4c5dfc8011f9083', 'git_blob': '0f5f9a8332255d4c7341b58207725254e4c34c76'},
++    'supervisor': {'bytes': 954, 'sha256': 'a119569c3460e6e5fcd434c4e1144864bbf0bed38811cb77e3a8563307d88109', 'git_blob': '851a18c3063d40c1208b198d02bc875b052a83d7'},
+ }
+ 
+ def check(value, message):

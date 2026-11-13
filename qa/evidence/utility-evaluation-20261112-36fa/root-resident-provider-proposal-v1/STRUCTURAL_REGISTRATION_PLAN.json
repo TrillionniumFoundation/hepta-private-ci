@@ -1,0 +1,128 @@
+{
+  "authority_granted": false,
+  "callers_original": {
+    "bytes": 1577765,
+    "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+    "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+  },
+  "existing_edges": [
+    {
+      "change_implemented_in_callers": false,
+      "original_complete_row": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn run(mut self, root_cancellation: CancellationToken)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "id": "root_resident_coordinator_run",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningRuntimeV3",
+        "symbol": "RootResidentLearningRuntimeV3::run"
+      },
+      "proposed_real_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "zero_based_position": 403
+    },
+    {
+      "change_implemented_in_callers": false,
+      "original_complete_row": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn serve_original_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_stream_serve",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningHandleV3",
+        "symbol": "RootResidentLearningHandleV3::serve_original_stream"
+      },
+      "proposed_real_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "zero_based_position": 404
+    },
+    {
+      "change_implemented_in_callers": false,
+      "original_complete_row": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_streams("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_create",
+        "product_callers": [],
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams"
+      },
+      "proposed_real_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "zero_based_position": 429
+    },
+    {
+      "change_implemented_in_callers": false,
+      "original_complete_row": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_original_streams("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_recover",
+        "product_callers": [],
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams"
+      },
+      "proposed_real_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "zero_based_position": 430
+    },
+    {
+      "change_implemented_in_callers": false,
+      "original_complete_row": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn into_candidate_runtime("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_candidate_runtime_consume",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime"
+      },
+      "proposed_real_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "zero_based_position": 434
+    }
+  ],
+  "full_original_source_collection_required": true,
+  "new_entries_requiring_fences": [
+    "send_root_candidate_stage_handoff",
+    "receive_root_candidate_stage_handoff",
+    "RootCandidateStageHandoffV1::into_original_streams",
+    "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline",
+    "RootResidentLearningRegistrationV3::into_candidate_service",
+    "RootResidentCandidateServiceV1::run"
+  ],
+  "no_final_literal_markers_before_actual_formatter": true,
+  "original_boundary_count": 569,
+  "original_protected_count": 422,
+  "required_new_protection": [
+    "separate purpose, fixed 21-right order, exact role names and distinct socket identity",
+    "root_pair and actual sender pidfd plus actual recipient PID/boot/start binding",
+    "trusted independent profile and typed materials; no wire origin or owner/grant constructors",
+    "absolute monotonic end, remaining lifetime, timeout bounds and consuming min-only deadline cap",
+    "registration Check before and after original role admission; private readonly fresh/recovery dispatch",
+    "by-value registration/handoff/stages; no Clone/getter/reconnect or returned stage owner",
+    "A EOF does not cancel Root; Root cancellation/finite end cancels and closes only owned work",
+    "original four disposition semantics, old protocols, budgets, assertions and exact caller sets retained"
+  ],
+  "source": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "status": "PLANNED_ONLY_WAITING_ORIGINAL_FORMAT_AND_COMPLETE_COLLECTOR"
+}

@@ -1,0 +1,85 @@
+{
+  "H_calls": 0,
+  "actual_source_ref_matches": true,
+  "all_server_modified_dates_absent": true,
+  "check_runs": 0,
+  "check_suites": 0,
+  "combined_status": "pending",
+  "format": "hepta-offline-review-of-original-hosted-ci-observations-v1",
+  "hosted_CI_GET_count": 4,
+  "hosted_CI_pass": false,
+  "local_original_archive_mtime_window_utc": [
+    "2026-11-13T00:37:01.326848+00:00",
+    "2026-11-13T00:37:01.549413+00:00"
+  ],
+  "native_qualification_result_inferred": false,
+  "new_service_GETs_by_this_reviewer": 0,
+  "original_GET_count": 5,
+  "originals": [
+    {
+      "local_file_mtime_utc": "2026-11-13T00:37:01.549413+00:00",
+      "name": "source-ref.GET.original.json",
+      "original": {
+        "bytes": 1819,
+        "git_blob": "40db85236d006055a8fb62c3511bd1e068bd6262",
+        "sha256": "1904901bef6a23a549f76df3d98f2401a3889a6543620bfb27f48ca4634b072f"
+      },
+      "server_modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/utility-evidence-closure-20261112-36fa"
+    },
+    {
+      "local_file_mtime_utc": "2026-11-13T00:37:01.326848+00:00",
+      "name": "check-runs.GET.original.json",
+      "original": {
+        "bytes": 775,
+        "git_blob": "81653abfba30c0a7412deea8574bfd8e3a0da9e6",
+        "sha256": "9c80d296ce13aeb5cf299f57cd6e77b77827923d07972472fb190906ecc24f94"
+      },
+      "server_modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/cc57c7198db6293ccca562253c42fffbe2a04633/check-runs?per_page=100"
+    },
+    {
+      "local_file_mtime_utc": "2026-11-13T00:37:01.369116+00:00",
+      "name": "check-suites.GET.original.json",
+      "original": {
+        "bytes": 791,
+        "git_blob": "94a52da1d24695a2d530d8b709530c8e0def2423",
+        "sha256": "86a879b152b6ab7599730d702dc79282bfb7d3c0062f08262d89b6cace1d3990"
+      },
+      "server_modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/cc57c7198db6293ccca562253c42fffbe2a04633/check-suites?per_page=100"
+    },
+    {
+      "local_file_mtime_utc": "2026-11-13T00:37:01.458204+00:00",
+      "name": "status.GET.original.json",
+      "original": {
+        "bytes": 12208,
+        "git_blob": "e748ed88fa309a0035f5659b3a24148c09517e97",
+        "sha256": "01f98fbc5abc77fe60a9d0ae792d1df3c551f26d0fb39f0bf284fbb26dc5505b"
+      },
+      "server_modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/cc57c7198db6293ccca562253c42fffbe2a04633/status"
+    },
+    {
+      "local_file_mtime_utc": "2026-11-13T00:37:01.425782+00:00",
+      "name": "workflow-runs.GET.original.json",
+      "original": {
+        "bytes": 772,
+        "git_blob": "717c59bc950d2ef064c27a8a9e7727d6c234d9c3",
+        "sha256": "5f92f24a79fc30f272976176d10246105c08c550c8f2a81e664ff49929a708e0"
+      },
+      "server_modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=cc57c7198db6293ccca562253c42fffbe2a04633&per_page=100"
+    }
+  ],
+  "prior_2026_11_12_23_53_observation_unchanged": true,
+  "read_only_original_responses_reviewed": true,
+  "reviewed_at_utc": "2026-11-13T00:39:27.007866+00:00",
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_ref_GET_count": 1,
+  "status_contexts": 0,
+  "tests": 0,
+  "time_scope": "Local file archive timestamps and this offline review time are recorded separately. No exact server response time is inferred from null modified_date fields.",
+  "trigger_or_permission_cause": "Unknown",
+  "workflow_runs": 0
+}

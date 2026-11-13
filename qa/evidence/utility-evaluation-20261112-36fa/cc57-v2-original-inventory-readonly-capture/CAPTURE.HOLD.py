@@ -1,0 +1,76 @@
+import datetime, gzip, hashlib, json, os, pathlib, stat
+
+ITEMS = [{'label': 'run', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-baseline.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'source-closure-before', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-closure/source-before.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'source-closure-after', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/source-closure/source-after.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'self-test-before', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/self-test/source-before.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'self-test-after', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/self-test/source-after.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'verify-before', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/verify/source-before.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'verify-after', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-gates-records/verify/source-after.inventory.json', 'kind': 'clone_raw', 'mode': 256, 'expected': {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}}, {'label': 'origin-initial', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/admission/SOURCE_INITIAL.complete.inventory.json.gz', 'kind': 'origin_gzip', 'mode': 384, 'expected': {'bytes': 1261372, 'sha256': 'f305af89b78f8cc0facb73c71b778061349a20ee7ee0a39ecaecd882faecfe50', 'git_blob': '42856a2c0402f43d9e2113a4b99b876998a87853'}}, {'label': 'origin-final', 'path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/admission/SOURCE_FINAL.complete.inventory.json.gz', 'kind': 'origin_gzip', 'mode': 384, 'expected': {'bytes': 1261372, 'sha256': 'f305af89b78f8cc0facb73c71b778061349a20ee7ee0a39ecaecd882faecfe50', 'git_blob': '42856a2c0402f43d9e2113a4b99b876998a87853'}}]
+CLONE_RAW = {'bytes': 5611184, 'git_blob': '99a901cbfb56ee462c195ab500f7a6c83eccb4da', 'sha256': 'f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a'}
+CLONE_GZIP = {'bytes': 1261386, 'git_blob': '3f5b564193cf96f37eb08ec8628b8078f412176f', 'sha256': '512a5066f06bf76fae70762ba17009a9cb62c0a78dd5ed57070e40cf1852d4f4'}
+CLONE_PARTS = [{'bytes': 262144, 'sha256': '029cf17a4ae8ca9e83b1838c8cabfb02d6f60e861a6cecf5ee44e031edf90c31', 'git_blob': 'a18066c72322f93b1531f4caff89c5b44eb98e51'}, {'bytes': 262144, 'sha256': 'e95f96638a804b8a163589c831677a6079296cd279e6571243bc8bb9a8f12f30', 'git_blob': 'ac3c7788b0312a7a585a4e2774a505c5bb92e7af'}, {'bytes': 262144, 'sha256': 'f13fc89f8161d763732a7c32cfd9e4f7acd7271ce4246bf01db3d08ff00c64c5', 'git_blob': '829e0e0c80b5a4b41ac756ced21d594892bab1fb'}, {'bytes': 262144, 'sha256': '3600f7aeca64fbc8ad553cb4d68f6dc22cd2d82101aca07002531e5387019264', 'git_blob': 'c641f65fac80633d17a585fc4e14093e383088b4'}, {'bytes': 212810, 'sha256': 'de43e5ccd61cf28fdb43c821e8b48ee741a1c8e880fd96a14c4ecb6ec4e35e32', 'git_blob': 'bf4193721a76a53879c1f6150cd40065c5525a59'}]
+ORIGIN_RAW = {'bytes': 5611184, 'git_blob': '7f94788b70546a8b8030dfd2b9182a7d9287c537', 'sha256': '13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9'}
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'git_blob': hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()}
+
+def stamp(s):
+    return {'device': s.st_dev, 'inode': s.st_ino, 'mode': s.st_mode,
+            'uid': s.st_uid, 'gid': s.st_gid, 'nlink': s.st_nlink,
+            'size': s.st_size, 'mtime_ns': s.st_mtime_ns, 'ctime_ns': s.st_ctime_ns}
+
+
+def read_original(item):
+    path = pathlib.Path(item['path'])
+    for parent in reversed(path.parents):
+        s = parent.lstat()
+        assert stat.S_ISDIR(s.st_mode) and not stat.S_ISLNK(s.st_mode), 'real fixed record parents'
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(fd, 'rb') as stream:
+        before = os.fstat(stream.fileno())
+        assert stat.S_ISREG(before.st_mode) and before.st_uid == 1000 and before.st_nlink == 1
+        assert before.st_size == item['expected']['bytes'] and stat.S_IMODE(before.st_mode) == item['mode']
+        raw = stream.read(item['expected']['bytes'] + 1)
+        after = os.fstat(stream.fileno())
+    outside = path.lstat()
+    assert stamp(before) == stamp(after) == stamp(outside), 'stable original record observation'
+    actual = identity(raw)
+    assert actual == item['expected'], 'exact full original record identity: ' + item['label']
+    return raw, {'label': item['label'], 'path': str(path), 'kind': item['kind'],
+                 'actual_identity': actual, 'stable_stat': stamp(after), 'full_bounded_read': True}
+
+assert os.getuid() == 1000, 'fixed original account'
+assert len(ITEMS) == 9 and sum(x['kind'] == 'clone_raw' for x in ITEMS) == 7
+observations = []
+clone_first = None
+origin_first = None
+for item in ITEMS:
+    raw, observed = read_original(item)
+    if item['kind'] == 'clone_raw':
+        if clone_first is None:
+            clone_first = raw
+            packed = gzip.compress(raw, compresslevel=9, mtime=0)
+            assert identity(packed) == CLONE_GZIP and gzip.decompress(packed) == raw
+            actual_parts = [identity(packed[i:i+262144]) for i in range(0, len(packed), 262144)]
+            assert actual_parts == CLONE_PARTS, 'all five original retained part identities'
+        assert raw == clone_first, 'all seven separately read clone inventory originals agree'
+        observed['equal_first_clone_original'] = True
+    elif item['kind'] == 'origin_gzip':
+        if origin_first is None:
+            origin_first = raw
+        assert raw == origin_first, 'two separately read origin original gzip files agree'
+        unpacked = gzip.decompress(raw)
+        assert identity(unpacked) == ORIGIN_RAW, 'complete origin bytes still exact clean canonical inventory'
+        observed['decoded_raw_identity'] = identity(unpacked)
+        observed['equal_first_origin_gzip_original'] = True
+    else:
+        raise ValueError('unknown original kind')
+    observations.append(observed)
+print(json.dumps({'format': 'hepta-source-original-inventory-readonly-capture-v1',
+      'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+      'source_job_id': '1a1d23c92f3-2564-1cb4',
+      'source_sha': 'cc57c7198db6293ccca562253c42fffbe2a04633',
+      'observations': observations, 'clone_originals_full_read': 7, 'origin_gzip_originals_full_read': 2,
+      'clone_raw_identity': CLONE_RAW, 'clone_gzip_identity': CLONE_GZIP,
+      'clone_original_retained_part_identities': actual_parts,
+      'origin_decoded_raw_identity': ORIGIN_RAW,
+      'scope': 'Read nine completed gate evidence files only; observed full-byte identities can bind separately reconstructed exact originals. No source, records, Git, Cargo, formatter, or gate mutation. This is not qualification.',
+      'record_or_source_writes': False, 'gate_or_cargo_commands_executed': False,
+      'full_original_contents_retransmitted': False, 'qualification': False},
+      sort_keys=True, separators=(',', ':')), flush=True)

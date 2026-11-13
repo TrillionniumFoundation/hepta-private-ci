@@ -1,0 +1,105 @@
+{
+  "H_calls": 0,
+  "all_new_evidence_payloads_below_500000_bytes": true,
+  "all_new_frozen_payload_size_sha256_git_sha_match": true,
+  "already_preserved_same_path_same_blob": 63,
+  "base_paths_changed": 0,
+  "base_paths_preserved": 3454,
+  "blocking_gaps": [],
+  "details": {
+    "bytes": 147203,
+    "git_blob": "24d3daf29b0ae0eb4bb99e31cad328aaf90dc7c4",
+    "sha256": "ba2de3a60946abfcc54e5ee7f36c2d5cbfe934ed22230bafa0e5ac59c8f221b8"
+  },
+  "existing_frozen_files_modified": false,
+  "format": "hepta-post3454-frozen-increment-independent-review-v1",
+  "fresh_GET_SDks_without_declared_paths_but_two_full_fields_present": 16,
+  "fresh_GET_complete_payload_fields_verified": 142,
+  "fresh_GET_unique_blobs": 71,
+  "frozen_at_utc_from_selection": "2026-11-13T01:19:21.793628+00:00",
+  "historical_pending_flags_preserved": {
+    "pending_rows": 71,
+    "selected_false": 71,
+    "selected_true": 98
+  },
+  "inputs": {
+    "BASE_3454_FILEMAP.json": {
+      "bytes": 406988,
+      "git_blob": "5dd29e2d74cf849728aa0e1ca0fdb6d7eba669c6",
+      "sha256": "9adeb7bca331cf92b3c8971739067490f028b110e8d52739816936e2a0832988"
+    },
+    "LOCAL_READBACK_SAVE_FIRST_ERROR.json": {
+      "bytes": 699,
+      "git_blob": "f21db5756afba5a731c981686d1a1aa93cce537c",
+      "sha256": "e0793d9091184c84ad5c8b67a7d5acee412a342b9a3aef2a1edb6d61c726e777"
+    },
+    "PENDING_GIT_READBACK.json": {
+      "bytes": 48345,
+      "git_blob": "3b8968d759ef34ef0f16d2621a1d2efea88de3bc",
+      "sha256": "2e9bb3a971f15e8adac0d84b3c8849281b58bdcf817b4160dd71aae447a9f7fb"
+    },
+    "SELECTED_ROWS.json": {
+      "bytes": 124846,
+      "git_blob": "804c2357e3834dbae7aecb22d2fcbf26a0d1856d",
+      "sha256": "e67349a9f9cd419688842b356866abf401b4a8e3a42af16ffc92af8069f62576"
+    },
+    "SELECTION_REVIEW.json": {
+      "bytes": 26024,
+      "git_blob": "f55307821a17eb43d0245c6412f3ce53b0a9604c",
+      "sha256": "684a38cd8f1e021cd66a5a02010b381e32e4a80eae6dfd081ac9504981535044"
+    }
+  },
+  "local_readback_save_failure": {
+    "classification": "Local oversized-shell-argument save failure after completed Git GET; not an H/source/gate failure.",
+    "identity": {
+      "bytes": 699,
+      "git_blob": "f21db5756afba5a731c981686d1a1aa93cce537c",
+      "sha256": "e0793d9091184c84ad5c8b67a7d5acee412a342b9a3aef2a1edb6d61c726e777"
+    },
+    "included_in_selected_169": false,
+    "publication_note": "Preserve this frozen outer sidecar when Root assembles checkpoint metadata; do not rewrite older cutoff records."
+  },
+  "merged_pre_publication_metadata_path_count": 3623,
+  "new_paths": 169,
+  "new_unique_blobs": 167,
+  "not_a_final_published_tree_or_count": true,
+  "path_order_in_matched_payload_paths_has_no_semantic_effect": true,
+  "proof_coverage_by_selected_path": {
+    "complete_new_GET_SDK": 72,
+    "complete_previous_GET_SDK": 93,
+    "identical_blob_already_in_verified_base": 4
+  },
+  "readback_note": "The frozen pending flags record their original selection time. The 71 complete later GET SDKs close that evidence gap without rewriting the selection. One new GET blob also covers an additional identical selected payload path.",
+  "semantic_boundaries_preserved": [
+    "1cb4 three original source gates passed only for their actual scope.",
+    "1cd4 failed precondition with zero behavioral stages; unknown_missing_before remains.",
+    "1ce4 proves recorded seven missing archive rows, not who changed them.",
+    "Provider v1 remains an uncompiled, ungated, unactivated isolated proposal.",
+    "No real qualified task chain or independent real B result is manufactured by evidence review."
+  ],
+  "snapshot_transport": {
+    "gzip": {
+      "bytes": 1169526,
+      "git_blob": "97cfbd03eb54740770e90ffd5ebb652561be12f5",
+      "sha256": "780933b23d9d2d3c792b7eb753544056c8ac4e72e07003b2c58932d0ba671282"
+    },
+    "manifest": {
+      "bytes": 3516,
+      "git_blob": "9fa8fd3596407a6ed18747d3478f29e26618b02f",
+      "sha256": "0f3ba8bd2d5a9750bb9ec87d393ffda64eb39b7ef05607d0aff99aa412471ce7"
+    },
+    "missing_rows_exactly_equal_to_original_diff": 7,
+    "parts": 5,
+    "raw": {
+      "bytes": 3529180,
+      "git_blob": "fea4c0aa086b90cfc997c187011bd5970c98c9c4",
+      "sha256": "6c28a1e1291c9c96879718e6c1b81028f9fa12c9ba358123090852d5b6e72b8f"
+    },
+    "rows": 15188,
+    "rows_equal_to_original_full_inventory_projection": 15181,
+    "scope": "Lossless recovery of the already observed 1cd4 snapshot; neither new physical-source observation nor another native run."
+  },
+  "source_index_refs_modified": false,
+  "status": "FROZEN_BYTES_AND_READBACK_PROOFS_CONSISTENT",
+  "tests_or_original_main_executed": false
+}

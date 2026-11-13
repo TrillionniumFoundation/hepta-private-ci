@@ -1,0 +1,98 @@
+{
+  "H_calls": 0,
+  "base_README_preserved": true,
+  "base_duplicate_original_paths_skipped": 5,
+  "base_evidence_head": "15673f01e5248efdecd00fcb06a58ae3dd45d2c0",
+  "base_file_count": 3328,
+  "base_leaf": "cbc9999071443c4e969830ca2fc198f3dad7ca96",
+  "base_paths_changed": [],
+  "base_paths_preserved": 3328,
+  "base_plan": {
+    "bytes": 519233,
+    "git_blob": "7900aa83b40b152f69ca2a1925c819ec46bba72e",
+    "sha256": "9066e5e9f7d66e09f6084b688457af6652f95a32ce2111b4f5abaa2737c5d995"
+  },
+  "base_root_tree": "783ed420aa3e8c8d8205769050c31637faf99434",
+  "format": "hepta-post3328-evidence-append-preparation-v1",
+  "frozen_at_utc": "2026-11-13T00:42:58.452787+00:00",
+  "kind_counts": {
+    "collection_metadata_not_source_execution": 8,
+    "complete_origin_or_clone_small_original": 8,
+    "complete_original_source_readback_index": 1,
+    "complete_original_source_result": 4,
+    "frozen_handoff_index": 1,
+    "frozen_publication_original": 39,
+    "frozen_static_peer_placement": 2,
+    "independent_static_peer_not_execution": 5,
+    "lossless_transport_manifest": 2,
+    "lossless_transport_part": 3,
+    "native_hold_static_peer": 3,
+    "native_hold_static_peer_placement": 1,
+    "offline_dated_review_of_original_hosted_observations": 1,
+    "origin_and_clone_small_readback_index": 1,
+    "origin_or_clone_original_read_sdk": 8,
+    "original_first_two_gate_read_sdk": 6,
+    "original_first_two_gate_readback_index": 1,
+    "original_first_two_gate_receipt": 6,
+    "root_core_review_or_original_hosted_observation": 7,
+    "source_original_or_transport_observation": 19
+  },
+  "lossless_original_transports": 2,
+  "maximum_new_file_bytes": 383067,
+  "merged_file_count": 3454,
+  "metadata_completed_at_utc": "2026-11-13T00:44:51.016494+00:00",
+  "new_collection_metadata_paths": 8,
+  "new_files_at_or_above_500000_bytes": 0,
+  "new_paths_full_Git_readback_equal": 126,
+  "new_paths_total": 126,
+  "new_payload_paths": 118,
+  "new_unique_git_blobs": 123,
+  "outer_indexes": [
+    {
+      "bytes": 88224,
+      "git_blob": "f3e21c1f1897cd31f189d31bb9c2a8e68c7c41e7",
+      "name": "VERIFIED_INCREMENTAL_ENTRIES.json",
+      "sha256": "6f7db911b61a4f5dad1cd3928ff97f221ef9a5648cfff824c4d1946ac4e30c19"
+    },
+    {
+      "bytes": 15184,
+      "git_blob": "917e214ac940c0d4abb7423f9590f13ba0835576",
+      "name": "INCREMENTAL_FILEMAP.json",
+      "sha256": "fe29e89306ff5f53b02d509c089f5dd0b8f9d830854ef3892f52e6cc11a03181"
+    },
+    {
+      "bytes": 406988,
+      "git_blob": "5dd29e2d74cf849728aa0e1ca0fdb6d7eba669c6",
+      "name": "FULL_FILEMAP.json",
+      "sha256": "9adeb7bca331cf92b3c8971739067490f028b110e8d52739816936e2a0832988"
+    }
+  ],
+  "outer_sidecar_rule": "The five handoff sidecars are excluded from their own 126-entry map, avoiding self-inclusion. Root may append their immutable pins in a later publication window.",
+  "preserved_failures": [
+    "two original source-closure raw-read MCP timeouts",
+    "publication helper schema misconception recorded in original Root review",
+    "old publication transfer and metadata404 originals",
+    "one current evidence-blob full-GET RemoteProtocolError followed by a successful same-blob GET"
+  ],
+  "review": {
+    "bytes": 19842,
+    "git_blob": "face237e54aeca5437b1b043bc42904f11bb8c83",
+    "path": "post3328-preparation/EVIDENCE_CONSISTENCY_REVIEW.json",
+    "sha256": "af164e7a28b580f2ed6432b1783ac74dadaab59fccd8260ad79d6157f2227aea"
+  },
+  "source_and_scope": {
+    "complete_gate_raw_and_full_inventory_payloads_not_in_this_window": true,
+    "later_raw_and_inventory_handoffs_separate": true,
+    "native_qualification_execution_or_pass_inferred": false,
+    "original_supervisor_exit0_complete_durable": true,
+    "original_three_source_gate_records": "passed",
+    "real_qualified_task_chain_outcomes": 0,
+    "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "source_job": "1a1d23c92f3-2564-1cb4",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_writes": 0,
+  "status": "FROZEN_VERIFIED_APPEND_ONLY_PREPARATION_NO_PUBLICATION",
+  "tests_or_gates_run": 0,
+  "trees_commits_refs_PR_modified": false
+}

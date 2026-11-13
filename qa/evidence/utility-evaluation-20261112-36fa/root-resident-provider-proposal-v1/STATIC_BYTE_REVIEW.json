@@ -1,0 +1,74 @@
+{
+  "H_calls": 0,
+  "added_lines": 659,
+  "before_reference_files_verified": 21,
+  "candidate_leaf_count": 15192,
+  "changed_files": 8,
+  "changed_trees": [
+    {
+      "after": "b517d3b110c13538780b9ccd743b9706098829fb",
+      "before": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+      "path": ""
+    },
+    {
+      "after": "b2210ffc8c39cd12f3567d09ca3ba8460c0a7716",
+      "before": "f66df22bbc1558d29f72e20942faf4d54a325baf",
+      "path": "codex-rs"
+    },
+    {
+      "after": "fabc33e9f101c8e419394efaaafe631725eb2c07",
+      "before": "5ac2a77b4e6f4991bf2d06f25f90049722fed8c3",
+      "path": "codex-rs/hepta-agentd"
+    },
+    {
+      "after": "270e1d3f180aaadc68a2540c321a5dc58eb19c0d",
+      "before": "96627f0124b7513a7b928f26cb2ee8dd3ed39a94",
+      "path": "codex-rs/hepta-agentd/src"
+    }
+  ],
+  "deleted_lines": 0,
+  "existing_files": 4,
+  "expected_preformat_candidate_tree": "b517d3b110c13538780b9ccd743b9706098829fb",
+  "format": "hepta-original-root-provider-static-byte-review-v1",
+  "formatter_executed": false,
+  "new_files": 4,
+  "old_base_merkle_recomputed": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "old_function_bodies_and_unrelated_file_bytes_preserved_by_exact_inverse": [
+    {
+      "complete_inverse_bytes_equal": true,
+      "inserted_blocks": 1,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs"
+    },
+    {
+      "complete_inverse_bytes_equal": true,
+      "inserted_blocks": 1,
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+    },
+    {
+      "complete_inverse_bytes_equal": true,
+      "inserted_blocks": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    },
+    {
+      "complete_inverse_bytes_equal": true,
+      "inserted_blocks": 2,
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    }
+  ],
+  "prepared_test_methods": [
+    "candidate_wire_preserves_all_original_fd_objects_and_cloexec",
+    "candidate_wire_and_old_two_right_packet_cannot_consume_each_other",
+    "candidate_wire_rejects_role_socket_alias_and_closes_all_received_rights",
+    "candidate_packet_refuses_changed_binding_role_process_and_original_timing"
+  ],
+  "real_task_chains": 0,
+  "rust_compile_executed": false,
+  "source": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "source_gate_executed": false,
+  "source_or_ref_activated": false,
+  "tests_executed": 0
+}

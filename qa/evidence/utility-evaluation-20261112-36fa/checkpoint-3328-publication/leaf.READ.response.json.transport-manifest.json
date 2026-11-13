@@ -1,0 +1,49 @@
+{
+  "compression_created_locally_for_transport": true,
+  "encoding": "base64 of contiguous gzip bytes, each ASCII file has one terminal LF",
+  "format": "hepta-lossless-original-evidence-transport-v1",
+  "gzip": {
+    "bytes": 298538,
+    "git_blob": "0ac260db5f7d6da4f03db20ad8cecd3c04ad6c5a",
+    "sha256": "bb74234dd2351c215ddc04245de614f90d7eb54b9ef078a49ca672123b9b2dc1"
+  },
+  "not_a_new_native_read": true,
+  "original_local_path": "/tmp/hepta-36fa-cc57-evidence-publication-v1/leaf.READ.response.json",
+  "original_observation_preserved_in_raw": true,
+  "parts": [
+    {
+      "decoded": {
+        "bytes": 262144,
+        "git_blob": "d8f48ad4ec87c52ff1f3abe355e1043f391bb981",
+        "sha256": "0756626483e52a82c5527701a6b922009c1aae4221119d0fa2f2cd3dd34b8d83"
+      },
+      "encoded": {
+        "bytes": 349529,
+        "git_blob": "e20b0f449ec847f01525f0cd39a07ac9bb6fea42",
+        "sha256": "f7d09b5cd720c84e0236c9ac16f118ae6a9a1d0c4bb68fc497836814d70fefa4"
+      },
+      "offset": 0,
+      "path": "checkpoint-3328-publication/leaf.READ.response.json.part-001.gz.b64"
+    },
+    {
+      "decoded": {
+        "bytes": 36394,
+        "git_blob": "845fa78784cd11e73229fd1d9cbab20c34c9340b",
+        "sha256": "b8b74a8a8a4d29c87998a05b6f730748a89230f42617edf690695bff74dec1fe"
+      },
+      "encoded": {
+        "bytes": 48529,
+        "git_blob": "6c536f925d94d107121cfc8968b608d1f0f0550b",
+        "sha256": "a50ae52ca44d15d7797e6409e97dc91a7887c4c520b0afbc3d7f30181e8f3cbe"
+      },
+      "offset": 262144,
+      "path": "checkpoint-3328-publication/leaf.READ.response.json.part-002.gz.b64"
+    }
+  ],
+  "raw": {
+    "bytes": 2360048,
+    "git_blob": "49b94b612d39cf07d6719b8a9d2e096332212490",
+    "sha256": "a0dfda278143e207e2731bb46e248a9944b96a9548361bdbc74fa820e8234b06"
+  },
+  "recovery": "Strip only terminal whitespace, strict base64-decode parts in order, concatenate, then gzip-decompress. Verify all raw and transport identities."
+}

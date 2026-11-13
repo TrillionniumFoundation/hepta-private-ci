@@ -1,0 +1,172 @@
+{
+  "actual_observer_stdout": {
+    "bytes": 5315,
+    "git_blob": "51866fcd97cce67daf3dffc62320127014f110be",
+    "sha256": "a84d39ef3763361c0aafebf2776a90d78f85cbdcae5b7a52982c66a73a3bf17e"
+  },
+  "actual_readonly_observer": "1a1d27152aa-2564-1ce4",
+  "behavioral_test_outcomes_observed": 0,
+  "classification": "Precondition rejection before any behavioral test. Neither complete NoUpdate/Ineligible nor evidence of Objective Fraud. Do not replace Unknown with an invented writer or mechanism.",
+  "complete_original_difference": {
+    "bytes": 3259,
+    "git_blob": "5ca1a28c507d5f38710cbac9fe11b67418e98214",
+    "sha256": "a1a08baf2d09fb5f7764e173aa8e18cdb1376cd6ee2a71cfee6ec9c0c56b2571"
+  },
+  "current_ref_observed_by_readonly_command": "refs/retired-artifacts/20261112-r71/3b03227b9431ee012e6b cc57c7198db6293ccca562253c42fffbe2a04633",
+  "expected_native_compact": {
+    "bytes": 3530181,
+    "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+    "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "failed_native_compact": {
+    "bytes": 3529180,
+    "git_blob": "fea4c0aa086b90cfc997c187011bd5970c98c9c4",
+    "sha256": "6c28a1e1291c9c96879718e6c1b81028f9fa12c9ba358123090852d5b6e72b8f"
+  },
+  "failed_native_original_gzip": {
+    "bytes": 1169526,
+    "git_blob": "97cfbd03eb54740770e90ffd5ebb652561be12f5",
+    "sha256": "780933b23d9d2d3c792b7eb753544056c8ac4e72e07003b2c58932d0ba671282"
+  },
+  "format": "hepta-root-actual-native-precondition-difference-review-v1",
+  "index_body_read_or_parsed": false,
+  "missing_original_bytes_total": 18176884,
+  "missing_rows": [
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz"
+      },
+      "before": {
+        "blob": "3a40fd7c802df1a9cc4e7dd284ebd96bcd5e3c62",
+        "bytes": 2896268,
+        "mode": "100644",
+        "path": "qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz",
+        "sha256": "11ba543a46a6150bbd89c2ac5513bea56660c69358ddb348122b4bae57533fe7"
+      },
+      "kind": "changed",
+      "path": "qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz"
+    },
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/cell-research-stages-20261108/followthrough-20261108/verify1-independent-audit.tar.gz"
+      },
+      "before": {
+        "blob": "807c2dc3c1088f916f11a235378bfdc051eda955",
+        "bytes": 1177531,
+        "mode": "100644",
+        "path": "qualification/cell-research-stages-20261108/followthrough-20261108/verify1-independent-audit.tar.gz",
+        "sha256": "ac8863c2893869db846801d825e89863cf168e87782571dd009733b921643de0"
+      },
+      "kind": "changed",
+      "path": "qualification/cell-research-stages-20261108/followthrough-20261108/verify1-independent-audit.tar.gz"
+    },
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/cell-research-stages-20261108/native-ci-routing-20261108/raw-ci-logs.tar.gz"
+      },
+      "before": {
+        "blob": "cea174270290297bd72c4e2cc126ebddbb2cf741",
+        "bytes": 1766809,
+        "mode": "100644",
+        "path": "qualification/cell-research-stages-20261108/native-ci-routing-20261108/raw-ci-logs.tar.gz",
+        "sha256": "3d4c805e3008b36d147fa750c36b301f20b82ca9f876f943c63ae24fa01fa02c"
+      },
+      "kind": "changed",
+      "path": "qualification/cell-research-stages-20261108/native-ci-routing-20261108/raw-ci-logs.tar.gz"
+    },
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip"
+      },
+      "before": {
+        "blob": "3c427d48aa759a4a4bad8258c951fbb94c0c616d",
+        "bytes": 1843158,
+        "mode": "100644",
+        "path": "qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip",
+        "sha256": "27d4f684ba9df1b9dec5c518377c50f80239d2a3f4998045f88939593fa01bcc"
+      },
+      "kind": "changed",
+      "path": "qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip"
+    },
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/memory-cell-mem1/raw-evidence-v1.tar.xz"
+      },
+      "before": {
+        "blob": "6f312b46ecae7f0d314b55504b0d7a5c75e3524b",
+        "bytes": 1765660,
+        "mode": "100644",
+        "path": "qualification/memory-cell-mem1/raw-evidence-v1.tar.xz",
+        "sha256": "df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15"
+      },
+      "kind": "changed",
+      "path": "qualification/memory-cell-mem1/raw-evidence-v1.tar.xz"
+    },
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/pin-utils-parent-backports-20261108/native-evidence.tar.gz"
+      },
+      "before": {
+        "blob": "506b81500b5f81d5eb8bee8ad610f3620696bca3",
+        "bytes": 2767574,
+        "mode": "100644",
+        "path": "qualification/pin-utils-parent-backports-20261108/native-evidence.tar.gz",
+        "sha256": "4c5cfe6d68e48fdc6f065ac7bbd2d0ee852a5b896f8d15b997f5fa8189e63c11"
+      },
+      "kind": "changed",
+      "path": "qualification/pin-utils-parent-backports-20261108/native-evidence.tar.gz"
+    },
+    {
+      "after": {
+        "missing": true,
+        "path": "qualification/pred1/evidence/pred1_evidence.tar.xz"
+      },
+      "before": {
+        "blob": "3f72098ddf57a704aef4d5f325dd7770b6f89694",
+        "bytes": 5959884,
+        "mode": "100644",
+        "path": "qualification/pred1/evidence/pred1_evidence.tar.xz",
+        "sha256": "08322f8fe581f84e7e6ea31f705c5c8554610930a5f531e15294de14e331219e"
+      },
+      "kind": "changed",
+      "path": "qualification/pred1/evidence/pred1_evidence.tar.xz"
+    }
+  ],
+  "original_native_job": "1a1d26326ac-2564-1cd4",
+  "original_source_comparison": "unknown_missing_before",
+  "original_source_job": "1a1d23c92f3-2564-1cb4",
+  "original_wrapper_result": {
+    "bytes": 909,
+    "git_blob": "abd141a7f71491823d2fcef451d7db3455e5925a",
+    "sha256": "6772f81fedadb9d6f9a8b7140d8954156b30c93798406ffa1b26a52bf925b0f9"
+  },
+  "original_wrapper_status": "failed",
+  "real_qualified_task_chain_outcomes": 0,
+  "recovery_direction": "Preserve the drifted old directory and its ref/index. Independently verify exact source objects, then separately review fresh isolated materialization and its actual proof before any successor native admission.",
+  "recovery_or_new_native_execution_authorized_by_this_report": false,
+  "reviewed_at_utc": "2026-11-13T01:17:38.352349+00:00",
+  "rows": {
+    "added": 0,
+    "changed": 7,
+    "removed": 0,
+    "unchanged": 15181
+  },
+  "scope": "All seven differences are missing tracked historical qualification archives. The 15181 remaining five-field rows are equal. This is not a serializer difference. Reconstructed complete failed raw and gzip bytes match the actual bounded original read; reconstruction is not another physical observation.",
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_full_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "source_refs_index_or_original_records_modified": false,
+  "status": "COMPLETE_RETAINED_SNAPSHOT_DIFFERENCE_VERIFIED_NO_REPAIR",
+  "timing_scope": "The current refs enumeration was observed at 1ce4. The two file inventories describe the retained 1cb4 and 1cd4 execution snapshots, not the live workspace at Root review time.",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "writer_or_cause": "Unknown"
+}

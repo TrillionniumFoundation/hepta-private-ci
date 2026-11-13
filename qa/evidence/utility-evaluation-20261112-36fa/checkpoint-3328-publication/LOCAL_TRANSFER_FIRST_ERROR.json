@@ -1,0 +1,9 @@
+{
+  "actual_error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server rejected request (-32603): Argument list too long (os error 7)\\\")\" }",
+  "format": "hepta-root-local-publication-transfer-observation-v1",
+  "partial_batch_scope": "Some independent immutable Git blob operations may already have succeeded. No tree/commit/ref operation was entered by this batch.",
+  "qualification": false,
+  "resolution": "Read bounded50000-character UTF8 slices directly from local files; avoid passing encoded file contents as process arguments. Exact original bytes and blob identities remain required.",
+  "scope": "Local file-transfer helper passed a100000-byte base64 chunk through one process argument; the encoded argument exceeded the process limit. This is not a source/native gate result.",
+  "source_or_native_main_retry": false
+}

@@ -1,0 +1,347 @@
+{
+  "HOLD_fields": {
+    "SOURCE_SUCCESS.original_run_result": null,
+    "SOURCE_SUCCESS.result": null,
+    "SOURCE_SUCCESS.supervisor": null,
+    "stdin.source_supervisor_base64": null
+  },
+  "H_calls": 0,
+  "actual_historical_anchor_proofs": {
+    "canonical_alignment": {
+      "bytes": 138945,
+      "git_blob": "c374e3029f0fa8fa4f66d6e311c6841785db63b5",
+      "path": "/tmp/hepta-36fa-source-repair-canonical-alignment-launch-v1/RESULT.json",
+      "sha256": "1c058f83bb69579f7d039a401ab1e94cd0fb25529dc8d8dc7f91a73c9fbb75fe"
+    },
+    "canonical_subject": {
+      "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "parents": [
+        "246d8cb614770252ee42029a5c014f2a4904176a"
+      ],
+      "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+    },
+    "clean_inventory": {
+      "bytes": 5611184,
+      "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+      "path": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json",
+      "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+    },
+    "compact_inventory": {
+      "bytes": 3530181,
+      "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+      "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+    },
+    "complete_source_control_pins_equal_current_inventory": [
+      {
+        "bytes": 22519,
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "path": "AGENTS.md",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      {
+        "bytes": 7838,
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "path": "justfile",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "bytes": 10206,
+        "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "path": "scripts/run-nextest.py",
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      },
+      {
+        "bytes": 6617,
+        "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+        "path": "codex-rs/.config/nextest.toml",
+        "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+      },
+      {
+        "bytes": 12863,
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "path": "scripts/hepta_ci_exec.py",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      {
+        "bytes": 6613,
+        "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+        "path": "scripts/hepta_ci_junit.py",
+        "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+      },
+      {
+        "bytes": 18658,
+        "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+        "path": "scripts/hepta_cell_test_helpers.py",
+        "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+      },
+      {
+        "bytes": 28918,
+        "git_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+        "path": "scripts/hepta_c_observer_coverage.py",
+        "sha256": "a2138ead7b212acf8f4fb747c7bf41b07df56aa51b34f45544d1a1690911a0df"
+      },
+      {
+        "bytes": 28133,
+        "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+      },
+      {
+        "bytes": 16599,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "path": "scripts/format.py",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "bytes": 2030,
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "path": "scripts/just-shell.py",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "bytes": 78,
+        "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+        "path": "codex-rs/rust-toolchain.toml",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      }
+    ],
+    "final_format": {
+      "bytes": 7097,
+      "git_blob": "6cb1b8d6af25907ca0fea5d9bd0f787062dbef94",
+      "path": "/tmp/hepta-36fa-source-repair-finalfmt-launch-v1/RESULT.original.json",
+      "sha256": "f0a8fd1bb8b6b3b4aa71cf5e9a0683cb4d4e0d7b532cc0cde43bedff4244544f"
+    },
+    "final_format_subject": {
+      "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "parents": [
+        "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+      ],
+      "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    },
+    "runtime_seed_note": "The runtime-restoration proof correctly remains tied to its original 86dd/383ab SEED. Admission changes m.HEAD/m.TREE to current cc57/B7 before actual Git checks; it does not rewrite that historical restoration proof."
+  },
+  "actual_source_admission_readback": {
+    "bytes": 679,
+    "git_blob": "0f711189058e4feeaffce4a4f8d82892f05d6cee",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-launch-v2/ACTUAL_ADMISSION_READBACK.json",
+    "sha256": "4d29ae41cd826e07b3211baf9f9efed668735e45236ce5437f2fc2c06f4153b0"
+  },
+  "actual_source_bootstrap": {
+    "bytes": 6316,
+    "git_blob": "43aab05122c70c99733a33f445957fe0a8b364a5",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/SOURCE_BOOTSTRAP.candidate.py",
+    "sha256": "ab2be45f3ce569489497336aa0cfbbc157dbd3bfc38268c1a010396b4953c6a5"
+  },
+  "actual_source_request": {
+    "bytes": 131345,
+    "git_blob": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0",
+    "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/SOURCE_PROCESS_INPUT.candidate.json",
+    "sha256": "55c9acefda3fe004b6b29e407256e89a1e99fd5e372b2ca04bf4b27a6f7687f4"
+  },
+  "budget_and_runtime_contract": {
+    "admission_seconds": 600,
+    "all_outer_seconds": 21000,
+    "eval_lib_seconds": 3600,
+    "final_evidence_seconds": 300,
+    "focused_ordinary_root_each_seconds": 7200,
+    "focused_outer_seconds": 12000,
+    "helper_build_seconds": 3600,
+    "helper_verification_each_seconds": 120,
+    "native_driver": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native_outer_seconds": 45000,
+    "native_wrapper": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "ordinary_packages_from_exact_workflow": [
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron"
+    ],
+    "plan": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "plan_phase_count": 14,
+    "root_case_count_from_exact_current_workflow_AST": 33,
+    "root_cases_dynamic_not_hardcoded_by_b92": true,
+    "root_setup_and_unmount_each_seconds": 60,
+    "runtime_notes": [
+      "Original justfile enforces RUST_MIN_STACK=8388608 and local nextest profile.",
+      "Every invoked test argv retains --retries 0; the unchanged nextest file has profile defaults and per-case overrides, not a newly rewritten global zero-retry config.",
+      "Original --no-fail-fast, timeout overrides, full eval library plus four required names, seven focused filters, full five-package ordinary suite and exact dynamic Root ignored-only cases remain unchanged.",
+      "Root suite is reached only after ordinary success. Fresh direct /run child and source/bind/checkpoints setup, UID0 check, sudo env whitelist, JUnit equality and cleanup remain original b92.",
+      "No source success or native suite result is inherited from 246d or prior cc57 v1 admission failure."
+    ],
+    "source_gate_seconds": {
+      "self-test": 300,
+      "source-closure": 600,
+      "verify": 4800
+    },
+    "source_outer_seconds": 7200,
+    "source_wrapper": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    },
+    "toolchain_seconds": 120
+  },
+  "comparison": {
+    "changed_pin_names": [
+      "APPROVED_QUALIFICATION_INPUT.json",
+      "APPROVED_SOURCE_GATES_CONFIG.json",
+      "CANONICAL_ALIGNMENT_NORMAL.original.json",
+      "qualification-admission.py"
+    ],
+    "exact_unchanged_native_exec_outside_staging_try": true,
+    "inverse_three_assignment_spans_restore_entire_original_bytes": true,
+    "normalized_AST_identical": true,
+    "old_task_path_or_job_occurrences_in_new_template": [],
+    "pins_equal_current_source_v2_bootstrap_and_all_eight_actual_input_bytes": true,
+    "top_level_functions": {
+      "check": {
+        "AST_unchanged": true,
+        "exact_bytes_unchanged": true
+      },
+      "identity": {
+        "AST_unchanged": true,
+        "exact_bytes_unchanged": true
+      },
+      "read_fixed": {
+        "AST_unchanged": true,
+        "exact_bytes_unchanged": true
+      },
+      "real_parents": {
+        "AST_unchanged": true,
+        "exact_bytes_unchanged": true
+      },
+      "retain": {
+        "AST_unchanged": true,
+        "exact_bytes_unchanged": true
+      }
+    }
+  },
+  "conclusion": "NO_CONCRETE_BLOCKER_TO_CONTINUE_HOLD_PREPARATION; NOT_READY_TO_EXECUTE",
+  "current_subject": {
+    "key_note": "The first native request for cc57 is named v1 while it consumes the cc57 source/control v2. This opaque fresh key is not a records path or source identity; no native dispatch is claimed by this static review.",
+    "native_idempotency_key": "hepta-utility-36fa-final-native-gates-cc57-v1",
+    "native_records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/native-records",
+    "native_run_identity": "hepta-utility-36fa-native-cc57-v2",
+    "parents": [
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "root_parent": "/run/hepta-utility-36fa-final-cc57-v2",
+    "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "source_base": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2",
+    "source_job_id": "1a1d23c92f3-2564-1cb4",
+    "source_run_identity": "hepta-utility-36fa-source-gates-cc57-v2",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "eight_exact_inputs": [
+    {
+      "bytes": 14294,
+      "git_blob": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/qualification-admission.py",
+      "sha256": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c"
+    },
+    {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/source-gates-wrapper.py",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    },
+    {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/native-wrapper.py",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/native-driver.original.py",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/PLAN.original.json",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    {
+      "bytes": 10960,
+      "git_blob": "9cd798c77f3cf9f3139c4f0b345bcc3be2b894da",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/APPROVED_QUALIFICATION_INPUT.json",
+      "sha256": "38169c3726baaf32eb55218bbb3e274d2f40d4957630b253d5d31bad48828365"
+    },
+    {
+      "bytes": 820,
+      "git_blob": "a6dbed0b4eea650f1af616df5dd1e9719475dff4",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/APPROVED_SOURCE_GATES_CONFIG.json",
+      "sha256": "f9bab5b64869c5b8a51545a73c6d1fe7e14767ead25239e8e8b718ff73f5c61c"
+    },
+    {
+      "bytes": 953,
+      "git_blob": "041ee7bcd32bcab8f7bedec17ac998cfd929326f",
+      "path": "/tmp/hepta-36fa-source-qualification-cc57-candidate-v2/inputs/CANONICAL_ALIGNMENT_NORMAL.original.json",
+      "sha256": "084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83"
+    }
+  ],
+  "format": "hepta-cc57-native-after-source-independent-static-review-v1",
+  "limitations": [
+    "Read-only local AST/byte/data audit; no reviewed module was imported or executed, no native filesystem/process probe and no runtime or qualification assertion.",
+    "The exact future normal/payload and source proof pins do not exist in this HOLD. Source state may progress elsewhere after the audit; this report intentionally does not fill or infer success."
+  ],
+  "original_template": {
+    "bytes": 9553,
+    "git_blob": "e857c626029f201df16f758b165aa95a00d7d965",
+    "path": "/tmp/hepta-36fa-final-native-qualification-launch-hold-v1/BOOTSTRAP_TEMPLATE.HOLD.py",
+    "sha256": "952d201051b8da4d12802b17d2b1713eb206fcb45697a882ca863d68c6b01c70"
+  },
+  "qualification": false,
+  "ref_updates": 0,
+  "remaining_before_execution": [
+    "Observe complete current 1cb4 terminal and full source records; a running job is insufficient.",
+    "Root must approve exact actual source wrapper RESULT, original run-result and authoritative normal supervisor pins, full output and complete unchanged-source evidence.",
+    "Only then prepare a sealed successor of this immutable HOLD with those exact observed bytes and receive Root exact-launch approval; do not execute the HOLD request."
+  ],
+  "request": {
+    "bytes": 10038,
+    "git_blob": "dc3cb0b9aa00513971aebae8ad5e46c516c46313",
+    "path": "/tmp/hepta-36fa-native-after-cc57-source-hold-v1/REQUEST.HOLD.json",
+    "sha256": "3aeb2431d3a038abc187bf138b911ae9e122c89efefac829c3b8247353bdf5e5"
+  },
+  "reviewed_at_utc": "2026-11-13T00:20:50.533442+00:00",
+  "reviewed_control_main_executions": 0,
+  "source_success_guard_chain": [
+    "Bootstrap checks all three success pins are dicts before any read or staging; they are currently null. Null supervisor payload also remains unfilled.",
+    "The exact pinned original supervisor must be for job 1cb4 and normal succeeded/exit0, no timeout/cancellation/retry, complete and durable output, terminal publication confirmed and no truncation.",
+    "The pinned source-handoff RESULT must be passed for cfg cc57/B7, driver_main_entered true, driver_returncode zero and original_run_status passed; the pinned original run-result must independently say passed.",
+    "Pinned 8607 grants passed only when original 5118 status is passed and its return value is zero; contradictory or incomplete terminal evidence is not converted to passed.",
+    "Pinned 5118 grants overall passed only for all three gate summaries passed. Each requires original normal result, full before/after inventory equality to the frozen clone baseline, no execution or after-inventory errors, an original record, and completed retention. Source mismatch is Failed; incomplete evidence is Unknown.",
+    "8607 finally calls a8be.finish: exact raw Git state and every original full inventory row must be unchanged. Any failure downgrades passed. Additional physical files are explicitly reported instead of being silently equated to original full bytes.",
+    "After source proof sealing, de3e9 again admits the actual clean canonical origin and exact full 13d3 inventory before native work. Thus unexpected additional origin files cannot be borrowed as an unchanged clean baseline.",
+    "Bootstrap itself uses the pinned proof producers and Root exact pin review; it does not independently re-run all per-gate semantics. Root must verify run_identity, all three named gate finals/records, source_changed false, complete baseline/before/after evidence and origin observation when filling the three actual pins."
+  ],
+  "source_writes": 0,
+  "template": {
+    "bytes": 9553,
+    "git_blob": "fcd164e362993c49affd4893e4108e06100b4726",
+    "path": "/tmp/hepta-36fa-native-after-cc57-source-hold-v1/BOOTSTRAP_TEMPLATE.HOLD.py",
+    "sha256": "71ac1f55db3243483836f5d13523ed9711b0b543535ced993b90b35b31a94cdf"
+  },
+  "tests_or_gate_runs": 0
+}

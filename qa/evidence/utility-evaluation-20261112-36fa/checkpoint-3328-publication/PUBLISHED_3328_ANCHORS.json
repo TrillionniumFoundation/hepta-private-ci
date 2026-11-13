@@ -1,0 +1,65 @@
+{
+  "actual_tree_commit_and_ref_readback": true,
+  "at": "2026-11-13T00:33:18.430877+00:00",
+  "evidence_head": "15673f01e5248efdecd00fcb06a58ae3dd45d2c0",
+  "evidence_leaf": "cbc9999071443c4e969830ca2fc198f3dad7ca96",
+  "evidence_parent_trees": {
+    "parent-evidence": "108373c0fec236498aa0b951c99b04a5501d7538",
+    "parent-qa": "cd76f3fe29386711816050cf36c41d19d5ab9f1e",
+    "parent-root": "783ed420aa3e8c8d8205769050c31637faf99434"
+  },
+  "evidence_root_tree": "783ed420aa3e8c8d8205769050c31637faf99434",
+  "file_count": 3328,
+  "force": false,
+  "format": "hepta-evidence-3328-actual-publication-anchors-v1",
+  "old_non_readme_preserved": 2840,
+  "old_readme_archive": "checkpoints/README_2841FILES_BEFORE_CC57_SOURCE_REQUALIFICATION.md",
+  "real_qualified_task_chain_outcomes": 0,
+  "sole_parent": "64b921b3f6031d515883a7ca506207932da3997f",
+  "source_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_snapshot_state": {
+    "actual_first_gate_start": "2026-11-13T00:09:29.500753+00:00",
+    "caller_self_test": {
+      "elapsed_seconds": 12.698749995790422,
+      "finished_at": "2026-11-13T00:16:18.224082+00:00",
+      "status": "passed"
+    },
+    "checkpoint_prepared_at_utc": "2026-11-13T00:19:13.466167+00:00",
+    "current_source_qualification_complete": false,
+    "existing_completed_windows_preserved": [
+      "3033 cutoff2026-11-12T23:28:14.670813Z",
+      "3251 cutoff2026-11-12T23:59:13.736011Z",
+      "post3251 cutoff2026-11-13T00:10:30.786603Z"
+    ],
+    "first_gate": "source-closure",
+    "format": "hepta-cc57-publication-observed-state-v1",
+    "hosted_CI_latest_archived": "2026-11-12 23:53:53-54UTC:0 checks/suites/statuses/runs;pending",
+    "incomplete_full_run_not_reclassified": true,
+    "latest_archived_original_stdout_bytes": 3600,
+    "native_qualification_started": false,
+    "original_frozen_clone_sha256": "f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a",
+    "real_qualified_task_chain_outcomes": 0,
+    "runtime_source_observation_scope": "Latest archived native original status and first gate-start event. Subsequent source events are not inferred or inserted into earlier windows.",
+    "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "source_closure": {
+      "elapsed_seconds": 401.1443105158396,
+      "finished_at": "2026-11-13T00:16:04.759997+00:00",
+      "status": "passed"
+    },
+    "source_gate_job": "1a1d23c92f3-2564-1cb4",
+    "source_gate_status": "running_verify_started",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "v1_rejection": {
+      "driver_main_entered": false,
+      "job": "1a1d2325df6-2564-1cae",
+      "supervisor": "failed_exit1_no_timeout",
+      "wrapper": "unknown"
+    },
+    "verify": {
+      "started_at": "2026-11-13T00:16:25.201770+00:00",
+      "status": "started",
+      "timeout_seconds": 4800
+    }
+  },
+  "source_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+}

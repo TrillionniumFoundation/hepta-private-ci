@@ -1,0 +1,714 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs
+@@ -0,0 +1,139 @@
++//! Explicit original inputs, complete role admission and supervised Root work.
++//! This service does not load trust from its handoff or manufacture any owner.
++
++use std::net::Shutdown;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::sync::Arc;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
++use tokio_util::sync::CancellationToken;
++use crate::AgentdError;
++use crate::AgentdRootAuthorityPeer;
++use crate::LoadedCellQ24ModelV1;
++use crate::OriginalCellEvaluationPanelRegistrationV1;
++use crate::OriginalCellQ24CandidateStageOwnersV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::RootCandidateStageHandoffV1;
++use super::RootResidentLearningHandleV3;
++use super::RootResidentLearningRegistrationV3;
++use super::RootResidentLearningRuntimeV3;
++use super::authority::ResidentRootAuthorityV3;
++use super::authority::ResidentStoreActionV3;
++
++/// Supplied by the original provider, separately from untrusted wire metadata.
++/// These typed values retain their original scope, baseline and evidence trust.
++pub struct RootResidentCandidateInputsV1 {
++    pub material: OriginalCellQ24MaterialReceiptConfigV1,
++    pub protocol: OriginalCellEvaluationPanelRegistrationV1,
++    pub baseline: Arc<LoadedCellQ24ModelV1>,
++    pub verifier: LearningEvidenceVerifierV1,
++}
++
++/// One already connected A/successor endpoint for the original resident server.
++/// Its pidfd and process identity are not the role hosts' consumer identities.
++pub struct RootResidentLearningConsumerV3 {
++    pub stream: UnixStream,
++    pub peer: AgentdRootAuthorityPeer,
++    pub uid: u32,
++    pub original_consumer_pidfd: OwnedFd,
++    pub timeout: Duration,
++    pub lifetime: Duration,
++}
++
++/// No Clone, stage getter, writer, signer or fresh replay entry escapes.
++pub struct RootResidentCandidateServiceV1 {
++    runtime: RootResidentLearningRuntimeV3,
++    handle: RootResidentLearningHandleV3,
++    consumer: RootResidentLearningConsumerV3,
++    end: Instant,
++}
++
++impl RootResidentLearningRegistrationV3 {
++    /// Consume an existing registration and original connected roles. Recovered
++    /// custody selects only recovered channels; packet bytes cannot promote it.
++    /// The original provider calls this inside the resident's Tokio runtime.
++    pub fn into_candidate_service(
++        self,
++        inputs: RootResidentCandidateInputsV1,
++        handoff: RootCandidateStageHandoffV1,
++        consumer: RootResidentLearningConsumerV3,
++    ) -> Result<RootResidentCandidateServiceV1, AgentdError> {
++        let admitted = Instant::now();
++        if consumer.uid == 0 || consumer.timeout.is_zero()
++            || consumer.timeout > Duration::from_secs(30) || consumer.lifetime.is_zero()
++            || consumer.lifetime > Duration::from_secs(300)
++        {
++            return Err(AgentdError::Invalid("original resident consumer timing or identity differs".into()));
++        }
++        let consumer_end = admitted.checked_add(consumer.lifetime)
++            .ok_or_else(|| AgentdError::Invalid("resident consumer deadline overflow".into()))?;
++        ResidentRootAuthorityV3::perform(&self.owner.authority, ResidentStoreActionV3::Check, &CancellationToken::new())?;
++        let (streams, handoff_end) = handoff.into_original_streams(&self.owner.authority.profile)?;
++        let end = handoff_end.min(consumer_end);
++        let RootResidentCandidateInputsV1 { material, protocol, baseline, verifier } = inputs;
++        let stages = if ResidentRootAuthorityV3::readonly(&self.owner.authority) {
++            OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(material, streams, protocol, baseline)
++        } else {
++            OriginalCellQ24CandidateStageOwnersV1::from_original_streams(material, streams, protocol, baseline)
++        }.map_err(|error| AgentdError::Protocol(format!("original resident role admission: {error}")))?;
++        let stages = OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(stages, end)
++            .map_err(|error| AgentdError::Protocol(format!("original handoff deadline: {error}")))?;
++        ResidentRootAuthorityV3::perform(&self.owner.authority, ResidentStoreActionV3::Check, &CancellationToken::new())?;
++        let (handle, runtime) = RootResidentLearningRegistrationV3::into_candidate_runtime(self, stages, verifier, /*capacity*/ 1)?;
++        Ok(RootResidentCandidateServiceV1 { runtime, handle, consumer, end })
++    }
++}
++
++struct CloseOriginalStream(UnixStream);
++
++impl Drop for CloseOriginalStream {
++    fn drop(&mut self) {
++        let _ = self.0.shutdown(Shutdown::Both);
++    }
++}
++
++impl RootResidentCandidateServiceV1 {
++    /// Run the real original service and coordinator. A EOF does not cancel
++    /// admitted Root work. Root cancellation/finite expiry closes the original
++    /// server and joins owned work; dropping this future also closes/cancels.
++    /// A remote effect already dispatched can outlive a cancelled await;
++    /// only the original explicit readback path can reconcile that uncertainty.
++    /// Return values describe service lifetime, never a learning disposition.
++    pub async fn run(self, root_cancellation: CancellationToken) -> Result<(), AgentdError> {
++        let Self { runtime, handle, consumer, end } = self;
++        let lifetime = end.checked_duration_since(Instant::now()).filter(|duration| !duration.is_zero())
++            .ok_or_else(|| AgentdError::GenerationFenced("original resident service expired".into()))?;
++        let cancellation = root_cancellation.child_token();
++        let _cancel_on_drop = cancellation.clone().drop_guard();
++        let shutdown = CloseOriginalStream(consumer.stream.try_clone()?);
++        let server = tokio::task::spawn_blocking(move || {
++            RootResidentLearningHandleV3::serve_original_stream(&handle, consumer.stream, consumer.peer,
++                consumer.uid, consumer.original_consumer_pidfd, consumer.timeout, lifetime)
++        });
++        let run = RootResidentLearningRuntimeV3::run(runtime, cancellation.clone());
++        let work = async move {
++            let (runtime_result, server_result) = tokio::join!(run, server);
++            runtime_result?;
++            server_result.map_err(|error| AgentdError::Protocol(format!("resident server join: {error}")))?
++                .map_err(|error| AgentdError::Protocol(format!("original resident server: {error}")))
++        };
++        tokio::pin!(work);
++        tokio::select! {
++            result = &mut work => result,
++            _ = root_cancellation.cancelled() => {
++                cancellation.cancel();
++                let _ = shutdown.0.shutdown(Shutdown::Both);
++                work.await
++            }
++            _ = tokio::time::sleep_until(end.into()) => {
++                cancellation.cancel();
++                let _ = shutdown.0.shutdown(Shutdown::Both);
++                let _terminal = work.await;
++                Err(AgentdError::GenerationFenced("original resident service deadline elapsed; only explicit recovery may follow".into()))
++            }
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs
+@@ -29,6 +29,11 @@
+ mod stages;
+ pub use runtime::RootResidentLearningHandleV3;
+ pub use runtime::RootResidentLearningRuntimeV3;
++#[path = "authority_host_learning_candidate_service.rs"]
++mod candidate_service;
++pub use candidate_service::RootResidentCandidateInputsV1;
++pub use candidate_service::RootResidentCandidateServiceV1;
++pub use candidate_service::RootResidentLearningConsumerV3;
+ #[path = "authority_host_learning_resident_auth.rs"]
+ mod authentication;
+ #[path = "authority_host_learning_resident_model.rs"]
+--- a/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
+@@ -114,6 +114,15 @@
+             return Err(Error::DeadlineExceeded);
+         }
+         Ok(())
++    }
++
++    /// Narrow the original command path to the already elapsed handoff end.
++    /// This consumes the bundle before Root can install its effect gate.
++    pub(crate) fn restrict_original_handoff_deadline(mut self, end: Instant) -> Result<Self, Error> {
++        self.end = self.end.min(end);
++        self.common.end = self.common.end.min(self.end);
++        self.require_live_deadline()?;
++        Ok(self)
+     }
+ 
+     pub(crate) fn install_fresh_resident_gate(
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -201,6 +201,12 @@
+ #[cfg(target_os = "linux")]
+ pub use authority_host_service::resident::RootResidentLearningRuntimeV3;
+ #[cfg(target_os = "linux")]
++pub use authority_host_service::resident::RootResidentCandidateInputsV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_service::resident::RootResidentCandidateServiceV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_service::resident::RootResidentLearningConsumerV3;
++#[cfg(target_os = "linux")]
+ pub(crate) use circuit_learning_delivery::AgentdRootResidentDeliveryV3;
+ #[cfg(target_os = "linux")]
+ pub use circuit_learning_delivery::AgentdRootResidentEnrollmentV3;
+@@ -224,6 +230,12 @@
+ pub use config::drop_root_native_owner_credentials;
+ #[cfg(target_os = "linux")]
+ pub use root_production_handoff::RootLearningHandoffV1;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::RootCandidateStageHandoffV1;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::receive_root_candidate_stage_handoff;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::send_root_candidate_stage_handoff;
+ #[cfg(target_os = "linux")]
+ pub use root_production_handoff::RootProductionWriterDescriptor;
+ #[cfg(target_os = "linux")]
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs
+@@ -0,0 +1,257 @@
++//! A separate, one-shot transfer of already connected original role channels.
++//! Public wire metadata carries no material, verifier, result, signer or grant.
++
++use std::os::fd::AsRawFd;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixStream;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++use serde::Serialize;
++
++use crate::AgentdError;
++use crate::AgentdRootAuthorityPeer;
++use crate::LearningIterationEvidencePeerV1;
++use crate::OriginalCellQ24CandidateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdatePeerStreamV1 as PeerStream;
++use crate::OriginalCellQ24NoUpdateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdateTaskStreamV1 as TaskStream;
++use crate::RootResidentLearningProfileV3;
++
++#[path = "root_candidate_stage_handoff_wire.rs"]
++mod wire;
++
++const PURPOSE: &str = "hepta.original-root-candidate-stage-handoff.v1";
++const ROLES: [&str; 10] = ["experience", "dataset", "trainer", "selector", "version", "next_use", "completion", "candidate_material", "evaluator", "model"];
++
++#[derive(Serialize, Deserialize, PartialEq, Eq)]
++#[serde(deny_unknown_fields)]
++struct Process {
++    pid: u32,
++    boot_id: String,
++    process_start_ticks: u64,
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Lane {
++    role: String,
++    uid: u32,
++    process: Process,
++    timeout_ns: u64,
++    end_ns: u64,
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Packet {
++    purpose: String,
++    profile: String,
++    recipient: Process,
++    lanes: Vec<Lane>,
++}
++
++/// No public constructor, deserializer, role getter or retry path. Admission
++/// consumes all rights against an independently supplied original Root profile.
++pub struct RootCandidateStageHandoffV1 {
++    packet: Packet,
++    descriptors: Vec<OwnedFd>,
++    sender: OwnedFd,
++}
++
++enum Input {
++    Peer(PeerStream),
++    Task(TaskStream),
++}
++
++/// The original host transfers existing endpoints for the actual resident
++/// process. Passing an FD cannot retarget its established SO_PEERCRED peer.
++/// Every endpoint and the private handoff socket are consumed even on error.
++pub fn send_root_candidate_stage_handoff(
++    socket: UnixDatagram,
++    root_pidfd: &OwnedFd,
++    recipient: AgentdRootAuthorityPeer,
++    recipient_pidfd: &OwnedFd,
++    profile: &RootResidentLearningProfileV3,
++    streams: OriginalCellQ24CandidateStageStreamsV1,
++    timeout: Duration,
++) -> Result<(), AgentdError> {
++    require_root()?;
++    let root = super::root_pair(&socket, timeout)?;
++    if root.pid as u32 != std::process::id() {
++        return Err(refused("same original Root pair required"));
++    }
++    super::require_root_pin(root_pidfd, std::process::id())?;
++    super::require_root_pin(recipient_pidfd, recipient.pid)?;
++    let recipient = Process { pid: recipient.pid, boot_id: recipient.boot_id, process_start_ticks: recipient.process_start_ticks };
++    require_process(&recipient)?;
++    let OriginalCellQ24CandidateStageStreamsV1 { common, candidate_material, evaluator, model } = streams;
++    let OriginalCellQ24NoUpdateStageStreamsV1 { experience, dataset, trainer, selector, version, next_use, completion } = common;
++    let inputs = [Input::Peer(experience), Input::Peer(dataset), Input::Peer(trainer), Input::Peer(selector), Input::Task(version), Input::Peer(next_use), Input::Task(completion), Input::Peer(candidate_material), Input::Peer(evaluator), Input::Peer(model)];
++    let now = wire::monotonic_ns()?;
++    let mut lanes = Vec::with_capacity(ROLES.len());
++    let mut owned = Vec::with_capacity(ROLES.len());
++    let mut sockets = std::collections::BTreeSet::new();
++    for (index, input) in inputs.into_iter().enumerate() {
++        let (stream, pidfd, uid, process, command_timeout, lifetime) = match input {
++            Input::Peer(input) => {
++                if Some(&input.peer.actor_id) != actor(profile, index)? {
++                    return Err(refused("original role actor differs"));
++                }
++                (input.stream, input.original_owner_pidfd, input.peer.uid,
++                 Process { pid: input.peer.pid, boot_id: input.peer.boot_id, process_start_ticks: input.peer.process_start_ticks }, input.timeout, input.lifetime)
++            }
++            Input::Task(input) => (input.stream, input.original_task_pidfd, input.uid,
++                Process { pid: input.peer.pid, boot_id: input.peer.boot_id, process_start_ticks: input.peer.process_start_ticks }, input.timeout, input.lifetime),
++        };
++        let timeout_ns = u64::try_from(command_timeout.as_nanos()).map_err(|_| refused("timeout overflow"))?;
++        let lifetime_ns = u64::try_from(lifetime.as_nanos()).map_err(|_| refused("lifetime overflow"))?;
++        require_timing(index, timeout_ns, lifetime_ns)?;
++        crate::notes_bootstrap::require_socket(stream.as_raw_fd(), libc::SOCK_STREAM)?;
++        if !sockets.insert(wire::socket_identity(stream.as_raw_fd())?) {
++            return Err(refused("role purposes require distinct original streams"));
++        }
++        let end_ns = now.checked_add(lifetime_ns).ok_or_else(|| refused("deadline overflow"))?;
++        lanes.push(Lane { role: ROLES[index].into(), uid, process, timeout_ns, end_ns });
++        owned.push((stream, pidfd));
++    }
++    let packet = Packet { purpose: PURPOSE.into(), profile: profile.binding().to_string(), recipient, lanes };
++    let bytes = serde_json::to_vec(&packet)?;
++    let mut descriptors = vec![root_pidfd.as_raw_fd()];
++    for (stream, pidfd) in &owned {
++        descriptors.extend([stream.as_raw_fd(), pidfd.as_raw_fd()]);
++    }
++    wire::send(&socket, &bytes, &descriptors, timeout)
++}
++
++/// Receive only original connected capabilities. Material, loaded-model and
++/// evaluation trust are supplied separately to the consuming Root service.
++pub fn receive_root_candidate_stage_handoff(
++    socket: UnixDatagram,
++    profile: &RootResidentLearningProfileV3,
++    timeout: Duration,
++) -> Result<RootCandidateStageHandoffV1, AgentdError> {
++    require_root()?;
++    let root = super::root_pair(&socket, timeout)?;
++    let (bytes, mut descriptors) = wire::receive(&socket, timeout)?;
++    let sender = descriptors.remove(0);
++    super::require_root_pin(&sender, root.pid as u32)?;
++    let packet: Packet = serde_json::from_slice(&bytes)?;
++    validate_packet(&packet, profile.binding())?;
++    Ok(RootCandidateStageHandoffV1 { packet, descriptors, sender })
++}
++
++impl RootCandidateStageHandoffV1 {
++    pub(crate) fn into_original_streams(
++        self,
++        profile: &RootResidentLearningProfileV3,
++    ) -> Result<(OriginalCellQ24CandidateStageStreamsV1, Instant), AgentdError> {
++        require_root()?;
++        validate_packet(&self.packet, profile.binding())?;
++        crate::root_observation_stream::check_lifetime(&self.sender)
++            .map_err(|_| refused("original handoff Root exited"))?;
++        // Sample Instant first: conversion can only shorten the original end.
++        let local = Instant::now();
++        let now = wire::monotonic_ns()?;
++        let minimum = self.packet.lanes.iter().map(|lane| lane.end_ns).min().ok_or_else(|| refused("missing role deadline"))?;
++        let remaining = minimum.checked_sub(now).filter(|ns| *ns > 0).ok_or_else(|| refused("original role deadline elapsed"))?;
++        let end = local.checked_add(Duration::from_nanos(remaining)).ok_or_else(|| refused("deadline overflow"))?;
++        let mut descriptors = self.descriptors.into_iter();
++        let mut inputs = Vec::with_capacity(ROLES.len());
++        for (index, lane) in self.packet.lanes.into_iter().enumerate() {
++            let stream = descriptors.next().ok_or_else(|| refused("missing role stream"))?;
++            let pidfd = descriptors.next().ok_or_else(|| refused("missing original role pidfd"))?;
++            crate::notes_bootstrap::require_socket(stream.as_raw_fd(), libc::SOCK_STREAM)?;
++            let lifetime_ns = lane.end_ns.checked_sub(now).ok_or_else(|| refused("expired original role"))?;
++            require_timing(index, lane.timeout_ns, lifetime_ns)?;
++            let peer = AgentdRootAuthorityPeer { pid: lane.process.pid, boot_id: lane.process.boot_id, process_start_ticks: lane.process.process_start_ticks };
++            let stream = UnixStream::from(stream);
++            let timeout = Duration::from_nanos(lane.timeout_ns);
++            let lifetime = Duration::from_nanos(lifetime_ns);
++            inputs.push(match actor(profile, index)? {
++                Some(actor_id) => Input::Peer(PeerStream { stream,
++                    peer: LearningIterationEvidencePeerV1 { pid: peer.pid, uid: lane.uid, boot_id: peer.boot_id, process_start_ticks: peer.process_start_ticks, actor_id: actor_id.clone() },
++                    original_owner_pidfd: pidfd, timeout, lifetime }),
++                None => Input::Task(TaskStream { stream, peer, uid: lane.uid, original_task_pidfd: pidfd, timeout, lifetime }),
++            });
++        }
++        let [Input::Peer(experience), Input::Peer(dataset), Input::Peer(trainer), Input::Peer(selector), Input::Task(version), Input::Peer(next_use), Input::Task(completion), Input::Peer(candidate_material), Input::Peer(evaluator), Input::Peer(model)]: [Input; 10] = inputs.try_into().map_err(|_| refused("exact original roles required"))? else {
++            return Err(refused("original role purposes differ"));
++        };
++        Ok((OriginalCellQ24CandidateStageStreamsV1 { common: OriginalCellQ24NoUpdateStageStreamsV1 { experience, dataset, trainer, selector, version, next_use, completion }, candidate_material, evaluator, model }, end))
++    }
++}
++
++fn actor(profile: &RootResidentLearningProfileV3, index: usize) -> Result<Option<&StableId>, AgentdError> {
++    let owners = &profile.initial().owners;
++    Ok(match index {
++        0 => Some(&owners.experience), 1 => Some(&owners.dataset),
++        2 | 7 => Some(&owners.trainer), 3 => Some(&owners.selector),
++        5 => Some(&owners.next_use_observer), 8 => Some(&owners.evaluator),
++        9 => Some(&owners.proposal), 4 | 6 => None,
++        _ => return Err(refused("unknown original role")),
++    })
++}
++
++fn validate_packet(packet: &Packet, binding: Digest32) -> Result<(), AgentdError> {
++    if packet.purpose != PURPOSE || packet.profile != binding.to_string()
++        || packet.recipient.pid != std::process::id() || packet.lanes.len() != ROLES.len()
++    {
++        return Err(refused("original purpose, profile, recipient and ten roles required"));
++    }
++    require_process(&packet.recipient)?;
++    let now = wire::monotonic_ns()?;
++    for (index, lane) in packet.lanes.iter().enumerate() {
++        if lane.role != ROLES[index] {
++            return Err(refused("original role order differs"));
++        }
++        let lifetime = lane.end_ns.checked_sub(now).ok_or_else(|| refused("expired original role"))?;
++        require_timing(index, lane.timeout_ns, lifetime)?;
++    }
++    Ok(())
++}
++
++fn require_timing(index: usize, timeout: u64, lifetime: u64) -> Result<(), AgentdError> {
++    let limit = if index == 6 { 500_000_000 } else { 30_000_000_000 };
++    if timeout == 0 || timeout > limit || lifetime == 0 || lifetime > 300_000_000_000 {
++        return Err(refused("original role timing exceeds its bound"));
++    }
++    Ok(())
++}
++
++fn require_process(peer: &Process) -> Result<(), AgentdError> {
++    use std::io::Read;
++    if peer.pid == 0 || peer.pid > i32::MAX as u32 || peer.process_start_ticks == 0 {
++        return Err(refused("original recipient identity is invalid"));
++    }
++    let mut boot = String::new();
++    std::fs::File::open("/proc/sys/kernel/random/boot_id")?.take(129).read_to_string(&mut boot)?;
++    let mut stat = String::new();
++    std::fs::File::open(format!("/proc/{}/stat", peer.pid))?.take(8193).read_to_string(&mut stat)?;
++    let start = stat.rsplit_once(") ").and_then(|(_, fields)| fields.split_whitespace().nth(19)).and_then(|value| value.parse::<u64>().ok());
++    if boot.len() > 128 || boot.trim() != peer.boot_id || stat.len() > 8192 || start != Some(peer.process_start_ticks)
++    {
++        return Err(refused("original recipient process differs"));
++    }
++    Ok(())
++}
++
++fn require_root() -> Result<(), AgentdError> {
++    // SAFETY: these calls only inspect this process's kernel credentials.
++    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
++        return Err(refused("actual Root resident required"));
++    }
++    Ok(())
++}
++
++fn refused(message: &str) -> AgentdError {
++    AgentdError::Protocol(format!("original Root candidate handoff: {message}"))
++}
++
++#[cfg(test)]
++#[path = "root_candidate_stage_handoff_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs
+@@ -0,0 +1,130 @@
++//! Real FD transport mechanism tests. These create no Root grant, original
++//! role owner, independent evaluation, or successful A/B/C task.
++
++use super::*;
++use pretty_assertions::assert_eq;
++use std::io::Read;
++use std::io::Write;
++
++fn descriptors() -> anyhow::Result<(Vec<UnixStream>, Vec<UnixStream>)> {
++    (0..21).map(|_| UnixStream::pair()).collect::<Result<Vec<_>, _>>()
++        .map(|pairs| pairs.into_iter().unzip()).map_err(Into::into)
++}
++
++#[test]
++fn candidate_wire_preserves_all_original_fd_objects_and_cloexec() -> anyhow::Result<()> {
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (streams, mut peers) = descriptors()?;
++    let raw = streams.iter().map(AsRawFd::as_raw_fd).collect::<Vec<_>>();
++    wire::send(&sender, b"mechanism-only-frame", &raw, Duration::from_secs(1))?;
++    drop(streams);
++    let (body, rights) = wire::receive(&receiver, Duration::from_secs(1))?;
++    assert_eq!(body, b"mechanism-only-frame");
++    let mut observed = Vec::new();
++    let mut cloexec = Vec::new();
++    for (index, (right, peer)) in rights.into_iter().zip(&mut peers).enumerate() {
++        // SAFETY: F_GETFD observes the live received FD only.
++        cloexec.push(unsafe { libc::fcntl(right.as_raw_fd(), libc::F_GETFD) } & libc::FD_CLOEXEC != 0);
++        peer.write_all(&[index as u8])?;
++        let mut stream = UnixStream::from(right);
++        let mut value = [0_u8];
++        stream.read_exact(&mut value)?;
++        observed.push(value[0]);
++    }
++    assert_eq!((observed, cloexec), ((0_u8..21).collect::<Vec<_>>(), vec![true; 21]));
++    Ok(())
++}
++
++#[test]
++fn candidate_wire_and_old_two_right_packet_cannot_consume_each_other() -> anyhow::Result<()> {
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (streams, mut peers) = descriptors()?;
++    let raw = streams.iter().map(AsRawFd::as_raw_fd).collect::<Vec<_>>();
++    wire::send(&sender, b"wrong-for-old-purpose", &raw, Duration::from_secs(1))?;
++    drop(streams);
++    assert!(super::super::receive_packet(&receiver, Duration::from_secs(1)).is_err());
++    for peer in &mut peers {
++        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
++        assert_eq!(peer.read(&mut [0])?, 0);
++    }
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (first, mut first_peer) = UnixStream::pair()?;
++    let (second, mut second_peer) = UnixStream::pair()?;
++    super::super::send_packet(&sender, super::super::FRAME,
++        &[first.as_raw_fd(), second.as_raw_fd()], Duration::from_secs(1))?;
++    drop((first, second));
++    assert!(wire::receive(&receiver, Duration::from_secs(1)).is_err());
++    for peer in [&mut first_peer, &mut second_peer] {
++        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
++        assert_eq!(peer.read(&mut [0])?, 0);
++    }
++    Ok(())
++}
++
++#[test]
++fn candidate_wire_rejects_role_socket_alias_and_closes_all_received_rights() -> anyhow::Result<()> {
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (mut streams, mut peers) = descriptors()?;
++    streams[3] = streams[1].try_clone()?;
++    let raw = streams.iter().map(AsRawFd::as_raw_fd).collect::<Vec<_>>();
++    wire::send(&sender, b"aliased-role-purpose", &raw, Duration::from_secs(1))?;
++    drop(streams);
++    assert!(wire::receive(&receiver, Duration::from_secs(1)).is_err());
++    for peer in &mut peers {
++        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
++        assert_eq!(peer.read(&mut [0])?, 0);
++    }
++    Ok(())
++}
++
++fn packet() -> anyhow::Result<(Packet, Digest32)> {
++    let pid = std::process::id();
++    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
++    let start = stat.rsplit_once(") ").and_then(|(_, fields)| fields.split_whitespace().nth(19))
++        .ok_or_else(|| anyhow::anyhow!("actual process stat"))?.parse()?;
++    let boot = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().to_string();
++    let binding = Digest32::of_bytes(b"explicit synthetic framing profile");
++    let now = wire::monotonic_ns()?;
++    let lanes = ROLES.iter().map(|name| Lane { role: (*name).into(), uid: 1000,
++        process: Process { pid, boot_id: boot.clone(), process_start_ticks: start },
++        timeout_ns: 100_000_000, end_ns: now + 10_000_000_000 }).collect();
++    Ok((Packet { purpose: PURPOSE.into(), profile: binding.to_string(),
++        recipient: Process { pid, boot_id: boot, process_start_ticks: start }, lanes }, binding))
++}
++
++#[test]
++fn candidate_packet_refuses_changed_binding_role_process_and_original_timing() -> anyhow::Result<()> {
++    let (packet, binding) = packet()?;
++    validate_packet(&packet, binding)?;
++    let baseline = serde_json::to_value(&packet)?;
++    let mut attacks = Vec::new();
++    for (pointer, value) in [
++        ("/purpose", serde_json::json!("HEPTA_ROOT_LEARNING_INPUTS_V1")),
++        ("/profile", serde_json::json!(Digest32::of_bytes(b"another profile").to_string())),
++        ("/recipient/pid", serde_json::json!(0)),
++        ("/recipient/boot_id", serde_json::json!("other boot")),
++        ("/recipient/process_start_ticks", serde_json::json!(0)),
++        ("/lanes/1/role", serde_json::json!("experience")),
++        ("/lanes/0/timeout_ns", serde_json::json!(0)),
++        ("/lanes/0/timeout_ns", serde_json::json!(30_000_000_001_u64)),
++        ("/lanes/6/timeout_ns", serde_json::json!(500_000_001_u64)),
++        ("/lanes/0/end_ns", serde_json::json!(0)),
++        ("/lanes/0/end_ns", serde_json::json!(u64::MAX)),
++    ] {
++        let mut changed = baseline.clone();
++        *changed.pointer_mut(pointer).ok_or_else(|| anyhow::anyhow!("actual field missing"))? = value;
++        let changed: Packet = serde_json::from_value(changed)?;
++        attacks.push(validate_packet(&changed, binding).is_err());
++    }
++    let mut changed: Packet = serde_json::from_value(baseline.clone())?;
++    changed.lanes.pop();
++    attacks.push(validate_packet(&changed, binding).is_err());
++    let mut changed: Packet = serde_json::from_value(baseline.clone())?;
++    changed.lanes.swap(0, 1);
++    attacks.push(validate_packet(&changed, binding).is_err());
++    let mut changed = baseline;
++    changed["fresh"] = serde_json::json!(true);
++    attacks.push(serde_json::from_value::<Packet>(changed).is_err());
++    assert_eq!(attacks, vec![true; 14]);
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs
+@@ -0,0 +1,101 @@
++//! Fixed twenty role rights and one original Root pidfd. Old handoff limits
++//! and both existing two-right purposes are deliberately unchanged.
++
++use std::mem;
++use std::os::fd::AsRawFd;
++use std::os::fd::OwnedFd;
++use std::os::fd::RawFd;
++use std::os::unix::net::UnixDatagram;
++use std::time::Duration;
++use crate::AgentdError;
++use super::refused;
++
++const RIGHTS: usize = 21;
++const BOUND: usize = 16_384;
++
++pub(super) fn send(socket: &UnixDatagram, bytes: &[u8], rights: &[RawFd], timeout: Duration) -> Result<(), AgentdError> {
++    if rights.len() != RIGHTS || bytes.is_empty() || bytes.len() > BOUND {
++        return Err(refused("exact bounded candidate packet required"));
++    }
++    socket.set_nonblocking(false)?;
++    socket.set_write_timeout(Some(timeout))?;
++    let mut control = [0_usize; 32];
++    let mut vector = libc::iovec { iov_base: bytes.as_ptr().cast_mut().cast(), iov_len: bytes.len() };
++    // SAFETY: the message is initialized below with retained aligned buffers.
++    let mut message: libc::msghdr = unsafe { mem::zeroed() };
++    message.msg_iov = &mut vector;
++    message.msg_iovlen = 1;
++    message.msg_control = control.as_mut_ptr().cast();
++    let length = mem::size_of_val(rights);
++    // SAFETY: scalar alignment calculation for a fixed bounded FD array.
++    message.msg_controllen = unsafe { libc::CMSG_SPACE(length as u32) } as usize;
++    if message.msg_controllen > mem::size_of_val(&control) {
++        return Err(refused("candidate ancillary bound exceeded"));
++    }
++    // SAFETY: the complete header and FD array fit in the live aligned buffer.
++    unsafe {
++        let header = libc::CMSG_FIRSTHDR(&message);
++        (*header).cmsg_level = libc::SOL_SOCKET;
++        (*header).cmsg_type = libc::SCM_RIGHTS;
++        (*header).cmsg_len = libc::CMSG_LEN(length as u32) as usize;
++        std::ptr::copy_nonoverlapping(rights.as_ptr(), libc::CMSG_DATA(header).cast(), rights.len());
++    }
++    // SAFETY: sendmsg only borrows these exact retained buffers and FD array.
++    let count = unsafe { libc::sendmsg(socket.as_raw_fd(), &message, libc::MSG_NOSIGNAL) };
++    if count < 0 { return Err(std::io::Error::last_os_error().into()); }
++    if count as usize != bytes.len() { return Err(refused("partial candidate handoff")); }
++    Ok(())
++}
++
++pub(super) fn receive(socket: &UnixDatagram, timeout: Duration) -> Result<(Vec<u8>, Vec<OwnedFd>), AgentdError> {
++    socket.set_nonblocking(false)?;
++    socket.set_read_timeout(Some(timeout))?;
++    let mut bytes = vec![0_u8; BOUND + 1];
++    let mut control = [0_usize; 32];
++    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };
++    // SAFETY: initialized below with bounded live data and aligned ancillary buffers.
++    let mut message: libc::msghdr = unsafe { mem::zeroed() };
++    message.msg_iov = &mut vector;
++    message.msg_iovlen = 1;
++    message.msg_control = control.as_mut_ptr().cast();
++    message.msg_controllen = mem::size_of_val(&control);
++    // SAFETY: recvmsg is bounded and atomically gives every received FD CLOEXEC.
++    let length = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
++    if length < 0 { return Err(std::io::Error::last_os_error().into()); }
++    // SAFETY: original ancillary parser; completed recvmsg buffers remain live.
++    let (rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
++    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
++        || rights.len() != RIGHTS || length == 0 || length as usize > BOUND
++    {
++        return Err(refused("exact twenty role rights and original Root pin required"));
++    }
++    let mut sockets = std::collections::BTreeSet::new();
++    for stream in rights.iter().skip(1).step_by(2) {
++        crate::notes_bootstrap::require_socket(stream.as_raw_fd(), libc::SOCK_STREAM)?;
++        if !sockets.insert(socket_identity(stream.as_raw_fd())?) {
++            return Err(refused("role stream aliases another purpose"));
++        }
++    }
++    bytes.truncate(length as usize);
++    Ok((bytes, rights))
++}
++
++pub(super) fn socket_identity(fd: RawFd) -> Result<(libc::dev_t, libc::ino_t), AgentdError> {
++    // SAFETY: fstat writes one correctly sized initialized stat for a borrowed FD.
++    let mut stat: libc::stat = unsafe { mem::zeroed() };
++    if unsafe { libc::fstat(fd, &mut stat) } != 0 {
++        return Err(std::io::Error::last_os_error().into());
++    }
++    Ok((stat.st_dev, stat.st_ino))
++}
++
++pub(super) fn monotonic_ns() -> Result<u64, AgentdError> {
++    let mut clock = libc::timespec { tv_sec: 0, tv_nsec: 0 };
++    // SAFETY: clock_gettime writes exactly this initialized timespec.
++    if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut clock) } != 0 {
++        return Err(std::io::Error::last_os_error().into());
++    }
++    u64::try_from(clock.tv_sec).ok().and_then(|s| s.checked_mul(1_000_000_000))
++        .and_then(|s| u64::try_from(clock.tv_nsec).ok().and_then(|ns| s.checked_add(ns)))
++        .ok_or_else(|| refused("original monotonic clock unavailable"))
++}
+--- a/codex-rs/hepta-agentd/src/root_production_handoff.rs
++++ b/codex-rs/hepta-agentd/src/root_production_handoff.rs
+@@ -29,6 +29,12 @@
+ pub use learning::RootLearningHandoffV1;
+ pub use learning::receive_root_learning_handoff;
+ pub use learning::send_root_learning_handoff;
++
++#[path = "root_candidate_stage_handoff.rs"]
++mod candidate_stages;
++pub use candidate_stages::RootCandidateStageHandoffV1;
++pub use candidate_stages::receive_root_candidate_stage_handoff;
++pub use candidate_stages::send_root_candidate_stage_handoff;
+ 
+ /// Consume exactly one inherited unnamed pair. The retained creator must be
+ /// actual UID0, and the second transferred descriptor must pin that same Root.

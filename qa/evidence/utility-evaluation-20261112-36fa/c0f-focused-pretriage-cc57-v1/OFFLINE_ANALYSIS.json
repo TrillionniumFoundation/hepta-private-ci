@@ -1,0 +1,1402 @@
+{
+  "format": "hepta-c0f-focused-versus-cc57-offline-analysis-v1",
+  "execution_scope": "Pure local JSON/XML/hash/source-text comparison only; no H, Rust, Cargo, tests, verifier gates, source edits, refs or PR operations.",
+  "old_commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "current_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "original_records": [
+    {
+      "filename": "focused.junit.xml",
+      "bytes": 49808,
+      "sha256": "e1e7901986fef0bb4a682156d87eef31b93a54f7e8759e564966dac136e198e7",
+      "git_blob": "96d5b747e0579ff70730a89f70eb7ae3b70dd479"
+    },
+    {
+      "filename": "focused.raw.original.log",
+      "bytes": 135424,
+      "sha256": "0a66330b21fee14ed42d276eac31fc2be6214de378ce42ff192f382cbeac27c5",
+      "git_blob": "d833e7724371e4626ac5860c356c5ac2f07e9934"
+    },
+    {
+      "filename": "FAILURE_CLASSIFICATION_AND_E8_DIFF.original.json",
+      "bytes": 27530,
+      "sha256": "753a001714d1fd9b4eb58dc84a85d573fb7f2ee13ed25082273bb9451966396b",
+      "git_blob": "a6f443efc267da6c4cf9928e72002061e446b663"
+    },
+    {
+      "filename": "focused.ROOT_REVIEW.original.json",
+      "bytes": 18241,
+      "sha256": "b57fffbe4f74f104ab5c4c06936dd8643bc63a70e4a7f89af4764551cae00b41",
+      "git_blob": "9f876775e386e4f9ca51e8c9ca5f429fd0d72331"
+    },
+    {
+      "filename": "focused.execution.original.json",
+      "bytes": 2221,
+      "sha256": "950a9628f6c46a7b80bb1e4c6dc211e75d446c5d03fb0fbf619f259729e375bc",
+      "git_blob": "465232e636f286344d9a4941960decee4d97c4e5"
+    },
+    {
+      "filename": "focused.driver-result.original.json",
+      "bytes": 894,
+      "sha256": "981765caa3a2ba86dc0beb858777ce5e2fda12744dcdcbec74bf50e221427468",
+      "git_blob": "932e8ff4925a92166c1408a6e4b081e9ff622b45"
+    },
+    {
+      "filename": "c0f.gdb.original.log",
+      "bytes": 43646,
+      "sha256": "a5794043e3cb211fb7e4131f5a06dee329edb5a67fb11e2127fb85be67daf70d",
+      "git_blob": "e0c0d9d82475980089e921ec2332c907469b02a6"
+    },
+    {
+      "filename": "c0f.four-caller-prologues.original.txt",
+      "bytes": 17335,
+      "sha256": "8b604cc77402afa956e85ecb2f5978e0c2f6f2f0a14f7ef92317f7070b72b210",
+      "git_blob": "f919c40fff919bf7395a87e492bcc34be0f4c624"
+    },
+    {
+      "filename": "c0f.FOUR_CALLER_SOURCE_AUDIT.original.json",
+      "bytes": 24470,
+      "sha256": "9213e51c9b26089bc48787d30ca5f6595ae5c723683f4696d22c2889d447d842",
+      "git_blob": "a0af9f060bdcf61b42d3073f8869d3655f1a80b3"
+    },
+    {
+      "filename": "unsorted-routes.MANIFEST.original.json",
+      "bytes": 2933,
+      "sha256": "0cf9e2594d9e4fe614f38dea6edcae1a23998aba027ec3334382e54a22fdac50",
+      "git_blob": "dfd30e0e1471c5bd8f4dd74fca42dedee99e36bd"
+    }
+  ],
+  "historical_execution": {
+    "after": {
+      "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "dirty": false,
+      "parents": [
+        "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "b29869e856d08db1bfb066116a9c443376ccc57d"
+      ],
+      "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "dirty": false,
+      "parents": [
+        "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "b29869e856d08db1bfb066116a9c443376ccc57d"
+      ],
+      "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "-E",
+      "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "command_exit_code": 100,
+    "elapsed_seconds": 960.6167124980129,
+    "error": "required tests were not observed passing",
+    "exit_code": 100,
+    "finished_at": "2026-11-12T14:37:06.751728+00:00",
+    "job": null,
+    "lane": "source-head",
+    "log_bytes": 135424,
+    "log_file": "focused.json.9f02d77fa66842edbd0598e99066a471.log",
+    "log_sha256": "0a66330b21fee14ed42d276eac31fc2be6214de378ce42ff192f382cbeac27c5",
+    "minimum_tests": 1,
+    "observed_failed_tests": 28,
+    "observed_passed_tests": 81,
+    "output_limit_exceeded": false,
+    "returncode": 100,
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "started_at": "2026-11-12T14:21:06.133352+00:00",
+    "status": "failed",
+    "tested_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "timed_out": false,
+    "working_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa"
+  },
+  "historical_counts": {
+    "total": 109,
+    "passed": 81,
+    "failed": 28,
+    "timeout": 2,
+    "functional": 2,
+    "stack_overflow": 24
+  },
+  "source_version_bodies_verified": 59,
+  "selected_source_paths": 30,
+  "unique_source_blobs": 42,
+  "source_rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_source_test_support.rs",
+      "c0f": {
+        "bytes": 7546,
+        "sha256": "b4c29e9752545345b5f5b16e601ce01097c4ad0800ae88df046d8da605309fb3",
+        "working_blob": "60491689bfdfdb2d4e9551bc6a91aa2d22c7259d"
+      },
+      "cc57": {
+        "bytes": 7546,
+        "sha256": "b4c29e9752545345b5f5b16e601ce01097c4ad0800ae88df046d8da605309fb3",
+        "working_blob": "60491689bfdfdb2d4e9551bc6a91aa2d22c7259d"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "c0f": {
+        "bytes": 13379,
+        "sha256": "c968c13d73c116175143d616cd47b6e8d1ab1030bb0192c76bfd08a5e2288339",
+        "working_blob": "3b4ca45c53d2633bf96d2c1b0fca3ed1ae30c114"
+      },
+      "cc57": {
+        "bytes": 13379,
+        "sha256": "c968c13d73c116175143d616cd47b6e8d1ab1030bb0192c76bfd08a5e2288339",
+        "working_blob": "3b4ca45c53d2633bf96d2c1b0fca3ed1ae30c114"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_binding.rs",
+      "c0f": {
+        "bytes": 11831,
+        "sha256": "2557725b0e01450791be17dd2af9dcfcacdab5bb00e88efe79343d1ab57d215f",
+        "working_blob": "d67f5a628c1729105205564df359ec154240747a"
+      },
+      "cc57": {
+        "bytes": 11831,
+        "sha256": "2557725b0e01450791be17dd2af9dcfcacdab5bb00e88efe79343d1ab57d215f",
+        "working_blob": "d67f5a628c1729105205564df359ec154240747a"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+      "c0f": {
+        "bytes": 7666,
+        "sha256": "b3ce0e22bb85d9f802fb0bf14da3270b152a49c7422f94ece14d558cee1712ab",
+        "working_blob": "5428558e44bb9ee3116ac1d0ab372d2d74e4f93b"
+      },
+      "cc57": {
+        "bytes": 7666,
+        "sha256": "b3ce0e22bb85d9f802fb0bf14da3270b152a49c7422f94ece14d558cee1712ab",
+        "working_blob": "5428558e44bb9ee3116ac1d0ab372d2d74e4f93b"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_tests.rs",
+      "c0f": {
+        "bytes": 31428,
+        "sha256": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+        "working_blob": "a2256001fb5a8c5fd3b2e22b0586e5240669f3ff"
+      },
+      "cc57": {
+        "bytes": 31428,
+        "sha256": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+        "working_blob": "a2256001fb5a8c5fd3b2e22b0586e5240669f3ff"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "c0f": {
+        "bytes": 21868,
+        "sha256": "f231113a63b829f69e90a058b23876d1b920b460db1482d92f37295b4db236da",
+        "working_blob": "5752c7e3c43931277c84bcec952450bc49415af9"
+      },
+      "cc57": {
+        "bytes": 21868,
+        "sha256": "f231113a63b829f69e90a058b23876d1b920b460db1482d92f37295b4db236da",
+        "working_blob": "5752c7e3c43931277c84bcec952450bc49415af9"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "c0f": {
+        "bytes": 13323,
+        "sha256": "dd5d7906176bd4681b103522bcf9f204d5490c7c272122065031f3a965d89870",
+        "working_blob": "218cbb06e2e078be28f48d2019cc901aee478499"
+      },
+      "cc57": {
+        "bytes": 14725,
+        "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+        "working_blob": "7179071338fb9779017a7e138742ce0b389c086e"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "c0f": null,
+      "cc57": {
+        "bytes": 5021,
+        "sha256": "f69a6de10c53cf0116c212a41f547286ba9b8da7a92bcfdf448fdaa15786b774",
+        "working_blob": "2893d2cc97faef0f3352406b89f7ec190b8e629d"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "c0f": {
+        "bytes": 19294,
+        "sha256": "b373ed0887d2eb21998d3fa3114c32793733242947b99fbe622cc602328f6566",
+        "working_blob": "f83c91242ee6b27f0523fb40e78eb923b607d953"
+      },
+      "cc57": {
+        "bytes": 19455,
+        "sha256": "45e006a5ae4b98e0fbda658bd7fdef5381d46178ba1c52ace8853019816273f9",
+        "working_blob": "4d0cfdd696dc92d00b5a47e07775e8d180bc6537"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "c0f": {
+        "bytes": 4118,
+        "sha256": "0dfd90b482987f06c76e91936e605df560083a34cbba278cdf6358e2ea5da658",
+        "working_blob": "31839e7d688471e97945493bf77f08c0b1fc3ce8"
+      },
+      "cc57": {
+        "bytes": 4118,
+        "sha256": "0dfd90b482987f06c76e91936e605df560083a34cbba278cdf6358e2ea5da658",
+        "working_blob": "31839e7d688471e97945493bf77f08c0b1fc3ce8"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "c0f": {
+        "bytes": 12745,
+        "sha256": "d7ee7f0dc75ac86fcbf39e3cdc2d6fcd69d521832a786b7cbb3df7bd84e77175",
+        "working_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802"
+      },
+      "cc57": {
+        "bytes": 12838,
+        "sha256": "7402eb757296f0657b747b396245647cfcdf35b409b09949d68001d9d8bfb49c",
+        "working_blob": "8d94ddd4a3ed4ea9552a6e58caaf4f6100fdc4d5"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f": {
+        "bytes": 13553,
+        "sha256": "e148faa0009f2d742fcdb7098bf54f65995c484ede18a406af57eabfe49944ca",
+        "working_blob": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19"
+      },
+      "cc57": {
+        "bytes": 13553,
+        "sha256": "e148faa0009f2d742fcdb7098bf54f65995c484ede18a406af57eabfe49944ca",
+        "working_blob": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "c0f": {
+        "bytes": 15286,
+        "sha256": "b1efc539271f321828fd77ea0fac3db77f6df5b2fc649cc6c812c6e88f40de58",
+        "working_blob": "2e301a7097eaf063f9f241d736a47340b82d4218"
+      },
+      "cc57": {
+        "bytes": 15361,
+        "sha256": "638960b10793c4ee351d22bb0e58db8e797d578d36209570bc1ec769a79652f2",
+        "working_blob": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "c0f": {
+        "bytes": 26865,
+        "sha256": "63738f26b0968a912d0d1bf0d95fce5434479341cc3cbe16c0d5cd526b557022",
+        "working_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8"
+      },
+      "cc57": {
+        "bytes": 26865,
+        "sha256": "63738f26b0968a912d0d1bf0d95fce5434479341cc3cbe16c0d5cd526b557022",
+        "working_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "c0f": {
+        "bytes": 3928,
+        "sha256": "7fc3c615118e417c75d95cb2309838b1b468e9fdd70c72bbc20be597bb0f64a7",
+        "working_blob": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c"
+      },
+      "cc57": {
+        "bytes": 3509,
+        "sha256": "d31435a2790000a02e7788907e80dfa4ad216efcab54e2338088c31d9cd9dcd4",
+        "working_blob": "988542fea74e3c077929ab9313a2c9bc0ae40d52"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "c0f": {
+        "bytes": 19896,
+        "sha256": "81cbd49fbe8eabe5b92f239723f481babfdc637e77f971c3416ec8366711322f",
+        "working_blob": "5c1958b2ab3e8d552a0d82d1a6f0e8ec059f2cae"
+      },
+      "cc57": {
+        "bytes": 20803,
+        "sha256": "ec21b2dbf8322e171be194a96799334aa17a774d124dd6cfaae5272ef03d254a",
+        "working_blob": "0169864d8a5743a1ce00eacf293392a118026d8d"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "c0f": {
+        "bytes": 10673,
+        "sha256": "6e647333a42e14fc5b5be36ae3ae414574ffd64d2774371901af2068fbc17413",
+        "working_blob": "01b1f7d02600b16eba09c581e1dab831b7c9e248"
+      },
+      "cc57": {
+        "bytes": 10352,
+        "sha256": "2b2d8e3a22de44017294f0fd9861c4025edf5bcf6f9cc36f021c27fad41220b8",
+        "working_blob": "322ceb9355e6d75d98e4f2219eeef8146dfc2b0e"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "c0f": {
+        "bytes": 11057,
+        "sha256": "d3e68a64c6080889f6b1074fea121ef3ff8159c404046a52ada05c0fc1101dc5",
+        "working_blob": "901c0a2fdfb475d4f09477a273a00fe437d47393"
+      },
+      "cc57": {
+        "bytes": 11057,
+        "sha256": "d3e68a64c6080889f6b1074fea121ef3ff8159c404046a52ada05c0fc1101dc5",
+        "working_blob": "901c0a2fdfb475d4f09477a273a00fe437d47393"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "c0f": {
+        "bytes": 24062,
+        "sha256": "2d85af35c49b8dfe2d5e0958b5dc7b48d47de1d602da94eaca4f69941e034fe6",
+        "working_blob": "467831627aaf7833f035804b3c94629739b3a981"
+      },
+      "cc57": {
+        "bytes": 24286,
+        "sha256": "cd63c4caf31b917f6ed92bad012b04f337fac9b61939c25c3799306812d14cb4",
+        "working_blob": "d2512ef649afa6e5a723de54ecf5f579b82c150c"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "c0f": {
+        "bytes": 6823,
+        "sha256": "39db9ce7cfd8e083fc570f3cb7d25e1e4370003288425914ca7b8108bcf14740",
+        "working_blob": "d15d23cbab985ef52d9490c1c00349c8892d44e2"
+      },
+      "cc57": {
+        "bytes": 6823,
+        "sha256": "39db9ce7cfd8e083fc570f3cb7d25e1e4370003288425914ca7b8108bcf14740",
+        "working_blob": "d15d23cbab985ef52d9490c1c00349c8892d44e2"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "c0f": {
+        "bytes": 10961,
+        "sha256": "53f27be194c4176efbec00746925c1200807b2d99dfe217c4ff22095141d7210",
+        "working_blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453"
+      },
+      "cc57": {
+        "bytes": 10961,
+        "sha256": "53f27be194c4176efbec00746925c1200807b2d99dfe217c4ff22095141d7210",
+        "working_blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "c0f": {
+        "bytes": 12053,
+        "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed",
+        "working_blob": "b59a9675d4d81554342e7b55235b39eb6ac356ec"
+      },
+      "cc57": {
+        "bytes": 12053,
+        "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed",
+        "working_blob": "b59a9675d4d81554342e7b55235b39eb6ac356ec"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "c0f": {
+        "bytes": 11410,
+        "sha256": "6001097fb8a403067d9687cf0c6aaf6afbd1bad0c3f0c1ff89e763218f5776d1",
+        "working_blob": "0e7f3c909fcc97742e228eb4ad189bd074727604"
+      },
+      "cc57": {
+        "bytes": 11581,
+        "sha256": "7d41de1a76a55b8b288a236d0fe570365a957593605e965db5cd493fdc80f480",
+        "working_blob": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "c0f": {
+        "bytes": 9561,
+        "sha256": "6fa587f21a2f637c74d43706902e6389be02f65417479060abe33781fd0c7d32",
+        "working_blob": "c968ff41de9cca02f5321cb2fa813ef5f8eeef6b"
+      },
+      "cc57": {
+        "bytes": 9724,
+        "sha256": "303d8e7b2c1b87f9f121a0b6199fc5f2e245a23811b11b94d8b6a0d5ea56ad4d",
+        "working_blob": "89e82d4b77f7cd76ac8df20e4ad88790e66a7158"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "c0f": {
+        "bytes": 16108,
+        "sha256": "3d1913855e7c0b37ccf1d2f6414e5ea5670025524381b2ea26bf311d4121a89c",
+        "working_blob": "a42826fa67ed1c598916c3bd9046dfd255e64280"
+      },
+      "cc57": {
+        "bytes": 18845,
+        "sha256": "d975495984646f2520c1e4ab9f6011730c0216145168a10a9cc4cfed0c57d0f6",
+        "working_blob": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "c0f": {
+        "bytes": 16766,
+        "sha256": "cadff53b207810423e0125e419093ff8ff84deee2f7a5aa66b857ceedbbb184c",
+        "working_blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6"
+      },
+      "cc57": {
+        "bytes": 16766,
+        "sha256": "cadff53b207810423e0125e419093ff8ff84deee2f7a5aa66b857ceedbbb184c",
+        "working_blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "c0f": {
+        "bytes": 3947,
+        "sha256": "2cac970b354bbf3577eb1d6e62bd676dcc54c25e7f6f64eb1192cff4b28aa146",
+        "working_blob": "9505db2dcf4d62cc1b80d586f88a8a3c3c5a2749"
+      },
+      "cc57": {
+        "bytes": 5395,
+        "sha256": "47d5369b7021820692819215f27e8b17b1ffde2cf5f1f656d916c4d2c99ab030",
+        "working_blob": "bc7be5dd406bb4da8afda7a9fd9df06cda2cece0"
+      },
+      "byte_identical": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "c0f": {
+        "bytes": 15839,
+        "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714",
+        "working_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020"
+      },
+      "cc57": {
+        "bytes": 15839,
+        "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714",
+        "working_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "c0f": {
+        "bytes": 14022,
+        "sha256": "47231d32f69c0a70f7daed27cc23db35e562ce46bbe02063ad8db652af20e3aa",
+        "working_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17"
+      },
+      "cc57": {
+        "bytes": 14022,
+        "sha256": "47231d32f69c0a70f7daed27cc23db35e562ce46bbe02063ad8db652af20e3aa",
+        "working_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17"
+      },
+      "byte_identical": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs",
+      "c0f": {
+        "bytes": 4250,
+        "sha256": "4dcbe79fa1c961b45690e60fdabc988b33bbf341c97dff4085cf5ff1112921b7",
+        "working_blob": "3a83d75c9fd2ca470a173bb2eb7a7152efc42b51"
+      },
+      "cc57": {
+        "bytes": 4250,
+        "sha256": "4dcbe79fa1c961b45690e60fdabc988b33bbf341c97dff4085cf5ff1112921b7",
+        "working_blob": "3a83d75c9fd2ca470a173bb2eb7a7152efc42b51"
+      },
+      "byte_identical": true
+    }
+  ],
+  "failures": [
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "60.014",
+      "category": "timeout",
+      "failure_attributes": [
+        {
+          "type": "test timeout"
+        }
+      ],
+      "failure_text": "",
+      "original_output": "\nrunning 1 test\n\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "c0f_function_line": 25,
+      "cc57_function_line": 25,
+      "same_test_definition_bytes": false,
+      "c0f_definition": {
+        "bytes": 7836,
+        "sha256": "3e3b562018bc626dfa7a3204a7759e959704ba2c4492f9304721893ad34df4ee",
+        "git_blob": "4d6fbe23ee28263708f047084d9c05aa76dfc45a"
+      },
+      "cc57_definition": {
+        "bytes": 9238,
+        "sha256": "022c31da5ee2a83ec1f5abf7c4d107ae1c11d15799596baf227f962f6592c42a",
+        "git_blob": "fb3a5707b693e0335f693d98443bdcec1d10d0ec"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "12.044",
+      "category": "functional",
+      "failure_attributes": [
+        {
+          "message": "Error: InvalidBinding",
+          "type": "test failure with exit code 101"
+        }
+      ],
+      "failure_text": "Error: InvalidBinding",
+      "original_output": "\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 12.02s\n\n\nError: InvalidBinding\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "c0f_function_line": 372,
+      "cc57_function_line": 444,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 853,
+        "sha256": "b55b0afe023abee3e667254081cc184c181def89bc0b675b6dc5601b4aee064e",
+        "git_blob": "a5b1b2213acbb36297f5c0c747cbe0faf94ee181"
+      },
+      "cc57_definition": {
+        "bytes": 853,
+        "sha256": "b55b0afe023abee3e667254081cc184c181def89bc0b675b6dc5601b4aee064e",
+        "git_blob": "a5b1b2213acbb36297f5c0c747cbe0faf94ee181"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "60.017",
+      "category": "timeout",
+      "failure_attributes": [
+        {
+          "type": "test timeout"
+        }
+      ],
+      "failure_text": "",
+      "original_output": "\nrunning 1 test\n\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "c0f_function_line": 146,
+      "cc57_function_line": 261,
+      "same_test_definition_bytes": false,
+      "c0f_definition": {
+        "bytes": 4519,
+        "sha256": "d3ed6e571fc0e484c3746f5d997f90c8acc8afaf27584cbbdbf88965e27bc8bf",
+        "git_blob": "0c4ae4aa0d46994d5dc1f402946459a9a2853bc0"
+      },
+      "cc57_definition": {
+        "bytes": 194,
+        "sha256": "5dd0e0f69d55fee5957a3c54dcad98b2d168d12797a83420b4bdc819b32b1c25",
+        "git_blob": "9374bd65e070310c9b5c2a5e196885438999b7d0"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.215",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c' (1484080) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f_function_line": 288,
+      "cc57_function_line": 288,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2222,
+        "sha256": "26bbc71c0da1171ffc9b54b43825d62053633ad79bbd8b08281ec4e3ce3851f3",
+        "git_blob": "cc34eb3d485b75f903207f987ffa44e612e9eebb"
+      },
+      "cc57_definition": {
+        "bytes": 2222,
+        "sha256": "26bbc71c0da1171ffc9b54b43825d62053633ad79bbd8b08281ec4e3ce3851f3",
+        "git_blob": "cc34eb3d485b75f903207f987ffa44e612e9eebb"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.222",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant' (1484118) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f_function_line": 182,
+      "cc57_function_line": 182,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2901,
+        "sha256": "40b59745ef1df5f9f161fcdccb0fe188fed166f969c12e6653ef3e088dd1588e",
+        "git_blob": "0f6a84e2ed221007c69f4437703c742e7f336cd2"
+      },
+      "cc57_definition": {
+        "bytes": 2901,
+        "sha256": "40b59745ef1df5f9f161fcdccb0fe188fed166f969c12e6653ef3e088dd1588e",
+        "git_blob": "0f6a84e2ed221007c69f4437703c742e7f336cd2"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.198",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication' (1484161) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f_function_line": 83,
+      "cc57_function_line": 83,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1870,
+        "sha256": "d173da6985621bdf6d9527fea69c50781a4f7eaaa3d84ac5fc49c1da32d04351",
+        "git_blob": "912b3e287d3add92b255655d757b0b3a80d264e4"
+      },
+      "cc57_definition": {
+        "bytes": 1870,
+        "sha256": "d173da6985621bdf6d9527fea69c50781a4f7eaaa3d84ac5fc49c1da32d04351",
+        "git_blob": "912b3e287d3add92b255655d757b0b3a80d264e4"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.212",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b' (1484187) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f_function_line": 18,
+      "cc57_function_line": 18,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2858,
+        "sha256": "2f28f1fed867a32c3092fd93ffa4647cf5e31b65e628009ab7b6a3bd45b73e69",
+        "git_blob": "ca0c9f84ee60d48bf2836950afa0b0e504308cbd"
+      },
+      "cc57_definition": {
+        "bytes": 2858,
+        "sha256": "2f28f1fed867a32c3092fd93ffa4647cf5e31b65e628009ab7b6a3bd45b73e69",
+        "git_blob": "ca0c9f84ee60d48bf2836950afa0b0e504308cbd"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.213",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners' (1484214) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f_function_line": 259,
+      "cc57_function_line": 259,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 918,
+        "sha256": "65582afa8d610c35ddfef6b2b9c37e32cfc993634d122945545a1577e6b8cbee",
+        "git_blob": "8a3fbbeb754cc6f0d771adea8c6bc402761566c7"
+      },
+      "cc57_definition": {
+        "bytes": 918,
+        "sha256": "65582afa8d610c35ddfef6b2b9c37e32cfc993634d122945545a1577e6b8cbee",
+        "git_blob": "8a3fbbeb754cc6f0d771adea8c6bc402761566c7"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.210",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch' (1484263) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "c0f_function_line": 136,
+      "cc57_function_line": 136,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1693,
+        "sha256": "369adb3b08eea620beaaeb82fce77f6202295aaea89798df4fd9bee34b16fe0d",
+        "git_blob": "c2ce895465bf4ecadd162594d4bcfa657a8a99cd"
+      },
+      "cc57_definition": {
+        "bytes": 1693,
+        "sha256": "369adb3b08eea620beaaeb82fce77f6202295aaea89798df4fd9bee34b16fe0d",
+        "git_blob": "c2ce895465bf4ecadd162594d4bcfa657a8a99cd"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.210",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed' (1484371) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "c0f_function_line": 280,
+      "cc57_function_line": 280,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2617,
+        "sha256": "a2fd641fa52760ac8eeee8f4a3e33695feee1a6e4ef00013ebe67d1485bd7179",
+        "git_blob": "26d4cc567cfd0215f4662258b0b2fbbd887fab27"
+      },
+      "cc57_definition": {
+        "bytes": 2617,
+        "sha256": "a2fd641fa52760ac8eeee8f4a3e33695feee1a6e4ef00013ebe67d1485bd7179",
+        "git_blob": "26d4cc567cfd0215f4662258b0b2fbbd887fab27"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.213",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion' (1484395) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "c0f_function_line": 353,
+      "cc57_function_line": 353,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2282,
+        "sha256": "ed3dc4f86a4c2b65eb12c4145fed07cd3bd40317fc9ebce406c2f43d4926a0c5",
+        "git_blob": "2074731744e7cb0737c6924dbc0bdf9f5340ae18"
+      },
+      "cc57_definition": {
+        "bytes": 2282,
+        "sha256": "ed3dc4f86a4c2b65eb12c4145fed07cd3bd40317fc9ebce406c2f43d4926a0c5",
+        "git_blob": "2074731744e7cb0737c6924dbc0bdf9f5340ae18"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.212",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut' (1484504) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "c0f_function_line": 185,
+      "cc57_function_line": 185,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 3260,
+        "sha256": "e3b2c2daced19d5edb81e4a8bffc9f7a65afb1577ea601ce710b5ab9e40e7ebc",
+        "git_blob": "f90e81663393941b8b83280a54e2111efe96dc3f"
+      },
+      "cc57_definition": {
+        "bytes": 3260,
+        "sha256": "e3b2c2daced19d5edb81e4a8bffc9f7a65afb1577ea601ce710b5ab9e40e7ebc",
+        "git_blob": "f90e81663393941b8b83280a54e2111efe96dc3f"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.216",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion' (1484532) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "c0f_function_line": 95,
+      "cc57_function_line": 95,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 6619,
+        "sha256": "0cd4c62d1c3e5069fcb1e6cdf00f9a11723c720e297cf8aa2b0c3cf4e46a42be",
+        "git_blob": "dd70c7c06fc827aaf726ba2e3abc49822b5d3eb3"
+      },
+      "cc57_definition": {
+        "bytes": 6619,
+        "sha256": "0cd4c62d1c3e5069fcb1e6cdf00f9a11723c720e297cf8aa2b0c3cf4e46a42be",
+        "git_blob": "dd70c7c06fc827aaf726ba2e3abc49822b5d3eb3"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.210",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs' (1484605) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "c0f_function_line": 458,
+      "cc57_function_line": 458,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2771,
+        "sha256": "013c79eed92ee2ace74730441e2ba6e90fffea8623eb6c0c72a8b4b517aec33b",
+        "git_blob": "a048a7bfb82d807c7cb921b43b22d0b94935e9e4"
+      },
+      "cc57_definition": {
+        "bytes": 2771,
+        "sha256": "013c79eed92ee2ace74730441e2ba6e90fffea8623eb6c0c72a8b4b517aec33b",
+        "git_blob": "a048a7bfb82d807c7cb921b43b22d0b94935e9e4"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.212",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim' (1484634) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "c0f_function_line": 284,
+      "cc57_function_line": 284,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 3685,
+        "sha256": "7dbb4465ab4c07893db61bcc0374a4216dfb8e5fa87923c021e0d9f222b0f641",
+        "git_blob": "ff95ae6a38acc17abd6ae9d1ceaf533ee11abe8e"
+      },
+      "cc57_definition": {
+        "bytes": 3685,
+        "sha256": "7dbb4465ab4c07893db61bcc0374a4216dfb8e5fa87923c021e0d9f222b0f641",
+        "git_blob": "ff95ae6a38acc17abd6ae9d1ceaf533ee11abe8e"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.214",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response' (1484656) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "c0f_function_line": 386,
+      "cc57_function_line": 386,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2467,
+        "sha256": "21eb56849252cc766032560737d53641d3b85f9d01c8e6d98aeca31aba3ea6b2",
+        "git_blob": "e9bd48c76560bfc4262fbadde726565face81e0c"
+      },
+      "cc57_definition": {
+        "bytes": 2467,
+        "sha256": "21eb56849252cc766032560737d53641d3b85f9d01c8e6d98aeca31aba3ea6b2",
+        "git_blob": "e9bd48c76560bfc4262fbadde726565face81e0c"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.905",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut' (1484728) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "c0f_function_line": 19,
+      "cc57_function_line": 19,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1877,
+        "sha256": "3e3bb62f6464568ac1642a27a2a0c9619a1cb18be04eccbed91396d873ee9286",
+        "git_blob": "7568dfb61f52abca71be572d01aa3877fac47117"
+      },
+      "cc57_definition": {
+        "bytes": 1877,
+        "sha256": "3e3bb62f6464568ac1642a27a2a0c9619a1cb18be04eccbed91396d873ee9286",
+        "git_blob": "7568dfb61f52abca71be572d01aa3877fac47117"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.409",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature' (1484860) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "c0f_function_line": 69,
+      "cc57_function_line": 69,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1340,
+        "sha256": "e8bf175e520b6bf9a2281f7bed0ac229d87ffe5654017226cb70a2ecaec108c4",
+        "git_blob": "67c30b761ea49bd6ca0651dfaf409836a8b4eb32"
+      },
+      "cc57_definition": {
+        "bytes": 1340,
+        "sha256": "e8bf175e520b6bf9a2281f7bed0ac229d87ffe5654017226cb70a2ecaec108c4",
+        "git_blob": "67c30b761ea49bd6ca0651dfaf409836a8b4eb32"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.206",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (1485017) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "c0f_function_line": 211,
+      "cc57_function_line": 211,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 4233,
+        "sha256": "4a6f218a39b33b4c7881db32da068f7c1ddc2bafa244cc64b35acf2878c602c4",
+        "git_blob": "9f6b1ebd5835ea529c41dff3ac664b7ea34b8603"
+      },
+      "cc57_definition": {
+        "bytes": 4233,
+        "sha256": "4a6f218a39b33b4c7881db32da068f7c1ddc2bafa244cc64b35acf2878c602c4",
+        "git_blob": "9f6b1ebd5835ea529c41dff3ac664b7ea34b8603"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.266",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (1485054) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "c0f_function_line": 31,
+      "cc57_function_line": 31,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1764,
+        "sha256": "85bf30af5c5736168f8ae10016b60ccfb7d3aceb0386832a12bf7cec5d748d71",
+        "git_blob": "1054d7bf8d47463615bdac370fe55b76bb7ae37a"
+      },
+      "cc57_definition": {
+        "bytes": 1764,
+        "sha256": "85bf30af5c5736168f8ae10016b60ccfb7d3aceb0386832a12bf7cec5d748d71",
+        "git_blob": "1054d7bf8d47463615bdac370fe55b76bb7ae37a"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "1.661",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (1485088) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "c0f_function_line": 72,
+      "cc57_function_line": 72,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 4913,
+        "sha256": "365853b8e76dee1ee78717c86d5f387162f1b24f0cdac34439e656b6554e2af1",
+        "git_blob": "6f55b7a2d4b973b200dfde9194265051688517d3"
+      },
+      "cc57_definition": {
+        "bytes": 4913,
+        "sha256": "365853b8e76dee1ee78717c86d5f387162f1b24f0cdac34439e656b6554e2af1",
+        "git_blob": "6f55b7a2d4b973b200dfde9194265051688517d3"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.061",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (1485109) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "c0f_function_line": 142,
+      "cc57_function_line": 142,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 3382,
+        "sha256": "6b3157115b918c189597bc3e409d1c6caafbacd5743dfb9e5544932731347430",
+        "git_blob": "71c07b8d444a66b1a7adfd35a307f72e24dba84a"
+      },
+      "cc57_definition": {
+        "bytes": 3382,
+        "sha256": "6b3157115b918c189597bc3e409d1c6caafbacd5743dfb9e5544932731347430",
+        "git_blob": "71c07b8d444a66b1a7adfd35a307f72e24dba84a"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.064",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (1485128) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "c0f_function_line": 24,
+      "cc57_function_line": 24,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2379,
+        "sha256": "3b2b227e29a7729cbc08b66ef94b6cc2522ba6ec176dfe57e62b33c91bed13bd",
+        "git_blob": "7a1f293f3aeb9d4bb71b61295396be979cca2ebd"
+      },
+      "cc57_definition": {
+        "bytes": 2379,
+        "sha256": "3b2b227e29a7729cbc08b66ef94b6cc2522ba6ec176dfe57e62b33c91bed13bd",
+        "git_blob": "7a1f293f3aeb9d4bb71b61295396be979cca2ebd"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.061",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (1485150) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "c0f_function_line": 89,
+      "cc57_function_line": 89,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 2022,
+        "sha256": "b6afd64af8a3ad1a981d61bb84a733e28cdcf5c52c12161244ff0d0975a947fc",
+        "git_blob": "1b42ccbb73a8b411adbc1976e04b5b24e596a5be"
+      },
+      "cc57_definition": {
+        "bytes": 2022,
+        "sha256": "b6afd64af8a3ad1a981d61bb84a733e28cdcf5c52c12161244ff0d0975a947fc",
+        "git_blob": "1b42ccbb73a8b411adbc1976e04b5b24e596a5be"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.192",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (1485196) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "c0f_function_line": 155,
+      "cc57_function_line": 157,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1717,
+        "sha256": "1ad3b4e539153adcbfb779615c8b3d73d11fd736c7c62b113845fa025d3b5ef8",
+        "git_blob": "00db9830840dc1979fe84b3bc3877e6931b14530"
+      },
+      "cc57_definition": {
+        "bytes": 1717,
+        "sha256": "1ad3b4e539153adcbfb779615c8b3d73d11fd736c7c62b113845fa025d3b5ef8",
+        "git_blob": "00db9830840dc1979fe84b3bc3877e6931b14530"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.193",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (1485216) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "c0f_function_line": 249,
+      "cc57_function_line": 251,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 843,
+        "sha256": "110efa366e9d563697e426489d4c82a8ed19cef911375239615273bc087a954e",
+        "git_blob": "12eea2389b4019be4d69c78f417353b690eeaff4"
+      },
+      "cc57_definition": {
+        "bytes": 843,
+        "sha256": "110efa366e9d563697e426489d4c82a8ed19cef911375239615273bc087a954e",
+        "git_blob": "12eea2389b4019be4d69c78f417353b690eeaff4"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "2.152",
+      "category": "stack_overflow",
+      "failure_attributes": [
+        {
+          "message": "process aborted with signal 6 (SIGABRT)",
+          "type": "test abort"
+        }
+      ],
+      "failure_text": "process aborted with signal 6 (SIGABRT)",
+      "original_output": "\nrunning 1 test\n\n\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (1485262) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "c0f_function_line": 209,
+      "cc57_function_line": 211,
+      "same_test_definition_bytes": true,
+      "c0f_definition": {
+        "bytes": 1530,
+        "sha256": "6c7532caf82d6e5098f1817b2d62add6a87cc47b498d64cb52efa33af7529693",
+        "git_blob": "32414a90ec46eb7b935513410e06e1c82fc826fc"
+      },
+      "cc57_definition": {
+        "bytes": 1530,
+        "sha256": "6c7532caf82d6e5098f1817b2d62add6a87cc47b498d64cb52efa33af7529693",
+        "git_blob": "32414a90ec46eb7b935513410e06e1c82fc826fc"
+      }
+    },
+    {
+      "fqn": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "crate": "codex-hepta-agentd",
+      "historical_seconds": "8.949",
+      "category": "functional",
+      "failure_attributes": [
+        {
+          "message": "Error: OwnerUnavailable(\"original learning evidence owner\")",
+          "type": "test failure with exit code 101"
+        }
+      ],
+      "failure_text": "Error: OwnerUnavailable(\"original learning evidence owner\")",
+      "original_output": "\nrunning 1 test\ntest runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED\n\nfailures:\n\nfailures:\n    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1172 filtered out; finished in 8.93s\n\n\nError: OwnerUnavailable(\"original learning evidence owner\")\n",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "c0f_function_line": 384,
+      "cc57_function_line": 384,
+      "same_test_definition_bytes": false,
+      "c0f_definition": {
+        "bytes": 1654,
+        "sha256": "8859e2a54842cd8c26ee48cef7e82277660fa132aa0de2983264fb475ea6dabf",
+        "git_blob": "25bdb871b87ed1e57aa2f8b79ab9a758e8421deb"
+      },
+      "cc57_definition": {
+        "bytes": 2540,
+        "sha256": "abd7dcf9a876f5fda8e7cf1123a23111b384c9a235e29e9622eda8653659bec2",
+        "git_blob": "e0946170bf0ebcba3538e10c9deb18bc846048bd"
+      }
+    }
+  ],
+  "static_equalities": {
+    "all_24_stack_test_definitions_byte_identical": true,
+    "provider_helper_body_restores_old_body_by_only_two_loop_header_substitutions": true,
+    "provider_partition": [
+      {
+        "test": "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "mutations": [
+          "withdraw",
+          "source-bytes"
+        ],
+        "modes": []
+      },
+      {
+        "test": "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+        "mutations": [
+          "ledger-bytes",
+          "rollback"
+        ],
+        "modes": []
+      },
+      {
+        "test": "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+        "mutations": [],
+        "modes": [
+          "unreleased",
+          "cold-readonly"
+        ]
+      }
+    ],
+    "provider_union": {
+      "mutations": [
+        "withdraw",
+        "source-bytes",
+        "ledger-bytes",
+        "rollback"
+      ],
+      "modes": [
+        "unreleased",
+        "cold-readonly"
+      ]
+    },
+    "deep_without_only_logger_and_stage_calls_restores_old_definition": true,
+    "deep_logger_definitions": 1,
+    "deep_stage_calls": 32,
+    "adjacent_24_production_path_inventory_identities_equal": true
+  },
+  "limits": [
+    "Textual function comparisons are bounded to inspected definitions; not a Rust proof or a gate verdict.",
+    "The old one-case GDB first signal is not a root-cause proof for all 24 failures.",
+    "Future sizes and runtime results cannot be projected from these source comparisons.",
+    "Original fixed source inventory files were recovered earlier and aligned; this script performs no second native observation.",
+    "Current cc57 test count need not equal 109 because new default tests and explicit partitioned cases exist."
+  ]
+}

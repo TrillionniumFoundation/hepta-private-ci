@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "dirty": false,
+    "parents": [
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "dirty": false,
+    "parents": [
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 389.06310816900805,
+  "exit_code": 0,
+  "finished_at": "2026-11-13T00:15:58.632071+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 111500,
+  "log_file": "source-closure.json.ed0273f9133d43afa01c976f1501b2af.log",
+  "log_sha256": "372c9a6a3a9bb6431aa8113a1198992a15e151d669f24546387d334cd0ca6ec9",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 492,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "started_at": "2026-11-13T00:09:29.566227+00:00",
+  "status": "passed",
+  "tested_sha": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-utility-36fa-source-gates-cc57-v2"
+}

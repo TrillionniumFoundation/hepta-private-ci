@@ -1,0 +1,75 @@
+{
+  "format": "hepta-c0f-focused-pretriage-cc57-manifest-v1",
+  "status": "READ_ONLY_HISTORICAL_AND_SOURCE_COMPARISON_COMPLETE",
+  "cutoff_utc": "2026-11-13T00:58:53.208853+00:00",
+  "current_test_verdict": "not_established_by_this_analysis",
+  "source_old": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_current": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "files": [
+    {
+      "name": "REVIEW.md",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/REVIEW.md",
+      "bytes": 13349,
+      "sha256": "c0b3c4f410bb4879eeaaa43719d61be4ca7201a476126dcf3300f5f4e6c7f74c",
+      "git_blob": "fce0058b41ba4d062e1127261529c720d72c1051"
+    },
+    {
+      "name": "review_history.py",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/review_history.py",
+      "bytes": 10863,
+      "sha256": "1be73afda8ed5d2956cb21c232ebd453f33f647b1055ad87c5f6baf28246faf4",
+      "git_blob": "ed42a3a786ab893cd9d0764d17f533612fc0257b"
+    },
+    {
+      "name": "OFFLINE_ANALYSIS.json",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/OFFLINE_ANALYSIS.json",
+      "bytes": 67061,
+      "sha256": "2d7f08798b8ec7e16f7835a5189ca1e26b22a71a921e8f4fc5f0c9d173b75594",
+      "git_blob": "f32bc8eb7a248752f86cfcaab2a46e2f5958d728"
+    },
+    {
+      "name": "SOURCE_PINS.json",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/SOURCE_PINS.json",
+      "bytes": 16569,
+      "sha256": "c5a52656cbe6bfcd44a2713d3487664d2d01fe256793e6dbc263e5e200bd0041",
+      "git_blob": "ac02f8f85d3d602b0e9768974cccca5f260906c8"
+    },
+    {
+      "name": "STACK_ADJACENT_PRODUCTION_INVENTORY_COMPARISON.json",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/STACK_ADJACENT_PRODUCTION_INVENTORY_COMPARISON.json",
+      "bytes": 6123,
+      "sha256": "0ce14938f222266b997f887db1ac432d50a274627acdc768918e06a8cea08000",
+      "git_blob": "ed93b965b1a5be9830cb051e00d2ce7d880f4289"
+    },
+    {
+      "name": "SELECTED_SOURCE_EXACT_DIFFS.patch",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/SELECTED_SOURCE_EXACT_DIFFS.patch",
+      "bytes": 32029,
+      "sha256": "de9ded3c989513e68e2d56d0e6f9c7efb346f9825563b13bb9c54af47e31d309",
+      "git_blob": "7070fc7c5e184862f677fc1e5d8fcf37ee74db72"
+    },
+    {
+      "name": "EXPECTED_ORIGINAL_BLOBS.json",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/EXPECTED_ORIGINAL_BLOBS.json",
+      "bytes": 969,
+      "sha256": "ca3c2aeaa0230613d6e3508eab372bbd22e1103325b22f425a48c56a38a06872",
+      "git_blob": "7ee8c562b540ba2f29c248f140b8d1fcd615d00b"
+    },
+    {
+      "name": "LOCAL_TRANSCRIPTION_CORRECTION.json",
+      "local_path": "/tmp/hepta-36fa-c0f-focused-pretriage-cc57-v1/LOCAL_TRANSCRIPTION_CORRECTION.json",
+      "bytes": 6689,
+      "sha256": "37ffb977b8a99cc9ffce77ab155f2642d449ae9caaac79836cc41a1d9457b3fc",
+      "git_blob": "30946f3b13b61ac2da1876d695acfeace9196eb3"
+    }
+  ],
+  "not_done": [
+    "H",
+    "Cargo",
+    "Rust tests",
+    "gates",
+    "source edits",
+    "refs or PR mutation"
+  ],
+  "scope_note": "Fixed historical originals and 30 source paths; all 28 historical failures mapped. Current native precondition failures are separate and not Rust test results."
+}

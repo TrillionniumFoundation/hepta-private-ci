@@ -1,0 +1,557 @@
+{
+  "authority_granted": false,
+  "base_full_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "path": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "base_source": {
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "candidate_manifest": {
+    "bytes": 7131,
+    "git_blob": "7cd37e6a6cc391bda9275b938acd7e08263d23a1",
+    "sha256": "88d062f37577993dbb10dd298febd01c27d4dd1ec6cf3b3f599e631ac8aec7d0"
+  },
+  "candidate_packet": {
+    "bytes": 314937,
+    "git_blob": "0d42484181e34c178a04c934737cdb99adbaca0d",
+    "sha256": "4b7c4405eb5405c6067e43ef56e00bcd4c2792ac709207dca5c5e26c3bd47af1"
+  },
+  "candidate_tree_is_projection_only": "b517d3b110c13538780b9ccd743b9706098829fb",
+  "decision": "Suitable as a frozen, reviewable HOLD candidate. No approval to integrate, run or deploy is implied. No concrete source defect was identified in this bounded review; the listed integration and qualification gaps remain real blockers to landing.",
+  "existing_source_preservation": [
+    {
+      "change": "new file",
+      "lines": 139,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "change": "insert-only, every original byte retained in order",
+      "hunks": [
+        {
+          "after_lines": [
+            32,
+            36
+          ],
+          "before_position": 31,
+          "text": "#[path = \"authority_host_learning_candidate_service.rs\"]\nmod candidate_service;\npub use candidate_service::RootResidentCandidateInputsV1;\npub use candidate_service::RootResidentCandidateServiceV1;\npub use candidate_service::RootResidentLearningConsumerV3;\n"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs"
+    },
+    {
+      "change": "insert-only, every original byte retained in order",
+      "hunks": [
+        {
+          "after_lines": [
+            117,
+            125
+          ],
+          "before_position": 116,
+          "text": "    }\n\n    /// Narrow the original command path to the already elapsed handoff end.\n    /// This consumes the bundle before Root can install its effect gate.\n    pub(crate) fn restrict_original_handoff_deadline(mut self, end: Instant) -> Result<Self, Error> {\n        self.end = self.end.min(end);\n        self.common.end = self.common.end.min(self.end);\n        self.require_live_deadline()?;\n        Ok(self)\n"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    },
+    {
+      "change": "insert-only, every original byte retained in order",
+      "hunks": [
+        {
+          "after_lines": [
+            204,
+            209
+          ],
+          "before_position": 203,
+          "text": "pub use authority_host_service::resident::RootResidentCandidateInputsV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::resident::RootResidentCandidateServiceV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::resident::RootResidentLearningConsumerV3;\n#[cfg(target_os = \"linux\")]\n"
+        },
+        {
+          "after_lines": [
+            233,
+            238
+          ],
+          "before_position": 226,
+          "text": "#[cfg(target_os = \"linux\")]\npub use root_production_handoff::RootCandidateStageHandoffV1;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::receive_root_candidate_stage_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::send_root_candidate_stage_handoff;\n"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "change": "new file",
+      "lines": 257,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "change": "new file",
+      "lines": 130,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs"
+    },
+    {
+      "change": "new file",
+      "lines": 101,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "change": "insert-only, every original byte retained in order",
+      "hunks": [
+        {
+          "after_lines": [
+            32,
+            37
+          ],
+          "before_position": 31,
+          "text": "\n#[path = \"root_candidate_stage_handoff.rs\"]\nmod candidate_stages;\npub use candidate_stages::RootCandidateStageHandoffV1;\npub use candidate_stages::receive_root_candidate_stage_handoff;\npub use candidate_stages::send_root_candidate_stage_handoff;\n"
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+    }
+  ],
+  "expected_candidate_leaf_count": 15192,
+  "format": "hepta-original-root-provider-independent-static-peer-v1",
+  "native_or_source_mutations": 0,
+  "prepared_test_review": {
+    "coverage_boundary": "All 21 raw FD slots intentionally use UnixStreams in the unprivileged framing test. No public Root receiver, real pidfd identity, original registration, ten-owner service, authority revocation, elapsed handoff, cancellation, or independent B is exercised by these four methods.",
+    "executed_by_this_peer": 0,
+    "genuine_mechanisms": [
+      "Actual anonymous sockets and SCM_RIGHTS transfer retain ordered communication after originals drop.",
+      "CLOEXEC is inspected on every returned descriptor.",
+      "Old/new right-count and body separation uses the original old parser, with EOF checks after rejection.",
+      "Duplicated underlying socket is rejected and all received descriptors are dropped.",
+      "Metadata mutants exercise the actual parser/validator and real current PID/boot/start comparison."
+    ],
+    "integration_blockers_before_landing": [
+      "At least one original-owner public send/receive/registration/service normal complete NoUpdate route, with exact original T/E/Version/S/C/current material and full signatures.",
+      "Recovered original registration selects only recovered channels and rejects fresh Admit; changed grant/lease/trust/material is refused.",
+      "Actual A EOF after admission does not cancel Root work; Root cancellation and deadline close the server and join owned work without replay.",
+      "Real elapsed handoff/admission rejects past end and never installs a later global end; wrong role socket/pidfd/recipient is rejected.",
+      "Original scoped formatting/compilation, postformat caller/protection/QA/allowlist integration, and all unchanged exact-source gates."
+    ],
+    "test_names": [
+      "candidate_wire_preserves_all_original_fd_objects_and_cloexec",
+      "candidate_wire_and_old_two_right_packet_cannot_consume_each_other",
+      "candidate_wire_rejects_role_socket_alias_and_closes_all_received_rights",
+      "candidate_packet_refuses_changed_binding_role_process_and_original_timing"
+    ]
+  },
+  "real_task_chains": 0,
+  "registration_plan_review": {
+    "complete_collector_still_required": true,
+    "current_callers_changed": false,
+    "current_original_boundary_count": 569,
+    "current_original_protected_rows": 422,
+    "existing_real_edges": [
+      {
+        "change_implemented_in_callers": false,
+        "original_complete_row": {
+          "caller_markers": [],
+          "definition_markers": [
+            "pub async fn run(mut self, root_cancellation: CancellationToken)"
+          ],
+          "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+          "id": "root_resident_coordinator_run",
+          "product_callers": [],
+          "receiver_type": "RootResidentLearningRuntimeV3",
+          "symbol": "RootResidentLearningRuntimeV3::run"
+        },
+        "proposed_real_product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "zero_based_position": 403
+      },
+      {
+        "change_implemented_in_callers": false,
+        "original_complete_row": {
+          "caller_markers": [],
+          "definition_markers": [
+            "pub fn serve_original_stream("
+          ],
+          "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "id": "root_resident_original_stream_serve",
+          "product_callers": [],
+          "receiver_type": "RootResidentLearningHandleV3",
+          "symbol": "RootResidentLearningHandleV3::serve_original_stream"
+        },
+        "proposed_real_product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "zero_based_position": 404
+      },
+      {
+        "change_implemented_in_callers": false,
+        "original_complete_row": {
+          "caller_markers": [],
+          "definition_markers": [
+            "pub fn from_original_streams("
+          ],
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "id": "learning_original_candidate_stage_create",
+          "product_callers": [],
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams"
+        },
+        "proposed_real_product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "zero_based_position": 429
+      },
+      {
+        "change_implemented_in_callers": false,
+        "original_complete_row": {
+          "caller_markers": [],
+          "definition_markers": [
+            "pub fn recover_original_streams("
+          ],
+          "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+          "id": "learning_original_candidate_stage_recover",
+          "product_callers": [],
+          "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+          "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams"
+        },
+        "proposed_real_product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "zero_based_position": 430
+      },
+      {
+        "change_implemented_in_callers": false,
+        "original_complete_row": {
+          "caller_markers": [],
+          "definition_markers": [
+            "pub fn into_candidate_runtime("
+          ],
+          "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+          "id": "root_resident_candidate_runtime_consume",
+          "product_callers": [],
+          "receiver_type": "RootResidentLearningRegistrationV3",
+          "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime"
+        },
+        "proposed_real_product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "zero_based_position": 434
+      }
+    ]
+  },
+  "review_method": "Complete manual read of the eight after images, relevant original call-chain implementations and four test bodies, plus independent exact byte/pin and insert-only checks. No Rust parser, formatter, compiler, H call, main, gate, or behavior test was run.",
+  "runtime_tests_executed": 0,
+  "semantic_review": [
+    {
+      "anchors": [
+        "root_candidate_stage_handoff.rs::send_root_candidate_stage_handoff",
+        "root_candidate_stage_handoff.rs::receive_root_candidate_stage_handoff",
+        "root_candidate_stage_handoff_wire.rs::{send,receive}",
+        "notes_bootstrap.rs::received_descriptors"
+      ],
+      "area": "Dedicated capability transfer and descriptor ownership",
+      "finding": "The private new frame requires exactly 21 rights, one sender Root pidfd plus ten ordered stream/pidfd pairs, a bounded nonempty body, and no ancillary truncation. Received rights are adopted as OwnedFd before every subsequent rejection. Ten stream objects are AF_UNIX/SOCK_STREAM and de-aliased by device/inode. Send owns the endpoints and socket, while only original Root/recipient pin arguments are borrowed. The old two-right marker, parser and eight-FD send bound remain unchanged.",
+      "limitation": "API consumption does not prevent a trusted or hostile provider from duplicating descriptors before supplying them. Kernel FD transfer itself is not a cryptographic grant or proof of purpose; original protocol and owner once-state remain necessary."
+    },
+    {
+      "anchors": [
+        "root_production_handoff.rs::{root_pair,require_root_pin}",
+        "root_candidate_stage_handoff.rs::{require_root,require_process,validate_packet}",
+        "learning_owner_command_channel.rs::original_owner_command_channel_v1",
+        "authority_host_peer.rs::HostAuthorityPeerChannel::from_stream",
+        "authority_host_channel.rs::OwnerChannel::{new,check}"
+      ],
+      "area": "Actual Root, recipient and role peer identity",
+      "finding": "Public send/receive and opaque consumption require actual real/effective UID0. The unnamed datagram pair is bound to its Root creator by SO_PEERCRED and the transferred live pidfd. Sender checks its creator PID and recipient pin; packet admission independently requires the actual receiving PID plus matching boot/start identity. Original role constructors still check actual peer socket UID/PID, same-UID/same-PID refusal, boot/start and pidfd type/PID/liveness. Packet lane metadata only supplies comparisons; it cannot retarget an established socket.",
+      "limitation": "The public receiver does not complete all ten role authentications by itself. They occur in the consuming original StageOwners constructors, and remote servers must already be configured for the actual recipient. The provider must supply genuinely Root-targeted endpoints; no current stock-main provider was established by this review."
+    },
+    {
+      "anchors": [
+        "authority_host_learning_candidate_service.rs::RootResidentLearningRegistrationV3::into_candidate_service",
+        "authority_host_learning_resident_authority.rs::ResidentRootAuthorityV3::{readonly,perform}",
+        "authority_host_learning_resident_runtime.rs::compose"
+      ],
+      "area": "Authority and trust provenance",
+      "finding": "The packet contains no fresh/recovered switch, material configuration, model, verifier, grant, signature, receipt or outcome. Original material/protocol/baseline/verifier and the nonconstructible original registration are supplied independently. Fresh versus recovered comes solely from the registration private authorization enum. Two original authority Check calls surround actual role admission; compose retains complete initial/scope/trust/baseline consistency checks. Wire metadata cannot create Root custody or promote recovered channels.",
+      "limitation": "Check uses the original Observe boundary and is not itself a fresh work admission. Work still requires the existing original runtime/checkpoint CAS and later dispatch guards. The candidate does not activate stock main, supply missing real owner credentials, or establish a real task chain."
+    },
+    {
+      "anchors": [
+        "root_candidate_stage_handoff.rs::{send_root_candidate_stage_handoff,validate_packet,RootCandidateStageHandoffV1::into_original_streams,require_timing}",
+        "cell_q24_candidate_stage_owners.rs::restrict_original_handoff_deadline",
+        "authority_host_learning_candidate_service.rs::RootResidentCandidateServiceV1::run"
+      ],
+      "area": "Absolute deadline and finite execution scope",
+      "finding": "Sender fixes monotonic ends before role serialization. Receive and consumption reject zero/elapsed or excessive remaining lifetime. Sampling Instant before monotonic conversion gives a conservative global end, and min-only consuming restriction narrows both Candidate and common deadlines before runtime composition. Service deadline is also bounded by the same end and the consumer lifetime. Original 30s/500ms exchange and 300s session limits remain unchanged.",
+      "limitation": "The global public execution/await cap is preserved. Original inner OwnerChannel constructors still establish their own Instant from remaining Duration at construction; this is not proof that every inner Instant numerically equals the packet end. A remote effect already dispatched may outlive cancellation, so the result remains uncertain pending original explicit readback, never rollback or fabricated NoUpdate."
+    },
+    {
+      "anchors": [
+        "authority_host_learning_candidate_service.rs::{CloseOriginalStream::drop,RootResidentCandidateServiceV1::run}",
+        "authority_host_learning_resident_runtime.rs::RootResidentLearningRuntimeV3::run",
+        "authority_host_learning_resident_transport.rs::RootResidentLearningHandleV3::serve_original_stream"
+      ],
+      "area": "Service supervision, A disconnect and cancellation",
+      "finding": "The service owns the original runtime and exactly one blocking server. A EOF merely ends/drops the server handle: the original coordinator deliberately waits for its independent Root cancellation and can retain active admitted work. Explicit Root cancellation or global expiry cancels the child token, shuts down the owned stream and awaits the combined work. Dropping the async service shuts down its clone and cancels its child token; no original peer process is killed or recreated.",
+      "limitation": "Dropping a Rust future does not synchronously join the already running blocking task; the code/documentation promise closure/cancellation on drop, not a completed join. Explicit cancellation join behavior and absence of lifecycle stalls have not been executed with actual original owners. Service Ok/Err is a lifetime result, not a learning disposition."
+    },
+    {
+      "anchors": [
+        "lib.rs Linux exports",
+        "root_production_handoff.rs::candidate_stages module",
+        "authority_host_learning_resident.rs::candidate_service module",
+        "authority_host_learning_candidate_service.rs original UFCS calls"
+      ],
+      "area": "Source-level type and module connections",
+      "finding": "The four old files are insert-only with every original byte retained. Linux mounts/exports, child access to parent-private original registration state, Root profile getters, AgentdError IO/GenerationFenced variants and explicit original UFCS call targets are present in the pinned baseline. The new consuming deadline method only reduces private fields. No known missing name or type mismatch was identified by this manual review.",
+      "limitation": "This is not Rust compilation, borrow checking, linter approval or a complete typed-caller result. Exact formatted literals and all new caller/fence data remain unfinished."
+    }
+  ],
+  "source_pins": [
+    {
+      "bytes": 22519,
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/AGENTS.md",
+      "path": "AGENTS.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 7941,
+      "git_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "sha256": "c99ed381b8c36a7123b5c8b90033759480b078ef8f4adfeb71c45d30ad182907",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 9708,
+      "git_blob": "02759f257a58147e8416391d9c1062e93bbc112c",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "sha256": "5f8c7bd39912e2954fb5333279b9459ad3ff7c9f943818ab62e39aa270ee8445",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 11164,
+      "git_blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "sha256": "71fc4129fb952dd3b1034ef306bbaf91fac2511d6e8d764f5f7e184b5e0282bf",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 11651,
+      "git_blob": "22bb410849e9f5f93b433bfff4c44547822f4655",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+      "sha256": "471e8cf447e01984336d38f50f15742512be90e4c3422af3bae35171bf908690",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 14985,
+      "git_blob": "e16820f8bab3027ab74490f942a34c7ee5470739",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha256": "756dbde52a209fe2c86d3bc807a722a73f2a5fc1cf6f4092b1cfb599d6cfffd7",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 14991,
+      "git_blob": "3deaa319c779c5121e6e66ea94af14c77363c7d7",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "sha256": "5a96d731ff911cfa277069e4eee075b04a9f77d95cd1475c982fa7a81e663ae3",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 20694,
+      "git_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "sha256": "85b277723db22d79923f7fe33375ebce96e035d4b9d410124cde25b049b66a7f",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 8386,
+      "git_blob": "12f37a10e306a9ede9f67cedb1a4a02306b1c0b0",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs",
+      "sha256": "a4fe143479c623b4c39e88603bf2b45e3d9cc6d474a6eee19cf52989932bfc2c",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 6614,
+      "git_blob": "4d48a46967db39d0258d00c9ff0876a3dca53de2",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "sha256": "f68a71fd637a3f23b0e8c4f19a9712a34f14bdda84cf4fec61e98d811ac76f65",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 12252,
+      "git_blob": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "sha256": "1e3e48412677a08d9e993613c305c9abf95571627819699229f4449e96a62631",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 8471,
+      "git_blob": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "sha256": "baa469c2e6fb690ddf7a0dd1d19b6443b309f7090d48ccbb2df0d293e794d13d",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 2813,
+      "git_blob": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/error.rs",
+      "path": "codex-rs/hepta-agentd/src/error.rs",
+      "sha256": "1131916265c0c1a27a2f9f87150f181e9701f56bf867a716f006595a6331287f",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 14022,
+      "git_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "sha256": "47231d32f69c0a70f7daed27cc23db35e562ce46bbe02063ad8db652af20e3aa",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 2841,
+      "git_blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "sha256": "f2c5a466095a8c7648b1865d48278c81eea5e2007980bc91290eaad67b311406",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 70987,
+      "git_blob": "b46baf3d8280114c937799f0430942ec3863afa8",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/lib.rs",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "bd9f28b05983696d103ec1dcfa0d8d1e94beeec5de3ff9390ebdd1fee4e379a0",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 20199,
+      "git_blob": "5090b7d68c778cef21d18b7f027dba7d4c8e5033",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/notes_bootstrap.rs",
+      "path": "codex-rs/hepta-agentd/src/notes_bootstrap.rs",
+      "sha256": "bb7671b47962dae55454d25f6a32fed5b5234dd4d3169b59aca25414b95c5375",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 9788,
+      "git_blob": "9d3d24bd5104be99372c8a55859360e792120605",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "sha256": "e2e6f4d977f2648aafef7717ce670228856019ff6fa5f201f0571b68db94cefb",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 9366,
+      "git_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "sha256": "652ab0c4177d5105bc55b2a7ba2308eb53483ead3b454647bd958caf285f89ed",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 7428,
+      "git_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-agentd/src/root_production_learning_handoff_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff_tests.rs",
+      "sha256": "8399c08f4f09e305334ef1c7f5bc5c53efa3242e2b14d175d4dac1b9a16d8b36",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 6672,
+      "git_blob": "36e4524baea04320b7610325579f0ff206690fab",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/before/codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352",
+      "version": "cc57 reference"
+    },
+    {
+      "bytes": 7038,
+      "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 8197,
+      "git_blob": "41ad5a933ad6a169b62ae216bde159e56800ed3c",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "sha256": "6b9f30ad0e65aa584e6fb5bf5892edfce7cbb4dedbded013b079c2b68bdb54b2",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 12663,
+      "git_blob": "76aaefe1917059fd4004ac938357ce4aed8d8320",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "sha256": "1f4b7658e0bb6f8bc59932cf00c9d2b80056af389d1433b3790ecf866ab4ef6a",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 71577,
+      "git_blob": "30c5911842286a68bb09a7238c3b7ad1417f8fbd",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "edb410fcd20a3e3f7ca714a75b50ec2785933ce4d32c33294824a7a29737f2ef",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 12564,
+      "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 6195,
+      "git_blob": "1dc042509e0590efc135c1cf89acdb7cfbf331c0",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "sha256": "b92c3d06393f686e1fa6c47959ca9db53868a17375cfc733967fe9fcdd8c027e",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 5029,
+      "git_blob": "955040ae66c1682ead7b7b8dda5379993eb59eb5",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "sha256": "9ef39e5c43d879218df8ad98546c31e1a329f8ec55991f7a460a348392ea2254",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 9613,
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+      "local_path": "/tmp/hepta-36fa-root-resident-provider-proposal-v1/after/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f",
+      "version": "candidate after"
+    },
+    {
+      "bytes": 6221,
+      "git_blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "local_path": "/tmp/hepta-36fa-root-provider-independent-review-v1/additional-originals/authority_host_channel.rs",
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "sha256": "cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78",
+      "version": "cc57 exact blob independently fetched"
+    },
+    {
+      "bytes": 5421,
+      "git_blob": "ac11017d0492be1ad30ae1d984ca807bf317ebf3",
+      "local_path": "/tmp/hepta-36fa-root-provider-independent-review-v1/additional-originals/authority_host_descriptor.rs",
+      "path": "codex-rs/hepta-contracts/src/authority_host_descriptor.rs",
+      "sha256": "4dff73553ff9f1afa43dd3bcf675e69536198069c5c285310394bc0d6e7c88cd",
+      "version": "cc57 exact blob independently fetched"
+    }
+  ],
+  "status": "NO_CONCRETE_SOURCE_DEFECT_IDENTIFIED_WITHIN_REVIEWED_SCOPE; HOLD_FOR_COMPILE_INTEGRATION_AND_GATES"
+}
