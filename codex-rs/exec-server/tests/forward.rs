@@ -5,6 +5,7 @@ mod relay_support;
 
 use std::collections::HashMap;
 
+use anyhow::Context;
 use anyhow::Result;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -25,8 +26,12 @@ use tokio_util::task::AbortOnDropHandle;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
-    let relay = RelayTest::new().await?;
-    let mut destination = common::exec_server::exec_server().await?;
+    let relay = RelayTest::new()
+        .await
+        .context("create forwarding relay fixture")?;
+    let mut destination = common::exec_server::exec_server()
+        .await
+        .context("start forwarding destination")?;
     let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel();
     let forwarder = AbortOnDropHandle::new(tokio::spawn(
         codex_exec_server::run_remote_environment_forward_until_shutdown(
@@ -37,7 +42,12 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
             },
         ),
     ));
-    let connection = relay.connect().await?;
+    let connection = relay.connect().await.with_context(|| {
+        format!(
+            "connect forwarding relay; destination {}",
+            destination.child_status()
+        )
+    })?;
     let client = &connection.client;
 
     for (process_id, expected_output, expected_exit) in [
@@ -77,7 +87,19 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 network_proxy: None,
             }),
         )
-        .await??;
+        .await
+        .with_context(|| {
+            format!(
+                "forwarded exec {process_id:?} exceeded {TEST_TIMEOUT:?}; destination {}",
+                destination.child_status()
+            )
+        })?
+        .with_context(|| {
+            format!(
+                "forwarded exec {process_id:?} failed; destination {}",
+                destination.child_status()
+            )
+        })?;
         let (output, exit_code) = timeout(TEST_TIMEOUT, async {
             let mut output = Vec::new();
             let mut after_seq = None;
@@ -101,7 +123,19 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 after_seq = response.next_seq.checked_sub(1);
             }
         })
-        .await??;
+        .await
+        .with_context(|| {
+            format!(
+                "forwarded output/exit {process_id:?} exceeded {TEST_TIMEOUT:?}; destination {}",
+                destination.child_status()
+            )
+        })?
+        .with_context(|| {
+            format!(
+                "read forwarded output/exit {process_id:?} failed; destination {}",
+                destination.child_status()
+            )
+        })?;
         assert_eq!(
             (String::from_utf8(output)?.replace("\r\n", "\n"), exit_code),
             (format!("{expected_output}\n"), Some(expected_exit))
@@ -121,7 +155,19 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
             sandbox: None,
         }),
     )
-    .await??;
+    .await
+    .with_context(|| {
+        format!(
+            "forwarded 13 MiB file write exceeded {TEST_TIMEOUT:?}; destination {}",
+            destination.child_status()
+        )
+    })?
+    .with_context(|| {
+        format!(
+            "forwarded 13 MiB file write failed; destination {}",
+            destination.child_status()
+        )
+    })?;
     // A following request must still arrive as its own complete message.
     let read_response = client
         .fs_read_file(FsReadFileParams {
@@ -129,12 +175,30 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
             follow_symlinks: None,
             sandbox: None,
         })
-        .await?;
+        .await
+        .with_context(|| {
+            format!(
+                "read back forwarded file failed; destination {}",
+                destination.child_status()
+            )
+        })?;
     assert_eq!(STANDARD.decode(read_response.data_base64)?, contents);
     connection.assert_encrypted()?;
     connection.close().await;
     let _ = shutdown_tx.send(());
-    timeout(TEST_TIMEOUT, forwarder).await???;
-    destination.shutdown().await?;
+    timeout(TEST_TIMEOUT, forwarder)
+        .await
+        .with_context(|| {
+            format!(
+                "forwarder shutdown exceeded {TEST_TIMEOUT:?}; destination {}",
+                destination.child_status()
+            )
+        })?
+        .context("join forwarding task")?
+        .context("forwarding task failed during shutdown")?;
+    destination
+        .shutdown()
+        .await
+        .context("stop forwarding destination")?;
     Ok(())
 }
