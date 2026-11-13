@@ -129,10 +129,10 @@ async fn normal_review_completion_cancellation_preserves_the_finish_fence() {
     retire_finish(&review_session, &identity, &completion);
 }
 
-#[tokio::test]
+// Start paused so exact deadlines share the timer driver's millisecond origin.
+#[tokio::test(start_paused = true)]
 async fn normal_review_completion_deadline_preserves_the_finish_fence() {
     let (review_session, tx_event, rx_sub) = test_review_session().await;
-    tokio::time::pause();
     let (identity, completion) = register_finish(&review_session, "current-turn");
     tx_event
         .send(turn_complete_event("current-turn", Some("fresh"), Some(42)))
@@ -201,10 +201,10 @@ async fn normal_review_drain_waits_for_only_its_finish_owner() {
     retire_finish(&review_session, &unrelated_identity, &unrelated_completion);
 }
 
-#[tokio::test]
+// Start paused so exact deadlines share the timer driver's millisecond origin.
+#[tokio::test(start_paused = true)]
 async fn normal_review_drain_finish_wait_does_not_restart_the_drain_budget() {
     let (review_session, tx_event, rx_sub) = test_review_session().await;
-    tokio::time::pause();
     let (identity, completion) = register_finish(&review_session, "current-turn");
     let started = tokio::time::Instant::now();
     let mut drain = Box::pin(interrupt_and_drain_turn(&review_session, "current-turn"));
