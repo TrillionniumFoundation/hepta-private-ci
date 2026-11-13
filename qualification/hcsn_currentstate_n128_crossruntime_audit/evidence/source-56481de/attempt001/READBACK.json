@@ -1,0 +1,47 @@
+{
+  "all_closed": false,
+  "artifact": {
+    "bytes": 3868,
+    "digest_sha256": "52c39984dc5edad36511740ce28277b6f427fc0e15de729ace98b94fc6831873",
+    "id": 14008447416,
+    "members": 4
+  },
+  "attempt": 1,
+  "audit_cost": {
+    "maximum_rss_kib": 45916,
+    "system_seconds": 0.02,
+    "user_seconds": 2.23,
+    "wall_seconds": 2.27
+  },
+  "audit_execution": {
+    "matrix_exponentials": 0,
+    "model_calls": 0,
+    "numerical_calls": 0,
+    "optimizer_updates": 0,
+    "torch_operations": 0
+  },
+  "cross_runtime_exact_byte_gate": "RED_UNCHANGED",
+  "job": {
+    "completed_at": "2026-11-13T03:50:27Z",
+    "conclusion": "success",
+    "id": 131674409030,
+    "started_at": "2026-11-13T03:45:36Z",
+    "wall_seconds": 291
+  },
+  "observations": {
+    "capsule_differing_bytes": 1489,
+    "coordinate_count": 1151028,
+    "exact_coordinates": 1149665,
+    "max_absolute_difference": 2.7755575615628914e-17,
+    "max_relative_eligible": 5.621079445829644e-15,
+    "max_scaled_difference": 2.7755575615628914e-17,
+    "max_ulp_distance": 50,
+    "mismatched_coordinates": 1363,
+    "sign_mismatches": 0,
+    "unique_worst_rows": 32
+  },
+  "qualification": false,
+  "run_id": 43361062277,
+  "source_commit": "56481de6db8876e0b9f609b42f8819636ba757c3",
+  "status": "PASS_EXACT_READBACK_PUBLICATION_ONLY"
+}
