@@ -15,6 +15,7 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::Error as ControlError;
 use codex_hepta_neuron::*;
 use pretty_assertions::assert_eq;
+use tokio::sync::oneshot;
 use tokio::time::sleep;
 use tokio::time::timeout;
 
@@ -48,8 +49,18 @@ impl CellGenerationWorkerV2 for UnknownWorker {
 }
 
 struct ObservedPort {
-    inner: ControlledCellGenerationPortV2,
+    inner: Option<ControlledCellGenerationPortV2>,
+    returned: Option<oneshot::Sender<ControlledCellGenerationPortV2>>,
     contacts: Arc<AtomicUsize>,
+}
+
+impl Drop for ObservedPort {
+    fn drop(&mut self) {
+        if let (Some(inner), Some(returned)) = (self.inner.take(), self.returned.take()) {
+            // Preserve the original port so the test can observe its real close result.
+            let _ = returned.send(inner);
+        }
+    }
 }
 
 impl CellGenerationControlPortV2 for ObservedPort {
@@ -59,21 +70,22 @@ impl CellGenerationControlPortV2 for ObservedPort {
         request: &CellGenerationRequestV2,
     ) -> Result<CellGenerationProposalV2, CellGenerationErrorV2> {
         self.contacts.fetch_add(1, Ordering::SeqCst);
-        self.inner.execute_generation(manifest, request)
+        checked(self.inner.as_mut().ok_or("original control owner"))
+            .execute_generation(manifest, request)
     }
 
     fn read_generation(
         &mut self,
         request: &CellGenerationRequestV2,
     ) -> Result<Option<CellGenerationProposalV2>, CellGenerationErrorV2> {
-        self.inner.read_generation(request)
+        checked(self.inner.as_mut().ok_or("original control owner")).read_generation(request)
     }
 
     fn cancel_generation(
         &mut self,
         request: &CellGenerationRequestV2,
     ) -> Result<(), CellGenerationErrorV2> {
-        self.inner.cancel_generation(request)
+        checked(self.inner.as_mut().ok_or("original control owner")).cancel_generation(request)
     }
 }
 
@@ -137,7 +149,11 @@ async fn start(
     clock: Clock,
     worker: Arc<UnknownWorker>,
     contacts: Arc<AtomicUsize>,
-) -> (NeuronGenerationRuntimeHandleV2, RuntimeTasks) {
+) -> (
+    NeuronGenerationRuntimeHandleV2,
+    RuntimeTasks,
+    oneshot::Receiver<ControlledCellGenerationPortV2>,
+) {
     let port = checked(ControlledCellGenerationPortV2::spawn(
         open_control(fixture).await,
         ControlledCellGenerationConfigV2 {
@@ -150,11 +166,13 @@ async fn start(
         worker,
         Arc::clone(&clock),
     ));
+    let (returned, control_returned) = oneshot::channel();
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
         fixture.journal(),
         ObservedPort {
-            inner: port,
+            inner: Some(port),
+            returned: Some(returned),
             contacts,
         },
         move || clock(),
@@ -167,7 +185,14 @@ async fn start(
         Arc::clone(fixture.state()),
         lifetime,
     ));
-    (handle, tasks)
+    (handle, tasks, control_returned)
+}
+
+fn shutdown_control(mut returned: oneshot::Receiver<ControlledCellGenerationPortV2>) {
+    // The service has been joined, so its adapter must have returned the port.
+    let mut original = checked(returned.try_recv());
+    // Successful completion is published only after the actor drops its file owner.
+    checked(original.shutdown());
 }
 
 fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
@@ -206,7 +231,7 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_returned) = start(
         &fixture,
         changing_clock,
         Arc::clone(&worker),
@@ -260,10 +285,11 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let drained_bytes = journal_bytes(&fixture);
     tasks.shutdown().await;
     drop(handle);
+    shutdown_control(control_returned);
     assert_eq!(control_bytes(&fixture), control_before);
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_returned) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -279,6 +305,7 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
     drop(handle);
+    shutdown_control(control_returned);
     assert_eq!(control_bytes(&fixture), control_before);
 }
 
@@ -289,7 +316,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Fence);
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_returned) = start(
         &fixture,
         changing_clock,
         Arc::clone(&worker),
@@ -304,6 +331,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     assert!(checked(fixture.state().is_fenced()));
     tasks.shutdown().await;
     drop(handle);
+    shutdown_control(control_returned);
     let control_before = control_bytes(&fixture);
     {
         let journal = fixture.journal();
@@ -316,7 +344,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     }
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_returned) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -346,6 +374,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
     drop(handle);
+    shutdown_control(control_returned);
     assert_eq!(control_bytes(&fixture), control_before);
 }
 
@@ -355,7 +384,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     let clock = clock();
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_returned) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -391,6 +420,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
     drop(handle);
+    shutdown_control(control_returned);
     let control_before = control_bytes(&fixture);
     {
         let control = open_control(&fixture).await;
@@ -398,7 +428,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     }
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) =
+    let (handle, mut tasks, control_returned) =
         start(&fixture, clock, Arc::clone(&worker), Arc::clone(&contacts)).await;
     let bytes = journal_bytes(&fixture);
     assert_eq!(
@@ -421,5 +451,6 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     );
     tasks.shutdown().await;
     drop(handle);
+    shutdown_control(control_returned);
     assert_eq!(control_bytes(&fixture), control_before);
 }
