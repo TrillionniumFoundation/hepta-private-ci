@@ -681,6 +681,7 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    use anyhow::Context;
     use codex_hepta_automation::ACTION_SKILL_SCHEMA_VERSION;
     use codex_hepta_automation::ActionSkillBudgetV1;
     use codex_hepta_automation::ActionSkillContractV1;
@@ -1020,23 +1021,24 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
-        check_plain_host_dispatch(WIRE).await;
+    async fn host_dispatches_exact_wire_payload_once() -> anyhow::Result<()> {
+        check_plain_host_dispatch(WIRE).await
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_preserves_ordinary_opaque_and_non_skill_json_payloads() {
+    async fn host_preserves_ordinary_opaque_and_non_skill_json_payloads() -> anyhow::Result<()> {
         for wire in [
             b"ordinary opaque provider bytes".as_slice(),
             br#"{"contract_digest":"ordinary-business-field"}"#.as_slice(),
             br#"{"destination_id":"business-destination","body":"ordinary"}"#.as_slice(),
             br#"{"metadata":{"contract_digest":"nested","destination_id":"nested"}}"#.as_slice(),
         ] {
-            check_plain_host_dispatch(wire).await;
+            check_plain_host_dispatch(wire).await?;
         }
+        Ok(())
     }
 
-    async fn check_plain_host_dispatch(wire: &[u8]) {
+    async fn check_plain_host_dispatch(wire: &[u8]) -> anyhow::Result<()> {
         let fixture = Fixture::new().await;
         let now_ms = u64::try_from(
             SystemTime::now()
@@ -1079,17 +1081,17 @@ mod tests {
         let (host, final_use_signer, _host_file) = fixture.open_effect_host(&server, &scope);
         let revocations_file = host.revocations_file.clone();
         let grant = signed_final_use(&intent, now_ms, &final_use_signer);
-        let trusted_head = host.authority.revocation_head().expect("trusted head");
-        let trusted_frontier = host.authority.frontier().expect("trusted frontier");
+        let trusted_head = host.authority.revocation_head().context("trusted head")?;
+        let trusted_frontier = host.authority.frontier().context("trusted frontier")?;
         let mut changed_same_revision = trusted_head.clone();
         changed_same_revision
             .revoked_grant_ids
             .insert(grant.grant.grant_id.clone());
         fs::write(
             &revocations_file,
-            serde_json::to_vec(&changed_same_revision).expect("changed head json"),
+            serde_json::to_vec(&changed_same_revision).context("changed head json")?,
         )
-        .expect("write conflicting same-revision head");
+        .context("write conflicting same-revision head")?;
         assert!(matches!(
             host.execute(
                 &fixture.store,
@@ -1102,15 +1104,37 @@ mod tests {
             .await,
             Err(AgentdError::GenerationFenced(_))
         ));
-        assert_eq!(host.authority.revocation_head().unwrap(), trusted_head);
-        assert_eq!(host.authority.frontier().unwrap(), trusted_frontier);
-        assert_eq!(host.authority.capacity().unwrap().used_nonces, 0);
-        assert!(server.received_requests().await.unwrap().is_empty());
+        assert_eq!(
+            host.authority
+                .revocation_head()
+                .context("read current revocation head")?,
+            trusted_head
+        );
+        assert_eq!(
+            host.authority
+                .frontier()
+                .context("read current authority frontier")?,
+            trusted_frontier
+        );
+        assert_eq!(
+            host.authority
+                .capacity()
+                .context("read current authority capacity")?
+                .used_nonces,
+            0
+        );
+        assert!(
+            server
+                .received_requests()
+                .await
+                .context("recorded provider requests")?
+                .is_empty()
+        );
         fs::write(
             &revocations_file,
-            serde_json::to_vec(&trusted_head).expect("restore head json"),
+            serde_json::to_vec(&trusted_head).context("restore head json")?,
         )
-        .expect("restore exact trusted head");
+        .context("restore exact trusted head")?;
         let receipt = host
             .execute(
                 &fixture.store,
@@ -1136,21 +1160,29 @@ mod tests {
             .insert(grant.grant.grant_id.clone());
         host.authority
             .update_revocations(advanced_head.clone())
-            .expect("trusted authority advance");
-        let advanced_frontier = host.authority.frontier().unwrap();
+            .context("trusted authority advance")?;
+        let advanced_frontier = host
+            .authority
+            .frontier()
+            .context("read current authority frontier")?;
         assert!(matches!(
             host.clone().refresh_revocations(),
             Err(AgentdError::GenerationFenced(_))
         ));
-        assert_eq!(host.authority.frontier().unwrap(), advanced_frontier);
+        assert_eq!(
+            host.authority
+                .frontier()
+                .context("read current authority frontier")?,
+            advanced_frontier
+        );
         fs::write(
             &revocations_file,
-            serde_json::to_vec(&advanced_head).expect("advanced head json"),
+            serde_json::to_vec(&advanced_head).context("advanced head json")?,
         )
-        .expect("publish the exact advanced head");
+        .context("publish the exact advanced head")?;
         host.clone()
             .refresh_revocations()
-            .expect("current cloned host");
+            .context("current cloned host")?;
         // Removing a revocation fails with either the same or a newer revision.
         // Neither refusal changes the durable head or refunds the used nonce.
         for revision in [advanced_head.revision, advanced_head.revision + 1] {
@@ -1159,22 +1191,38 @@ mod tests {
             removed.revoked_grant_ids.clear();
             fs::write(
                 &revocations_file,
-                serde_json::to_vec(&removed).expect("removed head json"),
+                serde_json::to_vec(&removed).context("removed head json")?,
             )
-            .expect("write invalid revocation removal");
+            .context("write invalid revocation removal")?;
             assert!(matches!(
                 host.refresh_revocations(),
                 Err(AgentdError::GenerationFenced(_))
             ));
-            assert_eq!(host.authority.revocation_head().unwrap(), advanced_head);
-            assert_eq!(host.authority.frontier().unwrap(), advanced_frontier);
-            assert_eq!(host.authority.capacity().unwrap().used_nonces, 1);
+            assert_eq!(
+                host.authority
+                    .revocation_head()
+                    .context("read current revocation head")?,
+                advanced_head
+            );
+            assert_eq!(
+                host.authority
+                    .frontier()
+                    .context("read current authority frontier")?,
+                advanced_frontier
+            );
+            assert_eq!(
+                host.authority
+                    .capacity()
+                    .context("read current authority capacity")?
+                    .used_nonces,
+                1
+            );
         }
         fs::write(
             &revocations_file,
-            serde_json::to_vec(&advanced_head).expect("restore advanced json"),
+            serde_json::to_vec(&advanced_head).context("restore advanced json")?,
         )
-        .expect("restore advanced head");
+        .context("restore advanced head")?;
         // A now-revoked grant does not erase the already completed effect. The
         // identical terminal read below still returns its original receipt.
         let replay = host
@@ -1230,6 +1278,7 @@ mod tests {
             .is_err()
         );
         server.verify().await;
+        Ok(())
     }
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn plain_host_rejects_skill_envelopes_before_claim_or_provider_contact() {
