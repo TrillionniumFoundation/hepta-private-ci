@@ -295,13 +295,13 @@ fn cold_case(case: &str) -> anyhow::Result<()> {
     )?));
     let root = &kept.0;
     let expected: ColdExpected = serde_json::from_slice(&fs::read(root.join("expected.json"))?)?;
-    let before = acknowledged_bytes(&root)?;
+    let before = acknowledged_bytes(root)?;
     child(control.path(), case, "recover")?;
     let recovered: u32 = fs::read_to_string(control.path().join("recovery-pid"))?.parse()?;
     assert_ne!(expected.producer_pid, recovered);
     assert_ne!(expected.producer_pid, std::process::id());
     assert_ne!(recovered, std::process::id());
-    assert_eq!(acknowledged_bytes(&root)?, before);
+    assert_eq!(acknowledged_bytes(root)?, before);
     Ok(())
 }
 
