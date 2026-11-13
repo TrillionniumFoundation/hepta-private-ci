@@ -1,0 +1,13 @@
+{
+  "format": "hepta-shared-readback-linux-export-review-v1",
+  "status": "static_correction_no_compilation",
+  "finding": "The inserted shared export consumed the existing cfg attribute, leaving the following original ArtifactCheckpoint export unguarded. Restore that exact cfg on the original export.",
+  "one_inserted_line": "#[cfg(target_os = \"linux\")]",
+  "original_v2_preserved": true,
+  "original_lib_recovered_exactly_by_removing_only_new_guarded_export": true,
+  "only_lib_changed": true,
+  "tests_run": 0,
+  "compiler_run": 0,
+  "native_run": 0,
+  "source_reference_changes": 0
+}

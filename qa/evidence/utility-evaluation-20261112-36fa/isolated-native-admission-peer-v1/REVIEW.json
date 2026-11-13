@@ -1,0 +1,52 @@
+{
+  "format": "hepta-isolated-native-admission-independent-peer-v1",
+  "conclusion": "No remaining concrete static blocker in the reviewed v2. HOLD only: actual isolated-materialization success has not been observed.",
+  "reviewed_admission": {"bytes": 26963, "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d", "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f"},
+  "reviewed_materializer": {"bytes": 57607, "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436", "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f"},
+  "evidence_boundary": {
+    "mode": "Offline full-source and producer-consumer schema review plus pure AST/identity comparison",
+    "admission_constructor_called": false,
+    "materializer_or_gate_main_called": false,
+    "H_calls": 0,
+    "Cargo_tests_format_source_or_ref_mutations": 0,
+    "qualification": false,
+    "runtime_status": "The single approved materialization request returned tunnel_client_not_seen/404 without a job ID; execution remains Unknown. This report is not a substitute success proof."
+  },
+  "findings": [
+    {
+      "topic": "Two independent V5 instances",
+      "result": "h retains original REPO, SEED, TARGET and runtime-restoration checks. m uses the same exact V5 bytes but binds only current source REPO/cc57/B7/OUT. Historical format and canonical records remain bound to the old source path. Neither history nor runtime proof is rewritten to claim execution in the new repository."
+    },
+    {
+      "topic": "Actual materialization prerequisite",
+      "result": "The consumer pins driver 972ec744, packet 06503652 and approved config 692d2b82. It requires exact normal supervisor/job, successful producer status, all three final audits, all action/cleanup flags, complete two-snapshot object scope, full physical inventory, native projection, raw Git/index baseline and same coordination lock. job_id/result/supervisor are null in the reviewed HOLD configuration, and admission refuses them."
+    },
+    {
+      "topic": "Producer schema",
+      "result": "destination_physical emits the required five-field complete inventory and three-field native identity; current_git_state emits the nine exact Git fields; verify_index supplies original raw identity, 15188 entries, actual stat checks and TREE-only extensions. The producer emits the four COMMANDS/MUTATION_INTENTS/INPUT_IDENTITIES.before/ARTIFACTS pins consumed by fixed paths, with command terminals and four mutation kinds checked. Old physical and fixed-metadata observations remain explicitly separate from whole-object-store metadata."
+    },
+    {
+      "topic": "Corrected lock stat mapping",
+      "result": "V1's device/inode/mode/uid/nlink lookup would not match producer stat_identity. V2 explicitly maps st_dev/st_ino/st_uid/st_nlink and applies stat.S_IMODE to st_mode. Missing fields still reject; no default or fallback was added. The unexecuted V1 is retained."
+    },
+    {
+      "topic": "Current physical source and Git",
+      "result": "After validating actual materialization, m.git_state must equal that new actual raw Git baseline. Original 5118 inventories must exactly match cc57's canonical 13d3 full identity and all 15188 entries. Original reviewed source controls are re-read at the new path. Final raw Git equality and all original physical rows remain mandatory; ignored generated output is recorded separately from the unchanged original native five-field snapshot gate."
+    },
+    {
+      "topic": "Environment, resources and gates",
+      "result": "Unchanged h.environment_preflight retains actual restored tool/file pins and old proof paths. Current target/UV project/cache/Ruff locations are separately checked against the new source. The original global process guard runs before every native stage. 32 GiB and create_target_if_absent=false are retained. No b92/V5/native command, gate budget, original four required evaluation cases, stack or per-test deadline is changed."
+    },
+    {
+      "topic": "Configuration paths",
+      "result": "records_parent remains the common external evidence parent and is not a stale source baseline; native out comes from the new records path. The source-gates config and handoff paths retain the original completed historical execution. The reviewed native wrapper does not dispatch the source-gates wrapper or relabel those paths as a new-source execution."
+    }
+  ],
+  "limits_and_next_conditions": [
+    "This is a static control review, not execution approval or qualification.",
+    "Only actual complete successful materializer RESULT and normal supervisor with exact identities may fill the three future proof values; transport failure cannot do so.",
+    "Root must separately approve the filled configuration and exact launcher. The initial live source/metadata, resources and process guard remain mandatory.",
+    "Historical source/native failures, including missing archives and the original detached/no-ref refusal, remain unchanged. A successful future new materialization would not retroactively alter them."
+  ],
+  "reproducibility": "review_static.py reads exact immutable source bytes and configuration; it parses AST and computes identities only. STATIC_BYTE_REVIEW.json is its actual output."
+}

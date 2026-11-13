@@ -1,0 +1,67 @@
+{
+  "format": "hepta-isolated-cc57-provider-progress-checkpoint-v1",
+  "cutoff_utc": "2026-11-13 03:34:01 UTC",
+  "evidence_parent": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+  "previous_leaf": "02f98a58fbed34eb796b38c75b048fac3d518b2f",
+  "previous_files": 3638,
+  "intended_final_files": 4287,
+  "old_non_readme_paths_unchanged": 3637,
+  "old_readme_archive": {
+    "path": "checkpoints/README_3638FILES_BEFORE_ISOLATED_MATERIALIZATION_AND_NATIVE_REVIEW.md",
+    "git_blob": "beaa457aad524b8f16bc71bc7c2029a65c327b99"
+  },
+  "new_readme": {
+    "git_blob": "870ac12eb491ccd2c5a3734437a325a70c466ede",
+    "bytes": 14745,
+    "sha256": "7ad70289dd89617560befdd1c3efbf9f51080aec578f7369c0daa387d41db78b"
+  },
+  "source": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "ref_changed": false
+  },
+  "source_gates": {
+    "job_id": "1a1d23c92f3-2564-1cb4",
+    "status": "PASS",
+    "new_provider_included": false
+  },
+  "materialization": {
+    "job_id": "1a1d2d20686-392-36",
+    "status": "MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY",
+    "full_capture_files": 54,
+    "placement": "3615ba45eff7e0d58895e3e33d12b66540fc043e",
+    "root_review": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b"
+  },
+  "native": {
+    "job_id": "1a1d2e908ac-392-5a",
+    "normal_exit": 1,
+    "timed_out": false,
+    "behavioral_tests_started": false,
+    "behavioral_commands": 0,
+    "error": "ValueError: RUSTY_V8_ARCHIVE actual existing file required",
+    "source_comparison": "unknown_missing_before",
+    "placement": "b2f5cde318ed5e7db120d429f44d5cefafa16011",
+    "full_capture_files": 47,
+    "root_review": "9f511c4abaff9bf2a6be7aab14bd84d8f9aae02e"
+  },
+  "provider": {
+    "combined_43_manifest": "08e8369e6c5adc6f6ae1ead0d44b7e932564448e",
+    "fresh_stage_packet": "23906f521d55c171123c03a8b0e27da431c618cc",
+    "typed_call_packet": "a965a2106c38be86ab0670c7ba090404c3dbc51d",
+    "helper_rename": "bfc96752df8c76fe59676696b6a1f77cef038aab",
+    "latest_changed_rust_paths": 46,
+    "formatted": false,
+    "compiled": false,
+    "behavior_tests_run": false,
+    "full_public_fresh_complete": false
+  },
+  "root_test_preparation": {
+    "old_parents": 33,
+    "candidate_parents": 39,
+    "all_old_parents_preserved": true,
+    "executed": false
+  },
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "publication_scope": "Only the qa/evidence/utility-evaluation-20261112-36fa leaf and its three tree ancestors are changed. Root code outside this evidence leaf is not asserted equal to current source."
+}

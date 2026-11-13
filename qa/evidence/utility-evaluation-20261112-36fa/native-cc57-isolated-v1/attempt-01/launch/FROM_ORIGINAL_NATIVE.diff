@@ -1,0 +1,64 @@
+--- 69e8/original-native-bootstrap.py
++++ isolated-native-candidate.py
+@@ -1,12 +1,12 @@
+ import base64, hashlib, json, os, pathlib, stat, sys, traceback
+ 
+-BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2')
+-PINS = {'qualification-admission.py': {'bytes': 14294, 'sha256': 'f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c', 'git_blob': 'a8be08b6cb00536817e2d68c42fa4b90d1e9ff72'}, 'source-gates-wrapper.py': {'bytes': 5610, 'sha256': 'f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457', 'git_blob': '8607fa4bf00fc8cf535849de04d1eb6ff29429b3'}, 'native-wrapper.py': {'bytes': 13360, 'sha256': 'fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f', 'git_blob': 'de3e9dc5e7eb30f47929f9e1ba9f460035a94fae'}, 'native-driver.original.py': {'bytes': 14986, 'sha256': '3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231', 'git_blob': 'b92ddded4fce78aeb076d022471c62bf81ce2e4f'}, 'PLAN.original.json': {'bytes': 32246, 'sha256': '2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619', 'git_blob': '3aefbc71d69d8014eed9e5a18269bbcc866a7583'}, 'APPROVED_QUALIFICATION_INPUT.json': {'bytes': 10960, 'sha256': '38169c3726baaf32eb55218bbb3e274d2f40d4957630b253d5d31bad48828365', 'git_blob': '9cd798c77f3cf9f3139c4f0b345bcc3be2b894da'}, 'APPROVED_SOURCE_GATES_CONFIG.json': {'bytes': 820, 'sha256': 'f9bab5b64869c5b8a51545a73c6d1fe7e14767ead25239e8e8b718ff73f5c61c', 'git_blob': 'a6dbed0b4eea650f1af616df5dd1e9719475dff4'}, 'CANONICAL_ALIGNMENT_NORMAL.original.json': {'bytes': 953, 'sha256': '084fb2db14e845c889ca3be77e10883ee9318b88b0700254f2126aa816a42e83', 'git_blob': '041ee7bcd32bcab8f7bedec17ac998cfd929326f'}}
++BASE = pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/final-native-cc57-isolated-v1")
++PINS = {"qualification-admission.py":{"bytes":26963,"sha256":"d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d","git_blob":"23d412ed67927a6cbfa5f521884e891afc93eb6f"},"native-wrapper.py":{"bytes":13360,"sha256":"fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f","git_blob":"de3e9dc5e7eb30f47929f9e1ba9f460035a94fae"},"native-driver.original.py":{"bytes":14986,"sha256":"3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231","git_blob":"b92ddded4fce78aeb076d022471c62bf81ce2e4f"},"PLAN.original.json":{"bytes":32246,"sha256":"2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619","git_blob":"3aefbc71d69d8014eed9e5a18269bbcc866a7583"},"APPROVED_QUALIFICATION_INPUT.json":{"bytes":11785,"sha256":"ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f","git_blob":"1666e5df58b33f1786287ba94d1d74b79442f8d6"},"ISOLATED_MATERIALIZATION_NORMAL.original.json":{"bytes":951,"sha256":"a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa","git_blob":"c507335b611474857eff53b738071a7a3f27dc99"}}
+ SOURCE_SUCCESS = {
+     'job_id': '1a1d23c92f3-2564-1cb4',
+-    'result_path': str(BASE / 'source-handoff' / 'RESULT.json'),
++    'result_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/RESULT.json',
+     'result': {'bytes': 692, 'sha256': '6a18c716d85035f6dfbed2a73df36244694bceced63450bad4a19bce3ac3615c', 'git_blob': 'd52e6d9a85fed924ea3b29fad1d22347d5732a34'},
+-    'original_run_result_path': str(BASE / 'source-handoff' / 'ORIGINAL_RUN_RESULT.json'),
++    'original_run_result_path': '/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-cc57-v2/source-handoff/ORIGINAL_RUN_RESULT.json',
+     'original_run_result': {'bytes': 5082, 'sha256': '43fed7f7ed12a8dde409891132be0b876d7594f85072f441a4c5dfc8011f9083', 'git_blob': '0f5f9a8332255d4c7341b58207725254e4c34c76'},
+     'supervisor': {'bytes': 954, 'sha256': 'a119569c3460e6e5fcd434c4e1144864bbf0bed38811cb77e3a8563307d88109', 'git_blob': '851a18c3063d40c1208b198d02bc875b052a83d7'},
+ }
+@@ -66,17 +66,37 @@
+     check(all(isinstance(SOURCE_SUCCESS[k], dict) for k in ('result', 'original_run_result', 'supervisor')),
+           'HOLD: complete actual source gates and Root exact launch review are still required')
+     real_parents()
++    raw_payload = sys.stdin.buffer.read(1048577)
++    check(len(raw_payload) <= 1048576, 'bounded exact native proof and input payload')
++    payload = json.loads(raw_payload)
++    check(set(payload) == {'format', 'files', 'source_supervisor_base64'}
++          and payload['format'] == 'hepta-isolated-native-staging-and-source-prerequisite-v1',
++          'exact isolated native proof schema')
++    check(isinstance(payload['files'], list) and len(payload['files']) == len(PINS),
++          'exact reviewed isolated input count')
++    files = {}
++    for item in payload['files']:
++        check(isinstance(item, dict) and set(item) == {'name', 'base64'}
++              and item['name'] in PINS and item['name'] not in files,
++              'exact unique reviewed isolated input name')
++        raw = base64.b64decode(item['base64'], validate=True)
++        check(identity(raw) == PINS[item['name']], 'exact isolated input bytes before any write')
++        files[item['name']] = raw
++    check(set(files) == set(PINS), 'complete six isolated input files')
++    normal = base64.b64decode(payload['source_supervisor_base64'], validate=True)
++    check(identity(normal) == SOURCE_SUCCESS['supervisor'], 'actual original source supervisor before any write')
++    BASE.mkdir(mode=0o700)
++    staging_started = True
+     s = BASE.lstat()
+     check(stat.S_ISDIR(s.st_mode) and not stat.S_ISLNK(s.st_mode)
+           and s.st_uid == os.getuid() and stat.S_IMODE(s.st_mode) == 0o700,
+-          'existing private reviewed qualification control')
++          'new private reviewed isolated qualification control')
++    input_rows = [retain(name, files[name]) for name in PINS]
+     files = {name: read_fixed(BASE / name, expected) for name, expected in PINS.items()}
+-    raw_payload = sys.stdin.buffer.read(1048577)
+-    check(len(raw_payload) <= 1048576, 'bounded exact native proof payload')
+-    payload = json.loads(raw_payload)
+-    check(set(payload) == {'format', 'source_supervisor_base64'}
+-          and payload['format'] == 'hepta-final-native-after-source-bootstrap-v1', 'exact native proof schema')
+-    normal = base64.b64decode(payload['source_supervisor_base64'], validate=True)
++    retain('ISOLATED_NATIVE_INPUTS_READBACK.json', (json.dumps({
++        'files': input_rows, 'native_wrapper_started': False,
++        'scope': 'Create-only control staging; historical source proofs keep their original absolute paths.'
++    }, indent=2, sort_keys=True) + '\n').encode())
+     check(identity(normal) == SOURCE_SUCCESS['supervisor'], 'actual original source supervisor pin')
+     envelope = json.loads(normal)
+     check(envelope.get('isError') is False and len(envelope.get('content', [])) == 1

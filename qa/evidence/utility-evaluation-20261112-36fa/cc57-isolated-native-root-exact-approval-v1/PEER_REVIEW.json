@@ -1,0 +1,135 @@
+{
+  "actual_materialization_command_count": 32,
+  "actual_materialization_current_full_inventory": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "tracked_entries": 15188
+  },
+  "actual_materialization_current_native_inventory": {
+    "bytes": 3530181,
+    "git_blob": "2def77faf50ba6d74d923732182dcb3cad916e53",
+    "sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "actual_materialization_lock_schema_projection_verified": true,
+  "actual_materialization_records_verified": {
+    "artifact_records": {
+      "bytes": 63084,
+      "git_blob": "3d14f683cc874b6b64f13c7c156b28b2fd448c90",
+      "name": "ARTIFACTS.json",
+      "sha256": "b50557442bb9cb2389b1d44d7c012270a3474603220831aa6aa3b677e13517f0"
+    },
+    "command_records": {
+      "bytes": 27329,
+      "git_blob": "fff5a51a4b273df14526c1059695a115b080f1f9",
+      "name": "COMMANDS.json",
+      "sha256": "4a2093fc27c3a39bdfa4e1591377b30652e8f298d955afa9274be986b7844054"
+    },
+    "input_records": {
+      "bytes": 1931,
+      "git_blob": "b4abc96b3543f87bbf724f8ff2918f4ea5ea7137",
+      "name": "INPUT_IDENTITIES.before.json",
+      "sha256": "006bbceebee283b71b6cf004eb17ec09570f763da7c9d8b4ff7dd9c3d152a6e7"
+    },
+    "mutation_records": {
+      "bytes": 730,
+      "git_blob": "bbd4478cbb872d18344b37b7251bc9c83df56521",
+      "name": "MUTATION_INTENTS.json",
+      "sha256": "8e5f9c1497b107444b3ed1c47c20cff15c9ad2ac45094777f32ee3c1308fb679"
+    }
+  },
+  "bootstrap": {
+    "bytes": 10917,
+    "git_blob": "d60e62a8bb28f40d314c25824fb665ab8ef1ea9c",
+    "sha256": "684ab68cf0eae833f727cf22b18ce35f0a6dcd086633e05dd838ba5b2170fd90"
+  },
+  "candidate_config_changed_only": [
+    "root_execution_approved",
+    "state"
+  ],
+  "config": {
+    "bytes": 11785,
+    "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+    "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f"
+  },
+  "env_override": false,
+  "exact_typed_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "five_helpers_full_bytes_equal": [
+    "check",
+    "identity",
+    "read_fixed",
+    "real_parents",
+    "retain"
+  ],
+  "format": "hepta-isolated-native-exact-launch-independent-static-review-v1",
+  "historical_runtime_and_current_source_instances_separate": true,
+  "inverse_restores_original_bootstrap_entire_bytes": true,
+  "limits": [
+    "Pure AST, byte and retained-artifact checks only; no candidate constructor, bootstrap, native wrapper, H or test was executed.",
+    "Candidate state/approval values are not this reviewer granting execution; Root must approve the exact typed request.",
+    "Historical source gates remain original 1cb4 execution. Materialization is a separate exact-content prerequisite, not a new source-gate run.",
+    "Current runtime, live global guard, current raw Git equality, resource checks and all original native gates still must execute normally.",
+    "Materialization proves two snapshot closures, not complete Git ancestry; old preserved scope is declared files/ref listing and physical snapshot, not entire donor metadata.",
+    "This narrow review rechecks four materialization record identities/normal terminals; prior complete producer/consumer review remains a separate evidence item."
+  ],
+  "materialization_result": {
+    "bytes": 12671,
+    "git_blob": "40833805111c98773ba1d046df09285357531396",
+    "sha256": "fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96"
+  },
+  "original_native_tail_outside_staging_try": true,
+  "outer_timeout_seconds": 45000,
+  "source_success_paths_keep_historical_1cb4": true,
+  "source_supervisor": {
+    "bytes": 954,
+    "git_blob": "851a18c3063d40c1208b198d02bc875b052a83d7",
+    "sha256": "a119569c3460e6e5fcd434c4e1144864bbf0bed38811cb77e3a8563307d88109"
+  },
+  "staged_files": {
+    "APPROVED_QUALIFICATION_INPUT.json": {
+      "bytes": 11785,
+      "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+      "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f"
+    },
+    "ISOLATED_MATERIALIZATION_NORMAL.original.json": {
+      "bytes": 951,
+      "git_blob": "c507335b611474857eff53b738071a7a3f27dc99",
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa"
+    },
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification-admission.py": {
+      "bytes": 26963,
+      "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+      "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d"
+    }
+  },
+  "typed_request": {
+    "bytes": 146890,
+    "git_blob": "127a33fb09629034ade6ce43d82e80e52816df8f",
+    "sha256": "c29da441e78222ba11db981b5e159e23ab0cc6b48faeada5138e6ba966125c43"
+  },
+  "verdict": "NO_CONCRETE_BLOCKER_IN_REVIEWED_STATIC_SCOPE"
+}

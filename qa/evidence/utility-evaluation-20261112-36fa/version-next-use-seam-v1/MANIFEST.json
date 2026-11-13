@@ -1,0 +1,134 @@
+{
+  "format": "hepta-isolated-source-manifest-v1",
+  "identity": "version-owned-evaluated-next-use-seam-v1",
+  "status": "PREPARATION_HOLD_NOT_COMPILED_OR_RUN",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_packet": {
+    "bytes": 96737,
+    "sha256": "f0982a24bb14c48e63eca1723b888e01dfe3433d30467607891205ad3c07f5ec",
+    "git_blob": "2b331b488fd789421f9731e3637d882bb57d7f0a"
+  },
+  "dependencies": [
+    "92a1567ac32c886d9d7386fb80915071475528bf",
+    "90f0623289c99ecce60d68d9dad348d27e0bd7fa",
+    "04fb77b4afb11c55ddbee1f0d4a631b4c1cf14ea",
+    "bfc96752df8c76fe59676696b6a1f77cef038aab"
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 1141,
+        "sha256": "c120010c1f38a74ffad74d1cb1e310d4e3f2cf44cf65d32a1b63e4060c93b6d8",
+        "git_blob": "9e1baa33ad0530c8df4fcc8e70fe610c5706818e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 2685,
+        "sha256": "6100ed9bbcc5e63c014b3a86d8a38bb26cbe6676d042af729f3fc0ccccb7c5b5",
+        "git_blob": "d3f4cae8fa88f76766b0cf5fd273d6ed242b3364"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 20118,
+        "sha256": "1a0f54df7609acf79797332b782ef1b89839d2779cd1e797b4788192eaf7535c",
+        "git_blob": "9f72e767ac85f1231a6fb9830a2be34d6d784772"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 10187,
+        "sha256": "0cb42e81da32b3aece7398fd8f74ddce20a82b69939a3597c08d2894156eca60",
+        "git_blob": "a2b190518040968eba90448016908974e69d6e40"
+      },
+      "after": {
+        "bytes": 12733,
+        "sha256": "e5aae6cef2ae20e55b0fdb62ae6034ff93651ac918ade6c42cfb1342494a0d16",
+        "git_blob": "28cb80fcf7946ae66c4dee89d14248f5c8d83a66"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 17481,
+        "sha256": "68d55cc1199381d2034c8ea85c2792d393164d86520db248094b6564fcc3993d",
+        "git_blob": "c949e2a64657bc2ec209253d149b09256f49b42e"
+      },
+      "after": {
+        "bytes": 17563,
+        "sha256": "5484f1082c95326babc0e64428d8a0ce0d914252cd1fe21a4825fc63ad133cb7",
+        "git_blob": "95edb69b5833d71553a6a12d583c671623343bcc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 9258,
+        "sha256": "0643c4ee41901169bd3aa4f5b1a063dc72abd13847be825b2a1a380d80078c28",
+        "git_blob": "cc470ac88e0fd62d7452dc44b38fa83f2edb597b"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "SOURCE_PACKET.json",
+      "bytes": 96737,
+      "sha256": "f0982a24bb14c48e63eca1723b888e01dfe3433d30467607891205ad3c07f5ec",
+      "git_blob": "2b331b488fd789421f9731e3637d882bb57d7f0a"
+    },
+    {
+      "name": "SOURCE_DELTA.patch",
+      "bytes": 38152,
+      "sha256": "d98b0b74c6ee70f91d28bc02cfac7e0ba1813d4763f213c9d09f160d58420107",
+      "git_blob": "2ee264288c39358a30dbd0a673caadda9bdf6297"
+    },
+    {
+      "name": "STATIC_REVIEW.json",
+      "bytes": 7646,
+      "sha256": "b7114808aa59acf128b764554074780a100ddaf777592d4821f6dcd7ca6f6784",
+      "git_blob": "9e5b944a4c6fe60932a17501d1aab82a5781b695"
+    },
+    {
+      "name": "TEST_MOUNT.json",
+      "bytes": 1028,
+      "sha256": "984aa462533ebe8278041d5d3c7fd8486e23bc0493ae6dd599fbe5baea37ed1f",
+      "git_blob": "3a0cbd6067339de7da98c13b3da5bd01087b8cff"
+    },
+    {
+      "name": "REGISTRATION_PLAN.json",
+      "bytes": 1274,
+      "sha256": "bc05c2032baf017420a0a469ed9d1f8db1d6a3767f3b72e0aa9e07096b1d2d4e",
+      "git_blob": "50cb24ae172684dcd634bbc9ba38c20b0729cdde"
+    },
+    {
+      "name": "build_package.py",
+      "bytes": 13597,
+      "sha256": "512d4c23189078e9c60d5267d6fea36d604bec9fd92ef900f78b3693f6c1cc46",
+      "git_blob": "d8ec3bbabc6886d045018ab9a1c614ef0c446f16"
+    },
+    {
+      "name": "README.md",
+      "bytes": 3502,
+      "sha256": "35350a9f14b7d6f8ed460fe1284422b8fbde2361d04e2fa3a78297cc83b5acf2",
+      "git_blob": "5e2cbcca9608732c765017b2532972e9d225c7a0"
+    }
+  ],
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "test_parent_mount_pending_sole_writer": true,
+  "actual_git_publication": "Recorded separately after actual create and full GET; these hashes alone are computed."
+}

@@ -1,0 +1,2783 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs
+@@ -0,0 +1,139 @@
++//! Explicit original inputs, complete role admission and supervised Root work.
++//! This service does not load trust from its handoff or manufacture any owner.
++
++use std::net::Shutdown;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::sync::Arc;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
++use tokio_util::sync::CancellationToken;
++use crate::AgentdError;
++use crate::AgentdRootAuthorityPeer;
++use crate::LoadedCellQ24ModelV1;
++use crate::OriginalCellEvaluationPanelRegistrationV1;
++use crate::OriginalCellQ24CandidateStageOwnersV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::RootCandidateStageHandoffV1;
++use super::RootResidentLearningHandleV3;
++use super::RootResidentLearningRegistrationV3;
++use super::RootResidentLearningRuntimeV3;
++use super::authority::ResidentRootAuthorityV3;
++use super::authority::ResidentStoreActionV3;
++
++/// Supplied by the original provider, separately from untrusted wire metadata.
++/// These typed values retain their original scope, baseline and evidence trust.
++pub struct RootResidentCandidateInputsV1 {
++    pub material: OriginalCellQ24MaterialReceiptConfigV1,
++    pub protocol: OriginalCellEvaluationPanelRegistrationV1,
++    pub baseline: Arc<LoadedCellQ24ModelV1>,
++    pub verifier: LearningEvidenceVerifierV1,
++}
++
++/// One already connected A/successor endpoint for the original resident server.
++/// Its pidfd and process identity are not the role hosts' consumer identities.
++pub struct RootResidentLearningConsumerV3 {
++    pub stream: UnixStream,
++    pub peer: AgentdRootAuthorityPeer,
++    pub uid: u32,
++    pub original_consumer_pidfd: OwnedFd,
++    pub timeout: Duration,
++    pub lifetime: Duration,
++}
++
++/// No Clone, stage getter, writer, signer or fresh replay entry escapes.
++pub struct RootResidentCandidateServiceV1 {
++    runtime: RootResidentLearningRuntimeV3,
++    handle: RootResidentLearningHandleV3,
++    consumer: RootResidentLearningConsumerV3,
++    end: Instant,
++}
++
++impl RootResidentLearningRegistrationV3 {
++    /// Consume an existing registration and original connected roles. Recovered
++    /// custody selects only recovered channels; packet bytes cannot promote it.
++    /// The original provider calls this inside the resident's Tokio runtime.
++    pub fn into_candidate_service(
++        self,
++        inputs: RootResidentCandidateInputsV1,
++        handoff: RootCandidateStageHandoffV1,
++        consumer: RootResidentLearningConsumerV3,
++    ) -> Result<RootResidentCandidateServiceV1, AgentdError> {
++        let admitted = Instant::now();
++        if consumer.uid == 0 || consumer.timeout.is_zero()
++            || consumer.timeout > Duration::from_secs(30) || consumer.lifetime.is_zero()
++            || consumer.lifetime > Duration::from_secs(300)
++        {
++            return Err(AgentdError::Invalid("original resident consumer timing or identity differs".into()));
++        }
++        let consumer_end = admitted.checked_add(consumer.lifetime)
++            .ok_or_else(|| AgentdError::Invalid("resident consumer deadline overflow".into()))?;
++        ResidentRootAuthorityV3::perform(&self.owner.authority, ResidentStoreActionV3::Check, &CancellationToken::new())?;
++        let (streams, handoff_end) = handoff.into_original_streams(&self.owner.authority.profile)?;
++        let end = handoff_end.min(consumer_end);
++        let RootResidentCandidateInputsV1 { material, protocol, baseline, verifier } = inputs;
++        let stages = if ResidentRootAuthorityV3::readonly(&self.owner.authority) {
++            OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(material, streams, protocol, baseline)
++        } else {
++            OriginalCellQ24CandidateStageOwnersV1::from_original_streams(material, streams, protocol, baseline)
++        }.map_err(|error| AgentdError::Protocol(format!("original resident role admission: {error}")))?;
++        let stages = OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(stages, end)
++            .map_err(|error| AgentdError::Protocol(format!("original handoff deadline: {error}")))?;
++        ResidentRootAuthorityV3::perform(&self.owner.authority, ResidentStoreActionV3::Check, &CancellationToken::new())?;
++        let (handle, runtime) = RootResidentLearningRegistrationV3::into_candidate_runtime(self, stages, verifier, /*capacity*/ 1)?;
++        Ok(RootResidentCandidateServiceV1 { runtime, handle, consumer, end })
++    }
++}
++
++struct CloseOriginalStream(UnixStream);
++
++impl Drop for CloseOriginalStream {
++    fn drop(&mut self) {
++        let _ = self.0.shutdown(Shutdown::Both);
++    }
++}
++
++impl RootResidentCandidateServiceV1 {
++    /// Run the real original service and coordinator. A EOF does not cancel
++    /// admitted Root work. Root cancellation/finite expiry closes the original
++    /// server and joins owned work; dropping this future also closes/cancels.
++    /// A remote effect already dispatched can outlive a cancelled await;
++    /// only the original explicit readback path can reconcile that uncertainty.
++    /// Return values describe service lifetime, never a learning disposition.
++    pub async fn run(self, root_cancellation: CancellationToken) -> Result<(), AgentdError> {
++        let Self { runtime, handle, consumer, end } = self;
++        let lifetime = end.checked_duration_since(Instant::now()).filter(|duration| !duration.is_zero())
++            .ok_or_else(|| AgentdError::GenerationFenced("original resident service expired".into()))?;
++        let cancellation = root_cancellation.child_token();
++        let _cancel_on_drop = cancellation.clone().drop_guard();
++        let shutdown = CloseOriginalStream(consumer.stream.try_clone()?);
++        let server = tokio::task::spawn_blocking(move || {
++            RootResidentLearningHandleV3::serve_original_stream(&handle, consumer.stream, consumer.peer,
++                consumer.uid, consumer.original_consumer_pidfd, consumer.timeout, lifetime)
++        });
++        let run = RootResidentLearningRuntimeV3::run(runtime, cancellation.clone());
++        let work = async move {
++            let (runtime_result, server_result) = tokio::join!(run, server);
++            runtime_result?;
++            server_result.map_err(|error| AgentdError::Protocol(format!("resident server join: {error}")))?
++                .map_err(|error| AgentdError::Protocol(format!("original resident server: {error}")))
++        };
++        tokio::pin!(work);
++        tokio::select! {
++            result = &mut work => result,
++            _ = root_cancellation.cancelled() => {
++                cancellation.cancel();
++                let _ = shutdown.0.shutdown(Shutdown::Both);
++                work.await
++            }
++            _ = tokio::time::sleep_until(end.into()) => {
++                cancellation.cancel();
++                let _ = shutdown.0.shutdown(Shutdown::Both);
++                let _terminal = work.await;
++                Err(AgentdError::GenerationFenced("original resident service deadline elapsed; only explicit recovery may follow".into()))
++            }
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs
+@@ -29,6 +29,11 @@
+ mod stages;
+ pub use runtime::RootResidentLearningHandleV3;
+ pub use runtime::RootResidentLearningRuntimeV3;
++#[path = "authority_host_learning_candidate_service.rs"]
++mod candidate_service;
++pub use candidate_service::RootResidentCandidateInputsV1;
++pub use candidate_service::RootResidentCandidateServiceV1;
++pub use candidate_service::RootResidentLearningConsumerV3;
+ #[path = "authority_host_learning_resident_auth.rs"]
+ mod authentication;
+ #[path = "authority_host_learning_resident_model.rs"]
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs
+@@ -0,0 +1,120 @@
++//! Actual registered Root, original Candidate admission and unmodified runtime
++//! supervision before any Admit. Dedicated-UID peers fail on role dispatch.
++//! These cases prove idle lifetime boundaries, not completed NoUpdate or B.
++
++use super::*;
++use crate::AgentdError;
++use crate::RootResidentCandidateServiceV1;
++use tokio_util::sync::CancellationToken;
++use pretty_assertions::assert_eq;
++
++struct Idle {
++    root: ResidentRootFixture,
++    material: MaterialCommandFixture,
++    before: Vec<Vec<u8>>,
++    peer: process::PeerProcess,
++    service: RootResidentCandidateServiceV1,
++    latest_original_end: Instant,
++}
++
++async fn idle(recovered: bool, lifetime: Duration, delay: Duration) -> anyhow::Result<Idle> {
++    let (material, protocol) = material().await?;
++    let before = material.bytes()?;
++    let mut root = root(&material)?;
++    if recovered {
++        root.recover()?;
++    }
++    assert_eq!(root.registration.as_ref().expect("actual Root registration").owner.authority.readonly(), recovered);
++    let mut peer = process::PeerProcess::start()?;
++    let (streams, a) = peer.take_streams()?;
++    let streams = role_streams(&peer, streams, &root.profile, lifetime)?;
++    let (handoff, after_send) = transfer(&root.profile, streams)?;
++    tokio::time::sleep(delay).await;
++    let registration = root.registration.take().ok_or_else(|| anyhow::anyhow!("once-consumed original registration"))?;
++    let service = registration.into_candidate_service(
++        input(&material, protocol), handoff, consumer(&peer, a, Duration::from_secs(3))?,
++    )?;
++    Ok(Idle { root, material, before, peer, service, latest_original_end: after_send + lifetime })
++}
++
++async fn unchanged_and_joined(mut idle: IdleRemainder) -> anyhow::Result<()> {
++    // A new explicitly authorized read-only opening observes the real protected
++    // record only after the consumed service and all its role channels ended.
++    idle.root.recover()?;
++    let observed = idle.root.registration.as_ref().expect("actual recovered Root")
++        .owner.read(&CancellationToken::new()).await?.0;
++    assert!(observed.snapshot.is_none());
++    assert!(!observed.dispatch_pending);
++    assert_eq!(idle.material.bytes()?, idle.before);
++    idle.peer.finish()?;
++    Ok(())
++}
++
++struct IdleRemainder {
++    root: ResidentRootFixture,
++    material: MaterialCommandFixture,
++    before: Vec<Vec<u8>>,
++    peer: process::PeerProcess,
++}
++
++impl Idle {
++    fn split(self) -> (RootResidentCandidateServiceV1, IdleRemainder, Instant) {
++        (self.service, IdleRemainder { root: self.root, material: self.material,
++            before: self.before, peer: self.peer }, self.latest_original_end)
++    }
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root() -> anyhow::Result<()> {
++    for recovered in [false, true] {
++        let (service, remainder, _) = Box::pin(idle(recovered, Duration::from_secs(3), Duration::ZERO)).await?.split();
++        let cancellation = CancellationToken::new();
++        let _cancel_on_drop = cancellation.clone().drop_guard();
++        let mut running = tokio::spawn(RootResidentCandidateServiceV1::run(service, cancellation.clone()));
++        remainder.peer.close_a()?;
++        assert!(tokio::time::timeout(Duration::from_millis(150), &mut running).await.is_err(),
++            "actual A EOF cannot end the resident runtime");
++        assert!(!cancellation.is_cancelled());
++        cancellation.cancel();
++        tokio::time::timeout(Duration::from_secs(2), running).await???;
++        unchanged_and_joined(remainder).await?;
++    }
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_idle_root_cancel_closes_live_a_and_joins_original_work() -> anyhow::Result<()> {
++    let (service, remainder, _) = Box::pin(idle(false, Duration::from_secs(3), Duration::ZERO)).await?.split();
++    let cancellation = CancellationToken::new();
++    let _cancel_on_drop = cancellation.clone().drop_guard();
++    let mut running = tokio::spawn(RootResidentCandidateServiceV1::run(service, cancellation.clone()));
++    // A is still actually connected. No role command or substituted reply is
++    // issued to drive the loop; Root alone requests termination.
++    assert!(tokio::time::timeout(Duration::from_millis(50), &mut running).await.is_err());
++    cancellation.cancel();
++    let terminal = tokio::time::timeout(Duration::from_secs(2), running).await??;
++    // Shutdown may be observed as EOF or the original server transport error.
++    // Neither represents a completed learning result. Preserve that distinction.
++    assert!(matches!(&terminal, Ok(()) | Err(AgentdError::Protocol(_))), "{terminal:?}");
++    println!("RESIDENT_IDLE_ROOT_CANCEL original_terminal={terminal:?}");
++    unchanged_and_joined(remainder).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_idle_delivery_delay_keeps_original_service_expiry_and_joins() -> anyhow::Result<()> {
++    let (service, remainder, latest_original_end) = Box::pin(idle(false,
++        Duration::from_secs(1), Duration::from_millis(400))).await?.split();
++    let cancellation = CancellationToken::new();
++    let _cancel_on_drop = cancellation.clone().drop_guard();
++    let running = tokio::spawn(RootResidentCandidateServiceV1::run(service, cancellation.clone()));
++    // The extra observation window is only a scheduling/join bound. It is not
++    // supplied to any production channel, handoff, service or test gate.
++    let observation_end = latest_original_end + Duration::from_millis(200);
++    let terminal = tokio::time::timeout_at(observation_end.into(), running).await??;
++    assert!(matches!(&terminal, Err(AgentdError::GenerationFenced(_))), "{terminal:?}");
++    assert!(!cancellation.is_cancelled(), "the service expires without mutating its parent's token");
++    unchanged_and_joined(remainder).await
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs
+@@ -0,0 +1,222 @@
++//! Actual dedicated-UID peers for admission and idle service lifetime tests.
++//! These endpoints never return role evidence. A read on a role socket must be
++//! EOF; any dispatched request fails the fixture instead of supplying a receipt.
++
++use std::fs::File;
++use std::io;
++use std::io::Read;
++use std::os::fd::AsRawFd;
++use std::os::fd::FromRawFd;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixListener;
++use std::os::unix::net::UnixStream;
++use std::os::unix::process::CommandExt;
++use std::process::Child;
++use std::process::Command;
++use std::process::Stdio;
++use std::time::Duration;
++use std::time::Instant;
++
++use crate::AgentdRootAuthorityPeer;
++use pretty_assertions::assert_eq;
++
++pub(super) const PEER_UID: u32 = 60001;
++const CHILD: &str = "authority_host_service::resident::authority::tests::provider_transport::process::resident_role_peer_process_child";
++const IO_WINDOW: Duration = Duration::from_secs(5);
++
++pub(super) fn process(pid: u32) -> anyhow::Result<AgentdRootAuthorityPeer> {
++    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
++    let process_start_ticks = stat.rsplit_once(") ")
++        .and_then(|(_, fields)| fields.split_whitespace().nth(19))
++        .ok_or_else(|| anyhow::anyhow!("actual process start field"))?.parse()?;
++    Ok(AgentdRootAuthorityPeer {
++        pid,
++        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().to_string(),
++        process_start_ticks,
++    })
++}
++
++pub(super) fn pin(pid: u32) -> anyhow::Result<OwnedFd> {
++    // SAFETY: pidfd_open returns a new descriptor for this observed live pid.
++    let number = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
++    anyhow::ensure!(number >= 0, "{}", io::Error::last_os_error());
++    // SAFETY: the successful syscall transferred exactly one new descriptor.
++    Ok(unsafe { OwnedFd::from_raw_fd(i32::try_from(number)?) })
++}
++
++pub(super) struct PeerProcess {
++    child: Option<Child>,
++    control: UnixDatagram,
++    pub(super) peer: AgentdRootAuthorityPeer,
++    streams: Vec<UnixStream>,
++}
++
++impl PeerProcess {
++    pub(super) fn start() -> anyhow::Result<Self> {
++        // SAFETY: observe the explicit Root test parent's actual credentials.
++        assert_eq!(unsafe { (libc::getuid(), libc::geteuid()) }, (0, 0));
++        let (control, inherited_control) = UnixDatagram::pair()?;
++        control.set_read_timeout(Some(IO_WINDOW))?;
++        control.set_write_timeout(Some(IO_WINDOW))?;
++        let executable = File::open(std::env::current_exe()?)?;
++        let inherited = [inherited_control.as_raw_fd(), executable.as_raw_fd()];
++        let mut command = Command::new("/usr/bin/setpriv");
++        command.args([
++            "--reuid=60001", "--regid=60001", "--clear-groups", "--no-new-privs",
++            "--inh-caps=-all", "--ambient-caps=-all", "--bounding-set=-all",
++        ]).arg(format!("/proc/self/fd/{}", executable.as_raw_fd()))
++            .args(["--exact", CHILD, "--ignored", "--nocapture", "--test-threads=1"])
++            .env_clear().env("PATH", "/usr/bin:/bin")
++            .env("HEPTA_RESIDENT_ROLE_PEER_FD", inherited_control.as_raw_fd().to_string())
++            .current_dir("/").stdout(Stdio::piped()).stderr(Stdio::piped());
++        // SAFETY: the post-fork closure only applies fcntl to these two live
++        // inherited FDs. setpriv performs the actual credential drop at exec.
++        unsafe {
++            command.pre_exec(move || {
++                for descriptor in inherited {
++                    let flags = libc::fcntl(descriptor, libc::F_GETFD);
++                    if flags < 0 || libc::fcntl(descriptor, libc::F_SETFD, flags & !libc::FD_CLOEXEC) < 0 {
++                        return Err(io::Error::last_os_error());
++                    }
++                }
++                Ok(())
++            });
++        }
++        let mut child = command.spawn()?;
++        drop(inherited_control);
++        let peer = match process(child.id()) {
++            Ok(peer) => peer,
++            Err(error) => {
++                let _ = child.kill();
++                let _ = child.wait();
++                return Err(error);
++            }
++        };
++        // From this point every error is guarded by Drop: no orphan role peer.
++        let mut observed = Self { peer, child: Some(child), control, streams: Vec::new() };
++        let mut path = [0_u8; 1024];
++        let count = observed.control.recv(&mut path)?;
++        let path = std::str::from_utf8(&path[..count])?;
++        anyhow::ensure!(path.starts_with("/tmp/") && path.ends_with("/roles.sock"));
++        for _ in 0..11 {
++            let stream = UnixStream::connect(path)?;
++            assert_peer(&stream, PEER_UID, observed.peer.pid)?;
++            observed.streams.push(stream);
++        }
++        observed.expect(b"eleven-original-connections")?;
++        Ok(observed)
++    }
++
++    pub(super) fn take_streams(&mut self) -> anyhow::Result<([UnixStream; 10], UnixStream)> {
++        let consumer = self.streams.pop().ok_or_else(|| anyhow::anyhow!("held A connection"))?;
++        let streams = std::mem::take(&mut self.streams).try_into()
++            .map_err(|_: Vec<UnixStream>| anyhow::anyhow!("exact ten held role connections"))?;
++        Ok((streams, consumer))
++    }
++
++    fn expect(&self, expected: &[u8]) -> anyhow::Result<()> {
++        let mut response = [0_u8; 128];
++        let count = self.control.recv(&mut response)?;
++        assert_eq!(&response[..count], expected);
++        Ok(())
++    }
++
++    pub(super) fn close_a(&self) -> anyhow::Result<()> {
++        self.control.send(b"close-original-A")?;
++        self.expect(b"original-A-closed")
++    }
++
++    pub(super) fn finish(mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.streams.is_empty(), "all original parent endpoints consumed");
++        self.control.send(b"assert-no-role-dispatch-and-exit")?;
++        let end = Instant::now() + IO_WINDOW;
++        let finished = loop {
++            if self.child.as_mut().ok_or_else(|| anyhow::anyhow!("original child"))?.try_wait()?.is_some() { break true; }
++            if Instant::now() >= end { break false; }
++            std::thread::sleep(Duration::from_millis(2));
++        };
++        if !finished {
++            anyhow::bail!("bounded original peer join did not finish");
++        }
++        let child = self.child.take().ok_or_else(|| anyhow::anyhow!("original child"))?;
++        let output = child.wait_with_output()?;
++        anyhow::ensure!(output.status.success(), "{}{}",
++            String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
++        let stdout = String::from_utf8(output.stdout)?;
++        anyhow::ensure!(stdout.contains("RESIDENT_IDLE_PEER uid=60001 role_dispatches=0 role_eofs=10"), "{stdout}");
++        Ok(())
++    }
++}
++
++impl Drop for PeerProcess {
++    fn drop(&mut self) {
++        self.streams.clear();
++        if let Some(mut child) = self.child.take() {
++            let _ = child.kill();
++            let _ = child.wait();
++        }
++    }
++}
++
++fn assert_peer(stream: &UnixStream, uid: u32, pid: u32) -> anyhow::Result<()> {
++    let mut credentials = libc::ucred { pid: 0, uid: u32::MAX, gid: u32::MAX };
++    let mut size = std::mem::size_of_val(&credentials) as libc::socklen_t;
++    // SAFETY: getsockopt writes exactly the initialized ucred buffer.
++    anyhow::ensure!(unsafe { libc::getsockopt(stream.as_raw_fd(), libc::SOL_SOCKET, libc::SO_PEERCRED,
++        (&mut credentials as *mut libc::ucred).cast(), &mut size) } == 0, "{}", io::Error::last_os_error());
++    assert_eq!(size as usize, std::mem::size_of::<libc::ucred>());
++    assert_eq!((credentials.uid, credentials.pid), (uid, i32::try_from(pid)?));
++    Ok(())
++}
++
++#[test]
++#[ignore = "only the explicit Root provider parent supplies the inherited control descriptor"]
++fn resident_role_peer_process_child() -> anyhow::Result<()> {
++    crate::authority_host_runtime::verify_process_credentials(std::process::id(), PEER_UID, PEER_UID)?;
++    let number: i32 = std::env::var("HEPTA_RESIDENT_ROLE_PEER_FD")?.parse()?;
++    anyhow::ensure!(number >= 3);
++    // SAFETY: the parent transferred exclusive ownership through exec once.
++    let control = unsafe { UnixDatagram::from_raw_fd(number) };
++    control.set_read_timeout(Some(IO_WINDOW))?;
++    control.set_write_timeout(Some(IO_WINDOW))?;
++    let directory = tempfile::tempdir_in("/tmp")?;
++    let path = directory.path().join("roles.sock");
++    let listener = UnixListener::bind(&path)?;
++    listener.set_nonblocking(true)?;
++    control.send(path.as_os_str().as_encoded_bytes())?;
++    let end = Instant::now() + IO_WINDOW;
++    let mut streams = Vec::new();
++    while streams.len() < 11 {
++        match listener.accept() {
++            Ok((stream, _)) => streams.push(stream),
++            Err(error) if error.kind() == io::ErrorKind::WouldBlock && Instant::now() < end =>
++                std::thread::sleep(Duration::from_millis(1)),
++            Err(error) => return Err(error.into()),
++        }
++    }
++    let mut consumer = streams.pop();
++    control.send(b"eleven-original-connections")?;
++    loop {
++        let mut request = [0_u8; 128];
++        let count = control.recv(&mut request)?;
++        match &request[..count] {
++            b"close-original-A" => {
++                anyhow::ensure!(consumer.take().is_some(), "A close is one-shot");
++                control.send(b"original-A-closed")?;
++            }
++            b"assert-no-role-dispatch-and-exit" => break,
++            _ => anyhow::bail!("unregistered idle peer command"),
++        }
++    }
++    drop(consumer);
++    let end = Instant::now() + IO_WINDOW;
++    for mut stream in streams {
++        let remaining = end.checked_duration_since(Instant::now())
++            .ok_or_else(|| anyhow::anyhow!("bounded role EOF observation"))?;
++        stream.set_read_timeout(Some(remaining))?;
++        assert_eq!(stream.read(&mut [0])?, 0, "idle test must never dispatch a role command");
++    }
++    println!("RESIDENT_IDLE_PEER uid=60001 role_dispatches=0 role_eofs=10");
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs
+@@ -0,0 +1,219 @@
++//! Public Root handoff and original process admission over actual dedicated-UID
++//! sockets. These idle peers supply no role result; a role request fails them.
++//! Complete original NoUpdate/B/Version/S/C work has a separate provider fixture.
++
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixStream;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++use crate::LearningIterationEvidencePeerV1;
++use crate::OriginalCellEvaluationPanelRegistrationV1 as Registration;
++use crate::OriginalCellEvaluationPanelTaskV1 as Task;
++use crate::OriginalCellQ24CandidateStageOwnersV1;
++use crate::OriginalCellQ24CandidateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdatePeerStreamV1 as PeerStream;
++use crate::OriginalCellQ24NoUpdateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdateTaskStreamV1 as TaskStream;
++use crate::RootCandidateStageHandoffV1;
++use crate::RootResidentCandidateInputsV1;
++use crate::RootResidentLearningConsumerV3;
++use crate::RootResidentLearningProfileV3;
++use crate::cell_q24_material_receipt_owner::MaterialCommandFixture;
++use super::support::ResidentRootFixture;
++
++#[path = "authority_host_learning_resident_provider_process_tests.rs"]
++mod process;
++#[path = "authority_host_learning_resident_provider_lifecycle_tests.rs"]
++mod lifecycle;
++
++fn registration() -> anyhow::Result<Registration> {
++    Ok(Registration::new(Task {
++        plan_id: StableId::new("resident-idle-primary-B")?,
++        task_digest: Digest32::of_bytes(b"explicit idle primary task"),
++        cohort_rule_digest: Digest32::of_bytes(b"explicit idle primary rule"),
++    }, vec![Task {
++        plan_id: StableId::new("resident-idle-retention-B")?,
++        task_digest: Digest32::of_bytes(b"explicit idle retention task"),
++        cohort_rule_digest: Digest32::of_bytes(b"explicit idle retention rule"),
++    }])?)
++}
++
++async fn material() -> anyhow::Result<(MaterialCommandFixture, Registration)> {
++    let protocol = registration()?;
++    let fixture = Box::pin(MaterialCommandFixture::candidate_pages_for_evaluation_profile(
++        protocol.evaluation_profile(),
++    )).await?;
++    Ok((fixture, protocol))
++}
++
++fn root(fixture: &MaterialCommandFixture) -> anyhow::Result<ResidentRootFixture> {
++    ResidentRootFixture::for_original_evaluation_window(
++        fixture.config.initial.clone(), fixture.config.scope.clone(), &fixture.config.verifier,
++    )
++}
++
++fn input(fixture: &MaterialCommandFixture, protocol: Registration) -> RootResidentCandidateInputsV1 {
++    RootResidentCandidateInputsV1 {
++        material: fixture.config.clone(), protocol,
++        baseline: fixture.training_baseline(), verifier: fixture.config.verifier.clone(),
++    }
++}
++
++fn role_streams(
++    process: &process::PeerProcess,
++    streams: [UnixStream; 10],
++    profile: &RootResidentLearningProfileV3,
++    lifetime: Duration,
++) -> anyhow::Result<OriginalCellQ24CandidateStageStreamsV1> {
++    let peer = |stream: UnixStream, actor: &StableId| -> anyhow::Result<PeerStream> {
++        Ok(PeerStream {
++            stream,
++            peer: LearningIterationEvidencePeerV1 {
++                uid: process::PEER_UID, pid: process.peer.pid,
++                boot_id: process.peer.boot_id.clone(), process_start_ticks: process.peer.process_start_ticks,
++                actor_id: actor.clone(),
++            },
++            original_owner_pidfd: process::pin(process.peer.pid)?,
++            timeout: Duration::from_millis(100), lifetime,
++        })
++    };
++    let task = |stream: UnixStream| -> anyhow::Result<TaskStream> {
++        Ok(TaskStream { stream, peer: process.peer.clone(), uid: process::PEER_UID,
++            original_task_pidfd: process::pin(process.peer.pid)?, timeout: Duration::from_millis(100), lifetime })
++    };
++    let [experience, dataset, trainer, selector, version, next_use, completion, candidate, evaluator, model] = streams;
++    let owners = &profile.initial().owners;
++    Ok(OriginalCellQ24CandidateStageStreamsV1 {
++        common: OriginalCellQ24NoUpdateStageStreamsV1 {
++            experience: peer(experience, &owners.experience)?,
++            dataset: peer(dataset, &owners.dataset)?,
++            trainer: peer(trainer, &owners.trainer)?,
++            selector: peer(selector, &owners.selector)?,
++            version: task(version)?,
++            next_use: peer(next_use, &owners.next_use_observer)?,
++            completion: task(completion)?,
++        },
++        candidate_material: peer(candidate, &owners.trainer)?,
++        evaluator: peer(evaluator, &owners.evaluator)?, model: peer(model, &owners.proposal)?,
++    })
++}
++
++fn transfer(
++    profile: &RootResidentLearningProfileV3,
++    streams: OriginalCellQ24CandidateStageStreamsV1,
++) -> anyhow::Result<(RootCandidateStageHandoffV1, Instant)> {
++    let (send, receive) = UnixDatagram::pair()?;
++    let root = process::process(std::process::id())?;
++    let sender = process::pin(root.pid)?;
++    let recipient = process::pin(root.pid)?;
++    crate::send_root_candidate_stage_handoff(send, &sender, root, &recipient,
++        profile, streams, Duration::from_secs(1))?;
++    let after_send = Instant::now();
++    let received = crate::receive_root_candidate_stage_handoff(receive, profile, Duration::from_secs(1))?;
++    Ok((received, after_send))
++}
++
++fn consumer(process: &process::PeerProcess, stream: UnixStream, lifetime: Duration)
++-> anyhow::Result<RootResidentLearningConsumerV3> {
++    Ok(RootResidentLearningConsumerV3 { stream, peer: process.peer.clone(), uid: process::PEER_UID,
++        original_consumer_pidfd: process::pin(process.peer.pid)?, timeout: Duration::from_millis(100), lifetime })
++}
++
++fn lifetimes(streams: &OriginalCellQ24CandidateStageStreamsV1) -> [Duration; 10] {
++    let common = &streams.common;
++    [common.experience.lifetime, common.dataset.lifetime, common.trainer.lifetime,
++        common.selector.lifetime, common.version.lifetime, common.next_use.lifetime,
++        common.completion.lifetime, streams.candidate_material.lifetime,
++        streams.evaluator.lifetime, streams.model.lifetime]
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline() -> anyhow::Result<()> {
++    let (fixture, _) = material().await?;
++    let root = root(&fixture)?;
++    let mut peer = process::PeerProcess::start()?;
++    let (streams, a) = peer.take_streams()?;
++    drop(a);
++    let original = Duration::from_secs(1);
++    let (handoff, after_send) = transfer(&root.profile, role_streams(&peer, streams, &root.profile, original)?)?;
++    tokio::time::sleep(Duration::from_millis(100)).await;
++    let (streams, end) = handoff.into_original_streams(&root.profile)?;
++    assert!(end <= after_send + original, "the same absolute end must survive delivery delay");
++    assert!(lifetimes(&streams).into_iter().all(|remaining| remaining < original - Duration::from_millis(80)));
++    // Every returned real socket still pins the same dedicated process. This
++    // does not make these deliberately idle endpoints into original role owners.
++    assert_eq!(streams.common.trainer.peer.pid, peer.peer.pid);
++    drop(streams);
++    peer.finish()?;
++
++    let mut peer = process::PeerProcess::start()?;
++    let (streams, a) = peer.take_streams()?;
++    drop(a);
++    let (handoff, _) = transfer(&root.profile, role_streams(&peer, streams, &root.profile, Duration::from_millis(50))?)?;
++    tokio::time::sleep(Duration::from_millis(100)).await;
++    assert!(handoff.into_original_streams(&root.profile).is_err());
++    peer.finish()?;
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch() -> anyhow::Result<()> {
++    let (fixture, protocol) = material().await?;
++    let original = fixture.bytes()?;
++    let root = root(&fixture)?;
++    for attack in ["uid", "pidfd", "process-start"] {
++        let mut peer = process::PeerProcess::start()?;
++        let (streams, a) = peer.take_streams()?;
++        drop(a);
++        let mut streams = role_streams(&peer, streams, &root.profile, Duration::from_secs(2))?;
++        match attack {
++            "uid" => streams.model.peer.uid = 60002,
++            "pidfd" => streams.model.original_owner_pidfd = process::pin(std::process::id())?,
++            "process-start" => streams.model.peer.process_start_ticks = streams.model.peer.process_start_ticks.checked_add(1)
++                .ok_or_else(|| anyhow::anyhow!("fixture process start overflow"))?,
++            _ => unreachable!(),
++        }
++        let (handoff, _) = transfer(&root.profile, streams)?;
++        let (streams, _) = handoff.into_original_streams(&root.profile)?;
++        // Use the unmodified public factory, including actual SO_PEERCRED and
++        // pidfd validation. No same-UID test channel or mocked return is admitted.
++        assert!(OriginalCellQ24CandidateStageOwnersV1::from_original_streams(
++            fixture.config.clone(), streams, protocol.clone(), fixture.training_baseline(),
++        ).is_err(), "{attack}");
++        peer.finish()?;
++        assert_eq!(fixture.bytes()?, original);
++    }
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_role_receiver_refuses_another_real_recipient_or_registered_profile() -> anyhow::Result<()> {
++    let (fixture, _) = material().await?;
++    let original = root(&fixture)?;
++    let other = root(&fixture)?;
++    assert_ne!(original.profile.binding(), other.profile.binding());
++    for wrong_recipient in [true, false] {
++        let mut peer = process::PeerProcess::start()?;
++        let (streams, a) = peer.take_streams()?;
++        drop(a);
++        let streams = role_streams(&peer, streams, &original.profile, Duration::from_secs(2))?;
++        let (send, receive) = UnixDatagram::pair()?;
++        let creator = process::pin(std::process::id())?;
++        let recipient = if wrong_recipient { peer.peer.clone() } else { process::process(std::process::id())? };
++        let recipient_pin = process::pin(recipient.pid)?;
++        crate::send_root_candidate_stage_handoff(send, &creator, recipient, &recipient_pin,
++            &original.profile, streams, Duration::from_secs(1))?;
++        let expected = if wrong_recipient { &original.profile } else { &other.profile };
++        assert!(crate::receive_root_candidate_stage_handoff(receive, expected, Duration::from_secs(1)).is_err());
++        peer.finish()?;
++    }
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
+@@ -427,3 +427,6 @@
+ 
+ #[path = "authority_host_learning_resident_retention_auth_tests.rs"]
+ mod retention_auth;
++
++#[path = "authority_host_learning_resident_provider_transport_tests.rs"]
++mod provider_transport;
+--- a/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
+@@ -114,6 +114,15 @@
+             return Err(Error::DeadlineExceeded);
+         }
+         Ok(())
++    }
++
++    /// Narrow the original command path to the already elapsed handoff end.
++    /// This consumes the bundle before Root can install its effect gate.
++    pub(crate) fn restrict_original_handoff_deadline(mut self, end: Instant) -> Result<Self, Error> {
++        self.end = self.end.min(end);
++        self.common.end = self.common.end.min(self.end);
++        self.require_live_deadline()?;
++        Ok(self)
+     }
+ 
+     pub(crate) fn install_fresh_resident_gate(
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
+@@ -116,3 +116,198 @@
+         anyhow::bail!("bounded original Trainer renewal fault")
+     })
+ }
++
++/// Only test transport custody: one Candidate readback and two Training
++/// evidence channels, all bound to the same actual Bootstrap before D/T.
++/// Shutdown makes every error/drop path terminal; it does not cancel an
++/// already admitted original owner operation or fabricate a successful count.
++pub(crate) struct OriginalTrainingPeers {
++    candidate: Option<crate::OriginalCellQ24TrainingCommandConnectionV1>,
++    trainers: [Option<crate::OriginalCellQ24TrainingReadbackConnectionV1>; 2],
++    shutdown: Vec<std::os::unix::net::UnixStream>,
++    servers: Vec<JoinHandle<Result<u64, Error>>>,
++}
++
++impl OriginalTrainingPeers {
++    pub(crate) fn new<
++        TW: AnchorWitnessStore + Send + 'static,
++        RW: AnchorWitnessStore + Send + 'static,
++    >(
++        owner: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++    ) -> anyhow::Result<Self> {
++        let lifetime = Duration::from_secs(300);
++        let (candidate, mut candidate_server, close_candidate) =
++            crate::OriginalCellQ24TrainingCommandConnectionV1::fixture_peer_with_shutdown(
++                material.clone(), lifetime,
++            )?;
++        let (primary, mut primary_server, close_primary) =
++            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
++                material.clone(), lifetime,
++            )?;
++        let (retention, mut retention_server, close_retention) =
++            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
++                material, lifetime,
++            )?;
++        let mut result = Self {
++            candidate: Some(candidate),
++            trainers: [Some(primary), Some(retention)],
++            shutdown: vec![close_candidate, close_primary, close_retention],
++            servers: Vec::new(),
++        };
++        let candidate_owner = Arc::clone(&owner);
++        result.servers.push(std::thread::spawn(move || {
++            candidate_owner.serve_candidate_material_channel(&mut candidate_server)
++        }));
++        let primary_owner = Arc::clone(&owner);
++        result.servers.push(std::thread::spawn(move || {
++            primary_owner.serve_original_training_readback_channel(&mut primary_server)
++        }));
++        result.servers.push(std::thread::spawn(move || {
++            owner.serve_original_training_readback_channel(&mut retention_server)
++        }));
++        Ok(result)
++    }
++
++    pub(crate) fn take_candidate(
++        &mut self,
++    ) -> anyhow::Result<crate::OriginalCellQ24TrainingCommandConnectionV1> {
++        self.candidate.take().ok_or_else(|| anyhow::anyhow!("one original Candidate connection"))
++    }
++
++    pub(crate) fn take_trainers(
++        &mut self,
++    ) -> anyhow::Result<[crate::OriginalCellQ24TrainingReadbackConnectionV1; 2]> {
++        let first = self.trainers[0].take()
++            .ok_or_else(|| anyhow::anyhow!("one original primary Trainer connection"))?;
++        let second = self.trainers[1].take()
++            .ok_or_else(|| anyhow::anyhow!("one original retention Trainer connection"))?;
++        Ok([first, second])
++    }
++
++    fn close(&mut self) {
++        for stream in &self.shutdown {
++            let _ = stream.shutdown(std::net::Shutdown::Both);
++        }
++        drop(self.candidate.take());
++        for client in &mut self.trainers {
++            drop(client.take());
++        }
++    }
++
++    pub(crate) fn finish(mut self) -> anyhow::Result<[u64; 3]> {
++        self.close();
++        let mut counts = Vec::new();
++        let mut failure = None;
++        for server in self.servers.drain(..) {
++            match server.join() {
++                Ok(Ok(count)) => counts.push(count),
++                Ok(Err(error)) => { if failure.is_none() { failure = Some(anyhow::Error::from(error)); } }
++                Err(_) => { if failure.is_none() { failure = Some(anyhow::anyhow!("original Trainer peer panicked")); } }
++            }
++        }
++        if let Some(error) = failure { return Err(error); }
++        counts.try_into().map_err(|_| anyhow::anyhow!("all three actual Trainer peers joined"))
++    }
++}
++
++impl Drop for OriginalTrainingPeers {
++    fn drop(&mut self) {
++        self.close();
++        // Best-effort error teardown still joins every owned thread. Only the
++        // explicit finish path can return and assert original handler results.
++        for server in self.servers.drain(..) {
++            let _ = server.join();
++        }
++    }
++}
++
++/// One test-only observation of actual Training completion and Candidate
++/// material. Call from the fixture's existing bounded blocking lane: the
++/// original SourceBound read performs real synchronous I/O. This helper adds
++/// no wait loop or deadline and consumes none of the three pre-held clients.
++/// Ready alone is not completion. After Some, subsequent B/channel operations
++/// must still perform their own original live reads; this is no future grant.
++pub(crate) fn completed_candidate_training<
++    TW: AnchorWitnessStore + Send + 'static,
++    RW: AnchorWitnessStore + Send + 'static,
++>(
++    owner: &Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
++) -> Result<Option<crate::OriginalCellQ24TrainingCommandReceiptV1>, Error> {
++    let original = {
++        let state = match owner.state.try_lock() {
++            Ok(state) => state,
++            Err(std::sync::TryLockError::WouldBlock) => return Ok(None),
++            Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Busy),
++        };
++        match &*state {
++            State::Awaiting(_) | State::Starting => return Ok(None),
++            State::Fenced => return Err(Error::Uncertain),
++            State::Ready(original) => Arc::clone(original),
++        }
++    };
++    // Release the Bootstrap state lock before the original Stage lane I/O.
++    OriginalCellQ24TrainingCommandOwnerV1::fixture_completed_candidate_receipt(&original)
++        .map_err(Error::from)
++}
++
++impl OriginalTrainingPeers {
++    /// Same original handlers, with only one purpose-bound evidence channel
++    /// for the primary and retention members' existing local Arc sharing.
++    /// This private transport fixture is not a public-permit admission test.
++    pub(crate) fn new_shared<
++        TW: AnchorWitnessStore + Send + 'static,
++        RW: AnchorWitnessStore + Send + 'static,
++    >(
++        owner: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++    ) -> anyhow::Result<Self> {
++        let lifetime = Duration::from_secs(300);
++        let (candidate, mut candidate_server, close_candidate) =
++            crate::OriginalCellQ24TrainingCommandConnectionV1::fixture_peer_with_shutdown(
++                material.clone(), lifetime,
++            )?;
++        let (trainer, mut trainer_server, close_trainer) =
++            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
++                material, lifetime,
++            )?;
++        let mut result = Self {
++            candidate: Some(candidate),
++            trainers: [Some(trainer), None],
++            shutdown: vec![close_candidate, close_trainer],
++            servers: Vec::new(),
++        };
++        let candidate_owner = Arc::clone(&owner);
++        result.servers.push(std::thread::spawn(move || {
++            candidate_owner.serve_candidate_material_channel(&mut candidate_server)
++        }));
++        result.servers.push(std::thread::spawn(move || {
++            owner.serve_original_training_readback_channel(&mut trainer_server)
++        }));
++        Ok(result)
++    }
++
++    pub(crate) fn take_shared_trainer(
++        &mut self,
++    ) -> anyhow::Result<crate::OriginalCellQ24TrainingReadbackConnectionV1> {
++        anyhow::ensure!(self.servers.len() == 2 && self.trainers[1].is_none(),
++                        "one original shared Trainer transport fixture");
++        self.trainers[0].take()
++            .ok_or_else(|| anyhow::anyhow!("one original shared Trainer connection"))
++    }
++
++    pub(crate) fn finish_shared(mut self) -> anyhow::Result<[u64; 2]> {
++        self.close();
++        let mut counts = Vec::new();
++        let mut failure = None;
++        for server in self.servers.drain(..) {
++            match server.join() {
++                Ok(Ok(count)) => counts.push(count),
++                Ok(Err(error)) => { if failure.is_none() { failure = Some(anyhow::Error::from(error)); } }
++                Err(_) => { if failure.is_none() { failure = Some(anyhow::anyhow!("original Trainer peer panicked")); } }
++            }
++        }
++        if let Some(error) = failure { return Err(error); }
++        counts.try_into().map_err(|_| anyhow::anyhow!("both actual Trainer peers joined"))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command.rs
+@@ -31,6 +31,9 @@
+ use crate::LearningIterationCheckpointErrorV1;
+ use crate::OriginalCellQ24TrainingStageErrorV1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
++
++#[path = "cell_q24_training_shared_readback.rs"]
++mod shared_readback;
+ 
+ #[path = "cell_q24_training_command_connection.rs"]
+ mod connection;
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs
+@@ -66,3 +66,43 @@
+ )> {
+     pair(material, Origin::Recovered(expected), lifetime)
+ }
++
++// Test-only shutdown custody for real original handlers; no production FD getter.
++impl OriginalCellQ24TrainingCommandConnectionV1 {
++    pub(crate) fn fixture_peer_with_shutdown(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        lifetime: Duration,
++    ) -> anyhow::Result<(
++        OriginalCellQ24TrainingCommandConnectionV1,
++        HostAuthorityPeerChannel,
++        UnixStream,
++    )> {
++        let (client, server) = UnixStream::pair()?;
++        let shutdown = client.try_clone()?;
++        let policy = || HostAuthorityPeerPolicy {
++            // SAFETY: explicit same-process fixture credentials.
++            peer: HostIssuerPeer {
++                uid: unsafe { libc::geteuid() },
++                pid: std::process::id(),
++            },
++            timeout: Duration::from_secs(30).min(lifetime),
++            lifetime,
++            request_bound: 16_384,
++            response_bound: 16_384,
++        };
++        let peer = HostAuthorityPeerChannel::from_stream(client, policy(), transport::pidfd()?)?;
++        let server = HostAuthorityPeerChannel::from_stream(server, policy(), transport::pidfd()?)?;
++        let (initial_binding, _) =
++            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
++        Ok((
++            OriginalCellQ24TrainingCommandConnectionV1 {
++                peer,
++                material,
++                initial_binding,
++                origin: Origin::Fresh,
++            },
++            server,
++            shutdown,
++        ))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+@@ -345,3 +345,49 @@
+     });
+     Ok(server)
+ }
++
++// This method is compiled only through serving::command_test_support. It is
++// a single synchronous observation of the already held original Stage, not
++// a command, a new connection, or a receipt/signing-custody constructor.
++impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
++    OriginalCellQ24TrainingCommandOwnerV1<TW, RW>
++{
++    pub(crate) fn fixture_completed_candidate_receipt(
++        &self,
++    ) -> Result<Option<OriginalCellQ24TrainingCommandReceiptV1>, super::Error> {
++        use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1 as Store;
++        use crate::CellQ24TrainingOwnerErrorV1 as Native;
++        use crate::OriginalCellQ24TrainingReceiptErrorV1 as Receipt;
++        use crate::OriginalCellQ24TrainingStageErrorV1 as Stage;
++        use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as Owner;
++
++        let material = match crate::SourceBoundCellQ24TrainingStageV1::read_candidate_material(
++            &self.stage,
++            &self.context.dataset,
++        ) {
++            Ok(material) => material,
++            // Exactly the non-completed states already distinguished by the
++            // original command service. No other read failure becomes None.
++            Err(Stage::Busy)
++            | Err(Stage::Training(Native::Pending))
++            | Err(Stage::Receipt(Receipt::Training(Native::Pending)))
++            | Err(Stage::Receipt(Receipt::Owner(Owner::Pending)))
++            | Err(Stage::Training(Native::Store(Store::Missing)))
++            | Err(Stage::Receipt(Receipt::Training(Native::Store(Store::Missing))))
++            | Err(Stage::Receipt(Receipt::Owner(Owner::Store(Store::Missing)))) => {
++                return Ok(None);
++            }
++            Err(error) => return Err(error.into()),
++        };
++        // The original material lane has re-read both original owners and the
++        // live source before and after its work. Authenticate those exact
++        // retained bytes with the original command context and current time.
++        let original = wire::authenticate_receipt(
++            &self.context,
++            material.receipt().clone(),
++            material.attestation().clone(),
++            super::super::now()?,
++        )?;
++        Ok(Some(original))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs
+@@ -40,3 +40,46 @@
+         channel(server)?,
+     ))
+ }
++
++// Test-only shutdown custody, with the same initial binding and peer policy.
++impl OriginalCellQ24TrainingReadbackConnectionV1 {
++    pub(crate) fn fixture_connection_with_shutdown(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        lifetime: Duration,
++    ) -> anyhow::Result<(
++        OriginalCellQ24TrainingReadbackConnectionV1,
++        HostAuthorityPeerChannel,
++        UnixStream,
++    )> {
++        let (initial_binding, _) =
++            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
++        let (stream, server) = UnixStream::pair()?;
++        let shutdown = stream.try_clone()?;
++        let channel = |stream| -> anyhow::Result<HostAuthorityPeerChannel> {
++            Ok(HostAuthorityPeerChannel::from_stream(
++                stream,
++                HostAuthorityPeerPolicy {
++                    peer: HostIssuerPeer {
++                        // SAFETY: the fixture observes its own credentials.
++                        uid: unsafe { libc::geteuid() },
++                        pid: std::process::id(),
++                    },
++                    timeout: Duration::from_secs(30),
++                    lifetime,
++                    request_bound: 16_384,
++                    response_bound: 16_384,
++                },
++                crate::learning_iteration_evidence_client::command_test_support::pidfd()?,
++            )?)
++        };
++        Ok((
++            OriginalCellQ24TrainingReadbackConnectionV1 {
++                peer: channel(stream)?,
++                material,
++                initial_binding,
++            },
++            channel(server)?,
++            shutdown,
++        ))
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs
+@@ -0,0 +1,40 @@
++//! Consume one completed original Trainer client into sealed local readback.
++//! The original channel, request counter and absolute lifetime stay in place.
++
++use std::sync::Arc;
++
++use super::Error;
++use super::OriginalCellQ24TrainingCommandClientV1;
++use super::OriginalCellQ24TrainingCommandReceiptV1;
++use super::now;
++use super::wire;
++
++impl OriginalCellQ24TrainingCommandClientV1 {
++    pub(crate) fn seal_original_completed_readback(
++        self,
++        expected: &OriginalCellQ24TrainingCommandReceiptV1,
++    ) -> Result<Arc<Self>, Error> {
++        let retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
++        let original = retained.as_ref().ok_or(Error::ReadbackRequired)?;
++        if original != expected {
++            return Err(Error::Binding("same completed original Trainer before sharing"));
++        }
++        let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
++        let channel = slot.as_mut().ok_or(Error::Unavailable)?;
++        channel.peer.check_peer_lifetime()?;
++        let authenticated = wire::authenticate_receipt(
++            &self.context,
++            original.receipt().clone(),
++            original.attestation().clone(),
++            now()?,
++        )?;
++        if &authenticated != original {
++            return Err(Error::Binding("full original Trainer signature before sharing"));
++        }
++        // This is a one-way attenuation of the same client, not a new channel.
++        channel.execution_requested = true;
++        drop(slot);
++        drop(retained);
++        Ok(Arc::new(self))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
+@@ -10,6 +10,7 @@
+ 
+ pub(super) enum OriginalPredecessors {
+     Legacy(LearningIterationEvidenceClientV1),
++    SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),
+     Evaluated {
+         trainer: OriginalCellQ24TrainingCommandClientV1,
+         evaluator: OriginalCellEvaluationCommandClientV1,
+@@ -57,6 +58,47 @@
+         })
+     }
+ 
++    pub(crate) fn from_original_evaluated_shared_receipt_owner(
++        owner: OriginalCircuitNextUseReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++        selector: LearningIterationEvidenceClientV1,
++    ) -> Result<Self, Error> {
++        let original = owner
++            .original_evaluated_command_selection()
++            .ok_or(Error::Binding("original evaluated Observer custody"))?;
++        shared.require_original_context(original.original_context())
++            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(original)?;
++        live.require_original_evaluated_next_use(original)
++            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        let (_, readback_only) = owner.original_command_profile();
++        let initial = context.initial()?;
++        if selector.initial != initial
++            || selector.actor_id != context.selection.owners.selector
++            || selector.verifier.trust_digest() != context.verifier.trust_digest()
++            || selector.verifier.scope_digest() != context.verifier.scope_digest()
++            || selector.verifier.objective_digest() != context.verifier.objective_digest()
++        {
++            return Err(Error::Binding(
++                "same original evaluated Selector readback client",
++            ));
++        }
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            owner: Mutex::new(owner),
++            live,
++            predecessors: OriginalPredecessors::SharedEvaluated(shared),
++            selector,
++            context,
++            initial_head: initial.head_digest,
++            binding,
++            execution_requested: AtomicBool::new(readback_only),
++            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
++            connections: Arc::new(Semaphore::new(4)),
++        })
++    }
++
+     pub(super) fn observe_original(
+         &self,
+         owner: &mut OriginalCircuitNextUseReceiptOwnerV1<W>,
+@@ -84,6 +126,30 @@
+                     ),
+                 }
+             }
++            OriginalPredecessors::SharedEvaluated(shared) => {
++                let selection = self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
++                        "original evaluated Observer command profile",
++                    ),
++                )?;
++                shared.require_original_context(selection.original_context())?;
++                let (trainer, evaluator) = shared.original_clients();
++                let source = OriginalCircuitEvaluatedNextUseRemoteSourcesV1 {
++                    snapshot: &self.context.selection,
++                    selection,
++                    live: &self.live,
++                    trainer,
++                    evaluator,
++                    selector: &self.selector,
++                };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion(owner, source)),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
++            }
+             OriginalPredecessors::Evaluated { trainer, evaluator } => {
+                 let selection = self.context.evaluated.as_ref().ok_or(
+                     crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs
+@@ -87,6 +87,23 @@
+         self.completed_evaluated_next_use(completed)
+     }
+ 
++    pub fn into_evaluated_shared_command_owner(
++        self,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++        selector: LearningIterationEvidenceClientV1,
++    ) -> Result<
++        crate::OriginalCircuitNextUseCommandOwnerV1<W>,
++        crate::OriginalCircuitNextUseCommandErrorV1,
++    >
++    where
++        W: Send + 'static,
++    {
++        crate::OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
++            self, live, shared, selector,
++        )
++    }
++
+     pub fn into_evaluated_command_owner(
+         self,
+         live: OriginalCircuitLearningReadClientV1,
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
+@@ -186,6 +186,26 @@
+             .map_err(|_| Error::Binding("two original evaluated predecessors"))
+     }
+ 
++    /// Consume the same retained clients only after the Version host has
++    /// completed its actual Published/current checks. These handles are local.
++    pub(crate) fn seal_original_readback_owners(
++        &self,
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++    ) -> Result<(
++        std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,
++        std::sync::Arc<OriginalCellEvaluationCommandClientV1>,
++    ), Error> {
++        self.authenticate(now()?, PublicationAccess::Readback)?;
++        let trainer = OriginalCellQ24TrainingCommandClientV1::seal_original_completed_readback(
++            trainer, &self.training,
++        )?;
++        let evaluator = OriginalCellEvaluationCommandClientV1::seal_original_completed_readback(
++            evaluator, &self.evaluation,
++        )?;
++        Ok((trainer, evaluator))
++    }
++
+     // Receipt owners retain the same opaque pins and origin. This is not an
+     // owner/client getter, a new stream, or a promotion from cold to fresh.
+     pub(crate) fn clone_for_original_receipt(&self) -> Self {
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
+@@ -11,6 +11,22 @@
+             Profile::TrainingNoUpdate => None,
+             Profile::Evaluated(context) => Some(context),
+         }
++    }
++
++    pub fn into_evaluated_shared_command_owner(
++        self,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<
++        crate::OriginalCircuitSelectionCommandOwnerV1<W>,
++        crate::OriginalCircuitSelectionCommandErrorV1,
++    >
++    where
++        W: Send + 'static,
++    {
++        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
++            self, live, shared,
++        )
+     }
+ 
+     pub fn into_evaluated_command_owner(
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+@@ -10,6 +10,7 @@
+ 
+ pub(super) enum OriginalPredecessors {
+     Legacy(LearningIterationEvidenceClientV1),
++    SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),
+     Evaluated {
+         trainer: OriginalCellQ24TrainingCommandClientV1,
+         evaluator: OriginalCellEvaluationCommandClientV1,
+@@ -45,6 +46,35 @@
+         })
+     }
+ 
++    pub(crate) fn from_original_evaluated_shared_receipt_owner(
++        owner: OriginalCircuitSelectionReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<Self, Error> {
++        let original = owner
++            .original_evaluated_command_context()
++            .ok_or(Error::Binding("original evaluated Selector custody"))?;
++        shared.require_original_context(original)
++            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(original)?;
++        live.require_original_evaluated_selection(original)
++            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let (_, readback_only) = owner.original_command_profile();
++        let initial = context.initial()?;
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            owner: Mutex::new(owner),
++            live,
++            predecessors: OriginalPredecessors::SharedEvaluated(shared),
++            context,
++            initial_head: initial.head_digest,
++            binding,
++            execution_requested: AtomicBool::new(readback_only),
++            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
++            connections: Arc::new(Semaphore::new(4)),
++        })
++    }
++
+     pub(super) fn observe_original(
+         &self,
+         owner: &mut OriginalCircuitSelectionReceiptOwnerV1<W>,
+@@ -71,6 +101,28 @@
+                     ),
+                 }
+             }
++            OriginalPredecessors::SharedEvaluated(shared) => {
++                let context = self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
++                        "original evaluated Selector command profile",
++                    ),
++                )?;
++                shared.require_original_context(context)?;
++                let (trainer, evaluator) = shared.original_clients();
++                let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {
++                    snapshot: &self.context.training,
++                    live: &self.live,
++                    trainer,
++                    evaluator,
++                };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection(owner, source)),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
++            }
+             OriginalPredecessors::Evaluated { trainer, evaluator } => {
+                 self.context.evaluated.as_ref().ok_or(
+                     crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
+--- a/codex-rs/hepta-agentd/src/circuit_feature_current.rs
++++ b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+@@ -74,6 +74,7 @@
+ pub use retained_publication::prepare_original_circuit_retained_publication_v1;
+ pub use retained_publication::recover_original_circuit_evaluated_retention_v1;
+ pub use retained_publication::recover_original_circuit_retained_publication_v1;
++pub use retained_publication::version::OriginalCircuitPublishedEvidenceReadbackV1;
+ pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+ pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
+ pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+@@ -684,3 +684,6 @@
+ 
+ #[path = "circuit_deep_training_readback_tests.rs"]
+ mod deep_readonly;
++
++#[path = "circuit_resident_candidate_provider_material_support_tests.rs"]
++mod resident_provider;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
+@@ -0,0 +1,282 @@
++//! Staged, mechanism-only B/retention over an actual Fresh Bootstrap T.
++//! Registration precedes T. Neither constructor runs PositiveFixture's
++//! auxiliary Evaluation/Model path. The two real Trainer servers remain owned
++//! by OriginalTrainingPeers outside this fixture and are explicitly joined.
++use super::*;
++use crate::OriginalCellEvaluationHostV1;
++use crate::OriginalCellEvaluationPanelOwnerV1;
++use crate::OriginalCellEvaluationReceiptConfigV1;
++use crate::OriginalCellEvaluationReceiptOwnerV1;
++use crate::OriginalCellEvaluationSigningConfigV1;
++use crate::OriginalCellQ24CandidateMaterialV1;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::neuron_cell_evaluation::tests::original_provider::panel_members::PanelMemberFixture;
++use material::evaluation_provider::DecisionBinding;
++
++type Panel = OriginalCellEvaluationPanelOwnerV1<
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++>;
++
++/// A borrowed view of original completed inputs, not another owner or signer.
++/// Candidate is opaque production readback material; both manifests are built
++/// from its actual model and the original loaded baseline, without prior E.
++pub(in super::super) struct CompletedTrainingInputs<'a> {
++    material: &'a OriginalCellQ24MaterialReceiptConfigV1,
++    previous: &'a CircuitTaskSourcePublicationV1,
++    training: LearningIterationSnapshotV1,
++    training_evidence: &'a SignedLearningEvidenceV1,
++    baseline: Digest32,
++    candidate: Digest32,
++    manifests: [CellBackendManifestV2; 2],
++    credentials: &'a material::Credentials,
++}
++
++impl<'a> CompletedTrainingInputs<'a> {
++    pub(in super::super) fn from_original_completion(
++        material: &'a OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &'a OriginalCellQ24TrainingCommandReceiptV1,
++        candidate: &OriginalCellQ24CandidateMaterialV1,
++        baseline: &LoadedCellQ24ModelV1,
++        previous: &'a CircuitTaskSourcePublicationV1,
++        source_a: &crate::CircuitTaskSourceInputV1,
++        config_a: &codex_hepta_neuron::CellGenerationConfigV2,
++        credentials: &'a material::Credentials,
++    ) -> anyhow::Result<Self> {
++        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)?;
++        anyhow::ensure!(material.initial.receipts.is_empty() && dataset.snapshot().receipts.len() == 2);
++        anyhow::ensure!(candidate.receipt() == training.receipt());
++        anyhow::ensure!(candidate.attestation() == training.attestation());
++        anyhow::ensure!(candidate.authority() == AuthorityPosture::DENY_ALL);
++        anyhow::ensure!(baseline.components() == &material.initial.request.selected_bundle.components);
++        anyhow::ensure!(previous.input() == source_a);
++        anyhow::ensure!(source_a.scope.run_id == material.initial.request.source_run_id);
++        anyhow::ensure!(source_a.objective_digest == material.initial.request.envelope.objective_digest);
++        anyhow::ensure!(previous.history_digest().as_str().parse::<Digest32>()?
++            == material.initial.request.completed_task_receipt);
++        anyhow::ensure!(credentials.generator.principal.principal_id == material.initial.owners.trainer);
++        anyhow::ensure!(credentials.evaluator.principal.principal_id == material.initial.owners.evaluator);
++        let mut cut = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
++        cut.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
++        anyhow::ensure!(cut.next_stage() == Some(LearningIterationStageV1::Evaluation));
++        anyhow::ensure!(cut.snapshot().receipts.len() == 3);
++        let baseline_bundle = &material.initial.request.selected_bundle;
++        let baseline_definition = support::definition(baseline, baseline_bundle)?;
++        let baseline_manifest = support::configuration(
++            baseline, baseline_bundle, &baseline_definition, source_a, 1,
++        )?.manifest;
++        anyhow::ensure!(baseline_manifest == config_a.manifest);
++        let candidate_definition = support::definition(candidate.model(), candidate.bundle())?;
++        let candidate_manifest = support::configuration(
++            candidate.model(), candidate.bundle(), &candidate_definition, source_a, 2,
++        )?.manifest;
++        Ok(Self {
++            material,
++            previous,
++            training: cut.snapshot().clone(),
++            training_evidence: training.attestation(),
++            baseline: baseline_bundle.digest()?,
++            candidate: candidate.bundle().digest()?,
++            manifests: [candidate_manifest, baseline_manifest],
++            credentials,
++        })
++    }
++}
++
++/// Created before Material/T; its frozen registration is supplied to the
++/// original initial request. No later receipt or profile is rewritten.
++pub(in super::super) struct PreparedBPanel {
++    primary: BFixture,
++    retention: BFixture,
++    registration: crate::OriginalCellEvaluationPanelRegistrationV1,
++}
++
++impl PreparedBPanel {
++    pub(in super::super) fn new(objective: Digest32, trust_time: u64) -> anyhow::Result<Self> {
++        let primary = BFixture::new("original-B", objective, trust_time)?;
++        let retention = BFixture::new("original-retention", objective, trust_time)?;
++        let registration = crate::OriginalCellEvaluationPanelRegistrationV1::new(
++            primary.task()?, vec![retention.task()?],
++        )?;
++        Ok(Self { primary, retention, registration })
++    }
++
++    pub(in super::super) fn registration(&self) -> &crate::OriginalCellEvaluationPanelRegistrationV1 {
++        &self.registration
++    }
++
++    pub(in super::super) fn complete<'a>(
++        self,
++        input: &'a CompletedTrainingInputs<'a>,
++        primary_trainer: LearningIterationEvidenceClientV1,
++        retention_trainer: LearningIterationEvidenceClientV1,
++    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
++        self.complete_with_trainers(input, Arc::new(primary_trainer), Arc::new(retention_trainer))
++    }
++
++    /// Existing production PanelMemberOwners already takes Arc evidence-only
++    /// clients. Sequential B reads share one original channel and its limits.
++    pub(in super::super) fn complete_with_shared_original_trainer<'a>(
++        self,
++        input: &'a CompletedTrainingInputs<'a>,
++        trainer: Arc<LearningIterationEvidenceClientV1>,
++    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
++        self.complete_with_trainers(input, Arc::clone(&trainer), trainer)
++    }
++
++    fn complete_with_trainers<'a>(
++        self,
++        input: &'a CompletedTrainingInputs<'a>,
++        primary_trainer: Arc<LearningIterationEvidenceClientV1>,
++        retention_trainer: Arc<LearningIterationEvidenceClientV1>,
++    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
++        Box::pin(async move {
++            let Self { mut primary, mut retention, registration } = self;
++            anyhow::ensure!(input.material.initial.request.evaluation_profile == registration.evaluation_profile());
++            anyhow::ensure!(primary.rule.objective_digest == input.material.initial.request.envelope.objective_digest);
++            anyhow::ensure!(primary.at == retention.at);
++            let at = primary.at;
++            // The original retention result is completed first and enters the
++            // primary's signed declaration. Equal supported policies continue
++            // to produce the original honest Ineligible result.
++            let mut retention_member = complete_member(
++                &mut retention, input, &registration, Vec::new(), retention_trainer,
++            ).await?;
++            let digests = vec![retention_member.qualification.product().evidence_digest];
++            let mut primary_member = complete_member(
++                &mut primary, input, &registration, digests, primary_trainer,
++            ).await?;
++            let config = &primary_member.config;
++            let receipt_config = OriginalCellEvaluationReceiptConfigV1 {
++                training: config.training.clone(),
++                scope: config.scope.clone(),
++                plan: config.plan.clone(),
++                signing: OriginalCellEvaluationSigningConfigV1 {
++                    plan: config.plan.product_plan().clone(),
++                    execution_namespace: config.execution_namespace,
++                    signer: input.credentials.evaluator.clone(),
++                    verifier: config.verifier.clone(),
++                    maximum_signature_lifetime_seconds: 600,
++                },
++            };
++            let panel = Panel::from_original_owners(
++                registration,
++                primary_member.take_original_member(),
++                vec![retention_member.take_original_member()],
++            )?;
++            let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
++            let mut result = CompletedBPanel {
++                host: None, config: receipt_config, at, primary, retention,
++                primary_member, retention_member, directory,
++            };
++            let (file, witness) = result.files(true)?;
++            let evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
++                file, witness, result.config.clone(), SigningKey::from_bytes(&[42; 32]),
++            )?;
++            let mut host = evaluator.into_original_evaluation_host(panel)?;
++            // This remains the existing explicit B clock fixture. It is not a
++            // claim of deployed task timing or independently obtained data.
++            host.fixture_original_clock(at)?;
++            result.host = Some(Arc::new(host));
++            Ok(result)
++        })
++    }
++}
++
++async fn complete_member(
++    b: &mut BFixture,
++    input: &CompletedTrainingInputs<'_>,
++    registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
++    retention_receipt_digests: Vec<Digest32>,
++    trainer: Arc<LearningIterationEvidenceClientV1>,
++) -> anyhow::Result<PanelMemberFixture> {
++    b.populate_from_original_training(
++        input.previous, input.baseline, input.candidate,
++        ObservationMode::Complete, false, DecisionBinding::ExactSource,
++    ).await?;
++    let config = b.config_from_original_training(
++        input.training.clone(), &input.material.scope, input.training_evidence,
++        &input.material.verifier, registration,
++    )?;
++    let cohort = CohortAt::read(b.owners(), config, b.at)?;
++    let runner = ProviderPlanFixture::for_panel(
++        &cohort.original, &b.rule, &input.training, input.manifests.clone(),
++    )?;
++    let provider = cohort.consume(runner.plan.clone())?;
++    Box::pin(PanelMemberFixture::complete_from_shared_original_trainer(
++        runner, provider, &input.material.initial, input.training.clone(),
++        input.training_evidence.clone(), &input.material.scope,
++        &input.credentials.generator, &input.credentials.evaluator,
++        input.material.verifier.clone(), retention_receipt_digests, trainer,
++    )).await
++}
++
++pub(in super::super) struct CompletedBPanel {
++    pub(in super::super) host: Option<Arc<OriginalCellEvaluationHostV1>>,
++    pub(in super::super) config: OriginalCellEvaluationReceiptConfigV1,
++    pub(in super::super) at: u64,
++    primary: BFixture,
++    retention: BFixture,
++    primary_member: PanelMemberFixture,
++    retention_member: PanelMemberFixture,
++    directory: tempfile::TempDir,
++}
++
++impl CompletedBPanel {
++    fn files(&self, create: bool) -> anyhow::Result<(File, FileAnchorWitnessStore)> {
++        let root = self.directory.path();
++        let file = opened(root, "original-evaluation", create)?;
++        let witness = original_witness(
++            root, "original-evaluation-witness", &self.config.scope,
++            self.config.signing.verifier.objective_digest(), create,
++        )?;
++        Ok((file, witness))
++    }
++
++    pub(in super::super) fn original_files(&self) -> anyhow::Result<[Vec<u8>; 2]> {
++        Ok([
++            fs::read(self.directory.path().join("original-evaluation"))?,
++            fs::read(self.directory.path().join("original-evaluation-witness"))?,
++        ])
++    }
++
++    pub(in super::super) fn upstream_files(&self) -> anyhow::Result<Vec<Vec<u8>>> {
++        let mut result = self.primary_member.bytes()?;
++        result.extend(self.retention_member.bytes()?);
++        result.extend(self.primary.all_source_bytes()?);
++        result.extend(self.retention.all_source_bytes()?);
++        result.extend(self.host.as_ref().ok_or_else(|| anyhow::anyhow!("original host retained"))?
++            .fixture_original_cohort_files()?);
++        Ok(result)
++    }
++
++    pub(in super::super) fn recover(&mut self) -> anyhow::Result<()> {
++        let host = Arc::try_unwrap(self.host.take().ok_or_else(|| anyhow::anyhow!("original host retained"))?)
++            .map_err(|_| anyhow::anyhow!("all original Evaluation services must be joined before recovery"))?;
++        let panel = host.fixture_take_original_panel()?;
++        let (file, witness) = self.files(false)?;
++        let evaluator = OriginalCellEvaluationReceiptOwnerV1::recover(
++            file, witness, self.config.clone(), SigningKey::from_bytes(&[42; 32]),
++        )?;
++        let mut host = evaluator.into_original_evaluation_host(panel)?;
++        host.fixture_original_clock(self.at)?;
++        self.host = Some(Arc::new(host));
++        Ok(())
++    }
++
++    /// All external service futures must have joined before this point; the
++    /// outside OriginalTrainingPeers is finished only after these clients drop.
++    pub(in super::super) fn finish(mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.host.as_ref().is_some_and(|host| Arc::strong_count(host) == 1),
++            "all original Evaluation services must be joined");
++        drop(self.host.take());
++        self.primary_member.finish_with_external_trainer()?;
++        self.retention_member.finish_with_external_trainer()?;
++        Ok(())
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
+@@ -48,7 +48,69 @@
+ }
+ 
+ impl PanelMemberFixture {
+-    pub(crate) async fn complete(
++    pub(crate) fn complete<'a>(
++        original_plan: ProviderPlanFixture,
++        provider: ProviderAt,
++        initial: &'a LearningIterationSnapshotV1,
++        training: LearningIterationSnapshotV1,
++        training_evidence: SignedLearningEvidenceV1,
++        scope: &'a FrozenLearningScopeV2,
++        generator: &'a TrustedLearningSignerV1,
++        evaluator: &'a TrustedLearningSignerV1,
++        verifier: LearningEvidenceVerifierV1,
++        retention_receipt_digests: Vec<Digest32>,
++    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
++        Self::complete_with_trainer(
++            original_plan, provider, initial, training, training_evidence,
++            scope, generator, evaluator, verifier, retention_receipt_digests,
++            None,
++        )
++    }
++
++    /// The caller retains and joins this real Trainer's server. No retained
++    /// signature responder is constructed on the fresh-provider path.
++    pub(crate) fn complete_from_original_trainer<'a>(
++        original_plan: ProviderPlanFixture,
++        provider: ProviderAt,
++        initial: &'a LearningIterationSnapshotV1,
++        training: LearningIterationSnapshotV1,
++        training_evidence: SignedLearningEvidenceV1,
++        scope: &'a FrozenLearningScopeV2,
++        generator: &'a TrustedLearningSignerV1,
++        evaluator: &'a TrustedLearningSignerV1,
++        verifier: LearningEvidenceVerifierV1,
++        retention_receipt_digests: Vec<Digest32>,
++        trainer: crate::LearningIterationEvidenceClientV1,
++    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
++        Self::complete_with_trainer(
++            original_plan, provider, initial, training, training_evidence,
++            scope, generator, evaluator, verifier, retention_receipt_digests,
++            Some(Arc::new(trainer)),
++        )
++    }
++
++    /// Both B tasks keep the same original read-only client, not a new peer.
++    pub(crate) fn complete_from_shared_original_trainer<'a>(
++        original_plan: ProviderPlanFixture,
++        provider: ProviderAt,
++        initial: &'a LearningIterationSnapshotV1,
++        training: LearningIterationSnapshotV1,
++        training_evidence: SignedLearningEvidenceV1,
++        scope: &'a FrozenLearningScopeV2,
++        generator: &'a TrustedLearningSignerV1,
++        evaluator: &'a TrustedLearningSignerV1,
++        verifier: LearningEvidenceVerifierV1,
++        retention_receipt_digests: Vec<Digest32>,
++        trainer: Arc<crate::LearningIterationEvidenceClientV1>,
++    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
++        Self::complete_with_trainer(
++            original_plan, provider, initial, training, training_evidence,
++            scope, generator, evaluator, verifier, retention_receipt_digests,
++            Some(trainer),
++        )
++    }
++
++    async fn complete_with_trainer(
+         original_plan: ProviderPlanFixture,
+         mut provider: ProviderAt,
+         initial: &LearningIterationSnapshotV1,
+@@ -59,6 +121,7 @@
+         evaluator: &TrustedLearningSignerV1,
+         verifier: LearningEvidenceVerifierV1,
+         retention_receipt_digests: Vec<Digest32>,
++        original_trainer: Option<Arc<crate::LearningIterationEvidenceClientV1>>,
+     ) -> anyhow::Result<Self> {
+         let ProviderPlanFixture {
+             mut fixture,
+@@ -194,12 +257,18 @@
+             )?,
+             config.clone(),
+         )?;
+-        let (trainer, thread) = fixture_original_receipt_client_until_close(
+-            initial.clone(),
+-            training.receipts[2].clone(),
+-            verifier,
+-            training_evidence,
+-        )?;
++        let (trainer, thread) = match original_trainer {
++            Some(trainer) => (trainer, None),
++            None => {
++                let (trainer, thread) = fixture_original_receipt_client_until_close(
++                    initial.clone(),
++                    training.receipts[2].clone(),
++                    verifier,
++                    training_evidence,
++                )?;
++                (Arc::new(trainer), Some(thread))
++            }
++        };
+         // Do not inline the original Qualification readback state into the
+         // surrounding member setup, which owns both physical runner journals.
+         let qualification = Box::pin(qualification_owner.qualify_or_readback(
+@@ -230,7 +299,7 @@
+             candidate_plan: fixture.candidate_temporal,
+             baseline_plan: fixture.baseline_temporal,
+             executions,
+-            trainer: Arc::new(trainer),
++            trainer,
+             cohort,
+         };
+         Ok(Self {
+@@ -238,7 +307,7 @@
+             qualification,
+             config,
+             initial: initial.clone(),
+-            thread: Some(thread),
++            thread,
+             _execution_signer: execution_signer,
+             directory: fixture.directory,
+         })
+@@ -294,4 +363,12 @@
+             .join()
+             .expect("original panel Trainer transport")
+     }
++
++    /// Drop the actual member's client before the outside fixture joins the
++    /// original Trainer server. This does not report a fabricated frame count.
++    pub(crate) fn finish_with_external_trainer(mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.thread.is_none(), "original Trainer server remains externally owned");
++        drop(self.member.take());
++        Ok(())
++    }
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+@@ -467,3 +467,6 @@
+ 
+ #[path = "circuit_original_evaluation_decision_binding_tests.rs"]
+ mod decision_binding;
++
++#[path = "circuit_original_evaluation_fresh_training_support_tests.rs"]
++pub(super) mod fresh_training;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
+@@ -155,6 +155,28 @@
+     ) -> anyhow::Result<()> {
+         let baseline = original.config.decision.request.selected_bundle.digest()?;
+         let candidate = original.candidate.digest()?;
++        self.populate_from_original_training(
++            &original.previous,
++            baseline,
++            candidate,
++            mode,
++            changed_candidate_action,
++            decision_binding,
++        )
++        .await
++    }
++
++    /// The fresh-provider path obtains both bundle digests from the actual
++    /// completed Trainer; it has no preceding auxiliary E or Model fixture.
++    pub(super) async fn populate_from_original_training(
++        &mut self,
++        previous: &CircuitTaskSourcePublicationV1,
++        baseline: Digest32,
++        candidate: Digest32,
++        mode: ObservationMode,
++        changed_candidate_action: bool,
++        decision_binding: DecisionBinding,
++    ) -> anyhow::Result<()> {
+         let rule = self.rule.clone();
+         let history_at = rule.history_start_unix_seconds + 10;
+         for (index, episode) in rule.history.iter().enumerate() {
+@@ -172,7 +194,7 @@
+                 );
+             }
+             let publication = self
+-                .execute(original, input, baseline, index, history_at)
++                .execute(previous, input, baseline, index, history_at)
+                 .await?;
+             material::evaluation_provider::decision(
+                 self.writer.as_mut().expect("original B ledger"),
+@@ -213,7 +235,7 @@
+             }
+             let publication = self
+                 .execute(
+-                    original,
++                    previous,
+                     input.clone(),
+                     baseline,
+                     /*selected_index*/ 0,
+@@ -231,7 +253,7 @@
+             let mut candidate_input = input;
+             candidate_input.scope.run_id = target.candidate_run_id.clone();
+             self.execute(
+-                original,
++                previous,
+                 candidate_input,
+                 candidate,
+                 usize::from(changed_candidate_action),
+@@ -278,7 +300,7 @@
+ 
+     async fn execute(
+         &mut self,
+-        original: &PositiveFixture,
++        previous: &CircuitTaskSourcePublicationV1,
+         input: crate::CircuitTaskSourceInputV1,
+         bundle: Digest32,
+         selected_index: usize,
+@@ -293,7 +315,7 @@
+         // A shared digest cannot replace the original compiled objective.
+         // B keeps its distinct admission/run/time, with the complete objective
+         // and function bytes used by the preregistered comparison.
+-        let objective = original.previous.original_record();
++        let objective = previous.original_record();
+         assert_eq!(
+             objective.snapshot.objective_digest,
+             self.rule.objective_digest
+@@ -334,6 +356,23 @@
+         original: &PositiveFixture,
+         registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+     ) -> anyhow::Result<OriginalCircuitEvaluationCohortConfigV1> {
++        self.config_from_original_training(
++            Self::training(original)?,
++            &original.config.scope,
++            &original.config.training_evidence,
++            &original.config.verifier,
++            registration,
++        )
++    }
++
++    pub(super) fn config_from_original_training(
++        &self,
++        training: LearningIterationSnapshotV1,
++        scope: &FrozenLearningScopeV2,
++        training_evidence: &SignedLearningEvidenceV1,
++        verifier: &LearningEvidenceVerifierV1,
++        registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
++    ) -> anyhow::Result<OriginalCircuitEvaluationCohortConfigV1> {
+         let freeze_plan = DatasetFreezePlanV2 {
+             snapshot_id: self.rule.snapshot_id.clone(),
+             objective_digest: self.rule.objective_digest,
+@@ -345,7 +384,7 @@
+             .expect("original B ledger before transfer");
+         assert_eq!(
+             writer.verifier().trust_digest(),
+-            original.config.verifier.trust_digest()
++            verifier.trust_digest()
+         );
+         let freeze_evidence = material::evaluation_provider::freeze(
+             writer,
+@@ -356,10 +395,10 @@
+         Ok(OriginalCircuitEvaluationCohortConfigV1 {
+             registration: registration.clone(),
+             rule: self.rule.clone(),
+-            training: Self::training(original)?,
+-            scope: original.config.scope.clone(),
+-            training_evidence: original.config.training_evidence.clone(),
+-            verifier: original.config.verifier.clone(),
++            training,
++            scope: scope.clone(),
++            training_evidence: training_evidence.clone(),
++            verifier: verifier.clone(),
+             freeze_plan,
+             freeze_evidence,
+         })
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+@@ -24,6 +24,7 @@
+ 
+ pub use c_task::OriginalCircuitRetainedTaskInputsV1;
+ pub use client::OriginalCircuitRetainedVersionClientV1;
++pub use host::OriginalCircuitPublishedEvidenceReadbackV1;
+ pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
+ pub use host::OriginalCircuitRetainedVersionHostV1;
+ pub use host::OriginalCircuitRetainedVersionRecoveryV1;
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+@@ -52,6 +52,9 @@
+ mod service;
+ #[path = "circuit_retained_version_state.rs"]
+ mod state;
++#[path = "circuit_retained_version_shared_readback.rs"]
++mod shared_readback;
++pub use shared_readback::OriginalCircuitPublishedEvidenceReadbackV1;
+ 
+ #[path = "circuit_retained_version_prepared.rs"]
+ mod prepared_custody;
+@@ -144,6 +147,7 @@
+     trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
+     initial_evaluator: Option<OriginalCellEvaluationCommandConnectionV1>,
+     evaluator: Option<OriginalCellEvaluationCommandClientV1>,
++    shared_evaluated: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
+     cut: Option<OriginalVersionCut>,
+     expected: Option<RetainedVersionColdCutV1>,
+     control: Arc<NeuronGenerationCurrentOwnerV1>,
+@@ -271,6 +275,7 @@
+                 trainer: None,
+                 initial_evaluator: evidence.into_evaluator(),
+                 evaluator: None,
++                shared_evaluated: None,
+                 cut: None,
+                 expected: None,
+                 control,
+@@ -367,6 +372,7 @@
+                 trainer: None,
+                 initial_evaluator: evidence.into_evaluator(),
+                 evaluator: None,
++                shared_evaluated: None,
+                 cut: None,
+                 expected: Some(RetainedVersionColdCutV1 {
+                     training: original.training,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs
+@@ -0,0 +1,133 @@
++//! A local, sealed view of the original published Version's same T/E channels.
++//! It has no new-work method, owner factory, descriptor or reconnect interface.
++
++use std::sync::Arc;
++
++use super::OriginalCircuitRetainedVersionHostV1;
++use super::RetainedVersionFinalUseOutcomeV1;
++use super::RetainedVersionHostPhaseV1;
++use super::super::Error;
++use super::super::RetainedVersionOriginV1;
++use super::super::RetainedVersionPurposeV1;
++use crate::OriginalCellEvaluationCommandClientV1;
++use crate::OriginalCellQ24TrainingCommandClientV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
++use crate::OriginalCircuitRetainedPublicationErrorV1;
++
++pub struct OriginalCircuitPublishedEvidenceReadbackV1 {
++    trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,
++    evaluator: Arc<OriginalCellEvaluationCommandClientV1>,
++    context: OriginalCircuitEvaluatedRetentionContextV1,
++}
++
++impl Clone for OriginalCircuitPublishedEvidenceReadbackV1 {
++    fn clone(&self) -> Self {
++        Self {
++            trainer: Arc::clone(&self.trainer),
++            evaluator: Arc::clone(&self.evaluator),
++            context: self.context.clone_for_original_receipt(),
++        }
++    }
++}
++
++impl OriginalCircuitPublishedEvidenceReadbackV1 {
++    /// Perform actual original T/E reads. This is not a cached publication
++    /// result or a new-work capability. Competing reads retain the original
++    /// Unavailable/Unknown semantics; sharing creates no queue or retry.
++    pub async fn read_original_predecessors(&self) -> Result<(), Error> {
++        self.context
++            .require_original_receipt_owners(self.trainer.as_ref(), self.evaluator.as_ref())
++            .await?;
++        Ok(())
++    }
++
++    pub(crate) fn require_original_context(
++        &self,
++        expected: &OriginalCircuitEvaluatedRetentionContextV1,
++    ) -> Result<(), OriginalCircuitRetainedPublicationErrorV1> {
++        if self.context.snapshot() != expected.snapshot()
++            || self.context.receipt_context_binding() != expected.receipt_context_binding()
++        {
++            return Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
++                "same original published T/E context",
++            ));
++        }
++        let at = super::super::super::now()?;
++        self.context.original_receipt_predecessors(at)?;
++        expected.original_receipt_predecessors(at)?;
++        Ok(())
++    }
++
++    pub(crate) fn original_clients(
++        &self,
++    ) -> (&OriginalCellQ24TrainingCommandClientV1, &OriginalCellEvaluationCommandClientV1) {
++        (self.trainer.as_ref(), self.evaluator.as_ref())
++    }
++}
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    /// Consume the already retained clients only after actual Published and a
++    /// full current read. A cold Published enum alone does not admit a reader.
++    /// All aliases keep the original clients' one channel slot and lifetime.
++    pub async fn share_original_evaluated_readbacks(
++        self: Arc<Self>,
++    ) -> Result<OriginalCircuitPublishedEvidenceReadbackV1, Error> {
++        tokio::task::spawn_blocking(move || {
++            self.require_lifetime()?;
++            if self.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++                || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++            {
++                return Err(Error::ReadbackRequired);
++            }
++            let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
++            if let Err(error) = self.bind_original_predecessor(&mut state) {
++                if self.origin == RetainedVersionOriginV1::Recovered {
++                    state.selection_reader = None;
++                }
++                return Err(error);
++            }
++            let observed = if self.origin == RetainedVersionOriginV1::Recovered {
++                self.read_original_recovery(&mut state)?
++            } else {
++                self.read_original(&state)?
++            };
++            if observed.publication().is_none()
++                || state.selection_reader.is_none()
++                || !matches!(
++                    state.phase.as_ref(),
++                    Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))
++                )
++                || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++            {
++                return Err(Error::ReadbackRequired);
++            }
++            let context = state.cut.as_ref().and_then(|cut| cut.evaluated.as_ref())
++                .ok_or(Error::ReadbackRequired)?.clone_for_original_receipt();
++            if state.shared_evaluated.is_none() {
++                let original = match (state.trainer.take(), state.evaluator.take()) {
++                    (Some(trainer), Some(evaluator)) => (trainer, evaluator),
++                    _ => {
++                        state.selection_reader = None;
++                        return Err(Error::Unavailable);
++                    }
++                };
++                let (trainer, evaluator) = match context.seal_original_readback_owners(original.0, original.1) {
++                    Ok(value) => value,
++                    Err(error) => {
++                        state.selection_reader = None;
++                        return Err(error.into());
++                    }
++                };
++                state.shared_evaluated = Some(OriginalCircuitPublishedEvidenceReadbackV1 {
++                    trainer,
++                    evaluator,
++                    context: context.clone_for_original_receipt(),
++                });
++            }
++            let shared = state.shared_evaluated.as_ref().ok_or(Error::Unavailable)?;
++            shared.require_original_context(&context)?;
++            self.require_lifetime()?;
++            Ok(shared.clone())
++        }).await.map_err(|_| Error::CommitUncertain)?
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+@@ -229,7 +229,9 @@
+     fn original_trainer(&self) -> Result<&OriginalCellQ24TrainingCommandClientV1, Error> {
+         match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
+             RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(original.trainer()),
+-            _ => self.trainer.as_ref().ok_or(Error::Unavailable),
++            _ => self.trainer.as_ref().or_else(|| {
++                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().0)
++            }).ok_or(Error::Unavailable),
+         }
+     }
+ 
+@@ -238,7 +240,9 @@
+             RetainedVersionHostPhaseV1::Prepared { original, .. } => {
+                 original.evaluator().ok_or(Error::Unavailable)
+             }
+-            _ => self.evaluator.as_ref().ok_or(Error::Unavailable),
++            _ => self.evaluator.as_ref().or_else(|| {
++                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().1)
++            }).ok_or(Error::Unavailable),
+         }
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -201,6 +201,12 @@
+ #[cfg(target_os = "linux")]
+ pub use authority_host_service::resident::RootResidentLearningRuntimeV3;
+ #[cfg(target_os = "linux")]
++pub use authority_host_service::resident::RootResidentCandidateInputsV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_service::resident::RootResidentCandidateServiceV1;
++#[cfg(target_os = "linux")]
++pub use authority_host_service::resident::RootResidentLearningConsumerV3;
++#[cfg(target_os = "linux")]
+ pub(crate) use circuit_learning_delivery::AgentdRootResidentDeliveryV3;
+ #[cfg(target_os = "linux")]
+ pub use circuit_learning_delivery::AgentdRootResidentEnrollmentV3;
+@@ -224,6 +230,12 @@
+ pub use config::drop_root_native_owner_credentials;
+ #[cfg(target_os = "linux")]
+ pub use root_production_handoff::RootLearningHandoffV1;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::RootCandidateStageHandoffV1;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::receive_root_candidate_stage_handoff;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::send_root_candidate_stage_handoff;
+ #[cfg(target_os = "linux")]
+ pub use root_production_handoff::RootProductionWriterDescriptor;
+ #[cfg(target_os = "linux")]
+@@ -879,6 +891,8 @@
+ pub use circuit_feature_current::OriginalCircuitLearningReadOwnerV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
++#[cfg(target_os = "linux")]
++pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+ #[cfg(target_os = "linux")]
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs
+@@ -30,6 +30,9 @@
+ use crate::OriginalCellEvaluationPanelRegistrationV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
++
++#[path = "neuron_cell_evaluation_shared_readback.rs"]
++mod shared_readback;
+ 
+ #[derive(Clone, Copy, Eq, PartialEq)]
+ enum Origin {
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs
+@@ -0,0 +1,39 @@
++//! Consume one completed original Evaluator client into sealed local readback.
++//! Sharing preserves its single slot, nonce, aggregate limit and expiry.
++
++use std::sync::Arc;
++
++use super::Error;
++use super::OriginalCellEvaluationCommandClientV1;
++use super::now;
++use super::wire;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++
++impl OriginalCellEvaluationCommandClientV1 {
++    pub(crate) fn seal_original_completed_readback(
++        self,
++        expected: &OriginalCellEvaluationCommandReceiptV1,
++    ) -> Result<Arc<Self>, Error> {
++        let retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
++        let original = retained.as_ref().ok_or(Error::ReadbackRequired)?;
++        if original != expected {
++            return Err(Error::Binding("same completed original Evaluator before sharing"));
++        }
++        let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
++        let channel = slot.as_mut().ok_or(Error::Unavailable)?;
++        channel.peer.check_peer_lifetime()?;
++        let authenticated = wire::authenticate_completed(
++            &self.context,
++            original.snapshot().clone(),
++            original.attestation().clone(),
++            now()?,
++        )?;
++        if &authenticated != original {
++            return Err(Error::Binding("full original Evaluator signature before sharing"));
++        }
++        channel.execution_requested = true;
++        drop(slot);
++        drop(retained);
++        Ok(Arc::new(self))
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs
+@@ -0,0 +1,257 @@
++//! A separate, one-shot transfer of already connected original role channels.
++//! Public wire metadata carries no material, verifier, result, signer or grant.
++
++use std::os::fd::AsRawFd;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixStream;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++use serde::Serialize;
++
++use crate::AgentdError;
++use crate::AgentdRootAuthorityPeer;
++use crate::LearningIterationEvidencePeerV1;
++use crate::OriginalCellQ24CandidateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdatePeerStreamV1 as PeerStream;
++use crate::OriginalCellQ24NoUpdateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdateTaskStreamV1 as TaskStream;
++use crate::RootResidentLearningProfileV3;
++
++#[path = "root_candidate_stage_handoff_wire.rs"]
++mod wire;
++
++const PURPOSE: &str = "hepta.original-root-candidate-stage-handoff.v1";
++const ROLES: [&str; 10] = ["experience", "dataset", "trainer", "selector", "version", "next_use", "completion", "candidate_material", "evaluator", "model"];
++
++#[derive(Serialize, Deserialize, PartialEq, Eq)]
++#[serde(deny_unknown_fields)]
++struct Process {
++    pid: u32,
++    boot_id: String,
++    process_start_ticks: u64,
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Lane {
++    role: String,
++    uid: u32,
++    process: Process,
++    timeout_ns: u64,
++    end_ns: u64,
++}
++
++#[derive(Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Packet {
++    purpose: String,
++    profile: String,
++    recipient: Process,
++    lanes: Vec<Lane>,
++}
++
++/// No public constructor, deserializer, role getter or retry path. Admission
++/// consumes all rights against an independently supplied original Root profile.
++pub struct RootCandidateStageHandoffV1 {
++    packet: Packet,
++    descriptors: Vec<OwnedFd>,
++    sender: OwnedFd,
++}
++
++enum Input {
++    Peer(PeerStream),
++    Task(TaskStream),
++}
++
++/// The original host transfers existing endpoints for the actual resident
++/// process. Passing an FD cannot retarget its established SO_PEERCRED peer.
++/// Every endpoint and the private handoff socket are consumed even on error.
++pub fn send_root_candidate_stage_handoff(
++    socket: UnixDatagram,
++    root_pidfd: &OwnedFd,
++    recipient: AgentdRootAuthorityPeer,
++    recipient_pidfd: &OwnedFd,
++    profile: &RootResidentLearningProfileV3,
++    streams: OriginalCellQ24CandidateStageStreamsV1,
++    timeout: Duration,
++) -> Result<(), AgentdError> {
++    require_root()?;
++    let root = super::root_pair(&socket, timeout)?;
++    if root.pid as u32 != std::process::id() {
++        return Err(refused("same original Root pair required"));
++    }
++    super::require_root_pin(root_pidfd, std::process::id())?;
++    super::require_root_pin(recipient_pidfd, recipient.pid)?;
++    let recipient = Process { pid: recipient.pid, boot_id: recipient.boot_id, process_start_ticks: recipient.process_start_ticks };
++    require_process(&recipient)?;
++    let OriginalCellQ24CandidateStageStreamsV1 { common, candidate_material, evaluator, model } = streams;
++    let OriginalCellQ24NoUpdateStageStreamsV1 { experience, dataset, trainer, selector, version, next_use, completion } = common;
++    let inputs = [Input::Peer(experience), Input::Peer(dataset), Input::Peer(trainer), Input::Peer(selector), Input::Task(version), Input::Peer(next_use), Input::Task(completion), Input::Peer(candidate_material), Input::Peer(evaluator), Input::Peer(model)];
++    let now = wire::monotonic_ns()?;
++    let mut lanes = Vec::with_capacity(ROLES.len());
++    let mut owned = Vec::with_capacity(ROLES.len());
++    let mut sockets = std::collections::BTreeSet::new();
++    for (index, input) in inputs.into_iter().enumerate() {
++        let (stream, pidfd, uid, process, command_timeout, lifetime) = match input {
++            Input::Peer(input) => {
++                if Some(&input.peer.actor_id) != actor(profile, index)? {
++                    return Err(refused("original role actor differs"));
++                }
++                (input.stream, input.original_owner_pidfd, input.peer.uid,
++                 Process { pid: input.peer.pid, boot_id: input.peer.boot_id, process_start_ticks: input.peer.process_start_ticks }, input.timeout, input.lifetime)
++            }
++            Input::Task(input) => (input.stream, input.original_task_pidfd, input.uid,
++                Process { pid: input.peer.pid, boot_id: input.peer.boot_id, process_start_ticks: input.peer.process_start_ticks }, input.timeout, input.lifetime),
++        };
++        let timeout_ns = u64::try_from(command_timeout.as_nanos()).map_err(|_| refused("timeout overflow"))?;
++        let lifetime_ns = u64::try_from(lifetime.as_nanos()).map_err(|_| refused("lifetime overflow"))?;
++        require_timing(index, timeout_ns, lifetime_ns)?;
++        crate::notes_bootstrap::require_socket(stream.as_raw_fd(), libc::SOCK_STREAM)?;
++        if !sockets.insert(wire::socket_identity(stream.as_raw_fd())?) {
++            return Err(refused("role purposes require distinct original streams"));
++        }
++        let end_ns = now.checked_add(lifetime_ns).ok_or_else(|| refused("deadline overflow"))?;
++        lanes.push(Lane { role: ROLES[index].into(), uid, process, timeout_ns, end_ns });
++        owned.push((stream, pidfd));
++    }
++    let packet = Packet { purpose: PURPOSE.into(), profile: profile.binding().to_string(), recipient, lanes };
++    let bytes = serde_json::to_vec(&packet)?;
++    let mut descriptors = vec![root_pidfd.as_raw_fd()];
++    for (stream, pidfd) in &owned {
++        descriptors.extend([stream.as_raw_fd(), pidfd.as_raw_fd()]);
++    }
++    wire::send(&socket, &bytes, &descriptors, timeout)
++}
++
++/// Receive only original connected capabilities. Material, loaded-model and
++/// evaluation trust are supplied separately to the consuming Root service.
++pub fn receive_root_candidate_stage_handoff(
++    socket: UnixDatagram,
++    profile: &RootResidentLearningProfileV3,
++    timeout: Duration,
++) -> Result<RootCandidateStageHandoffV1, AgentdError> {
++    require_root()?;
++    let root = super::root_pair(&socket, timeout)?;
++    let (bytes, mut descriptors) = wire::receive(&socket, timeout)?;
++    let sender = descriptors.remove(0);
++    super::require_root_pin(&sender, root.pid as u32)?;
++    let packet: Packet = serde_json::from_slice(&bytes)?;
++    validate_packet(&packet, profile.binding())?;
++    Ok(RootCandidateStageHandoffV1 { packet, descriptors, sender })
++}
++
++impl RootCandidateStageHandoffV1 {
++    pub(crate) fn into_original_streams(
++        self,
++        profile: &RootResidentLearningProfileV3,
++    ) -> Result<(OriginalCellQ24CandidateStageStreamsV1, Instant), AgentdError> {
++        require_root()?;
++        validate_packet(&self.packet, profile.binding())?;
++        crate::root_observation_stream::check_lifetime(&self.sender)
++            .map_err(|_| refused("original handoff Root exited"))?;
++        // Sample Instant first: conversion can only shorten the original end.
++        let local = Instant::now();
++        let now = wire::monotonic_ns()?;
++        let minimum = self.packet.lanes.iter().map(|lane| lane.end_ns).min().ok_or_else(|| refused("missing role deadline"))?;
++        let remaining = minimum.checked_sub(now).filter(|ns| *ns > 0).ok_or_else(|| refused("original role deadline elapsed"))?;
++        let end = local.checked_add(Duration::from_nanos(remaining)).ok_or_else(|| refused("deadline overflow"))?;
++        let mut descriptors = self.descriptors.into_iter();
++        let mut inputs = Vec::with_capacity(ROLES.len());
++        for (index, lane) in self.packet.lanes.into_iter().enumerate() {
++            let stream = descriptors.next().ok_or_else(|| refused("missing role stream"))?;
++            let pidfd = descriptors.next().ok_or_else(|| refused("missing original role pidfd"))?;
++            crate::notes_bootstrap::require_socket(stream.as_raw_fd(), libc::SOCK_STREAM)?;
++            let lifetime_ns = lane.end_ns.checked_sub(now).ok_or_else(|| refused("expired original role"))?;
++            require_timing(index, lane.timeout_ns, lifetime_ns)?;
++            let peer = AgentdRootAuthorityPeer { pid: lane.process.pid, boot_id: lane.process.boot_id, process_start_ticks: lane.process.process_start_ticks };
++            let stream = UnixStream::from(stream);
++            let timeout = Duration::from_nanos(lane.timeout_ns);
++            let lifetime = Duration::from_nanos(lifetime_ns);
++            inputs.push(match actor(profile, index)? {
++                Some(actor_id) => Input::Peer(PeerStream { stream,
++                    peer: LearningIterationEvidencePeerV1 { pid: peer.pid, uid: lane.uid, boot_id: peer.boot_id, process_start_ticks: peer.process_start_ticks, actor_id: actor_id.clone() },
++                    original_owner_pidfd: pidfd, timeout, lifetime }),
++                None => Input::Task(TaskStream { stream, peer, uid: lane.uid, original_task_pidfd: pidfd, timeout, lifetime }),
++            });
++        }
++        let [Input::Peer(experience), Input::Peer(dataset), Input::Peer(trainer), Input::Peer(selector), Input::Task(version), Input::Peer(next_use), Input::Task(completion), Input::Peer(candidate_material), Input::Peer(evaluator), Input::Peer(model)]: [Input; 10] = inputs.try_into().map_err(|_| refused("exact original roles required"))? else {
++            return Err(refused("original role purposes differ"));
++        };
++        Ok((OriginalCellQ24CandidateStageStreamsV1 { common: OriginalCellQ24NoUpdateStageStreamsV1 { experience, dataset, trainer, selector, version, next_use, completion }, candidate_material, evaluator, model }, end))
++    }
++}
++
++fn actor(profile: &RootResidentLearningProfileV3, index: usize) -> Result<Option<&StableId>, AgentdError> {
++    let owners = &profile.initial().owners;
++    Ok(match index {
++        0 => Some(&owners.experience), 1 => Some(&owners.dataset),
++        2 | 7 => Some(&owners.trainer), 3 => Some(&owners.selector),
++        5 => Some(&owners.next_use_observer), 8 => Some(&owners.evaluator),
++        9 => Some(&owners.proposal), 4 | 6 => None,
++        _ => return Err(refused("unknown original role")),
++    })
++}
++
++fn validate_packet(packet: &Packet, binding: Digest32) -> Result<(), AgentdError> {
++    if packet.purpose != PURPOSE || packet.profile != binding.to_string()
++        || packet.recipient.pid != std::process::id() || packet.lanes.len() != ROLES.len()
++    {
++        return Err(refused("original purpose, profile, recipient and ten roles required"));
++    }
++    require_process(&packet.recipient)?;
++    let now = wire::monotonic_ns()?;
++    for (index, lane) in packet.lanes.iter().enumerate() {
++        if lane.role != ROLES[index] {
++            return Err(refused("original role order differs"));
++        }
++        let lifetime = lane.end_ns.checked_sub(now).ok_or_else(|| refused("expired original role"))?;
++        require_timing(index, lane.timeout_ns, lifetime)?;
++    }
++    Ok(())
++}
++
++fn require_timing(index: usize, timeout: u64, lifetime: u64) -> Result<(), AgentdError> {
++    let limit = if index == 6 { 500_000_000 } else { 30_000_000_000 };
++    if timeout == 0 || timeout > limit || lifetime == 0 || lifetime > 300_000_000_000 {
++        return Err(refused("original role timing exceeds its bound"));
++    }
++    Ok(())
++}
++
++fn require_process(peer: &Process) -> Result<(), AgentdError> {
++    use std::io::Read;
++    if peer.pid == 0 || peer.pid > i32::MAX as u32 || peer.process_start_ticks == 0 {
++        return Err(refused("original recipient identity is invalid"));
++    }
++    let mut boot = String::new();
++    std::fs::File::open("/proc/sys/kernel/random/boot_id")?.take(129).read_to_string(&mut boot)?;
++    let mut stat = String::new();
++    std::fs::File::open(format!("/proc/{}/stat", peer.pid))?.take(8193).read_to_string(&mut stat)?;
++    let start = stat.rsplit_once(") ").and_then(|(_, fields)| fields.split_whitespace().nth(19)).and_then(|value| value.parse::<u64>().ok());
++    if boot.len() > 128 || boot.trim() != peer.boot_id || stat.len() > 8192 || start != Some(peer.process_start_ticks)
++    {
++        return Err(refused("original recipient process differs"));
++    }
++    Ok(())
++}
++
++fn require_root() -> Result<(), AgentdError> {
++    // SAFETY: these calls only inspect this process's kernel credentials.
++    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
++        return Err(refused("actual Root resident required"));
++    }
++    Ok(())
++}
++
++fn refused(message: &str) -> AgentdError {
++    AgentdError::Protocol(format!("original Root candidate handoff: {message}"))
++}
++
++#[cfg(test)]
++#[path = "root_candidate_stage_handoff_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs
+@@ -0,0 +1,130 @@
++//! Real FD transport mechanism tests. These create no Root grant, original
++//! role owner, independent evaluation, or successful A/B/C task.
++
++use super::*;
++use pretty_assertions::assert_eq;
++use std::io::Read;
++use std::io::Write;
++
++fn descriptors() -> anyhow::Result<(Vec<UnixStream>, Vec<UnixStream>)> {
++    (0..21).map(|_| UnixStream::pair()).collect::<Result<Vec<_>, _>>()
++        .map(|pairs| pairs.into_iter().unzip()).map_err(Into::into)
++}
++
++#[test]
++fn candidate_wire_preserves_all_original_fd_objects_and_cloexec() -> anyhow::Result<()> {
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (streams, mut peers) = descriptors()?;
++    let raw = streams.iter().map(AsRawFd::as_raw_fd).collect::<Vec<_>>();
++    wire::send(&sender, b"mechanism-only-frame", &raw, Duration::from_secs(1))?;
++    drop(streams);
++    let (body, rights) = wire::receive(&receiver, Duration::from_secs(1))?;
++    assert_eq!(body, b"mechanism-only-frame");
++    let mut observed = Vec::new();
++    let mut cloexec = Vec::new();
++    for (index, (right, peer)) in rights.into_iter().zip(&mut peers).enumerate() {
++        // SAFETY: F_GETFD observes the live received FD only.
++        cloexec.push(unsafe { libc::fcntl(right.as_raw_fd(), libc::F_GETFD) } & libc::FD_CLOEXEC != 0);
++        peer.write_all(&[index as u8])?;
++        let mut stream = UnixStream::from(right);
++        let mut value = [0_u8];
++        stream.read_exact(&mut value)?;
++        observed.push(value[0]);
++    }
++    assert_eq!((observed, cloexec), ((0_u8..21).collect::<Vec<_>>(), vec![true; 21]));
++    Ok(())
++}
++
++#[test]
++fn candidate_wire_and_old_two_right_packet_cannot_consume_each_other() -> anyhow::Result<()> {
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (streams, mut peers) = descriptors()?;
++    let raw = streams.iter().map(AsRawFd::as_raw_fd).collect::<Vec<_>>();
++    wire::send(&sender, b"wrong-for-old-purpose", &raw, Duration::from_secs(1))?;
++    drop(streams);
++    assert!(super::super::receive_packet(&receiver, Duration::from_secs(1)).is_err());
++    for peer in &mut peers {
++        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
++        assert_eq!(peer.read(&mut [0])?, 0);
++    }
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (first, mut first_peer) = UnixStream::pair()?;
++    let (second, mut second_peer) = UnixStream::pair()?;
++    super::super::send_packet(&sender, super::super::FRAME,
++        &[first.as_raw_fd(), second.as_raw_fd()], Duration::from_secs(1))?;
++    drop((first, second));
++    assert!(wire::receive(&receiver, Duration::from_secs(1)).is_err());
++    for peer in [&mut first_peer, &mut second_peer] {
++        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
++        assert_eq!(peer.read(&mut [0])?, 0);
++    }
++    Ok(())
++}
++
++#[test]
++fn candidate_wire_rejects_role_socket_alias_and_closes_all_received_rights() -> anyhow::Result<()> {
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let (mut streams, mut peers) = descriptors()?;
++    streams[3] = streams[1].try_clone()?;
++    let raw = streams.iter().map(AsRawFd::as_raw_fd).collect::<Vec<_>>();
++    wire::send(&sender, b"aliased-role-purpose", &raw, Duration::from_secs(1))?;
++    drop(streams);
++    assert!(wire::receive(&receiver, Duration::from_secs(1)).is_err());
++    for peer in &mut peers {
++        peer.set_read_timeout(Some(Duration::from_secs(1)))?;
++        assert_eq!(peer.read(&mut [0])?, 0);
++    }
++    Ok(())
++}
++
++fn packet() -> anyhow::Result<(Packet, Digest32)> {
++    let pid = std::process::id();
++    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
++    let start = stat.rsplit_once(") ").and_then(|(_, fields)| fields.split_whitespace().nth(19))
++        .ok_or_else(|| anyhow::anyhow!("actual process stat"))?.parse()?;
++    let boot = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().to_string();
++    let binding = Digest32::of_bytes(b"explicit synthetic framing profile");
++    let now = wire::monotonic_ns()?;
++    let lanes = ROLES.iter().map(|name| Lane { role: (*name).into(), uid: 1000,
++        process: Process { pid, boot_id: boot.clone(), process_start_ticks: start },
++        timeout_ns: 100_000_000, end_ns: now + 10_000_000_000 }).collect();
++    Ok((Packet { purpose: PURPOSE.into(), profile: binding.to_string(),
++        recipient: Process { pid, boot_id: boot, process_start_ticks: start }, lanes }, binding))
++}
++
++#[test]
++fn candidate_packet_refuses_changed_binding_role_process_and_original_timing() -> anyhow::Result<()> {
++    let (packet, binding) = packet()?;
++    validate_packet(&packet, binding)?;
++    let baseline = serde_json::to_value(&packet)?;
++    let mut attacks = Vec::new();
++    for (pointer, value) in [
++        ("/purpose", serde_json::json!("HEPTA_ROOT_LEARNING_INPUTS_V1")),
++        ("/profile", serde_json::json!(Digest32::of_bytes(b"another profile").to_string())),
++        ("/recipient/pid", serde_json::json!(0)),
++        ("/recipient/boot_id", serde_json::json!("other boot")),
++        ("/recipient/process_start_ticks", serde_json::json!(0)),
++        ("/lanes/1/role", serde_json::json!("experience")),
++        ("/lanes/0/timeout_ns", serde_json::json!(0)),
++        ("/lanes/0/timeout_ns", serde_json::json!(30_000_000_001_u64)),
++        ("/lanes/6/timeout_ns", serde_json::json!(500_000_001_u64)),
++        ("/lanes/0/end_ns", serde_json::json!(0)),
++        ("/lanes/0/end_ns", serde_json::json!(u64::MAX)),
++    ] {
++        let mut changed = baseline.clone();
++        *changed.pointer_mut(pointer).ok_or_else(|| anyhow::anyhow!("actual field missing"))? = value;
++        let changed: Packet = serde_json::from_value(changed)?;
++        attacks.push(validate_packet(&changed, binding).is_err());
++    }
++    let mut changed: Packet = serde_json::from_value(baseline.clone())?;
++    changed.lanes.pop();
++    attacks.push(validate_packet(&changed, binding).is_err());
++    let mut changed: Packet = serde_json::from_value(baseline.clone())?;
++    changed.lanes.swap(0, 1);
++    attacks.push(validate_packet(&changed, binding).is_err());
++    let mut changed = baseline;
++    changed["fresh"] = serde_json::json!(true);
++    attacks.push(serde_json::from_value::<Packet>(changed).is_err());
++    assert_eq!(attacks, vec![true; 14]);
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs
+@@ -0,0 +1,101 @@
++//! Fixed twenty role rights and one original Root pidfd. Old handoff limits
++//! and both existing two-right purposes are deliberately unchanged.
++
++use std::mem;
++use std::os::fd::AsRawFd;
++use std::os::fd::OwnedFd;
++use std::os::fd::RawFd;
++use std::os::unix::net::UnixDatagram;
++use std::time::Duration;
++use crate::AgentdError;
++use super::refused;
++
++const RIGHTS: usize = 21;
++const BOUND: usize = 16_384;
++
++pub(super) fn send(socket: &UnixDatagram, bytes: &[u8], rights: &[RawFd], timeout: Duration) -> Result<(), AgentdError> {
++    if rights.len() != RIGHTS || bytes.is_empty() || bytes.len() > BOUND {
++        return Err(refused("exact bounded candidate packet required"));
++    }
++    socket.set_nonblocking(false)?;
++    socket.set_write_timeout(Some(timeout))?;
++    let mut control = [0_usize; 32];
++    let mut vector = libc::iovec { iov_base: bytes.as_ptr().cast_mut().cast(), iov_len: bytes.len() };
++    // SAFETY: the message is initialized below with retained aligned buffers.
++    let mut message: libc::msghdr = unsafe { mem::zeroed() };
++    message.msg_iov = &mut vector;
++    message.msg_iovlen = 1;
++    message.msg_control = control.as_mut_ptr().cast();
++    let length = mem::size_of_val(rights);
++    // SAFETY: scalar alignment calculation for a fixed bounded FD array.
++    message.msg_controllen = unsafe { libc::CMSG_SPACE(length as u32) } as usize;
++    if message.msg_controllen > mem::size_of_val(&control) {
++        return Err(refused("candidate ancillary bound exceeded"));
++    }
++    // SAFETY: the complete header and FD array fit in the live aligned buffer.
++    unsafe {
++        let header = libc::CMSG_FIRSTHDR(&message);
++        (*header).cmsg_level = libc::SOL_SOCKET;
++        (*header).cmsg_type = libc::SCM_RIGHTS;
++        (*header).cmsg_len = libc::CMSG_LEN(length as u32) as usize;
++        std::ptr::copy_nonoverlapping(rights.as_ptr(), libc::CMSG_DATA(header).cast(), rights.len());
++    }
++    // SAFETY: sendmsg only borrows these exact retained buffers and FD array.
++    let count = unsafe { libc::sendmsg(socket.as_raw_fd(), &message, libc::MSG_NOSIGNAL) };
++    if count < 0 { return Err(std::io::Error::last_os_error().into()); }
++    if count as usize != bytes.len() { return Err(refused("partial candidate handoff")); }
++    Ok(())
++}
++
++pub(super) fn receive(socket: &UnixDatagram, timeout: Duration) -> Result<(Vec<u8>, Vec<OwnedFd>), AgentdError> {
++    socket.set_nonblocking(false)?;
++    socket.set_read_timeout(Some(timeout))?;
++    let mut bytes = vec![0_u8; BOUND + 1];
++    let mut control = [0_usize; 32];
++    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };
++    // SAFETY: initialized below with bounded live data and aligned ancillary buffers.
++    let mut message: libc::msghdr = unsafe { mem::zeroed() };
++    message.msg_iov = &mut vector;
++    message.msg_iovlen = 1;
++    message.msg_control = control.as_mut_ptr().cast();
++    message.msg_controllen = mem::size_of_val(&control);
++    // SAFETY: recvmsg is bounded and atomically gives every received FD CLOEXEC.
++    let length = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
++    if length < 0 { return Err(std::io::Error::last_os_error().into()); }
++    // SAFETY: original ancillary parser; completed recvmsg buffers remain live.
++    let (rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
++    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
++        || rights.len() != RIGHTS || length == 0 || length as usize > BOUND
++    {
++        return Err(refused("exact twenty role rights and original Root pin required"));
++    }
++    let mut sockets = std::collections::BTreeSet::new();
++    for stream in rights.iter().skip(1).step_by(2) {
++        crate::notes_bootstrap::require_socket(stream.as_raw_fd(), libc::SOCK_STREAM)?;
++        if !sockets.insert(socket_identity(stream.as_raw_fd())?) {
++            return Err(refused("role stream aliases another purpose"));
++        }
++    }
++    bytes.truncate(length as usize);
++    Ok((bytes, rights))
++}
++
++pub(super) fn socket_identity(fd: RawFd) -> Result<(libc::dev_t, libc::ino_t), AgentdError> {
++    // SAFETY: fstat writes one correctly sized initialized stat for a borrowed FD.
++    let mut stat: libc::stat = unsafe { mem::zeroed() };
++    if unsafe { libc::fstat(fd, &mut stat) } != 0 {
++        return Err(std::io::Error::last_os_error().into());
++    }
++    Ok((stat.st_dev, stat.st_ino))
++}
++
++pub(super) fn monotonic_ns() -> Result<u64, AgentdError> {
++    let mut clock = libc::timespec { tv_sec: 0, tv_nsec: 0 };
++    // SAFETY: clock_gettime writes exactly this initialized timespec.
++    if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut clock) } != 0 {
++        return Err(std::io::Error::last_os_error().into());
++    }
++    u64::try_from(clock.tv_sec).ok().and_then(|s| s.checked_mul(1_000_000_000))
++        .and_then(|s| u64::try_from(clock.tv_nsec).ok().and_then(|ns| s.checked_add(ns)))
++        .ok_or_else(|| refused("original monotonic clock unavailable"))
++}
+--- a/codex-rs/hepta-agentd/src/root_production_handoff.rs
++++ b/codex-rs/hepta-agentd/src/root_production_handoff.rs
+@@ -29,6 +29,12 @@
+ pub use learning::RootLearningHandoffV1;
+ pub use learning::receive_root_learning_handoff;
+ pub use learning::send_root_learning_handoff;
++
++#[path = "root_candidate_stage_handoff.rs"]
++mod candidate_stages;
++pub use candidate_stages::RootCandidateStageHandoffV1;
++pub use candidate_stages::receive_root_candidate_stage_handoff;
++pub use candidate_stages::send_root_candidate_stage_handoff;
+ 
+ /// Consume exactly one inherited unnamed pair. The retained creator must be
+ /// actual UID0, and the second transferred descriptor must pin that same Root.

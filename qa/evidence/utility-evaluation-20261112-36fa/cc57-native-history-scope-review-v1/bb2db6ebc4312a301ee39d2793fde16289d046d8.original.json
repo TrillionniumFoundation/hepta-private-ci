@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 2030,
+    "index_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "scripts/just-shell.py",
+    "permissions": 420,
+    "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+    "stable": true,
+    "working_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "#!/usr/bin/env python3\n\"\"\"Cross-platform shell launcher for `just` recipes.\n\nThis keeps recipe bodies as normal shell snippets while giving the justfile one\nportable placeholder, `{args}`, for forwarding variadic recipe arguments.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport os\nimport shutil\nimport subprocess\nimport sys\n\n\nARGS_TOKEN = \"{args}\"\nSTDERR_NULL_TOKEN = \"{stderr-null}\"\nPOWERSHELL_ARGS = \"@($args | Select-Object -Skip 1)\"\nPOWERSHELL_STDERR_NULL = \"2>$null; exit $LASTEXITCODE\"\nSH_ARGS = '\"$@\"'\nSH_STDERR_NULL = \"2>/dev/null\"\n\n\ndef main() -> int:\n    if len(sys.argv) < 2:\n        print(\"just shell adapter expected a recipe command.\", file=sys.stderr)\n        return 1\n\n    command = sys.argv[1]\n    recipe_name = sys.argv[2] if len(sys.argv) > 2 else \"\"\n    recipe_args = sys.argv[3:]\n\n    if os.name == \"nt\":\n        return run_powershell(command, recipe_name, recipe_args)\n    else:\n        return run_sh(command, recipe_name, recipe_args)\n\n\ndef run_sh(command: str, recipe_name: str, recipe_args: list[str]) -> int:\n    command = command.replace(ARGS_TOKEN, SH_ARGS)\n    command = command.replace(STDERR_NULL_TOKEN, SH_STDERR_NULL)\n    os.execvp(\"sh\", [\"sh\", \"-cu\", command, recipe_name, *recipe_args])\n\n\ndef run_powershell(command: str, recipe_name: str, recipe_args: list[str]) -> int:\n    pwsh = shutil.which(\"pwsh.exe\") or shutil.which(\"pwsh\")\n    if pwsh is None:\n        print(\n            \"PowerShell ('pwsh') is required for Windows just recipes. \"\n            \"Run 'just install' to install it.\",\n            file=sys.stderr,\n        )\n        return 1\n\n    command = command.replace(ARGS_TOKEN, POWERSHELL_ARGS)\n    command = command.replace(STDERR_NULL_TOKEN, POWERSHELL_STDERR_NULL)\n    return subprocess.run(\n        [\n            pwsh,\n            \"-NoLogo\",\n            \"-NoProfile\",\n            \"-CommandWithArgs\",\n            command,\n            recipe_name,\n            *recipe_args,\n        ],\n        check=False,\n    ).returncode\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+    },
+    "isError": false
+  }
+}

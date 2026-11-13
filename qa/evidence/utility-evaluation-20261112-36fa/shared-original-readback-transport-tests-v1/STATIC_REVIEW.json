@@ -1,0 +1,246 @@
+{
+  "format": "hepta-shared-readback-transport-tests-static-review-v1",
+  "status": "PREPARATION_NOT_COMPILED_OR_EXECUTED",
+  "authorship_scope": "two new cfg(test)-mounted files only",
+  "source_base": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "production_dependency": {
+    "manifest": "23ff230431ca67bd0fa77b5fdb52ff0a4004dc01",
+    "packet": "92a1567ac32c886d9d7386fb80915071475528bf",
+    "all15_after_hashes_recomputed": true,
+    "actual_original_training_exchange_and_tail_equal": true,
+    "independent_production_semantic_audit": "native_ci_audit's separate responsibility"
+  },
+  "static_checks": {
+    "kind": "literal/structure checks, not AST parsing, compilation or execution",
+    "checks": {
+      "tests_exact": true,
+      "original_server_route": true,
+      "gate_only_selected": true,
+      "original_only_selected": true,
+      "actual_readback_hook": true,
+      "actual_slot_hook": true,
+      "cancellation_of_read_not_export": true,
+      "no_counter_write": true,
+      "no_wire_completion_fabrication": true,
+      "helper_passes_original_bytes": true,
+      "same_original_128_helper": true,
+      "original_budget_test_non_helper": true
+    },
+    "methods": [
+      "evaluated_published_readback_alias_competition_uses_same_slot",
+      "evaluated_published_readback_cancelled_alias_cannot_restore_any_alias",
+      "evaluated_published_readback_aliases_share_original_128_frame_budget",
+      "evaluated_published_readback_clone_cannot_renew_original_absolute_deadline"
+    ]
+  },
+  "mechanisms": [
+    {
+      "method": "evaluated_published_readback_alias_competition_uses_same_slot",
+      "server": "controlled original command_response; unchanged response bytes; original protocol and 128 loop",
+      "trigger": "actual original T Completed response produced; before transmission",
+      "assertions": [
+        "T/E Arc identities equal",
+        "losing actual public bundle read contains original Training::Unavailable in error chain",
+        "one actual original T frame while winner held",
+        "winner and subsequent loser actual T/E reads succeed after release",
+        "no original journal changes and C revision remains zero"
+      ],
+      "scope": "actual same-process readback contention; not external peer admission"
+    },
+    {
+      "method": "evaluated_published_readback_cancelled_alias_cannot_restore_any_alias",
+      "server": "controlled original command_response",
+      "trigger": "abort public bundle read task during its actual T exchange; await JoinError::is_cancelled while original response is held",
+      "assertions": [
+        "same original slot unavailable before release",
+        "all existing and newly cloned aliases remain unavailable after release",
+        "no further T request reaches original handler",
+        "independent real control T read still returns the same full receipt/signature",
+        "no journal change or C work"
+      ],
+      "scope": "T-side cancellation, not cancellation of Version's export spawn_blocking; independent control never replaces bundle's failed channel"
+    },
+    {
+      "method": "evaluated_published_readback_aliases_share_original_128_frame_budget",
+      "server": "existing commands::serve -> unchanged original serve_command_channel; not controlled helper",
+      "trigger": "actual Version export reads consumed; cfg(test) read-only next_id observes exact aggregate count; alternating actual reads fill remaining requests",
+      "assertions": [
+        "all successful actual T reads equal same complete original receipt/signature",
+        "both aliases share next_id129 after real request128",
+        "new alias request129 returns original CommitUncertain",
+        "all aliases then Unavailable and original slot None",
+        "original server terminal is original Unavailable from its 128 loop"
+      ],
+      "scope": "T command limit only; T-only read hook avoids conflating existing B evidence fixture's 64-frame limit with T's budget"
+    },
+    {
+      "method": "evaluated_published_readback_clone_cannot_renew_original_absolute_deadline",
+      "server": "existing commands::serve -> unchanged original serve_command_channel",
+      "trigger": "existing recovered_peer accepts a 10-second lifetime before binding/sharing; wait past upper bound recorded only after both original endpoints exist",
+      "assertions": [
+        "actual successful T read before deadline",
+        "late clone shares same clients and untouched original next_id",
+        "first expired request original CommitUncertain; subsequent alias original Unavailable",
+        "both aliases slot None",
+        "independent actual T owner still current; original journals unchanged/C no work"
+      ],
+      "scope": "actual wall-clock transport expiry within unchanged test budget; no edited receipt, frozen evidence, clock or original channel deadline"
+    }
+  ],
+  "cleanup": {
+    "normal_and_result_error": "release scheduling gate; drop shared/Version/held clients; join all D/T/E peers even after expected T terminal error; stop actual C; finish original PublicationFixture",
+    "panic": "Drop releases gate, drops owned clients and joins this Case's three peers; no claim of asynchronous C/PublicationFixture stop during panic",
+    "original_response_pause_seconds": 5,
+    "pause_timeout": "test failure via scheduling_failed, never a successful command",
+    "cancellation_and_expiry_terminal": "EOF(count) or original Transport error allowed only after independent slot/count/owner assertions; exhaustion requires original Unavailable",
+    "no_retry_or_channel_replacement_after_failure": true
+  },
+  "honest_limits": [
+    "No rustfmt, parser/AST, compilation, H, native, Cargo, source gate or behavioral test was run for this packet.",
+    "The literal/byte static checks are not Rust type checking.",
+    "Cold recovery uses PublicationFixture's actual native T and actual Ineligible/NoUpdate publication; its B-member evidence peers, keys and same-UID transport remain existing fixtures. This is not a Fresh Root, real independent-B or real utility result.",
+    "Actual public four-connection admission, cross-UID/pidfd handoff and a complete fresh ten-owner path are outside these four tests.",
+    "These tests cover T-slot contention/cancellation/frame exhaustion/expiry. They do not claim independent E-slot exhaustion/cancellation coverage.",
+    "Original 8 MiB stack and 60-second per-test budget remain unchanged. Fixture construction and 128 native readbacks have not been timed; failure under the original budget must be retained.",
+    "The shorter 10-second factory lifetime is a legal test input before initial channel construction. If actual cold admission cannot finish within it, the test fails; no deadline extension is authorized.",
+    "New parent mounts plus the three exact cfg(test) hooks must be integrated before compilation; the two files alone are not a complete buildable repository.",
+    "Actual final tests inventory/FQNs and source protection registration must be derived after integration; no old PASS is inherited."
+  ],
+  "prior_draft": {
+    "test_blob": "0ef2ef2e34938f662a233ae67478b9f85a6d07b1",
+    "retained": true,
+    "reason": "budget test used controlled helper's copied loop; revised to actual original service",
+    "inverse_entire_text_equal": true,
+    "replacements": 15
+  },
+  "refs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 7164,
+      "sha256": "b32cb3057a14fc810e6ef640d83df6171c5c54a20010709c8078f4fa65a339ff",
+      "git_blob": "639f3d799c69a54c4583ee24ce87956ec149a07f",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 12838,
+      "sha256": "7402eb757296f0657b747b396245647cfcdf35b409b09949d68001d9d8bfb49c",
+      "git_blob": "8d94ddd4a3ed4ea9552a6e58caaf4f6100fdc4d5",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 2282,
+      "sha256": "7a2759950fc8def989df0d65965489f3c6ea03c6283ac057d70c89149cb6d4c7",
+      "git_blob": "3546571b4cb448383c76b7ff11bf14a19104e86f",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 13427,
+      "sha256": "6b3244343310c3103f17f3ad44411451d21803babb9de6df66380c01369c43da",
+      "git_blob": "05a0d4c37348c8cdfc686c6e2b6c93af4fb26e63",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 13580,
+      "sha256": "3467bd8da71f36e932e4c4386cbc7a075066d24564fcc7fc4310059fb6c4a8df",
+      "git_blob": "80e37d6b6f41081cc661850ea29b9ff61a5787ef",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 15970,
+      "sha256": "3a1ae78e0cc54f28f62e4a5c89b9369f2ae09f137cfeda45878358f7bb59867f",
+      "git_blob": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 8890,
+      "sha256": "9c35bb1622ce75f94a19c1e0190f8b8ae8fe1603de8e925e90817ff46b2f6fc0",
+      "git_blob": "a24dbbf280dcfff9c3d52deeaa087ffc8a11bdc8",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 11232,
+      "sha256": "eefa95b19559db29d0ab86399369faa220bb46bd806059e34597294908dc666a",
+      "git_blob": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 5900,
+      "sha256": "cf58ac1dbe5515145801d34806543cb77cec035d1fcebf84656a7d6e719f2470",
+      "git_blob": "e6f841ab40dbfe35f5763b726f391830a76c9b44",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 13602,
+      "sha256": "6789fb9b152112c779c38e725e199c56679618aaf4cf1c32b9f926ccf7fd1cc8",
+      "git_blob": "4cf197df6841af9d5f99d9d1d608b427f9753c25",
+      "full_utf8_read": true
+    },
+    {
+      "role": "bundle_test_support",
+      "bytes": 1106,
+      "sha256": "ea98aeaba79f391f74c5cdf22c74b5258a41ddf212bc7f963004225afa72b328",
+      "git_blob": "49411b029236b814a6a2f21efc22f86585a88e11",
+      "full_utf8_read": true
+    },
+    {
+      "role": "trainer_test_support",
+      "bytes": 500,
+      "sha256": "ea50838ea1569f534141c72bc65cd51c9c06d1dd3c8e052d11f28250d2a2b1bb",
+      "git_blob": "e4322de280617f3cec445b4b5211cc8659e18816",
+      "full_utf8_read": true
+    },
+    {
+      "role": "bundle_with_test_mount",
+      "bytes": 5891,
+      "sha256": "0f128f434049ddcd7884a6f8084be0869ca0ae0eead9ae8cac9126b6d9017c4a",
+      "git_blob": "91dd820a4069b8faaab1274f5b3918b144e3b2e9",
+      "full_utf8_read": true
+    },
+    {
+      "role": "trainer_with_test_mount",
+      "bytes": 1668,
+      "sha256": "d110fa42980857036d83bdc0cc2b9319b7749346d52ea1e4fdf6601c60435b30",
+      "git_blob": "fab5600f505aa7c8c039aa0990ec38ca01d15c83",
+      "full_utf8_read": true
+    },
+    {
+      "role": "original_training_support_plus_observer",
+      "bytes": 15862,
+      "sha256": "0d17f86b56334854be2d74d676810d0c2cc8e70b947beb89a75f5005eef6a590",
+      "git_blob": "8c73e1d0fc2a4a489031edf42723a29af1cde6e1",
+      "full_utf8_read": true
+    }
+  ],
+  "executions": {
+    "formatter": 0,
+    "parser_or_ast": 0,
+    "compile": 0,
+    "behavior_tests": 0,
+    "H": 0,
+    "gates": 0,
+    "ref_changes": 0,
+    "active_source_changes": 0
+  }
+}

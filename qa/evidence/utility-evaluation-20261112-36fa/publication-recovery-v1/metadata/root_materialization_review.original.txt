@@ -1,0 +1,178 @@
+{
+  "format": "hepta.root_actual_isolated_materialization_review.v1",
+  "reviewed_at_utc": "2026-11-13 03:06:54 UTC",
+  "status": "ACTUAL_MATERIALIZATION_ACCEPTED_FOR_EXACT_NATIVE_LAUNCH_REVIEW",
+  "native_dispatch_approved_by_this_record": false,
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "actual_job": "1a1d2d20686-392-36",
+  "launch_history": {
+    "initial_unknown_retained": true,
+    "reconciliation_same_request_and_idempotency_key": true,
+    "key": "hepta-utility-36fa-cc57-isolated-materialization-v1",
+    "actual_reconciliation_admission_reused": false,
+    "no_new_materialization_variant": true
+  },
+  "actual_records": [
+    {
+      "role": "RESULT",
+      "git_blob": "40833805111c98773ba1d046df09285357531396",
+      "bytes": 12671,
+      "sha256": "fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96"
+    },
+    {
+      "role": "authoritative normal terminal",
+      "git_blob": "c507335b611474857eff53b738071a7a3f27dc99",
+      "bytes": 951,
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa"
+    },
+    {
+      "role": "original bounded full RESULT read SDK",
+      "git_blob": "37f2b5b0987200c9adb4e89c57b8d2774cea254e",
+      "bytes": 17370,
+      "sha256": "d3fb8da08a65fcde6d18f6cddec2451e7b39bf6a582cdfc348dead7b83517740"
+    },
+    {
+      "role": "complete stdout",
+      "git_blob": "5a337d1aa0fef29261084a1d71c227fdffdb00ae",
+      "bytes": 2068,
+      "sha256": "c97e981d0400f675b46af835d6a893b2accef102b0cfac4956772c80973054eb"
+    },
+    {
+      "role": "command_records",
+      "bytes": 27329,
+      "git_blob": "fff5a51a4b273df14526c1059695a115b080f1f9",
+      "name": "COMMANDS.json",
+      "sha256": "4a2093fc27c3a39bdfa4e1591377b30652e8f298d955afa9274be986b7844054"
+    },
+    {
+      "role": "mutation_records",
+      "bytes": 730,
+      "git_blob": "bbd4478cbb872d18344b37b7251bc9c83df56521",
+      "name": "MUTATION_INTENTS.json",
+      "sha256": "8e5f9c1497b107444b3ed1c47c20cff15c9ad2ac45094777f32ee3c1308fb679"
+    },
+    {
+      "role": "input_records",
+      "bytes": 1931,
+      "git_blob": "b4abc96b3543f87bbf724f8ff2918f4ea5ea7137",
+      "name": "INPUT_IDENTITIES.before.json",
+      "sha256": "006bbceebee283b71b6cf004eb17ec09570f763da7c9d8b4ff7dd9c3d152a6e7"
+    },
+    {
+      "role": "artifact_records",
+      "bytes": 63084,
+      "git_blob": "3d14f683cc874b6b64f13c7c156b28b2fd448c90",
+      "name": "ARTIFACTS.json",
+      "sha256": "b50557442bb9cb2389b1d44d7c012270a3474603220831aa6aa3b677e13517f0"
+    }
+  ],
+  "checks": {
+    "normal_exit_zero_complete_durable_logs": true,
+    "no_timeout_cancellation_automatic_retry": true,
+    "all_32_command_terminals_observed_normal_zero": true,
+    "all_4_scoped_mutation_terminals_observed": true,
+    "artifact_catalog_complete_rows": 209,
+    "artifact_catalog_does_not_claim_all_209_bodies_retrieved_by_root": true,
+    "all_three_actual_final_audits_verified": true,
+    "new_source_full_rows": 15188,
+    "new_full_inventory_sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "new_native_inventory_sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+    "source_before_after_full_record_equal": true,
+    "detached_cc57_no_refs": true,
+    "new_index": {
+      "all_actual_stat_fields_verified": true,
+      "all_entry_logical_identities_verified": true,
+      "assume_unchanged_or_skip_worktree_entries": 0,
+      "entries": 15188,
+      "extensions": [
+        {
+          "bytes": 68848,
+          "name": "TREE"
+        }
+      ],
+      "raw": {
+        "bytes": 2072488,
+        "git_blob": "015ff2e2d1525f7aec80ea19fbd2a27cd267a1d7",
+        "sha256": "95547dcfed1945bb06b5400468ec228037cff5374b674ca033a7f66468b34193"
+      }
+    },
+    "actual_six_new_git_files_and_nine_stat_fields_bound": "See exact 2234-byte raw metadata and lossless original audit; no old-index reuse",
+    "old_preservation": {
+      "physical_present": 15181,
+      "known_missing": 7,
+      "all_present_full_bytes_checked_by_reviewed_executed_materializer": true,
+      "fixed_raw_git_files": 4,
+      "complete_ref_listing_unchanged": true,
+      "all_old_object_store_metadata_audited": false,
+      "writer_or_cause_of_prior_loss": "Unknown"
+    },
+    "current_git_metadata_losslessly_reconstructed_and_hash_verified": true,
+    "same_coordination_lock_device_inode_uid_mode_nlink": true,
+    "all_eight_inputs_equal_by_exact_path_plus_full_identity_projection": true,
+    "object_scope": {
+      "complete_ancestry": false,
+      "complete_snapshots": [
+        "cc57c7198db6293ccca562253c42fffbe2a04633",
+        "246d8cb614770252ee42029a5c014f2a4904176a"
+      ],
+      "counts": {
+        "blob": 14615,
+        "commit": 2,
+        "tree": 1832
+      },
+      "network": false,
+      "objects": 16449,
+      "recursive_history_walk": false,
+      "unmaterialized_parent_boundary": "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    },
+    "no_cargo_formatter_test_or_dependency_installation_started": true,
+    "actual_filled_hold_inverse_three_nulls_byte_equal": true
+  },
+  "small_actual_artifacts": [
+    {
+      "path": "cc57-isolated-materialization-root-review-v1/ACTUAL_SMALL_AUDIT.json",
+      "git_blob": "88c3753aaac1758ea69b46df0e7753afbef2dd3d",
+      "bytes": 5167,
+      "sha256": "86e2c2df37161f965868cbc724dd4e17fbbad431e401425aa1d2dd76dac17632"
+    },
+    {
+      "path": "cc57-isolated-materialization-root-review-v1/ACTUAL_SMALL_AUDIT.original.json",
+      "git_blob": "1917a114c1019b21dbab39fa952882ae7119d779",
+      "bytes": 5703,
+      "sha256": "d8e27c77195cf1cf24e2b085d549a82dc665b0ddf0bd21ae7b697eaf48b39af7"
+    },
+    {
+      "path": "cc57-isolated-materialization-root-review-v1/INITIAL_LOCAL_AUDIT_ASSERTION.original.json",
+      "git_blob": "504696132d6a81cda67b486bbdc9f6f793fb9bf2",
+      "bytes": 221,
+      "sha256": "a9713d1a27932de85c4728ce3f097a3b9fa439d9ca14b6c88be7ddc9f471df79"
+    },
+    {
+      "path": "cc57-isolated-materialization-root-review-v1/INPUT_SERIALIZATION_INSPECTION.original.json",
+      "git_blob": "d53adabe6deb9c7520bf92f0d08f46ff0848e4c9",
+      "bytes": 3553,
+      "sha256": "39f0de694d33c0a598823f155d3f7ae87c2cbf585d329f2a0d0d181fe7ee9cd7"
+    },
+    {
+      "path": "cc57-isolated-materialization-root-review-v1/review_materialization_records.py",
+      "git_blob": "4f013e1b0e193b00675791847a99404fe063f7f8",
+      "bytes": 2661,
+      "sha256": "3974a0561fc746a93a47d31b26a8fc49031528dc15689b76814cd0f76729aee1"
+    }
+  ],
+  "review_correction": {
+    "initial_local_assertion": "Root initially compared the two differently shaped input-identity serializations as raw equal bytes.",
+    "observed_schema": "before is a path-keyed map; final is a list containing path and the same three identity fields.",
+    "correction": "Require all four exact final row keys, eight unique paths, and complete exact path-to-identity equality; do not rewrite either original.",
+    "impact": "Local review assertion only; no native job or source gate was retried or altered."
+  },
+  "next": "Review the exact approved-configuration candidate and full closed seven-field native request before its one authorized dispatch. Retain original b92 driver, 14 phases, tests, limits, target, stack, lineage and old history proofs.",
+  "not_established": [
+    "native behavioral qualification",
+    "provider-candidate formatting or compilation",
+    "real independent B or full utility/cost comparison",
+    "authorized real A-to-C task or daemon/Root cold recovery"
+  ],
+  "real_qualified_task_chains": 0
+}

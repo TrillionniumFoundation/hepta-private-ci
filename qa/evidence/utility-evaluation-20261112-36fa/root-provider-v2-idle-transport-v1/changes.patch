@@ -1,0 +1,579 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs
+@@ -0,0 +1,222 @@
++//! Actual dedicated-UID peers for admission and idle service lifetime tests.
++//! These endpoints never return role evidence. A read on a role socket must be
++//! EOF; any dispatched request fails the fixture instead of supplying a receipt.
++
++use std::fs::File;
++use std::io;
++use std::io::Read;
++use std::os::fd::AsRawFd;
++use std::os::fd::FromRawFd;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixListener;
++use std::os::unix::net::UnixStream;
++use std::os::unix::process::CommandExt;
++use std::process::Child;
++use std::process::Command;
++use std::process::Stdio;
++use std::time::Duration;
++use std::time::Instant;
++
++use crate::AgentdRootAuthorityPeer;
++use pretty_assertions::assert_eq;
++
++pub(super) const PEER_UID: u32 = 60001;
++const CHILD: &str = "authority_host_service::resident::authority::tests::provider_transport::process::resident_role_peer_process_child";
++const IO_WINDOW: Duration = Duration::from_secs(5);
++
++pub(super) fn process(pid: u32) -> anyhow::Result<AgentdRootAuthorityPeer> {
++    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
++    let process_start_ticks = stat.rsplit_once(") ")
++        .and_then(|(_, fields)| fields.split_whitespace().nth(19))
++        .ok_or_else(|| anyhow::anyhow!("actual process start field"))?.parse()?;
++    Ok(AgentdRootAuthorityPeer {
++        pid,
++        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().to_string(),
++        process_start_ticks,
++    })
++}
++
++pub(super) fn pin(pid: u32) -> anyhow::Result<OwnedFd> {
++    // SAFETY: pidfd_open returns a new descriptor for this observed live pid.
++    let number = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
++    anyhow::ensure!(number >= 0, "{}", io::Error::last_os_error());
++    // SAFETY: the successful syscall transferred exactly one new descriptor.
++    Ok(unsafe { OwnedFd::from_raw_fd(i32::try_from(number)?) })
++}
++
++pub(super) struct PeerProcess {
++    child: Option<Child>,
++    control: UnixDatagram,
++    pub(super) peer: AgentdRootAuthorityPeer,
++    streams: Vec<UnixStream>,
++}
++
++impl PeerProcess {
++    pub(super) fn start() -> anyhow::Result<Self> {
++        // SAFETY: observe the explicit Root test parent's actual credentials.
++        assert_eq!(unsafe { (libc::getuid(), libc::geteuid()) }, (0, 0));
++        let (control, inherited_control) = UnixDatagram::pair()?;
++        control.set_read_timeout(Some(IO_WINDOW))?;
++        control.set_write_timeout(Some(IO_WINDOW))?;
++        let executable = File::open(std::env::current_exe()?)?;
++        let inherited = [inherited_control.as_raw_fd(), executable.as_raw_fd()];
++        let mut command = Command::new("/usr/bin/setpriv");
++        command.args([
++            "--reuid=60001", "--regid=60001", "--clear-groups", "--no-new-privs",
++            "--inh-caps=-all", "--ambient-caps=-all", "--bounding-set=-all",
++        ]).arg(format!("/proc/self/fd/{}", executable.as_raw_fd()))
++            .args(["--exact", CHILD, "--ignored", "--nocapture", "--test-threads=1"])
++            .env_clear().env("PATH", "/usr/bin:/bin")
++            .env("HEPTA_RESIDENT_ROLE_PEER_FD", inherited_control.as_raw_fd().to_string())
++            .current_dir("/").stdout(Stdio::piped()).stderr(Stdio::piped());
++        // SAFETY: the post-fork closure only applies fcntl to these two live
++        // inherited FDs. setpriv performs the actual credential drop at exec.
++        unsafe {
++            command.pre_exec(move || {
++                for descriptor in inherited {
++                    let flags = libc::fcntl(descriptor, libc::F_GETFD);
++                    if flags < 0 || libc::fcntl(descriptor, libc::F_SETFD, flags & !libc::FD_CLOEXEC) < 0 {
++                        return Err(io::Error::last_os_error());
++                    }
++                }
++                Ok(())
++            });
++        }
++        let mut child = command.spawn()?;
++        drop(inherited_control);
++        let peer = match process(child.id()) {
++            Ok(peer) => peer,
++            Err(error) => {
++                let _ = child.kill();
++                let _ = child.wait();
++                return Err(error);
++            }
++        };
++        // From this point every error is guarded by Drop: no orphan role peer.
++        let mut observed = Self { peer, child: Some(child), control, streams: Vec::new() };
++        let mut path = [0_u8; 1024];
++        let count = observed.control.recv(&mut path)?;
++        let path = std::str::from_utf8(&path[..count])?;
++        anyhow::ensure!(path.starts_with("/tmp/") && path.ends_with("/roles.sock"));
++        for _ in 0..11 {
++            let stream = UnixStream::connect(path)?;
++            assert_peer(&stream, PEER_UID, observed.peer.pid)?;
++            observed.streams.push(stream);
++        }
++        observed.expect(b"eleven-original-connections")?;
++        Ok(observed)
++    }
++
++    pub(super) fn take_streams(&mut self) -> anyhow::Result<([UnixStream; 10], UnixStream)> {
++        let consumer = self.streams.pop().ok_or_else(|| anyhow::anyhow!("held A connection"))?;
++        let streams = std::mem::take(&mut self.streams).try_into()
++            .map_err(|_: Vec<UnixStream>| anyhow::anyhow!("exact ten held role connections"))?;
++        Ok((streams, consumer))
++    }
++
++    fn expect(&self, expected: &[u8]) -> anyhow::Result<()> {
++        let mut response = [0_u8; 128];
++        let count = self.control.recv(&mut response)?;
++        assert_eq!(&response[..count], expected);
++        Ok(())
++    }
++
++    pub(super) fn close_a(&self) -> anyhow::Result<()> {
++        self.control.send(b"close-original-A")?;
++        self.expect(b"original-A-closed")
++    }
++
++    pub(super) fn finish(mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.streams.is_empty(), "all original parent endpoints consumed");
++        self.control.send(b"assert-no-role-dispatch-and-exit")?;
++        let end = Instant::now() + IO_WINDOW;
++        let finished = loop {
++            if self.child.as_mut().ok_or_else(|| anyhow::anyhow!("original child"))?.try_wait()?.is_some() { break true; }
++            if Instant::now() >= end { break false; }
++            std::thread::sleep(Duration::from_millis(2));
++        };
++        if !finished {
++            anyhow::bail!("bounded original peer join did not finish");
++        }
++        let child = self.child.take().ok_or_else(|| anyhow::anyhow!("original child"))?;
++        let output = child.wait_with_output()?;
++        anyhow::ensure!(output.status.success(), "{}{}",
++            String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
++        let stdout = String::from_utf8(output.stdout)?;
++        anyhow::ensure!(stdout.contains("RESIDENT_IDLE_PEER uid=60001 role_dispatches=0 role_eofs=10"), "{stdout}");
++        Ok(())
++    }
++}
++
++impl Drop for PeerProcess {
++    fn drop(&mut self) {
++        self.streams.clear();
++        if let Some(mut child) = self.child.take() {
++            let _ = child.kill();
++            let _ = child.wait();
++        }
++    }
++}
++
++fn assert_peer(stream: &UnixStream, uid: u32, pid: u32) -> anyhow::Result<()> {
++    let mut credentials = libc::ucred { pid: 0, uid: u32::MAX, gid: u32::MAX };
++    let mut size = std::mem::size_of_val(&credentials) as libc::socklen_t;
++    // SAFETY: getsockopt writes exactly the initialized ucred buffer.
++    anyhow::ensure!(unsafe { libc::getsockopt(stream.as_raw_fd(), libc::SOL_SOCKET, libc::SO_PEERCRED,
++        (&mut credentials as *mut libc::ucred).cast(), &mut size) } == 0, "{}", io::Error::last_os_error());
++    assert_eq!(size as usize, std::mem::size_of::<libc::ucred>());
++    assert_eq!((credentials.uid, credentials.pid), (uid, i32::try_from(pid)?));
++    Ok(())
++}
++
++#[test]
++#[ignore = "only the explicit Root provider parent supplies the inherited control descriptor"]
++fn resident_role_peer_process_child() -> anyhow::Result<()> {
++    crate::authority_host_runtime::verify_process_credentials(std::process::id(), PEER_UID, PEER_UID)?;
++    let number: i32 = std::env::var("HEPTA_RESIDENT_ROLE_PEER_FD")?.parse()?;
++    anyhow::ensure!(number >= 3);
++    // SAFETY: the parent transferred exclusive ownership through exec once.
++    let control = unsafe { UnixDatagram::from_raw_fd(number) };
++    control.set_read_timeout(Some(IO_WINDOW))?;
++    control.set_write_timeout(Some(IO_WINDOW))?;
++    let directory = tempfile::tempdir_in("/tmp")?;
++    let path = directory.path().join("roles.sock");
++    let listener = UnixListener::bind(&path)?;
++    listener.set_nonblocking(true)?;
++    control.send(path.as_os_str().as_encoded_bytes())?;
++    let end = Instant::now() + IO_WINDOW;
++    let mut streams = Vec::new();
++    while streams.len() < 11 {
++        match listener.accept() {
++            Ok((stream, _)) => streams.push(stream),
++            Err(error) if error.kind() == io::ErrorKind::WouldBlock && Instant::now() < end =>
++                std::thread::sleep(Duration::from_millis(1)),
++            Err(error) => return Err(error.into()),
++        }
++    }
++    let mut consumer = streams.pop();
++    control.send(b"eleven-original-connections")?;
++    loop {
++        let mut request = [0_u8; 128];
++        let count = control.recv(&mut request)?;
++        match &request[..count] {
++            b"close-original-A" => {
++                anyhow::ensure!(consumer.take().is_some(), "A close is one-shot");
++                control.send(b"original-A-closed")?;
++            }
++            b"assert-no-role-dispatch-and-exit" => break,
++            _ => anyhow::bail!("unregistered idle peer command"),
++        }
++    }
++    drop(consumer);
++    let end = Instant::now() + IO_WINDOW;
++    for mut stream in streams {
++        let remaining = end.checked_duration_since(Instant::now())
++            .ok_or_else(|| anyhow::anyhow!("bounded role EOF observation"))?;
++        stream.set_read_timeout(Some(remaining))?;
++        assert_eq!(stream.read(&mut [0])?, 0, "idle test must never dispatch a role command");
++    }
++    println!("RESIDENT_IDLE_PEER uid=60001 role_dispatches=0 role_eofs=10");
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs
+@@ -0,0 +1,219 @@
++//! Public Root handoff and original process admission over actual dedicated-UID
++//! sockets. These idle peers supply no role result; a role request fails them.
++//! Complete original NoUpdate/B/Version/S/C work has a separate provider fixture.
++
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixStream;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++use crate::LearningIterationEvidencePeerV1;
++use crate::OriginalCellEvaluationPanelRegistrationV1 as Registration;
++use crate::OriginalCellEvaluationPanelTaskV1 as Task;
++use crate::OriginalCellQ24CandidateStageOwnersV1;
++use crate::OriginalCellQ24CandidateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdatePeerStreamV1 as PeerStream;
++use crate::OriginalCellQ24NoUpdateStageStreamsV1;
++use crate::OriginalCellQ24NoUpdateTaskStreamV1 as TaskStream;
++use crate::RootCandidateStageHandoffV1;
++use crate::RootResidentCandidateInputsV1;
++use crate::RootResidentLearningConsumerV3;
++use crate::RootResidentLearningProfileV3;
++use crate::cell_q24_material_receipt_owner::MaterialCommandFixture;
++use super::support::ResidentRootFixture;
++
++#[path = "authority_host_learning_resident_provider_process_tests.rs"]
++mod process;
++#[path = "authority_host_learning_resident_provider_lifecycle_tests.rs"]
++mod lifecycle;
++
++fn registration() -> anyhow::Result<Registration> {
++    Ok(Registration::new(Task {
++        plan_id: StableId::new("resident-idle-primary-B")?,
++        task_digest: Digest32::of_bytes(b"explicit idle primary task"),
++        cohort_rule_digest: Digest32::of_bytes(b"explicit idle primary rule"),
++    }, vec![Task {
++        plan_id: StableId::new("resident-idle-retention-B")?,
++        task_digest: Digest32::of_bytes(b"explicit idle retention task"),
++        cohort_rule_digest: Digest32::of_bytes(b"explicit idle retention rule"),
++    }])?)
++}
++
++async fn material() -> anyhow::Result<(MaterialCommandFixture, Registration)> {
++    let protocol = registration()?;
++    let fixture = Box::pin(MaterialCommandFixture::candidate_pages_for_evaluation_profile(
++        protocol.evaluation_profile(),
++    )).await?;
++    Ok((fixture, protocol))
++}
++
++fn root(fixture: &MaterialCommandFixture) -> anyhow::Result<ResidentRootFixture> {
++    ResidentRootFixture::for_original_evaluation_window(
++        fixture.config.initial.clone(), fixture.config.scope.clone(), &fixture.config.verifier,
++    )
++}
++
++fn input(fixture: &MaterialCommandFixture, protocol: Registration) -> RootResidentCandidateInputsV1 {
++    RootResidentCandidateInputsV1 {
++        material: fixture.config.clone(), protocol,
++        baseline: fixture.training_baseline(), verifier: fixture.config.verifier.clone(),
++    }
++}
++
++fn role_streams(
++    process: &process::PeerProcess,
++    streams: [UnixStream; 10],
++    profile: &RootResidentLearningProfileV3,
++    lifetime: Duration,
++) -> anyhow::Result<OriginalCellQ24CandidateStageStreamsV1> {
++    let peer = |stream: UnixStream, actor: &StableId| -> anyhow::Result<PeerStream> {
++        Ok(PeerStream {
++            stream,
++            peer: LearningIterationEvidencePeerV1 {
++                uid: process::PEER_UID, pid: process.peer.pid,
++                boot_id: process.peer.boot_id.clone(), process_start_ticks: process.peer.process_start_ticks,
++                actor_id: actor.clone(),
++            },
++            original_owner_pidfd: process::pin(process.peer.pid)?,
++            timeout: Duration::from_millis(100), lifetime,
++        })
++    };
++    let task = |stream: UnixStream| -> anyhow::Result<TaskStream> {
++        Ok(TaskStream { stream, peer: process.peer.clone(), uid: process::PEER_UID,
++            original_task_pidfd: process::pin(process.peer.pid)?, timeout: Duration::from_millis(100), lifetime })
++    };
++    let [experience, dataset, trainer, selector, version, next_use, completion, candidate, evaluator, model] = streams;
++    let owners = &profile.initial().owners;
++    Ok(OriginalCellQ24CandidateStageStreamsV1 {
++        common: OriginalCellQ24NoUpdateStageStreamsV1 {
++            experience: peer(experience, &owners.experience)?,
++            dataset: peer(dataset, &owners.dataset)?,
++            trainer: peer(trainer, &owners.trainer)?,
++            selector: peer(selector, &owners.selector)?,
++            version: task(version)?,
++            next_use: peer(next_use, &owners.next_use_observer)?,
++            completion: task(completion)?,
++        },
++        candidate_material: peer(candidate, &owners.trainer)?,
++        evaluator: peer(evaluator, &owners.evaluator)?, model: peer(model, &owners.proposal)?,
++    })
++}
++
++fn transfer(
++    profile: &RootResidentLearningProfileV3,
++    streams: OriginalCellQ24CandidateStageStreamsV1,
++) -> anyhow::Result<(RootCandidateStageHandoffV1, Instant)> {
++    let (send, receive) = UnixDatagram::pair()?;
++    let root = process::process(std::process::id())?;
++    let sender = process::pin(root.pid)?;
++    let recipient = process::pin(root.pid)?;
++    crate::send_root_candidate_stage_handoff(send, &sender, root, &recipient,
++        profile, streams, Duration::from_secs(1))?;
++    let after_send = Instant::now();
++    let received = crate::receive_root_candidate_stage_handoff(receive, profile, Duration::from_secs(1))?;
++    Ok((received, after_send))
++}
++
++fn consumer(process: &process::PeerProcess, stream: UnixStream, lifetime: Duration)
++-> anyhow::Result<RootResidentLearningConsumerV3> {
++    Ok(RootResidentLearningConsumerV3 { stream, peer: process.peer.clone(), uid: process::PEER_UID,
++        original_consumer_pidfd: process::pin(process.peer.pid)?, timeout: Duration::from_millis(100), lifetime })
++}
++
++fn lifetimes(streams: &OriginalCellQ24CandidateStageStreamsV1) -> [Duration; 10] {
++    let common = &streams.common;
++    [common.experience.lifetime, common.dataset.lifetime, common.trainer.lifetime,
++        common.selector.lifetime, common.version.lifetime, common.next_use.lifetime,
++        common.completion.lifetime, streams.candidate_material.lifetime,
++        streams.evaluator.lifetime, streams.model.lifetime]
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline() -> anyhow::Result<()> {
++    let (fixture, _) = material().await?;
++    let root = root(&fixture)?;
++    let mut peer = process::PeerProcess::start()?;
++    let (streams, a) = peer.take_streams()?;
++    drop(a);
++    let original = Duration::from_secs(1);
++    let (handoff, after_send) = transfer(&root.profile, role_streams(&peer, streams, &root.profile, original)?)?;
++    tokio::time::sleep(Duration::from_millis(100)).await;
++    let (streams, end) = handoff.into_original_streams(&root.profile)?;
++    assert!(end <= after_send + original, "the same absolute end must survive delivery delay");
++    assert!(lifetimes(&streams).into_iter().all(|remaining| remaining < original - Duration::from_millis(80)));
++    // Every returned real socket still pins the same dedicated process. This
++    // does not make these deliberately idle endpoints into original role owners.
++    assert_eq!(streams.common.trainer.peer.pid, peer.peer.pid);
++    drop(streams);
++    peer.finish()?;
++
++    let mut peer = process::PeerProcess::start()?;
++    let (streams, a) = peer.take_streams()?;
++    drop(a);
++    let (handoff, _) = transfer(&root.profile, role_streams(&peer, streams, &root.profile, Duration::from_millis(50))?)?;
++    tokio::time::sleep(Duration::from_millis(100)).await;
++    assert!(handoff.into_original_streams(&root.profile).is_err());
++    peer.finish()?;
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch() -> anyhow::Result<()> {
++    let (fixture, protocol) = material().await?;
++    let original = fixture.bytes()?;
++    let root = root(&fixture)?;
++    for attack in ["uid", "pidfd", "process-start"] {
++        let mut peer = process::PeerProcess::start()?;
++        let (streams, a) = peer.take_streams()?;
++        drop(a);
++        let mut streams = role_streams(&peer, streams, &root.profile, Duration::from_secs(2))?;
++        match attack {
++            "uid" => streams.model.peer.uid = 60002,
++            "pidfd" => streams.model.original_owner_pidfd = process::pin(std::process::id())?,
++            "process-start" => streams.model.peer.process_start_ticks = streams.model.peer.process_start_ticks.checked_add(1)
++                .ok_or_else(|| anyhow::anyhow!("fixture process start overflow"))?,
++            _ => unreachable!(),
++        }
++        let (handoff, _) = transfer(&root.profile, streams)?;
++        let (streams, _) = handoff.into_original_streams(&root.profile)?;
++        // Use the unmodified public factory, including actual SO_PEERCRED and
++        // pidfd validation. No same-UID test channel or mocked return is admitted.
++        assert!(OriginalCellQ24CandidateStageOwnersV1::from_original_streams(
++            fixture.config.clone(), streams, protocol.clone(), fixture.training_baseline(),
++        ).is_err(), "{attack}");
++        peer.finish()?;
++        assert_eq!(fixture.bytes()?, original);
++    }
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_role_receiver_refuses_another_real_recipient_or_registered_profile() -> anyhow::Result<()> {
++    let (fixture, _) = material().await?;
++    let original = root(&fixture)?;
++    let other = root(&fixture)?;
++    assert_ne!(original.profile.binding(), other.profile.binding());
++    for wrong_recipient in [true, false] {
++        let mut peer = process::PeerProcess::start()?;
++        let (streams, a) = peer.take_streams()?;
++        drop(a);
++        let streams = role_streams(&peer, streams, &original.profile, Duration::from_secs(2))?;
++        let (send, receive) = UnixDatagram::pair()?;
++        let creator = process::pin(std::process::id())?;
++        let recipient = if wrong_recipient { peer.peer.clone() } else { process::process(std::process::id())? };
++        let recipient_pin = process::pin(recipient.pid)?;
++        crate::send_root_candidate_stage_handoff(send, &creator, recipient, &recipient_pin,
++            &original.profile, streams, Duration::from_secs(1))?;
++        let expected = if wrong_recipient { &original.profile } else { &other.profile };
++        assert!(crate::receive_root_candidate_stage_handoff(receive, expected, Duration::from_secs(1)).is_err());
++        peer.finish()?;
++    }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs
+@@ -0,0 +1,120 @@
++//! Actual registered Root, original Candidate admission and unmodified runtime
++//! supervision before any Admit. Dedicated-UID peers fail on role dispatch.
++//! These cases prove idle lifetime boundaries, not completed NoUpdate or B.
++
++use super::*;
++use crate::AgentdError;
++use crate::RootResidentCandidateServiceV1;
++use tokio_util::sync::CancellationToken;
++use pretty_assertions::assert_eq;
++
++struct Idle {
++    root: ResidentRootFixture,
++    material: MaterialCommandFixture,
++    before: Vec<Vec<u8>>,
++    peer: process::PeerProcess,
++    service: RootResidentCandidateServiceV1,
++    latest_original_end: Instant,
++}
++
++async fn idle(recovered: bool, lifetime: Duration, delay: Duration) -> anyhow::Result<Idle> {
++    let (material, protocol) = material().await?;
++    let before = material.bytes()?;
++    let mut root = root(&material)?;
++    if recovered {
++        root.recover()?;
++    }
++    assert_eq!(root.registration.as_ref().expect("actual Root registration").owner.authority.readonly(), recovered);
++    let mut peer = process::PeerProcess::start()?;
++    let (streams, a) = peer.take_streams()?;
++    let streams = role_streams(&peer, streams, &root.profile, lifetime)?;
++    let (handoff, after_send) = transfer(&root.profile, streams)?;
++    tokio::time::sleep(delay).await;
++    let registration = root.registration.take().ok_or_else(|| anyhow::anyhow!("once-consumed original registration"))?;
++    let service = registration.into_candidate_service(
++        input(&material, protocol), handoff, consumer(&peer, a, Duration::from_secs(3))?,
++    )?;
++    Ok(Idle { root, material, before, peer, service, latest_original_end: after_send + lifetime })
++}
++
++async fn unchanged_and_joined(mut idle: IdleRemainder) -> anyhow::Result<()> {
++    // A new explicitly authorized read-only opening observes the real protected
++    // record only after the consumed service and all its role channels ended.
++    idle.root.recover()?;
++    let observed = idle.root.registration.as_ref().expect("actual recovered Root")
++        .owner.read(&CancellationToken::new()).await?.0;
++    assert!(observed.snapshot.is_none());
++    assert!(!observed.dispatch_pending);
++    assert_eq!(idle.material.bytes()?, idle.before);
++    idle.peer.finish()?;
++    Ok(())
++}
++
++struct IdleRemainder {
++    root: ResidentRootFixture,
++    material: MaterialCommandFixture,
++    before: Vec<Vec<u8>>,
++    peer: process::PeerProcess,
++}
++
++impl Idle {
++    fn split(self) -> (RootResidentCandidateServiceV1, IdleRemainder, Instant) {
++        (self.service, IdleRemainder { root: self.root, material: self.material,
++            before: self.before, peer: self.peer }, self.latest_original_end)
++    }
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root() -> anyhow::Result<()> {
++    for recovered in [false, true] {
++        let (service, remainder, _) = Box::pin(idle(recovered, Duration::from_secs(3), Duration::ZERO)).await?.split();
++        let cancellation = CancellationToken::new();
++        let _cancel_on_drop = cancellation.clone().drop_guard();
++        let mut running = tokio::spawn(RootResidentCandidateServiceV1::run(service, cancellation.clone()));
++        remainder.peer.close_a()?;
++        assert!(tokio::time::timeout(Duration::from_millis(150), &mut running).await.is_err(),
++            "actual A EOF cannot end the resident runtime");
++        assert!(!cancellation.is_cancelled());
++        cancellation.cancel();
++        tokio::time::timeout(Duration::from_secs(2), running).await???;
++        unchanged_and_joined(remainder).await?;
++    }
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_idle_root_cancel_closes_live_a_and_joins_original_work() -> anyhow::Result<()> {
++    let (service, remainder, _) = Box::pin(idle(false, Duration::from_secs(3), Duration::ZERO)).await?.split();
++    let cancellation = CancellationToken::new();
++    let _cancel_on_drop = cancellation.clone().drop_guard();
++    let mut running = tokio::spawn(RootResidentCandidateServiceV1::run(service, cancellation.clone()));
++    // A is still actually connected. No role command or substituted reply is
++    // issued to drive the loop; Root alone requests termination.
++    assert!(tokio::time::timeout(Duration::from_millis(50), &mut running).await.is_err());
++    cancellation.cancel();
++    let terminal = tokio::time::timeout(Duration::from_secs(2), running).await??;
++    // Shutdown may be observed as EOF or the original server transport error.
++    // Neither represents a completed learning result. Preserve that distinction.
++    assert!(matches!(&terminal, Ok(()) | Err(AgentdError::Protocol(_))), "{terminal:?}");
++    println!("RESIDENT_IDLE_ROOT_CANCEL original_terminal={terminal:?}");
++    unchanged_and_joined(remainder).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "explicit actual Root and pre-existing protected bind qualification"]
++async fn resident_idle_delivery_delay_keeps_original_service_expiry_and_joins() -> anyhow::Result<()> {
++    let (service, remainder, latest_original_end) = Box::pin(idle(false,
++        Duration::from_secs(1), Duration::from_millis(400))).await?.split();
++    let cancellation = CancellationToken::new();
++    let _cancel_on_drop = cancellation.clone().drop_guard();
++    let running = tokio::spawn(RootResidentCandidateServiceV1::run(service, cancellation.clone()));
++    // The extra observation window is only a scheduling/join bound. It is not
++    // supplied to any production channel, handoff, service or test gate.
++    let observation_end = latest_original_end + Duration::from_millis(200);
++    let terminal = tokio::time::timeout_at(observation_end.into(), running).await??;
++    assert!(matches!(&terminal, Err(AgentdError::GenerationFenced(_))), "{terminal:?}");
++    assert!(!cancellation.is_cancelled(), "the service expires without mutating its parent's token");
++    unchanged_and_joined(remainder).await
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
+@@ -427,3 +427,6 @@
+ 
+ #[path = "authority_host_learning_resident_retention_auth_tests.rs"]
+ mod retention_auth;
++
++#[path = "authority_host_learning_resident_provider_transport_tests.rs"]
++mod provider_transport;

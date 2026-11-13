@@ -1,0 +1,91 @@
+{
+  "format": "hepta-isolated-native-exact-launch-candidate-v1",
+  "status": "HOLD_ROOT_EXACT_LAUNCH_APPROVAL_REQUIRED",
+  "qualification": false,
+  "native_main_dispatched": false,
+  "configuration_has_approval_candidate_fields_but_is_not_an_execution_authorization": true,
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+  "control": "/home/qian-qi/hepta-utility-36fa-evidence/final-native-cc57-isolated-v1",
+  "idempotency_key": "hepta-utility-36fa-final-native-gates-cc57-isolated-v1",
+  "outer_timeout_seconds": 45000,
+  "native_wrapper_original": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+  "native_driver_original": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+  "admission_original": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+  "original_source_job": "1a1d23c92f3-2564-1cb4",
+  "source_gate_rerun": false,
+  "materialization_job": "1a1d2d20686-392-36",
+  "materialization_is_not_source_gate_execution": true,
+  "files": [
+    {
+      "name": "qualification-admission.py",
+      "bytes": 26963,
+      "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d",
+      "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f"
+    },
+    {
+      "name": "native-wrapper.py",
+      "bytes": 13360,
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f",
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae"
+    },
+    {
+      "name": "native-driver.original.py",
+      "bytes": 14986,
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+    },
+    {
+      "name": "PLAN.original.json",
+      "bytes": 32246,
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619",
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583"
+    },
+    {
+      "name": "APPROVED_QUALIFICATION_INPUT.json",
+      "bytes": 11785,
+      "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f",
+      "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6"
+    },
+    {
+      "name": "ISOLATED_MATERIALIZATION_NORMAL.original.json",
+      "bytes": 951,
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa",
+      "git_blob": "c507335b611474857eff53b738071a7a3f27dc99"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "NATIVE_BOOTSTRAP.CANDIDATE.py",
+      "bytes": 10917,
+      "sha256": "684ab68cf0eae833f727cf22b18ce35f0a6dcd086633e05dd838ba5b2170fd90",
+      "git_blob": "d60e62a8bb28f40d314c25824fb665ab8ef1ea9c"
+    },
+    {
+      "name": "NATIVE_STDIN.CANDIDATE.json",
+      "bytes": 135422,
+      "sha256": "c010b3d4c16de36b38362cb386f8217a91b9a4868e3551f389769b83e7331fd0",
+      "git_blob": "d1ea0624fb40ca429ef4936536fb7cfa12858b97"
+    },
+    {
+      "name": "NATIVE_PROCESS_INPUT.CANDIDATE.json",
+      "bytes": 146890,
+      "sha256": "c29da441e78222ba11db981b5e159e23ab0cc6b48faeada5138e6ba966125c43",
+      "git_blob": "127a33fb09629034ade6ce43d82e80e52816df8f"
+    },
+    {
+      "name": "APPROVED_QUALIFICATION_INPUT.CANDIDATE.json",
+      "bytes": 11785,
+      "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f",
+      "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6"
+    }
+  ],
+  "boundaries": [
+    "All six control files are decoded and pinned before the new private directory is created.",
+    "Existing directory or file is a hard failure; no overwrite or automatic retry.",
+    "Original source supervisor and two result identities still refer to historical 1cb4 paths.",
+    "The unchanged native wrapper executes outside the bootstrap exception handler.",
+    "No source/index/ref/environment/stack/budget mutation is introduced by the bootstrap."
+  ]
+}

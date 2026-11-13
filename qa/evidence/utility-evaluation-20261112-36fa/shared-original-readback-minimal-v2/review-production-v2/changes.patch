@@ -1,0 +1,612 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_command.rs b/codex-rs/hepta-agentd/src/cell_q24_training_command.rs
+index 56423fc5ab8bb3d8dd1169ba3571efdecfa18c00..94cdad47f9564d1521a7216c8d8d62c422202b85 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command.rs
+@@ -32,6 +32,9 @@
+ use crate::OriginalCellQ24TrainingStageErrorV1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ 
++#[path = "cell_q24_training_shared_readback.rs"]
++mod shared_readback;
++
+ #[path = "cell_q24_training_command_connection.rs"]
+ mod connection;
+ pub use connection::OriginalCellQ24TrainingCommandConnectionErrorV1;
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..17596f02e662ab982dce5c918e03c19a8a30a953
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs
+@@ -0,0 +1,40 @@
++//! Consume one completed original Trainer client into sealed local readback.
++//! The original channel, request counter and absolute lifetime stay in place.
++
++use std::sync::Arc;
++
++use super::Error;
++use super::OriginalCellQ24TrainingCommandClientV1;
++use super::OriginalCellQ24TrainingCommandReceiptV1;
++use super::now;
++use super::wire;
++
++impl OriginalCellQ24TrainingCommandClientV1 {
++    pub(crate) fn seal_original_completed_readback(
++        self,
++        expected: &OriginalCellQ24TrainingCommandReceiptV1,
++    ) -> Result<Arc<Self>, Error> {
++        let retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
++        let original = retained.as_ref().ok_or(Error::ReadbackRequired)?;
++        if original != expected {
++            return Err(Error::Binding("same completed original Trainer before sharing"));
++        }
++        let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
++        let channel = slot.as_mut().ok_or(Error::Unavailable)?;
++        channel.peer.check_peer_lifetime()?;
++        let authenticated = wire::authenticate_receipt(
++            &self.context,
++            original.receipt().clone(),
++            original.attestation().clone(),
++            now()?,
++        )?;
++        if &authenticated != original {
++            return Err(Error::Binding("full original Trainer signature before sharing"));
++        }
++        // This is a one-way attenuation of the same client, not a new channel.
++        channel.execution_requested = true;
++        drop(slot);
++        drop(retained);
++        Ok(Arc::new(self))
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
+index 2893d2cc97faef0f3352406b89f7ec190b8e629d..98198c3d2ba177ab554d3028ea1270fbe7713bb1 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
+@@ -10,6 +10,7 @@
+ 
+ pub(super) enum OriginalPredecessors {
+     Legacy(LearningIterationEvidenceClientV1),
++    SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),
+     Evaluated {
+         trainer: OriginalCellQ24TrainingCommandClientV1,
+         evaluator: OriginalCellEvaluationCommandClientV1,
+@@ -57,6 +58,47 @@
+         })
+     }
+ 
++    pub(crate) fn from_original_evaluated_shared_receipt_owner(
++        owner: OriginalCircuitNextUseReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++        selector: LearningIterationEvidenceClientV1,
++    ) -> Result<Self, Error> {
++        let original = owner
++            .original_evaluated_command_selection()
++            .ok_or(Error::Binding("original evaluated Observer custody"))?;
++        shared.require_original_context(original.original_context())
++            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(original)?;
++        live.require_original_evaluated_next_use(original)
++            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        let (_, readback_only) = owner.original_command_profile();
++        let initial = context.initial()?;
++        if selector.initial != initial
++            || selector.actor_id != context.selection.owners.selector
++            || selector.verifier.trust_digest() != context.verifier.trust_digest()
++            || selector.verifier.scope_digest() != context.verifier.scope_digest()
++            || selector.verifier.objective_digest() != context.verifier.objective_digest()
++        {
++            return Err(Error::Binding(
++                "same original evaluated Selector readback client",
++            ));
++        }
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            owner: Mutex::new(owner),
++            live,
++            predecessors: OriginalPredecessors::SharedEvaluated(shared),
++            selector,
++            context,
++            initial_head: initial.head_digest,
++            binding,
++            execution_requested: AtomicBool::new(readback_only),
++            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
++            connections: Arc::new(Semaphore::new(4)),
++        })
++    }
++
+     pub(super) fn observe_original(
+         &self,
+         owner: &mut OriginalCircuitNextUseReceiptOwnerV1<W>,
+@@ -83,6 +125,30 @@
+                         OriginalCircuitNextUseReceiptOwnerV1::readback_remote(owner, source),
+                     ),
+                 }
++            }
++            OriginalPredecessors::SharedEvaluated(shared) => {
++                let selection = self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
++                        "original evaluated Observer command profile",
++                    ),
++                )?;
++                shared.require_original_context(selection.original_context())?;
++                let (trainer, evaluator) = shared.original_clients();
++                let source = OriginalCircuitEvaluatedNextUseRemoteSourcesV1 {
++                    snapshot: &self.context.selection,
++                    selection,
++                    live: &self.live,
++                    trainer,
++                    evaluator,
++                    selector: &self.selector,
++                };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion(owner, source)),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
+             }
+             OriginalPredecessors::Evaluated { trainer, evaluator } => {
+                 let selection = self.context.evaluated.as_ref().ok_or(
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs
+index fed5077853544aad6a725f2967ba782715555a1f..36c099ad2ae3b72deae633729a46be0b4fb766cd 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs
+@@ -87,6 +87,23 @@
+         self.completed_evaluated_next_use(completed)
+     }
+ 
++    pub fn into_evaluated_shared_command_owner(
++        self,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++        selector: LearningIterationEvidenceClientV1,
++    ) -> Result<
++        crate::OriginalCircuitNextUseCommandOwnerV1<W>,
++        crate::OriginalCircuitNextUseCommandErrorV1,
++    >
++    where
++        W: Send + 'static,
++    {
++        crate::OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
++            self, live, shared, selector,
++        )
++    }
++
+     pub fn into_evaluated_command_owner(
+         self,
+         live: OriginalCircuitLearningReadClientV1,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
+index 023d44d19df5ae7eb6b566ba03d6b323d9e6eaef..5e6221196cb26ce6120040f5b7cd6df5b4f94f1a 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
+@@ -186,6 +186,26 @@
+             .map_err(|_| Error::Binding("two original evaluated predecessors"))
+     }
+ 
++    /// Consume the same retained clients only after the Version host has
++    /// completed its actual Published/current checks. These handles are local.
++    pub(crate) fn seal_original_readback_owners(
++        &self,
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++    ) -> Result<(
++        std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,
++        std::sync::Arc<OriginalCellEvaluationCommandClientV1>,
++    ), Error> {
++        self.authenticate(now()?, PublicationAccess::Readback)?;
++        let trainer = OriginalCellQ24TrainingCommandClientV1::seal_original_completed_readback(
++            trainer, &self.training,
++        )?;
++        let evaluator = OriginalCellEvaluationCommandClientV1::seal_original_completed_readback(
++            evaluator, &self.evaluation,
++        )?;
++        Ok((trainer, evaluator))
++    }
++
+     // Receipt owners retain the same opaque pins and origin. This is not an
+     // owner/client getter, a new stream, or a promotion from cold to fresh.
+     pub(crate) fn clone_for_original_receipt(&self) -> Self {
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
+index c2e4d61d3b676c1d01d4f4efff39dbd45cff09f1..1180fb9dd9700346f2a94e0a097e84660423a83b 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
+@@ -13,6 +13,22 @@
+         }
+     }
+ 
++    pub fn into_evaluated_shared_command_owner(
++        self,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<
++        crate::OriginalCircuitSelectionCommandOwnerV1<W>,
++        crate::OriginalCircuitSelectionCommandErrorV1,
++    >
++    where
++        W: Send + 'static,
++    {
++        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
++            self, live, shared,
++        )
++    }
++
+     pub fn into_evaluated_command_owner(
+         self,
+         live: OriginalCircuitLearningReadClientV1,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+index 95e6dc6fb97dadbafdcc9e13897221da6ddccb36..3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+@@ -10,6 +10,7 @@
+ 
+ pub(super) enum OriginalPredecessors {
+     Legacy(LearningIterationEvidenceClientV1),
++    SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),
+     Evaluated {
+         trainer: OriginalCellQ24TrainingCommandClientV1,
+         evaluator: OriginalCellEvaluationCommandClientV1,
+@@ -45,6 +46,35 @@
+         })
+     }
+ 
++    pub(crate) fn from_original_evaluated_shared_receipt_owner(
++        owner: OriginalCircuitSelectionReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
++    ) -> Result<Self, Error> {
++        let original = owner
++            .original_evaluated_command_context()
++            .ok_or(Error::Binding("original evaluated Selector custody"))?;
++        shared.require_original_context(original)
++            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(original)?;
++        live.require_original_evaluated_selection(original)
++            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let (_, readback_only) = owner.original_command_profile();
++        let initial = context.initial()?;
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            owner: Mutex::new(owner),
++            live,
++            predecessors: OriginalPredecessors::SharedEvaluated(shared),
++            context,
++            initial_head: initial.head_digest,
++            binding,
++            execution_requested: AtomicBool::new(readback_only),
++            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
++            connections: Arc::new(Semaphore::new(4)),
++        })
++    }
++
+     pub(super) fn observe_original(
+         &self,
+         owner: &mut OriginalCircuitSelectionReceiptOwnerV1<W>,
+@@ -70,6 +100,28 @@
+                         OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner, source),
+                     ),
+                 }
++            }
++            OriginalPredecessors::SharedEvaluated(shared) => {
++                let context = self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
++                        "original evaluated Selector command profile",
++                    ),
++                )?;
++                shared.require_original_context(context)?;
++                let (trainer, evaluator) = shared.original_clients();
++                let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {
++                    snapshot: &self.context.training,
++                    live: &self.live,
++                    trainer,
++                    evaluator,
++                };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection(owner, source)),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
+             }
+             OriginalPredecessors::Evaluated { trainer, evaluator } => {
+                 self.context.evaluated.as_ref().ok_or(
+diff --git a/codex-rs/hepta-agentd/src/circuit_feature_current.rs b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+index 542e4e532443ac2082bd0b8fa7649fcdb25deca9..034ac9101813dd657e83ee1c377818a0c10ca435 100644
+--- a/codex-rs/hepta-agentd/src/circuit_feature_current.rs
++++ b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+@@ -74,6 +74,7 @@
+ pub use retained_publication::prepare_original_circuit_retained_publication_v1;
+ pub use retained_publication::recover_original_circuit_evaluated_retention_v1;
+ pub use retained_publication::recover_original_circuit_retained_publication_v1;
++pub use retained_publication::version::OriginalCircuitPublishedEvidenceReadbackV1;
+ pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+ pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
+ pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
+diff --git a/codex-rs/hepta-agentd/src/circuit_retained_version.rs b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+index e6f841ab40dbfe35f5763b726f391830a76c9b44..6b7eb85645b952b7f08d1fa66557cd25ee425a2b 100644
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+@@ -24,6 +24,7 @@
+ 
+ pub use c_task::OriginalCircuitRetainedTaskInputsV1;
+ pub use client::OriginalCircuitRetainedVersionClientV1;
++pub use host::OriginalCircuitPublishedEvidenceReadbackV1;
+ pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
+ pub use host::OriginalCircuitRetainedVersionHostV1;
+ pub use host::OriginalCircuitRetainedVersionRecoveryV1;
+diff --git a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+index d84937fc81f0a7b41c997c97b29cd06ff9cf03e4..c949e2a64657bc2ec209253d149b09256f49b42e 100644
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+@@ -52,6 +52,9 @@
+ mod service;
+ #[path = "circuit_retained_version_state.rs"]
+ mod state;
++#[path = "circuit_retained_version_shared_readback.rs"]
++mod shared_readback;
++pub use shared_readback::OriginalCircuitPublishedEvidenceReadbackV1;
+ 
+ #[path = "circuit_retained_version_prepared.rs"]
+ mod prepared_custody;
+@@ -144,6 +147,7 @@
+     trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
+     initial_evaluator: Option<OriginalCellEvaluationCommandConnectionV1>,
+     evaluator: Option<OriginalCellEvaluationCommandClientV1>,
++    shared_evaluated: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
+     cut: Option<OriginalVersionCut>,
+     expected: Option<RetainedVersionColdCutV1>,
+     control: Arc<NeuronGenerationCurrentOwnerV1>,
+@@ -271,6 +275,7 @@
+                 trainer: None,
+                 initial_evaluator: evidence.into_evaluator(),
+                 evaluator: None,
++                shared_evaluated: None,
+                 cut: None,
+                 expected: None,
+                 control,
+@@ -367,6 +372,7 @@
+                 trainer: None,
+                 initial_evaluator: evidence.into_evaluator(),
+                 evaluator: None,
++                shared_evaluated: None,
+                 cut: None,
+                 expected: Some(RetainedVersionColdCutV1 {
+                     training: original.training,
+diff --git a/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs b/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..ce1c4983afdcc251e4472068ccf0e4941809d499
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs
+@@ -0,0 +1,133 @@
++//! A local, sealed view of the original published Version's same T/E channels.
++//! It has no new-work method, owner factory, descriptor or reconnect interface.
++
++use std::sync::Arc;
++
++use super::OriginalCircuitRetainedVersionHostV1;
++use super::RetainedVersionFinalUseOutcomeV1;
++use super::RetainedVersionHostPhaseV1;
++use super::super::Error;
++use super::super::RetainedVersionOriginV1;
++use super::super::RetainedVersionPurposeV1;
++use crate::OriginalCellEvaluationCommandClientV1;
++use crate::OriginalCellQ24TrainingCommandClientV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
++use crate::OriginalCircuitRetainedPublicationErrorV1;
++
++pub struct OriginalCircuitPublishedEvidenceReadbackV1 {
++    trainer: Arc<OriginalCellQ24TrainingCommandClientV1>,
++    evaluator: Arc<OriginalCellEvaluationCommandClientV1>,
++    context: OriginalCircuitEvaluatedRetentionContextV1,
++}
++
++impl Clone for OriginalCircuitPublishedEvidenceReadbackV1 {
++    fn clone(&self) -> Self {
++        Self {
++            trainer: Arc::clone(&self.trainer),
++            evaluator: Arc::clone(&self.evaluator),
++            context: self.context.clone_for_original_receipt(),
++        }
++    }
++}
++
++impl OriginalCircuitPublishedEvidenceReadbackV1 {
++    /// Perform actual original T/E reads. This is not a cached publication
++    /// result or a new-work capability. Competing reads retain the original
++    /// Unavailable/Unknown semantics; sharing creates no queue or retry.
++    pub async fn read_original_predecessors(&self) -> Result<(), Error> {
++        self.context
++            .require_original_receipt_owners(self.trainer.as_ref(), self.evaluator.as_ref())
++            .await?;
++        Ok(())
++    }
++
++    pub(crate) fn require_original_context(
++        &self,
++        expected: &OriginalCircuitEvaluatedRetentionContextV1,
++    ) -> Result<(), OriginalCircuitRetainedPublicationErrorV1> {
++        if self.context.snapshot() != expected.snapshot()
++            || self.context.receipt_context_binding() != expected.receipt_context_binding()
++        {
++            return Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
++                "same original published T/E context",
++            ));
++        }
++        let at = super::super::super::now()?;
++        self.context.original_receipt_predecessors(at)?;
++        expected.original_receipt_predecessors(at)?;
++        Ok(())
++    }
++
++    pub(crate) fn original_clients(
++        &self,
++    ) -> (&OriginalCellQ24TrainingCommandClientV1, &OriginalCellEvaluationCommandClientV1) {
++        (self.trainer.as_ref(), self.evaluator.as_ref())
++    }
++}
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    /// Consume the already retained clients only after actual Published and a
++    /// full current read. A cold Published enum alone does not admit a reader.
++    /// All aliases keep the original clients' one channel slot and lifetime.
++    pub async fn share_original_evaluated_readbacks(
++        self: Arc<Self>,
++    ) -> Result<OriginalCircuitPublishedEvidenceReadbackV1, Error> {
++        tokio::task::spawn_blocking(move || {
++            self.require_lifetime()?;
++            if self.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++                || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++            {
++                return Err(Error::ReadbackRequired);
++            }
++            let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
++            if let Err(error) = self.bind_original_predecessor(&mut state) {
++                if self.origin == RetainedVersionOriginV1::Recovered {
++                    state.selection_reader = None;
++                }
++                return Err(error);
++            }
++            let observed = if self.origin == RetainedVersionOriginV1::Recovered {
++                self.read_original_recovery(&mut state)?
++            } else {
++                self.read_original(&state)?
++            };
++            if observed.publication().is_none()
++                || state.selection_reader.is_none()
++                || !matches!(
++                    state.phase.as_ref(),
++                    Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))
++                )
++                || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++            {
++                return Err(Error::ReadbackRequired);
++            }
++            let context = state.cut.as_ref().and_then(|cut| cut.evaluated.as_ref())
++                .ok_or(Error::ReadbackRequired)?.clone_for_original_receipt();
++            if state.shared_evaluated.is_none() {
++                let original = match (state.trainer.take(), state.evaluator.take()) {
++                    (Some(trainer), Some(evaluator)) => (trainer, evaluator),
++                    _ => {
++                        state.selection_reader = None;
++                        return Err(Error::Unavailable);
++                    }
++                };
++                let (trainer, evaluator) = match context.seal_original_readback_owners(original.0, original.1) {
++                    Ok(value) => value,
++                    Err(error) => {
++                        state.selection_reader = None;
++                        return Err(error.into());
++                    }
++                };
++                state.shared_evaluated = Some(OriginalCircuitPublishedEvidenceReadbackV1 {
++                    trainer,
++                    evaluator,
++                    context: context.clone_for_original_receipt(),
++                });
++            }
++            let shared = state.shared_evaluated.as_ref().ok_or(Error::Unavailable)?;
++            shared.require_original_context(&context)?;
++            self.require_lifetime()?;
++            Ok(shared.clone())
++        }).await.map_err(|_| Error::CommitUncertain)?
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+index a0f3c847a49c3d5a2ae4df704ed1f751b9e287f9..d96f9c9b7767c071106370beb5dfc7ad8b4fba83 100644
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+@@ -229,7 +229,9 @@
+     fn original_trainer(&self) -> Result<&OriginalCellQ24TrainingCommandClientV1, Error> {
+         match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
+             RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(original.trainer()),
+-            _ => self.trainer.as_ref().ok_or(Error::Unavailable),
++            _ => self.trainer.as_ref().or_else(|| {
++                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().0)
++            }).ok_or(Error::Unavailable),
+         }
+     }
+ 
+@@ -238,7 +240,9 @@
+             RetainedVersionHostPhaseV1::Prepared { original, .. } => {
+                 original.evaluator().ok_or(Error::Unavailable)
+             }
+-            _ => self.evaluator.as_ref().ok_or(Error::Unavailable),
++            _ => self.evaluator.as_ref().or_else(|| {
++                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().1)
++            }).ok_or(Error::Unavailable),
+         }
+     }
+ 
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index b46baf3d8280114c937799f0430942ec3863afa8..10205177c9e4274f58347f5a3719f2a34ed76519 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -880,6 +880,7 @@
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
+ #[cfg(target_os = "linux")]
++pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;
+ pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitRetainedPublicationContextV1;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs
+index 086a50cd688da7e06d4e290dabd56d68ff975e86..f7a57575bccb0de9d139a070e30bc26fcb8daf8d 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs
+@@ -31,6 +31,9 @@
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ 
++#[path = "neuron_cell_evaluation_shared_readback.rs"]
++mod shared_readback;
++
+ #[derive(Clone, Copy, Eq, PartialEq)]
+ enum Origin {
+     Fresh,
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e7b2e5e89ab0911193ca41d054f0633ba132767
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs
+@@ -0,0 +1,39 @@
++//! Consume one completed original Evaluator client into sealed local readback.
++//! Sharing preserves its single slot, nonce, aggregate limit and expiry.
++
++use std::sync::Arc;
++
++use super::Error;
++use super::OriginalCellEvaluationCommandClientV1;
++use super::now;
++use super::wire;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++
++impl OriginalCellEvaluationCommandClientV1 {
++    pub(crate) fn seal_original_completed_readback(
++        self,
++        expected: &OriginalCellEvaluationCommandReceiptV1,
++    ) -> Result<Arc<Self>, Error> {
++        let retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
++        let original = retained.as_ref().ok_or(Error::ReadbackRequired)?;
++        if original != expected {
++            return Err(Error::Binding("same completed original Evaluator before sharing"));
++        }
++        let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
++        let channel = slot.as_mut().ok_or(Error::Unavailable)?;
++        channel.peer.check_peer_lifetime()?;
++        let authenticated = wire::authenticate_completed(
++            &self.context,
++            original.snapshot().clone(),
++            original.attestation().clone(),
++            now()?,
++        )?;
++        if &authenticated != original {
++            return Err(Error::Binding("full original Evaluator signature before sharing"));
++        }
++        channel.execution_requested = true;
++        drop(slot);
++        drop(retained);
++        Ok(Arc::new(self))
++    }
++}

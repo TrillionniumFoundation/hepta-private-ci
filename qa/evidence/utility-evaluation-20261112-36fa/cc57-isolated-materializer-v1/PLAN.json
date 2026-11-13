@@ -1,0 +1,72 @@
+{
+  "budgets": {
+    "action": 600,
+    "outer": 900,
+    "owned_git_cleanup_max_seconds": 5,
+    "recording_reserves_last_seconds": 10,
+    "records": 180
+  },
+  "config": "WAITING_CONFIG_V4.json",
+  "driver": "driver-v4.HOLD.py",
+  "fixed_existing_inventory_driver": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py",
+  "format": "cc57-independent-materialization-control-plan-v1",
+  "historical_source_qualification": "Existing original1cb4 PASS remains tied to exactcc57 content and original observation window. This materialization does not create another PASS or start native tests.",
+  "new_control": "/home/qian-qi/hepta-utility-36fa-evidence/cc57-isolated-materialization-v1",
+  "new_repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+  "ordered_actions": [
+    "Verify exact config/driver/packet/observer normal+report/current tool and original inventory driver.",
+    "Hold the original task EX lock; enforce the unchanged global same-UID build/formatter guard.",
+    "Re-read all current physical old files and the exact four old Git files/ref listing/absences. Only the seven known paths may be absent.",
+    "Independently derive both exact full trees and check local metadata for their exact16449-object union.",
+    "Create a fresh absent independent repository. Re-read each existing source file while copying; use only seven exact local archive blobs for the missing paths.",
+    "Encode standard PACK v2 from original bodies; import with threads=1 into the independent object store; completely read/hash every imported object.",
+    "Read-tree without -u, detach HEAD, normal refresh and write-tree. Verify every actual stat field, stage-zero flags and absence of assume-unchanged/skip-worktree. Fsync new files/directories.",
+    "Call original5118 inventory to obtain exact13d3 and derive exact original native20008. Preserve new actual raw index/Git/metadata baseline.",
+    "Under the original180-second record budget, recheck old full physical bytes/fixed Git originals, new full source/Git/index, and all inputs/held coordination identity.",
+    "Keep partial new output on any failure. Never rollback, reuse records, repair old source, clear refs, install dependencies, run Cargo or tests."
+  ],
+  "packet": "MATERIALIZATION_PACKET.HOLD.json",
+  "scope": {
+    "full_ancestry": false,
+    "new_source_files": 15188,
+    "old_known_missing": 7,
+    "old_source_files_present": 15181,
+    "snapshots": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "246d8cb614770252ee42029a5c014f2a4904176a"
+    ],
+    "two_complete_snapshot_objects": 16449,
+    "unmaterialized_boundary": "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+  },
+  "staged_files": [
+    "driver.py",
+    "MATERIALIZATION_PACKET.json",
+    "AVAILABILITY_RESULT.original.json",
+    "AVAILABILITY_SUPERVISOR.original.json",
+    "APPROVED_CONFIG.json"
+  ],
+  "status": "HOLD",
+  "success_result_required": {
+    "action_completed": true,
+    "all_audits_status": "verified",
+    "cleanup_errors": [],
+    "current_git_before_after": "actual identical new baseline, never old index bytes",
+    "current_inventory_raw_sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+    "current_native_projection_sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+    "final_audits": [
+      "old_physical_source_and_fixed_git_metadata",
+      "new_source_and_git",
+      "inputs_and_coordination"
+    ],
+    "format": "hepta-isolated-cc57-materialization-result-v1",
+    "four_record_files": "Exact actual command/mutation/input/artifact pins bound in RESULT",
+    "input_identities_unchanged": true,
+    "new_files_and_directories_synced": true,
+    "new_objects_fully_verified": 16449,
+    "new_repo_created": true,
+    "old_physical_and_fixed_git_state_unchanged": true,
+    "physical_leaves_created": 15188,
+    "qualification": false,
+    "status": "MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY"
+  }
+}

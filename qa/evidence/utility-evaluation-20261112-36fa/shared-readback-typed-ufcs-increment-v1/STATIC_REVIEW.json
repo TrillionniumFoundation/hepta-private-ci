@@ -1,0 +1,73 @@
+{
+  "format": "hepta-shared-ufcs-static-review-v1",
+  "packet": {
+    "path": "SOURCE_PACKET.json",
+    "bytes": 76155,
+    "sha256": "7550d54916d2fa6963b01af6a433013e8c1f3ab060044da4e5b790e2d0f79eaf",
+    "git_blob": "a965a2106c38be86ab0670c7ba090404c3dbc51d",
+    "full_readback_equal": true
+  },
+  "replacement_count": 9,
+  "exact_inverse_complete_file_equal": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "before": {
+        "bytes": 7023,
+        "sha256": "4b5414e4c13a8cb8f5e3933c453b8ab5e72c48a13e674c63305441727af6ec22",
+        "git_blob": "3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26"
+      },
+      "after": {
+        "bytes": 7178,
+        "sha256": "3b3bed7a8a53a0ef4b496e9e8cf5b8b4386ef045f4135d8f7b7a06bb44fb2a82",
+        "git_blob": "4db88aab962628b6c7414718f5e5c68f55e86b11"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "before": {
+        "bytes": 8423,
+        "sha256": "96bcafedb1389d94e5c53eccab986d54ca50ed905e6b8e5e9121f0e86fda014d",
+        "git_blob": "98198c3d2ba177ab554d3028ea1270fbe7713bb1"
+      },
+      "after": {
+        "bytes": 8578,
+        "sha256": "e3244af38d6fc15e068eb99f27207dff4e2bfcc96ff468793de54af1a3b2e063",
+        "git_blob": "bb104facd29f0939e8b8a4f013cced395116a4bf"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "before": {
+        "bytes": 12931,
+        "sha256": "5078ac0681116b1536415065b51d6f39a1a5099acf6db55637d7261218a618fb",
+        "git_blob": "d96f9c9b7767c071106370beb5dfc7ad8b4fba83"
+      },
+      "after": {
+        "bytes": 13031,
+        "sha256": "4d0dbed421c0d48b5577d9189166e04fdf1cfbed7acecb0efd11546f1ff4da92",
+        "git_blob": "4f88e588c805271cf8954305bfe09fdfab777bf4"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "before": {
+        "bytes": 5891,
+        "sha256": "0f128f434049ddcd7884a6f8084be0869ca0ae0eead9ae8cac9126b6d9017c4a",
+        "git_blob": "91dd820a4069b8faaab1274f5b3918b144e3b2e9"
+      },
+      "after": {
+        "bytes": 5937,
+        "sha256": "9f72fbcb9796952555e93c433912f01ee6611c53782c5eecc39920ba54d3824a",
+        "git_blob": "0d52084d728eee8a62bce68b99780c12624242d7"
+      }
+    }
+  ],
+  "scope": "Only direct method-call to exact UFCS spelling; explicit &shared for owned constructor parameters, shared for borrowed match/closure parameters, &context for context method.",
+  "new_functions": 0,
+  "fields_changed": 0,
+  "verifier_changed": false,
+  "budget_changed": false,
+  "qualification": false,
+  "execution": false
+}

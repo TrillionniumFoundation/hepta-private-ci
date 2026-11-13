@@ -1,0 +1,36 @@
+{
+  "format": "hepta-test-helper-rename-static-review-v1",
+  "reason": "The original full collector excludes _tests.rs paths; cfg(test) mounting alone does not exclude a file from product path classification.",
+  "packet": {
+    "bytes": 41449,
+    "sha256": "ba073a71b5bbe264255bc70f6f2f698ef640f57be8330b367c733f0431674301",
+    "git_blob": "bfc96752df8c76fe59676696b6a1f77cef038aab"
+  },
+  "helper": {
+    "bytes": 6928,
+    "sha256": "906cee540e75299a35ae50c3d7f1e35656b0d7de0b887e269d64ef32ff5a6db7",
+    "git_blob": "265e80b2763cbf4f2a530e2e1400f364ee1b1711"
+  },
+  "parent_before": {
+    "bytes": 15957,
+    "sha256": "3b3e2e8768a19a26fb27c6126f499894e52bd8963ac0aa5b077864bdbae68a97",
+    "git_blob": "89e1116136ff39c0a4478d69675cfb5c645e9aec"
+  },
+  "parent_after": {
+    "bytes": 15958,
+    "sha256": "755ea1d0caab32039eee7e2296dbde98bc39c95a03a9f6ebbc3befefdb8496f3",
+    "git_blob": "98f631981384dbe739e83c9297547172720f2abb"
+  },
+  "exact_replacement_count": 1,
+  "parent_reverse_equal": true,
+  "helper_content_equal": true,
+  "no_authority_or_verifier_or_collector_change": true,
+  "old_frozen_packet_preserved": true,
+  "not_executed": [
+    "fmt",
+    "compile",
+    "tests",
+    "source-gates",
+    "H"
+  ]
+}

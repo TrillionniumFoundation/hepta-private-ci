@@ -1,0 +1,76 @@
+{
+  "format": "hepta-isolated-native-v8-readonly-placement-v1",
+  "frozen_at": "2026-11-13T03:44:48.039023+00:00",
+  "job_id": "1a1d2f968fe-392-69",
+  "approval_blob": "e4e47e9348690070e8084300ea52afb6cad1d58e",
+  "files": [
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/observe.HOLD.py",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/observe.HOLD.py",
+      "bytes": 11276,
+      "sha256": "31701a21883b864d14ec60e9fbe2b86983553304e90316139f9785ce7552dd88",
+      "git_blob": "4be68be7511aa54a94bbacf290db408e4c0e02e3",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/REQUEST.HOLD.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/REQUEST.HOLD.json",
+      "bytes": 11778,
+      "sha256": "5ca539fbe8fb818a265dedc0f478c6f24601c4565362fc3b217886ccbda106db",
+      "git_blob": "080fc28f1abb02f708b3333cea4787af9a09785e",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/PLAN.HOLD.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/PLAN.HOLD.json",
+      "bytes": 2891,
+      "sha256": "f77fe0b209fb6f01ff4f9aa6ef62d0fd3e4b9feba0002171b272651f6f265337",
+      "git_blob": "1a1fd325aaf08013eec346247a4ea0e39bd6a876",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/DISPATCH_INTENT.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/DISPATCH_INTENT.json",
+      "bytes": 626,
+      "sha256": "e914cb6d31d17bca615332a31c75db71b3c5ab3deea02e9fe4876a322450c2d1",
+      "git_blob": "ab98de145feaf0069744a45caf0542845e02d99e",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/ADMISSION.original.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/ADMISSION.original.json",
+      "bytes": 13152,
+      "sha256": "f323828de9c2dacd9549f68eff3ccb8660951753ccda635a8e5395a94a689dfd",
+      "git_blob": "f151f934d59a4aac905559f9ddc6ab299f80d96b",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/STATUS_01.original.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/STATUS_01.original.json",
+      "bytes": 953,
+      "sha256": "1116958e3093081443eb26ba8f3adc049e8f1c79aba523e481e628d9289782d1",
+      "git_blob": "5be552843672e0780cbc79847c2a118b6be33dfd",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/STDOUT_READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/STDOUT_READ_01.original.json",
+      "bytes": 41224,
+      "sha256": "e19b534915d8d686b6f20cf7bd89500d72ba8fc3c64396935cab43a3ea14bdf9",
+      "git_blob": "89ec3c566eaec663d67e7aa8e7d090d3a7bdc519",
+      "actual_git_full_get_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/v8-readonly-observation-v1/OBSERVATION.original.json",
+      "local_path": "/tmp/hepta-36fa-isolated-native-v8-readonly-diagnostic-v1/OBSERVATION.original.json",
+      "bytes": 12654,
+      "sha256": "e4b3154c87d06dab64c5e6b91c5d7dd421437e57230f4d09fc5e88502a058186",
+      "git_blob": "1789babc0eeca7de054f209fc051ed8aa44582a4",
+      "actual_git_full_get_equal": true
+    }
+  ],
+  "scope": "One completed readonly observation: original archive path ENOENT before/after; full bindings original identity/mode matched. No dependency/environment/source mutation. The original native precondition failure with zero behavioral tests remains.",
+  "stdout_full_original_verified": true,
+  "archive_continuity": "All eight original files were on disk before functions store loss; all eight existing immutable Git blobs were then fetched again and fully compared. No H job or observation was repeated.",
+  "large_json_integers": "Original H SDK inner JSON and original stdout are preserved as exact strings; selected parsed summaries never replace original bytes."
+}

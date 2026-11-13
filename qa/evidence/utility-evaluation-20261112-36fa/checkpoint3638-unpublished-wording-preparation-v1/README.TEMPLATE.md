@@ -1,0 +1,81 @@
+# Utility evaluation: complete cc57 source proof and native precondition refusal
+
+This checkpoint contains **__FINAL_EVIDENCE_COUNT__ files**. Source remains [`cc57c7198db6293ccca562253c42fffbe2a04633`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/cc57c7198db6293ccca562253c42fffbe2a04633), tree `b7b357c07b5539769a068c6b9b009629f5612d1e`, sole parent `246d8cb614770252ee42029a5c014f2a4904176a`. [PR #6203](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6203) remains draft and unmerged.
+
+**HOLD. Real qualified authorized A → original Training owner → independent B → Adopt or complete NoUpdate → new C → daemon and Root cold-recovery task chains remain 0.** The complete original source gates passed. The first subsequent native request failed its source precondition before running any behavioral test. A separate Root service source proposal is included for review; it has not been applied, formatted, compiled, gated or activated.
+
+## Complete original source qualification
+
+Source job `1a1d23c92f3-2564-1cb4` completed with authoritative normal exit 0 at **2026-11-13 00:25:02.355 UTC**, complete durable stdout/stderr, no timeout, cancellation or retry. Root subsequently reviewed the complete actual originals and their immutable Git readbacks.
+
+| Original gate or audit | Observed result and scope |
+| --- | --- |
+| Source closure, original 600-second limit | PASS. Complete 111,500-byte raw log contains 492 explicit `ok` methods, zero failures; raw footer 384.885 seconds, original command 389.063108 seconds, complete outer stage 401.14431 seconds. |
+| Caller self-test, original 300-second limit | PASS. Complete 48-byte raw log and original normal receipt retained. |
+| Full caller verification, original 4,800-second limit | PASS. Complete 270,271-byte raw report: 569 boundaries, 569 privileged inventory names, 422 protected files, 6,619 Rust files, `authorityGranted=false`. Complete outer stage 517.869023 seconds. |
+| Complete source supervisor | PASS under the unchanged 7,200-second limit; all three original stage results and normal terminal reviewed. |
+| Source during that execution | Complete origin inventory before/after identical, 15,188 tracked/physical rows, zero extras. Raw Git before/after equals the then-current canonical alignment. All 25 control input identities and 13 original read-only command terminals checked. |
+
+Primary records: [complete Root source review](cc57-final-source-root-review-v1/ROOT_COMPLETE_SOURCE_REVIEW.json), [original whole-run result](source-qualification-cc57-v2/completed-originals/ORIGINAL_RUN_RESULT.json), [authoritative terminal](source-qualification-cc57-v2/completed-originals/STATUS_05.original.json), [complete closure log](cc57-v2-closure-log-readonly-capture/source-closure.original.log), [complete caller report](source-qualification-cc57-v2/completed-originals/stage-originals/verify/verify.original.log).
+
+The three inventory identities have distinct meanings. The origin full inventory is SHA256 `13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9`; the frozen source-gate clone full inventory is `f7db5e671a913b26a8798ec9e8ea5bdd265e6ace80ec85cdea7e6c22bb66387a`; the original native compact projection is `20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9`. The clone's actual regular-file permissions and exact bytes were confirmed by the original reads. The original freeze function merely removes write bits; that function alone does not imply the clone's complete permission mapping.
+
+Read-only observer `1a1d2544b50-2564-1cca` recovered the complete original closure log after two retained direct-read transport timeouts. Observer `1a1d25d4534-2564-1cd2` completely read seven retained original clone inventory records and two retained origin inventory gzip records, with stable metadata, exact identities and original part checks. These observers read completed artifacts. They did **not** reobserve the live worktree or run another source gate. [Nine-original capture](cc57-v2-original-inventory-readonly-capture/CAPTURE_FULL_READBACK.json) and [exact reconstruction binding](cc57-final-source-root-review-v1/clone-inventory-exact-material/ACTUAL_READBACK_RECONSTRUCTION.json) preserve that distinction.
+
+## First native request: failed precondition, zero behavioral tests
+
+Native job `1a1d26326ac-2564-1cd4` was uniquely admitted at **00:51:15.756 UTC** and ended at **00:51:25.194 UTC**, supervisor failed/exit 1, complete durable output, no timeout, cancellation or retry. Its source-success bootstrap pins matched the actual completed source result. The wrapper then rejected the live source state with `ValueError: unchanged detached HEAD/no refs`.
+
+The complete original result has `behavioral_tests_started=false`, `stages=[]`, `source_before=null` and `source_comparison="unknown_missing_before"`. **No evaluator, focused, ordinary-package or Root behavioral test ran.** This is neither a native pass nor a completed failing behavioral comparison, and it does not support utility NoUpdate/Ineligible. [Original wrapper result](native-cc57-v1-failed-precondition/RESULT.json), [normal supervisor terminal](native-cc57-v1-failed-precondition/STATUS_01.original.json), [Root refusal review](native-cc57-preflight-root-v1/ROOT_PREFLIGHT_REFUSAL_REVIEW.json).
+
+The actual admission sets the current HEAD/tree expectations before its first raw Git check. Unlike the earlier source admission's stale ancestry issue, this refusal is supported by a later-observed extra ref. Exact raw HEAD still contains cc57 plus one LF. The observed ref `refs/retired-artifacts/20261112-r71/3b03227b9431ee012e6b` also points to cc57. It still violates the required no-refs invariant. The observed index changed from the earlier 2,072,488-byte identity `8aa01d86…` to 2,072,293 bytes / `b6ab195d…`. The new ref and index metadata carry times around 00:30:41 UTC. Their nearby timestamps do not establish a writer or common mechanism. At this frozen window, the index body has not been retrieved or parsed.
+
+The original failed native post-snapshot retains an empty porcelain status and the expected commit/tree, but its complete compact inventory is `6c28a1e1…`, which is not the required `20008a0c…`. A clean Git status alone did not establish a complete physical source.
+
+## Complete difference diagnosis and preservation
+
+Read-only observer `1a1d27152aa-2564-1ce4` completed normally at **01:06:46 UTC**. It fully read the two retained execution inventories and the failed native summary, and separately ran one current read-only ref enumeration. Comparison with the exact original native serializer found **15,181 equal rows, seven changed rows, zero added and zero removed rows**. Each changed row became `{"path": ..., "missing": true}`.
+
+| Missing tracked archive | Original bytes |
+| --- | ---: |
+| `qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz` | 2,896,268 |
+| `qualification/cell-research-stages-20261108/followthrough-20261108/verify1-independent-audit.tar.gz` | 1,177,531 |
+| `qualification/cell-research-stages-20261108/native-ci-routing-20261108/raw-ci-logs.tar.gz` | 1,766,809 |
+| `qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip` | 1,843,158 |
+| `qualification/memory-cell-mem1/raw-evidence-v1.tar.xz` | 1,765,660 |
+| `qualification/pin-utils-parent-backports-20261108/native-evidence.tar.gz` | 2,767,574 |
+| `qualification/pred1/evidence/pred1_evidence.tar.xz` | 5,959,884 |
+| Total | 18,176,884 |
+
+Every original mode, size, SHA256 and Git blob is retained in the [complete original difference](native-cc57-precondition-readonly-diagnostic-v1/SNAPSHOT_DIFF.original.json). Root independently reconstructed the complete failed compact inventory and original gzip; both identities match the actual full bounded original reads. [Root difference review](native-cc57-preflight-root-v1/ROOT_ACTUAL_SNAPSHOT_DIFFERENCE_REVIEW.json) and [complete lossless transport manifest](native-cc57-precondition-readonly-diagnostic-v1/source-after.files.EXACT_RECOVERED.json.transport-manifest.json).
+
+**Writer and cause remain Unknown.** Missing evidence and an unexplained ref do not establish Objective Fraud. The inventories describe the retained 1cb4 and 1cd4 execution snapshots; the 1ce4 ref enumeration is a separate live observation. No ref deletion, index reset, old-source repair, history rewrite or new native request is contained in this window. The old directory is preserved. A separately reviewed fresh-directory materialization is the planned recovery direction; it must reproduce the original 15,188-row `13d3` / `20008` content and establish its own actual raw Git baseline before native qualification.
+
+## Root resident provider: concrete source proposal, still HOLD
+
+The separate [provider v1 proposal](root-resident-provider-proposal-v1/README.md) adds eight source postimages, four new files and 659 inserted lines. Its four modified old files restore byte-for-byte after removing the exact inserted blocks. It does not modify the published cc57 source. The proposed unformatted tree identity is a preparation result, not an executed checkout or acceptance result.
+
+The proposal provides a purpose-separated 21-right handoff: one original Root pidfd plus ten original role stream/pidfd pairs. It consumes existing capabilities and preserves actual receiver PID/boot/start, peer/pidfd checks, one-shot ownership and an absolute monotonic lifetime. A concrete Root service composes the original typed registration, owners, runtime and stream service. Fresh versus read-only recovery derives from the trusted registration. Original two-right handoff behavior is retained.
+
+[Independent static review](root-provider-independent-peer-v1/REVIEW.json) found no concrete source-level authorization-escalation or FD-cleanup defect within its stated coverage. That is not runtime verification. The four added tests cover wire/metadata mechanisms only; they do not execute the complete public handoff and ten-owner service. Normal complete NoUpdate/recovered paths, A disconnect, explicit Root cancellation/join and delayed handoff still require meaningful integration tests, formatting, exact caller/protected registration and original gates. Cancellation cannot be claimed to retract an already dispatched remote effect.
+
+Default product startup still has no demonstrated legitimate typed provider source. No fake provider, fixture authority, empty callback or caller-list entry establishes the requested real loop. Later v2 code or recovery work is outside this frozen evidence window.
+
+## Retained history and utility contract
+
+All 3,327 non-README paths from the previous 3,328-file publication keep their exact blobs; its [README is archived](checkpoints/README_3328FILES_BEFORE_COMPLETE_SOURCE_AND_NATIVE_REFUSAL.md). The separately frozen 3,454-path preparation window is also preserved unchanged, including its earlier cutoff. This new append window adds the complete source originals, exact inventory material, actual failed native admission, complete difference diagnosis, historical focused-test forensics and bounded provider proposal review. It does not backdate later findings into earlier running/pending observations.
+
+Historical `246d…` source closure remains failed (488 explicit successful methods, four failed methods with six failure entries). Historical `c0f…` evaluator 163/163 pass and focused 81 pass/28 fail remain tied to that earlier source; ordinary and Root did not start. The [focused-test forensics](c0f-focused-pretriage-cc57-v1/REVIEW.md) compares actual source changes without inventing new compiled outcomes or declaring all old stack/timeouts fixed.
+
+The latest archived exact-source hosted-CI query, around **00:37:01 UTC**, still reported zero check runs, suites, status contexts and workflow runs, combined pending. It is a dated observation, not hosted CI PASS or a current live status promise.
+
+| Outcome | Required meaning |
+| --- | --- |
+| Adopt | Complete evidence passes comparative benefit and every hard gate; original owners authorize the new version under the public contract. |
+| Complete NoUpdate / Ineligible | Sufficient applicable evidence supports the complete negative comparison and original owners complete the applicable protocol. One Ineligible member cannot issue aggregate NoUpdate. |
+| InsufficientEvidence / Unknown | Applicable results, costs, provenance, independence or authorization are missing. Preserve pending/refusal; a known failed metric cannot fill missing evidence. |
+| Objective Fraud | Reproducible deterministic fraud evidence enters the explicit challenge/disposition process. Disagreement or missing evidence alone is insufficient. |
+
+NDU objectives, predicted consequences, policy, critic, independent observed outcomes and the public reward contract remain separate. Utility requires the full deployable composition, strongest deployable comparator, complete frozen costs including failed/cancelled/search/evaluation/download/service/maintenance work, and old/rare/critical task constraints. Privacy, authorization and must-pass tasks cannot be offset by average quality. Distinct keys or processes do not establish independent task sources, training lineage, judges or operational control. Action-dependent forecasts require the relevant state/policy/propensity and identification conditions; otherwise retain Unknown.
+
+The actual real input gap remains recorded in [remaining inputs and steps](real-utility-inputs-cc57-review-v1/REMAINING_INPUTS_AND_STEPS.md). The original Model, Selector, Version and FinalUse owners, accessible and legally authorized material, independent real B outcomes, complete cost ledger, actual new C and daemon/Root cold-recovery receipts are still required. Content roots, available bytes, authorization and actual consumer adoption are separate claims. No deployment, merge, bonus maturity or payment is established by this checkpoint.

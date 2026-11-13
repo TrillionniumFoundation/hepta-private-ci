@@ -1,0 +1,60 @@
+{
+  "format": "hepta-fresh-stage-static-review-v1",
+  "packet": {
+    "path": "SOURCE_PACKET.json",
+    "bytes": 77805,
+    "sha256": "980e48fc071873ebb068c2c585c478eb179cfeebe40eab6df3376e030083b3d4",
+    "git_blob": "23906f521d55c171123c03a8b0e27da431c618cc",
+    "full_readback_equal": true
+  },
+  "scope": "source inspection only",
+  "existing_parent_change": "one #[path] literal; full inverse restores f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa",
+  "old_function_changes": 0,
+  "new_test_methods": 2,
+  "material_body_reused": {
+    "bytes": 16553,
+    "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0",
+    "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224"
+  },
+  "original_completion_boundary": "await original Training Execute; no Ready-only inference",
+  "training_capability_layout": [
+    "Root T command",
+    "original Candidate reader",
+    "one original readonly B evidence shared by two members",
+    "Version T command"
+  ],
+  "training_public_permits_proved": false,
+  "retained_full_signature_equality": true,
+  "actual_original_files_checks": true,
+  "root_daemon_or_public_ten_owner_complete": false,
+  "no_execution": true,
+  "unexecuted": [
+    "formatter",
+    "compiler",
+    "unit tests",
+    "full collector",
+    "source closure",
+    "H"
+  ],
+  "dependency_packets": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "bytes": 16553,
+      "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0",
+      "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224",
+      "packet": "4a2aabfb2cca405e57aa26994ebe97cdcd6e6b94"
+    },
+    {
+      "packet": "8d5b1eeea4e63ae04bb77c91abc996a34cdeccfa",
+      "scope": "Fresh B facade and original actual Trainer peers"
+    },
+    {
+      "packet": "85d28ef8d6dd6f4fd48f5380b68b4e389a7427c1",
+      "scope": "actual original T completion observation, not invoked by these staged tests"
+    },
+    {
+      "packet": "b7c1fd26ab52400f5105bcc227f0950a2b785900",
+      "scope": "one actual readonly T evidence client shared by both B members"
+    }
+  ]
+}

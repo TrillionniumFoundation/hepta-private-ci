@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 1383,
+    "index_blob": "9430313a818b48a4bda92ef0f1c2e0f43fddcd53",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/third_party/starlark-0.14.2-blake3-backport/build.rs",
+    "permissions": 420,
+    "sha256": "03b17dc7ca19ed3a576133fdbafa93a52fe4894c470696582d34dff883b2c0a8",
+    "stable": true,
+    "working_blob": "9430313a818b48a4bda92ef0f1c2e0f43fddcd53"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "/*\n * Copyright 2018 The Starlark in Rust Authors.\n * Copyright (c) Facebook, Inc. and its affiliates.\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *     https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\nfn main() {\n    rust_nightly();\n}\n\nfn rust_nightly() {\n    let rustc = std::env::var(\"RUSTC\").unwrap();\n    let version = std::process::Command::new(rustc)\n        .arg(\"--version\")\n        .output()\n        .unwrap();\n\n    assert!(version.status.success());\n\n    // Nightly output:\n    // rustc 1.64.0-nightly (affe0d3a0 2022-08-05)\n    // Stable output:\n    // rustc 1.64.0 (a55dd71d5 2022-09-19)\n    // Meta internal output:\n    // rustc 1.64.0-dev\n\n    let stdout = String::from_utf8(version.stdout).unwrap();\n    assert!(stdout.contains(\"rustc\"), \"Sanity check\");\n    let nightly = stdout.contains(\"nightly\") || stdout.contains(\"dev\");\n    if nightly {\n        println!(\"cargo:rustc-cfg=rust_nightly\");\n    }\n}\n"
+    },
+    "isError": false
+  }
+}

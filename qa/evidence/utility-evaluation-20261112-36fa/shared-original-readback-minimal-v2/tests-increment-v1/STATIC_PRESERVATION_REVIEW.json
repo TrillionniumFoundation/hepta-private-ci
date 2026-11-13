@@ -1,0 +1,214 @@
+{
+  "format": "hepta-static-test-source-preservation-v1",
+  "identity": "shared-original-readback-minimal-v2/tests-increment-v1",
+  "scope": "source byte and registration-shape review only",
+  "production_packet": "92a1567ac32c886d9d7386fb80915071475528bf",
+  "changes": [
+    {
+      "path": "cell_q24_training_shared_readback.rs",
+      "kind": "append-only cfg(test) module mount",
+      "before": {
+        "bytes": 1564,
+        "sha256": "51ea5ff7726f921484608408233d6075b52a542c502bfc7f0a95a8a3c973d0b6",
+        "git_blob": "17596f02e662ab982dce5c918e03c19a8a30a953"
+      },
+      "after": {
+        "bytes": 1668,
+        "sha256": "d110fa42980857036d83bdc0cc2b9319b7749346d52ea1e4fdf6601c60435b30",
+        "git_blob": "fab5600f505aa7c8c039aa0990ec38ca01d15c83"
+      },
+      "all_prior_bytes_equal": true
+    },
+    {
+      "path": "circuit_retained_version_shared_readback.rs",
+      "kind": "append-only cfg(test) module mount",
+      "before": {
+        "bytes": 5789,
+        "sha256": "6a2516576c8a8898f407a49016699ade333d005069ea5499eefa97ca30e48f19",
+        "git_blob": "ce1c4983afdcc251e4472068ccf0e4941809d499"
+      },
+      "after": {
+        "bytes": 5891,
+        "sha256": "0f128f434049ddcd7884a6f8084be0869ca0ae0eead9ae8cac9126b6d9017c4a",
+        "git_blob": "91dd820a4069b8faaab1274f5b3918b144e3b2e9"
+      },
+      "all_prior_bytes_equal": true
+    },
+    {
+      "path": "circuit_evaluated_version_recovery_support_tests.rs",
+      "kind": "append-only cfg(test) module mount",
+      "before": {
+        "bytes": 7164,
+        "sha256": "b32cb3057a14fc810e6ef640d83df6171c5c54a20010709c8078f4fa65a339ff",
+        "git_blob": "639f3d799c69a54c4583ee24ce87956ec149a07f"
+      },
+      "after": {
+        "bytes": 7342,
+        "sha256": "afe49cf1dcc155b735019a7404fe52eb04cdac3b74f657e20bb4acc518387d3b",
+        "git_blob": "a47922b80b3bd9ae0d1168efefdcfbde3f3a98b5"
+      },
+      "all_prior_bytes_equal": true
+    },
+    {
+      "path": "cell_q24_training_command_support_tests.rs",
+      "kind": "append-only cfg(test) module mount",
+      "before": {
+        "bytes": 15862,
+        "sha256": "0d17f86b56334854be2d74d676810d0c2cc8e70b947beb89a75f5005eef6a590",
+        "git_blob": "8c73e1d0fc2a4a489031edf42723a29af1cde6e1"
+      },
+      "after": {
+        "bytes": 15957,
+        "sha256": "3b3e2e8768a19a26fb27c6126f499894e52bd8963ac0aa5b077864bdbae68a97",
+        "git_blob": "89e1116136ff39c0a4478d69675cfb5c645e9aec"
+      },
+      "all_prior_bytes_equal": true
+    },
+    {
+      "path": "circuit_evaluated_version_final_use_tests.rs",
+      "kind": "three additive actual export rejection assertions in existing ignored UID0 method",
+      "before": {
+        "bytes": 9082,
+        "sha256": "1b5573f640987145e0c35c015438894ee662bdf63adacbe1cde5d40f249ca601",
+        "git_blob": "dff1d4f81b87a258218c83de075de9bce884364d"
+      },
+      "after": {
+        "bytes": 9753,
+        "sha256": "681f530fa4c92caa90eff09c76917002714ac02fca343af10c66fa58531c8419",
+        "git_blob": "c00498c5f8c2ac1301d1dbb32e630c9efb01867a"
+      },
+      "inverse_added_assertions_restores_all_prior_bytes": true,
+      "old_method_ast_unchanged": false
+    }
+  ],
+  "source_objects": [
+    {
+      "name": "cell_q24_training_command_support_tests.rs",
+      "bytes": 15957,
+      "sha256": "3b3e2e8768a19a26fb27c6126f499894e52bd8963ac0aa5b077864bdbae68a97",
+      "git_blob": "89e1116136ff39c0a4478d69675cfb5c645e9aec",
+      "full_readback_equal": true
+    },
+    {
+      "name": "cell_q24_training_shared_readback.rs",
+      "bytes": 1668,
+      "sha256": "d110fa42980857036d83bdc0cc2b9319b7749346d52ea1e4fdf6601c60435b30",
+      "git_blob": "fab5600f505aa7c8c039aa0990ec38ca01d15c83",
+      "full_readback_equal": true
+    },
+    {
+      "name": "cell_q24_training_shared_readback_observation_tests.rs",
+      "bytes": 500,
+      "sha256": "ea50838ea1569f534141c72bc65cd51c9c06d1dd3c8e052d11f28250d2a2b1bb",
+      "git_blob": "e4322de280617f3cec445b4b5211cc8659e18816",
+      "full_readback_equal": true
+    },
+    {
+      "name": "cell_q24_training_shared_readback_test_support.rs",
+      "bytes": 6928,
+      "sha256": "906cee540e75299a35ae50c3d7f1e35656b0d7de0b887e269d64ef32ff5a6db7",
+      "git_blob": "265e80b2763cbf4f2a530e2e1400f364ee1b1711",
+      "full_readback_equal": true
+    },
+    {
+      "name": "circuit_evaluated_version_final_use_tests.rs",
+      "bytes": 9753,
+      "sha256": "681f530fa4c92caa90eff09c76917002714ac02fca343af10c66fa58531c8419",
+      "git_blob": "c00498c5f8c2ac1301d1dbb32e630c9efb01867a",
+      "full_readback_equal": true
+    },
+    {
+      "name": "circuit_evaluated_version_recovery_support_tests.rs",
+      "bytes": 7342,
+      "sha256": "afe49cf1dcc155b735019a7404fe52eb04cdac3b74f657e20bb4acc518387d3b",
+      "git_blob": "a47922b80b3bd9ae0d1168efefdcfbde3f3a98b5",
+      "full_readback_equal": true
+    },
+    {
+      "name": "circuit_evaluated_version_shared_export_tests.rs",
+      "bytes": 11816,
+      "sha256": "1697d84fc57e7383d5c2e2e17422a57832cdb00a37bc026c102e588f7bb670eb",
+      "git_blob": "c473012597dcc29b4f13a3353b27ddc12e42f523",
+      "full_readback_equal": true
+    },
+    {
+      "name": "circuit_evaluated_version_shared_readback_tests.rs",
+      "bytes": 22395,
+      "sha256": "07a7bf05f05162d01d0ccde58e53af003a32dd8f35f3644764f2e1af3977e876",
+      "git_blob": "30769dda72e5fe509bed1e1c8ce251f79f1861d2",
+      "full_readback_equal": true
+    },
+    {
+      "name": "circuit_retained_version_shared_readback.rs",
+      "bytes": 5891,
+      "sha256": "0f128f434049ddcd7884a6f8084be0869ca0ae0eead9ae8cac9126b6d9017c4a",
+      "git_blob": "91dd820a4069b8faaab1274f5b3918b144e3b2e9",
+      "full_readback_equal": true
+    },
+    {
+      "name": "circuit_retained_version_shared_readback_support_tests.rs",
+      "bytes": 1179,
+      "sha256": "d592c569b55c7cfdd41d53066282a73ad598137f714d6c11421df87cecc05f27",
+      "git_blob": "705311ff2c468d6cfdd131a656a49e3b48b04290",
+      "full_readback_equal": true
+    }
+  ],
+  "new_test_methods": [
+    {
+      "file": "circuit_evaluated_version_shared_export_tests.rs",
+      "name": "published_shared_export_requires_actual_cold_admission_and_retains_same_clients"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_export_tests.rs",
+      "name": "cold_published_enum_with_withdrawn_b_cannot_export_shared_clients"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_export_tests.rs",
+      "name": "cold_changed_artifact_current_cannot_export_shared_clients"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_export_tests.rs",
+      "name": "repeated_shared_export_rechecks_current_original_b"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_export_tests.rs",
+      "name": "cold_changed_expected_training_signature_cannot_export_shared_clients"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_export_tests.rs",
+      "name": "cold_changed_expected_evaluation_signature_cannot_export_shared_clients"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_readback_tests.rs",
+      "name": "evaluated_published_readback_alias_competition_uses_same_slot"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_readback_tests.rs",
+      "name": "evaluated_published_readback_cancelled_alias_cannot_restore_any_alias"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_readback_tests.rs",
+      "name": "evaluated_published_readback_aliases_share_original_128_frame_budget"
+    },
+    {
+      "file": "circuit_evaluated_version_shared_readback_tests.rs",
+      "name": "evaluated_published_readback_clone_cannot_renew_original_absolute_deadline"
+    }
+  ],
+  "new_test_methods_count": 10,
+  "old_test_change": "one existing UID0 method strengthened by three assertions; no old assertion or body fragment removed",
+  "test_only_hooks": [
+    "original actual T readback through the same Arc",
+    "Arc pointer identity only",
+    "original channel next_request_id observation only"
+  ],
+  "transport_scope": "two eval files exactly retain 265e80... and 30769...; alias/cancel uses real response gate, budget/expiry uses original unchanged service",
+  "qualification": {
+    "formatted": false,
+    "compiled": false,
+    "tests_executed": false,
+    "source_gates_run": false,
+    "full_ten_owner_normal_path": false,
+    "actual_public_capacity_proved": false
+  }
+}

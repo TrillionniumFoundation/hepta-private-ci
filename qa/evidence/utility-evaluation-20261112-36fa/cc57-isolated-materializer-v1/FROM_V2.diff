@@ -1,0 +1,110 @@
+--- driver-v2.HOLD.py
++++ driver-v3.HOLD.py
+@@ -261,6 +261,7 @@
+     if data is not None:
+         row['stdin'] = write(prefix + '.stdin', data)
+     handle = process = None
++    cleanup_attempted = False
+     disarm()
+     try:
+         budget = remaining()
+@@ -270,10 +271,16 @@
+         try:
+             stdout, stderr = process.communicate(data, timeout=budget)
+             row.update(actual_terminal='observed', returncode=process.returncode, timed_out=False)
+-        except subprocess.TimeoutExpired:
++        except subprocess.TimeoutExpired as original_timeout:
+             process.kill()
+-            stdout, stderr = process.communicate()
+-            row.update(actual_terminal='observed', returncode=process.returncode, timed_out=True)
++            cleanup_attempted = True
++            try:
++                stdout, stderr = process.communicate(timeout=5)
++                row.update(actual_terminal='observed', returncode=process.returncode, timed_out=True)
++            except subprocess.TimeoutExpired as cleanup_timeout:
++                stdout = cleanup_timeout.stdout or original_timeout.stdout or b''
++                stderr = cleanup_timeout.stderr or original_timeout.stderr or b''
++                row.update(actual_terminal='unknown_after_bounded_owned_cleanup', timed_out=True, cleanup_terminal='unknown_not_observed', captured_streams_are_partial=True)
+             row['stdout'] = write(prefix + '.stdout', stdout)
+             row['stderr'] = write(prefix + '.stderr', stderr)
+             raise
+@@ -282,9 +289,17 @@
+         check(process.returncode == 0, 'normal exact Git command: ' + repr(arguments))
+         return stdout
+     finally:
+-        if process is not None and process.poll() is None:
+-            process.kill()
+-            process.wait()
++        if process is not None:
++            if process.poll() is None and not cleanup_attempted:
++                process.kill()
++                try:
++                    row['cleanup_returncode'] = process.wait(timeout=5)
++                except subprocess.TimeoutExpired:
++                    row['cleanup_terminal'] = 'unknown_not_observed'
++                    row['actual_terminal'] = 'unknown_after_bounded_owned_cleanup'
++            for stream in (process.stdin, process.stdout, process.stderr):
++                if stream is not None and not stream.closed:
++                    stream.close()
+         if handle is not None:
+             handle.close()
+         row['finished_at'] = now()
+@@ -324,25 +339,30 @@
+ 
+     def exact(self, count):
+         blocks = []
++        self.row['current_stream_read'] = {'requested_bytes': count, 'received_bytes': 0}
+         while count:
+             check(select.select([self.process.stdout], [], [], remaining())[0], 'bounded original object stream')
+             raw = os.read(self.process.stdout.fileno(), min(count, 1048576))
+             check(bool(raw), 'complete original object body')
+             blocks.append(raw)
+             count -= len(raw)
++            self.row['current_stream_read']['received_bytes'] += len(raw)
+         return b''.join(blocks)
+ 
+     def get(self, key, expected):
+         remaining()
+         self.row['requested_objects'] += 1
++        self.row['current_request'] = {'sha': key, 'expected': expected}
+         self.process.stdin.write((key + '\n').encode())
+         self.process.stdin.flush()
+         header = b''
+         while not header.endswith(b'\n'):
+             check(len(header) < 160, 'bounded original object header')
+             header += self.exact(1)
++        self.row['current_request']['actual_header_base64'] = base64.b64encode(header).decode()
+         check(header == (key + ' ' + expected['type'] + ' ' + str(expected['bytes']) + '\n').encode(), 'exact existing object type/size, no missing substitute')
+         raw = self.exact(expected['bytes'])
++        self.row['current_request']['actual_body'] = {**identity(raw), 'object_sha': oid(expected['type'], raw)}
+         check(self.exact(1) == b'\n', 'object delimiter')
+         check(oid(expected['type'], raw) == key and sha256(raw) == expected['sha256'], 'complete original object hash')
+         self.row['fully_verified_objects'] += 1
+@@ -755,7 +775,7 @@
+     command(TARGET, ['read-tree', TREE], mutation=True)
+     command(TARGET, ['update-ref', '--no-deref', 'HEAD', HEAD], mutation=True)
+     command(TARGET, ['update-index', '--refresh'], mutation=True)
+-    check(command(TARGET, ['write-tree']).decode().strip() == TREE, 'new normal index exact Merkle tree')
++    check(command(TARGET, ['write-tree'], mutation=True).decode().strip() == TREE, 'new normal index exact Merkle tree')
+     action['actual_terminal'] = 'observed'
+     verify_index('initial')
+     for directory, children, files in os.walk(TARGET, topdown=False, followlinks=False):
+@@ -856,7 +876,8 @@
+     result['old_source_after'] = {k: value for k, value in current.items() if k != 'records'}
+     result['old_git_state_before'] = old_git_before
+     result['old_git_state_after'] = current_git
+-    result['old_source_and_git_unchanged'] = True
++    result['old_physical_and_fixed_git_state_unchanged'] = True
++    result['old_git_observation_scope'] = {'fixed_raw_files': [row['path'] for row in current_git['files']], 'complete_ref_listing_unchanged': True, 'absent_lookup_paths': current_git['absent_lookup_paths'], 'entire_old_object_store_metadata_verified': False}
+ 
+ def final_new():
+     check_processes('final-new-source')
+@@ -946,7 +967,7 @@
+                     journal_stream.close()
+                 except BaseException as exc:
+                     cleanup_errors.append(type(exc).__name__ + ': ' + str(exc))
+-            for name, method, available in [('old_source_and_git', final_old, source_before is not None and old_git_before is not None), ('new_source_and_git', final_new, new_source_before is not None and new_git_before is not None), ('inputs_and_coordination', final_inputs, lock_fd is not None and cfg is not None)]:
++            for name, method, available in [('old_physical_source_and_fixed_git_metadata', final_old, source_before is not None and old_git_before is not None), ('new_source_and_git', final_new, new_source_before is not None and new_git_before is not None), ('inputs_and_coordination', final_inputs, lock_fd is not None and cfg is not None)]:
+                 row = {'check': name, 'status': 'unknown_not_available'}
+                 if available:
+                     try:

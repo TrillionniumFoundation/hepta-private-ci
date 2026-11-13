@@ -1,0 +1,183 @@
+{
+  "format": "hepta-shared-readback-production-independent-peer-review-v1",
+  "reviewer": "native_ci_audit",
+  "reviewed_at": "2026-11-13T02:54:46.223Z",
+  "conclusion": "NO_REMAINING_CONCRETE_STATIC_BLOCKER_FOR_V2_PLUS_EXACT_LINUX_CFG_INCREMENT",
+  "qualification": false,
+  "reviewed_source": {
+    "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "base_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "production_packet": {
+      "bytes": 210968,
+      "sha256": "2218046cd3db27fcb377474ec70fe4e2af93dab50d84beccf06c3a3fff761e4c",
+      "git_blob": "92a1567ac32c886d9d7386fb80915071475528bf"
+    },
+    "production_manifest": {
+      "bytes": 9854,
+      "sha256": "2f602527da8da41518f295afd87b37274d4c417b575355cd0ec73bea2d1e2fe4",
+      "git_blob": "23ff230431ca67bd0fa77b5fdb52ff0a4004dc01"
+    },
+    "production_patch": {
+      "bytes": 29239,
+      "sha256": "d5393e40bbf6f24a03f2a7dd044c68c04bf25c5f2896c5dd2f582a1b1fdcac11",
+      "git_blob": "e2909c8549dd7ccd7ae214e37b94ccb60a29cefe"
+    },
+    "mandatory_cfg_increment_packet": {
+      "bytes": 74342,
+      "sha256": "51174d913bd9bf7d0cba82da787e35d12b38681ea731358f5e8b6e074f1d1cc3",
+      "git_blob": "812b8308dbec3ee818bcbb7eae41fb60da10e086"
+    },
+    "mandatory_cfg_increment_manifest": {
+      "bytes": 1733,
+      "sha256": "c753cf05f1c75bf2afba0ceb1f590ff35bba0eedec3de1218e301bcbbc78db85",
+      "git_blob": "6ed069dc213bb5c24872f0f98da5f21adeab8655"
+    },
+    "mandatory_cfg_increment_patch": {
+      "bytes": 667,
+      "sha256": "1c7289811cfdaf7407b06c41d74cdd4c1997659788c4b27b5247a2e11fbc19f5",
+      "git_blob": "f8c494630d0a88e2169c56d381760b60f91f6afb"
+    },
+    "effective_lib_postimage": {
+      "bytes": 71092,
+      "sha256": "ff4dd039ea0431ef25bf661bd47fdde61771d93ab3a1ec819aa733dc7e0ddc0c",
+      "git_blob": "e4875d82be8b8bd9401c770584c1cf286ccb5eef"
+    },
+    "source_paths": 15,
+    "modified_paths": 12,
+    "added_paths": 3,
+    "note": "This is the explicit new review-production-v2 and its separate one-file increment, not a reconstruction or approval of the unavailable v1."
+  },
+  "identity_checks": [
+    "Complete production packet, manifest, patch and cfg increment were fetched from immutable Git blobs and independently recomputed as UTF-8 length, SHA256 and Git blob SHA.",
+    "All 12 preimages matched independently retrieved complete cc57 Git source bytes. All 15 packet postimages matched their stated full identities and manifest rows.",
+    "The 15-file unified patch was independently applied with exact hunk context/count validation; all resulting complete postimages matched. The separate 667-byte cfg patch exactly produced the final full lib.rs.",
+    "Three declared new paths returned NOT_FOUND under the exact cc57 commit; those are repository-path observations, not physical host file observations.",
+    "Eleven modified old files are recovered byte-for-byte by removing only named additions. The twelfth, state.rs, differs only in the two explicitly inspected original-client getter fallbacks.",
+    "All seven original state current/recovery/phase/reader functions and all four old by-value S/C factories/adapters retain their complete original bytes."
+  ],
+  "resolved_finding": {
+    "id": "linux-export-cfg-association",
+    "severity": "compile-compatibility blocker in uncorrected production v2",
+    "original_lib_postimage": "10205177c9e4274f58347f5a3719f2a34ed76519",
+    "evidence": "The new export was inserted between the old #[cfg(target_os = \"linux\")] and OriginalCircuitRetainedArtifactCheckpointV1 export. That left the old export unguarded while circuit_feature_current remained Linux-only.",
+    "correction": "The separate increment adds the original Linux attribute before the old export, making both exports separately guarded.",
+    "corrected_lib_postimage": {
+      "bytes": 71092,
+      "sha256": "ff4dd039ea0431ef25bf661bd47fdde61771d93ab3a1ec819aa733dc7e0ddc0c",
+      "git_blob": "e4875d82be8b8bd9401c770584c1cf286ccb5eef"
+    },
+    "verification": "Removing only the new guarded export from the corrected complete lib.rs exactly restores the complete original cc57 lib.rs.",
+    "historical_result_preserved": true,
+    "rust_compilation_performed": false
+  },
+  "findings": [
+    {
+      "id": "client-identity-and-spent-execute",
+      "sources": [
+        "cell_q24_training_shared_readback.rs::seal_original_completed_readback",
+        "neuron_cell_evaluation_shared_readback.rs::seal_original_completed_readback"
+      ],
+      "finding": "Each consuming seal requires an actual retained completion, exact opaque equality, a present original channel, live peer/lifetime and complete original signature authentication. It sets execution_requested=true in that same channel before Arc::new(self). Original fields, constructors, exchange and readback bodies are byte-identical after removal of the module mount.",
+      "implication": "No new stream, nonce, counter, lifetime, optional mutex or queue is created. The same aggregate request state is shared. Even the crate-private raw references remain subject to the original Execute-before-I/O rejection; there is no external raw-client/Deref/FD/Execute surface on the bundle."
+    },
+    {
+      "id": "context-and-one-way-partial-failure",
+      "sources": [
+        "circuit_evaluated_retention_context.rs::seal_original_readback_owners",
+        "circuit_retained_version_shared_readback.rs::share_original_evaluated_readbacks"
+      ],
+      "finding": "The original evaluated context authenticates Readback, then supplies its own complete original T and E receipts to the consuming seals. Both clients are removed together from the Version state. Missing either or any partial sealing error clears selection_reader and drops taken clients; there is no restoration, reconnection, rebind or downgrade to a Fresh execution state.",
+      "implication": "Partial success is fail-closed, not an atomic rollback promise."
+    },
+    {
+      "id": "published-and-recovered-window",
+      "sources": [
+        "circuit_retained_version_shared_readback.rs::share_original_evaluated_readbacks",
+        "circuit_retained_version_state.rs"
+      ],
+      "finding": "Every export, including a repeat export, requires the evaluated purpose, actual Published outcome, original lifetime, the original state lock, original predecessor binding, and original full read. Recovered origin uses read_original_recovery. Export additionally requires an observed publication, an admitted selection reader and Installed/Recovered phase, then rechecks Published and lifetime. Installed or cold Published metadata alone cannot pass.",
+      "implication": "No new enum/reader shortcut substitutes for the original D/T/E, Artifact/CURRENT and original C owner checks."
+    },
+    {
+      "id": "original-version-readback-preserved",
+      "sources": [
+        "circuit_retained_version_state.rs::original_trainer",
+        "circuit_retained_version_state.rs::original_evaluator",
+        "circuit_retained_version_state.rs::require_cut_current"
+      ],
+      "finding": "Only the two getters gain a fallback to the same sealed bundle clients when the old retained fields are empty. Prepared continues to read its original Prepared custody. The original full current/read/recovery/phase functions are unchanged and still read and compare actual original owner responses.",
+      "implication": "Sharing does not turn Version reads into cached evidence or skip recovery admission."
+    },
+    {
+      "id": "shared-selection-and-next-use",
+      "sources": [
+        "circuit_evaluated_selection_command_service.rs",
+        "circuit_evaluated_next_use_command_service.rs",
+        "circuit_evaluated_selection_command_owner_adapter.rs",
+        "circuit_evaluated_next_use_remote.rs"
+      ],
+      "finding": "New explicit SharedEvaluated variants and factories bind the same complete evaluated context. They retain original live publication checks, owner command-origin profile, initial head/binding, C's complete selector-client checks, runtime handle and four-connection semaphore. Each shared observation again checks context and then invokes the existing actual remote owner methods with the same client references.",
+      "implication": "Old by-value entries remain byte-identical. The original T/E then S then final Source/Cell order is reused; no attestation or execution authority comes from cached metadata."
+    },
+    {
+      "id": "public-api-and-local-sharing",
+      "sources": [
+        "circuit_retained_version_shared_readback.rs",
+        "lib.rs"
+      ],
+      "finding": "The public bundle has two private Arc fields plus the original evaluated context. Its public operations are Clone and actual readonly predecessor reads; only the actual Version host exports it. The context clone preserves original origin and opaque receipt/signature bytes. Internal raw client access is crate-private, and both channels have permanently spent Execute before any bundle can be returned.",
+      "implication": "This is local same-process sharing. It supplies no cross-process Arc serialization, descriptor duplication, transport proxy, public owner factory, public raw client, signer or new stream."
+    },
+    {
+      "id": "concurrency-and-exchange-cancellation",
+      "sources": [
+        "cell_q24_training_command.rs::exchange",
+        "neuron_cell_evaluation_host_command.rs::exchange",
+        "original order review3380e627"
+      ],
+      "finding": "Original exchange removes its sole channel before spawned I/O and restores it only at its original successful validation point. A competing alias sees the same absent slot and refuses. Cancellation of the actual exchange await preserves that original behavior. T and E retain their distinct nonterminal and terminal error handling; the review does not claim that every error leaves None.",
+      "implication": "No new queue, retry, concurrency success guarantee, budget increase or silent error-to-success conversion is introduced. Existing run_original_c background reads can still compete with S/C reads."
+    },
+    {
+      "id": "outer-share-cancellation",
+      "sources": [
+        "circuit_retained_version_shared_readback.rs::share_original_evaluated_readbacks",
+        "Tokio 1.53.3 task documentation"
+      ],
+      "finding": "Dropping the outer await after spawn_blocking has started does not establish that its closure stopped. It can finish readonly currentness reads and the one-way conversion; its result may be lost to that caller while readonly state remains. This is distinct from dropping a nested original exchange await.",
+      "implication": "Treat cancelled caller delivery as Unknown. Any retained state remains readonly or fail-closed; there is no Fresh restoration or new-work replay. The code does not claim that cancellation joined the blocking task."
+    }
+  ],
+  "tokio_reference": {
+    "actual_lockfile": {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 421005,
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419"
+    },
+    "locked_version": "1.53.3",
+    "primary_api_urls": [
+      "https://docs.rs/tokio/1.53.3/tokio/task/fn.spawn_blocking.html",
+      "https://docs.rs/tokio/1.53.3/tokio/task/struct.JoinHandle.html"
+    ],
+    "summary": "A started blocking task cannot be stopped by aborting its handle; dropping a JoinHandle detaches it and loses the returned value.",
+    "use": "Support for the static cancellation interpretation, not evidence of any actual candidate execution."
+  },
+  "limitations": [
+    "No Rust formatting, compilation, behavioral test, source gate or native qualification was executed for this candidate.",
+    "The 15 production files plus cfg increment contain no new behavioral tests, caller inventory, protection QA, allowlist or Root inventory updates.",
+    "The eventual provider integration and actual same-host role/session placement are outside this production-only packet. T=4/E=3 capacity and aggregate 128-request/original-deadline fit require actual evidence.",
+    "No reviewed source was applied to any H workspace or source ref. Historical cc57 source PASS does not transfer to the new candidate.",
+    "The local v1 snapshot was not available after the Cloud interruption; its initial Git 404 results are retained separately and are not a source or test failure."
+  ],
+  "execution_scope": {
+    "review_computation": "Pure JavaScript byte/hash/patch calculations in functions; immutable Git reads and evidence-blob saves.",
+    "candidate_H": 0,
+    "candidate_source_writes": 0,
+    "candidate_Cargo": 0,
+    "candidate_rustfmt": 0,
+    "candidate_tests": 0,
+    "qualification": false
+  },
+  "independent_materialization_note": "An independently authorized existing cc57 materialization may be running concurrently; it does not contain or execute this production candidate and is not evidence for this review."
+}

@@ -1,0 +1,74 @@
+{
+  "format": "hepta-root-exact-isolated-native-dispatch-approval-v1",
+  "created_at_utc": "2026-11-13 03:16:15 UTC",
+  "status": "APPROVED_ONE_EXACT_NATIVE_DISPATCH",
+  "executor": "/root/native_ci_audit",
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "typed_request": {
+    "bytes": 146890,
+    "git_blob": "127a33fb09629034ade6ce43d82e80e52816df8f",
+    "sha256": "c29da441e78222ba11db981b5e159e23ab0cc6b48faeada5138e6ba966125c43"
+  },
+  "bootstrap": {
+    "bytes": 10917,
+    "git_blob": "d60e62a8bb28f40d314c25824fb665ab8ef1ea9c",
+    "sha256": "684ab68cf0eae833f727cf22b18ce35f0a6dcd086633e05dd838ba5b2170fd90"
+  },
+  "stdin": {
+    "bytes": 135422,
+    "git_blob": "d1ea0624fb40ca429ef4936536fb7cfa12858b97",
+    "sha256": "c010b3d4c16de36b38362cb386f8217a91b9a4868e3551f389769b83e7331fd0"
+  },
+  "configuration": {
+    "bytes": 11785,
+    "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+    "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f"
+  },
+  "manifest": {
+    "bytes": 3851,
+    "git_blob": "6f4cf7430d0850a43376c1c3344dcc62b627cb0d",
+    "sha256": "837a546f74294edccd32df1ff75307a447fa9b593f97aceb397ae21f8ac35684"
+  },
+  "root_independent_review": {
+    "path": "cc57-isolated-native-root-exact-approval-v1/INDEPENDENT_REVIEW.json",
+    "git_blob": "b22bb40cd49c58b084798fc7e63a66b1b1230257",
+    "bytes": 5420,
+    "sha256": "1a72cdf6e4a07223e8ff6e68d9bb4e06d633dd245afe8f3fc00fd87774bb55bf"
+  },
+  "independent_peer_review": {
+    "git_blob": "a16ce8129abc47699246774acb5bb3e7275c2956",
+    "bytes": 5535,
+    "sha256": "932198a13105722657fae50d259cd25000f50fd0a10ee417b1bd67bdbbd40c70"
+  },
+  "accepted_materialization_root_review": {
+    "git_blob": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b",
+    "bytes": 7620,
+    "sha256": "cdeafc22dcff65bf24d797bda43777a0d32930081917dc4e2637310695c08daf"
+  },
+  "materialization_job": "1a1d2d20686-392-36",
+  "original_source_job": "1a1d23c92f3-2564-1cb4",
+  "idempotency_key": "hepta-utility-36fa-final-native-gates-cc57-isolated-v1",
+  "outer_timeout_seconds": 45000,
+  "request_fields": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "stdin",
+    "timeout_seconds",
+    "idempotency_key"
+  ],
+  "authorization_scope": "One dispatch of the exact seven-field request using the original native wrapper, driver and plan; collect original terminal status, output and required records.",
+  "immutable_constraints": [
+    "No environment override, stack increase, timeout increase, test/filter removal, automatic command retry, source/ref/index repair or target recreation.",
+    "Original source-gate success remains historical 1cb4; all original live admission and native gates must run unchanged.",
+    "Use only the new isolated source and new create-only native control; preserve the old source directory, anomalous ref, original failed native precondition and prior tunnel Unknown.",
+    "If dispatch outcome is unknown, preserve it and use only the exact same typed request and idempotency key for any necessary admission reconciliation; never submit a substitute key.",
+    "Qualification requires complete authoritative terminal evidence and original gate results; this approval does not establish passing tests.",
+    "This does not promote the new provider candidate, authorize merge/deployment/runtime task authority, or prove a real utility chain."
+  ],
+  "dispatch_occurred_in_this_record": false,
+  "qualification": false,
+  "real_qualified_utility_chains": 0
+}

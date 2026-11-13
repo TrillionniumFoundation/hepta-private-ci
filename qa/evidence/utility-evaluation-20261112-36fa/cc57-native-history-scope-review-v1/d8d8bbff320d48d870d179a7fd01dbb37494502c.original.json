@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 609,
+    "index_blob": "d8d8bbff320d48d870d179a7fd01dbb37494502c",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/code-mode-protocol/build.rs",
+    "permissions": 420,
+    "sha256": "92171dbc25135066d8a17dbdab947566f56e44d8ff39629de67842fa01856658",
+    "stable": true,
+    "working_blob": "d8d8bbff320d48d870d179a7fd01dbb37494502c"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "use std::path::PathBuf;\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    println!(\"cargo:rustc-check-cfg=cfg(codex_bazel)\");\n    println!(\"cargo:rerun-if-changed=src/grpc\");\n\n    let mut config = tonic_prost_build::Config::new();\n    config.protoc_executable(protoc_bin_vendored::protoc_bin_path()?);\n    let proto_files = glob::glob(\"src/grpc/*.proto\")?.collect::<Result<Vec<_>, _>>()?;\n\n    tonic_prost_build::configure()\n        .build_client(/*enable*/ true)\n        .build_server(/*enable*/ true)\n        .compile_with_config(config, &proto_files, &[PathBuf::from(\"src/grpc\")])?;\n\n    Ok(())\n}\n"
+    },
+    "isError": false
+  }
+}

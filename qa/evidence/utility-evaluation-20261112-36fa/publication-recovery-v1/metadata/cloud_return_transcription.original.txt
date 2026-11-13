@@ -1,0 +1,20 @@
+{
+  "format": "hepta.cloud_return_readonly_observation.v1",
+  "kind": "verbatim tool result transcription",
+  "tool": "exec_command",
+  "arguments": {
+    "cmd": "python3 - <<'PY'\nimport os,json\npaths=['/workspace/scratch/36fa460df1de','/tmp/hepta-36fa-root-resident-provider-proposal-v2','/tmp/hepta-36fa-shared-original-readback-minimal-v2/review-production-v1','/tmp/hepta-36fa-post3824-evidence-preparation-v1']\nprint(json.dumps({'cwd':os.getcwd(),'paths':[{'path':p,'exists':os.path.exists(p),'is_dir':os.path.isdir(p)} for p in paths]},sort_keys=True))\nPY",
+    "workdir": "/workspace/scratch/36fa460df1de",
+    "max_output_tokens": 1500,
+    "yield_time_ms": 1000
+  },
+  "tool_result": {
+    "chunk_id": "5bd27e",
+    "wall_time_seconds": 0.000037761,
+    "exit_code": 0,
+    "original_token_count": 112,
+    "output": "{\"cwd\": \"/workspace/scratch/36fa460df1de\", \"paths\": [{\"exists\": true, \"is_dir\": true, \"path\": \"/workspace/scratch/36fa460df1de\"}, {\"exists\": false, \"is_dir\": false, \"path\": \"/tmp/hepta-36fa-root-resident-provider-proposal-v2\"}, {\"exists\": false, \"is_dir\": false, \"path\": \"/tmp/hepta-36fa-shared-original-readback-minimal-v2/review-production-v1\"}, {\"exists\": false, \"is_dir\": false, \"path\": \"/tmp/hepta-36fa-post3824-evidence-preparation-v1\"}]}\n"
+  },
+  "scope": "A process started normally and these fixed paths were observed. This does not prove broader environment configuration readiness, previous files destroyed, H host health, materialization admission, source equality or native qualification.",
+  "recorded_at_utc": "2026-11-13 02:51:01 UTC"
+}

@@ -1,0 +1,140 @@
+{
+  "format": "hepta-shared-readback-transport-tests-manifest-v1",
+  "identity": "shared-original-readback-transport-tests-v1",
+  "frozen_at_utc": "2026-11-13 02:55:33 UTC",
+  "status": "PREPARATION_NOT_FORMATTED_COMPILED_OR_EXECUTED",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "base_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "production_packet": "92a1567ac32c886d9d7386fb80915071475528bf",
+  "production_manifest": "23ff230431ca67bd0fa77b5fdb52ff0a4004dc01",
+  "two_new_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs",
+      "before": null,
+      "after": {
+        "bytes": 6928,
+        "sha256": "906cee540e75299a35ae50c3d7f1e35656b0d7de0b887e269d64ef32ff5a6db7",
+        "git_blob": "265e80b2763cbf4f2a530e2e1400f364ee1b1711"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "before": null,
+      "after": {
+        "bytes": 22395,
+        "sha256": "07a7bf05f05162d01d0ccde58e53af003a32dd8f35f3644764f2e1af3977e876",
+        "git_blob": "30769dda72e5fe509bed1e1c8ce251f79f1861d2"
+      }
+    }
+  ],
+  "new_test_methods": [
+    "evaluated_published_readback_alias_competition_uses_same_slot",
+    "evaluated_published_readback_cancelled_alias_cannot_restore_any_alias",
+    "evaluated_published_readback_aliases_share_original_128_frame_budget",
+    "evaluated_published_readback_clone_cannot_renew_original_absolute_deadline"
+  ],
+  "existing_method_changes": 0,
+  "mount_and_hooks": {
+    "bytes": 2938,
+    "sha256": "cd37a2360b56a7dca7dfc1af64f4dbc2cacccc62def7f1c848358422fc8efb9d",
+    "git_blob": "e8b02c40e0dd0027508b01d0a7042c8ccbe76f41"
+  },
+  "artifact_count_excluding_this_manifest": 11,
+  "artifacts": [
+    {
+      "name": "source/cell_q24_training_shared_readback_test_support.rs",
+      "source_path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs",
+      "bytes": 6928,
+      "sha256": "906cee540e75299a35ae50c3d7f1e35656b0d7de0b887e269d64ef32ff5a6db7",
+      "git_blob": "265e80b2763cbf4f2a530e2e1400f364ee1b1711",
+      "full_readback_equal": true
+    },
+    {
+      "name": "source/circuit_evaluated_version_shared_readback_tests.rs",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "bytes": 22395,
+      "sha256": "07a7bf05f05162d01d0ccde58e53af003a32dd8f35f3644764f2e1af3977e876",
+      "git_blob": "30769dda72e5fe509bed1e1c8ce251f79f1861d2",
+      "full_readback_equal": true
+    },
+    {
+      "name": "SOURCE_PACKET.json",
+      "bytes": 35061,
+      "sha256": "a34099160c227a5c28cec47e1e390bca88343d9a6745c45db793f60d33acef71",
+      "git_blob": "bf5e43e47661e0209b22402580a5d6a0e3c6dc4b",
+      "full_readback_equal": true
+    },
+    {
+      "name": "MOUNT_AND_HOOK_CONTRACT.json",
+      "bytes": 2938,
+      "sha256": "cd37a2360b56a7dca7dfc1af64f4dbc2cacccc62def7f1c848358422fc8efb9d",
+      "git_blob": "e8b02c40e0dd0027508b01d0a7042c8ccbe76f41",
+      "full_readback_equal": true
+    },
+    {
+      "name": "STATIC_REVIEW.json",
+      "bytes": 12417,
+      "sha256": "83863b55ca3fe413c8206845c4a9364e231af5d1650db1342c18a444b1a6f652",
+      "git_blob": "4822f854b3e1d984f5a5f4ee2976447d202282e5",
+      "full_readback_equal": true
+    },
+    {
+      "name": "changes.patch",
+      "bytes": 30725,
+      "sha256": "d90c7e16812f3bde442f71dd12deda3d655931c09c1f9a6c881bc2cbf7d9e900",
+      "git_blob": "a4caa2e39abfffc7b48628dcc690d5c0cf938b70",
+      "full_readback_equal": true
+    },
+    {
+      "name": "PRIOR_DRAFT_TO_FINAL_EXACT_REPLACEMENTS.json",
+      "bytes": 8310,
+      "sha256": "241a27c3d684f6d6d4824c73e696caf89b9997fe49991adedfedba6d921a467c",
+      "git_blob": "1df9cb9822ff4bf31659a7f0c265e887ce013995",
+      "full_readback_equal": true
+    },
+    {
+      "name": "README.md",
+      "bytes": 7091,
+      "sha256": "b373bc324ef37c5d206bde20474b6387dd17cefe634bff715cd13512a9926ef5",
+      "git_blob": "7bc800d5c2532c46f644d835f626f91cb2c6cad3",
+      "full_readback_equal": true
+    },
+    {
+      "name": "SOURCE_GITHUB.original.json",
+      "bytes": 107324,
+      "sha256": "aa910297079ce200db890d6254657488514dc4538b08d1390bb5f5d1baa7faee",
+      "git_blob": "bf0d815bf26acbe08fd9d71cfb7f10687fb9ea8c",
+      "full_readback_equal": true
+    },
+    {
+      "name": "METADATA_GITHUB.original.json",
+      "bytes": 209816,
+      "sha256": "4e23a2b9271c3d05c3ca5aad193d19e105a818e5d18a682d1d070b8803750d20",
+      "git_blob": "f4bc2de063c5b3e48fed7ee940cfd5826040d62e",
+      "full_readback_equal": true
+    },
+    {
+      "name": "PREIMAGE_ABSENCE.original.json",
+      "bytes": 2005,
+      "sha256": "1a940e36f55cc829b7f09365056df6f4b1d04ec3abdf794b816e2a1771da71f4",
+      "git_blob": "10768d5391dea8ec86819e54562f4263a89516c7",
+      "full_readback_equal": true
+    }
+  ],
+  "verification": "All listed payloads actually created and fetched in full; UTF-8 bytes/SHA256/Git identities independently recomputed. Static checks are not type checking or execution.",
+  "scope": "Git-only isolated proposal. No local-file persistence, source checkout application, native execution, branch/ref change or qualification PASS claimed.",
+  "executions": {
+    "H": 0,
+    "Cargo": 0,
+    "formatter": 0,
+    "Rust_parser_or_AST": 0,
+    "behavior_tests": 0,
+    "source_gates": 0
+  },
+  "remaining": [
+    "ordinary merges two cfg(test) mounts and its three hooks with all existing additions",
+    "combined-source compile and formatter validation",
+    "original budgets and actual test outcomes, including runtime and stack, remain to be observed",
+    "actual final source protection and test inventory derived from integrated source"
+  ]
+}

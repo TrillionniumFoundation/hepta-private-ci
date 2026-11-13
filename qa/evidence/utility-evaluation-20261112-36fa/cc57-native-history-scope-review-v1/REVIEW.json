@@ -1,0 +1,172 @@
+{
+  "H_calls": 0,
+  "conclusion": "No additional ancestor beyond the explicit cc57+246d snapshot union is required by the reviewed native entrypoints/helper/recorder or repository build.rs code. Keep authentic parent references; do not claim complete history.",
+  "findings": [
+    {
+      "ancestor_traversal": false,
+      "entry": "original b92/de3 source snapshots",
+      "git_operations": [
+        "ls-files --stage or names",
+        "ls-files --others --exclude-standard",
+        "rev-parse HEAD",
+        "rev-parse HEAD^{tree}",
+        "status --porcelain"
+      ]
+    },
+    {
+      "ancestor_traversal": false,
+      "entry": "original hepta_cell_test_helpers.py build/verify",
+      "git_operations": [
+        "rev-parse HEAD",
+        "rev-parse HEAD^{tree}",
+        "status --porcelain"
+      ]
+    },
+    {
+      "ancestor_traversal": false,
+      "entry": "original hepta_ci_exec.py identity/source-head lane",
+      "git_operations": [
+        "cat-file -p HEAD",
+        "rev-parse HEAD",
+        "rev-parse HEAD^{tree}",
+        "rev-parse --show-toplevel",
+        "status --porcelain"
+      ],
+      "scope": "Original wrapper sets HEPTA_CI_LANE=source-head; base-merge branch merge-tree is preserved but not selected."
+    },
+    {
+      "ancestor_traversal": false,
+      "entry": "original just test/run-nextest/just-shell",
+      "scope": "Original recipes launch nextest and optional scoped Cargo metadata, no Git history query."
+    },
+    {
+      "ancestor_traversal": false,
+      "entry": "all eight repository build.rs files listed by exact cc57 full inventory",
+      "scope": "All actual bytes read. CLI invokes BuildIdentity::resolve; that exact 6429B dependency implementation uses explicit environment and no Git. Other seven build.rs have no Git call."
+    },
+    {
+      "ancestor_traversal": true,
+      "command": "git merge-base --is-ancestor FORMAT_BASE_SHA HEAD",
+      "entry": "workflow format/merge gate",
+      "scope": "This is an original GitHub workflow pre-format step, not the reviewed b92/native wrapper that omits maintenance. It is not dispatched by the upcoming native-only plan."
+    }
+  ],
+  "format": "cc57-declared-native-entrypoint-history-scope-review-v1",
+  "limitations": [
+    "This is static review, not execution or a proof about every future Rust test branch or external dependency build script.",
+    "No git describe/log/rev-list/merge-base operation was found on the selected original native path. If a future real command needs additional history, retain that actual failure and scope only authentic required objects; do not fabricate ancestry, add shallow/grafts, or relax tests."
+  ],
+  "original_controls": {
+    "b92": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+    "native_wrapper": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae"
+  },
+  "qualification_execution": false,
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "sources_full_bytes_verified": [
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/08ffc5c603a4c950cca285ed2b1e479508d8b5ed.original.json",
+      "bytes": 28133,
+      "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/1ed63abe84267b320cbfb0123a70aac5507f4595.original.json",
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "path": "scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/49dafa1c915ba8d2876424f2293791943d5501ea.original.json",
+      "bytes": 933,
+      "git_blob": "49dafa1c915ba8d2876424f2293791943d5501ea",
+      "path": "codex-rs/cli/build.rs",
+      "sha256": "7c99b6fb983d233f9d46a62b1f610628359f102964f5681b079a7488262f6a1c"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/6ba79e6c75deb87067ced02e824eaf7faf79346d.original.json",
+      "bytes": 1416,
+      "git_blob": "6ba79e6c75deb87067ced02e824eaf7faf79346d",
+      "path": "codex-rs/windows-sandbox-rs/build.rs",
+      "sha256": "b656ced2ef8037f379c2d45d57116e937dc80ec3b23c7f9cb2501da98338774d"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/846c97953250109d99cfc17dfdf85ec552b051d2.original.json",
+      "bytes": 1099,
+      "git_blob": "846c97953250109d99cfc17dfdf85ec552b051d2",
+      "path": "apps/hepta-control-ui/rust/robrix-ui/build.rs",
+      "sha256": "cdc0bf6bdb2f3d3e3de7d42c0356d3a0c9bc9920f8bce34916366e943ff292f3"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/9430313a818b48a4bda92ef0f1c2e0f43fddcd53.original.json",
+      "bytes": 1383,
+      "git_blob": "9430313a818b48a4bda92ef0f1c2e0f43fddcd53",
+      "path": "codex-rs/third_party/starlark-0.14.2-blake3-backport/build.rs",
+      "sha256": "03b17dc7ca19ed3a576133fdbafa93a52fe4894c470696582d34dff883b2c0a8"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/968cfc7e67bac7ac9bf3fa64e312338f893cc6b1.original.json",
+      "bytes": 77,
+      "git_blob": "968cfc7e67bac7ac9bf3fa64e312338f893cc6b1",
+      "path": "codex-rs/linux-sandbox/build.rs",
+      "sha256": "9a58f252be8ae4baabc9ebc1db9f9923d1a9345cd44bce3ce7b76c94942743bb"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/a215a76cf407ace9715bca39c20497014e7dd4dc.original.json",
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/bb2db6ebc4312a301ee39d2793fde16289d046d8.original.json",
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "path": "scripts/just-shell.py",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/c9434b3a4afb31f80e323d543936386a2fa738de.original.json",
+      "bytes": 12863,
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "path": "scripts/hepta_ci_exec.py",
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/d8d8bbff320d48d870d179a7fd01dbb37494502c.original.json",
+      "bytes": 609,
+      "git_blob": "d8d8bbff320d48d870d179a7fd01dbb37494502c",
+      "path": "codex-rs/code-mode-protocol/build.rs",
+      "sha256": "92171dbc25135066d8a17dbdab947566f56e44d8ff39629de67842fa01856658"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/d9d87932b2db8150e4bdcf663e2de32b7d100f9f.original.json",
+      "bytes": 3851,
+      "git_blob": "d9d87932b2db8150e4bdcf663e2de32b7d100f9f",
+      "path": "codex-rs/bwrap/build.rs",
+      "sha256": "3ca3f0c90e075d38215e74ff19049df1ff6fdd80a04711ee05f3acd39dfd7b70"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/db4ef68416f17a3ec67e2260b80f14d01da4c196.original.json",
+      "bytes": 598,
+      "git_blob": "db4ef68416f17a3ec67e2260b80f14d01da4c196",
+      "path": "codex-rs/skills/build.rs",
+      "sha256": "24c62df6f869f931b04e14645c539b715c97e96e6274c5a6313bb1c7bbd28dcc"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/f5b702a55b44c081c6d8f5556da3a2152a33eec3.original.json",
+      "bytes": 18658,
+      "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+      "path": "scripts/hepta_cell_test_helpers.py",
+      "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+    },
+    {
+      "actual_full_original_sdk": "/tmp/hepta-36fa-cc57-native-history-scope-review-v1/9d0dcc585102de339b583802ec35e0074549eb1f.source.SDK.json",
+      "bytes": 6429,
+      "git_blob": "9d0dcc585102de339b583802ec35e0074549eb1f",
+      "path": "codex-rs/utils/build-identity/src/lib.rs",
+      "sha256": "e6af265767aad7fa81dcb74c5385e211ad8241ac688ed05ac8644e5d99e7eeb6"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+--- actual-canonical-bootstrap
++++ isolated-materialization-bootstrap
+@@ -1,11 +1,12 @@
+ import base64, gzip, hashlib, io, json, os, pathlib, stat, sys, traceback
+ 
+-BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/source-repair-canonical-alignment-v1')
++BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/cc57-isolated-materialization-v1')
+ PINS = {
+-    'driver.py': {'bytes': 46102, 'sha256': 'd2c9ad9ab7f0339853936d8138650bbf08978884051c976597fd82b7f3714f19', 'git_blob': '4952e13c052d9e83d448d09897ff9c09c31552c5'},
+-    'FINAL_FORMAT_NORMAL.original.json': {'bytes': 955, 'sha256': 'c7e92ac3e26262c0bcc0707ae138ed873c2b2221d98a4c6c5f7889fd5ff923eb', 'git_blob': 'b20a78f43e34fa72937df40d09d782f792a2f873'},
+-    'CANONICAL_PACKET.json': {'bytes': 2220779, 'sha256': 'd311e33a4800352ca8de1634560208952b02463b9daaff5a52a05fa55afc1d78', 'git_blob': '173cddd5b019c8d137adc42989f1075d5ebda6ec'},
+-    'APPROVED_CONFIG.json': {'bytes': 3758, 'sha256': 'f3c3b9c9df1197e9c9d6cc2ae163eb83d8aaeac273dd1ba8335d3121878167dc', 'git_blob': '3647755a0c05e818e5a13bea6047346ce7a3eb39'},
++    'driver.py': {'bytes': 57607, 'sha256': '5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436', 'git_blob': '972ec74449b113a95b4ec098e562a565f23aa82f'},
++    'MATERIALIZATION_PACKET.json': {'bytes': 13764, 'sha256': 'b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3', 'git_blob': '06503652a2895120daf8b66e42b3a01cefeaf4fb'},
++    'AVAILABILITY_RESULT.original.json': {'bytes': 11954, 'sha256': '7631a19a48c56b4a37b396b97d57f19793baa67cdb37e31acb7a3dd79f397a22', 'git_blob': '365a11bbfc183a05d76076da08301ce227847191'},
++    'AVAILABILITY_SUPERVISOR.original.json': {'bytes': 956, 'sha256': '417a8191432b901a1b1c625518e31ae77e51150ee9494c616fe16da04a56c3de', 'git_blob': '432eeed53c480af77bd3b79fef43d3f96f1ca22c'},
++    'APPROVED_CONFIG.json': {'bytes': 992, 'sha256': '414a52cdd7802f5d84de65ee70422a14eb93d799ca46912a9d618f734bffe6a0', 'git_blob': '692d2b825dcbb38eb95e91c0fb5f67afa39d0518'},
+ }
+ 
+ created = False
+@@ -50,14 +51,14 @@
+     raw_input = sys.stdin.buffer.read(1048577)
+     check(len(raw_input) <= 1048576, 'bounded exact input')
+     packet = json.loads(raw_input)
+-    check(set(packet) == {'format', 'files'} and packet['format'] == 'hepta-final-canonical-alignment-bootstrap-v1', 'exact bootstrap schema')
+-    check(isinstance(packet['files'], dict) and set(packet['files']) == set(PINS), 'exact four input files')
++    check(set(packet) == {'format', 'files'} and packet['format'] == 'hepta-isolated-cc57-materialization-bootstrap-v1', 'exact bootstrap schema')
++    check(isinstance(packet['files'], dict) and set(packet['files']) == set(PINS), 'exact five input files')
+     files = {}
+     for name, pin in PINS.items():
+         encoded = packet['files'][name]
+         check(isinstance(encoded, str), 'base64 input required')
+         raw = base64.b64decode(encoded, validate=True)
+-        if name == 'CANONICAL_PACKET.json':
++        if name == 'MATERIALIZATION_PACKET.json':
+             check(type(pin['bytes']) is int and 0 < pin['bytes'] <= 40000000, 'bounded reviewed packet')
+             with gzip.GzipFile(fileobj=io.BytesIO(raw)) as stream:
+                 expanded = stream.read(pin['bytes'] + 1)
+@@ -76,17 +77,16 @@
+             retain('ACTUAL_BOOTSTRAP_ARGV.json', (json.dumps(argv, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode()),
+             retain('ACTUAL_BOOTSTRAP_PAYLOAD.json', raw_input)]
+     rows += [retain(name, raw) for name, raw in files.items()]
+-    retain('STAGING_READBACK.json', (json.dumps({'format': 'hepta-final-canonical-alignment-bootstrap-readback-v1',
++    retain('STAGING_READBACK.json', (json.dumps({'format': 'hepta-isolated-cc57-materialization-bootstrap-readback-v1',
+            'files': rows, 'source_writes_during_staging': False, 'qualification': False}, sort_keys=True, indent=2) + '\n').encode())
+     directory_fd = os.open(BASE, os.O_RDONLY | os.O_DIRECTORY)
+     try:
+         os.fsync(directory_fd)
+     finally:
+         os.close(directory_fd)
+-    print(json.dumps({'event': 'fixed_canonical_alignment_bootstrap_verified', 'control': str(BASE),
++    print(json.dumps({'event': 'fixed_isolated_cc57_materialization_bootstrap_verified', 'control': str(BASE),
+                       'source_writes_during_staging': False, 'qualification': False}), flush=True)
+-    os.execv('/usr/bin/python3', ['/usr/bin/python3', '-B', str(BASE / 'driver.py'),
+-             '--config-sha256', PINS['APPROVED_CONFIG.json']['sha256']])
++    os.execv('/usr/bin/python3', ['/usr/bin/python3', '-B', str(BASE / 'driver.py')])
+ except BaseException as error:
+     if created:
+         try:

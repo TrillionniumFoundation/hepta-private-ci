@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 1416,
+    "index_blob": "6ba79e6c75deb87067ced02e824eaf7faf79346d",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/windows-sandbox-rs/build.rs",
+    "permissions": 420,
+    "sha256": "b656ced2ef8037f379c2d45d57116e937dc80ec3b23c7f9cb2501da98338774d",
+    "stable": true,
+    "working_blob": "6ba79e6c75deb87067ced02e824eaf7faf79346d"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "use std::env;\nuse std::path::PathBuf;\n\nconst SETUP_BIN: &str = \"codex-windows-sandbox-setup\";\nconst SETUP_MANIFEST: &str = \"codex-windows-sandbox-setup.manifest\";\n\nfn main() -> Result<(), String> {\n    println!(\"cargo:rerun-if-changed={SETUP_MANIFEST}\");\n\n    if env::var(\"CARGO_CFG_TARGET_OS\").as_deref() != Ok(\"windows\") {\n        return Ok(());\n    }\n\n    let manifest_dir = env::var_os(\"CARGO_MANIFEST_DIR\")\n        .ok_or_else(|| \"CARGO_MANIFEST_DIR should be set for build scripts\".to_string())?;\n    let manifest_path = PathBuf::from(manifest_dir).join(SETUP_MANIFEST);\n    let manifest_path = manifest_path.display();\n\n    // Keep this scoped to the setup helper so Codex binaries that link the\n    // library do not inherit any resource metadata from this package.\n    match (\n        env::var(\"CARGO_CFG_TARGET_ENV\").as_deref(),\n        env::var(\"CARGO_CFG_TARGET_ABI\").as_deref(),\n    ) {\n        (Ok(\"msvc\"), _) => {\n            println!(\"cargo:rustc-link-arg-bin={SETUP_BIN}=/MANIFEST:EMBED\");\n            println!(\"cargo:rustc-link-arg-bin={SETUP_BIN}=/MANIFESTINPUT:{manifest_path}\");\n        }\n        (Ok(\"gnu\"), Ok(\"llvm\")) => {\n            println!(\"cargo:rustc-link-arg-bin={SETUP_BIN}=-Wl,-Xlink=/manifest:embed\");\n            println!(\n                \"cargo:rustc-link-arg-bin={SETUP_BIN}=-Wl,-Xlink=/manifestinput:{manifest_path}\"\n            );\n        }\n        _ => {}\n    }\n\n    Ok(())\n}\n"
+    },
+    "isError": false
+  }
+}

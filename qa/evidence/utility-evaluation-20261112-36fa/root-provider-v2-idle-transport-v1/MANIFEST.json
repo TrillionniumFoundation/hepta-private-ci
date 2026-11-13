@@ -1,0 +1,79 @@
+{
+  "format": "hepta-provider-idle-transport-preparation-v1",
+  "status": "UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "base_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "requires_provider_v1_manifest": "7cd37e6a6cc391bda9275b938acd7e08263d23a1",
+  "scope": "actual UID60001 transport admission and idle Root lifecycle only; no learning request or role result",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 9939,
+        "sha256": "37a779966a145fc135007bf654f5b5f4e7e78c5d52bd8441dfa96981433d66e7",
+        "git_blob": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8"
+      },
+      "line_count": 222
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 10697,
+        "sha256": "56ce9abd8a2003b9560985e992db52d705557711c8c37d950262a79ae583e0c7",
+        "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235"
+      },
+      "line_count": 219
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "bytes": 6112,
+        "sha256": "e45ebd779660e90c3bb0f7da99d16a5a3e17bd36a1b58831723a832d1b3d644a",
+        "git_blob": "1005fffcd1b2c335ed44b6e4ffdc39956262d114"
+      },
+      "line_count": 120
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 14985,
+        "sha256": "756dbde52a209fe2c86d3bc807a722a73f2a5fc1cf6f4092b1cfb599d6cfffd7",
+        "git_blob": "e16820f8bab3027ab74490f942a34c7ee5470739"
+      },
+      "after": {
+        "bytes": 15083,
+        "sha256": "a7c598c946a5a94b3202ffc279d4b5ed244c772ffb1289c7c8eb202ee20ece49",
+        "git_blob": "64d25ff8801f69b61de0a2433282786a82b3f15a"
+      },
+      "line_count": 432
+    }
+  ],
+  "old_root_tests_preserved_byte_for_byte": true,
+  "v1_eight_source_postimages_unchanged": true,
+  "tests": {
+    "parents": 6,
+    "ignored_exec_child": 1,
+    "parent_root_workflow_registration": "REQUIRED_BEFORE_LANDING; not yet changed",
+    "execution": "not_run",
+    "complete_ten_owner_no_update": "not_covered_by_this_unit",
+    "real_utility_task_count": 0
+  },
+  "patch": {
+    "bytes": 28054,
+    "sha256": "c899de3d29c46b1854ab92de8b9cb23b8602f57c75c2846d412dfb523650b4b6",
+    "git_blob": "ee521cafc9ffb9e6ab31d6a8bbef3ecf5139d450"
+  },
+  "deadlines": "original production limits, test gate budgets and stack unchanged; bounded IO/cleanup assertions are fixture-specific",
+  "remaining": [
+    "Meaningful full ten-owner complete evaluated NoUpdate provider integration under development separately.",
+    "Actual recovery of completed original owners and whole Root checkpoint remains a distinct test.",
+    "Original fmt, compile, strict caller/source/native gates have not run."
+  ]
+}

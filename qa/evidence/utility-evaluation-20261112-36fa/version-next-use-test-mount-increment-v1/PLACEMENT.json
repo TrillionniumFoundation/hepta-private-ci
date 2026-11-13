@@ -1,0 +1,26 @@
+{
+  "format": "hepta-immutable-placement-v1",
+  "scope": "single append-only test mount, no execution",
+  "entries": [
+    {
+      "local": "SOURCE_PACKET.json",
+      "git_blob": "468a449d78979c8c923009eb87140a2613ae0416",
+      "full_readback_equal": true
+    },
+    {
+      "local": "SOURCE_DELTA.patch",
+      "git_blob": "03f704bb832a40b63756a70c5178947a27f3da0a",
+      "full_readback_equal": true
+    },
+    {
+      "local": "STATIC_REVIEW.json",
+      "git_blob": "1688993e7eaf2c13a8d32a78ce30c775416c6a3a",
+      "full_readback_equal": true
+    },
+    {
+      "local": "after/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "git_blob": "43976a78c4e4f380c9d97559006aed7d5e714cb7",
+      "full_readback_equal": true
+    }
+  ]
+}

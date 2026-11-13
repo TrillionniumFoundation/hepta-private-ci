@@ -1,0 +1,15 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+index 89e1116136ff39c0a4478d69675cfb5c645e9aec..98f631981384dbe739e83c9297547172720f2abb 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs
+@@ -392,5 +392,5 @@
+     }
+ }
+ 
+-#[path = "cell_q24_training_shared_readback_test_support.rs"]
++#[path = "cell_q24_training_shared_readback_support_tests.rs"]
+ pub(crate) mod shared_readback;
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs b/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs
+similarity index 100%
+rename from codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs
+rename to codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs

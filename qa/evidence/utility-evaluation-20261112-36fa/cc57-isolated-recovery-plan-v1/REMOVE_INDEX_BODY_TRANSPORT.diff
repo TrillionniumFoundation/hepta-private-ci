@@ -1,0 +1,29 @@
+--- draft-with-index-transport
++++ reviewed-scope-HOLD
+@@ -29,7 +29,6 @@
+ PREFIX = ['/usr/bin/git', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-c', 'core.untrackedCache=false', '-C', REPO]
+ START = time.monotonic()
+ report = {'format': 'hepta-cc57-snapshot-object-availability-readonly-v1', 'started_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'repo': REPO, 'commit': HEAD, 'tree': TREE, 'qualification': False, 'source_record_index_ref_writes': False, 'cargo_formatter_gate_or_network_commands': False, 'history_walk_or_fsck': False, 'current_physical_source_files_read': 0, 'commands': [], 'status': 'not_completed'}
+-index_transport = None
+ 
+ def check(value, reason):
+     if not value:
+@@ -217,10 +216,7 @@
+         check(not os.environ.get(name), 'no inherited Git override: ' + name)
+     _, report['git_tool_before'] = checked_read('/usr/bin/git', {**GIT_PIN, 'mode': 0o755}, uid=0)
+     report['old_git_before'], index_raw = metadata_snapshot()
+-    packed_index = gzip.compress(index_raw, compresslevel=9, mtime=0)
+-    check(gzip.decompress(packed_index) == index_raw, 'lossless original old-index preservation')
+-    index_transport = {'format': 'hepta-readonly-old-index-transport-v1', 'raw': identity(index_raw), 'gzip': identity(packed_index), 'gzip_base64': base64.b64encode(packed_index).decode()}
+-    report['old_index_transport'] = {'raw': identity(index_raw), 'gzip': identity(packed_index), 'transport_record_follows_summary': True}
++    report['old_index_full_read_identity'] = identity(index_raw)
+     packed, report['original_inventory_read'] = checked_read(INVENTORY, {**INVENTORY_GZIP, 'mode': 0o600})
+     with gzip.GzipFile(fileobj=io.BytesIO(packed), mode='rb') as stream:
+         raw = stream.read(INVENTORY_RAW['bytes'] + 1)
+@@ -263,6 +259,4 @@
+     report['finished_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+     report['wall_seconds'] = time.monotonic() - START
+     print(json.dumps(report, sort_keys=True, separators=(',', ':')), flush=True)
+-    if index_transport is not None:
+-        print(json.dumps(index_transport, sort_keys=True, separators=(',', ':')), flush=True)
+ raise SystemExit(0 if report['status'] == 'completed_readonly_availability_check' else 1)

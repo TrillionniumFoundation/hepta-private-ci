@@ -1,0 +1,824 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs
+@@ -0,0 +1,29 @@
++//! A test observation around the actual C readiness response. It preserves
++//! every original byte and waits only inside the original 500 ms exchange
++//! envelope so the production post-handler absolute deadline must reject it.
++
++use super::*;
++use std::sync::Arc;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++
++impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S> {
++    pub(crate) fn fixture_evaluated_next_use_deadline_channel(
++        &self,
++        channel: &mut HostAuthorityPeerChannel,
++        end: Instant,
++        cross_end_after_original_read: bool,
++        response_observed: Arc<AtomicBool>,
++    ) -> Result<u64, Error> {
++        self.serve_original_evaluated_next_use_profile(channel, end, |owner, bytes, request_id| {
++            let original = owner.readiness_response(bytes, request_id)?;
++            response_observed.store(true, Ordering::Release);
++            if cross_end_after_original_read {
++                while Instant::now() < end {
++                    std::thread::yield_now();
++                }
++            }
++            Ok(original)
++        })
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs
+@@ -0,0 +1,62 @@
++//! Same-process transport only, forwarding to the production Version admission
++//! and serving path. These helpers create no C owner, S or T/E response.
++
++use super::*;
++use std::sync::atomic::AtomicBool;
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    pub(crate) async fn fixture_serve_original_evaluated_next_use(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        channel: HostAuthorityPeerChannel,
++        readiness: bool,
++    ) -> Result<u64, Error> {
++        self.require_lifetime()?;
++        let permit = Arc::clone(&self.connections)
++            .try_acquire_owned().map_err(|_| Error::Busy)?;
++        self.serve_original_evaluated_next_use_channel(
++            selection,
++            channel,
++            permit,
++            if readiness { NextUseReadPurpose::CompletionReadiness }
++            else { NextUseReadPurpose::Readback },
++        ).await
++    }
++
++    pub(crate) async fn fixture_require_original_evaluated_next_use(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<(), Error> {
++        tokio::task::spawn_blocking(move || {
++            self.build_original_evaluated_next_use_reader(selection).map(|_| ())
++        }).await.map_err(|_| Error::CommitUncertain)?
++    }
++
++    /// The deadline probe only narrows the original Version's end. It invokes
++    /// the same response/128-loop with real owners and an unchanged channel.
++    /// Its extra test observation never supplies a successful wire response.
++    pub(crate) async fn fixture_evaluated_next_use_deadline_probe(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        mut channel: HostAuthorityPeerChannel,
++        already_expired: bool,
++        response_observed: Arc<AtomicBool>,
++    ) -> Result<u64, Error> {
++        self.require_lifetime()?;
++        let permit = Arc::clone(&self.connections)
++            .try_acquire_owned().map_err(|_| Error::Busy)?;
++        tokio::task::spawn_blocking(move || {
++            let _permit = permit;
++            channel.check_peer_lifetime()?;
++            let reader = self.build_original_evaluated_next_use_reader(selection)?;
++            let end = if already_expired {
++                Instant::now()
++            } else {
++                Instant::now().checked_add(Duration::from_millis(250)).ok_or(Error::Clock)?
++            }.min(self.end);
++            reader.fixture_evaluated_next_use_deadline_channel(
++                &mut channel, end, !already_expired, response_observed,
++            ).map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++        }).await.map_err(|_| Error::CommitUncertain)?
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs
+@@ -0,0 +1,400 @@
++//! Actual cold Version/T/B/S/C mechanisms. Original fixture credentials and
++//! same-process transports are explicit; these are not Fresh Root or public
++//! cross-UID qualification. No successful response or opaque S is fabricated.
++
++use super::*;
++use anyhow::Context as _;
++use std::os::unix::fs::OpenOptionsExt as _;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++
++use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;
++use crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++use crate::OriginalCircuitLearningReadClientV1;
++use crate::OriginalCircuitLearningReadErrorV1 as ReadError;
++use crate::OriginalCircuitPublishedEvidenceReadbackV1;
++use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;
++use crate::OriginalCircuitSelectionReceiptOwnerV1;
++use crate::OriginalCircuitSelectionCommandOwnerV1;
++use crate::circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;
++use crate::circuit_feature_current::original_evaluated_readiness_fixture as readiness;
++use crate::circuit_feature_current::original_learning_read_fixture as reads;
++
++type Selector = OriginalCircuitSelectionReceiptOwnerV1<FileAnchorWitnessStore>;
++type Server = tokio::task::JoinHandle<Result<u64, VersionError>>;
++
++struct NextUseCase {
++    fixture: Option<Box<PublicationFixture>>,
++    task: Option<support::Session>,
++    held: Option<HeldPredecessors>,
++    peers: Option<HeldPeers>,
++    version: Option<Arc<Version>>,
++    shared: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
++    selector_home: Option<tempfile::TempDir>,
++    selector: Option<Selector>,
++    selector_host: Option<Arc<OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>>>,
++    selector_server: Option<Server>,
++    selection: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
++    readiness: Option<OriginalCircuitCompletionReadinessClientV1>,
++    live: Option<OriginalCircuitLearningReadClientV1>,
++    servers: Vec<Server>,
++}
++
++impl NextUseCase {
++    async fn ready() -> anyhow::Result<Self> {
++        let fixture = Box::new(Box::pin(PublicationFixture::ready()).await?);
++        let mut case = Self {
++            fixture: Some(fixture), task: None, held: None, peers: None,
++            version: None, shared: None, selector_home: None, selector: None,
++            selector_host: None, selector_server: None,
++            selection: None, readiness: None, live: None, servers: Vec::new(),
++        };
++        if let Err(error) = Box::pin(case.initialize()).await {
++            let cleanup = case.finish().await;
++            return Err(error.context(format!("original NextUse setup cleanup: {cleanup:?}")));
++        }
++        Ok(case)
++    }
++
++    async fn initialize(&mut self) -> anyhow::Result<()> {
++        let (held, peers) = Box::pin(held_predecessors(self.fixture()?)).await?;
++        let dataset = held.dataset_receipt.clone();
++        self.held = Some(held);
++        self.peers = Some(peers);
++        let (task, recovery) = Box::pin(publish_for_recovery(
++            self.fixture.as_deref_mut().context("same original fixture")?, &dataset,
++        )).await?;
++        self.task = Some(task);
++
++        let home = tempfile::tempdir()?;
++        let open = |name: &str| -> anyhow::Result<std::fs::File> {
++            Ok(std::fs::OpenOptions::new().read(true).write(true).create_new(true)
++                .mode(0o600).open(home.path().join(name))?)
++        };
++        let f = self.fixture()?;
++        let witness = FileAnchorWitnessStore::open(
++            open("selector.witness")?,
++            codex_hepta_neuron::JournalScope {
++                scope_digest: f.host.config.scope.binding(),
++                objective_digest: f.host.config.signing.verifier.objective_digest(),
++            },
++            codex_hepta_types::Generation::new(1)?,
++            16,
++        )?;
++        let mut selector = Selector::create_evaluated(
++            open("selector.journal")?,
++            witness,
++            OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
++                context: f.context()?,
++                signer: f.host.original.credentials.selector.clone(),
++                maximum_signature_lifetime_seconds: 300,
++            },
++            SigningKey::from_bytes(&[46; 32]),
++        )?;
++        let (trainer, evaluator, peers) = f.clients()?;
++        let selected = selector.attest_original_evaluated_selection(
++            OriginalCircuitEvaluatedSelectionReceiptSourcesV1 {
++                snapshot: f.evaluation.snapshot(),
++                cell: &self.task()?.cell,
++                trainer: &trainer,
++                evaluator: &evaluator,
++            },
++        ).await;
++        drop(trainer);
++        drop(evaluator);
++        let trainer_done = peers.trainer.join()
++            .map_err(|_| anyhow::anyhow!("actual S Trainer peer panicked"));
++        let evaluator_done = peers.evaluator.join()
++            .map_err(|_| anyhow::anyhow!("actual S Evaluator peer panicked"));
++        trainer_done??;
++        evaluator_done??;
++        self.selection = Some(selected?);
++        self.selector = Some(selector);
++        self.selector_home = Some(home);
++
++        let held = self.held.take().context("one original predecessor connection set")?;
++        let host = cold_version(self.fixture()?, held, recovery)?;
++        self.version = Some(Arc::clone(&host));
++        // Exercise the new services after the original T/E clients have been
++        // consumed into the sealed shared bundle. No replacement T/E is opened.
++        self.shared = Some(Version::share_original_evaluated_readbacks(Arc::clone(&host)).await?);
++        let context = ReadContext::for_original_selection(self.fixture()?.readback_context()?)?;
++        let (live, channel) = reads::evaluated_client(context)?;
++        self.selector_server = Some(tokio::spawn(Version::fixture_serve_original_selection_channel(
++            Arc::clone(&host), channel,
++        )));
++        let selector = self.selector.take().context("one original Selector receipt owner")?;
++        let shared = self.shared.as_ref().context("same sealed original T/E")?.clone();
++        let selector_host = Arc::new(selector.into_evaluated_shared_command_owner(live, shared)?);
++        self.selector_host = Some(Arc::clone(&selector_host));
++        let before = self.original_bytes()?;
++        let current = OriginalCircuitSelectionCommandOwnerV1::read_original_evaluated_receipt(
++            selector_host,
++        ).await?;
++        let original = self.selection.as_ref().context("original completed S")?;
++        anyhow::ensure!((current.snapshot(), current.receipt(), current.attestation())
++            == (original.snapshot(), original.receipt(), original.attestation()),
++            "same-host delivery preserves the entire actual S and signatures");
++        anyhow::ensure!(self.original_bytes()? == before,
++            "the same original S local readback cannot execute or resign");
++        self.selection = Some(current);
++        Ok(())
++    }
++
++    fn fixture(&self) -> anyhow::Result<&PublicationFixture> {
++        self.fixture.as_deref().context("same original fixture")
++    }
++
++    fn task(&self) -> anyhow::Result<&support::Session> {
++        self.task.as_ref().context("same actual published C")
++    }
++
++    fn host(&self) -> anyhow::Result<Arc<Version>> {
++        Ok(Arc::clone(self.version.as_ref().context("same published Version")?))
++    }
++
++    fn selection(&self) -> anyhow::Result<OriginalCircuitEvaluatedSelectionReceiptV1> {
++        Ok(self.selection.as_ref().context("actual original S")?.clone())
++    }
++
++    fn context(&self) -> anyhow::Result<ReadContext> {
++        Ok(ReadContext::for_original_next_use(self.selection()?)?)
++    }
++
++    fn original_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
++        let f = self.fixture()?;
++        let mut bytes = f.publication_bytes()?;
++        bytes.extend(f.host.original.predecessor_bytes()?);
++        bytes.extend(f.host.upstream_files()?);
++        bytes.extend(f.host.original_files()?);
++        let home = self.selector_home.as_ref().context("original S files")?;
++        bytes.push(std::fs::read(home.path().join("selector.journal"))?);
++        bytes.push(std::fs::read(home.path().join("selector.witness"))?);
++        Ok(bytes)
++    }
++
++    fn start_readiness(&mut self) -> anyhow::Result<()> {
++        let (client, channel) = readiness::client(self.context()?)?;
++        let server = tokio::spawn(Version::fixture_serve_original_evaluated_next_use(
++            self.host()?, self.selection()?, channel, true,
++        ));
++        self.readiness = Some(client);
++        self.servers.push(server);
++        Ok(())
++    }
++
++    fn start_readback(&mut self) -> anyhow::Result<()> {
++        let (client, channel) = reads::evaluated_client(self.context()?)?;
++        let server = tokio::spawn(Version::fixture_serve_original_evaluated_next_use(
++            self.host()?, self.selection()?, channel, false,
++        ));
++        self.live = Some(client);
++        self.servers.push(server);
++        Ok(())
++    }
++
++    async fn finish(mut self) -> anyhow::Result<()> {
++        // Close both consumers before awaiting the actual serving lanes. Do
++        // not abort a blocking owner read or detach it to make teardown pass.
++        drop(self.readiness.take());
++        drop(self.live.take());
++        let mut failures = Vec::new();
++        for server in self.servers.drain(..) {
++            match server.await {
++                Ok(Ok(_)) => {}
++                Ok(Err(error)) => failures.push(error.to_string()),
++                Err(error) => failures.push(format!("actual C reader join: {error}")),
++            }
++        }
++        drop(self.selector_host.take());
++        if let Some(server) = self.selector_server.take() {
++            match server.await {
++                Ok(Ok(_)) => {}
++                Ok(Err(error)) => failures.push(error.to_string()),
++                Err(error) => failures.push(format!("original S reader join: {error}")),
++            }
++        }
++        drop(self.shared.take());
++        drop(self.version.take());
++        drop(self.held.take());
++        drop(self.selector.take());
++        if let Some(peers) = self.peers.take() {
++            let dataset = material_ports::finish(peers.dataset);
++            let trainer = peers.trainer.join()
++                .map_err(|_| anyhow::anyhow!("original T peer panicked"))
++                .and_then(|value| value.map_err(anyhow::Error::from));
++            let evaluator = peers.evaluator.join()
++                .map_err(|_| anyhow::anyhow!("original E peer panicked"))
++                .and_then(|value| value);
++            for result in [dataset, trainer, evaluator] {
++                if let Err(error) = result { failures.push(error.to_string()); }
++            }
++        }
++        if let Some(mut task) = self.task.take() {
++            if let Err(error) = task.stop().await { failures.push(error.to_string()); }
++            drop(task);
++        }
++        if let Some(fixture) = self.fixture.take() {
++            if let Err(error) = (*fixture).finish().await { failures.push(error.to_string()); }
++        }
++        anyhow::ensure!(failures.is_empty(), "original NextUse cleanup: {failures:?}");
++        Ok(())
++    }
++}
++
++async fn finish_case(result: anyhow::Result<()>, case: NextUseCase) -> anyhow::Result<()> {
++    let cleanup = case.finish().await;
++    match (result, cleanup) {
++        (Ok(()), Ok(())) => Ok(()),
++        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
++        (Err(error), Err(cleanup)) => Err(error.context(format!("original cleanup: {cleanup:#}"))),
++    }
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_reads_same_c_after_real_completion() -> anyhow::Result<()> {
++    let mut case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        let before = case.original_bytes()?;
++        case.start_readiness()?;
++        anyhow::ensure!(case.readiness.as_ref().context("readiness client")?
++            .read_current().await?.is_none(), "actual unexecuted C remains unresolved");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "readiness never dispatches C");
++        anyhow::ensure!(case.original_bytes()? == before, "readonly admission changes no original journal");
++        let publication = execute(case.task()?, 1).await?;
++        let actual = read_receipt(case.task()?, &case.fixture()?.definition, &publication)?;
++        anyhow::ensure!(actual.bundle_digest == case.fixture()?.bundle.digest()?, "C actually used the retained baseline");
++        let completed = case.readiness.as_ref().context("same readiness client")?
++            .read_current().await?.context("actual original C completion")?;
++        // The first real readiness response has completed admission. Starting
++        // the second lane here does not queue concurrent original T/E reads.
++        case.start_readback()?;
++        let read = case.live.as_ref().context("original C reader")?.read_current().await?;
++        anyhow::ensure!(read == completed, "both distinct purposes read the same original C");
++        anyhow::ensure!(matches!(read.observation(),
++            LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, .. }
++            if *retained_bundle == case.fixture()?.bundle.digest()?), "original next-use observation");
++        let host = case.host()?;
++        anyhow::ensure!(matches!(Version::prepare_original_version_fixture(Arc::clone(&host)).await,
++            Err(VersionError::ReadbackRequired)), "read service cannot promote cold Prepare");
++        anyhow::ensure!(matches!(Version::run_original_issuer_fixture(host).await,
++            Err(VersionError::ReadbackRequired)), "read service cannot promote FinalUse");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_rejects_another_actual_original_s_cut() -> anyhow::Result<()> {
++    let first = Box::pin(NextUseCase::ready()).await?;
++    let second = match Box::pin(NextUseCase::ready()).await {
++        Ok(case) => case,
++        Err(error) => return finish_case(Err(error), first).await,
++    };
++    let result: anyhow::Result<()> = async {
++        let before = first.original_bytes()?;
++        anyhow::ensure!(first.selection()?.original_context().receipt_context_binding()
++            != second.selection()?.original_context().receipt_context_binding(),
++            "two actually completed original operations");
++        anyhow::ensure!(matches!(
++            Version::fixture_require_original_evaluated_next_use(first.host()?, second.selection()?).await,
++            Err(VersionError::Binding("same original Version T/E and Selection cut"))
++        ), "an authentic foreign S is not this Version's full T/E pin");
++        anyhow::ensure!(first.original_bytes()? == before, "foreign S cannot publish or rewrite evidence");
++        anyhow::ensure!(first.task()?.cell.snapshot(&first.fixture()?.source_c.scope)?.revision == 0,
++            "foreign S cannot start C");
++        Ok(())
++    }.await;
++    let result = finish_case(result, second).await;
++    finish_case(result, first).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_rechecks_actual_b_after_shared_export() -> anyhow::Result<()> {
++    let mut case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        case.fixture.as_deref_mut().context("original fixture")?.host.retention_b.withdraw_target()?;
++        let before = case.original_bytes()?;
++        anyhow::ensure!(matches!(
++            Version::fixture_require_original_evaluated_next_use(case.host()?, case.selection()?).await,
++            Err(VersionError::Publication(crate::OriginalCircuitRetainedPublicationErrorV1::Evaluation(
++                crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
++            )))
++        ), "actual B withdrawal cannot be satisfied by the retained shared bundle");
++        anyhow::ensure!(case.original_bytes()? == before, "readback refusal changes no original journals");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "unavailable B does not become NoUpdate or start C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_refuses_four_cut_selection_requests() -> anyhow::Result<()> {
++    let mut case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        let before = case.original_bytes()?;
++        let context = ReadContext::for_original_selection(case.fixture()?.readback_context()?)?;
++        let (client, channel) = reads::evaluated_client(context)?;
++        let server = tokio::spawn(Version::fixture_serve_original_evaluated_next_use(
++            case.host()?, case.selection()?, channel, false,
++        ));
++        case.live = Some(client);
++        case.servers.push(server);
++        let client = case.live.as_ref().context("actual four-cut Selection client")?;
++        let first = client.read_current().await;
++        let after = client.read_current().await;
++        drop(case.live.take());
++        let served = case.servers.pop().context("original NextUse-only lane")?.await?;
++        anyhow::ensure!(first.is_err(), "a valid original four-cut client is not five-cut NextUse");
++        anyhow::ensure!(matches!(after, Err(ReadError::Unavailable)), "wrong purpose consumes this channel");
++        anyhow::ensure!(served.is_err(), "server rejects the actual wrong-purpose request");
++        anyhow::ensure!(case.original_bytes()? == before, "wrong purpose changes no original journal");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "wrong purpose cannot start C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++async fn deadline_case(already_expired: bool) -> anyhow::Result<()> {
++    let mut case = Box::pin(NextUseCase::ready()).await?;
++    let result: anyhow::Result<()> = async {
++        let before = case.original_bytes()?;
++        let observed = Arc::new(AtomicBool::new(false));
++        let (client, channel) = readiness::client(case.context()?)?;
++        let server = tokio::spawn(Version::fixture_evaluated_next_use_deadline_probe(
++            case.host()?, case.selection()?, channel, already_expired, Arc::clone(&observed),
++        ));
++        case.readiness = Some(client);
++        case.servers.push(server);
++        let client = case.readiness.as_ref().context("same original readiness client")?;
++        let first = client.read_current().await;
++        let after = client.read_current().await;
++        drop(case.readiness.take());
++        let served = case.servers.pop().context("original deadline lane")?.await?;
++        anyhow::ensure!(first.is_err(), "no expired original response is successful");
++        anyhow::ensure!(matches!(after, Err(ReadError::Unavailable)), "failure consumes the same channel without retry");
++        anyhow::ensure!(served.is_err(), "actual server preserves refusal");
++        anyhow::ensure!(observed.load(Ordering::Acquire) == !already_expired,
++            "pre-expiry refuses before IO; crossing case first produced the actual original response");
++        anyhow::ensure!(case.original_bytes()? == before, "deadline failure cannot repair or publish");
++        anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,
++            "deadline failure cannot dispatch C");
++        Ok(())
++    }.await;
++    finish_case(result, case).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_rejects_already_elapsed_absolute_end() -> anyhow::Result<()> {
++    Box::pin(deadline_case(true)).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn version_owned_next_use_rejects_original_response_crossing_absolute_end() -> anyhow::Result<()> {
++    Box::pin(deadline_case(false)).await
++}
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
+@@ -4,6 +4,7 @@
+ use std::os::fd::OwnedFd;
+ use std::os::unix::net::UnixStream;
+ use std::time::Duration;
++use std::time::Instant;
+ 
+ use codex_hepta_contracts::HostAuthorityPeerChannel;
+ use codex_hepta_contracts::HostIssuerTransportError;
+@@ -149,6 +150,65 @@
+             let mut failure = None;
+             let exchanged = channel.exchange(|bytes| {
+                 self.response(bytes, request_id).map_err(|error| {
++                    failure = Some(error);
++                    HostIssuerTransportError::InvalidRequest
++                })
++            });
++            match exchanged {
++                Ok(true) => {}
++                Ok(false) => return Ok(request_id - 1),
++                Err(error) => return Err(failure.unwrap_or(Error::Transport(error))),
++            }
++        }
++        Err(Error::Unavailable)
++    }
++
++    /// The same prebound original channel, attenuated to the evaluated S cut.
++    /// Version supplies its existing absolute end; a late original result is
++    /// rejected even if this channel's relative transport lifetime is later.
++    pub(crate) fn serve_original_evaluated_next_use_channel(
++        &self,
++        channel: &mut HostAuthorityPeerChannel,
++        end: Instant,
++    ) -> Result<u64, Error> {
++        self.serve_original_evaluated_next_use_profile(channel, end, Self::response)
++    }
++
++    /// A separate completion-readiness purpose using the same actual C owners.
++    /// This neither starts C nor turns Missing/Pending into completed evidence.
++    pub(crate) fn serve_original_evaluated_next_use_readiness_channel(
++        &self,
++        channel: &mut HostAuthorityPeerChannel,
++        end: Instant,
++    ) -> Result<u64, Error> {
++        self.serve_original_evaluated_next_use_profile(channel, end, Self::readiness_response)
++    }
++
++    fn serve_original_evaluated_next_use_profile(
++        &self,
++        channel: &mut HostAuthorityPeerChannel,
++        end: Instant,
++        mut response: impl FnMut(&Self, &[u8], u64) -> Result<Vec<u8>, Error>,
++    ) -> Result<u64, Error> {
++        if !matches!(&self.context, ReadProfile::Evaluated(_))
++            || self.context.mode()? != wire::Mode::NextUse
++        {
++            return Err(Error::Binding("evaluated Version NextUse-only read purpose"));
++        }
++        for request_id in 1..=128 {
++            let mut failure = None;
++            let exchanged = channel.exchange(|bytes| {
++                let original = (|| {
++                    if Instant::now() >= end {
++                        return Err(Error::Unavailable);
++                    }
++                    let bytes = response(self, bytes, request_id)?;
++                    if Instant::now() >= end {
++                        return Err(Error::Unavailable);
++                    }
++                    Ok(bytes)
++                })();
++                original.map_err(|error| {
+                     failure = Some(error);
+                     HostIssuerTransportError::InvalidRequest
+                 })
+@@ -258,3 +318,7 @@
+         })
+     }
+ }
++
++#[cfg(test)]
++#[path = "circuit_evaluated_next_use_read_channel_support_tests.rs"]
++mod evaluated_next_use_fixture;
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+@@ -55,6 +55,9 @@
+ #[path = "circuit_retained_version_shared_readback.rs"]
+ mod shared_readback;
+ pub use shared_readback::OriginalCircuitPublishedEvidenceReadbackV1;
++
++#[path = "circuit_retained_version_next_use_readback.rs"]
++mod next_use_readback;
+ 
+ #[path = "circuit_retained_version_prepared.rs"]
+ mod prepared_custody;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs
+@@ -0,0 +1,225 @@
++//! The published Version serves C from the original owners it already holds.
++//! An opaque original S fixes the five-cut read purpose. No task, writer,
++//! signer, RunStart, owner getter or additional T/E connection is created.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::sync::Arc;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use tokio::sync::OwnedSemaphorePermit;
++
++use super::super::super::context::PublicationAccess;
++use super::super::Error;
++use super::super::RetainedVersionOriginV1;
++use super::super::RetainedVersionPurposeV1;
++use super::OriginalCircuitRetainedVersionHostV1;
++use super::RetainedVersionFinalUseOutcomeV1;
++use super::RetainedVersionHostPhaseV1;
++use crate::AgentdRootAuthorityPeer;
++use crate::OriginalCircuitEvaluatedLearningReadContextV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++use crate::OriginalCircuitLearningReadOwnerV1;
++use crate::learning_owner_command_channel::original_owner_command_channel_v1;
++
++type OriginalNextUseReader =
++    OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++
++enum NextUseReadPurpose {
++    Readback,
++    CompletionReadiness,
++}
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    /// Serve the actual C observation to the original NextUse owner. S must
++    /// already be an opaque original receipt for this Version's exact T/E cut.
++    /// This entry cannot dispatch C or create its original completion evidence.
++    pub async fn serve_original_evaluated_next_use_readback(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        stream: UnixStream,
++        consumer: AgentdRootAuthorityPeer,
++        consumer_uid: u32,
++        original_consumer_pidfd: OwnedFd,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<u64, Error> {
++        self.serve_original_evaluated_next_use(
++            selection,
++            stream,
++            consumer,
++            consumer_uid,
++            original_consumer_pidfd,
++            timeout,
++            lifetime,
++            NextUseReadPurpose::Readback,
++        )
++        .await
++    }
++
++    /// A separate readonly readiness channel for the same actual C and S.
++    /// Pending is unresolved. Only the existing daemon control may start C.
++    pub async fn serve_original_evaluated_completion_readiness(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        stream: UnixStream,
++        consumer: AgentdRootAuthorityPeer,
++        consumer_uid: u32,
++        original_consumer_pidfd: OwnedFd,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<u64, Error> {
++        self.serve_original_evaluated_next_use(
++            selection,
++            stream,
++            consumer,
++            consumer_uid,
++            original_consumer_pidfd,
++            timeout,
++            lifetime,
++            NextUseReadPurpose::CompletionReadiness,
++        )
++        .await
++    }
++
++    async fn serve_original_evaluated_next_use(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        stream: UnixStream,
++        consumer: AgentdRootAuthorityPeer,
++        consumer_uid: u32,
++        original_consumer_pidfd: OwnedFd,
++        timeout: Duration,
++        lifetime: Duration,
++        purpose: NextUseReadPurpose,
++    ) -> Result<u64, Error> {
++        if timeout.is_zero()
++            || timeout > Duration::from_millis(500)
++            || lifetime.is_zero()
++            || lifetime > Duration::from_secs(300)
++        {
++            return Err(Error::Binding("original Version NextUse read bounds"));
++        }
++        self.require_lifetime()?;
++        let permit = Arc::clone(&self.connections)
++            .try_acquire_owned()
++            .map_err(|_| Error::Busy)?;
++        let remaining = self.end.checked_duration_since(Instant::now())
++            .ok_or(Error::Unavailable)?;
++        let channel = original_owner_command_channel_v1(
++            stream,
++            consumer,
++            consumer_uid,
++            original_consumer_pidfd,
++            timeout,
++            lifetime.min(remaining),
++        )?;
++        self.serve_original_evaluated_next_use_channel(selection, channel, permit, purpose)
++            .await
++    }
++
++    async fn serve_original_evaluated_next_use_channel(
++        self: Arc<Self>,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++        mut channel: HostAuthorityPeerChannel,
++        permit: OwnedSemaphorePermit,
++        purpose: NextUseReadPurpose,
++    ) -> Result<u64, Error> {
++        tokio::task::spawn_blocking(move || {
++            let _permit = permit;
++            channel.check_peer_lifetime()?;
++            let reader = self.build_original_evaluated_next_use_reader(selection)?;
++            self.require_lifetime()?;
++            channel.check_peer_lifetime()?;
++            // No Version mutex or T/E channel is held across the C serving
++            // loop. Each original response still rereads the same C owners.
++            // The sealed T/E clients stay in Version for later actual reads.
++            match purpose {
++                NextUseReadPurpose::Readback =>
++                    OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_channel(
++                        &reader, &mut channel, self.end,
++                    ),
++                NextUseReadPurpose::CompletionReadiness =>
++                    OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_readiness_channel(
++                        &reader, &mut channel, self.end,
++                    ),
++            }
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
++        })
++        .await
++        .map_err(|_| Error::CommitUncertain)?
++    }
++
++    fn build_original_evaluated_next_use_reader(
++        &self,
++        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<OriginalNextUseReader, Error> {
++        self.require_lifetime()?;
++        if self.purpose != RetainedVersionPurposeV1::EvaluatedNoUpdate
++            || self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published
++        {
++            return Err(Error::ReadbackRequired);
++        }
++        let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
++        if let Err(error) = self.bind_original_predecessor(&mut state) {
++            if self.origin == RetainedVersionOriginV1::Recovered {
++                state.selection_reader = None;
++            }
++            return Err(error);
++        }
++        let before = if self.origin == RetainedVersionOriginV1::Recovered {
++            self.read_original_recovery(&mut state)?
++        } else {
++            self.read_original(&state)?
++        };
++        if before.publication().is_none() {
++            return Err(Error::ReadbackRequired);
++        }
++        let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++        let evaluated = cut.evaluated.as_ref().ok_or(Error::ReadbackRequired)?;
++        let original_context = selection.original_context();
++        if original_context.snapshot() != evaluated.snapshot()
++            || original_context.receipt_context_binding() != evaluated.receipt_context_binding()
++        {
++            return Err(Error::Binding("same original Version T/E and Selection cut"));
++        }
++        // for_original_next_use verifies full T/E/S signatures, the original
++        // five-cut NextUse purpose and the retained baseline bundle again.
++        let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection.clone())
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        let original = match state.phase.as_ref() {
++            Some(RetainedVersionHostPhaseV1::Installed { original, .. }
++                | RetainedVersionHostPhaseV1::Recovered(original)) => original,
++            _ => return Err(Error::ReadbackRequired),
++        };
++        let reader = OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(
++            original.cell.clone(),
++            original.source.as_ref().clone(),
++            original.identity.clone(),
++            context,
++        )
++        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        // The local reader is not exposed before this same-lock full second
++        // read of D/T/E, Artifact/CURRENT and the actual installed C succeeds.
++        let after = self.read_original(&state)?;
++        if before != after || after.publication().is_none() {
++            return Err(Error::CommitUncertain);
++        }
++        state.cut.as_ref().ok_or(Error::Unavailable)?
++            .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        selection.original_receipt_predecessors(super::super::now()?)
++            .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        self.require_lifetime()?;
++        if self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published {
++            return Err(Error::ReadbackRequired);
++        }
++        Ok(reader)
++    }
++}
++
++#[cfg(test)]
++#[path = "circuit_evaluated_version_next_use_readback_support_tests.rs"]
++mod fixture;

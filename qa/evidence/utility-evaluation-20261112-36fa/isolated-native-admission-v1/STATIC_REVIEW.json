@@ -1,0 +1,53 @@
+{
+  "AST_parse_and_compile_only": true,
+  "H_calls": 0,
+  "actual_isolated_success_pins_still_null": true,
+  "added_definitions": [
+    "Admission.validate_materialization"
+  ],
+  "admission_constructor_called": false,
+  "changed_definitions": [
+    "Admission.__init__",
+    "Admission.acquire_and_validate",
+    "Admission.before_native_stage",
+    "Admission.finish"
+  ],
+  "format": "hepta-isolated-native-admission-static-preparation-review-v1",
+  "native_main_started": false,
+  "old_definition_count": 12,
+  "original_native_and_V5_bytes_changed": false,
+  "qualification": false,
+  "source_writes": 0,
+  "unchanged_configuration_keys": [
+    "runtime_guard",
+    "full_physical_inventory",
+    "expected_inventory_sha256",
+    "expected_file_count",
+    "final_format",
+    "canonical_alignment",
+    "source",
+    "tree",
+    "parents",
+    "coordination_lock",
+    "positive_eval_cases",
+    "native_driver_pin",
+    "plan_pin",
+    "maintenance_guard_path",
+    "inventory_driver_path",
+    "actual_final_format_postimages_reviewed",
+    "reviewed_formatter_changed_paths",
+    "source_gates_config_path",
+    "source_gates_config_pin",
+    "source_gates_handoff_records"
+  ],
+  "unchanged_definitions": [
+    "check",
+    "identity",
+    "pin",
+    "load",
+    "Admission.read",
+    "Admission.observed_proof",
+    "Admission.current_lock",
+    "Admission.close"
+  ]
+}

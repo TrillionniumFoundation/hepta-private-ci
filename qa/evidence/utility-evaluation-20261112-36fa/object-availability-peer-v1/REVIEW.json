@@ -1,0 +1,110 @@
+{
+  "H_calls": 0,
+  "blocking_findings": [],
+  "bounded_code_review": [
+    "Only retained canonical inventory, four fixed old Git metadata files, the original Git executable and exact Git objects are read. No current physical working source payload is read by this observer.",
+    "Fixed path inputs use real directory ancestors, O_RDONLY/O_NOFOLLOW, regular-file ownership, exact sizes/hashes and before/after stable stat. Index bytes are hashed but never emitted.",
+    "Git inherited identity/object/config override variables are rejected. Prefix retains --no-optional-locks and disables fsmonitor/untrackedCache.",
+    "Only for-each-ref, cat-file --batch-check and cat-file --batch are invoked. No restore/reset/read-tree/update-index/update-ref/hash-object/write-tree/fetch, shell or Cargo invocation is present.",
+    "Expected B7 tree bodies are derived with canonical Git entry ordering from the exact 13d3 inventory. Repeated blob/tree identities must agree.",
+    "Every metadata row is paired with its requested OID, exact type and size. Missing/wrong-type/wrong-size outcomes remain explicit, not silently omitted.",
+    "Available selected bodies are fully checked for exact header, byte count, separator, raw Git SHA, SHA256, tree bytes, and original commit tree/ordered parent headers.",
+    "Anonymous memfds carry request and stderr bytes; no source or evidence file is opened for writing. Stdout is the only retained result transport.",
+    "Select/read/wait use the remaining 45-second action budget. Ordinary Git observations use at most min(15,remaining). Finally kills and waits only for this observer's own cat-file child, with bounded 5-second cleanup and explicit unknown child-terminal if cleanup cannot observe completion.",
+    "Completed status requires the four old metadata records, exact existing ref output, index raw bytes, absent lookup paths and Git executable observations to agree before/after. It does not require old worktree cleanliness or erase the known ref."
+  ],
+  "failure_and_success_scope": {
+    "materialization_requires_separate_explicit_approval_and_actual_proof": true,
+    "missing_objects_may_yield_completed_with_availability_false": true,
+    "no_writer_attribution_from_timestamps_or_hashes": true,
+    "normal_exit_means_observation_completed_only": true,
+    "old_1cd4_failure_preserved": true,
+    "qualification_not_executed_or_approved_by_this_review": true
+  },
+  "format": "hepta-cc57-object-availability-independent-peer-v1",
+  "independent_merkle": {
+    "commit_bytes": 916,
+    "commit_oid": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "commit_type": "commit",
+    "leaf_count": 15188,
+    "parent": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "required_full_body_objects": 1836,
+    "seven_archive_blob_bytes": 18176884,
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "unique_blob_objects": 14610,
+    "unique_snapshot_objects_with_commit": 16439,
+    "unique_tree_objects": 1828
+  },
+  "limitations": [
+    "Only the exact one-snapshot closure is considered; no full parent history or fsck assertion.",
+    "All 1828 trees, seven archive blobs and cc57 commit are fully hashed only if they are locally available; unavailable entries remain false. Other blob bodies are metadata-only in this observer.",
+    "The observer does not certify the current 15181 physical source files; later materialization must fully reread them.",
+    "No proposed observer top-level/native path was executed by this peer. Only three pure AST-extracted Merkle helpers were evaluated against local immutable bytes."
+  ],
+  "offline_inputs": {
+    "commit_raw": {
+      "bytes": 916,
+      "git_blob": "9320a0edafa9e2a9fd1ca73120d609851e4afcc3",
+      "path": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_COMMIT.raw",
+      "sha256": "9bf2f19821b3007a29d446967ccc8a025e2ac671f1e0301c8e71b37848d72e48"
+    },
+    "historical_runtime_environment": {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "path": "/tmp/hepta-36fa-checkpoint1867-recovery/runtime-v2-environment.original.json",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    "inventory": {
+      "bytes": 5611184,
+      "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+      "path": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json",
+      "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+    }
+  },
+  "request": {
+    "action_deadline_seconds": 45,
+    "inline_script_equal": true,
+    "key": "hepta-utility-36fa-cc57-snapshot-objects-readonly-v1",
+    "no_env_payload": true,
+    "outer_timeout_seconds": 60,
+    "six_exact_fields": true
+  },
+  "source_index_ref_control_mutations": false,
+  "status": "NO_BLOCKING_FINDING_FOR_EXACT_READONLY_OBSERVER",
+  "subject": {
+    "plan": {
+      "bytes": 12076,
+      "git_blob": "0f83ffa6c8aeb23ccaa26f56ce271822ba55b680",
+      "sha256": "bdbf7b8f9b807de7506ef8fab73d7b36da6fec29a80f30efcfeae8b69b8ef2f7"
+    },
+    "request": {
+      "bytes": 18130,
+      "git_blob": "04c4ce7cec0528da1492934a6d859b77798f6a03",
+      "sha256": "24c92545d5dc9efd61a4477b769be6e0117431106c80d106a1996e17785c2240"
+    },
+    "script": {
+      "bytes": 17626,
+      "git_blob": "2063cdf273dc9c848b373b152ed455ee1e0d6f14",
+      "sha256": "1a422a3f386f5edbcdd405bc1d4eaf4bb3f394c93cde76deafb228141e27b92f"
+    }
+  },
+  "system_git_single_link_observation": {
+    "existing_actual_record_supports_nlink_1": true,
+    "interpretation": "An original detailed ENV_READY observation supplies nlink=1, unlike the five-field projection alone. It is historical evidence; the observer must still check the current executable and can fail if it changed. No new H lookup or extra condition was invented by this peer.",
+    "observation": {
+      "bytes": 4066232,
+      "ctime_ns": 1792492455842180909,
+      "device": 2050,
+      "git_blob": "e45c49e5b79c065db33dce8cfaca2086422d1ab4",
+      "inode": 36447600,
+      "mode": 493,
+      "mtime_ns": 1792159905000000000,
+      "nlink": 1,
+      "path": "/usr/bin/git",
+      "resolved": "/usr/bin/git",
+      "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201",
+      "uid": 0
+    }
+  },
+  "tests_or_qualification_executed": false
+}

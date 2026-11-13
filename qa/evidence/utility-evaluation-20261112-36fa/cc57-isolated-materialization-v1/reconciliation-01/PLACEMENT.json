@@ -1,0 +1,575 @@
+{
+  "format": "hepta-completed-isolated-materialization-placement-v1",
+  "recorded_at": "2026-11-13T03:22:14.958Z",
+  "captured_window": "2026-11-13T03:12:17.992816+00:00",
+  "scope": "The completed same-key materialization reconciliation only. Earlier launch/health disconnect records retain their original separate placement. Future native launch and native preflight failure are not included in this frozen set.",
+  "job_id": "1a1d2d20686-392-36",
+  "idempotency_key": "hepta-utility-36fa-cc57-isolated-materialization-v1",
+  "status": "MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY",
+  "qualification": false,
+  "tests_started": false,
+  "original_disconnected_placement": "52a8425c11e9a7cdf4f3f83371deb8057448b77e",
+  "root_exact_launch_approval": "b83401f565882785233c2ac34f273ae3cfa0b0ac",
+  "root_actual_review": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b",
+  "files": [
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/ARTIFACTS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d14f683cc874b6b64f13c7c156b28b2fd448c90",
+      "bytes": 63084,
+      "sha256": "b50557442bb9cb2389b1d44d7c012270a3474603220831aa6aa3b677e13517f0",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/ARTIFACTS.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/ARTIFACTS_READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "536dd5663d7c6293b97d1ae3de36cc579cd25741",
+      "bytes": 84589,
+      "sha256": "402341cc40f904f3962f85f1cc27f13bd6de2996635b8441753e7b9199efc766",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/ARTIFACTS_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/COMMANDS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fff5a51a4b273df14526c1059695a115b080f1f9",
+      "bytes": 27329,
+      "sha256": "4a2093fc27c3a39bdfa4e1591377b30652e8f298d955afa9274be986b7844054",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/COMMANDS.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/COMMANDS_READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d13c6582c7631715e1ba9c5cad3718863262b63b",
+      "bytes": 36916,
+      "sha256": "ab1256b89361b547befea8307ec016e8312cf2cac6778216da4051ab36574e7e",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/COMMANDS_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/COMPLETE_STDOUT.log",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a337d1aa0fef29261084a1d71c227fdffdb00ae",
+      "bytes": 2068,
+      "sha256": "c97e981d0400f675b46af835d6a893b2accef102b0cfac4956772c80973054eb",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/COMPLETE_STDOUT.log",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/HOST_HEALTH_03.INTENT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "332787bb8b056308115ddd3eb9c21fdf82988d79",
+      "bytes": 962,
+      "sha256": "9b28cd37c4f864d58cc198f4c52ec730fa9ed8d56cc0f96abf78fef125ad7ad2",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/HOST_HEALTH_03.INTENT.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/HOST_HEALTH_03.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7778f1c777f1f096f27232108a96b2b9a1bab6c0",
+      "bytes": 584,
+      "sha256": "a05f3179ba98865bab382be0fa83d2d71f25fef0b022eb22dcb5a25ab8a27931",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/HOST_HEALTH_03.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_IDENTITIES.before.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4abc96b3543f87bbf724f8ff2918f4ea5ea7137",
+      "bytes": 1931,
+      "sha256": "006bbceebee283b71b6cf004eb17ec09570f763da7c9d8b4ff7dd9c3d152a6e7",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/INPUT_IDENTITIES.before.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_IDENTITIES.final.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "909a05695b1cd6b4bd47face0dca2d17c5ae3f7b",
+      "bytes": 1987,
+      "sha256": "a6b23b515b03184887e3882d021bbc84f2ee0976895b9e9abc919104e8b72a79",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/INPUT_IDENTITIES.final.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_IDENTITIES.final.json.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "31de5e158a5733084cd1a22bd674190e7b12fbf5",
+      "bytes": 3139,
+      "sha256": "1896c7fbb025ed90597677f97c71cea808b353361569bf62d6634aa5c09dc2d5",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/INPUT_IDENTITIES.final.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/INPUT_READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b9b4e8918ecd6caeb80c9c7190803bdd0a79dfc",
+      "bytes": 3064,
+      "sha256": "9105600591d8899a78d5e70fa925c0ee8e03f65b16015f85368db317ccc1154b",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/INPUT_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/MUTATION_INTENTS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bbd4478cbb872d18344b37b7251bc9c83df56521",
+      "bytes": 730,
+      "sha256": "8e5f9c1497b107444b3ed1c47c20cff15c9ad2ac45094777f32ee3c1308fb679",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/MUTATION_INTENTS.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/MUTATION_READ_01_FAILURE.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee720552601b4fd39acb31c5a6b5128f3dce17cd",
+      "bytes": 265,
+      "sha256": "fc9983a0a6f18cff1cb03c0583d9c286ad88336cd0d2c9bbeb2d39cb17d2439b",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/MUTATION_READ_01_FAILURE.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/MUTATION_READ_02.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "caccb2f870947655efc438540f395b2effd23ca4",
+      "bytes": 1454,
+      "sha256": "d7bf5ad8f29c8f1b3850544a595a04eb4d9f8d56aa2fc8dea903f84dc0654124",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/MUTATION_READ_02.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/RECONCILIATION_01.INTENT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74b4f2d44188bcf0dd5176f4763d04610ae2983b",
+      "bytes": 1434,
+      "sha256": "4ad8bf56b38b8b7b5a875865136b54c19d769058550f9020afc6778787c45e63",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/RECONCILIATION_01.INTENT.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/RECONCILIATION_01_ADMISSION.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "14efff035016840b2ca8f6b25a8edc9153ba50a5",
+      "bytes": 7304,
+      "sha256": "1f18fb44a6b310310ee9512db5a2452a784bc8c008c3d7d1b2cb5bb1b181b43f",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/RECONCILIATION_01_ADMISSION.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/RESULT.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "40833805111c98773ba1d046df09285357531396",
+      "bytes": 12671,
+      "sha256": "fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/RESULT.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/RESULT_READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "37f2b5b0987200c9adb4e89c57b8d2774cea254e",
+      "bytes": 17370,
+      "sha256": "d3fb8da08a65fcde6d18f6cddec2451e7b39bf6a582cdfc348dead7b83517740",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/RESULT_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/SOURCE_COORDINATION_EX.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d445e863f1991150a99b980fc00e9ad3d7f701b3",
+      "bytes": 376,
+      "sha256": "83f683800e1d5f9684e3b636cc29de0b3a830704c209a0d616d078093bf08502",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/SOURCE_COORDINATION_EX.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac5fa0eb7a2c9ed5b1b97a26c7e9e2c94e72ff1f",
+      "bytes": 988,
+      "sha256": "ddb2eee20beabbee4c087e9df81fac8f7af03b61f504ddb69a7d28683f5ba37d",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/STATUS_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ff6eaf5e68de8e07d8382b3012ee15259b8d8bf",
+      "bytes": 656,
+      "sha256": "125108f6f558181a2cc39f94fb7d97f9cb5701684185f3ff8a86c020c8026044",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/STATUS_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/STATUS_02.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ff6eaf5e68de8e07d8382b3012ee15259b8d8bf",
+      "bytes": 656,
+      "sha256": "125108f6f558181a2cc39f94fb7d97f9cb5701684185f3ff8a86c020c8026044",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/STATUS_02.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/STATUS_03.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c507335b611474857eff53b738071a7a3f27dc99",
+      "bytes": 951,
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/STATUS_03.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/STDOUT_READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08e9a0d025690997533b9aee672bbc9367b2a25c",
+      "bytes": 3402,
+      "sha256": "53076664083901f949921899325d619daf6672acc454f168d5562b226a66495a",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/STDOUT_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/STDOUT_READ_02.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf214e0099770a9fea45a42e4d940bb3ffc60b06",
+      "bytes": 3887,
+      "sha256": "b1ed5a2715d15898fe4bb7e40819ec3eff990fcfc62f6f9c826d5772a73d6872",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/STDOUT_READ_02.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/STDOUT_READ_03.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1cdc8aae85a4ae45571e012bf7809c0bf6b8e0b",
+      "bytes": 1070,
+      "sha256": "d278bfbdf3c7131852aae3e05a9d0d27d8a863928b3526efe961ff7076175d54",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/STDOUT_READ_03.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/before.old-git.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55126141bab78f0bc84209561f2edebc3595de69",
+      "bytes": 2054,
+      "sha256": "df55082eb89426c012d69f2f47791007910e2b7990ed9b38cda81da23b9d27e3",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/before.old-git.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/before.old-git.json.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d989ac8d4b4a296bfeada4c82ee02a9021bc9a17",
+      "bytes": 3219,
+      "sha256": "b553b76f0cecfa7cd4367136dc4ad2f52ef56723509434ce63934675923ccab6",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/before.old-git.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/final.git-metadata.json.gz.part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8eb3a9131ba9cdd69b81e92a2c933d09f7f2f42",
+      "bytes": 1041,
+      "sha256": "6017976137adfbc148897f9d19b65454d84f7ba804f9686350618fe5bdd3b14c",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/final.git-metadata.json.gz.part-001.b64",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/final.git-metadata.json.gz.part-001.b64.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b652f7fcce128c87e4c8b0dc60da4e5625495f8",
+      "bytes": 1887,
+      "sha256": "4e83bd20038ba7e283e6c40bde09866d866cb57440901a80aae950e621aaf6e7",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/final.git-metadata.json.gz.part-001.b64.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/final.new-index-check.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68483fcb30a969650f36e7b51f9f5e8538e9d05e",
+      "bytes": 347,
+      "sha256": "e82b5d65ca4fdb26f27aba721354a25514c1831dbe668182472c3a518a84f044",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/final.new-index-check.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/final.new-index-check.json.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08c12e85a4037f0c1ddb4af1655b3cba88fa605b",
+      "bytes": 947,
+      "sha256": "913edb4c53ce78ba62e0b97421c384fc37ce469f785becdfa14c8121c85989a3",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/final.new-index-check.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/final.old-git.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55126141bab78f0bc84209561f2edebc3595de69",
+      "bytes": 2054,
+      "sha256": "df55082eb89426c012d69f2f47791007910e2b7990ed9b38cda81da23b9d27e3",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/final.old-git.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/final.old-git.json.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a0ccb8220b706656ec53fc9d5459c1332afe330",
+      "bytes": 3218,
+      "sha256": "18be095220a5c7614159b81403b43add96592079201217125648c611678508d7",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/final.old-git.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/ENCODED_PARTS_DERIVATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e26842a2dfd3b6611d0a78cc85b171d44b9b67f9",
+      "bytes": 1662,
+      "sha256": "69cfd00e283e4d6ae90089e8a38965e362d6dd79368513e33e6776da79e2fef1",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/ENCODED_PARTS_DERIVATION.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_FULL_READBACK_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b23bb92763b60e07a594807f974e9e5b82725b9",
+      "bytes": 6185,
+      "sha256": "6d614c1739b5c40bdd9bf549c713488856273b487503e6e662808c713009b198",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_FULL_READBACK_MANIFEST.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0000000.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7969f946e1b5a7ee0a7efdcdd2022c1123147488",
+      "bytes": 87872,
+      "sha256": "d3818bf4766237d450eaec3d45c0b274a680b21deee5ea6a9d74baaffc4faebf",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0000000.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0065536.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e836bb54ad2c2d395ac800c06207d4e6e12dc33",
+      "bytes": 87877,
+      "sha256": "378ab535429fd9b1ffa5b4f3f5b57582e673efa0de46ffec109339a5727f3925",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0065536.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0131072.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad8126fdccfc2a90d1c8860e404646e34f6d5e0e",
+      "bytes": 87878,
+      "sha256": "438f62dc9b3095b299f2ca874d800cda8c92e02f4e61d4e61b2ffd0135c13af0",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0131072.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0196608.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea9474465cb4e797fb76d0da25e3260d7d5b92e0",
+      "bytes": 87878,
+      "sha256": "55736c028a8e069a0c18a693a08ef0a2816a567a38f69ae4479b83b654a65380",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0196608.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0262144.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f3825f08c588e61b02f1c5ab52485a2d167cb67",
+      "bytes": 87878,
+      "sha256": "017b0762239d6cf630acb474096fd2b5f9271b1c95d8210f530eedf2d1d3cbed",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0262144.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0327680.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c7d8b8b7bbdec0e1022a2d43fe457474d921b46c",
+      "bytes": 87878,
+      "sha256": "ed7b460735f91a574a819e35f77c56a9ed6cc4e528525df25c8501ab9b0c2c73",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0327680.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0393216.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d0ff3f7afb22ff07cad29862dc2fe76703563b7",
+      "bytes": 87878,
+      "sha256": "b74ad32be868e2065676b4a0717510337bd4b8dcbb0002fcaa1b323ce9e95096",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0393216.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0458752.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87f353c6dddd6ce60449d998f05c7daa1774dbeb",
+      "bytes": 87878,
+      "sha256": "31b588b2b64f56d7a80cd7f5752000dc16e0a436acc14f4b6261f6a9f66bc42f",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0458752.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0524288.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0de4b3455d5792aaaa760a64ed79526058733ab2",
+      "bytes": 87878,
+      "sha256": "0a410b169bcd539d1461d0d31528e933d84fd545885f140caa5aebb8dcafa943",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0524288.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0589824.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aba745c6b5be6f692f975d33ff4c2e995442a432",
+      "bytes": 87878,
+      "sha256": "6a5b0b3ff9d9caf86864761a5d21011f9a5ad3696410016a3e877dc7eb0595f1",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0589824.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0655360.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5000f156581a589aa8424f3c78138b27eb1f574a",
+      "bytes": 87878,
+      "sha256": "a7b732ba3e5757d71ac206fda836c287c9cd234800ec2e8af7882843c93299eb",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0655360.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/INDEX_READ_0720896.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a61557aa4813d942cb29a9897337e074719c0a3f",
+      "bytes": 8081,
+      "sha256": "f1d977bb0eadc5b396b2f9cc69339afd372c62cd87c6ffc99b8d3c629906049c",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/INDEX_READ_0720896.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/final.new-index.raw.gz.part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef8c60b773705c379f9e14b21607f5b10d33021c",
+      "bytes": 349529,
+      "sha256": "1b9b49b8a3807432ed428b541f7c923eec16484da67789b7e688df3d6dc213af",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/final.new-index.raw.gz.part-001.b64",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/final.new-index.raw.gz.part-002.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "289e68d88cfaf6b96f6a745595d6c92a40f81480",
+      "bytes": 349529,
+      "sha256": "a1e263ba62bff0ecf7d4ee1bd520d923adea11cd9dec53de2d43ab6256bff5e8",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/final.new-index.raw.gz.part-002.b64",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/index-readback/final.new-index.raw.gz.part-003.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0ad9ab853f3b19dbbbb6b8da6b00935e92b7433",
+      "bytes": 269733,
+      "sha256": "1004d3741ccd046d029f9f5717208b6c60dfd202611862887a800d5258a06ec5",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/index-readback/final.new-index.raw.gz.part-003.b64",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/initial.git-metadata.json.gz.part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8eb3a9131ba9cdd69b81e92a2c933d09f7f2f42",
+      "bytes": 1041,
+      "sha256": "6017976137adfbc148897f9d19b65454d84f7ba804f9686350618fe5bdd3b14c",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/initial.git-metadata.json.gz.part-001.b64",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/initial.git-metadata.json.gz.part-001.b64.READ_01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d11eb484b34bae92927cd46290b3392a379da58",
+      "bytes": 1889,
+      "sha256": "afdde4e47607545f20111a0b520d474c821f7fa3b700c074262b467f27e01571",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/materialization/initial.git-metadata.json.gz.part-001.b64.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "cc57-isolated-materialization-v1/reconciliation-01/FROZEN_MATERIALIZATION_CAPTURE_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4c952dd849cd20393df97be97bb6ff43ed660ef5",
+      "bytes": 25559,
+      "sha256": "a4cbccc0c829f23251a3cda126cfaee75dab81e09323236e38087f0686f40d32",
+      "local": "/tmp/hepta-36fa-native-ci-resumed-20261113T0255/FROZEN_MATERIALIZATION_CAPTURE_MANIFEST.json",
+      "full_readback_equal": true
+    }
+  ],
+  "binary_originals": [
+    {
+      "name": "final.new-index.raw.gz",
+      "bytes": 726586,
+      "sha256": "6890fb3f37231e9f86a1c7f6579db11cbd4fa94ec1fbfd39f06e59c20407a565",
+      "git_blob": "e1f51553d0c7e68acac9970bf747d19caa4dfb4b"
+    },
+    {
+      "name": "final.new-index.raw",
+      "bytes": 2072488,
+      "sha256": "95547dcfed1945bb06b5400468ec228037cff5374b674ca033a7f66468b34193",
+      "git_blob": "015ff2e2d1525f7aec80ea19fbd2a27cd267a1d7"
+    }
+  ],
+  "binary_retention": "Both complete binary originals are on the cloud filesystem; their exact bytes are durably represented by all three base64 parts, the complete 12 pinned H read SDKs, and INDEX_FULL_READBACK_MANIFEST. This placement does not claim a UTF-8 Git upload of the binary originals.",
+  "full_physical_inventory": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9",
+  "native_inventory": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+  "object_scope": "Two complete snapshots cc57 and246d, 16449 objects; not complete ancestry.",
+  "old_scene": "15181 present plus the original 7 missing; original four fixed Git files/refs/lookup indirections preserved. Entire old object-store metadata was outside scope."
+}

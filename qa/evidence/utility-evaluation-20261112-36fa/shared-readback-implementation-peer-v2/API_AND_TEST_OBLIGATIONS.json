@@ -1,0 +1,125 @@
+{
+  "format": "hepta-shared-readback-integration-obligations-v1",
+  "scope": "Static obligations for the exact production packet plus Linux cfg increment; no registrations or tests were applied by this review.",
+  "new_explicit_functions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "visibility": "pub(crate)",
+      "name": "seal_original_completed_readback"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "visibility": "pub(crate)",
+      "name": "from_original_evaluated_shared_receipt_owner"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "visibility": "pub",
+      "name": "into_evaluated_shared_command_owner"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "visibility": "pub(crate)",
+      "name": "seal_original_readback_owners"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "visibility": "pub",
+      "name": "into_evaluated_shared_command_owner"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "visibility": "pub(crate)",
+      "name": "from_original_evaluated_shared_receipt_owner"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "visibility": "pub",
+      "name": "read_original_predecessors"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "visibility": "pub(crate)",
+      "name": "require_original_context"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "visibility": "pub(crate)",
+      "name": "original_clients"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "visibility": "pub",
+      "name": "share_original_evaluated_readbacks"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "visibility": "pub(crate)",
+      "name": "seal_original_completed_readback"
+    }
+  ],
+  "trait_implementation": "Clone for OriginalCircuitPublishedEvidenceReadbackV1 is an additional new implementation; it is not included in the 11 explicit pub/pub(crate) declaration count.",
+  "existing_changed_paths_and_functions": [
+    {
+      "path": "circuit_retained_version_state.rs",
+      "functions": [
+        "original_trainer",
+        "original_evaluator"
+      ],
+      "obligation": "Retain complete current/read/recovery guards; register the same-client fallback without weakening their original caller fences."
+    },
+    {
+      "path": "circuit_evaluated_selection_command_service.rs",
+      "functions": [
+        "observe_original"
+      ],
+      "obligation": "Add the explicit SharedEvaluated branch and actual owner path to the original caller/protection inventory."
+    },
+    {
+      "path": "circuit_evaluated_next_use_command_service.rs",
+      "functions": [
+        "observe_original"
+      ],
+      "obligation": "Add the explicit SharedEvaluated branch and exact original T/E then S then final Source/Cell order."
+    },
+    {
+      "path": "circuit_retained_version_host.rs",
+      "functions": [
+        "existing Fresh and Recovered constructors"
+      ],
+      "obligation": "Register only the new shared_evaluated=None field initialization and module linkage; original construction authority remains unchanged."
+    }
+  ],
+  "registration_work_remaining": [
+    "Run the unchanged complete source collector over the eventual integrated and formatted source; classify all new public and crate-visible functions rather than inventing a new total from this lexical list.",
+    "Record actual new caller edges for export, context sealing, both client seals, shared S/C factories/adapters, context matching, readonly reads and the two Version state fallbacks.",
+    "Protect complete owner/currentness/origin/receipt-equality/phase/one-way-spend/partial-failure bodies after actual rustfmt. Do not freeze unformatted string markers as final fences.",
+    "Update existing exact allowlist and required QA/Root inventories for the actual integrated changes and actual test parent methods. This production packet supplies no new test parent names.",
+    "Retain the original full source/native gates, filters, 8 MiB stack, per-case overrides, aggregate request bounds and deadlines. Existing cc57 source PASS is not a PASS for this candidate."
+  ],
+  "required_behavioral_evidence_not_in_this_packet": [
+    "Actual successful Published evaluated NoUpdate host export, same-host Version/S/C construction, and real original T/E owner reads.",
+    "Fresh/Awaiting, Prepared, Installed-before-Published, Denied/Uncertain, wrong purpose and failed recovered-current windows reject export; recovery only admits a reader after the original complete checks.",
+    "Missing either retained client or a partial T-success/E-failure consumes the taken clients, clears reader admission and cannot restore Fresh, reconnect or reset request state.",
+    "Full receipt/signature/context mismatch is rejected both during attenuation and at shared S/C construction and observation.",
+    "Multiple aliases share one channel slot, original nonce/counter, the same aggregate request budget and absolute deadline; internal Execute references fail before I/O after attenuation.",
+    "A deliberately overlapping alias read retains original Unavailable behavior. Cancellation of the actual exchange await preserves its original absent-slot semantics.",
+    "Cancellation of the outer share await is a separate case: a started blocking conversion can continue; caller delivery is Unknown, with only readonly retained state or a fail-closed partial state, never restored Fresh.",
+    "Complete same-host route must actually fit the original T=4/E=3 arrangement and original aggregate/time budgets; static review does not prove those runtime counts or successful scheduling."
+  ],
+  "included_in_candidate": {
+    "new_behavior_tests": 0,
+    "new_QA_files": 0,
+    "CALLERS_changes": 0,
+    "allowlist_changes": 0,
+    "Root_inventory_changes": 0
+  },
+  "executed_by_reviewer": {
+    "H": 0,
+    "Cargo": 0,
+    "rustfmt": 0,
+    "Rust_tests": 0,
+    "source_gates": 0,
+    "source_mutations": 0
+  }
+}

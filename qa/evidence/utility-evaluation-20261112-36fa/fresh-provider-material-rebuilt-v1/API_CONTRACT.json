@@ -1,0 +1,63 @@
+{
+  "format": "hepta-fresh-provider-material-api-contract-v1",
+  "status": "TEST_ONLY_UNCOMPILED",
+  "source": {
+    "bytes": 16553,
+    "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0",
+    "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224"
+  },
+  "parent_mount": {
+    "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+    "reference_before": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+    "append": "\n#[path = \"circuit_resident_candidate_provider_material_support_tests.rs\"]\nmod resident_provider;\n",
+    "integration": "ordinary appends on actual combined parent, preserving all previous mounts. Additional orchestrator children are separate additions; do not overwrite this frozen constructor."
+  },
+  "factories": [
+    {
+      "signature": "ProviderAdmission::new().await -> anyhow::Result<ProviderAdmission>",
+      "public_to_parent": [
+        "objective: Digest32",
+        "trust_time: u64",
+        "source_c: CircuitTaskSourceInputV1"
+      ],
+      "held_private": [
+        "original A support::Admission",
+        "separate actual C support::Admission"
+      ],
+      "note": "source previews are not RunStart or completion; original signed C request remains held"
+    },
+    {
+      "signature": "UnstartedProvider::new(admission, evaluation_profile: Digest32).await -> anyhow::Result<UnstartedProvider>",
+      "precondition": "construct PreparedBPanel with admission.objective/trust_time first; supply its registration().evaluation_profile(); do not change a signed initial profile later",
+      "fields": [
+        "trainer: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore,FileAnchorWitnessStore>>",
+        "material_owner: Arc<OriginalCellQ24MaterialCommandOwnerV1<FileAnchorWitnessStore,FileAnchorWitnessStore,FileAnchorWitnessStore>>",
+        "material: OriginalCellQ24MaterialReceiptConfigV1",
+        "baseline: Arc<LoadedCellQ24ModelV1>",
+        "bundle: CellCompatibilityBundleV1",
+        "definition: CellDefinitionV1",
+        "ledger: Arc<Mutex<LedgerWriter>>",
+        "credentials: material::Credentials",
+        "previous: CircuitTaskSourcePublicationV1",
+        "source_a: CircuitTaskSourceInputV1",
+        "config_a: CellGenerationConfigV2",
+        "a: Option<support::Session>",
+        "c: Option<support::Admission>",
+        "source_c: CircuitTaskSourceInputV1",
+        "version: VersionFixture",
+        "root: PathBuf"
+      ]
+    },
+    {
+      "signature": "UnstartedProvider::original_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>>",
+      "note": "reads original source journal/witness even after A is taken, plus original ledger/material/training/baseline files; missing files remain error"
+    },
+    {
+      "signature": "UnstartedProvider::finish(self).await -> anyhow::Result<[u64;4]>",
+      "precondition": "join all external owners/services and release all extra Trainer/Material Arc clones first; if A was taken, caller owns its actual stop/join and retention of its home directory"
+    }
+  ],
+  "observer_binding": "The existing enrolled credentials.observer is chosen before material::unstarted_material_with_profile freezes initial owners. The actual later C owner must use this same TrustedLearningSignerV1 and original fixture key43. SourceInput has no observer getter.",
+  "preserved_c_request": "Before a later retained_version_task_inputs consumes C Admission, caller must preserve the actual C ingress needed for the actual new daemon. Do not substitute another request or support::start a second C factory.",
+  "no_parent_source_edit_in_this_packet": true
+}

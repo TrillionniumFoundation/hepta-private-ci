@@ -1,0 +1,104 @@
+{
+  "format": "hepta-fresh-provider-material-rebuilt-manifest-v1",
+  "identity": "fresh-provider-material-rebuilt-v1",
+  "cutoff_utc": "2026-11-13 03:09:01 UTC",
+  "status": "PREPARATION_NOT_FORMATTED_COMPILED_EXECUTED",
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "base_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "source_change": {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+    "mode": "100644",
+    "before": null,
+    "after": {
+      "bytes": 16553,
+      "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0",
+      "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224"
+    }
+  },
+  "source_packet": {
+    "bytes": 21633,
+    "sha256": "aef29188736a9f48b0db9e0b902c8c174384f7507572ff17b8ce7515a3ac3d41",
+    "git_blob": "4a2aabfb2cca405e57aa26994ebe97cdcd6e6b94"
+  },
+  "api": {
+    "bytes": 3621,
+    "sha256": "3b7fdea9b9abc573e480bd6db11b73c4f992db8f34c851937a0c3786773f6c44",
+    "git_blob": "6979146f9886858108aeadd3fd282d5332978a92"
+  },
+  "references": "all exact canonical source identities in STATIC_REVIEW; no inherited test PASS",
+  "old_cloud_drafts": {
+    "recovered": false,
+    "reason": "8494/9491-byte drafts were not durably frozen; this is a new implementation"
+  },
+  "actual_full_readbacks": 8,
+  "artifacts": [
+    {
+      "name": "source/circuit_resident_candidate_provider_material_support_tests.rs",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "bytes": 16553,
+      "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0",
+      "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224",
+      "full_readback_equal": true
+    },
+    {
+      "name": "API_CONTRACT.json",
+      "bytes": 3621,
+      "sha256": "3b7fdea9b9abc573e480bd6db11b73c4f992db8f34c851937a0c3786773f6c44",
+      "git_blob": "6979146f9886858108aeadd3fd282d5332978a92",
+      "full_readback_equal": true
+    },
+    {
+      "name": "STATIC_REVIEW.json",
+      "bytes": 8116,
+      "sha256": "adaa8b7fbfeadf8fcb5626535471845ca16b82383c94d5c8dbe26ae6f88e230c",
+      "git_blob": "2dbc7a3069cb663f1955cb8af067a0c14cba7f32",
+      "full_readback_equal": true
+    },
+    {
+      "name": "SOURCE_PACKET.json",
+      "bytes": 21633,
+      "sha256": "aef29188736a9f48b0db9e0b902c8c174384f7507572ff17b8ce7515a3ac3d41",
+      "git_blob": "4a2aabfb2cca405e57aa26994ebe97cdcd6e6b94",
+      "full_readback_equal": true
+    },
+    {
+      "name": "changes.patch",
+      "bytes": 17282,
+      "sha256": "b53c2e36e07ef203251fff3d25d7a021d21d8a1f012b02ec856805b4e7878c79",
+      "git_blob": "be13a9c6cb8efb1242d2459e3d4800d06a225fcc",
+      "full_readback_equal": true
+    },
+    {
+      "name": "README.md",
+      "bytes": 6299,
+      "sha256": "8da9aa88cbfdb6770014294561c3d54b6ccfc2ed71f5a350bbd179805e8f0abd",
+      "git_blob": "08b7c441d6ab2d553e1f126886d47405ddba22f1",
+      "full_readback_equal": true
+    },
+    {
+      "name": "SOURCE_GITHUB.original.json",
+      "bytes": 36599,
+      "sha256": "c8df2740e671fbd5ad7a8489f35155e5bdba995fe477c01f318c51e237e6fdc6",
+      "git_blob": "65a3f93a22f6c437864729594e20dcb60c2a78c9",
+      "full_readback_equal": true
+    },
+    {
+      "name": "METADATA_GITHUB.original.json",
+      "bytes": 202954,
+      "sha256": "912936206e1c911c8ddf3aaa62c0d7b569d1c1305fca77779dc3405efa79339a",
+      "git_blob": "4c1e29239243d4712cecc83694aa1d7e47acf9c2",
+      "full_readback_equal": true
+    }
+  ],
+  "active_checkout_changes": 0,
+  "source_ref_changes": 0,
+  "executions": {
+    "H": 0,
+    "formatter": 0,
+    "compile": 0,
+    "AST": 0,
+    "tests": 0,
+    "gates": 0
+  },
+  "integration": "ordinary alone merges the new resident_provider mount and orchestrator children onto actual combined parents. Existing code and tests remain unchanged."
+}

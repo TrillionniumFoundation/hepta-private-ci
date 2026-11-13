@@ -1,0 +1,87 @@
+{
+  "format": "independent-isolated-cc57-materializer-peer-v1",
+  "verdict": "NO_CONCRETE_BLOCKER_IN_REVIEWED_HOLD_V4",
+  "scope": "Independent complete source reading of the fixed materializer and exact incremental changes, followed by pure local byte/AST/Merkle reconstruction. No reviewed driver main, H action, Git repository mutation, materialization, Cargo, formatter, test, or gate was executed by this review.",
+  "driver": {
+    "path": "/tmp/hepta-36fa-cc57-isolated-materializer-v1/driver-v4.HOLD.py",
+    "bytes": 57607,
+    "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436",
+    "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f"
+  },
+  "packet": {
+    "path": "/tmp/hepta-36fa-cc57-isolated-materializer-v1/MATERIALIZATION_PACKET.HOLD.json",
+    "bytes": 13764,
+    "sha256": "b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3",
+    "git_blob": "06503652a2895120daf8b66e42b3a01cefeaf4fb"
+  },
+  "pure_reconstruction_result": {
+    "path": "/tmp/hepta-36fa-isolated-materializer-peer-v1/STATIC_BYTE_REVIEW.json",
+    "bytes": 3563,
+    "sha256": "16d65d6ae18dfbebbaa0d5e1c470f75e865c919369d440d68befb0e36174c9f3",
+    "git_blob": "1c9861e4d8526b4f0f270eef7c3220f950024c5e"
+  },
+  "source_and_authorization_boundary": {
+    "old_source": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "new_source": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+    "canonical_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "canonical_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "sole_parent": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "formal_config_still_required": true,
+    "no_native_qualification_authorization_from_this_review": true,
+    "new_source_create_only": true,
+    "old_source_repair": false,
+    "retry_or_rollback": false,
+    "remote_source_or_evidence_ref_updates": false,
+    "old_native_1cd4_precondition_failure_remains_unchanged": true
+  },
+  "verified_design": [
+    {
+      "functions": ["preflight", "old_git_state", "source_physical", "source_leaf", "final_old"],
+      "finding": "Before creating a destination, the script requires the retained actual 1d0a normal supervisor and exact availability result, then freshly rereads all 15181 existing physical leaves and requires exactly the original seven missing archive paths. Their original canonical identities sum to 18176884 bytes. Copying rereads every existing leaf and requires its complete byte identity and stable stat to equal preflight; the final audit repeats the complete old physical check.",
+      "old_git_scope": "Four fixed original files (HEAD, index, config, observed retired-artifacts ref) retain exact raw bytes and the observed stat identities; the full ref listing and explicitly absent lookup paths must also remain equal. The script does not claim to inventory every file in the old object database. Old source Git commands are read-only for-each-ref and cat-file operations; mutations are confined to the newly created destination."
+    },
+    {
+      "functions": ["expected_graphs", "tree_objects", "raw_commit_fields", "create_destination", "verify_import"],
+      "finding": "The retained 15188-leaf canonical inventory reconstructs B7 exactly. The five original parent preimages reconstruct the full 246d tree d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087. Both authentic commit bodies retain their original SHA, author/committer bytes and ordered parents. The exact union is 16449 objects: 14615 blobs, 1832 trees and two commits. Each copied/current blob and each separately fetched parent blob is hashed against its original Git object identity and SHA256 before a no-delta PACK v2 is built. The new independent object database is then read back completely with cat-file --batch.",
+      "history_limit": "This is two complete snapshots and two authentic commits. The 246d parent 9c4a11f61d30e9cc352bf44d56c98909d202a55d is explicitly unmaterialized. There are no shallow files, grafts, replace refs, alternates, network fetches, history walks or claims of complete ancestry."
+    },
+    {
+      "functions": ["real_directory", "destination_leaf", "create_destination", "initialize_index", "verify_index", "current_git_state", "git_metadata"],
+      "finding": "The fixed new target must be absent and is created with exclusive new ownership. Canonical paths are checked for traversal and file/directory collisions; parent paths must be real directories. Ordinary files use exclusive no-follow creation, exact original mode and fsync. Symlink targets are copied as original link bytes and checked without dereferencing. A normal new index is created with read-tree (without -u/-m/reset), detached HEAD is set only in the new repository, update-index --refresh is explicit, and write-tree must equal B7. All 15188 raw index entries, logical object IDs, modes, flags and actual stat fields are checked. The new Git directory has no copied refs or object lookup indirections; its complete metadata is hashed and compared before/after final audit. New files and directories are synced."
+    },
+    {
+      "functions": ["destination_physical", "native_projection", "final_new"],
+      "finding": "The unchanged original 5118 inventory algorithm must actually run in the new destination and produce all 15188 leaves and exact raw inventory 5611184 bytes / SHA256 13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9. Its exact five-field native projection must equal 3530181 bytes / SHA256 20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9. The damaged old-source compact snapshot remains separately bound to 3529180 bytes / SHA256 6c28a1e1291c9c96879718e6c1b81028f9fa12c9ba358123090852d5b6e72b8f. This review only rederived these expected identities; it did not observe a new physical destination."
+    },
+    {
+      "functions": ["active_build_processes", "check_processes", "preflight", "final_inputs"],
+      "finding": "The original same-UID Cargo/formatter global guard remains in place and records observed candidates before rejection. The source coordination EX lock must have the exact already-observed inode, device, mode, owner and single-link identity, held through final audit. This only coordinates cooperating task writers; full physical/raw-Git checks remain mandatory. System Git is fully pinned; its single-link requirement was supported by the retained runtime observation, not inferred. External controls and the original inventory module are byte-pinned and reread at final audit."
+    },
+    {
+      "functions": ["command", "ObjectReader", "retain_existing_output", "main"],
+      "finding": "The 600-second preparation and 180-second retention budgets remain unchanged, with an intended independent 900-second outer envelope. Wrapper alarm is disabled during owned subprocess cleanup; actual command return codes are only recorded after observation. Own-child cleanup is bounded and missing terminal results remain Unknown. No unrelated process is killed. Final retention reserves the last ten seconds for control records, preserves the creation journal and input pack, and attaches exact command, mutation, input and artifact record identities to RESULT. Success additionally requires action_completed, no operation/cleanup/retention error, and all three complete final audits verified. Partial targets are retained and never automatically reset or retried."
+    }
+  ],
+  "incremental_review": {
+    "initial_driver_git_blob": "8bbdb73beb9156a70943c71067bb37efab056317",
+    "initial_top_level_definitions": 53,
+    "v4_top_level_definitions": 54,
+    "unchanged_initial_definitions": 48,
+    "changed": ["command", "ObjectReader", "initialize_index", "final_old", "main"],
+    "added": ["retain_existing_output"],
+    "v3_to_v4_only_change": "Four existing jwrite return identities are attached to RESULT; no source/object/permission/timeout predicate changed."
+  },
+  "approval_conditions": [
+    "Root must freeze an exact approved config and launcher/request for this same driver and packet. The current WAITING_CONFIG_V4 remains HOLD, root_execution_approved=false, qualification=false.",
+    "The actual execution must satisfy all live preconditions and complete final audits. A new target or changed old source, old Git bytes/stats/refs, tool identity or unknown process observation must reject; the review does not authorize bypassing those conditions.",
+    "A successful materializer result would establish an isolated source preparation only. New source admission and the original native qualification require their own current proof binding and authorization; no old source-gate or library/focused result is inherited.",
+    "The declared limited Git history must be kept explicit. If a later original command actually needs an older anchor, obtain and validate the authentic original object; do not invent a replacement commit or weaken a source identity check."
+  ],
+  "not_claimed": [
+    "No actual new materialization or qualification result.",
+    "No current or future runtime, deadline or disk-space success from this static review.",
+    "No attribution of the earlier seven missing files or retired-artifacts ref to a writer.",
+    "No proof that noncooperating external processes cannot race the filesystem; the stable reads and terminal comparisons detect observations within the stated scope.",
+    "No full-history fsck or complete old object-store metadata preservation claim."
+  ]
+}

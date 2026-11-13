@@ -1,0 +1,149 @@
+{
+  "all_actual_full_readbacks_or_previous_exact_objects_verified": true,
+  "all_frozen_bytes_verified": true,
+  "all_old_paths_preserved": true,
+  "base_files": 3638,
+  "base_head": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+  "evidence_branch_changed": false,
+  "format": "hepta-post3638-verified-frozen-window-v1",
+  "frozen_selected_rows_identity": {
+    "bytes": 136067,
+    "git_blob": "0f93214c6507964dce3fb049bc8f1db4576d45f4",
+    "sha256": "26bc6374030d6d26099c0306167811c4705339e110875a36096c958d56ebe995"
+  },
+  "incremental_paths": 186,
+  "later_active_admission_and_full_provider_work_excluded": true,
+  "lossless_transports": [
+    {
+      "complete_reconstruction_matches_frozen_original": true,
+      "gzip": {
+        "bytes": 128266,
+        "git_blob": "d8e79f76404db0d8b9f5d142a26a8b50dd35d8ee",
+        "sha256": "8e1bc30c55bfc57855771f957c48dd298fc1a6af085a0a40d4f3795a0616e2f4"
+      },
+      "parts": 1,
+      "path": "checkpoint3638-unpublished-wording-preparation-v1/PUBLISH_PLAN.json.transport-manifest.json",
+      "raw": {
+        "bytes": 516842,
+        "git_blob": "43d74b0051c860986ad2a2f40ac5858001bdb54a",
+        "sha256": "ea487eb54b832b4848e06b146b8913cdd9b9d0a2ab23d5f3e6ac94a2c260e3fd"
+      }
+    },
+    {
+      "complete_reconstruction_matches_frozen_original": true,
+      "gzip": {
+        "bytes": 327544,
+        "git_blob": "eda6227be4e303564aa41534df68c859403a0b2d",
+        "sha256": "ad49b7d94c2f53323d50a963c8e44059187cf4451e4ac3d8d78d56365a939ad6"
+      },
+      "parts": 2,
+      "path": "checkpoint3638-unpublished-wording-preparation-v1/leaf.READ.response.json.transport-manifest.json",
+      "raw": {
+        "bytes": 2579536,
+        "git_blob": "5b787758f8ffbdd6dc2490fcde13f5d8b1760e44",
+        "sha256": "cd6096841bf6f7384232694563703d60cf624fcaac785859c972fa763725399e"
+      }
+    },
+    {
+      "complete_reconstruction_matches_frozen_original": true,
+      "gzip": {
+        "bytes": 128264,
+        "git_blob": "85d550da1f3a4621e3745c4902d6c3980eab89f7",
+        "sha256": "a873f0656a0d60321bba742f7c05307df5bf46a0d0025972c59581a0b03ceff7"
+      },
+      "parts": 1,
+      "path": "checkpoint3638-actual-publication-v2/PUBLISH_PLAN.json.transport-manifest.json",
+      "raw": {
+        "bytes": 516842,
+        "git_blob": "dd9d121d4102fd907c3ff55d4faa266c4b7494f4",
+        "sha256": "37336eb3b8de9f0e89ccc2cadfeebfc390d3099afc344be8542263c6cc0a935d"
+      }
+    },
+    {
+      "complete_reconstruction_matches_frozen_original": true,
+      "gzip": {
+        "bytes": 327549,
+        "git_blob": "5ba33605d13930a9c698635a953b6ce452f98188",
+        "sha256": "61ad2fe16545a85f37ca43625e07d03d6b5ba478b848aa6e92effaa501a413ef"
+      },
+      "parts": 2,
+      "path": "checkpoint3638-actual-publication-v2/leaf.READ.response.json.transport-manifest.json",
+      "raw": {
+        "bytes": 2579536,
+        "git_blob": "c34f9e20fa4686b7b3cfbc3e233323df867aadd7",
+        "sha256": "89471f6d51634d1e44bd3a734ef0d74f116abf908a98962086f65f5de17e841a"
+      }
+    }
+  ],
+  "new_full_readback_files": 117,
+  "new_readback_errors": 0,
+  "old_readme_unchanged": true,
+  "outputs": [
+    {
+      "bytes": 213807,
+      "git_blob": "c142533cbf44745d29733d2ed8739b023b0ed03b",
+      "path": "/tmp/hepta-36fa-post3638-evidence-preparation-v1/VERIFIED_INCREMENTAL_ENTRIES.json",
+      "sha256": "a6569568bd1b95d7f3538bb00de0714438d43f2e299195a4893150326bf9a64a"
+    },
+    {
+      "bytes": 23225,
+      "git_blob": "027e51d5bc3a87eb9055ee58139a80881b03d4d7",
+      "path": "/tmp/hepta-36fa-post3638-evidence-preparation-v1/INCREMENTAL_FILEMAP.json",
+      "sha256": "71e378dba474ccfb3eb7cd9026a4a03dc3ff53403f107954cea4b67997e21263"
+    },
+    {
+      "bytes": 452215,
+      "git_blob": "2d40c9782d6592fbf92088e98ba39e1f170131a0",
+      "path": "/tmp/hepta-36fa-post3638-evidence-preparation-v1/FULL_FILEMAP.json",
+      "sha256": "93a02649723ca33c0c7a1d17e2c31c17b357a2e29e0f3962c4d3c3eb52535cd6"
+    }
+  ],
+  "real_qualified_task_chains": 0,
+  "scope": {
+    "H_calls_by_collection": 0,
+    "actual_availability": "1d0a normal success: 16439 metadata objects and 1836 complete bodies checked in its original observation window; not a later live source check.",
+    "base_count": 3638,
+    "duplicates_preserved": [],
+    "format": "hepta-post3638-completed-evidence-selection-v1",
+    "frozen_at_utc": "2026-11-13T02:10:54.300244+00:00",
+    "later_active_admission_and_full_provider_work_excluded": true,
+    "lossless_large_transports": 4,
+    "materialization": "One exact request, no job ID. Original launch and independent host-health calls returned tunnel_client_not_seen/404. Admission and actual execution remain Unknown; no fabricated terminal, source inventory or Git baseline.",
+    "native": "Earlier 1cd4 precondition refusal remains zero behavioral stages. No new native result.",
+    "new_paths_before_this_report": 185,
+    "old_paths_changed": [],
+    "old_readme_unchanged": true,
+    "path_normalizations": [
+      {
+        "leaf_relative": "object-availability-peer-v1/REVIEW.json",
+        "original": "qualification/hepta-utility-36fa-20261112/object-availability-peer-v1/REVIEW.json"
+      },
+      {
+        "leaf_relative": "object-availability-peer-v1/review_static.py",
+        "original": "qualification/hepta-utility-36fa-20261112/object-availability-peer-v1/review_static.py"
+      },
+      {
+        "leaf_relative": "object-availability-peer-v1/GITHUB_FULL_READBACK.json",
+        "original": "qualification/hepta-utility-36fa-20261112/object-availability-peer-v1/GITHUB_FULL_READBACK.json"
+      },
+      {
+        "leaf_relative": "isolated-source-environment-peer-v1/REVIEW.json",
+        "original": "qualification/hepta-utility-36fa-20261112/isolated-source-environment-peer-v1/REVIEW.json"
+      },
+      {
+        "leaf_relative": "isolated-source-environment-peer-v1/review_static.py",
+        "original": "qualification/hepta-utility-36fa-20261112/isolated-source-environment-peer-v1/review_static.py"
+      },
+      {
+        "leaf_relative": "isolated-source-environment-peer-v1/GITHUB_FULL_READBACK.json",
+        "original": "qualification/hepta-utility-36fa-20261112/isolated-source-environment-peer-v1/GITHUB_FULL_READBACK.json"
+      }
+    ],
+    "provider_components": "Frozen V2 public-transport/idle tests and Fresh T-to-B component only. Not formatted, compiled, executed, activated or a complete public ten-owner deployment.",
+    "published_base_head": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+    "real_qualified_task_chains": 0,
+    "source_or_refs_modified_by_collection": false
+  },
+  "source_branch_changed": false,
+  "total_files": 3824
+}

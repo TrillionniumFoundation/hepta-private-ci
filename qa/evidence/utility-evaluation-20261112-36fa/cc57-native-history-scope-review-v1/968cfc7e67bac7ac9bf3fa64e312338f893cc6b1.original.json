@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 77,
+    "index_blob": "968cfc7e67bac7ac9bf3fa64e312338f893cc6b1",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/linux-sandbox/build.rs",
+    "permissions": 420,
+    "sha256": "9a58f252be8ae4baabc9ebc1db9f9923d1a9345cd44bce3ce7b76c94942743bb",
+    "stable": true,
+    "working_blob": "968cfc7e67bac7ac9bf3fa64e312338f893cc6b1"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "fn main() {\n    println!(\"cargo:rerun-if-env-changed=CODEX_BWRAP_SHA256\");\n}\n"
+    },
+    "isError": false
+  }
+}

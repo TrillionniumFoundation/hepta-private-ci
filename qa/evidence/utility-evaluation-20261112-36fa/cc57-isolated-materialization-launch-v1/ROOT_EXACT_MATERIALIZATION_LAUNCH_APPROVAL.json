@@ -1,0 +1,123 @@
+{
+  "H_calls_by_this_review": 0,
+  "actual_availability_root_review_git_blob": "7d8a96cfce3531592c634e8de7d661b5cd44c668",
+  "authority_scope": "The user-authorized engineering recovery is limited to the fixed create-only isolated source and control directory, using the reviewed v4 driver. No old source/ref/index repair, rollback, retry, test, activation, merge, remote ref update or new task authority is authorized by this record.",
+  "budgets_seconds": {
+    "action": 600,
+    "outer": 900,
+    "records": 180
+  },
+  "complete_actual_git_readbacks": {
+    "ACTUAL_BOOTSTRAP.py": {
+      "actual_full_payload_fields": [
+        "$.fetch.structuredContent.content"
+      ],
+      "identity": {
+        "bytes": 5868,
+        "git_blob": "702e32c7a53a3b19dc9925cad54eaff676aadb47",
+        "sha256": "b315044d34bac950b2b92d9ed1fdd4f3eb9e7f90234399f58db818219249f343"
+      }
+    },
+    "ACTUAL_PROCESS_INPUT.json": {
+      "actual_full_payload_fields": [
+        "$.fetch.structuredContent.content"
+      ],
+      "identity": {
+        "bytes": 109095,
+        "git_blob": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+        "sha256": "7e8caf48364c4b58a737af0a1b888e97730e7b53d0c23bdb79dc786031e704a5"
+      }
+    },
+    "ACTUAL_STDIN.json": {
+      "actual_full_payload_fields": [
+        "$.fetch.structuredContent.content"
+      ],
+      "identity": {
+        "bytes": 102842,
+        "git_blob": "21b6bacc578526fce331faa9ebd38ea3bb43b41f",
+        "sha256": "d23dfcd7a5c20267e37239e40a5e635f5b97f7d23057872cc12b742796727387"
+      }
+    },
+    "EXACT_LAUNCH_MANIFEST.json": {
+      "actual_full_payload_fields": [
+        "$.fetch.structuredContent.content"
+      ],
+      "identity": {
+        "bytes": 4032,
+        "git_blob": "3807f3d3ecfe630383b79045ca52a8df39fbaf99",
+        "sha256": "d488dbb66a9c27391688d0ac72b717cc90d380c57c50bf96fbf5d9681963fb9c"
+      }
+    },
+    "FROM_ORIGINAL_BOOTSTRAP.diff": {
+      "actual_full_payload_fields": [
+        "$.fetch.structuredContent.content"
+      ],
+      "identity": {
+        "bytes": 4703,
+        "git_blob": "6fd8f0bd82f6b3e34657d590bc7bf8a91c08b21f",
+        "sha256": "dc77dc5054c1264d48550da88f06841b3a908f07443781774cecf1513d27b0cd"
+      }
+    },
+    "seal_exact_launch.py": {
+      "actual_full_payload_fields": [
+        "$.fetch.structuredContent.content"
+      ],
+      "identity": {
+        "bytes": 8060,
+        "git_blob": "d3cc9bfe6d17d41337681d37a65f2944993ced47",
+        "sha256": "9f4cc251556359b889009f2db636801d72feb44ed0e7f703e59784c946a107db"
+      }
+    }
+  },
+  "cwd": "/home/qian-qi",
+  "decision": "APPROVE_ONE_EXACT_ISOLATED_MATERIALIZATION_REQUEST",
+  "executable": "/usr/bin/python3",
+  "five_exact_decoded_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 992,
+      "git_blob": "692d2b825dcbb38eb95e91c0fb5f67afa39d0518",
+      "sha256": "414a52cdd7802f5d84de65ee70422a14eb93d799ca46912a9d618f734bffe6a0"
+    },
+    "AVAILABILITY_RESULT.original.json": {
+      "bytes": 11954,
+      "git_blob": "365a11bbfc183a05d76076da08301ce227847191",
+      "sha256": "7631a19a48c56b4a37b396b97d57f19793baa67cdb37e31acb7a3dd79f397a22"
+    },
+    "AVAILABILITY_SUPERVISOR.original.json": {
+      "bytes": 956,
+      "git_blob": "432eeed53c480af77bd3b79fef43d3f96f1ca22c",
+      "sha256": "417a8191432b901a1b1c625518e31ae77e51150ee9494c616fe16da04a56c3de"
+    },
+    "MATERIALIZATION_PACKET.json": {
+      "bytes": 13764,
+      "git_blob": "06503652a2895120daf8b66e42b3a01cefeaf4fb",
+      "sha256": "b2a62c45873fe6c37257df5561accd9d30dcf2d7ca969de6968fec7ac1e3acc3"
+    },
+    "driver.py": {
+      "bytes": 57607,
+      "git_blob": "972ec74449b113a95b4ec098e562a565f23aa82f",
+      "sha256": "5717afe87597089462b685014d0687f0d45a3416f5a1d65580f69f26c9650436"
+    }
+  },
+  "format": "hepta-root-exact-isolated-materialization-launch-approval-v1",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-cc57-isolated-materialization-v1",
+  "independent_driver_review_git_blob": "27817d854b232280025ab3195fa383b6c1985e61",
+  "original_four_bootstrap_helpers_byte_identical": true,
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "request": {
+    "bytes": 109095,
+    "git_blob": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+    "sha256": "7e8caf48364c4b58a737af0a1b888e97730e7b53d0c23bdb79dc786031e704a5"
+  },
+  "required_completion": "Actual normal supervisor plus full RESULT, commands, mutation intents, inputs and artifacts; all original final audits verified and complete canonical inventory/raw-Git readback before a separate native admission.",
+  "reviewed_at_utc": "2026-11-13T02:03:55.764824+00:00",
+  "root_full_driver_review_precedes_this_exact_launcher_review": true,
+  "unknown_admission_rule": "Reconcile this same exact idempotency key. Never submit another key to bypass an unobserved admission or a partial destination.",
+  "verification_script": {
+    "bytes": 7059,
+    "git_blob": "2ff9537e5340178480714e72bb0c202b4b73d589",
+    "sha256": "9e1daf2968148d789b27d019d78754b848e56c94d1ac713a8212c9188e1a9571"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "format": "hepta-shared-readback-test-mount-contract-v1",
+  "status": "REQUIRES_ORDINARY_SINGLE_WRITER_INTEGRATION",
+  "candidate_base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "production_packet": "92a1567ac32c886d9d7386fb80915071475528bf",
+  "mounts": [
+    {
+      "parent_path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "reference_before_blob": "8c73e1d0fc2a4a489031edf42723a29af1cde6e1",
+      "reference_kind": "earlier separate completion-observer candidate; merge this append with all preserved additions",
+      "append": "\n#[path = \"cell_q24_training_shared_readback_test_support.rs\"]\npub(crate) mod shared_readback;\n",
+      "parent_is_cfg_test": true
+    },
+    {
+      "parent_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "reference_before_blob": "639f3d799c69a54c4583ee24ce87956ec149a07f",
+      "reference_kind": "exact cc57 parent; preserve ordinary shared-export child and all existing tests",
+      "append": "\n#[path = \"circuit_evaluated_version_shared_readback_tests.rs\"]\nmod shared_readback_tests;\n",
+      "parent_is_cfg_test": true
+    }
+  ],
+  "required_test_only_dependencies": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "git_blob": "49411b029236b814a6a2f21efc22f86585a88e11",
+      "signatures": [
+        "fixture_read_original_trainer(&self) -> Result<OriginalCellQ24TrainingCommandReceiptV1, OriginalCellQ24TrainingCommandErrorV1> (async)",
+        "fixture_same_original_clients(&self, other: &Self) -> bool",
+        "fixture_original_trainer_next_request_id(&self) -> Result<Option<u64>, OriginalCellQ24TrainingCommandErrorV1>"
+      ],
+      "note": "first hook performs actual original readback; it advances real request/retained state. The other two observe without mutation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_observation_tests.rs",
+      "git_blob": "e4322de280617f3cec445b4b5211cc8659e18816",
+      "signatures": [
+        "fixture_readback_next_request_id(&self) -> Result<Option<u64>, Error>"
+      ],
+      "note": "try_lock on original slot; no counter, channel, lifetime or execution flag write"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "git_blob": "91dd820a4069b8faaab1274f5b3918b144e3b2e9",
+      "note": "ordinary production bundle ce1c498 plus cfg(test) support mount only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "git_blob": "fab5600f505aa7c8c039aa0990ec38ca01d15c83",
+      "note": "ordinary T seal17596 plus cfg(test) observer mount only"
+    }
+  ],
+  "boundary": "No parent or production file is edited by this two-file packet. Integrator must record actual combined afterimages and preserve existing methods and mounts."
+}

@@ -1,0 +1,220 @@
+{
+  "existing_edge_candidates": [
+    {
+      "candidate_all_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "id": "root_resident_coordinator_run",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "old_all_product_callers": [],
+      "old_touched_product_callers": [],
+      "symbol": "RootResidentLearningRuntimeV3::run"
+    },
+    {
+      "candidate_all_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "id": "root_resident_original_stream_serve",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "old_all_product_callers": [],
+      "old_touched_product_callers": [],
+      "symbol": "RootResidentLearningHandleV3::serve_original_stream"
+    },
+    {
+      "candidate_all_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "id": "learning_original_candidate_stage_create",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "old_all_product_callers": [],
+      "old_touched_product_callers": [],
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams"
+    },
+    {
+      "candidate_all_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "id": "learning_original_candidate_stage_recover",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "old_all_product_callers": [],
+      "old_touched_product_callers": [],
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams"
+    },
+    {
+      "candidate_all_product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "id": "root_resident_candidate_runtime_consume",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "old_all_product_callers": [],
+      "old_touched_product_callers": [],
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime"
+    }
+  ],
+  "format": "hepta-changed-overlay-caller-inspection-v1",
+  "full_source_collector_executed": false,
+  "new_explicit_boundary_candidates": [
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "id": "root_candidate_handoff_send",
+      "observed_overlay_callers": [],
+      "receiver_type": null,
+      "symbol": "send_root_candidate_stage_handoff"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "id": "root_candidate_handoff_receive",
+      "observed_overlay_callers": [],
+      "receiver_type": null,
+      "symbol": "receive_root_candidate_stage_handoff"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "id": "root_candidate_handoff_consume_original_streams",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "receiver_type": "RootCandidateStageHandoffV1",
+      "symbol": "RootCandidateStageHandoffV1::into_original_streams"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "id": "learning_original_candidate_handoff_deadline_restrict",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "id": "root_resident_candidate_service_consume_registration",
+      "observed_overlay_callers": [],
+      "receiver_type": "RootResidentLearningRegistrationV3",
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_service"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "id": "root_resident_candidate_service_run",
+      "observed_overlay_callers": [],
+      "receiver_type": "RootResidentCandidateServiceV1",
+      "symbol": "RootResidentCandidateServiceV1::run"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "id": "learning_original_training_completed_readback_seal",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ],
+      "receiver_type": "OriginalCellQ24TrainingCommandClientV1",
+      "symbol": "OriginalCellQ24TrainingCommandClientV1::seal_original_completed_readback"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "id": "learning_original_evaluation_completed_readback_seal",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      ],
+      "receiver_type": "OriginalCellEvaluationCommandClientV1",
+      "symbol": "OriginalCellEvaluationCommandClientV1::seal_original_completed_readback"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "id": "learning_evaluated_retention_readback_owners_seal",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs"
+      ],
+      "receiver_type": "OriginalCircuitEvaluatedRetentionContextV1",
+      "symbol": "OriginalCircuitEvaluatedRetentionContextV1::seal_original_readback_owners"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "id": "learning_evaluated_selection_shared_command_create",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+      ],
+      "receiver_type": "OriginalCircuitSelectionCommandOwnerV1",
+      "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "id": "learning_evaluated_selection_shared_command_adapter",
+      "observed_overlay_callers": [],
+      "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+      "symbol": "OriginalCircuitSelectionReceiptOwnerV1::into_evaluated_shared_command_owner"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "id": "learning_evaluated_next_use_shared_command_create",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+      ],
+      "receiver_type": "OriginalCircuitNextUseCommandOwnerV1",
+      "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_shared_receipt_owner"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "id": "learning_evaluated_next_use_shared_command_adapter",
+      "observed_overlay_callers": [],
+      "receiver_type": "OriginalCircuitNextUseReceiptOwnerV1",
+      "symbol": "OriginalCircuitNextUseReceiptOwnerV1::into_evaluated_shared_command_owner"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "id": "learning_published_shared_original_predecessors_read",
+      "observed_overlay_callers": [],
+      "receiver_type": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "symbol": "OriginalCircuitPublishedEvidenceReadbackV1::read_original_predecessors"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "id": "learning_published_shared_original_context_require",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      ],
+      "receiver_type": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "symbol": "OriginalCircuitPublishedEvidenceReadbackV1::require_original_context"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "id": "learning_published_shared_original_clients_borrow",
+      "observed_overlay_callers": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      ],
+      "receiver_type": "OriginalCircuitPublishedEvidenceReadbackV1",
+      "symbol": "OriginalCircuitPublishedEvidenceReadbackV1::original_clients"
+    },
+    {
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "id": "learning_version_published_original_readbacks_share",
+      "observed_overlay_callers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::share_original_evaluated_readbacks"
+    }
+  ],
+  "original_boundary_count": 569,
+  "product_paths_in_overlay": 21,
+  "scope": "Only changed-file product source was scanned with the unchanged original scanner. Unchanged caller sets are inherited candidates, not globally reverified observations.",
+  "source_paths": 46,
+  "source_qualification": false,
+  "status": "PREPARATION_ONLY_NOT_FULL_COLLECTOR",
+  "uncertainties": []
+}

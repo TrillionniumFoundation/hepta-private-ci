@@ -1,0 +1,146 @@
+{
+  "format": "hepta-version-next-use-source-review-v1",
+  "identity": "version-owned-evaluated-next-use-seam-v1",
+  "at_utc": "2026-11-13T03:45:55.488066+00:00",
+  "verdict": "STATIC_SOURCE_AND_BYTE_CHECKS_COMPLETE_RUNTIME_UNVERIFIED",
+  "source_packet": {
+    "bytes": 96737,
+    "sha256": "f0982a24bb14c48e63eca1723b888e01dfe3433d30467607891205ad3c07f5ec",
+    "git_blob": "2b331b488fd789421f9731e3637d882bb57d7f0a"
+  },
+  "source_paths": 6,
+  "new_paths": 4,
+  "modified_paths": 2,
+  "inverse_full_bytes": {
+    "Version_host": true,
+    "read_service": true
+  },
+  "unchanged_contracts_and_old_serving": true,
+  "actual_checks": [
+    "Whole host restored by removal of the one new module mount.",
+    "Whole original read_service restored by removal of new import, new methods and test module mount.",
+    "Every reference file matched its exact canonical cc57 Git blob; no live branch fetched.",
+    "One shared 128-request loop for the two new typed NextUse purposes; original loops untouched.",
+    "Both pre-handler and post-handler absolute-end checks are in the actual exchange closure.",
+    "Version original four-permit pool, 500ms exchange and at-most-300s transport bounds retained.",
+    "Same Version lock covers live original admission, original C reader construction, full second read and final freshness.",
+    "Exact original four-cut context plus full T/E/S signature authentication precedes reader return.",
+    "The tests obtain opaque S through the new same-original-command-owner readonly API and compare all original bytes.",
+    "All new test helpers use *_tests.rs; no collector ignore, thresholds, permissions or source policy changed."
+  ],
+  "semantic_scope": {
+    "admission": "actual Published, original Material/D/T/E/Artifact/CURRENT/C with full original signature equality and final S authentication",
+    "per_response": "unchanged original C/Source/profile and full T/E/S signature checks; absolute Version end before and after response generation",
+    "live_T_E": "original same shared clients at Version admission, and existing NextUse Sources before/after actual C reads; no extra channel or queue",
+    "idle": "original HAP relative lifetime/peer checks remain; not a claim of exact HAP end equality or instantaneous idle close at Version end",
+    "cancel": "blocking readonly work may outlive a dropped await until its actual bound; no automatic retry or delivery claim",
+    "missing_pending": "original readiness only; not NoUpdate, NoEffect, or permission to execute C"
+  },
+  "test_methods_prepared": [
+    "version_owned_next_use_reads_same_c_after_real_completion",
+    "version_owned_next_use_rejects_another_actual_original_s_cut",
+    "version_owned_next_use_rechecks_actual_b_after_shared_export",
+    "version_owned_next_use_refuses_four_cut_selection_requests",
+    "version_owned_next_use_rejects_already_elapsed_absolute_end",
+    "version_owned_next_use_rejects_original_response_crossing_absolute_end"
+  ],
+  "test_scope": "actual original A/T/B/S and published C in existing cold same-process fixture; not Fresh Root/public UID/real utility proof",
+  "deadline_probe": "unchanged actual readiness response is formed, then yielded within a 250ms narrowed deadline inside the original 500ms envelope; no fabricated wire or changed clock",
+  "pending": [
+    "ordinary_path applies the single separate recovery-parent test mount without overwriting existing mounts",
+    "Root registers new production boundaries/scopes after actual formatting",
+    "Rust compile/type/privacy validation and all six real fixture executions remain unperformed",
+    "Public cross-UID transport and Fresh ten-owner orchestration remain separate unverified integration work",
+    "Normal startup must serialize admissions by successful original probes; shared client contention retains Unavailable without queuing",
+    "An authentic foreign-operation S test constructs two real fixture operations; it must retain the unchanged native 60s budget"
+  ],
+  "executions": {
+    "H": false,
+    "Cargo": false,
+    "rustfmt": false,
+    "Rust_tests": false,
+    "gate": false,
+    "source_activation": false,
+    "ref_updates": false
+  },
+  "references": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs",
+      "bytes": 1610,
+      "sha256": "43468f4d8b43529d192d692df2d81b025a4f38dc3484c3a6dddb426fac64d1af",
+      "git_blob": "03a40cad03821f7eb80552af29c0d720c6b44446"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "bytes": 9175,
+      "sha256": "e477c4add7255164ebaf29b1472327b504c690c1e4b32fb897f58f249a70af53",
+      "git_blob": "749a448516c46079683536ffdbc1714432bf3023"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs",
+      "bytes": 9881,
+      "sha256": "57569f510f7923589041706ef110c06026cff82bcc8ea930252f0f8f788c63ed",
+      "git_blob": "3312383c8b0fcc6053758eabc7ab04c6bab4c4c5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "bytes": 15361,
+      "sha256": "638960b10793c4ee351d22bb0e58db8e797d578d36209570bc1ec769a79652f2",
+      "git_blob": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "bytes": 5718,
+      "sha256": "fa5cc5336720a595eb072492d95c160ae1a0637eedafec3232a82c9ef832a70f",
+      "git_blob": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "bytes": 14849,
+      "sha256": "94afec745aac0dd7050c179651eaf91ac11b780eccdb01c1e48586c63f37222c",
+      "git_blob": "fbc73f0dc7140625e56b6e5b409e9e5469a247ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs",
+      "bytes": 2248,
+      "sha256": "adabb18677de98a65b1d4ab70c06256506181f38968ba1c28f296e497aa3f59f",
+      "git_blob": "662f86dbde5364b95985595f09a7826efb8613de"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "bytes": 7209,
+      "sha256": "9415299402ccae131ed4eefee22ff259a2b638841f6a53d3c17fa790d78c7194",
+      "git_blob": "3224ca4aa80e8841fc902979c4042d177f647f69"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "bytes": 9941,
+      "sha256": "86fbd7cd4f61e2cd9b5b9314384c820ec078d14742c23c6275c7b4ff24e50504",
+      "git_blob": "4db1399444a01432f056f71e7322990750f3ce0f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "bytes": 10187,
+      "sha256": "0cb42e81da32b3aece7398fd8f74ddce20a82b69939a3597c08d2894156eca60",
+      "git_blob": "a2b190518040968eba90448016908974e69d6e40"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "bytes": 11113,
+      "sha256": "26f09f954a8ccdda618c35ec789eeb7dd59c85fbb23c4fa86315dee50230f3d7",
+      "git_blob": "96c2e18be1761e4c81da04bf5081a1bd57313305"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "bytes": 8949,
+      "sha256": "ebbc285c1b54c06a9ce330a657af9b4b31c5b0c6befe24de10dd038676cc5218",
+      "git_blob": "38be926458be8a3b1db0e5c22e1336dc1c8737f8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "bytes": 13794,
+      "sha256": "a9f42d0adf35cc27c54d72c58a283ef64208ca26fcf939605bb3e86681c4b495",
+      "git_blob": "28a97fd7da6a322e530585d04088f7962617c0c1"
+    }
+  ]
+}

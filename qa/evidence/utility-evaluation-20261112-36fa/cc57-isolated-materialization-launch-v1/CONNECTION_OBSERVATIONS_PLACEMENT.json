@@ -1,0 +1,43 @@
+{
+  "actual_materialization_observed": false,
+  "execution_state": "unknown_no_job_observed",
+  "files": [
+    {
+      "bytes": 480,
+      "local": "/tmp/hepta-36fa-cc57-isolated-materialization-launch-v1/DISPATCH_INTENT.json",
+      "observation": "local intent before the unique exact request",
+      "path": "cc57-isolated-materialization-v1/DISPATCH_INTENT.json",
+      "sha": "9b8f31e9b2e41ec87e036f3c1b92306bb05a27ac",
+      "sha256": "b0dcb4daa30c334c411dbdcfbf24acbc30ff7f0c137408d11a6f72ce2bdbff92"
+    },
+    {
+      "bytes": 997,
+      "local": "/tmp/hepta-36fa-cc57-isolated-materialization-launch-v1/ADMISSION.original.json",
+      "observation": "initial exact H process-start return",
+      "path": "cc57-isolated-materialization-v1/ADMISSION.original.json",
+      "sha": "c43b0f4240939af6f0d39a016edc87077794c607",
+      "sha256": "821ddf8bd6d9cac3bf71e2294e841902b75536c85470a86232536920d2dd7ffa"
+    },
+    {
+      "bytes": 997,
+      "local": "/tmp/hepta-36fa-cc57-isolated-materialization-launch-v1/HOST_HEALTH_01.original.json",
+      "observation": "one independent bounded H host-health return",
+      "path": "cc57-isolated-materialization-v1/HOST_HEALTH_01.original.json",
+      "sha": "c43b0f4240939af6f0d39a016edc87077794c607",
+      "sha256": "821ddf8bd6d9cac3bf71e2294e841902b75536c85470a86232536920d2dd7ffa"
+    }
+  ],
+  "format": "hepta-isolated-materialization-unavailable-transport-placement-v1",
+  "host_health_calls": 1,
+  "idempotency_key": "hepta-utility-36fa-cc57-isolated-materialization-v1",
+  "initial_dispatch_calls": 1,
+  "known_job_id": null,
+  "new_control_or_source_creation_observed": false,
+  "qualification": false,
+  "recorded_at": "2026-11-13T02:06:07.645851+00:00",
+  "request_git_blob": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+  "root_exact_approval": "b83401f565882785233c2ac34f273ae3cfa0b0ac",
+  "same_key_reconciliation_calls": 0,
+  "scope": "Both original tool responses are retained; no new key, repair, alternate channel, or native main was dispatched. Future reconciliation must use the exact original request and idempotency key.",
+  "transport_error": "tunnel_client_not_seen / NOT_FOUND / 404; client not seen for 300 seconds"
+}

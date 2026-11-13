@@ -1,0 +1,17 @@
+--- driver-v3.HOLD.py
++++ driver-v4.HOLD.py
+@@ -992,10 +992,10 @@
+                 result['status'] = 'MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY' if success else 'FAILED_ISOLATED_MATERIALIZATION'
+                 result['old_source_writes'] = False
+                 result['finished_at'] = now()
+-                jwrite('COMMANDS.json', commands)
+-                jwrite('MUTATION_INTENTS.json', intents)
+-                jwrite('INPUT_IDENTITIES.before.json', inputs)
+-                jwrite('ARTIFACTS.json', artifacts)
++                result['command_records'] = jwrite('COMMANDS.json', commands)
++                result['mutation_records'] = jwrite('MUTATION_INTENTS.json', intents)
++                result['input_records'] = jwrite('INPUT_IDENTITIES.before.json', inputs)
++                result['artifact_records'] = jwrite('ARTIFACTS.json', artifacts)
+                 jwrite('RESULT.json', result)
+                 event('isolated_materialization_complete', status=result['status'], qualification=False)
+             finally:

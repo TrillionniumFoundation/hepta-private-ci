@@ -1,0 +1,170 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
+@@ -85,6 +85,27 @@
+         Self::complete_with_trainer(
+             original_plan, provider, initial, training, training_evidence,
+             scope, generator, evaluator, verifier, retention_receipt_digests,
++            Some(Arc::new(trainer)),
++        )
++    }
++
++    /// Both B tasks keep the same original read-only client, not a new peer.
++    pub(crate) fn complete_from_shared_original_trainer<'a>(
++        original_plan: ProviderPlanFixture,
++        provider: ProviderAt,
++        initial: &'a LearningIterationSnapshotV1,
++        training: LearningIterationSnapshotV1,
++        training_evidence: SignedLearningEvidenceV1,
++        scope: &'a FrozenLearningScopeV2,
++        generator: &'a TrustedLearningSignerV1,
++        evaluator: &'a TrustedLearningSignerV1,
++        verifier: LearningEvidenceVerifierV1,
++        retention_receipt_digests: Vec<Digest32>,
++        trainer: Arc<crate::LearningIterationEvidenceClientV1>,
++    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
++        Self::complete_with_trainer(
++            original_plan, provider, initial, training, training_evidence,
++            scope, generator, evaluator, verifier, retention_receipt_digests,
+             Some(trainer),
+         )
+     }
+@@ -100,7 +121,7 @@
+         evaluator: &TrustedLearningSignerV1,
+         verifier: LearningEvidenceVerifierV1,
+         retention_receipt_digests: Vec<Digest32>,
+-        original_trainer: Option<crate::LearningIterationEvidenceClientV1>,
++        original_trainer: Option<Arc<crate::LearningIterationEvidenceClientV1>>,
+     ) -> anyhow::Result<Self> {
+         let ProviderPlanFixture {
+             mut fixture,
+@@ -245,7 +266,7 @@
+                     verifier,
+                     training_evidence,
+                 )?;
+-                (trainer, Some(thread))
++                (Arc::new(trainer), Some(thread))
+             }
+         };
+         // Do not inline the original Qualification readback state into the
+@@ -278,7 +299,7 @@
+             candidate_plan: fixture.candidate_temporal,
+             baseline_plan: fixture.baseline_temporal,
+             executions,
+-            trainer: Arc::new(trainer),
++            trainer,
+             cohort,
+         };
+         Ok(Self {
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
+@@ -115,6 +115,25 @@
+         input: &'a CompletedTrainingInputs<'a>,
+         primary_trainer: LearningIterationEvidenceClientV1,
+         retention_trainer: LearningIterationEvidenceClientV1,
++    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
++        self.complete_with_trainers(input, Arc::new(primary_trainer), Arc::new(retention_trainer))
++    }
++
++    /// Existing production PanelMemberOwners already takes Arc evidence-only
++    /// clients. Sequential B reads share one original channel and its limits.
++    pub(in super::super) fn complete_with_shared_original_trainer<'a>(
++        self,
++        input: &'a CompletedTrainingInputs<'a>,
++        trainer: Arc<LearningIterationEvidenceClientV1>,
++    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
++        self.complete_with_trainers(input, Arc::clone(&trainer), trainer)
++    }
++
++    fn complete_with_trainers<'a>(
++        self,
++        input: &'a CompletedTrainingInputs<'a>,
++        primary_trainer: Arc<LearningIterationEvidenceClientV1>,
++        retention_trainer: Arc<LearningIterationEvidenceClientV1>,
+     ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
+         Box::pin(async move {
+             let Self { mut primary, mut retention, registration } = self;
+@@ -174,7 +193,7 @@
+     input: &CompletedTrainingInputs<'_>,
+     registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+     retention_receipt_digests: Vec<Digest32>,
+-    trainer: LearningIterationEvidenceClientV1,
++    trainer: Arc<LearningIterationEvidenceClientV1>,
+ ) -> anyhow::Result<PanelMemberFixture> {
+     b.populate_from_original_training(
+         input.previous, input.baseline, input.candidate,
+@@ -189,7 +208,7 @@
+         &cohort.original, &b.rule, &input.training, input.manifests.clone(),
+     )?;
+     let provider = cohort.consume(runner.plan.clone())?;
+-    Box::pin(PanelMemberFixture::complete_from_original_trainer(
++    Box::pin(PanelMemberFixture::complete_from_shared_original_trainer(
+         runner, provider, &input.material.initial, input.training.clone(),
+         input.training_evidence.clone(), &input.material.scope,
+         &input.credentials.generator, &input.credentials.evaluator,
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
+@@ -250,3 +250,64 @@
+     OriginalCellQ24TrainingCommandOwnerV1::fixture_completed_candidate_receipt(&original)
+         .map_err(Error::from)
+ }
++
++impl OriginalTrainingPeers {
++    /// Same original handlers, with only one purpose-bound evidence channel
++    /// for the primary and retention members' existing local Arc sharing.
++    /// This private transport fixture is not a public-permit admission test.
++    pub(crate) fn new_shared<
++        TW: AnchorWitnessStore + Send + 'static,
++        RW: AnchorWitnessStore + Send + 'static,
++    >(
++        owner: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++    ) -> anyhow::Result<Self> {
++        let lifetime = Duration::from_secs(300);
++        let (candidate, mut candidate_server, close_candidate) =
++            crate::OriginalCellQ24TrainingCommandConnectionV1::fixture_peer_with_shutdown(
++                material.clone(), lifetime,
++            )?;
++        let (trainer, mut trainer_server, close_trainer) =
++            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
++                material, lifetime,
++            )?;
++        let mut result = Self {
++            candidate: Some(candidate),
++            trainers: [Some(trainer), None],
++            shutdown: vec![close_candidate, close_trainer],
++            servers: Vec::new(),
++        };
++        let candidate_owner = Arc::clone(&owner);
++        result.servers.push(std::thread::spawn(move || {
++            candidate_owner.serve_candidate_material_channel(&mut candidate_server)
++        }));
++        result.servers.push(std::thread::spawn(move || {
++            owner.serve_original_training_readback_channel(&mut trainer_server)
++        }));
++        Ok(result)
++    }
++
++    pub(crate) fn take_shared_trainer(
++        &mut self,
++    ) -> anyhow::Result<crate::OriginalCellQ24TrainingReadbackConnectionV1> {
++        anyhow::ensure!(self.servers.len() == 2 && self.trainers[1].is_none(),
++                        "one original shared Trainer transport fixture");
++        self.trainers[0].take()
++            .ok_or_else(|| anyhow::anyhow!("one original shared Trainer connection"))
++    }
++
++    pub(crate) fn finish_shared(mut self) -> anyhow::Result<[u64; 2]> {
++        self.close();
++        let mut counts = Vec::new();
++        let mut failure = None;
++        for server in self.servers.drain(..) {
++            match server.join() {
++                Ok(Ok(count)) => counts.push(count),
++                Ok(Err(error)) => { if failure.is_none() { failure = Some(anyhow::Error::from(error)); } }
++                Err(_) => { if failure.is_none() { failure = Some(anyhow::anyhow!("original Trainer peer panicked")); } }
++            }
++        }
++        if let Some(error) = failure { return Err(error); }
++        counts.try_into().map_err(|_| anyhow::anyhow!("both actual Trainer peers joined"))
++    }
++}

@@ -1,0 +1,49 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "scope": "Independent review of sealed shared-readback production v2 plus exact Linux cfg increment",
+  "entries": [
+    {
+      "path": "shared-readback-implementation-peer-v2/REVIEW.json",
+      "bytes": 12988,
+      "sha256": "666e268236fba44f614a4a2691c3019d0212efaf0edd798de458cd500f30d9d9",
+      "git_blob": "74ae18f40c85e603a13b17a194c7d75d571a0f38",
+      "actual_full_readback_equal": true
+    },
+    {
+      "path": "shared-readback-implementation-peer-v2/SOURCE_BYTE_PROOF.json",
+      "bytes": 29938,
+      "sha256": "8221b9c70e3aa4bcd542236168ef471a672fcf3504e62c700e1f9c1e4635ccfe",
+      "git_blob": "75095ecef31092fa9878052a275d3e8a529dc470",
+      "actual_full_readback_equal": true
+    },
+    {
+      "path": "shared-readback-implementation-peer-v2/API_AND_TEST_OBLIGATIONS.json",
+      "bytes": 6431,
+      "sha256": "8f64d35bba6312f75d064a85f2998289d6b22f6f8fbf3a97e5868058864f44d7",
+      "git_blob": "470c13f92d8e3f387ed32acc67f016484cecb9e5",
+      "actual_full_readback_equal": true
+    },
+    {
+      "path": "shared-readback-implementation-peer-v2/review_bytes.js",
+      "bytes": 7906,
+      "sha256": "4a5a3732f13f48fcc7411facc656d5372a3bd2f6d03e7c25bf759b85fdeb0e3d",
+      "git_blob": "e68c5291bd84cce2c5c06f43ada9f8f4a3e5fc96",
+      "actual_full_readback_equal": true
+    },
+    {
+      "path": "shared-readback-implementation-peer-v2/hash_bytes.js",
+      "bytes": 3016,
+      "sha256": "3c74977a65ae4d64e812e7da63590b92f39efcf34f1c5908f4592af0c600d8c9",
+      "git_blob": "153a31341d11f1144fd026bea8829dfc88bacb18",
+      "actual_full_readback_equal": true
+    }
+  ],
+  "source_inputs": {
+    "packet": "92a1567ac32c886d9d7386fb80915071475528bf",
+    "manifest": "23ff230431ca67bd0fa77b5fdb52ff0a4004dc01",
+    "cfg_increment_packet": "812b8308dbec3ee818bcbb7eae41fb60da10e086",
+    "cfg_increment_manifest": "6ed069dc213bb5c24872f0f98da5f21adeab8655"
+  },
+  "qualifying_execution": false,
+  "local_note": "Created and fully read back directly in Git during Cloud recovery; no local file path is asserted."
+}

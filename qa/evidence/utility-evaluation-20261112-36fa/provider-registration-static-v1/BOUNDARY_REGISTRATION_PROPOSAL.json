@@ -1,0 +1,365 @@
+{
+  "baseline": {
+    "bytes": 1577765,
+    "git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+    "sha256": "13a03ff7b69506cac47dbf25d3803083ba0e750c72c31f9ce3c3519250dff3ec"
+  },
+  "baseline_boundary_count": 569,
+  "baseline_protected_count": 422,
+  "callers_file_written": false,
+  "callers_path": "CALLERS.toml",
+  "candidate_boundary_count_if_exact_six_added": 575,
+  "existing_edge_changes": [
+    {
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn run(mut self, root_cancellation: CancellationToken)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "id": "root_resident_coordinator_run",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningRuntimeV3",
+        "symbol": "RootResidentLearningRuntimeV3::run"
+      },
+      "candidate_after_fields": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn run(mut self, root_cancellation: CancellationToken)"
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+        "id": "root_resident_coordinator_run",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "receiver_type": "RootResidentLearningRuntimeV3",
+        "symbol": "RootResidentLearningRuntimeV3::run"
+      },
+      "literal_marker_finalization": "pending actual formatter and complete collector",
+      "observed_call": {
+        "form": "explicit UFCS",
+        "line": 116,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "position": 403
+    },
+    {
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn serve_original_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_stream_serve",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningHandleV3",
+        "symbol": "RootResidentLearningHandleV3::serve_original_stream"
+      },
+      "candidate_after_fields": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn serve_original_stream("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        "id": "root_resident_original_stream_serve",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "receiver_type": "RootResidentLearningHandleV3",
+        "symbol": "RootResidentLearningHandleV3::serve_original_stream"
+      },
+      "literal_marker_finalization": "pending actual formatter and complete collector",
+      "observed_call": {
+        "form": "explicit UFCS",
+        "line": 113,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "position": 404
+    },
+    {
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_streams("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_create",
+        "product_callers": [],
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams"
+      },
+      "candidate_after_fields": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_streams("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_create",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams"
+      },
+      "literal_marker_finalization": "pending actual formatter and complete collector",
+      "observed_call": {
+        "form": "explicit UFCS",
+        "line": 80,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "position": 429
+    },
+    {
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_original_streams("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_recover",
+        "product_callers": [],
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams"
+      },
+      "candidate_after_fields": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn recover_original_streams("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "id": "learning_original_candidate_stage_recover",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+        "symbol": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams"
+      },
+      "literal_marker_finalization": "pending actual formatter and complete collector",
+      "observed_call": {
+        "form": "explicit UFCS",
+        "line": 78,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "position": 430
+    },
+    {
+      "before": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn into_candidate_runtime("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_candidate_runtime_consume",
+        "product_callers": [],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime"
+      },
+      "candidate_after_fields": {
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn into_candidate_runtime("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "id": "root_resident_candidate_runtime_consume",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+        ],
+        "receiver_type": "RootResidentLearningRegistrationV3",
+        "symbol": "RootResidentLearningRegistrationV3::into_candidate_runtime"
+      },
+      "literal_marker_finalization": "pending actual formatter and complete collector",
+      "observed_call": {
+        "form": "explicit UFCS",
+        "line": 85,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "position": 434
+    }
+  ],
+  "final_body_markers_frozen": false,
+  "format": "hepta-provider-call-boundary-structure-proposal-v1",
+  "full_collector_run": false,
+  "new_boundary_candidates": [
+    {
+      "absence_claim_scope": "No global caller absence is claimed; fixed V1 overlay observations only.",
+      "caller_markers": null,
+      "complete_source_collection_required": true,
+      "definition_line": 74,
+      "definition_markers": null,
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "definition_source": {
+        "bytes": 12564,
+        "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+        "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a"
+      },
+      "final_product_callers": null,
+      "observed_call": null,
+      "observed_product_callers_in_fixed_v1_overlay": [],
+      "receiver_type": null,
+      "suggested_id": "root_candidate_handoff_send",
+      "symbol": "send_root_candidate_stage_handoff",
+      "visibility": "pub"
+    },
+    {
+      "absence_claim_scope": "No global caller absence is claimed; fixed V1 overlay observations only.",
+      "caller_markers": null,
+      "complete_source_collection_required": true,
+      "definition_line": 133,
+      "definition_markers": null,
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "definition_source": {
+        "bytes": 12564,
+        "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+        "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a"
+      },
+      "final_product_callers": null,
+      "observed_call": null,
+      "observed_product_callers_in_fixed_v1_overlay": [],
+      "receiver_type": null,
+      "suggested_id": "root_candidate_handoff_receive",
+      "symbol": "receive_root_candidate_stage_handoff",
+      "visibility": "pub"
+    },
+    {
+      "absence_claim_scope": "No global caller absence is claimed; fixed V1 overlay observations only.",
+      "caller_markers": null,
+      "complete_source_collection_required": true,
+      "definition_line": 149,
+      "definition_markers": null,
+      "definition_path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "definition_source": {
+        "bytes": 12564,
+        "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+        "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a"
+      },
+      "final_product_callers": null,
+      "observed_call": {
+        "form": "typed parameter method call",
+        "line": 74,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "observed_product_callers_in_fixed_v1_overlay": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "receiver_type": "RootCandidateStageHandoffV1",
+      "suggested_id": "root_candidate_handoff_consume_original_streams",
+      "symbol": "RootCandidateStageHandoffV1::into_original_streams",
+      "visibility": "pub(crate)"
+    },
+    {
+      "absence_claim_scope": "No global caller absence is claimed; fixed V1 overlay observations only.",
+      "caller_markers": null,
+      "complete_source_collection_required": true,
+      "definition_line": 121,
+      "definition_markers": null,
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "definition_source": {
+        "bytes": 12663,
+        "git_blob": "76aaefe1917059fd4004ac938357ce4aed8d8320",
+        "sha256": "1f4b7658e0bb6f8bc59932cf00c9d2b80056af389d1433b3790ecf866ab4ef6a"
+      },
+      "final_product_callers": null,
+      "observed_call": {
+        "form": "explicit UFCS",
+        "line": 82,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+        "source": {
+          "bytes": 7038,
+          "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+          "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+        }
+      },
+      "observed_product_callers_in_fixed_v1_overlay": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      ],
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "suggested_id": "learning_original_candidate_handoff_deadline_restrict",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline",
+      "visibility": "pub(crate)"
+    },
+    {
+      "absence_claim_scope": "No global caller absence is claimed; fixed V1 overlay observations only.",
+      "caller_markers": null,
+      "complete_source_collection_required": true,
+      "definition_line": 58,
+      "definition_markers": null,
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "definition_source": {
+        "bytes": 7038,
+        "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+        "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+      },
+      "final_product_callers": null,
+      "observed_call": null,
+      "observed_product_callers_in_fixed_v1_overlay": [],
+      "receiver_type": "RootResidentLearningRegistrationV3",
+      "suggested_id": "root_resident_candidate_service_consume_registration",
+      "symbol": "RootResidentLearningRegistrationV3::into_candidate_service",
+      "visibility": "pub"
+    },
+    {
+      "absence_claim_scope": "No global caller absence is claimed; fixed V1 overlay observations only.",
+      "caller_markers": null,
+      "complete_source_collection_required": true,
+      "definition_line": 105,
+      "definition_markers": null,
+      "definition_path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "definition_source": {
+        "bytes": 7038,
+        "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+        "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+      },
+      "final_product_callers": null,
+      "observed_call": null,
+      "observed_product_callers_in_fixed_v1_overlay": [],
+      "receiver_type": "RootResidentCandidateServiceV1",
+      "suggested_id": "root_resident_candidate_service_run",
+      "symbol": "RootResidentCandidateServiceV1::run",
+      "visibility": "pub"
+    }
+  ],
+  "new_protected_count": null,
+  "new_protected_rows": null,
+  "required_semantic_protection": [
+    "separate purpose, fixed 21-right order, exact role names and distinct socket identity",
+    "root_pair and actual sender pidfd plus actual recipient PID/boot/start binding",
+    "trusted independent profile and typed materials; no wire origin or owner/grant constructors",
+    "absolute monotonic end, remaining lifetime, timeout bounds and consuming min-only deadline cap",
+    "registration Check before and after original role admission; private readonly fresh/recovery dispatch",
+    "by-value registration/handoff/stages; no Clone/getter/reconnect or returned stage owner",
+    "A EOF does not cancel Root; Root cancellation/finite end cancels and closes only owned work",
+    "original four disposition semantics, old protocols, budgets, assertions and exact caller sets retained"
+  ],
+  "scope_note": "Definition ownership and directly observed V1 product edges only. Test callers and reexports are not counted as product callers; later source additions need fresh complete collection.",
+  "status": "STRUCTURE_ONLY_PENDING_ACTUAL_FORMAT_AND_COMPLETE_COLLECTOR"
+}

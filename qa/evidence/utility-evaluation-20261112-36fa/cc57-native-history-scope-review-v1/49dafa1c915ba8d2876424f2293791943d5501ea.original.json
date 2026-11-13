@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 933,
+    "index_blob": "49dafa1c915ba8d2876424f2293791943d5501ea",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/cli/build.rs",
+    "permissions": 420,
+    "sha256": "7c99b6fb983d233f9d46a62b1f610628359f102964f5681b079a7488262f6a1c",
+    "stable": true,
+    "working_blob": "49dafa1c915ba8d2876424f2293791943d5501ea"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "fn main() {\n    emit_build_identity();\n    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"macos\") {\n        println!(\"cargo:rustc-link-arg=-ObjC\");\n    }\n}\n\nfn emit_build_identity() {\n    use codex_utils_build_identity::BUILD_SOURCE_DIRTY_ENV;\n    use codex_utils_build_identity::BuildIdentity;\n    use codex_utils_build_identity::RELEASE_SOURCE_SHA_ENV;\n\n    println!(\"cargo:rerun-if-env-changed={RELEASE_SOURCE_SHA_ENV}\");\n    println!(\"cargo:rerun-if-env-changed={BUILD_SOURCE_DIRTY_ENV}\");\n    let release_source_sha = std::env::var(RELEASE_SOURCE_SHA_ENV).ok();\n    let source_dirty = std::env::var(BUILD_SOURCE_DIRTY_ENV).ok();\n    let identity = BuildIdentity::resolve(release_source_sha.as_deref(), source_dirty.as_deref())\n        .unwrap_or_else(|error| panic!(\"invalid Codex build identity: {error}\"));\n    println!(\n        \"cargo:rustc-env=CODEX_BUILD_SOURCE_IDENTITY={}\",\n        identity.summary()\n    );\n}\n"
+    },
+    "isError": false
+  }
+}

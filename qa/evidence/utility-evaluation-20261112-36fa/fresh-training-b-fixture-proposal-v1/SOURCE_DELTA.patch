@@ -1,0 +1,721 @@
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs
+@@ -116,3 +116,108 @@
+         anyhow::bail!("bounded original Trainer renewal fault")
+     })
+ }
++
++/// Only test transport custody: one Candidate readback and two Training
++/// evidence channels, all bound to the same actual Bootstrap before D/T.
++/// Shutdown makes every error/drop path terminal; it does not cancel an
++/// already admitted original owner operation or fabricate a successful count.
++pub(crate) struct OriginalTrainingPeers {
++    candidate: Option<crate::OriginalCellQ24TrainingCommandConnectionV1>,
++    trainers: [Option<crate::OriginalCellQ24TrainingReadbackConnectionV1>; 2],
++    shutdown: Vec<std::os::unix::net::UnixStream>,
++    servers: Vec<JoinHandle<Result<u64, Error>>>,
++}
++
++impl OriginalTrainingPeers {
++    pub(crate) fn new<
++        TW: AnchorWitnessStore + Send + 'static,
++        RW: AnchorWitnessStore + Send + 'static,
++    >(
++        owner: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++    ) -> anyhow::Result<Self> {
++        let lifetime = Duration::from_secs(300);
++        let (candidate, mut candidate_server, close_candidate) =
++            crate::OriginalCellQ24TrainingCommandConnectionV1::fixture_peer_with_shutdown(
++                material.clone(), lifetime,
++            )?;
++        let (primary, mut primary_server, close_primary) =
++            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
++                material.clone(), lifetime,
++            )?;
++        let (retention, mut retention_server, close_retention) =
++            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
++                material, lifetime,
++            )?;
++        let mut result = Self {
++            candidate: Some(candidate),
++            trainers: [Some(primary), Some(retention)],
++            shutdown: vec![close_candidate, close_primary, close_retention],
++            servers: Vec::new(),
++        };
++        let candidate_owner = Arc::clone(&owner);
++        result.servers.push(std::thread::spawn(move || {
++            candidate_owner.serve_candidate_material_channel(&mut candidate_server)
++        }));
++        let primary_owner = Arc::clone(&owner);
++        result.servers.push(std::thread::spawn(move || {
++            primary_owner.serve_original_training_readback_channel(&mut primary_server)
++        }));
++        result.servers.push(std::thread::spawn(move || {
++            owner.serve_original_training_readback_channel(&mut retention_server)
++        }));
++        Ok(result)
++    }
++
++    pub(crate) fn take_candidate(
++        &mut self,
++    ) -> anyhow::Result<crate::OriginalCellQ24TrainingCommandConnectionV1> {
++        self.candidate.take().ok_or_else(|| anyhow::anyhow!("one original Candidate connection"))
++    }
++
++    pub(crate) fn take_trainers(
++        &mut self,
++    ) -> anyhow::Result<[crate::OriginalCellQ24TrainingReadbackConnectionV1; 2]> {
++        let first = self.trainers[0].take()
++            .ok_or_else(|| anyhow::anyhow!("one original primary Trainer connection"))?;
++        let second = self.trainers[1].take()
++            .ok_or_else(|| anyhow::anyhow!("one original retention Trainer connection"))?;
++        Ok([first, second])
++    }
++
++    fn close(&mut self) {
++        for stream in &self.shutdown {
++            let _ = stream.shutdown(std::net::Shutdown::Both);
++        }
++        drop(self.candidate.take());
++        for client in &mut self.trainers {
++            drop(client.take());
++        }
++    }
++
++    pub(crate) fn finish(mut self) -> anyhow::Result<[u64; 3]> {
++        self.close();
++        let mut counts = Vec::new();
++        let mut failure = None;
++        for server in self.servers.drain(..) {
++            match server.join() {
++                Ok(Ok(count)) => counts.push(count),
++                Ok(Err(error)) => { if failure.is_none() { failure = Some(anyhow::Error::from(error)); } }
++                Err(_) => { if failure.is_none() { failure = Some(anyhow::anyhow!("original Trainer peer panicked")); } }
++            }
++        }
++        if let Some(error) = failure { return Err(error); }
++        counts.try_into().map_err(|_| anyhow::anyhow!("all three actual Trainer peers joined"))
++    }
++}
++
++impl Drop for OriginalTrainingPeers {
++    fn drop(&mut self) {
++        self.close();
++        // Best-effort error teardown still joins every owned thread. Only the
++        // explicit finish path can return and assert original handler results.
++        for server in self.servers.drain(..) {
++            let _ = server.join();
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs
+@@ -66,3 +66,43 @@
+ )> {
+     pair(material, Origin::Recovered(expected), lifetime)
+ }
++
++// Test-only shutdown custody for real original handlers; no production FD getter.
++impl OriginalCellQ24TrainingCommandConnectionV1 {
++    pub(crate) fn fixture_peer_with_shutdown(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        lifetime: Duration,
++    ) -> anyhow::Result<(
++        OriginalCellQ24TrainingCommandConnectionV1,
++        HostAuthorityPeerChannel,
++        UnixStream,
++    )> {
++        let (client, server) = UnixStream::pair()?;
++        let shutdown = client.try_clone()?;
++        let policy = || HostAuthorityPeerPolicy {
++            // SAFETY: explicit same-process fixture credentials.
++            peer: HostIssuerPeer {
++                uid: unsafe { libc::geteuid() },
++                pid: std::process::id(),
++            },
++            timeout: Duration::from_secs(30).min(lifetime),
++            lifetime,
++            request_bound: 16_384,
++            response_bound: 16_384,
++        };
++        let peer = HostAuthorityPeerChannel::from_stream(client, policy(), transport::pidfd()?)?;
++        let server = HostAuthorityPeerChannel::from_stream(server, policy(), transport::pidfd()?)?;
++        let (initial_binding, _) =
++            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
++        Ok((
++            OriginalCellQ24TrainingCommandConnectionV1 {
++                peer,
++                material,
++                initial_binding,
++                origin: Origin::Fresh,
++            },
++            server,
++            shutdown,
++        ))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs
+@@ -40,3 +40,46 @@
+         channel(server)?,
+     ))
+ }
++
++// Test-only shutdown custody, with the same initial binding and peer policy.
++impl OriginalCellQ24TrainingReadbackConnectionV1 {
++    pub(crate) fn fixture_connection_with_shutdown(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        lifetime: Duration,
++    ) -> anyhow::Result<(
++        OriginalCellQ24TrainingReadbackConnectionV1,
++        HostAuthorityPeerChannel,
++        UnixStream,
++    )> {
++        let (initial_binding, _) =
++            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
++        let (stream, server) = UnixStream::pair()?;
++        let shutdown = stream.try_clone()?;
++        let channel = |stream| -> anyhow::Result<HostAuthorityPeerChannel> {
++            Ok(HostAuthorityPeerChannel::from_stream(
++                stream,
++                HostAuthorityPeerPolicy {
++                    peer: HostIssuerPeer {
++                        // SAFETY: the fixture observes its own credentials.
++                        uid: unsafe { libc::geteuid() },
++                        pid: std::process::id(),
++                    },
++                    timeout: Duration::from_secs(30),
++                    lifetime,
++                    request_bound: 16_384,
++                    response_bound: 16_384,
++                },
++                crate::learning_iteration_evidence_client::command_test_support::pidfd()?,
++            )?)
++        };
++        Ok((
++            OriginalCellQ24TrainingReadbackConnectionV1 {
++                peer: channel(stream)?,
++                material,
++                initial_binding,
++            },
++            channel(server)?,
++            shutdown,
++        ))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+@@ -684,3 +684,6 @@
+ 
+ #[path = "circuit_deep_training_readback_tests.rs"]
+ mod deep_readonly;
++
++#[path = "circuit_resident_candidate_provider_material_support_tests.rs"]
++mod resident_provider;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
+@@ -0,0 +1,263 @@
++//! Staged, mechanism-only B/retention over an actual Fresh Bootstrap T.
++//! Registration precedes T. Neither constructor runs PositiveFixture's
++//! auxiliary Evaluation/Model path. The two real Trainer servers remain owned
++//! by OriginalTrainingPeers outside this fixture and are explicitly joined.
++use super::*;
++use crate::OriginalCellEvaluationHostV1;
++use crate::OriginalCellEvaluationPanelOwnerV1;
++use crate::OriginalCellEvaluationReceiptConfigV1;
++use crate::OriginalCellEvaluationReceiptOwnerV1;
++use crate::OriginalCellEvaluationSigningConfigV1;
++use crate::OriginalCellQ24CandidateMaterialV1;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::neuron_cell_evaluation::tests::original_provider::panel_members::PanelMemberFixture;
++use material::evaluation_provider::DecisionBinding;
++
++type Panel = OriginalCellEvaluationPanelOwnerV1<
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++    FileAnchorWitnessStore,
++>;
++
++/// A borrowed view of original completed inputs, not another owner or signer.
++/// Candidate is opaque production readback material; both manifests are built
++/// from its actual model and the original loaded baseline, without prior E.
++pub(in super::super) struct CompletedTrainingInputs<'a> {
++    material: &'a OriginalCellQ24MaterialReceiptConfigV1,
++    previous: &'a CircuitTaskSourcePublicationV1,
++    training: LearningIterationSnapshotV1,
++    training_evidence: &'a SignedLearningEvidenceV1,
++    baseline: Digest32,
++    candidate: Digest32,
++    manifests: [CellBackendManifestV2; 2],
++    credentials: &'a material::Credentials,
++}
++
++impl<'a> CompletedTrainingInputs<'a> {
++    pub(in super::super) fn from_original_completion(
++        material: &'a OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &'a OriginalCellQ24TrainingCommandReceiptV1,
++        candidate: &OriginalCellQ24CandidateMaterialV1,
++        baseline: &LoadedCellQ24ModelV1,
++        previous: &'a CircuitTaskSourcePublicationV1,
++        source_a: &crate::CircuitTaskSourceInputV1,
++        config_a: &codex_hepta_neuron::CellGenerationConfigV2,
++        credentials: &'a material::Credentials,
++    ) -> anyhow::Result<Self> {
++        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)?;
++        anyhow::ensure!(material.initial.receipts.is_empty() && dataset.snapshot().receipts.len() == 2);
++        anyhow::ensure!(candidate.receipt() == training.receipt());
++        anyhow::ensure!(candidate.attestation() == training.attestation());
++        anyhow::ensure!(candidate.authority() == AuthorityPosture::DENY_ALL);
++        anyhow::ensure!(baseline.components() == &material.initial.request.selected_bundle.components);
++        anyhow::ensure!(previous.input() == source_a);
++        anyhow::ensure!(source_a.scope.run_id == material.initial.request.source_run_id);
++        anyhow::ensure!(source_a.objective_digest == material.initial.request.envelope.objective_digest);
++        anyhow::ensure!(previous.history_digest().as_str().parse::<Digest32>()?
++            == material.initial.request.completed_task_receipt);
++        anyhow::ensure!(credentials.generator.principal.principal_id == material.initial.owners.trainer);
++        anyhow::ensure!(credentials.evaluator.principal.principal_id == material.initial.owners.evaluator);
++        let mut cut = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
++        cut.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
++        anyhow::ensure!(cut.next_stage() == Some(LearningIterationStageV1::Evaluation));
++        anyhow::ensure!(cut.snapshot().receipts.len() == 3);
++        let baseline_bundle = &material.initial.request.selected_bundle;
++        let baseline_definition = support::definition(baseline, baseline_bundle)?;
++        let baseline_manifest = support::configuration(
++            baseline, baseline_bundle, &baseline_definition, source_a, 1,
++        )?.manifest;
++        anyhow::ensure!(baseline_manifest == config_a.manifest);
++        let candidate_definition = support::definition(candidate.model(), candidate.bundle())?;
++        let candidate_manifest = support::configuration(
++            candidate.model(), candidate.bundle(), &candidate_definition, source_a, 2,
++        )?.manifest;
++        Ok(Self {
++            material,
++            previous,
++            training: cut.snapshot().clone(),
++            training_evidence: training.attestation(),
++            baseline: baseline_bundle.digest()?,
++            candidate: candidate.bundle().digest()?,
++            manifests: [candidate_manifest, baseline_manifest],
++            credentials,
++        })
++    }
++}
++
++/// Created before Material/T; its frozen registration is supplied to the
++/// original initial request. No later receipt or profile is rewritten.
++pub(in super::super) struct PreparedBPanel {
++    primary: BFixture,
++    retention: BFixture,
++    registration: crate::OriginalCellEvaluationPanelRegistrationV1,
++}
++
++impl PreparedBPanel {
++    pub(in super::super) fn new(objective: Digest32, trust_time: u64) -> anyhow::Result<Self> {
++        let primary = BFixture::new("original-B", objective, trust_time)?;
++        let retention = BFixture::new("original-retention", objective, trust_time)?;
++        let registration = crate::OriginalCellEvaluationPanelRegistrationV1::new(
++            primary.task()?, vec![retention.task()?],
++        )?;
++        Ok(Self { primary, retention, registration })
++    }
++
++    pub(in super::super) fn registration(&self) -> &crate::OriginalCellEvaluationPanelRegistrationV1 {
++        &self.registration
++    }
++
++    pub(in super::super) fn complete<'a>(
++        self,
++        input: &'a CompletedTrainingInputs<'a>,
++        primary_trainer: LearningIterationEvidenceClientV1,
++        retention_trainer: LearningIterationEvidenceClientV1,
++    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {
++        Box::pin(async move {
++            let Self { mut primary, mut retention, registration } = self;
++            anyhow::ensure!(input.material.initial.request.evaluation_profile == registration.evaluation_profile());
++            anyhow::ensure!(primary.rule.objective_digest == input.material.initial.request.envelope.objective_digest);
++            anyhow::ensure!(primary.at == retention.at);
++            let at = primary.at;
++            // The original retention result is completed first and enters the
++            // primary's signed declaration. Equal supported policies continue
++            // to produce the original honest Ineligible result.
++            let mut retention_member = complete_member(
++                &mut retention, input, &registration, Vec::new(), retention_trainer,
++            ).await?;
++            let digests = vec![retention_member.qualification.product().evidence_digest];
++            let mut primary_member = complete_member(
++                &mut primary, input, &registration, digests, primary_trainer,
++            ).await?;
++            let config = &primary_member.config;
++            let receipt_config = OriginalCellEvaluationReceiptConfigV1 {
++                training: config.training.clone(),
++                scope: config.scope.clone(),
++                plan: config.plan.clone(),
++                signing: OriginalCellEvaluationSigningConfigV1 {
++                    plan: config.plan.product_plan().clone(),
++                    execution_namespace: config.execution_namespace,
++                    signer: input.credentials.evaluator.clone(),
++                    verifier: config.verifier.clone(),
++                    maximum_signature_lifetime_seconds: 600,
++                },
++            };
++            let panel = Panel::from_original_owners(
++                registration,
++                primary_member.take_original_member(),
++                vec![retention_member.take_original_member()],
++            )?;
++            let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
++            let mut result = CompletedBPanel {
++                host: None, config: receipt_config, at, primary, retention,
++                primary_member, retention_member, directory,
++            };
++            let (file, witness) = result.files(true)?;
++            let evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
++                file, witness, result.config.clone(), SigningKey::from_bytes(&[42; 32]),
++            )?;
++            let mut host = evaluator.into_original_evaluation_host(panel)?;
++            // This remains the existing explicit B clock fixture. It is not a
++            // claim of deployed task timing or independently obtained data.
++            host.fixture_original_clock(at)?;
++            result.host = Some(Arc::new(host));
++            Ok(result)
++        })
++    }
++}
++
++async fn complete_member(
++    b: &mut BFixture,
++    input: &CompletedTrainingInputs<'_>,
++    registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
++    retention_receipt_digests: Vec<Digest32>,
++    trainer: LearningIterationEvidenceClientV1,
++) -> anyhow::Result<PanelMemberFixture> {
++    b.populate_from_original_training(
++        input.previous, input.baseline, input.candidate,
++        ObservationMode::Complete, false, DecisionBinding::ExactSource,
++    ).await?;
++    let config = b.config_from_original_training(
++        input.training.clone(), &input.material.scope, input.training_evidence,
++        &input.material.verifier, registration,
++    )?;
++    let cohort = CohortAt::read(b.owners(), config, b.at)?;
++    let runner = ProviderPlanFixture::for_panel(
++        &cohort.original, &b.rule, &input.training, input.manifests.clone(),
++    )?;
++    let provider = cohort.consume(runner.plan.clone())?;
++    Box::pin(PanelMemberFixture::complete_from_original_trainer(
++        runner, provider, &input.material.initial, input.training.clone(),
++        input.training_evidence.clone(), &input.material.scope,
++        &input.credentials.generator, &input.credentials.evaluator,
++        input.material.verifier.clone(), retention_receipt_digests, trainer,
++    )).await
++}
++
++pub(in super::super) struct CompletedBPanel {
++    pub(in super::super) host: Option<Arc<OriginalCellEvaluationHostV1>>,
++    pub(in super::super) config: OriginalCellEvaluationReceiptConfigV1,
++    pub(in super::super) at: u64,
++    primary: BFixture,
++    retention: BFixture,
++    primary_member: PanelMemberFixture,
++    retention_member: PanelMemberFixture,
++    directory: tempfile::TempDir,
++}
++
++impl CompletedBPanel {
++    fn files(&self, create: bool) -> anyhow::Result<(File, FileAnchorWitnessStore)> {
++        let root = self.directory.path();
++        let file = opened(root, "original-evaluation", create)?;
++        let witness = original_witness(
++            root, "original-evaluation-witness", &self.config.scope,
++            self.config.signing.verifier.objective_digest(), create,
++        )?;
++        Ok((file, witness))
++    }
++
++    pub(in super::super) fn original_files(&self) -> anyhow::Result<[Vec<u8>; 2]> {
++        Ok([
++            fs::read(self.directory.path().join("original-evaluation"))?,
++            fs::read(self.directory.path().join("original-evaluation-witness"))?,
++        ])
++    }
++
++    pub(in super::super) fn upstream_files(&self) -> anyhow::Result<Vec<Vec<u8>>> {
++        let mut result = self.primary_member.bytes()?;
++        result.extend(self.retention_member.bytes()?);
++        result.extend(self.primary.all_source_bytes()?);
++        result.extend(self.retention.all_source_bytes()?);
++        result.extend(self.host.as_ref().ok_or_else(|| anyhow::anyhow!("original host retained"))?
++            .fixture_original_cohort_files()?);
++        Ok(result)
++    }
++
++    pub(in super::super) fn recover(&mut self) -> anyhow::Result<()> {
++        let host = Arc::try_unwrap(self.host.take().ok_or_else(|| anyhow::anyhow!("original host retained"))?)
++            .map_err(|_| anyhow::anyhow!("all original Evaluation services must be joined before recovery"))?;
++        let panel = host.fixture_take_original_panel()?;
++        let (file, witness) = self.files(false)?;
++        let evaluator = OriginalCellEvaluationReceiptOwnerV1::recover(
++            file, witness, self.config.clone(), SigningKey::from_bytes(&[42; 32]),
++        )?;
++        let mut host = evaluator.into_original_evaluation_host(panel)?;
++        host.fixture_original_clock(self.at)?;
++        self.host = Some(Arc::new(host));
++        Ok(())
++    }
++
++    /// All external service futures must have joined before this point; the
++    /// outside OriginalTrainingPeers is finished only after these clients drop.
++    pub(in super::super) fn finish(mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.host.as_ref().is_some_and(|host| Arc::strong_count(host) == 1),
++            "all original Evaluation services must be joined");
++        drop(self.host.take());
++        self.primary_member.finish_with_external_trainer()?;
++        self.retention_member.finish_with_external_trainer()?;
++        Ok(())
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
+@@ -48,7 +48,48 @@
+ }
+ 
+ impl PanelMemberFixture {
+-    pub(crate) async fn complete(
++    pub(crate) fn complete<'a>(
++        original_plan: ProviderPlanFixture,
++        provider: ProviderAt,
++        initial: &'a LearningIterationSnapshotV1,
++        training: LearningIterationSnapshotV1,
++        training_evidence: SignedLearningEvidenceV1,
++        scope: &'a FrozenLearningScopeV2,
++        generator: &'a TrustedLearningSignerV1,
++        evaluator: &'a TrustedLearningSignerV1,
++        verifier: LearningEvidenceVerifierV1,
++        retention_receipt_digests: Vec<Digest32>,
++    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
++        Self::complete_with_trainer(
++            original_plan, provider, initial, training, training_evidence,
++            scope, generator, evaluator, verifier, retention_receipt_digests,
++            None,
++        )
++    }
++
++    /// The caller retains and joins this real Trainer's server. No retained
++    /// signature responder is constructed on the fresh-provider path.
++    pub(crate) fn complete_from_original_trainer<'a>(
++        original_plan: ProviderPlanFixture,
++        provider: ProviderAt,
++        initial: &'a LearningIterationSnapshotV1,
++        training: LearningIterationSnapshotV1,
++        training_evidence: SignedLearningEvidenceV1,
++        scope: &'a FrozenLearningScopeV2,
++        generator: &'a TrustedLearningSignerV1,
++        evaluator: &'a TrustedLearningSignerV1,
++        verifier: LearningEvidenceVerifierV1,
++        retention_receipt_digests: Vec<Digest32>,
++        trainer: crate::LearningIterationEvidenceClientV1,
++    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
++        Self::complete_with_trainer(
++            original_plan, provider, initial, training, training_evidence,
++            scope, generator, evaluator, verifier, retention_receipt_digests,
++            Some(trainer),
++        )
++    }
++
++    async fn complete_with_trainer(
+         original_plan: ProviderPlanFixture,
+         mut provider: ProviderAt,
+         initial: &LearningIterationSnapshotV1,
+@@ -59,6 +100,7 @@
+         evaluator: &TrustedLearningSignerV1,
+         verifier: LearningEvidenceVerifierV1,
+         retention_receipt_digests: Vec<Digest32>,
++        original_trainer: Option<crate::LearningIterationEvidenceClientV1>,
+     ) -> anyhow::Result<Self> {
+         let ProviderPlanFixture {
+             mut fixture,
+@@ -194,12 +236,18 @@
+             )?,
+             config.clone(),
+         )?;
+-        let (trainer, thread) = fixture_original_receipt_client_until_close(
+-            initial.clone(),
+-            training.receipts[2].clone(),
+-            verifier,
+-            training_evidence,
+-        )?;
++        let (trainer, thread) = match original_trainer {
++            Some(trainer) => (trainer, None),
++            None => {
++                let (trainer, thread) = fixture_original_receipt_client_until_close(
++                    initial.clone(),
++                    training.receipts[2].clone(),
++                    verifier,
++                    training_evidence,
++                )?;
++                (trainer, Some(thread))
++            }
++        };
+         // Do not inline the original Qualification readback state into the
+         // surrounding member setup, which owns both physical runner journals.
+         let qualification = Box::pin(qualification_owner.qualify_or_readback(
+@@ -238,7 +286,7 @@
+             qualification,
+             config,
+             initial: initial.clone(),
+-            thread: Some(thread),
++            thread,
+             _execution_signer: execution_signer,
+             directory: fixture.directory,
+         })
+@@ -294,4 +342,12 @@
+             .join()
+             .expect("original panel Trainer transport")
+     }
++
++    /// Drop the actual member's client before the outside fixture joins the
++    /// original Trainer server. This does not report a fabricated frame count.
++    pub(crate) fn finish_with_external_trainer(mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.thread.is_none(), "original Trainer server remains externally owned");
++        drop(self.member.take());
++        Ok(())
++    }
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+@@ -467,3 +467,6 @@
+ 
+ #[path = "circuit_original_evaluation_decision_binding_tests.rs"]
+ mod decision_binding;
++
++#[path = "circuit_original_evaluation_fresh_training_support_tests.rs"]
++pub(super) mod fresh_training;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
+@@ -155,6 +155,28 @@
+     ) -> anyhow::Result<()> {
+         let baseline = original.config.decision.request.selected_bundle.digest()?;
+         let candidate = original.candidate.digest()?;
++        self.populate_from_original_training(
++            &original.previous,
++            baseline,
++            candidate,
++            mode,
++            changed_candidate_action,
++            decision_binding,
++        )
++        .await
++    }
++
++    /// The fresh-provider path obtains both bundle digests from the actual
++    /// completed Trainer; it has no preceding auxiliary E or Model fixture.
++    pub(super) async fn populate_from_original_training(
++        &mut self,
++        previous: &CircuitTaskSourcePublicationV1,
++        baseline: Digest32,
++        candidate: Digest32,
++        mode: ObservationMode,
++        changed_candidate_action: bool,
++        decision_binding: DecisionBinding,
++    ) -> anyhow::Result<()> {
+         let rule = self.rule.clone();
+         let history_at = rule.history_start_unix_seconds + 10;
+         for (index, episode) in rule.history.iter().enumerate() {
+@@ -172,7 +194,7 @@
+                 );
+             }
+             let publication = self
+-                .execute(original, input, baseline, index, history_at)
++                .execute(previous, input, baseline, index, history_at)
+                 .await?;
+             material::evaluation_provider::decision(
+                 self.writer.as_mut().expect("original B ledger"),
+@@ -213,7 +235,7 @@
+             }
+             let publication = self
+                 .execute(
+-                    original,
++                    previous,
+                     input.clone(),
+                     baseline,
+                     /*selected_index*/ 0,
+@@ -231,7 +253,7 @@
+             let mut candidate_input = input;
+             candidate_input.scope.run_id = target.candidate_run_id.clone();
+             self.execute(
+-                original,
++                previous,
+                 candidate_input,
+                 candidate,
+                 usize::from(changed_candidate_action),
+@@ -278,7 +300,7 @@
+ 
+     async fn execute(
+         &mut self,
+-        original: &PositiveFixture,
++        previous: &CircuitTaskSourcePublicationV1,
+         input: crate::CircuitTaskSourceInputV1,
+         bundle: Digest32,
+         selected_index: usize,
+@@ -293,7 +315,7 @@
+         // A shared digest cannot replace the original compiled objective.
+         // B keeps its distinct admission/run/time, with the complete objective
+         // and function bytes used by the preregistered comparison.
+-        let objective = original.previous.original_record();
++        let objective = previous.original_record();
+         assert_eq!(
+             objective.snapshot.objective_digest,
+             self.rule.objective_digest
+@@ -334,6 +356,23 @@
+         original: &PositiveFixture,
+         registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+     ) -> anyhow::Result<OriginalCircuitEvaluationCohortConfigV1> {
++        self.config_from_original_training(
++            Self::training(original)?,
++            &original.config.scope,
++            &original.config.training_evidence,
++            &original.config.verifier,
++            registration,
++        )
++    }
++
++    pub(super) fn config_from_original_training(
++        &self,
++        training: LearningIterationSnapshotV1,
++        scope: &FrozenLearningScopeV2,
++        training_evidence: &SignedLearningEvidenceV1,
++        verifier: &LearningEvidenceVerifierV1,
++        registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
++    ) -> anyhow::Result<OriginalCircuitEvaluationCohortConfigV1> {
+         let freeze_plan = DatasetFreezePlanV2 {
+             snapshot_id: self.rule.snapshot_id.clone(),
+             objective_digest: self.rule.objective_digest,
+@@ -345,7 +384,7 @@
+             .expect("original B ledger before transfer");
+         assert_eq!(
+             writer.verifier().trust_digest(),
+-            original.config.verifier.trust_digest()
++            verifier.trust_digest()
+         );
+         let freeze_evidence = material::evaluation_provider::freeze(
+             writer,
+@@ -356,10 +395,10 @@
+         Ok(OriginalCircuitEvaluationCohortConfigV1 {
+             registration: registration.clone(),
+             rule: self.rule.clone(),
+-            training: Self::training(original)?,
+-            scope: original.config.scope.clone(),
+-            training_evidence: original.config.training_evidence.clone(),
+-            verifier: original.config.verifier.clone(),
++            training,
++            scope: scope.clone(),
++            training_evidence: training_evidence.clone(),
++            verifier: verifier.clone(),
+             freeze_plan,
+             freeze_evidence,
+         })

@@ -1,0 +1,65 @@
+## Why this change is needed
+
+A known failed metric could take precedence over missing applicable evidence, turning an incomplete evaluation into an `Ineligible` comparison and permitting a completed `NoUpdate`. This change gives missing applicable evidence precedence while retaining the known failed metrics. Complete eligible and complete negative comparisons retain their separate meanings. The learning-stage regression keeps the original Training cut at Evaluation when a future window is missing and prevents a NoUpdate receipt.
+
+## Current revision and acceptance state
+
+**Draft / HOLD.** Source remains **`cc57c7198db6293ccca562253c42fffbe2a04633`**, tree **`b7b357c07b5539769a068c6b9b009629f5612d1e`**, sole parent `246d8cb614770252ee42029a5c014f2a4904176a`. The PR is unmerged. The complete original source proof has been reviewed. The first subsequent native request failed its live-source precondition before running any behavioral test.
+
+| Gate or outcome | Actual observed state |
+| --- | --- |
+| Original formatter and canonical alignment | Normal exit 0; exact five-file repair, no additional formatter changes; all original source/Git/input audits passed. |
+| Source closure on cc57, original 600-second limit | **PASS:** complete raw log has 492 explicit successful methods and zero failures. |
+| Caller self-test, original 300-second limit | **PASS:** original complete receipt and raw output reviewed. |
+| Full caller verification, original 4,800-second limit | **PASS:** 569 boundaries, 569 privileged inventory names, 422 protected-file inventory entries covering 351 distinct paths, 6,619 Rust files, `authorityGranted=false`. |
+| Whole source job `1a1d23c92f3-2564-1cb4` | **PASS:** authoritative normal exit 0 at 2026-11-13 00:25:02.355 UTC, complete durable output, no timeout/cancellation/retry. |
+| First native job `1a1d26326ac-2564-1cd4` | **Precondition FAILED / exit 1:** `behavioral_tests_started=false`, `stages=[]`, `source_before=null`, `source_comparison="unknown_missing_before"`. |
+| Evaluator / focused / ordinary / Root behavior on cc57 | **No behavioral result yet.** The failed native admission dispatched none of these stages. |
+| Hosted CI | Latest archived exact-source query around 00:37:01 UTC: zero checks, suites, status contexts and workflow runs; combined pending. This is a dated observation, not CI PASS. |
+| Real authorized A → Training → independent B → Adopt/complete NoUpdate → new C → daemon/Root cold recovery | **0 qualified task chains.** |
+
+[Complete source review](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/cc57-final-source-root-review-v1/ROOT_COMPLETE_SOURCE_REVIEW.json), [original complete run result](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/source-qualification-cc57-v2/completed-originals/ORIGINAL_RUN_RESULT.json), [original failed native result](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/native-cc57-v1-failed-precondition/RESULT.json).
+
+The source review includes the complete 111,500-byte closure log, 48-byte self-test log and 270,271-byte caller report; all nine retained original inventory reads; exact raw Git before/after; all 25 input identities; and all 13 original read-only command terminals. Origin source stayed complete and unchanged during **that** execution, with 15,188 rows and zero extras. Read-only recovery of those completed artifacts does not prove the worktree stayed unchanged later.
+
+## Why the native admission refused
+
+The native wrapper's source-success bootstrap matched the actual completed source result. Its original raw Git guard then rejected the later workspace. Actual raw HEAD still identifies cc57, but the repository had acquired `refs/retired-artifacts/20261112-r71/3b03227b9431ee012e6b`, also pointing to cc57. Its raw index also differed from the source-qualification baseline. The guard's required no-refs condition was therefore not met.
+
+The failed native post-snapshot has the expected commit/tree and an empty porcelain status, but its complete compact inventory differs. Read-only diagnostic `1a1d27152aa-2564-1ce4` compared the complete retained execution snapshots using the exact original native serializer: **15,181 equal rows, seven missing tracked historical qualification archives, zero added or removed rows**. The seven archives total **18,176,884 bytes**. Their original paths, modes, sizes, SHA256 and Git blob identities remain available. The complete failed raw snapshot and original gzip were independently recovered and matched the actual full read identities.
+
+**Writer and cause remain Unknown.** Nearby ref/index timestamps do not identify a writer, retirement mechanism or fraud. Missing evidence is not a complete utility comparison. The original `unknown_missing_before` and zero-stage failure are preserved. No old ref deletion, index reset or expected-inventory relaxation is used to make the refusal disappear. Recovery requires a separately reviewed independent directory, exact original cc57 content and a new actual raw Git baseline.
+
+[Complete difference and Root review](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/native-cc57-preflight-root-v1/ROOT_ACTUAL_SNAPSHOT_DIFFERENCE_REVIEW.json), [original seven-row difference](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/native-cc57-precondition-readonly-diagnostic-v1/SNAPSHOT_DIFF.original.json).
+
+## Changes retained in the source candidate
+
+- Preserve incomplete-evidence precedence and the four evaluator regressions while integrating the original-owner paths. A negative retention member cannot substitute for an eligible primary comparison. Complete primary-negative NoUpdate, missing-evidence refusal, fraud and payment remain distinct.
+- Preserve original authorization, task/source bijection, inclusive expiry and actual readback arguments. Missing original Model, Selector, Version or FinalUse owners continues to refuse. The legacy NextUse Trainer reference remains explicit to the conservative caller collector.
+- Retain evaluated NoUpdate purpose-separated 4/5/6-cut handling, original Training/Evaluation ownership, one Version preparation, and publication/selector/new-consumer readback mechanisms. Legacy 3/4/5 remains separate.
+- Retain all 569 caller boundaries and all original authorization flags. The 422 protected inventory rows comprise 39 synchronized existing rows, 10 additional rows and 373 unchanged old rows; these rows cover 351 distinct paths.
+- Preserve the complete original QA inventory and the V1 scope-gap failure. The later coverage correction reached all 34 intended scopes across 20 paths; scoped diagnostics are not substituted for the complete original gates.
+
+The parent source gate exposed four failed methods. The final five-file non-Rust repair appends the actual `recover_original_custody` identifier to three Training readback forbidden lists; appends the exact new CALLERS allowlist hash; includes the existing observer `require_profile` method; applies the original Selection branch attacks to its actual `if`/`else` form with a same-length domain mutation; and includes the already-selected 33rd Root workflow parent. Existing forbidden markers, closed boundaries, authorization flags, original mutations and method inventory remain. Original formatting returned 0 without further source changes.
+
+## Separate Root provider proposal and remaining behavior
+
+The evidence includes a concrete **unapplied** Root resident provider v1 source proposal: eight postimages, four new files, 659 insertions and zero deleted lines. It adds a separate 21-right handoff for one original Root pidfd and ten original stream/pidfd pairs, with receiver identity, capability ownership and absolute lifetime checks, plus a service that composes the original typed registration, owners, runtime and stream service. Fresh versus read-only recovery comes from trusted registration.
+
+The four modified old files restore byte-for-byte after removing the exact inserted blocks. Independent static review found no concrete authorization-escalation or FD-cleanup defect within its stated coverage. The proposal **has not been applied, formatted, compiled, gated or activated**. Its four tests cover wire/metadata mechanisms only. Complete ten-owner NoUpdate/recovered paths, A disconnect, cancellation/join and delayed handoff require actual integration tests. Later test-fixture work is separate from this frozen v1 evidence.
+
+Default main still has no demonstrated legitimate typed provider source. A proposed handoff, caller-list entry, fixture or separate process does not establish the requested real authorized chain. [Provider proposal](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/root-resident-provider-proposal-v1/README.md) and [bounded independent review](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/root-provider-independent-peer-v1/REVIEW.json).
+
+After exact independent materialization, native qualification keeps the original **45,000-second outer limit**, all 14 phase limits, whole evaluator library and four required regressions, unchanged seven focused filters, complete five-package ordinary phase and all 33 current Root workflow cases. Original order, 8 MiB stack, nextest defaults/overrides and zero retries remain. No completed parent result is transferred to this source or to the unapplied provider proposal.
+
+## Evidence preservation and utility boundaries
+
+The published evidence checkpoint is **`07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0`**, sole parent `15673f01e5248efdecd00fcb06a58ae3dd45d2c0`, root tree **`016b1d22e42141612b4453516688d206fac0c673`**. It contains **3,638 files**, adds **310 paths**, preserves all 3,327 old non-README blobs and archives the old README. The complete non-truncated recursive readback, all 434 Merkle trees and three ancestor trees were verified; commit and expected-old-SHA ref publication were read back with `force=false`.
+
+This checkpoint contains the complete source proof, first native refusal, seven-row diagnosis and bounded provider v1 review. The earlier 3,454-path preparation window and its cutoff remain unchanged. Later object-availability/materialization observations are not backdated into this window. [Published checkpoint](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0/qa/evidence/utility-evaluation-20261112-36fa/README.md).
+
+Historical failures remain: parent `246d…` source closure failed (488 successful methods, four failed methods producing six failure entries), while its other two source gates passed. Historical `c0f…` evaluator passed 163/163 and focused native had 81 pass/28 fail; ordinary and Root did not start. Transport errors, the earlier cc57 ancestry-admission Unknown, prior incomplete coverage and review corrections remain archived without changing their original outcomes.
+
+Real utility still requires the complete deployable composition and strongest deployable comparator, full frozen costs including failed/cancelled/search/evaluation/download/service/maintenance work, old/rare/critical task constraints, actual independent B outcomes, accessible and legitimately authorized model material, actual new C adoption and daemon/Root cold recovery. Privacy, authorization and must-pass tasks cannot be offset by average quality. Distinct keys/processes do not prove independent task sources, training lineage, judges or operational control. Action-dependent forecasts without the necessary state/policy/propensity and identification conditions remain Unknown.
+
+NDU objectives, predictions, policy, critic, independent observations and public reward contract remain separate. Adopt, complete NoUpdate/Ineligible, InsufficientEvidence/Unknown and reproducible Objective Fraud retain different meanings. **Real qualified task chains remain 0; no merge, deployment, bonus maturity or payment is established.**

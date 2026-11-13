@@ -1,0 +1,501 @@
+{
+  "format": "hepta-isolated-native-precondition-failure-placement-v1",
+  "recorded_at": "2026-11-13T03:27:44.844Z",
+  "job_id": "1a1d2e908ac-392-5a",
+  "idempotency_key": "hepta-utility-36fa-final-native-gates-cc57-isolated-v1",
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "root_exact_approval": "3622556e48163010c65c754ccd1e5bbf31f21319",
+  "root_source_materialization_review": "05fefaacdda28aa8e263a0b86b3b1da86ac5e71b",
+  "actual_supervisor_status": "failed",
+  "actual_exit_code": 1,
+  "timed_out": false,
+  "behavioral_tests_started": false,
+  "behavioral_test_commands_dispatched": 0,
+  "actual_wrapper_status": "failed",
+  "actual_error": "ValueError: RUSTY_V8_ARCHIVE actual existing file required",
+  "qualification": false,
+  "main_repeated": false,
+  "environment_or_source_repair_performed": false,
+  "source_comparison_preserved": "unknown_missing_before; wrapper source_before and source_change remain null",
+  "separate_actual_admission_observations": {
+    "full_physical_bytes_equal": true,
+    "extra_physical_entries": 0,
+    "git_before_after_exact": true,
+    "raw_index_sha256": "95547dcfed1945bb06b5400468ec228037cff5374b674ca033a7f66468b34193",
+    "native_inventory": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9"
+  },
+  "scope": "47 immutable files: all exact launch candidate controls, intent/admission/terminal/result/stdout and their read SDKs, all six written historical-runtime input/environment records, seven current source/Git/input audit records and each original pinned read SDK, bounded actual directory listing, and explicitly derived exact guard source context. No later filesystem diagnostic or next native attempt is included. Full inventory gzip and historical proof duplicate paths are listed by the original directory observation and identities but are not claimed separately retransferred in this window.",
+  "files": [
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/NATIVE_BOOTSTRAP.CANDIDATE.py",
+      "sha": "d60e62a8bb28f40d314c25824fb665ab8ef1ea9c",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 10917,
+      "sha256": "684ab68cf0eae833f727cf22b18ce35f0a6dcd086633e05dd838ba5b2170fd90",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/NATIVE_BOOTSTRAP.CANDIDATE.py",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/NATIVE_STDIN.CANDIDATE.json",
+      "sha": "d1ea0624fb40ca429ef4936536fb7cfa12858b97",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 135422,
+      "sha256": "c010b3d4c16de36b38362cb386f8217a91b9a4868e3551f389769b83e7331fd0",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/NATIVE_STDIN.CANDIDATE.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/NATIVE_PROCESS_INPUT.CANDIDATE.json",
+      "sha": "127a33fb09629034ade6ce43d82e80e52816df8f",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 146890,
+      "sha256": "c29da441e78222ba11db981b5e159e23ab0cc6b48faeada5138e6ba966125c43",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/NATIVE_PROCESS_INPUT.CANDIDATE.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/APPROVED_QUALIFICATION_INPUT.CANDIDATE.json",
+      "sha": "1666e5df58b33f1786287ba94d1d74b79442f8d6",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 11785,
+      "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/APPROVED_QUALIFICATION_INPUT.CANDIDATE.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/EXACT_LAUNCH_MANIFEST.CANDIDATE.json",
+      "sha": "6f4cf7430d0850a43376c1c3344dcc62b627cb0d",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 3851,
+      "sha256": "837a546f74294edccd32df1ff75307a447fa9b593f97aceb397ae21f8ac35684",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/EXACT_LAUNCH_MANIFEST.CANDIDATE.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/ORIGINAL_NATIVE_BOOTSTRAP.py",
+      "sha": "1e3402a037b259f44213ac6de487e6d91cc6b445",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 9986,
+      "sha256": "5da0dca2d11dd1ed2f4479d918cfe25726771f110a6350b4ddefdbd38bb6d694",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/ORIGINAL_NATIVE_BOOTSTRAP.py",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/STATIC_REVIEW.json",
+      "sha": "f57b6ff125606e1493c0a718b7c0e4b34c27e904",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 5283,
+      "sha256": "cd7767475591c02ef6a64759e52ebb37615e5d5c3c54a4c17265b92d252d9fa0",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/STATIC_REVIEW.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/FROM_ORIGINAL_NATIVE.diff",
+      "sha": "64278d789ce69da49f0da809189f454e1b3da74c",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 6829,
+      "sha256": "f7c2d45a457e160915c5ad8254cc376cb46ff168ad4202b32962c16b562ccbd1",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/FROM_ORIGINAL_NATIVE.diff",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/STAGING_REPLACEMENT.json",
+      "sha": "fc03badc4da4ec2ea224d4557a1f63b8e189a8c4",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2811,
+      "sha256": "a176c06c02b40fa5ca6c3eb67e090f7487e546b0032c214149cb1ea376ca88cc",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/STAGING_REPLACEMENT.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/EXPECTED_CANDIDATE_FILES.json",
+      "sha": "1722aa001ed6e1cdd5a38211dfdf247d893f4e14",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1317,
+      "sha256": "6af2681c191d36114cef64ac9535eaa1b88c6829e1ee000440215b8a23654840",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/EXPECTED_CANDIDATE_FILES.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/verify_candidate.py",
+      "sha": "70b5fcdf6f186fabffa7fa4ba9801af5dac40a26",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 6432,
+      "sha256": "8d7d70980d6cd17355d13f7409da84b86cdb41e26541f65b139b470f4b87985d",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/verify_candidate.py",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/launch/STATIC_EXEC.original.json",
+      "sha": "ff46e268c2b61f355f15d08d35718dbf404b7396",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 552,
+      "sha256": "c5e763920fdcc83c5de175720fcc2058552f901c60aaa73bcff4f5635fffafbc",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/launch/STATIC_EXEC.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/native/STATUS_01.original.json",
+      "sha": "cc3fe33203dbd831771d070e496397057095b05a",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 948,
+      "sha256": "71d3a9f4182f9c5ca7d1849478625d9e1df8e7250376c22b8688ed35e85c48ab",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/native/STATUS_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/native/STDOUT_READ_01.original.json",
+      "sha": "28bd62bafd35d8c5c4fc0d4c999c0293d8430f2d",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 4027,
+      "sha256": "cfe28aa33f13e837a62a02c86a8e6fe28ade8d93fa0dc33cae63c9245feae5fa",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/native/STDOUT_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/native/RESULT_READ_01.original.json",
+      "sha": "51afc6116afac89278249c22ae8111b2592b6382",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1819,
+      "sha256": "60091dc3bd92f22e0c21940895e93efab7629bb850d163cb51c24141e8c615b1",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/native/RESULT_READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/native/RESULT.json",
+      "sha": "b6a785c0194c2f65054a26e5815042010a22dad8",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1003,
+      "sha256": "3ff0675a3fb0dca9c6107b4982c1cb26f34007f5a3d4f62c46cd1a660428a50d",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/native/RESULT.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/native/COMPLETE_STDOUT.log",
+      "sha": "dd18ce5ceaf251c5fbd5593c42b21ebe64806d8f",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1091,
+      "sha256": "052a183855c2bad22f9a60d2715721420ef26fc52f8cd00bf05db0c042200075",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/native/COMPLETE_STDOUT.log",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/MAIN_DISPATCH_INTENT.json",
+      "sha": "1bdc443dec535cd3111903207d441ed93919f04d",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1126,
+      "sha256": "237052fd0457420cad35d64e48e5ce741f035534d3f8f0b10755bcd225f2a992",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/MAIN_DISPATCH_INTENT.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/MAIN_ADMISSION.original.json",
+      "sha": "a4ae3ab6b6eac4272348e2d029f6bd8969b984b2",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 12706,
+      "sha256": "7c1403d9db5d4b3df18c01d14fd1a168dcb86a1e0005e185467ed7c45db539ab",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/MAIN_ADMISSION.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/FORMATTER_ENVIRONMENT.before-override.json",
+      "sha": "1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1382,
+      "sha256": "eb8fe090db31cc6c8a3422e8159bce58e1259072fcd5c5822d975b53005976b7",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/FORMATTER_ENVIRONMENT.before-override.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/FORMATTER_ENVIRONMENT.before-override.json.READ_01.original.json",
+      "sha": "0ea27c1403901d1e8cb94bed3654f7dd9ee42957",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2383,
+      "sha256": "9dae26f78b60ac52b625e0b0b4c9995016a3feeb9cf74b4ca5341edb87599e2a",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/FORMATTER_ENVIRONMENT.before-override.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/INPUTS.final.json",
+      "sha": "c1d7b2e09e094575e6d258fcba635800aa9ae3f2",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1236,
+      "sha256": "f8c4a2ef088a94999b49d4d17c71894e8c96736d133685dbbc9a848a770ccf94",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/INPUTS.final.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/INPUTS.final.json.READ_01.original.json",
+      "sha": "1bdcc9abab4e6f203a76e1469f1c03067167b720",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2162,
+      "sha256": "c547b2153a5915a0a6b984861a6e23b76ec0fac557e7b99aaf6e2d6ac6c07bcf",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/INPUTS.final.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/READONLY_COMMANDS.json",
+      "sha": "7480edb52be0ce634497a999abb4af0806f5854e",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1267,
+      "sha256": "9fab768a481e6dd5bd66d564382662efe78031855c4e0c472300e368c8cee4a2",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/READONLY_COMMANDS.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/READONLY_COMMANDS.json.READ_01.original.json",
+      "sha": "87b9a4cd2de4ca79f743245be7cffad6021c705f",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2211,
+      "sha256": "ebb3b8737a043192c4f2923b0a81c6aea1492af740b8bcda38e8d77e0e592197",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/READONLY_COMMANDS.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.before.json",
+      "sha": "0b42d258d307696a1e236f326521819e7a969ae6",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 489,
+      "sha256": "6415236e0d5ca6d1fc0cf11a926dc8126811e4be5d5ffb0059dab0f77cf061f5",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/GIT_STATE.before.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.before.json.READ_01.original.json",
+      "sha": "7dc7a85ec347559c908d9e75bebaec8246e735c4",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1148,
+      "sha256": "a782351b740f129e1c5dd38b90c75d272516b26be30299d240a6db19b4d2898e",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/GIT_STATE.before.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.after.json",
+      "sha": "0b42d258d307696a1e236f326521819e7a969ae6",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 489,
+      "sha256": "6415236e0d5ca6d1fc0cf11a926dc8126811e4be5d5ffb0059dab0f77cf061f5",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/GIT_STATE.after.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/GIT_STATE.after.json.READ_01.original.json",
+      "sha": "b4f89dd43432322fa1bdfb7864c591beb3faacf7",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1147,
+      "sha256": "81914c740487c21dfbfd95cb202d4899d04fd44b524e7adeba95b88c64d02813",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/GIT_STATE.after.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/FULL_PHYSICAL_COMPARISON.json",
+      "sha": "54cc9f6894944027a22b0d8f7ea16a2c978a1d74",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 204,
+      "sha256": "0e95afa2a439a0d8ecfbdbd120564dfd5acf9d21eab1e47af2a50754438d717c",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/FULL_PHYSICAL_COMPARISON.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/FULL_PHYSICAL_COMPARISON.json.READ_01.original.json",
+      "sha": "559504d669fa91c90f25b55346b7d69845e9fb7d",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 776,
+      "sha256": "caaf4391583cbaa36a1696e07dec10995a4a014d19226549df3a9ee5f25cba39",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/FULL_PHYSICAL_COMPARISON.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/INPUTS.final.json",
+      "sha": "6e486247891d5baa006efb9dd9abd11665d8897f",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 6950,
+      "sha256": "95d4aa9c899c56f4dbb490d37539a662f46a96f97dbbafe3dd4536de03a9b176",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/INPUTS.final.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/INPUTS.final.json.READ_01.original.json",
+      "sha": "08e62127a59947d8c14baa8b37735d8a333c0a8a",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 9763,
+      "sha256": "e82a2792b2f93b7b1f97b9dd523d16ad875332281b39679a2199bbcc10f8db2d",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/INPUTS.final.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/READONLY_COMMANDS.json",
+      "sha": "f40b5c83d9a92d779e0377226f878c84b1c4bbb5",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 5640,
+      "sha256": "565e4504c5d6e17cbd0a2a683451168a74c00cba732676f41e063181e4b11522",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/READONLY_COMMANDS.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/READONLY_COMMANDS.json.READ_01.original.json",
+      "sha": "9ede2d6ab9225a3c7fe1ae0469b7823255ad11d9",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 8020,
+      "sha256": "1d9514657e688c3cbdbd3759aa4034a530809c85c781b5a1db4bff9826f1e160",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/READONLY_COMMANDS.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/SOURCE_COORDINATION_SH.json",
+      "sha": "e9d97689ac83560184f61e3ccdea2bc7d78b1811",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 318,
+      "sha256": "36f253dd6d5d308ada3e2006f8e92ae7e60990837547b35d725d242ff5faac3b",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/SOURCE_COORDINATION_SH.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/SOURCE_COORDINATION_SH.json.READ_01.original.json",
+      "sha": "09418f2469ebbec0e793a642aff64af7b143d1f9",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 926,
+      "sha256": "a5796b03d75fae4e34c18a0be16d88a02f142de265c3ddbf7924e74d206c57cf",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/SOURCE_COORDINATION_SH.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/HISTORICAL_TO_CURRENT_SOURCE_CHAIN.json",
+      "sha": "31112397afc6a1e3162a7eba3a1be059334d150f",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 3206,
+      "sha256": "3a9e45e8d99b46641bb8171bda08c7ac4a16be0f522db3773f6facd3015c5b36",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/HISTORICAL_TO_CURRENT_SOURCE_CHAIN.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/HISTORICAL_TO_CURRENT_SOURCE_CHAIN.json.READ_01.original.json",
+      "sha": "11efb1803faf9fa31b27dc6748b419ba96de4414",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 4793,
+      "sha256": "1b809f3af4a642e7fd99c59f113b2f682398c58e4c559b266438551548707759",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/HISTORICAL_TO_CURRENT_SOURCE_CHAIN.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_ENVIRONMENT_READY.original.json",
+      "sha": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 21724,
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/RUNTIME_ENVIRONMENT_READY.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_ENVIRONMENT_READY.original.json.READ_01.original.json",
+      "sha": "48f0d0e17e1b0e85f6d33c08f181aa73b08043df",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 29507,
+      "sha256": "db1003d8cb882a3a4f30a6bc5e196ad21f809c4b93fd0a246cfb1013466a388f",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/RUNTIME_ENVIRONMENT_READY.original.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_RESULT.original.json",
+      "sha": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 21366,
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/RUNTIME_RESTORATION_RESULT.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_RESULT.original.json.READ_01.original.json",
+      "sha": "ca68df3a5d92b5c146c896d1d67d33d9c50e6c56",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 29028,
+      "sha256": "eba5d715b969fd5a91d8b51ce7e56cb33cb6c2600d50f5c9c6fb846e7156f3bc",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/RUNTIME_RESTORATION_RESULT.original.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+      "sha": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 954,
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/admission/historical-runtime/RUNTIME_RESTORATION_SUPERVISOR.original.json.READ_01.original.json",
+      "sha": "f935d8aee6b1a489805d6a6ead85ee5a26743560",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1810,
+      "sha256": "45a9905b37e6d5fc643c05e56b391e84ef00eba4f6a3f6ccfd2564154957831d",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/admission/historical-runtime/RUNTIME_RESTORATION_SUPERVISOR.original.json.READ_01.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/RECORDS_LISTING.original.json",
+      "sha": "3df4be4243c48587d908a64dfb94bed2567b2998",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1341,
+      "sha256": "2ec9e05bc4bb1f122c1cf7ad661c409d26bb042763115690d2e823a8ca0dcad5",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/RECORDS_LISTING.original.json",
+      "full_readback_equal": true
+    },
+    {
+      "path": "native-cc57-isolated-v1/attempt-01/RUNTIME_GUARD_FAILURE_CONTEXT.json",
+      "sha": "51738995a75140093b741909c8b0b5eb6225eae9",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 13677,
+      "sha256": "e8da18abacbe05239b8f040a449c25a14661faa1c123e3244b9d24294f22521c",
+      "local": "/tmp/hepta-36fa-isolated-native-preflight-window-v1/RUNTIME_GUARD_FAILURE_CONTEXT.json",
+      "full_readback_equal": true
+    }
+  ]
+}

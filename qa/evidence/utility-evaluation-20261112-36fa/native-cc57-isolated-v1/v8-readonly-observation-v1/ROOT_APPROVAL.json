@@ -1,0 +1,32 @@
+{
+  "format": "hepta-root-exact-readonly-v8-observer-approval-v1",
+  "at_utc": "2026-11-13 03:34:37 UTC",
+  "status": "APPROVED_ONE_EXACT_READONLY_OBSERVER_DISPATCH",
+  "executor": "/root/native_ci_audit",
+  "request": {
+    "git_blob": "080fc28f1abb02f708b3333cea4787af9a09785e",
+    "bytes": 11778,
+    "sha256": "5ca539fbe8fb818a265dedc0f478c6f24601c4565362fc3b217886ccbda106db"
+  },
+  "script": {
+    "git_blob": "4be68be7511aa54a94bbacf290db408e4c0e02e3",
+    "bytes": 11276,
+    "sha256": "31701a21883b864d14ec60e9fbe2b86983553304e90316139f9785ce7552dd88"
+  },
+  "plan": {
+    "git_blob": "1a1fd325aaf08013eec346247a4ea0e39bd6a876",
+    "bytes": 2891,
+    "sha256": "f77fe0b209fb6f01ff4f9aa6ef62d0fd3e4b9feba0002171b272651f6f265337"
+  },
+  "idempotency_key": "hepta-utility-36fa-isolated-native-v8-readonly-v1",
+  "budgets": {
+    "action_seconds": 45,
+    "outer_seconds": 60
+  },
+  "scope": "Only three exact pinned completed-job input records and metadata for five fixed external paths; bounded full-byte hash of existing regular material leaves under real parent directories. No directory listing, subprocess, network, dependency install, source/environment/ref/index/target write.",
+  "original_failed_native_job": "1a1d2e908ac-392-5a",
+  "cause_and_writer_not_assumed": true,
+  "qualification": false,
+  "behavioral_tests": false,
+  "instructions": "Preserve missing/nonregular/permission/symlink/changed/timeout results. Retain complete actual admission, authoritative terminal and stdout. Do not retry main or repair materials. Any uncertain observer admission uses only this exact request/key."
+}

@@ -1,0 +1,114 @@
+{
+  "executions": {
+    "cargo": 0,
+    "h": 0,
+    "ref_changes": 0,
+    "source_changes": 0,
+    "tests": 0
+  },
+  "findings": [
+    {
+      "constraint": "Keep the same Client in one Arc. Preserve all original channel, counter, binding, retained signature, liveness, absolute deadline and error state; no new client, stream or counter.",
+      "finding": "Both original clients take the sole Channel out of a Mutex<Option<Channel>> before spawn_blocking I/O, and restore it only after original response and currentness validation. A concurrent alias finds the absent slot and refuses without sending a second request.",
+      "id": "same-channel-exclusivity",
+      "sources": [
+        "cell_q24_training_command.rs::exchange",
+        "neuron_cell_evaluation_host_command.rs::exchange"
+      ]
+    },
+    {
+      "constraint": "Do not add retry, error-to-success conversion, replacement capability, or new queue. Preserve T and E distinctions, including E completed-to-Missing/Pending refusal.",
+      "finding": "The original slot is restored by the outer caller only after the blocking result and full validation. Dropping the dispatched await cannot restore that channel. Terminal/authentication failures leave all aliases referencing the same unavailable slot; original nonterminal outcome behavior remains as implemented.",
+      "id": "cancellation-and-errors",
+      "sources": [
+        "cell_q24_training_command.rs::exchange",
+        "neuron_cell_evaluation_host_command.rs::exchange"
+      ]
+    },
+    {
+      "finding": "Actual T readback completes and equals the retained full T receipt before actual E readback is started and compared. Final context authentication follows both awaits. No join/spawn runs these two predecessor reads together in this function.",
+      "id": "evaluated-pair-order",
+      "sources": [
+        "circuit_evaluated_retention_context.rs::require_current"
+      ]
+    },
+    {
+      "finding": "S prepares/observes the live published owner, awaits T/E validation, and makes the later live observation in separate sequential awaits. The evaluated finish path awaits predecessor reads before its final Source/Cell observation.",
+      "id": "selector-order",
+      "sources": [
+        "circuit_selection_receipt_owner.rs::attest_source",
+        "circuit_selection_receipt_owner.rs::readback_source",
+        "circuit_selection_receipt_owner.rs::finish_original_readback",
+        "circuit_evaluated_selection_remote.rs::observe"
+      ]
+    },
+    {
+      "finding": "C completes its T/E validation before awaiting the S evidence read. S can then read the same T/E again without the first C T/E exchange still owning a channel. Final C Source/Cell observation follows awaited predecessors. This single nested path does not force same-channel simultaneous I/O.",
+      "id": "next-use-nesting",
+      "sources": [
+        "circuit_next_use_receipt_owner.rs::predecessors",
+        "circuit_next_use_receipt_owner.rs::finish_original_readback",
+        "circuit_evaluated_next_use_remote.rs::observe"
+      ]
+    },
+    {
+      "constraint": "New export must call these original paths before consuming Owned clients, and again before later cloned exports. Recovered Published enum or an Installed/reader value alone is insufficient.",
+      "finding": "Version performs real D/T/E cut checks around Artifact/CURRENT and phase observations. Recovery removes reader admission until its full original before/after reads, freshness and lifetime checks succeed.",
+      "id": "version-currentness",
+      "sources": [
+        "circuit_retained_version_state.rs::read_original",
+        "circuit_retained_version_state.rs::require_cut_current",
+        "circuit_retained_version_state.rs::read_original_recovery"
+      ]
+    },
+    {
+      "constraint": "Verify complete retained opaque results and a present original channel, spend Execute permanently, and fail closed on partial conversion. No public inner-client/Deref/AsRef/FD/constructor/Execute surface; exact old by-value and Fresh/Recovered behavior stays available.",
+      "finding": "The real publish path returns T/E after the one-shot Prepared publication. It installs state and reader before final currentness and Published notification. The proposed export occurs only after Published and repeats full checks; actual returned clients are then consumed once and retained as the same readonly handles.",
+      "id": "one-way-attenuation",
+      "sources": [
+        "circuit_retained_version_effect.rs::publish_original_final_use",
+        "circuit_retained_version_state.rs::original_trainer",
+        "circuit_retained_version_state.rs::original_evaluator"
+      ]
+    },
+    {
+      "finding": "serve_original_ordinary uses try_join! for the command server, actual C startup and final-use issuer. run_original_c performs an additional original read under the Version state lock before consuming C configuration and entering crate::run. This can overlap a separately dispatched S/C direct predecessor read; Root stage serialization alone does not prove all background reads serialized.",
+      "id": "background-concurrency-boundary",
+      "interpretation": "Possible scheduling overlap, not a proof of unavoidable overlap on every execution. The smallest design retains original Unavailable/Unknown refusal and does not promise queued or successful concurrent service. A future real fixture must retain any collision or establish actual ordering, not assume success.",
+      "sources": [
+        "circuit_retained_version_service.rs::serve_original_ordinary",
+        "circuit_retained_version_effect.rs::run_original_c"
+      ]
+    },
+    {
+      "constraint": "No permit-limit increase, socket duplication/rebind, metadata-supplied peer substitution or public callback proxy. Count actual public sessions in the complete fixture.",
+      "finding": "The planned T=4 and E=3 arrangement requires Version/S/C in one actual trusted receiver process, plus the already-supported single readonly B evidence client shared by its two members. Arc does not authenticate a new process or transfer a socket capability across processes.",
+      "id": "placement-and-capacity",
+      "sources": [
+        "proposal::Physical placement and capacity"
+      ]
+    }
+  ],
+  "format": "hepta-shared-readback-minimal-design-peer-review-v1",
+  "proposal": {
+    "bytes": 7667,
+    "git_blob": "5976d8b49c2fea805e45ba881a637e6f735e3409",
+    "sha256": "fa389d49f549c7fdebe0e7ebe1bcb23581d693cdf1d4f6fc0b02d78c855e2516"
+  },
+  "proposal_path": "/tmp/hepta-36fa-shared-original-readback-minimal-v2/PROPOSAL.md",
+  "remaining_checks": [
+    "Review actual immutable Rust pre/postimages, API reachability, attenuation constructors and same-source caller fences.",
+    "Keep original Client fields, request/protocol/exchange bodies and all existing constructor signatures byte-identical apart from necessary sibling exports.",
+    "Test real publication/recovery export, alias single-dispatch refusal, actual terminal error/cancellation propagation, and exact original receipt/context mismatch rejection.",
+    "Measure the complete route against the one aggregate 128-request sequence and original absolute lifetime; this design review does not prove either budget fits.",
+    "Run the original formatter, complete source/caller/native gates on the eventual frozen source; this review is not qualification."
+  ],
+  "source_identity_review": {
+    "bytes": 6523,
+    "git_blob": "725a1b04266053b3f747fefd5ebd783bf39ab840",
+    "path": "SOURCE_IDENTITY_REVIEW.json",
+    "sha256": "ed809d3fc60c23ba01646a59a62909a723a6b3ceb614153b05275dba19f351ad"
+  },
+  "status": "NO_CONCRETE_DESIGN_BLOCKER_IMPLEMENTATION_AND_RUNTIME_NOT_REVIEWED",
+  "superseded_serialization_proposal": "Not adopted or approved by this review; no optional mutex/queue/Contracts change is needed from the call ordering examined."
+}

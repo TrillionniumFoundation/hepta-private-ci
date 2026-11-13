@@ -1,0 +1,63 @@
+# Exact original A, Version, FinalUse and new C chain
+
+Status: **source-level integration review; complete fresh ten-owner fixture remains unfinished and unexecuted**. Source is cc57c7198db6293ccca562253c42fffbe2a04633. The full text identities in [SOURCE_REFERENCES.json](SOURCE_REFERENCES.json) were actually retrieved through Git after cloud execution became unavailable. This is not a new physical checkout observation or runtime result.
+
+## What must stay connected
+
+| Link | Existing exact type or function | Required material and effect |
+| --- | --- | --- |
+| Original A | `support::Admission`, `support::start`, actual signed `ObjectiveStart` | The same admitted session that produces the observed A publication must feed the source-bound Training capture. Previewing `support::source` alone creates no RunStart authority. |
+| Completed A | `PublishedCircuitFeatureTaskV1::drain_completed_task` | Consume the same A retirement task with its actual Cell, Source and identity; preserve the returned completion, original Source owner and A identity. |
+| Publication inputs | `OriginalCircuitRetainedPublicationInputsV1` | Same Version authority/CURRENT/selection/predecessor files that published the baseline A; an actual new target, unchanged baseline bundle for NoUpdate, separate source C and the drained A completion. |
+| Separate C | `support::admission` and `retained_version_task_inputs` | New runtime identity/session and the original C Objective ingress, with task inputs using the same original A Source and identity. Do not renew or invent A authorization. |
+| Version host | `OriginalCircuitRetainedVersionHostV1::from_original_evaluated_owners` | Actual D/T/E clients, publication inputs, C task inputs, original artifact checkpoint and the original FinalUse issuer. Fresh evaluated cuts are 4/5/6, not the older synthetic 3/4/5 path. |
+| FinalUse | `read_original_final_use_binding`, original issuer service, `publish_original_final_use` | Derive the binding from the actual prepared publication. The exact original issuer must return an applicable grant. The grant is distinct from C ObjectiveStart. |
+| Runtime startup | `run_original_c` | Fresh-only, one consumption of the actual installed config after a complete current read and Published; invokes ordinary `crate::run`. Startup does not itself create C RunStart or completion. |
+| Actual C ingress | `AgentdClient::objective_start` | Send the retained original, correctly signed Objective ingress to the actual C control socket. Read the actual original Source and Cell result afterward. |
+| Readonly S/C evidence | Original Version selection readback and evaluated S/C owners | The shared T/E bundle preserves the original channels and budgets. Admission and full currentness checks remain required; no cached publication substitutes for original reads. |
+| Recovery | Original daemon/Version/Root recovery paths | Reopen the actual durable files and original authorized readonly channels after shutdown. A mechanism fixture or enum label is not a completed cold-recovery observation. |
+
+## A concrete fixture loss to avoid
+
+`circuit_retained_version_task_support_tests.rs::retained_version_task_inputs` destructures `Admission.request` as `_original_run_start` and does not return it. That helper deliberately builds C inputs without creating RunStart. A complete C fixture therefore must preserve the actual C ingress before consuming the Admission. Do not silently synthesize a different request after publication.
+
+The existing `circuit_q24_task_test_support.rs::start` shows how the fixture issuer binds the request body to the actual Cell runtime digest, Cell semantic digest and bundle digest, then signs `authbus_objective_claims` for the actual runtime identity. These are explicit test credentials. Reusing that signing pattern is a test mechanism, never evidence of a real user's grant.
+
+`OriginalCircuitRetainedTaskInputsV1::require_completed_a` compares the original A publication twice and enforces a separate C session. `install_original` uses the existing `AgentdConfig::with_q24_circuit_task_profile` factory once, observes its actual installed Source/Cell, checks original A again and preserves the original freshness gate. Do not call `support::start` afterward to create a second replacement factory or substitute Source/Cell files.
+
+## Ordinary bootstrap and the full daemon have different evidence
+
+The existing `support::start` extracts the task bootstrap and attaches it to a fixture's already held `RuntimeFixture.state`. The ordinary Q24 test's `execute` calls that state's real `response(..., AgentdMethod::ObjectiveStart)` and reads real Source/Cell receipts. This is meaningful ordinary bootstrap/ingress integration, with explicit fixture credentials.
+
+The actual Version `run_original_c` path instead calls `crate::run`. `runtime.rs::run_with_shutdown` creates a new `AgentdState`, attaches the consumed original bootstrap, opens original AuthBus/Objective owners, binds the control socket, starts the real App Server and observes actual App Server readiness. The old Admission's in-memory state is not this new daemon state. Marking the old fixture state ready does not prove that the new daemon became ready.
+
+For actual daemon ingress, the existing public API is:
+
+```rust
+let client = AgentdClient::new(
+    identity.control_socket.clone(),
+    identity.agent_id.clone(),
+    identity.spawn_generation,
+)?;
+let outcome = client.objective_start(original_c_request).await?;
+```
+
+`AgentdClient` already checks bounded framing, request identity, agent identity and spawn generation. Its original two-second per-transport timeout remains unchanged. The fixture must verify the applicable admission/completion outcome and actual Source/Cell readback. A timeout does not prove non-admission; `objective_admission` is the existing exact-request historical read path, not permission to replay another task.
+
+`run_original_c` uses the existing daemon signal-driven stop entry. If a mechanism test chooses the explicit `run_with_shutdown` embedded entry, it must say so and preserve real startup, generation fences and drain; it cannot claim to have exercised the exact Version entry simply by calling a different path. No change to either entry is proposed by this review.
+
+## FinalUse and same-owner requirements
+
+The original evaluated FinalUse test constructs a real issuer transport and checks the exact prepared binding; its signing authority is the same fixture Version authority. It explicitly requires UID 0 and labels its credentials and same-process transport as test inputs. It also demonstrates why Installed or a reader pointer alone is insufficient: later B loss can leave published material and an installed reader while Version remains uncertain and refuses S/C service.
+
+The fresh full fixture must obtain T from the original fresh Training path and B from the prepared panel completed after the actual Training/Candidate observation. `PublicationFixture::ready` recovers a Training owner after a prior source-bound run and therefore cannot stand in for a new full fresh Root run. `PositiveFixture::ready` also performs auxiliary positive evaluation/model work; it is not the clean new fresh A/T/B/NoUpdate chain.
+
+## Scheduling and limits
+
+Version's ordinary server uses `try_join!` for command service, the actual C runtime and FinalUse issuance. C startup performs another original current read. This can overlap an externally issued S/C predecessor read. The proposed sealed same-channel sharing must retain original Unavailable/Unknown behavior; there is no new queue, retry, reset, extra permit or implied guarantee that every schedule succeeds.
+
+A complete fixture should observe the actual startup/readiness boundary before dispatching later S/C work, retain any actual collision, and measure all original public sessions and aggregate reads. The planned T=4 and E=3 arrangement is still an engineering design; this source review does not measure it or prove the 128-request / absolute-lifetime budget sufficient.
+
+## Remaining completion work
+
+The 15-file shared-readback production candidate and its Linux export correction do not supply the full fresh fixture. The exact same-A fresh material builder, complete ten-owner service assembly, actual C ingress/readback, daemon/Root cold recovery, original registrations, formatting, compilation and gates remain necessary. Real original task/owner inputs, independent B results and full frozen costs remain external requirements. Real qualified chains remain **0**.

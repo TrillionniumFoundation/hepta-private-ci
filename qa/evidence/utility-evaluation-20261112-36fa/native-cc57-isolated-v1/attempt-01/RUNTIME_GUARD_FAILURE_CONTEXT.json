@@ -1,0 +1,127 @@
+{
+  "format": "hepta-isolated-native-preflight-failure-source-context-v1",
+  "status": "KNOWN_FAILED_PREFLIGHT_ZERO_BEHAVIORAL_TESTS",
+  "job_id": "1a1d2e908ac-392-5a",
+  "result": {
+    "bytes": 1003,
+    "sha256": "3ff0675a3fb0dca9c6107b4982c1cb26f34007f5a3d4f62c46cd1a660428a50d",
+    "git_blob": "b6a785c0194c2f65054a26e5815042010a22dad8"
+  },
+  "qualification": false,
+  "source_writes": 0,
+  "dependency_recovery_actions": 0,
+  "new_native_main_attempts": 0,
+  "original_v5_pin": {
+    "bytes": 63007,
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735"
+  },
+  "original_admission_pin": {
+    "bytes": 26963,
+    "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d",
+    "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f"
+  },
+  "approved_configuration": {
+    "bytes": 11785,
+    "sha256": "ffb59de9f19c3ec9c45ec4f750ee33220dcb74df4d35a07a0ef7b1a2be446b6f",
+    "git_blob": "1666e5df58b33f1786287ba94d1d74b79442f8d6"
+  },
+  "error": "ValueError: RUSTY_V8_ARCHIVE actual existing file required",
+  "guard_excerpt": {
+    "function": "installed_file_observation",
+    "first_line": 480,
+    "source": "def installed_file_observation(path,label):\n    path=pathlib.Path(path)\n    check(path.is_absolute() and path.is_file(),label+\" actual existing file required\")\n    resolved=path.resolve(strict=True)\n    before=resolved.stat()\n    digest=hashlib.sha256()\n    with resolved.open(\"rb\") as f:\n        for block in iter(lambda:f.read(1048576),b\"\"):digest.update(block)\n    after=resolved.stat()\n    check((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)==\n          (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns),\n          label+\" changed while reading\")\n    return {\"path\":str(path),\"resolved\":str(resolved),\"bytes\":before.st_size,\n            \"sha256\":digest.hexdigest(),\"mode\":stat.S_IMODE(before.st_mode)}\n\n"
+  },
+  "environment_preflight_excerpt": {
+    "function": "environment_preflight",
+    "first_line": 551,
+    "source": "def environment_preflight():\n    historical=parse(read_input(ENVIRONMENT_FILE,HISTORICAL_ENV_PIN,100000))\n    check(historical[\"environment\"]==ORIGINAL_ENVIRONMENT,\"original historical environment bytes/fields\")\n    restored=validate_runtime_restoration()\n    desired=dict(ORIGINAL_ENVIRONMENT)\n    desired.update({\n        \"CARGO_TARGET_DIR\":str(TARGET),\n        \"PATH\":str(DEPOT/\"bin\")+\":\"+ORIGINAL_ENVIRONMENT[\"PATH\"],\n        \"RUSTY_V8_ARCHIVE\":str(DEPOT/\"v8-150.4.0-gnu-sandbox\"/\n            \"librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\"),\n        \"RUSTY_V8_SRC_BINDING_PATH\":str(DEPOT/\"v8-150.4.0-gnu-sandbox\"/\n            \"src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\"),\n        \"UV_PROJECT_ENVIRONMENT\":str(DEPOT/\"scripts-project-environment\"),\n        \"UV_CACHE_DIR\":str(DEPOT/\"uv-cache\"),\n        \"RUFF_CACHE_DIR\":str(DEPOT/\"ruff-cache\"),\n        \"UV_OFFLINE\":\"true\",\"UV_PYTHON_DOWNLOADS\":\"never\"})\n    check(restored.get(\"explicit_environment\")==desired and cfg.get(\"environment\")==desired,\n          \"actual restored and explicitly approved complete runtime environment\")\n    inherited={name:os.environ.get(name) for name in SAFE_SOURCE_ENV}\n    check(inherited==restored.get(\"inherited_source_environment\")\n          and inherited==cfg.get(\"inherited_source_environment\"),\n          \"actual inherited CODEX_REPO_ROOT/PYTHONPATH match restored and approved observation\")\n    check(inherited[\"CODEX_REPO_ROOT\"] in (None,str(REPO)),\n          \"CODEX_REPO_ROOT cannot identify an old source worktree\")\n    unexpected=sorted(name for name in os.environ\n          if (name.startswith(\"UV_\") or name.startswith(\"RUFF_\")) and name not in UV_KEYS)\n    check(not unexpected,\"unreviewed formatter environment names: \"+repr(unexpected))\n    jwrite(\"FORMATTER_ENVIRONMENT.before-override.json\",\n          {\"formatter_environment\":{name:os.environ.get(name) for name in UV_KEYS},\n           \"inherited_source_environment\":inherited,\"approved_explicit_environment\":desired})\n    for key,value in desired.items():os.environ[key]=value\n    os.environ[\"GIT_OPTIONAL_LOCKS\"]=\"0\"\n    os.environ[\"PYTHONDONTWRITEBYTECODE\"]=\"1\"\n    sys.dont_write_bytecode=True\n    check(not any(os.environ.get(x) for x in\n          (\"GIT_DIR\",\"GIT_WORK_TREE\",\"GIT_COMMON_DIR\",\"GIT_INDEX_FILE\",\"GIT_OBJECT_DIRECTORY\",\n           \"GIT_ALTERNATE_OBJECT_DIRECTORIES\",\"GIT_SHALLOW_FILE\",\"GIT_REPLACE_REF_BASE\")),\n          \"no inherited Git identity/object overrides\")\n    material_files=restored[\"tool_and_material_files\"]\n    restored_tools={name:project_runtime_file(material_files[\"tool_\"+name])\n                    for name in (\"git\",\"just\",\"python3\",\"rustup\",\"cargo\",\"uv\")}\n    check(cfg.get(\"tool_files\")==restored_tools,\"approved five-field actual restored tool projections\")\n    tools={}\n    for name in restored_tools:\n        resolved=shutil.which(name)\n        check(resolved is not None,\"required actual restored tool missing: \"+name)\n        tools[name]=installed_file_observation(resolved,\"actual tool \"+name)\n    check(tools==restored_tools,\"restored actual tool bytes/paths/modes before maintenance\")\n    # Read-only versions do not run uv sync, uv run, installation or a formatter.\n    tool_versions={}\n    for name in (\"just\",\"uv\"):\n        tool_versions[name]=run_readonly([tools[name][\"path\"],\"--version\"]).decode(\"utf-8\",\"strict\")\n    # just has the exact restored file identity; record its version without inventing a version contract.\n    check(re.fullmatch(r\"uv 0\\.11\\.3(?: \\([^\\r\\n]*\\))?\\r?\\n\",tool_versions[\"uv\"]) is not None,\n          \"actual pinned UV version 0.11.3\")\n    tool_versions[\"rustup_toolchains\"]=run_readonly([tools[\"rustup\"][\"path\"],\"toolchain\",\"list\"]).decode(\"utf-8\",\"strict\")\n    check(any(line.startswith(\"1.96.0-\") for line in tool_versions[\"rustup_toolchains\"].splitlines()),\n          \"actual pre-installed original Rust toolchain unavailable\")\n    check(cfg.get(\"create_target_if_absent\") is False,\n          \"runtime restoration must have already prepared the target; no target recreation\")\n    target=external_directory(TARGET,\"exclusive CARGO_TARGET_DIR\")\n    minimum=cfg.get(\"minimum_target_free_bytes\")\n    check(type(minimum) is int and minimum>0 and target[\"disk_free\"]>=minimum,\n          \"approved actual target free-space precondition\")\n    check(target[\"uid\"]==os.getuid(),\"current-user-owned restored target\")\n    roles={\"RUSTY_V8_ARCHIVE\":\"v8-sandbox-archive\",\"RUSTY_V8_SRC_BINDING_PATH\":\"v8-sandbox-bindings\"}\n    restored_v8={name:project_runtime_file(material_files[role]) for name,role in roles.items()}\n    v8={name:installed_file_observation(desired[name],name) for name in roles}\n    check(cfg.get(\"v8_files\")==restored_v8 and v8==restored_v8,\n          \"approved actual restored V8 pair bytes/paths/modes\")\n    formatter_dirs={name:external_directory(desired[key],\"restored external \"+name)\n                    for name,key in ((\"project\",\"UV_PROJECT_ENVIRONMENT\"),\n                                     (\"ruff_cache\",\"RUFF_CACHE_DIR\"),(\"uv_cache\",\"UV_CACHE_DIR\"))}\n    check(all(row[\"uid\"]==os.getuid() for row in formatter_dirs.values()),\n          \"current-user-owned restored external formatter directories\")\n    restored_formatter={\"python\":project_runtime_file(material_files[\"venv_python\"]),\n                        \"ruff\":project_runtime_file(material_files[\"ruff\"])}\n    formatter_tools={name:installed_file_observation(pathlib.Path(desired[\"UV_PROJECT_ENVIRONMENT\"])/\"bin\"/name,\n                     \"external formatter \"+name) for name in (\"python\",\"ruff\")}\n    check(cfg.get(\"formatter_tool_files\")==restored_formatter and formatter_tools==restored_formatter,\n          \"approved actual external formatter bytes/paths/modes\")\n    active=active_build_processes()\n    jwrite(\"BUILD_PROCESS_PREFLIGHT.json\",active)\n    check(not active[\"active_matching_processes\"] and not active[\"unreadable_matching_processes\"],\n          \"active/unknown same-UID Cargo/formatter process; no competing maintenance\")\n    record={\"historical_environment\":HISTORICAL_ENV_PIN,\"effective_explicit_environment\":desired,\n            \"actual_runtime_restoration\":cfg[\"runtime_restoration\"],\n            \"inherited_source_environment\":inherited,\"tool_identity_projection\":[\"path\",\"resolved\",\"bytes\",\"sha256\",\"mode\"],\n            \"tools\":tools,\"tool_versions\":tool_versions,\"v8_files\":v8,\"target\":target,\n            \"formatter_directories\":formatter_dirs,\"formatter_tools\":formatter_tools,\"process_observation\":active,\n            \"tool_or_dependency_installation_commands_executed\":False,\n            \"limitation\":\"Actual restoration and current bytes are prerequisites; future fix/fmt success remains unobserved.\"}\n    jwrite(\"ENVIRONMENT_PREFLIGHT.json\",record)\n    return record\n\n"
+  },
+  "configured_v8_files": {
+    "RUSTY_V8_ARCHIVE": {
+      "bytes": 29366352,
+      "mode": 384,
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+    },
+    "RUSTY_V8_SRC_BINDING_PATH": {
+      "bytes": 39884,
+      "mode": 384,
+      "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+    }
+  },
+  "actual_before_override_file": {
+    "bytes": 1382,
+    "sha256": "eb8fe090db31cc6c8a3422e8159bce58e1259072fcd5c5822d975b53005976b7",
+    "git_blob": "1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d",
+    "version": "2050:51187966:1382:1794539860776939671:1794539860776939671"
+  },
+  "actual_current_git_before": {
+    "bytes": 489,
+    "sha256": "6415236e0d5ca6d1fc0cf11a926dc8126811e4be5d5ffb0059dab0f77cf061f5",
+    "git_blob": "0b42d258d307696a1e236f326521819e7a969ae6",
+    "version": "2050:51187956:489:1794539851503164909:1794539851503164909"
+  },
+  "actual_current_git_after": {
+    "bytes": 489,
+    "sha256": "6415236e0d5ca6d1fc0cf11a926dc8126811e4be5d5ffb0059dab0f77cf061f5",
+    "git_blob": "0b42d258d307696a1e236f326521819e7a969ae6",
+    "version": "2050:51187987:489:1794539864238908963:1794539864238908963"
+  },
+  "actual_full_physical_comparison": {
+    "bytes": 204,
+    "sha256": "0e95afa2a439a0d8ecfbdbd120564dfd5acf9d21eab1e47af2a50754438d717c",
+    "git_blob": "54cc9f6894944027a22b0d8f7ea16a2c978a1d74",
+    "version": "2050:51187994:204:1794539868210880575:1794539868210880575"
+  },
+  "reasoning_scope": "The exact code sets the complete explicitly approved environment before observing the fixed V8 pair. The error occurs at absolute/is_file validation before resolve/open/hash. The fixed configured archive path is absolute; no current filesystem diagnostic has yet observed why is_file was false. Do not infer a writer, deletion cause, or new source failure.",
+  "known_unchanged_scope": "Both actual admission raw Git state records are byte equal; actual physical comparison reports original rows equal and zero extras. Preserve the original wrapper source_before=null/source_change=null/source_comparison=unknown_missing_before.",
+  "historical_runtime_commands": [
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "--version"
+      ],
+      "finished_at": "2026-11-13T03:17:41.277562+00:00",
+      "purpose": "read-only preflight/evidence",
+      "returncode": 0,
+      "started_at": "2026-11-13T03:17:41.275041+00:00",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 12,
+      "stdout_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "argv": [
+        "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+        "--version"
+      ],
+      "finished_at": "2026-11-13T03:17:41.351013+00:00",
+      "purpose": "read-only preflight/evidence",
+      "returncode": 0,
+      "started_at": "2026-11-13T03:17:41.341595+00:00",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 37,
+      "stdout_sha256": "cbaa487aa52e8dacd228992f11a8a49459a06b479806187cb00a93c880b5460e"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/rustup",
+        "toolchain",
+        "list"
+      ],
+      "finished_at": "2026-11-13T03:17:41.396081+00:00",
+      "purpose": "read-only preflight/evidence",
+      "returncode": 0,
+      "started_at": "2026-11-13T03:17:41.382005+00:00",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 306,
+      "stdout_sha256": "a268561e227f4e66241dd0ea189af10e0ebec792d01b5b39da248739bacb6697"
+    }
+  ]
+}

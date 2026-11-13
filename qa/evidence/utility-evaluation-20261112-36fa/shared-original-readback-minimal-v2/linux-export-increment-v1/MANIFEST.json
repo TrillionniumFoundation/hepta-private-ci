@@ -1,0 +1,51 @@
+{
+  "format": "hepta-source-increment-manifest-v1",
+  "identity": "shared-original-readback-minimal-v2/linux-export-increment-v1",
+  "base_packet": "92a1567ac32c886d9d7386fb80915071475528bf",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 71064,
+        "sha256": "1456a1b965d3cfa1c61e75f688e56f61b98e7dbb9f109a5a8948f5b2b30494cd",
+        "git_blob": "10205177c9e4274f58347f5a3719f2a34ed76519"
+      },
+      "after": {
+        "bytes": 71092,
+        "sha256": "ff4dd039ea0431ef25bf661bd47fdde61771d93ab3a1ec819aa733dc7e0ddc0c",
+        "git_blob": "e4875d82be8b8bd9401c770584c1cf286ccb5eef"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "after/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 71092,
+      "sha256": "ff4dd039ea0431ef25bf661bd47fdde61771d93ab3a1ec819aa733dc7e0ddc0c",
+      "git_blob": "e4875d82be8b8bd9401c770584c1cf286ccb5eef",
+      "full_readback_equal": true
+    },
+    {
+      "name": "SOURCE_PACKET.json",
+      "bytes": 74342,
+      "sha256": "51174d913bd9bf7d0cba82da787e35d12b38681ea731358f5e8b6e074f1d1cc3",
+      "git_blob": "812b8308dbec3ee818bcbb7eae41fb60da10e086",
+      "full_readback_equal": true
+    },
+    {
+      "name": "changes.patch",
+      "bytes": 667,
+      "sha256": "1c7289811cfdaf7407b06c41d74cdd4c1997659788c4b27b5247a2e11fbc19f5",
+      "git_blob": "f8c494630d0a88e2169c56d381760b60f91f6afb",
+      "full_readback_equal": true
+    },
+    {
+      "name": "STATIC_REVIEW.json",
+      "bytes": 592,
+      "sha256": "dd0569b0146b7c78d6ceb24adf9b4ea011cf23627b234066a4ef1424d08453c1",
+      "git_blob": "a4bf0102dc43c386b4fecea12479ae3f3c2f89cd",
+      "full_readback_equal": true
+    }
+  ]
+}

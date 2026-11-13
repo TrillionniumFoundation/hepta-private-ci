@@ -1,0 +1,82 @@
+{
+  "before": "0ef2ef2e34938f662a233ae67478b9f85a6d07b1",
+  "after": "30769dda72e5fe509bed1e1c8ce251f79f1861d2",
+  "inverse_full_text_equal": true,
+  "replacements": [
+    {
+      "label": "explicit original-service choice",
+      "before": "struct Case {",
+      "after": "#[derive(Clone, Copy)]\nenum TrainerServing {\n    ControlledResponse,\n    OriginalService,\n}\n\nstruct Case {"
+    },
+    {
+      "label": "ready selection argument",
+      "before": "    async fn ready(trainer_lifetime: Duration) -> anyhow::Result<Self> {",
+      "after": "    async fn ready(\n        trainer_lifetime: Duration,\n        serving: TrainerServing,\n    ) -> anyhow::Result<Self> {"
+    },
+    {
+      "label": "ready passes selection",
+      "before": "Box::pin(case.initialize(trainer_lifetime)).await",
+      "after": "Box::pin(case.initialize(trainer_lifetime, serving)).await"
+    },
+    {
+      "label": "initialize selection argument",
+      "before": "    async fn initialize(&mut self, trainer_lifetime: Duration) -> anyhow::Result<()> {",
+      "after": "    async fn initialize(\n        &mut self,\n        trainer_lifetime: Duration,\n        serving: TrainerServing,\n    ) -> anyhow::Result<()> {"
+    },
+    {
+      "label": "unchanged original service for enforcement",
+      "before": "        let (control, trainer_peer) =\n            controlled_training::serve(Arc::clone(&fixture.trainer), channel);\n        self.control = Some(control);\n        self.trainer_peer = Some(trainer_peer);",
+      "after": "        self.trainer_peer = Some(match serving {\n            TrainerServing::ControlledResponse => {\n                let (control, peer) =\n                    controlled_training::serve(Arc::clone(&fixture.trainer), channel);\n                self.control = Some(control);\n                peer\n            }\n            // Budget and deadline tests use the unchanged production service\n            // loop through the existing same-process transport adapter.\n            TrainerServing::OriginalService =>\n                commands::serve(Arc::clone(&fixture.trainer), channel),\n        });"
+    },
+    {
+      "label": "serving mode evaluated_published_readback_alias_competition_uses_same_slot",
+      "before": "async fn evaluated_published_readback_alias_competition_uses_same_slot() -> anyhow::Result<()> {\n    let case = Box::pin(Case::ready(Duration::from_secs(300))).await?;",
+      "after": "async fn evaluated_published_readback_alias_competition_uses_same_slot() -> anyhow::Result<()> {\n    let case = Box::pin(Case::ready(\n        Duration::from_secs(300), TrainerServing::ControlledResponse,\n    )).await?;"
+    },
+    {
+      "label": "serving mode evaluated_published_readback_cancelled_alias_cannot_restore_any_alias",
+      "before": "async fn evaluated_published_readback_cancelled_alias_cannot_restore_any_alias() -> anyhow::Result<()> {\n    let case = Box::pin(Case::ready(Duration::from_secs(300))).await?;",
+      "after": "async fn evaluated_published_readback_cancelled_alias_cannot_restore_any_alias() -> anyhow::Result<()> {\n    let case = Box::pin(Case::ready(\n        Duration::from_secs(300), TrainerServing::ControlledResponse,\n    )).await?;"
+    },
+    {
+      "label": "serving mode evaluated_published_readback_aliases_share_original_128_frame_budget",
+      "before": "async fn evaluated_published_readback_aliases_share_original_128_frame_budget() -> anyhow::Result<()> {\n    let case = Box::pin(Case::ready(Duration::from_secs(300))).await?;",
+      "after": "async fn evaluated_published_readback_aliases_share_original_128_frame_budget() -> anyhow::Result<()> {\n    let case = Box::pin(Case::ready(\n        Duration::from_secs(300), TrainerServing::OriginalService,\n    )).await?;"
+    },
+    {
+      "label": "serving mode evaluated_published_readback_clone_cannot_renew_original_absolute_deadline",
+      "before": "async fn evaluated_published_readback_clone_cannot_renew_original_absolute_deadline() -> anyhow::Result<()> {\n    // A legal shorter lifetime is supplied to the existing connection factory\n    // before binding or sharing. No frozen receipt or live deadline is edited.\n    let case = Box::pin(Case::ready(Duration::from_secs(10))).await?;",
+      "after": "async fn evaluated_published_readback_clone_cannot_renew_original_absolute_deadline() -> anyhow::Result<()> {\n    // A legal shorter lifetime is supplied to the existing connection factory\n    // before binding or sharing. No frozen receipt or live deadline is edited.\n    let case = Box::pin(Case::ready(\n        Duration::from_secs(10), TrainerServing::OriginalService,\n    )).await?;"
+    },
+    {
+      "label": "actual aggregate request observation",
+      "before": "        let consumed = case.control()?.frames()?.len();\n        anyhow::ensure!(consumed > 0 && consumed < 128, \"actual Version admission spent original frames\");",
+      "after": "        let next = shared.fixture_original_trainer_next_request_id()?\n            .context(\"the original service's actual channel is present\")?;\n        let consumed = usize::try_from(next.checked_sub(1)\n            .context(\"original request ids start at one\")?)?;\n        anyhow::ensure!(consumed > 0 && consumed < 128, \"actual Version admission spent original frames\");"
+    },
+    {
+      "label": "actual next-id at exhaustion",
+      "before": "        require_original_frames(case.control()?, 128)?;\n        let new_alias = shared.clone();",
+      "after": "        anyhow::ensure!(\n            shared.fixture_original_trainer_next_request_id()? == Some(129)\n                && alias.fixture_original_trainer_next_request_id()? == Some(129),\n            \"all aliases spent the same original 128 requests\",\n        );\n        let new_alias = shared.clone();"
+    },
+    {
+      "label": "actual absent shared slot after exhaustion",
+      "before": "        require_original_frames(case.control()?, 128)?;\n        anyhow::ensure!(case.bytes()? == before, \"bounded reads changed no original journals\");",
+      "after": "        for reader in [&shared, &alias, &new_alias] {\n            anyhow::ensure!(reader.fixture_original_trainer_next_request_id()?.is_none(),\n                            \"no exhausted alias retains an original channel\");\n        }\n        anyhow::ensure!(case.bytes()? == before, \"bounded reads changed no original journals\");"
+    },
+    {
+      "label": "deadline actual request observation",
+      "before": "        let count = case.control()?.frames()?.len();\n        let expired_at = case.trainer_deadline_upper_bound",
+      "after": "        let next = shared.fixture_original_trainer_next_request_id()?\n            .context(\"the original deadline has not yet consumed the channel\")?;\n        let count = usize::try_from(next.checked_sub(1)\n            .context(\"original request ids start at one\")?)?;\n        let expired_at = case.trainer_deadline_upper_bound"
+    },
+    {
+      "label": "deadline original slot before expired request",
+      "before": "        anyhow::ensure!(shared.fixture_same_original_clients(&late_alias),\n                        \"late cloning still holds the same original clients\");\n        anyhow::ensure!(matches!(",
+      "after": "        anyhow::ensure!(shared.fixture_same_original_clients(&late_alias),\n                        \"late cloning still holds the same original clients\");\n        anyhow::ensure!(\n            shared.fixture_original_trainer_next_request_id()? == Some(next)\n                && late_alias.fixture_original_trainer_next_request_id()? == Some(next),\n            \"time and cloning did not construct another channel or reset its request id\",\n        );\n        anyhow::ensure!(matches!("
+    },
+    {
+      "label": "deadline shared channel consumed",
+      "before": "        require_original_frames(case.control()?, count)?;\n        case.require_original_training_still_current().await?;",
+      "after": "        anyhow::ensure!(\n            shared.fixture_original_trainer_next_request_id()?.is_none()\n                && late_alias.fixture_original_trainer_next_request_id()?.is_none(),\n            \"all aliases lose the same expired channel\",\n        );\n        case.require_original_training_still_current().await?;"
+    }
+  ]
+}

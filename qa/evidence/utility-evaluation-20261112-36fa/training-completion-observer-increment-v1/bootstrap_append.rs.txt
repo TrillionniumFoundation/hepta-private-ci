@@ -1,0 +1,29 @@
+
+/// One test-only observation of actual Training completion and Candidate
+/// material. Call from the fixture's existing bounded blocking lane: the
+/// original SourceBound read performs real synchronous I/O. This helper adds
+/// no wait loop or deadline and consumes none of the three pre-held clients.
+/// Ready alone is not completion. After Some, subsequent B/channel operations
+/// must still perform their own original live reads; this is no future grant.
+pub(crate) fn completed_candidate_training<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
+    owner: &Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
+) -> Result<Option<crate::OriginalCellQ24TrainingCommandReceiptV1>, Error> {
+    let original = {
+        let state = match owner.state.try_lock() {
+            Ok(state) => state,
+            Err(std::sync::TryLockError::WouldBlock) => return Ok(None),
+            Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Busy),
+        };
+        match &*state {
+            State::Awaiting(_) | State::Starting => return Ok(None),
+            State::Fenced => return Err(Error::Uncertain),
+            State::Ready(original) => Arc::clone(original),
+        }
+    };
+    // Release the Bootstrap state lock before the original Stage lane I/O.
+    OriginalCellQ24TrainingCommandOwnerV1::fixture_completed_candidate_receipt(&original)
+        .map_err(Error::from)
+}

@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""Verify frozen source identities for a manual, source-only API/order review."""
+import hashlib
+import json
+from pathlib import Path
+
+OUT = Path(__file__).parent
+PLAN = Path('/tmp/hepta-36fa-shared-original-readback-minimal-v2')
+CAP = Path('/tmp/hepta-36fa-training-public-capacity-review-v1/reference')
+PROVIDER = Path('/tmp/hepta-36fa-root-resident-provider-proposal-v2/reference')
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'git_blob': hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()}
+
+
+def stable_read(path):
+    before = path.stat()
+    raw = path.read_bytes()
+    after = path.stat()
+    assert (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) == (
+        after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+    return raw
+
+
+def write(name, value):
+    raw = (json.dumps(value, sort_keys=True, indent=2) + '\n').encode()
+    with (OUT / name).open('xb') as f:
+        f.write(raw)
+    return {'path': name, **identity(raw)}
+
+
+inventory_path = Path('/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json')
+inventory_raw = stable_read(inventory_path)
+assert identity(inventory_raw)['git_blob'] == '7f94788b70546a8b8030dfd2b9182a7d9287c537'
+inventory = json.loads(inventory_raw)
+rows = {row['path']: row for row in inventory['files']}
+assert len(rows) == 15188
+proposal_raw = stable_read(PLAN / 'PROPOSAL.md')
+pins_raw = stable_read(PLAN / 'SOURCE_PINS.json')
+assert identity(proposal_raw)['git_blob'] == '5976d8b49c2fea805e45ba881a637e6f735e3409'
+assert identity(pins_raw)['git_blob'] == '877a60992392fca8d80ddfdc9e72da3d7fa913d7'
+pins = json.loads(pins_raw)
+assert pins['base'] == inventory['source']
+for row in pins['source_pins']:
+    original = rows[row['path']]
+    assert row['bytes'] == original['bytes']
+    assert row['sha256'] == original['sha256']
+    assert row['working_blob'] == original['index_blob']
+    assert row['index_mode'] == original['index_mode']
+
+read_files = [
+    'cell_q24_training_command.rs', 'neuron_cell_evaluation_host_command.rs',
+    'circuit_evaluated_retention_context.rs', 'circuit_retained_version_effect.rs',
+    'circuit_retained_version_state.rs', 'circuit_retained_version_service.rs',
+    'circuit_selection_receipt_owner.rs', 'circuit_next_use_receipt_owner.rs',
+    'circuit_evaluated_selection_remote.rs', 'circuit_evaluated_next_use_remote.rs',
+    'circuit_evaluated_selection_command_service.rs', 'circuit_evaluated_next_use_command_service.rs',
+    'circuit_selection_command_service.rs', 'circuit_next_use_command_service.rs',
+]
+actual = []
+for name in read_files:
+    path = CAP / name
+    if not path.exists():
+        path = PROVIDER / name
+    raw = stable_read(path)
+    row = rows['codex-rs/hepta-agentd/src/' + name]
+    got = identity(raw)
+    assert got == {'bytes': row['bytes'], 'sha256': row['sha256'], 'git_blob': row['index_blob']}
+    actual.append({'path': row['path'], 'local_path': str(path), **got})
+
+source_review = {
+    'format': 'hepta-shared-readback-source-identity-review-v1',
+    'baseline': inventory['source'], 'complete_inventory_reference': identity(inventory_raw),
+    'proposal': identity(proposal_raw), 'proposal_source_pins': identity(pins_raw),
+    'all_proposal_pin_rows_match_complete_cc57_inventory': True,
+    'proposal_pin_count': len(pins['source_pins']),
+    'actual_full_read_source_count': len(actual), 'actual_full_read_sources': actual,
+    'scope': 'Original retained cloud bytes matched to the prior complete canonical inventory, not a new native physical observation.',
+    'h_requests': 0, 'rust_compilation': False, 'tests': False, 'source_writes': False,
+}
+source_pin = write('SOURCE_IDENTITY_REVIEW.json', source_review)
+review = {
+    'format': 'hepta-shared-readback-minimal-design-peer-review-v1',
+    'status': 'NO_CONCRETE_DESIGN_BLOCKER_IMPLEMENTATION_AND_RUNTIME_NOT_REVIEWED',
+    'proposal': identity(proposal_raw), 'proposal_path': str(PLAN / 'PROPOSAL.md'),
+    'source_identity_review': source_pin,
+    'superseded_serialization_proposal': 'Not adopted or approved by this review; no optional mutex/queue/Contracts change is needed from the call ordering examined.',
+    'findings': [
+        {'id': 'same-channel-exclusivity', 'sources': ['cell_q24_training_command.rs::exchange', 'neuron_cell_evaluation_host_command.rs::exchange'],
+         'finding': 'Both original clients take the sole Channel out of a Mutex<Option<Channel>> before spawn_blocking I/O, and restore it only after original response and currentness validation. A concurrent alias finds the absent slot and refuses without sending a second request.',
+         'constraint': 'Keep the same Client in one Arc. Preserve all original channel, counter, binding, retained signature, liveness, absolute deadline and error state; no new client, stream or counter.'},
+        {'id': 'cancellation-and-errors', 'sources': ['cell_q24_training_command.rs::exchange', 'neuron_cell_evaluation_host_command.rs::exchange'],
+         'finding': 'The original slot is restored by the outer caller only after the blocking result and full validation. Dropping the dispatched await cannot restore that channel. Terminal/authentication failures leave all aliases referencing the same unavailable slot; original nonterminal outcome behavior remains as implemented.',
+         'constraint': 'Do not add retry, error-to-success conversion, replacement capability, or new queue. Preserve T and E distinctions, including E completed-to-Missing/Pending refusal.'},
+        {'id': 'evaluated-pair-order', 'sources': ['circuit_evaluated_retention_context.rs::require_current'],
+         'finding': 'Actual T readback completes and equals the retained full T receipt before actual E readback is started and compared. Final context authentication follows both awaits. No join/spawn runs these two predecessor reads together in this function.'},
+        {'id': 'selector-order', 'sources': ['circuit_selection_receipt_owner.rs::attest_source', 'circuit_selection_receipt_owner.rs::readback_source', 'circuit_selection_receipt_owner.rs::finish_original_readback', 'circuit_evaluated_selection_remote.rs::observe'],
+         'finding': 'S prepares/observes the live published owner, awaits T/E validation, and makes the later live observation in separate sequential awaits. The evaluated finish path awaits predecessor reads before its final Source/Cell observation.'},
+        {'id': 'next-use-nesting', 'sources': ['circuit_next_use_receipt_owner.rs::predecessors', 'circuit_next_use_receipt_owner.rs::finish_original_readback', 'circuit_evaluated_next_use_remote.rs::observe'],
+         'finding': 'C completes its T/E validation before awaiting the S evidence read. S can then read the same T/E again without the first C T/E exchange still owning a channel. Final C Source/Cell observation follows awaited predecessors. This single nested path does not force same-channel simultaneous I/O.'},
+        {'id': 'version-currentness', 'sources': ['circuit_retained_version_state.rs::read_original', 'circuit_retained_version_state.rs::require_cut_current', 'circuit_retained_version_state.rs::read_original_recovery'],
+         'finding': 'Version performs real D/T/E cut checks around Artifact/CURRENT and phase observations. Recovery removes reader admission until its full original before/after reads, freshness and lifetime checks succeed.',
+         'constraint': 'New export must call these original paths before consuming Owned clients, and again before later cloned exports. Recovered Published enum or an Installed/reader value alone is insufficient.'},
+        {'id': 'one-way-attenuation', 'sources': ['circuit_retained_version_effect.rs::publish_original_final_use', 'circuit_retained_version_state.rs::original_trainer', 'circuit_retained_version_state.rs::original_evaluator'],
+         'finding': 'The real publish path returns T/E after the one-shot Prepared publication. It installs state and reader before final currentness and Published notification. The proposed export occurs only after Published and repeats full checks; actual returned clients are then consumed once and retained as the same readonly handles.',
+         'constraint': 'Verify complete retained opaque results and a present original channel, spend Execute permanently, and fail closed on partial conversion. No public inner-client/Deref/AsRef/FD/constructor/Execute surface; exact old by-value and Fresh/Recovered behavior stays available.'},
+        {'id': 'background-concurrency-boundary', 'sources': ['circuit_retained_version_service.rs::serve_original_ordinary', 'circuit_retained_version_effect.rs::run_original_c'],
+         'finding': 'serve_original_ordinary uses try_join! for the command server, actual C startup and final-use issuer. run_original_c performs an additional original read under the Version state lock before consuming C configuration and entering crate::run. This can overlap a separately dispatched S/C direct predecessor read; Root stage serialization alone does not prove all background reads serialized.',
+         'interpretation': 'Possible scheduling overlap, not a proof of unavoidable overlap on every execution. The smallest design retains original Unavailable/Unknown refusal and does not promise queued or successful concurrent service. A future real fixture must retain any collision or establish actual ordering, not assume success.'},
+        {'id': 'placement-and-capacity', 'sources': ['proposal::Physical placement and capacity'],
+         'finding': 'The planned T=4 and E=3 arrangement requires Version/S/C in one actual trusted receiver process, plus the already-supported single readonly B evidence client shared by its two members. Arc does not authenticate a new process or transfer a socket capability across processes.',
+         'constraint': 'No permit-limit increase, socket duplication/rebind, metadata-supplied peer substitution or public callback proxy. Count actual public sessions in the complete fixture.'},
+    ],
+    'remaining_checks': [
+        'Review actual immutable Rust pre/postimages, API reachability, attenuation constructors and same-source caller fences.',
+        'Keep original Client fields, request/protocol/exchange bodies and all existing constructor signatures byte-identical apart from necessary sibling exports.',
+        'Test real publication/recovery export, alias single-dispatch refusal, actual terminal error/cancellation propagation, and exact original receipt/context mismatch rejection.',
+        'Measure the complete route against the one aggregate 128-request sequence and original absolute lifetime; this design review does not prove either budget fits.',
+        'Run the original formatter, complete source/caller/native gates on the eventual frozen source; this review is not qualification.',
+    ],
+    'executions': {'h': 0, 'cargo': 0, 'tests': 0, 'source_changes': 0, 'ref_changes': 0},
+}
+review_pin = write('REVIEW.json', review)
+print(json.dumps({'review': review_pin, 'source_review': source_pin}, sort_keys=True))

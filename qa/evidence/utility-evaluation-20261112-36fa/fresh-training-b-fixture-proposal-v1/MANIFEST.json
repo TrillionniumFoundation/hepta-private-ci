@@ -1,0 +1,158 @@
+{
+  "H_calls": 0,
+  "Rust_compile_or_run": false,
+  "artifacts": {
+    "INPUT_PINS.initial.json": {
+      "bytes": 3120,
+      "git_blob": "db48a085712841640407ac1eed2c9089f7ed3eed",
+      "sha256": "f603190a3d7e727a3eeb65cfc1980869768d3cec08d55799245667cbb50521e0"
+    },
+    "README.md": {
+      "bytes": 7497,
+      "git_blob": "efd89d6e8741ded9d0ce50a3ee0a1f9543559530",
+      "sha256": "41593d54575324eb9448db67973cb1dca08eb7d07d70147a3b6dd47cc8ac9304"
+    },
+    "SOURCE_DELTA.patch": {
+      "bytes": 32111,
+      "git_blob": "87f8a236f178e17a60235c26351feed0a0779cef",
+      "sha256": "2dd5fde218d552b5e558e35ae455977fd5645d7bbf8bb9d7a951a921dc4850cf"
+    },
+    "STATIC_PRESERVATION_REVIEW.json": {
+      "bytes": 7432,
+      "git_blob": "1be564c0a6a80d7ade1f28f4732f3a5f271669b4",
+      "sha256": "b666ca224bdc587fe20ae92fed1ad2482ac920eb3892517138f340119f3add1b"
+    },
+    "review_preservation.py": {
+      "bytes": 9291,
+      "git_blob": "e5bd975da8e87f22cde9cd04d6ac9e1dfb84f0e5",
+      "sha256": "7dbfdd93494106b1bfc1a30f2fabb94b95fcf1379aa95999736d612e3a8c0b5a"
+    }
+  },
+  "base_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "base_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "changes": [
+    {
+      "after": {
+        "bytes": 9633,
+        "git_blob": "aec983844a859a7d292f2ab53fd3756d2a42a222",
+        "sha256": "488b4b14a3e08db0f9db081c233752ed23b5726999a5ebda76d80e44a663a64c"
+      },
+      "before": {
+        "bytes": 5190,
+        "git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+        "sha256": "2a6216c8d265092e32fab520457b3fa065aabb28d409e19352fef36d01caefc1"
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 3802,
+        "git_blob": "113feddc8a4c543f7c4df15bd6450028851c5dea",
+        "sha256": "3a03f65d8f5fa55d3376f54cad23642917e2f7eeb4b20b74776da032008719ce"
+      },
+      "before": {
+        "bytes": 2282,
+        "git_blob": "3546571b4cb448383c76b7ff11bf14a19104e86f",
+        "sha256": "7a2759950fc8def989df0d65965489f3c6ea03c6283ac057d70c89149cb6d4c7"
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 3236,
+        "git_blob": "b0e4049f4f9c128ab29a5c12b0892d3a4c5bf0b9",
+        "sha256": "eca7cc30a25d53e14e0f5d1289dfce20899fcc42a541944c11d05c792414fcb5"
+      },
+      "before": {
+        "bytes": 1587,
+        "git_blob": "034c2df36cbbbfe13e4378437ae7c4e311650dc8",
+        "sha256": "aee96ea8e6bd0969db5be4bb5462dd48290e2c4d65a7c84a9da86a4b029e6c54"
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 26963,
+        "git_blob": "f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa",
+        "sha256": "741c92344b5bb3ac217191e632329485eb09be5ce35e0f6ce5dcaede7e9a8ce4"
+      },
+      "before": {
+        "bytes": 26865,
+        "git_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+        "sha256": "63738f26b0968a912d0d1bf0d95fce5434479341cc3cbe16c0d5cd526b557022"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 13079,
+        "git_blob": "fa08441db86ad7918a79b86e7b25d6fb0c3dd855",
+        "sha256": "99680fcd10a5bd0f50a2b979e271c1bfc4b77ea2ad5564d4183efa797bf0d6f5"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 14089,
+        "git_blob": "66314778d0dff6ff760361e624f89180024f087d",
+        "sha256": "f9caa780da7de24188fec8e151e66803bfd747b141fb4e297da8aacb035b36ba"
+      },
+      "before": {
+        "bytes": 11581,
+        "git_blob": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+        "sha256": "7d41de1a76a55b8b288a236d0fe570365a957593605e965db5cd493fdc80f480"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 18949,
+        "git_blob": "9815d57b9141661d93a876b17f358efefab43454",
+        "sha256": "9c6bc1e6cd6b4fe6769df8608b33dc9fc101888e26e96663b09fa82a994f7894"
+      },
+      "before": {
+        "bytes": 18845,
+        "git_blob": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f",
+        "sha256": "d975495984646f2520c1e4ab9f6011730c0216145168a10a9cc4cfed0c57d0f6"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "test_only": true
+    },
+    {
+      "after": {
+        "bytes": 18043,
+        "git_blob": "9528b169dd57d71dd30d087d8732eeaec90c6d02",
+        "sha256": "4769f08a40d0bc83e4aefae0833db5a0e699559c63b992973acbf99ef45f21ca"
+      },
+      "before": {
+        "bytes": 16766,
+        "git_blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+        "sha256": "cadff53b207810423e0125e419093ff8ff84deee2f7a5aa66b857ceedbbb184c"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "test_only": true
+    }
+  ],
+  "external_dependency": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+  "format": "fresh-training-b-fixture-frozen-manifest-v1",
+  "initial_snapshot_manifest": {
+    "bytes": 8007,
+    "git_blob": "1bf7c15d7b8a41802cb51072b1b475d8dc2c5a1b",
+    "sha256": "dcce9e5e0eeca199ff6e3893ed388921ae44099677634a89407b2535e46a991a"
+  },
+  "packet": {
+    "bytes": 201263,
+    "git_blob": "8d5b1eeea4e63ae04bb77c91abc996a34cdeccfa",
+    "sha256": "0586e34a970e3a3156beb694e7e8db613642509a816329320b20e32f2c632a08"
+  },
+  "permission_or_production_interface_changes": false,
+  "source_activation": false,
+  "status": "HOLD_UNFORMATTED_UNCOMPILED_UNEXECUTED"
+}

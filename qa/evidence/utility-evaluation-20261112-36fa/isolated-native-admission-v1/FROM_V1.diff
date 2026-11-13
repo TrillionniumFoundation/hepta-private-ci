@@ -1,0 +1,15 @@
+--- a529-unexecuted-draft
++++ v2-correct-st-fields
+@@ -304,8 +304,10 @@
+         lock = value['coordination_lock']
+         expected_lock = cfg['coordination_lock']
+         check(lock['path'] == expected_lock['path'] and lock['mode'] == 'LOCK_EX'
+-              and all(lock['stat'][key] == expected_lock[key] for key in ('device', 'inode', 'uid', 'nlink'))
+-              and stat.S_IMODE(lock['stat']['mode']) == expected_lock['mode'],
++              and all(lock['stat'][observed_key] == expected_lock[expected_key]
++                      for observed_key, expected_key in [('st_dev', 'device'), ('st_ino', 'inode'),
++                                                         ('st_uid', 'uid'), ('st_nlink', 'nlink')])
++              and stat.S_IMODE(lock['stat']['st_mode']) == expected_lock['mode'],
+               'materialization used the same real task coordination lock')
+         records = {}
+         for key, filename in [('command_records', 'COMMANDS.json'), ('mutation_records', 'MUTATION_INTENTS.json'),

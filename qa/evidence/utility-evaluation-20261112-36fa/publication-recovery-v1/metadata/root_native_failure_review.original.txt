@@ -1,0 +1,108 @@
+{
+  "format": "hepta-root-isolated-native-preflight-refusal-review-v1",
+  "status": "AUTHORITATIVE_TERMINAL_FAILURE_BEFORE_BEHAVIORAL_TESTS",
+  "job_id": "1a1d2e908ac-392-5a",
+  "source": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "root_exact_approval": "3622556e48163010c65c754ccd1e5bbf31f21319",
+  "result": {
+    "git_blob": "b6a785c0194c2f65054a26e5815042010a22dad8",
+    "bytes": 1003,
+    "sha256": "3ff0675a3fb0dca9c6107b4982c1cb26f34007f5a3d4f62c46cd1a660428a50d"
+  },
+  "supervisor": {
+    "git_blob": "cc3fe33203dbd831771d070e496397057095b05a",
+    "bytes": 948,
+    "sha256": "71d3a9f4182f9c5ca7d1849478625d9e1df8e7250376c22b8688ed35e85c48ab"
+  },
+  "stdout": {
+    "git_blob": "dd18ce5ceaf251c5fbd5593c42b21ebe64806d8f",
+    "bytes": 1091,
+    "sha256": "052a183855c2bad22f9a60d2715721420ef26fc52f8cd00bf05db0c042200075"
+  },
+  "complete_capture_placement": {
+    "git_blob": "b2f5cde318ed5e7db120d429f44d5cefafa16011",
+    "files_full_git_get_verified": 47
+  },
+  "authoritative_terminal": {
+    "at_unix_ms": 1794539868310,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1d2e908ac-392-5a",
+    "launch_nonce": "91149d385f7dabdf194974515073041a",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1091,
+        "stored": 1091
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_error": "ValueError: RUSTY_V8_ARCHIVE actual existing file required",
+  "behavioral_tests_started": false,
+  "behavioral_test_commands": 0,
+  "original_wrapper_source_before": null,
+  "original_wrapper_source_change": null,
+  "original_wrapper_source_comparison": "unknown_missing_before",
+  "separate_observations": {
+    "after_source": {
+      "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "files": 15188,
+      "inventory_sha256": "20008a0cb7bbfd5ed67396a301e2bfdbbd30f336d0f962cac23e5d1601f660d9",
+      "status": "",
+      "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+    },
+    "full_physical_comparison": {
+      "additional_physical_entries": [],
+      "full_bytes_equal": true,
+      "original_rows_identical": true,
+      "scope": "Original native snapshot equality is a separate required gate; actual generated outputs remain visible."
+    },
+    "raw_git_before_and_after_same_blob": "0b42d258d307696a1e236f326521819e7a969ae6",
+    "current_index_sha256": "95547dcfed1945bb06b5400468ec228037cff5374b674ca033a7f66468b34193"
+  },
+  "diagnosis": {
+    "failing_guard": "path.is_absolute() and path.is_file()",
+    "original_label": "RUSTY_V8_ARCHIVE",
+    "frozen_path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "original_guard_context": "51738995a75140093b741909c8b0b5eb6225eae9",
+    "path_open_and_hash_not_reached": true,
+    "writer_and_cause": "Unknown",
+    "filesystem_diagnostic_not_in_this_capture": true
+  },
+  "not_established": [
+    "native PASS",
+    "a completed failing behavioral comparison",
+    "utility Ineligible or NoUpdate",
+    "Objective Fraud",
+    "a qualified external A/B/C chain"
+  ],
+  "source_ref_moved": false,
+  "rerun_performed": false,
+  "environment_repair_performed": false,
+  "new_provider_candidate_qualification": false,
+  "real_qualified_task_chains": 0
+}

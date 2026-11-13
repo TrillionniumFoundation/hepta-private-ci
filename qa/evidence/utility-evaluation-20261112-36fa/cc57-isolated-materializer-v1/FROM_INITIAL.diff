@@ -1,0 +1,161 @@
+--- driver.HOLD.py
++++ driver-v2.HOLD.py
+@@ -296,13 +296,31 @@
+         remaining()
+         self.repo = repo
+         self.label = label
++        self.process = None
++        self.closed = False
+         self.error_fd = os.memfd_create('hepta-object-reader-stderr', os.MFD_CLOEXEC)
+         self.row = {'argv': [GIT, '--no-optional-locks', '-c', 'core.fsmonitor=false', '-c', 'core.untrackedCache=false', '-C', str(repo), 'cat-file', '--batch'], 'started_at': now(), 'actual_terminal': 'unknown_not_observed', 'requested_objects': 0, 'fully_verified_objects': 0}
+         commands.append(self.row)
+         self.prefix = 'command-%03d' % len(commands)
+         jwrite(self.prefix + '.intent.json', self.row)
+-        self.process = subprocess.Popen(self.row['argv'], cwd=repo, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.error_fd, bufsize=0)
+-        self.closed = False
++        disarm()
++        try:
++            remaining()
++            self.process = subprocess.Popen(self.row['argv'], cwd=repo, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.error_fd, bufsize=0)
++            arm_if_remaining()
++        except BaseException:
++            disarm()
++            if self.process is not None:
++                if self.process.poll() is None:
++                    self.process.kill()
++                self.row['cleanup_returncode'] = self.process.wait(timeout=5)
++                self.process.stdin.close()
++                self.process.stdout.close()
++            os.close(self.error_fd)
++            self.closed = True
++            self.row['finished_at'] = now()
++            jwrite(self.prefix + '.terminal.json', self.row)
++            raise
+ 
+     def exact(self, count):
+         blocks = []
+@@ -740,6 +758,21 @@
+     check(command(TARGET, ['write-tree']).decode().strip() == TREE, 'new normal index exact Merkle tree')
+     action['actual_terminal'] = 'observed'
+     verify_index('initial')
++    for directory, children, files in os.walk(TARGET, topdown=False, followlinks=False):
++        remaining()
++        if pathlib.Path(directory).is_relative_to(TARGET / '.git'):
++            for name in files:
++                fd = os.open(pathlib.Path(directory) / name, os.O_RDONLY | os.O_NOFOLLOW)
++                try:
++                    os.fsync(fd)
++                finally:
++                    os.close(fd)
++        fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++        try:
++            os.fsync(fd)
++        finally:
++            os.close(fd)
++    result['new_files_and_directories_synced'] = True
+ 
+ def verify_index(label):
+     raw = regular_read(TARGET / '.git' / 'index')
+@@ -848,6 +881,22 @@
+     jwrite('INPUT_IDENTITIES.final.json', rows)
+     check(stat_identity(os.fstat(lock_fd)) == result['coordination_lock']['stat'] == stat_identity(COORDINATION.lstat()), 'same source coordination lock inode remains held')
+     result['input_identities_unchanged'] = True
++
++def retain_existing_output(name):
++    path = OUT / name
++    if not os.path.lexists(path):
++        return
++    before = path.lstat()
++    check(stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid() and before.st_nlink == 1, 'ordinary own retained output')
++    digest = hashlib.sha256()
++    blob = hashlib.sha1(b'blob ' + str(before.st_size).encode() + b'\0')
++    with path.open('rb') as stream:
++        for chunk in iter(lambda: stream.read(1048576), b''):
++            remaining()
++            digest.update(chunk)
++            blob.update(chunk)
++    check(stat_identity(before) == stat_identity(path.lstat()), 'stable own output retained')
++    artifacts.append({'name': name, 'bytes': before.st_size, 'sha256': digest.hexdigest(), 'git_blob': blob.hexdigest(), 'retained_original': True})
+ 
+ def main():
+     global deadline, source_reader, target_reader, journal_stream, new_source_before, new_git_before, new_metadata_before
+@@ -878,17 +927,25 @@
+         result['traceback'] = traceback.format_exc()
+     finally:
+         disarm()
+-        deadline = time.monotonic() + RECORD_SECONDS
++        record_deadline = time.monotonic() + RECORD_SECONDS
++        deadline = record_deadline - 10
+         arm_if_remaining()
++        audits = []
++        cleanup_errors = []
+         try:
+             for reader in (source_reader, target_reader):
+                 if reader is not None and not reader.closed:
+-                    reader.abort()
++                    try:
++                        reader.abort()
++                    except BaseException as exc:
++                        cleanup_errors.append(type(exc).__name__ + ': ' + str(exc))
+             if journal_stream is not None and not journal_stream.closed:
+-                journal_stream.flush()
+-                os.fsync(journal_stream.fileno())
+-                journal_stream.close()
+-            audits = []
++                try:
++                    journal_stream.flush()
++                    os.fsync(journal_stream.fileno())
++                    journal_stream.close()
++                except BaseException as exc:
++                    cleanup_errors.append(type(exc).__name__ + ': ' + str(exc))
+             for name, method, available in [('old_source_and_git', final_old, source_before is not None and old_git_before is not None), ('new_source_and_git', final_new, new_source_before is not None and new_git_before is not None), ('inputs_and_coordination', final_inputs, lock_fd is not None and cfg is not None)]:
+                 row = {'check': name, 'status': 'unknown_not_available'}
+                 if available:
+@@ -898,22 +955,33 @@
+                     except BaseException as exc:
+                         row.update(status='failed', error=type(exc).__name__ + ': ' + str(exc), traceback=traceback.format_exc())
+                 audits.append(row)
+-            result['final_audits'] = audits
+-            success = operation_error is None and result.get('action_completed') is True and all(row['status'] == 'verified' for row in audits)
+-            result['status'] = 'MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY' if success else 'FAILED_ISOLATED_MATERIALIZATION'
+-            result['old_source_writes'] = False
+-            result['finished_at'] = now()
+-            jwrite('COMMANDS.json', commands)
+-            jwrite('MUTATION_INTENTS.json', intents)
+-            jwrite('INPUT_IDENTITIES.before.json', inputs)
+-            jwrite('ARTIFACTS.json', artifacts)
+-            jwrite('RESULT.json', result)
+-            event('isolated_materialization_complete', status=result['status'], qualification=False)
++            for name in ('PHYSICAL_CREATION_JOURNAL.jsonl', 'INDEPENDENT_OBJECTS.input.pack'):
++                retain_existing_output(name)
++        except BaseException as exc:
++            result['retention_error'] = type(exc).__name__ + ': ' + str(exc)
++            result['retention_traceback'] = traceback.format_exc()
+         finally:
+             disarm()
+-            if lock_fd is not None:
+-                fcntl.flock(lock_fd, fcntl.LOCK_UN)
+-                os.close(lock_fd)
++            deadline = record_deadline
++            arm_if_remaining()
++            try:
++                result['final_audits'] = audits
++                result['cleanup_errors'] = cleanup_errors
++                success = operation_error is None and result.get('action_completed') is True and not cleanup_errors and 'retention_error' not in result and len(audits) == 3 and all(row['status'] == 'verified' for row in audits)
++                result['status'] = 'MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY' if success else 'FAILED_ISOLATED_MATERIALIZATION'
++                result['old_source_writes'] = False
++                result['finished_at'] = now()
++                jwrite('COMMANDS.json', commands)
++                jwrite('MUTATION_INTENTS.json', intents)
++                jwrite('INPUT_IDENTITIES.before.json', inputs)
++                jwrite('ARTIFACTS.json', artifacts)
++                jwrite('RESULT.json', result)
++                event('isolated_materialization_complete', status=result['status'], qualification=False)
++            finally:
++                disarm()
++                if lock_fd is not None:
++                    fcntl.flock(lock_fd, fcntl.LOCK_UN)
++                    os.close(lock_fd)
+     raise SystemExit(0 if result.get('status') == 'MATERIALIZED_EXACT_CC57_FOR_NATIVE_REVIEW_ONLY' else 1)
+ 
+ if __name__ == '__main__':

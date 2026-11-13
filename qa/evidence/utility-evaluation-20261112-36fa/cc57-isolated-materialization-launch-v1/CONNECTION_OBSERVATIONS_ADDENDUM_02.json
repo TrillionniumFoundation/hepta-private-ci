@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "bytes": 508,
+      "git_blob": "1c61d5d84cf5e1deb56b8d55b01e7fd503fafe9a",
+      "local_path": "/tmp/hepta-36fa-cc57-isolated-materialization-launch-v1/HOST_HEALTH_02.INTENT.json",
+      "path": "cc57-isolated-materialization-v1/connection-observations/HOST_HEALTH_02.INTENT.json",
+      "sha256": "72394d0deae6bb36d7712f2c199eed2bf81b4c5b41b6ae735fcf631f4ad4a773"
+    },
+    {
+      "bytes": 997,
+      "git_blob": "c43b0f4240939af6f0d39a016edc87077794c607",
+      "local_path": "/tmp/hepta-36fa-cc57-isolated-materialization-launch-v1/HOST_HEALTH_02.original.json",
+      "path": "cc57-isolated-materialization-v1/connection-observations/HOST_HEALTH_02.original.json",
+      "sha256": "821ddf8bd6d9cac3bf71e2294e841902b75536c85470a86232536920d2dd7ffa"
+    }
+  ],
+  "format": "hepta-materialization-connection-observation-addendum-v1",
+  "host_health_observations": 2,
+  "materialization_effect": "Unknown",
+  "materialization_exact_reconciliations": 0,
+  "materialization_job_id": null,
+  "materialization_main_initial_calls": 1,
+  "native_main_calls": 0,
+  "no_further_health_polling": true,
+  "observation": "host_health_02",
+  "observation_started_at": "2026-11-13T02:21:11.395158+00:00",
+  "original_health_result": "tool-layer tunnel_client_not_seen / HTTP 404 / NOT_FOUND",
+  "prior_placement": "52a8425c11e9a7cdf4f3f83371deb8057448b77e",
+  "status": "original observation preserved; not an execution or gate failure"
+}

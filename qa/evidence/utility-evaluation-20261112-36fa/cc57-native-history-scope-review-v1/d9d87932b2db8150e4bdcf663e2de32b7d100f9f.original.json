@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 3851,
+    "index_blob": "d9d87932b2db8150e4bdcf663e2de32b7d100f9f",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/bwrap/build.rs",
+    "permissions": 420,
+    "sha256": "3ca3f0c90e075d38215e74ff19049df1ff6fdd80a04711ee05f3acd39dfd7b70",
+    "stable": true,
+    "working_blob": "d9d87932b2db8150e4bdcf663e2de32b7d100f9f"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "use std::env;\nuse std::path::Path;\nuse std::path::PathBuf;\n\nfn main() {\n    println!(\"cargo:rustc-check-cfg=cfg(bwrap_available)\");\n    println!(\"cargo:rerun-if-env-changed=CODEX_BWRAP_SOURCE_DIR\");\n    println!(\"cargo:rerun-if-env-changed=PKG_CONFIG_ALLOW_CROSS\");\n    println!(\"cargo:rerun-if-env-changed=PKG_CONFIG_PATH\");\n    println!(\"cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR\");\n    println!(\"cargo:rerun-if-env-changed=CODEX_SKIP_BWRAP_BUILD\");\n\n    let manifest_dir = PathBuf::from(env::var(\"CARGO_MANIFEST_DIR\").unwrap_or_default());\n    let vendor_dir = manifest_dir.join(\"../vendor/bubblewrap\");\n    for source in [\"bubblewrap.c\", \"bind-mount.c\", \"network.c\", \"utils.c\"] {\n        println!(\n            \"cargo:rerun-if-changed={}\",\n            vendor_dir.join(source).display()\n        );\n    }\n\n    let target_os = env::var(\"CARGO_CFG_TARGET_OS\").unwrap_or_default();\n    if target_os != \"linux\" || env::var_os(\"CODEX_SKIP_BWRAP_BUILD\").is_some() {\n        return;\n    }\n\n    if let Err(err) = try_build_bwrap() {\n        panic!(\"failed to compile bubblewrap for Linux target: {err}\");\n    }\n}\n\nfn try_build_bwrap() -> Result<(), String> {\n    let manifest_dir =\n        PathBuf::from(env::var(\"CARGO_MANIFEST_DIR\").map_err(|err| err.to_string())?);\n    let out_dir = PathBuf::from(env::var(\"OUT_DIR\").map_err(|err| err.to_string())?);\n    let src_dir = resolve_bwrap_source_dir(&manifest_dir)?;\n    let libcap = pkg_config::Config::new()\n        .cargo_metadata(false)\n        .probe(\"libcap\")\n        .map_err(|err| format!(\"libcap not available via pkg-config: {err}\"))?;\n\n    let config_h = out_dir.join(\"config.h\");\n    std::fs::write(\n        &config_h,\n        r#\"#pragma once\n#define PACKAGE_STRING \"bubblewrap built for Codex\"\n\"#,\n    )\n    .map_err(|err| format!(\"failed to write {}: {err}\", config_h.display()))?;\n\n    let mut build = cc::Build::new();\n    build\n        .file(src_dir.join(\"bubblewrap.c\"))\n        .file(src_dir.join(\"bind-mount.c\"))\n        .file(src_dir.join(\"network.c\"))\n        .file(src_dir.join(\"utils.c\"))\n        .include(&out_dir)\n        .include(&src_dir)\n        .define(\"_GNU_SOURCE\", None)\n        // Rename `main` so the Rust wrapper can expose the Cargo-built binary.\n        .define(\"main\", Some(\"bwrap_main\"));\n    for include_path in libcap.include_paths {\n        // Use -idirafter so target sysroot headers win (musl cross builds),\n        // while still allowing libcap headers from the host toolchain.\n        build.flag(format!(\"-idirafter{}\", include_path.display()));\n    }\n\n    build.compile(\"standalone_bwrap\");\n    for link_path in libcap.link_paths {\n        println!(\"cargo:rustc-link-search=native={}\", link_path.display());\n    }\n    for lib in libcap.libs {\n        println!(\"cargo:rustc-link-lib={lib}\");\n    }\n    println!(\"cargo:rustc-cfg=bwrap_available\");\n    Ok(())\n}\n\n/// Resolve the bubblewrap source directory used for build-time compilation.\n///\n/// Priority:\n/// 1. `CODEX_BWRAP_SOURCE_DIR` points at an existing bubblewrap checkout.\n/// 2. The vendored bubblewrap tree under `codex-rs/vendor/bubblewrap`.\nfn resolve_bwrap_source_dir(manifest_dir: &Path) -> Result<PathBuf, String> {\n    if let Ok(path) = env::var(\"CODEX_BWRAP_SOURCE_DIR\") {\n        let src_dir = PathBuf::from(path);\n        if src_dir.exists() {\n            return Ok(src_dir);\n        }\n        return Err(format!(\n            \"CODEX_BWRAP_SOURCE_DIR was set but does not exist: {}\",\n            src_dir.display()\n        ));\n    }\n\n    let vendor_dir = manifest_dir.join(\"../vendor/bubblewrap\");\n    if vendor_dir.exists() {\n        return Ok(vendor_dir);\n    }\n\n    Err(format!(\n        \"expected vendored bubblewrap at {}, but it was not found.\\n\\\nSet CODEX_BWRAP_SOURCE_DIR to an existing checkout or vendor bubblewrap under codex-rs/vendor.\",\n        vendor_dir.display()\n    ))\n}\n"
+    },
+    "isError": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "status": "registration_plan_only_original_verifier_and_CALLERS_not_modified",
+  "new_module": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+  "public_entrypoints": [
+    "OriginalCircuitRetainedVersionHostV1::serve_original_evaluated_next_use_readback",
+    "OriginalCircuitRetainedVersionHostV1::serve_original_evaluated_completion_readiness"
+  ],
+  "private_scopes": [
+    "serve_original_evaluated_next_use",
+    "serve_original_evaluated_next_use_channel",
+    "build_original_evaluated_next_use_reader"
+  ],
+  "read_service_new_scopes": [
+    "serve_original_evaluated_next_use_channel",
+    "serve_original_evaluated_next_use_readiness_channel",
+    "serve_original_evaluated_next_use_profile"
+  ],
+  "concrete_calls": [
+    "original_owner_command_channel_v1",
+    "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use",
+    "OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners",
+    "OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_channel",
+    "OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_next_use_readiness_channel"
+  ],
+  "permissions": "No owner getter, creator, writer, RunStart, signer, extra T/E connection, queue, renewal, or fallback authorization."
+}

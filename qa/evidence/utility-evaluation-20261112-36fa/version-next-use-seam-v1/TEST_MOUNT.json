@@ -1,0 +1,21 @@
+{
+  "status": "explicit_integration_hunk_for_ordinary_path_sole_writer_not_applied",
+  "target": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+  "baseline_after_test_packet": "a47922b80b3bd9ae0d1168efefdcfbde3f3a98b5",
+  "append": "\n#[path = \"circuit_evaluated_version_next_use_readback_tests.rs\"]\nmod next_use_readback_tests;\n",
+  "preserve": [
+    "tests",
+    "final_use_tests",
+    "shared_readback_tests",
+    "shared_export_tests"
+  ],
+  "methods": [
+    "version_owned_next_use_reads_same_c_after_real_completion",
+    "version_owned_next_use_rejects_another_actual_original_s_cut",
+    "version_owned_next_use_rechecks_actual_b_after_shared_export",
+    "version_owned_next_use_refuses_four_cut_selection_requests",
+    "version_owned_next_use_rejects_already_elapsed_absolute_end",
+    "version_owned_next_use_rejects_original_response_crossing_absolute_end"
+  ],
+  "registration": "Child of the existing model_selection_owner test subtree; original focused filter preserved."
+}

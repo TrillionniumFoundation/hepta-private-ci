@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 598,
+    "index_blob": "db4ef68416f17a3ec67e2260b80f14d01da4c196",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "codex-rs/skills/build.rs",
+    "permissions": 420,
+    "sha256": "24c62df6f869f931b04e14645c539b715c97e96e6274c5a6313bb1c7bbd28dcc",
+    "stable": true,
+    "working_blob": "db4ef68416f17a3ec67e2260b80f14d01da4c196"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "use std::fs;\nuse std::path::Path;\n\nfn main() {\n    let samples_dir = Path::new(\"src/assets/samples\");\n    if !samples_dir.exists() {\n        return;\n    }\n\n    println!(\"cargo:rerun-if-changed={}\", samples_dir.display());\n    visit_dir(samples_dir);\n}\n\nfn visit_dir(dir: &Path) {\n    let entries = match fs::read_dir(dir) {\n        Ok(entries) => entries,\n        Err(_) => return,\n    };\n\n    for entry in entries.flatten() {\n        let path = entry.path();\n        println!(\"cargo:rerun-if-changed={}\", path.display());\n        if path.is_dir() {\n            visit_dir(&path);\n        }\n    }\n}\n"
+    },
+    "isError": false
+  }
+}

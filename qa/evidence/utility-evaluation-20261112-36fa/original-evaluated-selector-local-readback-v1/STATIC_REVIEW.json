@@ -1,0 +1,39 @@
+{
+  "format": "hepta-selector-local-readback-static-review-v1",
+  "scope": "source-only before/after inspection",
+  "packet": {
+    "path": "SOURCE_PACKET.json",
+    "bytes": 24717,
+    "sha256": "92b0ca5e4dbc95335e754eaf1a1c1e61f816d129b758f56fc76e94ada1b3aa7d",
+    "git_blob": "90f0623289c99ecce60d68d9dad348d27e0bd7fa",
+    "full_readback_equal": true
+  },
+  "existing_parent_insert_only": true,
+  "all_old_function_bytes_unchanged": true,
+  "api": "OriginalCircuitSelectionCommandOwnerV1<W>::read_original_evaluated_receipt(self: Arc<Self>) -> Result<OriginalCircuitEvaluatedSelectionReceiptV1, OriginalCircuitSelectionCommandErrorV1>",
+  "read_path": [
+    "same original four-permit pool",
+    "reject non-evaluated context",
+    "original context authenticate",
+    "same original receipt-owner Mutex",
+    "explicit observe_original(Readback)",
+    "original wire::authenticate_receipt",
+    "existing sealed from_original_command_response",
+    "original context authenticate again"
+  ],
+  "original_current_reads": "observe_original uses the unchanged evaluated remote owner path with actual live C and original T/E reads before and after",
+  "fresh_and_incomplete": "No local Execute request is sent. Original missing/pending/invalid/withdrawn readback errors propagate.",
+  "cancellation": "The blocking read may continue after outer future cancellation. Permit and actual operation remain owned by that work until terminal; the cancelled caller has unknown delivery. It does not imply cancellation of an individual original T/E exchange.",
+  "no_new_queue_or_transport_or_nonce": true,
+  "no_owner_or_raw_client_export": true,
+  "existing_remote_channel_128_and_absolute_lifetimes_unchanged": true,
+  "wire": "same underlying complete receipt authenticator as client decode_completed and existing original evidence endpoint; no externally supplied snapshot/signature",
+  "new_tests_in_this_packet": 0,
+  "not_executed": [
+    "formatter",
+    "compile",
+    "tests",
+    "full collector",
+    "H"
+  ]
+}

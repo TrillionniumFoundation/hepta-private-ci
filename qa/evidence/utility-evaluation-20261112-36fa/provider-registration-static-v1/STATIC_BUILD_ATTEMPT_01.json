@@ -1,0 +1,10 @@
+{
+  "actual_error": "AssertionError at line 134: builder expected separate .arg(\"--exact\") and .arg(CHILD) syntax; the fixed fixture uses .args([\"--exact\", CHILD, \"--ignored\", \"--nocapture\", \"--test-threads=1\"]).",
+  "exit_code": 1,
+  "format": "hepta-static-proposal-builder-diagnostic-v1",
+  "input_builder_bytes": 23280,
+  "input_builder_git_blob": "49d51760c919e79a63fd333e3a2bdf18bd056264",
+  "input_builder_sha256": "9467a4eb27ff05c0d6669c53e8a4e972ec620253659f88a85d6c56fade2d8265",
+  "next_change": "Match the actual fixed .args array spelling; source and intended child exclusion unchanged.",
+  "scope": "Local proposal construction only; no repository test, H, Cargo, or source mutation. Failure occurred before any proposal output was written."
+}

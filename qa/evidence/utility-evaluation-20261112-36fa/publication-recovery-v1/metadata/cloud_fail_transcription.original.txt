@@ -1,0 +1,25 @@
+{
+  "format": "hepta-cloud-environment-unavailability-observation-v1",
+  "recorded_at": "2026-11-13 02:37:31 UTC",
+  "observation_kind": "verbatim tool-error transcription plus explicit environment-context event",
+  "attempted_action": "Read the frozen local review-production-v1 manifest and source diff; no repository or H mutation.",
+  "local_read_completed": false,
+  "nested_tool": "exec_command",
+  "outer_exec_cell": "169",
+  "actual_error_text": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 45s\\\")\" }",
+  "environment_context_status": "unavailable",
+  "local_file_contents_or_unchanged_state_reobserved": false,
+  "git_service_followup": {
+    "actual_latest_frozen_filemap_blob": "3f3d938d3a69898411c37bba9664c085ed2ac5d5",
+    "full_filemap_entries": 3896,
+    "actual_published_evidence_ref": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+    "actual_source_ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "both_ref_reads_succeeded": true,
+    "scope": "Git service remains available. The 3896-entry verified frozen map is not yet published as a branch checkpoint."
+  },
+  "materialization_admission": "Unknown; one earlier exact H launch lacked a job ID; this local error adds no H outcome.",
+  "native_behavioral_stages_started_by_this_action": 0,
+  "new_source_tests_claimed_passed": 0,
+  "real_qualified_task_chains": 0,
+  "source_or_refs_modified_by_this_action": false
+}

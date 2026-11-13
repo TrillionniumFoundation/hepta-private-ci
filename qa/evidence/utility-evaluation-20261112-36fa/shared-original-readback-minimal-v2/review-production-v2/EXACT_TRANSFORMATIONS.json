@@ -1,0 +1,101 @@
+{
+  "base_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "operations": [
+    {
+      "name": "cell_q24_training_command.rs",
+      "old": "#[path = \"cell_q24_training_command_connection.rs\"]",
+      "new": "#[path = \"cell_q24_training_shared_readback.rs\"]\nmod shared_readback;\n\n#[path = \"cell_q24_training_command_connection.rs\"]"
+    },
+    {
+      "name": "neuron_cell_evaluation_host_command.rs",
+      "old": "#[derive(Clone, Copy, Eq, PartialEq)]\nenum Origin {",
+      "new": "#[path = \"neuron_cell_evaluation_shared_readback.rs\"]\nmod shared_readback;\n\n#[derive(Clone, Copy, Eq, PartialEq)]\nenum Origin {"
+    },
+    {
+      "name": "circuit_evaluated_retention_context.rs",
+      "old": "    // Receipt owners retain the same opaque pins and origin.",
+      "new": "    /// Consume the same retained clients only after the Version host has\n    /// completed its actual Published/current checks. These handles are local.\n    pub(crate) fn seal_original_readback_owners(\n        &self,\n        trainer: OriginalCellQ24TrainingCommandClientV1,\n        evaluator: OriginalCellEvaluationCommandClientV1,\n    ) -> Result<(\n        std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,\n        std::sync::Arc<OriginalCellEvaluationCommandClientV1>,\n    ), Error> {\n        self.authenticate(now()?, PublicationAccess::Readback)?;\n        let trainer = OriginalCellQ24TrainingCommandClientV1::seal_original_completed_readback(\n            trainer, &self.training,\n        )?;\n        let evaluator = OriginalCellEvaluationCommandClientV1::seal_original_completed_readback(\n            evaluator, &self.evaluation,\n        )?;\n        Ok((trainer, evaluator))\n    }\n\n    // Receipt owners retain the same opaque pins and origin."
+    },
+    {
+      "name": "circuit_retained_version_host.rs",
+      "old": "#[path = \"circuit_retained_version_state.rs\"]\nmod state;",
+      "new": "#[path = \"circuit_retained_version_state.rs\"]\nmod state;\n#[path = \"circuit_retained_version_shared_readback.rs\"]\nmod shared_readback;\npub use shared_readback::OriginalCircuitPublishedEvidenceReadbackV1;"
+    },
+    {
+      "name": "circuit_retained_version_host.rs",
+      "old": "    evaluator: Option<OriginalCellEvaluationCommandClientV1>,\n    cut:",
+      "new": "    evaluator: Option<OriginalCellEvaluationCommandClientV1>,\n    shared_evaluated: Option<OriginalCircuitPublishedEvidenceReadbackV1>,\n    cut:"
+    },
+    {
+      "name": "circuit_retained_version_host.rs",
+      "old": "                evaluator: None,\n                cut: None,",
+      "new": "                evaluator: None,\n                shared_evaluated: None,\n                cut: None,",
+      "occurrences": 2
+    },
+    {
+      "name": "circuit_retained_version_state.rs",
+      "old": "            _ => self.trainer.as_ref().ok_or(Error::Unavailable),",
+      "new": "            _ => self.trainer.as_ref().or_else(|| {\n                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().0)\n            }).ok_or(Error::Unavailable),"
+    },
+    {
+      "name": "circuit_retained_version_state.rs",
+      "old": "            _ => self.evaluator.as_ref().ok_or(Error::Unavailable),",
+      "new": "            _ => self.evaluator.as_ref().or_else(|| {\n                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().1)\n            }).ok_or(Error::Unavailable),"
+    },
+    {
+      "name": "circuit_retained_version.rs",
+      "old": "pub use host::OriginalCircuitRetainedArtifactCheckpointV1;",
+      "new": "pub use host::OriginalCircuitPublishedEvidenceReadbackV1;\npub use host::OriginalCircuitRetainedArtifactCheckpointV1;"
+    },
+    {
+      "name": "circuit_feature_current.rs",
+      "old": "pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;",
+      "new": "pub use retained_publication::version::OriginalCircuitPublishedEvidenceReadbackV1;\npub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;"
+    },
+    {
+      "name": "lib.rs",
+      "old": "pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;",
+      "new": "pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;\npub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;"
+    },
+    {
+      "name": "circuit_evaluated_selection_command_service.rs",
+      "old": "    Legacy(LearningIterationEvidenceClientV1),",
+      "new": "    Legacy(LearningIterationEvidenceClientV1),\n    SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),"
+    },
+    {
+      "name": "circuit_evaluated_selection_command_service.rs",
+      "old": "    pub(super) fn observe_original(",
+      "new": "    pub(crate) fn from_original_evaluated_shared_receipt_owner(\n        owner: OriginalCircuitSelectionReceiptOwnerV1<W>,\n        live: OriginalCircuitLearningReadClientV1,\n        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,\n    ) -> Result<Self, Error> {\n        let original = owner\n            .original_evaluated_command_context()\n            .ok_or(Error::Binding(\"original evaluated Selector custody\"))?;\n        shared.require_original_context(original)\n            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;\n        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(original)?;\n        live.require_original_evaluated_selection(original)\n            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;\n        let (_, readback_only) = owner.original_command_profile();\n        let initial = context.initial()?;\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            owner: Mutex::new(owner),\n            live,\n            predecessors: OriginalPredecessors::SharedEvaluated(shared),\n            context,\n            initial_head: initial.head_digest,\n            binding,\n            execution_requested: AtomicBool::new(readback_only),\n            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,\n            connections: Arc::new(Semaphore::new(4)),\n        })\n    }\n\n    pub(super) fn observe_original("
+    },
+    {
+      "name": "circuit_evaluated_next_use_command_service.rs",
+      "old": "    Legacy(LearningIterationEvidenceClientV1),",
+      "new": "    Legacy(LearningIterationEvidenceClientV1),\n    SharedEvaluated(crate::OriginalCircuitPublishedEvidenceReadbackV1),"
+    },
+    {
+      "name": "circuit_evaluated_next_use_command_service.rs",
+      "old": "    pub(super) fn observe_original(",
+      "new": "    pub(crate) fn from_original_evaluated_shared_receipt_owner(\n        owner: OriginalCircuitNextUseReceiptOwnerV1<W>,\n        live: OriginalCircuitLearningReadClientV1,\n        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,\n        selector: LearningIterationEvidenceClientV1,\n    ) -> Result<Self, Error> {\n        let original = owner\n            .original_evaluated_command_selection()\n            .ok_or(Error::Binding(\"original evaluated Observer custody\"))?;\n        shared.require_original_context(original.original_context())\n            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;\n        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(original)?;\n        live.require_original_evaluated_next_use(original)\n            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;\n        let (_, readback_only) = owner.original_command_profile();\n        let initial = context.initial()?;\n        if selector.initial != initial\n            || selector.actor_id != context.selection.owners.selector\n            || selector.verifier.trust_digest() != context.verifier.trust_digest()\n            || selector.verifier.scope_digest() != context.verifier.scope_digest()\n            || selector.verifier.objective_digest() != context.verifier.objective_digest()\n        {\n            return Err(Error::Binding(\n                \"same original evaluated Selector readback client\",\n            ));\n        }\n        let binding = context.binding(now()?)?;\n        Ok(Self {\n            owner: Mutex::new(owner),\n            live,\n            predecessors: OriginalPredecessors::SharedEvaluated(shared),\n            selector,\n            context,\n            initial_head: initial.head_digest,\n            binding,\n            execution_requested: AtomicBool::new(readback_only),\n            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,\n            connections: Arc::new(Semaphore::new(4)),\n        })\n    }\n\n    pub(super) fn observe_original("
+    },
+    {
+      "name": "circuit_evaluated_selection_command_service.rs",
+      "old": "            OriginalPredecessors::Evaluated { trainer, evaluator } => {",
+      "new": "            OriginalPredecessors::SharedEvaluated(shared) => {\n                let context = self.context.evaluated.as_ref().ok_or(\n                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(\n                        \"original evaluated Selector command profile\",\n                    ),\n                )?;\n                shared.require_original_context(context)?;\n                let (trainer, evaluator) = shared.original_clients();\n                let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {\n                    snapshot: &self.context.training,\n                    live: &self.live,\n                    trainer,\n                    evaluator,\n                };\n                let original = match action {\n                    wire::Action::Execute => self.runtime.block_on(\n                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(owner, source)),\n                    wire::Action::Readback => self.runtime.block_on(\n                        OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection(owner, source)),\n                }?;\n                Ok((original.receipt().clone(), original.attestation().clone()))\n            }\n            OriginalPredecessors::Evaluated { trainer, evaluator } => {"
+    },
+    {
+      "name": "circuit_evaluated_next_use_command_service.rs",
+      "old": "            OriginalPredecessors::Evaluated { trainer, evaluator } => {",
+      "new": "            OriginalPredecessors::SharedEvaluated(shared) => {\n                let selection = self.context.evaluated.as_ref().ok_or(\n                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(\n                        \"original evaluated Observer command profile\",\n                    ),\n                )?;\n                shared.require_original_context(selection.original_context())?;\n                let (trainer, evaluator) = shared.original_clients();\n                let source = OriginalCircuitEvaluatedNextUseRemoteSourcesV1 {\n                    snapshot: &self.context.selection,\n                    selection,\n                    live: &self.live,\n                    trainer,\n                    evaluator,\n                    selector: &self.selector,\n                };\n                let original = match action {\n                    wire::Action::Execute => self.runtime.block_on(\n                        OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(owner, source)),\n                    wire::Action::Readback => self.runtime.block_on(\n                        OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion(owner, source)),\n                }?;\n                Ok((original.receipt().clone(), original.attestation().clone()))\n            }\n            OriginalPredecessors::Evaluated { trainer, evaluator } => {"
+    },
+    {
+      "name": "circuit_evaluated_selection_command_owner_adapter.rs",
+      "old": "    pub fn into_evaluated_command_owner(",
+      "new": "    pub fn into_evaluated_shared_command_owner(\n        self,\n        live: OriginalCircuitLearningReadClientV1,\n        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,\n    ) -> Result<\n        crate::OriginalCircuitSelectionCommandOwnerV1<W>,\n        crate::OriginalCircuitSelectionCommandErrorV1,\n    >\n    where\n        W: Send + 'static,\n    {\n        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner(\n            self, live, shared,\n        )\n    }\n\n    pub fn into_evaluated_command_owner("
+    },
+    {
+      "name": "circuit_evaluated_next_use_remote.rs",
+      "old": "    pub fn into_evaluated_command_owner(",
+      "new": "    pub fn into_evaluated_shared_command_owner(\n        self,\n        live: OriginalCircuitLearningReadClientV1,\n        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,\n        selector: LearningIterationEvidenceClientV1,\n    ) -> Result<\n        crate::OriginalCircuitNextUseCommandOwnerV1<W>,\n        crate::OriginalCircuitNextUseCommandErrorV1,\n    >\n    where\n        W: Send + 'static,\n    {\n        crate::OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_shared_receipt_owner(\n            self, live, shared, selector,\n        )\n    }\n\n    pub fn into_evaluated_command_owner("
+    }
+  ]
+}

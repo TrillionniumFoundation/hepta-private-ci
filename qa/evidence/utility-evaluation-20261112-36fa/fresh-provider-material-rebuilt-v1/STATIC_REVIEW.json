@@ -1,0 +1,147 @@
+{
+  "format": "hepta-fresh-provider-material-static-review-v1",
+  "status": "PREPARATION_NOT_FORMATTED_COMPILED_EXECUTED",
+  "new_reconstruction": true,
+  "not_recovery_of_lost_8494_or_9491_byte_drafts": true,
+  "actual_new_source": {
+    "bytes": 16553,
+    "sha256": "09304a3ba8438ea0b865bfbdc2d0c41c3c5e04bc637185f0e3a4f59042a504e0",
+    "git_blob": "182285bb87ede5ed1cc0dcea7172f5ce3cd55224"
+  },
+  "base": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "checks": {
+    "actual_a_admission": true,
+    "actual_c_admission_preserved": true,
+    "actual_a_start_and_execute": true,
+    "profile_fixed_in_unstarted_material": true,
+    "original_enrolled_c_observer": true,
+    "original_positive_terminal_only": true,
+    "no_material_execute_call": true,
+    "no_training_execution": true,
+    "no_evaluation_execution": true,
+    "no_auxiliary_positive_fixture": true,
+    "no_model_commit": true,
+    "one_fresh_bootstrap": true,
+    "original_limits": true,
+    "four_original_material_connections": true,
+    "close_trainer_before_peer_join": true,
+    "always_read_original_source_after_a_take": true,
+    "private_test_mount": true
+  },
+  "check_kind": "source-text and identity checks only, not AST/type checking or runtime verification",
+  "references": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 26865,
+      "sha256": "63738f26b0968a912d0d1bf0d95fce5434479341cc3cbe16c0d5cd526b557022",
+      "git_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 19962,
+      "sha256": "d8230d6480cd957911aa343e5438689817997ef296484524c92c850d3607b19e",
+      "git_blob": "704673bda41352c26a5f464fc0b0ab75654eef22",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 21868,
+      "sha256": "f231113a63b829f69e90a058b23876d1b920b460db1482d92f37295b4db236da",
+      "git_blob": "5752c7e3c43931277c84bcec952450bc49415af9",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 15839,
+      "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714",
+      "git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 7779,
+      "sha256": "7ad1512d08b9f49b0bcdc949081638ad714c96761ba74e89845d8b8ff9a02d23",
+      "git_blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 13866,
+      "sha256": "aedb443b6bb07f497960ceedfb4889dac690511556c91452db1c3e3366a413c2",
+      "git_blob": "58afc356fff945a5377c3556fa0ba79139d3fad6",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_material_ports_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 6298,
+      "sha256": "2f0fc12aca07cf516fbdff8406235fae7bcb5ac4ad0a5cb341940ac412460bfe",
+      "git_blob": "d30794234278ce7e934b78c27a3330db49628d06",
+      "full_utf8_read": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_transport_tests.rs",
+      "ref": "cc57c7198db6293ccca562253c42fffbe2a04633",
+      "bytes": 9480,
+      "sha256": "cc6c80ae50aac00af53ddd0c19a0fa6fbb14d2b8c410eacf195e836dbd40bc9d",
+      "git_blob": "db77e036458e7d7ac3f2da9247e621cebe16d551",
+      "full_utf8_read": true
+    }
+  ],
+  "chain": [
+    "ProviderAdmission holds actual original A and separate C admissions; computes objective preview only.",
+    "PreparedBPanel must be frozen by caller before new(admission, profile); the factory cannot derive B evidence from training results.",
+    "Factory binds real A run before original support::start signs the actual complete ObjectiveStart body.",
+    "Actual execute/read_receipt supplies original A Source/Cell completion; original baseline prediction is checked.",
+    "Original material::decision and independent fixed2Q terminal_outcome enter the same ledger before Material/T.",
+    "Original unstarted_material_with_profile freezes profile and enrolled C Observer into the initial owner set, reads actual Source/Ledger/baseline, and returns original config/optimizer without Material signatures.",
+    "Actual new Material receipt owners are consumed into the same actual command owner. Four existing original internal transports precede all Material execution.",
+    "Actual Fresh Bootstrap holds original native/receipt files, Generator key and those original connections. No T, Evaluation or Model is executed or prefilled.",
+    "Original A session/Version/baseline remain held for the later same-A FinalUse/publication/C chain."
+  ],
+  "cleanup": {
+    "result_error_after_session_start": "partially built clients drop before outer cleanup; original A.stop is awaited and every started Material peer is joined, collecting all peer errors",
+    "normal_finish": "stop still-held A; drop own Trainer; join all four Material peers; check no external Trainer or Material clones remained; retain directory until these operations finish",
+    "drop": "MaterialPeers joins its original std threads and logs errors; support::Session's existing Drop only requests cancellation. No asynchronous worker-join success is claimed from Drop.",
+    "a_handoff": "a.take transfers A lifecycle and source-home retention responsibility. original_bytes still reads pinned original paths and cannot silently omit them.",
+    "missing_files": "remain errors; no reopen writer/re-sign/reset/retry"
+  },
+  "guarantees_not_established": [
+    "No build, rustfmt, Rust parser/AST, tests, H or qualification gates were executed for this file.",
+    "Actual combined module visibility and generics are source-reviewed but not compiled.",
+    "No full Fresh Root or ten-owner run, real independent B, public connection-capacity result, C execution or cold recovery has been demonstrated.",
+    "All role keys, terminal label, trust and admissions here remain explicit original mechanism fixtures.",
+    "Internal ports retain original same-UID adaptation. Original source/evidence exchanges use 500ms and the original Dataset command adapter uses 30s; lifetimes remain300s and original frame limits remain128. External deployment admission is a separate test.",
+    "The original caller/fixture stack and test deadlines remain unchanged; runtime and stack behavior require original execution.",
+    "Full orchestrator must preserve C original request and actual A home; it must not use support::start to replace the intended already installed C."
+  ],
+  "storage": "Git blobs with full readback; no active source checkout edit or local-file claim",
+  "prior_draft_source": "fa86fc1240b394e21eed29f61fc3f31a184b557e",
+  "intermediate_source": "6f5bfb0eaedb4b9780a0da73dc22df4d0bceb8f7",
+  "final_static_corrections": [
+    "original Source bytes always included after a.take",
+    "all final construction checks remain inside cleanup Result scope",
+    "open actual custody files before original short evidence-channel lifetimes begin, without changing those lifetimes"
+  ],
+  "existing_source_methods_changed": 0,
+  "executions": {
+    "H": 0,
+    "Cargo": 0,
+    "formatter": 0,
+    "AST": 0,
+    "tests": 0,
+    "source_gates": 0,
+    "source_ref_changes": 0
+  },
+  "corrected_prior_review_blob": "d658b020d92314d408d0a4dd9e78b8cedd0eeac8"
+}

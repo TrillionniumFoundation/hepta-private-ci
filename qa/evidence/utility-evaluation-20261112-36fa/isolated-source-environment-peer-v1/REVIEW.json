@@ -1,0 +1,352 @@
+{
+  "concrete_relocation_seams": [
+    {
+      "current_predicate": "observed.source_repo == str(REPO)",
+      "function": "V5.validate_runtime_restoration",
+      "requirement": "Keep the exact historical 86dd source path as a separately pinned historical identity; a new current REPO must not rewrite or relax the original proof. Keep all SEED commit/tree/parents, six commands, three audits and exact result/environment/supervisor bytes unchanged."
+    },
+    {
+      "current_predicate": "str(m.REPO) == cfg.repo",
+      "function": "Admission.__init__",
+      "requirement": "An explicitly reviewed current-repo binding is necessary. Merely changing cfg.repo fails; merely rebinding m.REPO makes the V5 historical predicate fail. Keep TARGET/DEPOT and runtime tool pins fixed."
+    },
+    {
+      "current_predicate": "final_format.source_repo == cfg.repo and aligned.source_repo == cfg.repo",
+      "function": "Admission.acquire_and_validate / historical format and alignment",
+      "requirement": "Validate both originals against their actual historical source path, then require an actual create-only new-source materialization proof referencing the same exact cc57 tree/commit and complete inventory. Do not claim those old jobs ran in the new directory."
+    },
+    {
+      "current_predicate": "self.initial_git == old aligned.after.git_state",
+      "function": "Admission.acquire_and_validate / current Git state",
+      "requirement": "A newly initialized repository has its own exact raw index/config/HEAD/refs baseline. Bind actual current Git bytes to its actual successful materialization result, and retain exact before/after equality during qualification. Keep detached HEAD, zero refs, complete tree/index/physical-source requirements; do not reuse old metadata or weaken equality."
+    }
+  ],
+  "historical_environment": {
+    "all_16_recorded_tool_material_path_pairs_external_to_historical_repo": true,
+    "external_environment_is_reusable_only_after_current_file_and_resource_checks": true,
+    "inherited_source_environment": {
+      "CODEX_REPO_ROOT": null,
+      "PYTHONPATH": null
+    },
+    "six_original_runtime_commands_observed_normal_zero": true,
+    "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "source_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "tool_material_paths": [
+      {
+        "path": "/usr/bin/python3",
+        "resolved": "/usr/bin/python3.12",
+        "role": "python"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/ruff",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/ruff",
+        "role": "ruff"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/wheelhouse/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/wheelhouse/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+        "role": "ruff-locked-wheel"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/bin/cargo",
+        "resolved": "/home/qian-qi/.cargo/bin/rustup",
+        "role": "tool_cargo"
+      },
+      {
+        "path": "/usr/bin/git",
+        "resolved": "/usr/bin/git",
+        "role": "tool_git"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/bin/just",
+        "resolved": "/home/qian-qi/.cargo/bin/just",
+        "role": "tool_just"
+      },
+      {
+        "path": "/usr/bin/python3",
+        "resolved": "/usr/bin/python3.12",
+        "role": "tool_python3"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/bin/rustup",
+        "resolved": "/home/qian-qi/.cargo/bin/rustup",
+        "role": "tool_rustup"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+        "role": "tool_uv"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/bin/uv",
+        "role": "uv"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/downloads/uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/downloads/uv-x86_64-unknown-linux-gnu.tar.gz.sha256",
+        "role": "uv-archive-checksum-text"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/downloads/uv-x86_64-unknown-linux-gnu.tar.gz",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/downloads/uv-x86_64-unknown-linux-gnu.tar.gz",
+        "role": "uv-executable-archive"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+        "role": "v8-pair-checksum-text"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "role": "v8-sandbox-archive"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "resolved": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/v8-150.4.0-gnu-sandbox/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "role": "v8-sandbox-bindings"
+      },
+      {
+        "path": "/data/hepta-utility-36fa-runtime-materials-86dd-v1/scripts-project-environment/bin/python",
+        "resolved": "/usr/bin/python3.12",
+        "role": "venv_python"
+      }
+    ]
+  },
+  "inputs": {
+    "admission": {
+      "bytes": 14294,
+      "git_blob": "a8be08b6cb00536817e2d68c42fa4b90d1e9ff72",
+      "path": "/tmp/hepta-36fa-cc57-admission-successor-v2/qualification-admission.cc57.HOLD.py",
+      "sha256": "f2a4a3b666c28605c9e7c48fe8e0c8c1910e5d8443ded456a67ff81c99cc697c"
+    },
+    "cc57_inventory": {
+      "bytes": 5611184,
+      "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+      "path": "/tmp/hepta-36fa-source-repair-canonical-packet-v1/CANONICAL_CLEAN_INVENTORY.expected.json",
+      "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+    },
+    "native_wrapper": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "path": "/tmp/hepta-36fa-final-qualification-hold-v1/native-wrapper.HOLD.py",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification_input": {
+      "bytes": 10960,
+      "git_blob": "2a19b2b6b27f885dc3791897dad8c9e51f305ae0",
+      "path": "/tmp/hepta-36fa-cc57-qualification-root-inputs-v1/APPROVED_FINAL_QUALIFICATION_INPUT.json",
+      "sha256": "7fec117538bed151be59fdf90ed889f8840ae88832a658aab0d9a8b74b6d38ab"
+    },
+    "runtime_environment": {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "path": "/tmp/hepta-36fa-checkpoint1867-recovery/runtime-v2-environment.original.json",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    "runtime_inputs": {
+      "bytes": 5392,
+      "git_blob": "deeb6e293bc9798df249eefb6f602733c5e9634b",
+      "path": "/tmp/hepta-36fa-native-runtime-v2-recovery-20261112/INPUT_IDENTITIES.json",
+      "sha256": "8b29a1c3688287d95869bd0d35f055db16b5e3a160f51e68182195ce56bb0813"
+    },
+    "runtime_result": {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "path": "/tmp/hepta-36fa-checkpoint1867-recovery/runtime-v2-result.original.json",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    "seed_inventory": {
+      "bytes": 5611182,
+      "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+      "path": "/tmp/hepta-36fa-a96-recovery/MATERIALIZED_86DD_INVENTORY.recovered.json",
+      "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711"
+    },
+    "v5": {
+      "bytes": 63007,
+      "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+      "path": "/tmp/hepta-36fa-successor-maintenance-v5/driver-v5.py",
+      "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+    }
+  },
+  "must_remain_current_checks": [
+    "Complete current 15188-file physical inventory and cc57/B7 exact identity, including the seven archives missing from the old source.",
+    "The same real coordination-lock policy and fresh current Git byte baseline; old missing-file/ref/index scene remains untouched.",
+    "Actual current full bytes/path/resolved/mode of six tools, V8 pair and venv Python/Ruff, using the original exact five-field projection.",
+    "External accessible current-user target/depot/venv/cache directories, target already present and live free space at least 34359738368 bytes.",
+    "Original global same-UID active/unreadable Cargo/formatter rejection, with BUILD_PROCESS_PREFLIGHT recorded before rejection; no foreign-job exception.",
+    "Exact inherited source environment (both null in the original observation), no unknown UV/RUFF names and no Git identity/object environment overrides.",
+    "Original environment, all original gate/test argv, budgets, 8MiB stack/test deadline, executor, raw/postimage retention and failure/Unknown semantics."
+  ],
+  "not_proved": [
+    "No actual new source directory or native object-store availability observed.",
+    "No new current tool, cache, target capacity, process, lock, file-mode or Git-state observation performed.",
+    "No Cargo, H, original driver main, qualification gate, download, tool install or original-source/ref/index write performed.",
+    "This does not identify who changed the old index/retired-artifacts ref or removed seven tracked archives, and does not reclassify old 1cd4."
+  ],
+  "schema": "hepta.isolated-source.v5-environment-independent-review.v1",
+  "scope": "Pinned V5 environment, a8be admission call sites, historical runtime proof, and source-dependency identity only. Not a new recovery/control implementation.",
+  "source_dependency_identity": {
+    "all_16_equal_to_seed_and_cc57_complete_inventory_rows": true,
+    "all_6_source_entries_equal_to_seed_and_cc57": true,
+    "evidence_limit": "The two exact recovered inventories are immutable historical/canonical evidence. This comparison is not a fresh physical observation of any new source directory.",
+    "runtime_source_input_count": 16,
+    "runtime_source_inputs": [
+      {
+        "bytes": 28133,
+        "complete_inventory_row_equal": true,
+        "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+      },
+      {
+        "bytes": 4345,
+        "complete_inventory_row_equal": true,
+        "git_blob": "3ff0f275c075617a49d5b257d318b74b100dad39",
+        "path": ".github/workflows/repo-checks.yml",
+        "sha256": "9f06a9eb55ebaef65ec88893d3c341d151a28193002bca9f358437c93f7f311a"
+      },
+      {
+        "bytes": 421005,
+        "complete_inventory_row_equal": true,
+        "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+        "path": "codex-rs/Cargo.lock",
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      {
+        "bytes": 23385,
+        "complete_inventory_row_equal": true,
+        "git_blob": "fcd9d64bd64f5b8f8276ac72cd0a070b97deaeaa",
+        "path": "codex-rs/Cargo.toml",
+        "sha256": "acc1d51df0364172c38a14421c03cbf4fee90bf9a251173b29c7098ea0a09678"
+      },
+      {
+        "bytes": 78,
+        "complete_inventory_row_equal": true,
+        "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+        "path": "codex-rs/rust-toolchain.toml",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "bytes": 7838,
+        "complete_inventory_row_equal": true,
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "path": "justfile",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "bytes": 4738,
+        "complete_inventory_row_equal": true,
+        "git_blob": "e217e8d0fd485cfddfc8f50ec9c0b3a90c8be985",
+        "path": "scripts/codex_package/targets.py",
+        "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+      },
+      {
+        "bytes": 6624,
+        "complete_inventory_row_equal": true,
+        "git_blob": "e8788ec0f308038542807ec6adf014c157d65187",
+        "path": "scripts/codex_package/v8.py",
+        "sha256": "8007703ea89e620342940d33f32a14dd593278e820f37433a42f783b2bd99d4e"
+      },
+      {
+        "bytes": 16599,
+        "complete_inventory_row_equal": true,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "path": "scripts/format.py",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "bytes": 12863,
+        "complete_inventory_row_equal": true,
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "path": "scripts/hepta_ci_exec.py",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      {
+        "bytes": 3153,
+        "complete_inventory_row_equal": true,
+        "git_blob": "088b737c0cca7386161e06b254c794bf972380ad",
+        "path": "scripts/hepta_ci_v8.py",
+        "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+      },
+      {
+        "bytes": 2030,
+        "complete_inventory_row_equal": true,
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "path": "scripts/just-shell.py",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "bytes": 177,
+        "complete_inventory_row_equal": true,
+        "git_blob": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+        "path": "scripts/pyproject.toml",
+        "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+      },
+      {
+        "bytes": 6220,
+        "complete_inventory_row_equal": true,
+        "git_blob": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+        "path": "scripts/uv.lock",
+        "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+      },
+      {
+        "bytes": 11082,
+        "complete_inventory_row_equal": true,
+        "git_blob": "a22dbb98ca0a08e58089c70b5c6bc3ee9b1dfd01",
+        "path": "third_party/v8/README.md",
+        "sha256": "2fe61f1d177dff6771ded026494b3e98db8e4c2ab2ea102442fa63bdd4e28657"
+      },
+      {
+        "bytes": 227,
+        "complete_inventory_row_equal": true,
+        "git_blob": "628ae7a9ac94eee0e0dd66c927964a0ad06544d7",
+        "path": "third_party/v8/rusty_v8_150_4_0.sha256",
+        "sha256": "4d9885b59f209e063c755acc917529bd23ec87c949f7fe205b2b56e73f649552"
+      }
+    ],
+    "v5_source_entries": [
+      {
+        "bytes": 22519,
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "path": "AGENTS.md",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      {
+        "bytes": 7838,
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "path": "justfile",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "bytes": 16599,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "path": "scripts/format.py",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "bytes": 12863,
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "path": "scripts/hepta_ci_exec.py",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      {
+        "bytes": 2030,
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "path": "scripts/just-shell.py",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "bytes": 78,
+        "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+        "path": "codex-rs/rust-toolchain.toml",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      }
+    ],
+    "v5_source_entry_count": 6
+  },
+  "source_path_execution_behavior": "Before native execution, the original wrapper sets CODEX_REPO_ROOT=cfg.repo and PYTHONPATH=cfg.repo/scripts, then chdir(cfg.repo/codex-rs). Keep this current-source behavior; do not invent historical inherited non-null values.",
+  "status": "STATIC_RELOCATION_SEAMS_IDENTIFIED_NO_NATIVE_EXECUTION"
+}

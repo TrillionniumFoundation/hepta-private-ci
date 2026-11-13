@@ -1,0 +1,61 @@
+
+impl OriginalTrainingPeers {
+    /// Same original handlers, with only one purpose-bound evidence channel
+    /// for the primary and retention members' existing local Arc sharing.
+    /// This private transport fixture is not a public-permit admission test.
+    pub(crate) fn new_shared<
+        TW: AnchorWitnessStore + Send + 'static,
+        RW: AnchorWitnessStore + Send + 'static,
+    >(
+        owner: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+    ) -> anyhow::Result<Self> {
+        let lifetime = Duration::from_secs(300);
+        let (candidate, mut candidate_server, close_candidate) =
+            crate::OriginalCellQ24TrainingCommandConnectionV1::fixture_peer_with_shutdown(
+                material.clone(), lifetime,
+            )?;
+        let (trainer, mut trainer_server, close_trainer) =
+            crate::OriginalCellQ24TrainingReadbackConnectionV1::fixture_connection_with_shutdown(
+                material, lifetime,
+            )?;
+        let mut result = Self {
+            candidate: Some(candidate),
+            trainers: [Some(trainer), None],
+            shutdown: vec![close_candidate, close_trainer],
+            servers: Vec::new(),
+        };
+        let candidate_owner = Arc::clone(&owner);
+        result.servers.push(std::thread::spawn(move || {
+            candidate_owner.serve_candidate_material_channel(&mut candidate_server)
+        }));
+        result.servers.push(std::thread::spawn(move || {
+            owner.serve_original_training_readback_channel(&mut trainer_server)
+        }));
+        Ok(result)
+    }
+
+    pub(crate) fn take_shared_trainer(
+        &mut self,
+    ) -> anyhow::Result<crate::OriginalCellQ24TrainingReadbackConnectionV1> {
+        anyhow::ensure!(self.servers.len() == 2 && self.trainers[1].is_none(),
+                        "one original shared Trainer transport fixture");
+        self.trainers[0].take()
+            .ok_or_else(|| anyhow::anyhow!("one original shared Trainer connection"))
+    }
+
+    pub(crate) fn finish_shared(mut self) -> anyhow::Result<[u64; 2]> {
+        self.close();
+        let mut counts = Vec::new();
+        let mut failure = None;
+        for server in self.servers.drain(..) {
+            match server.join() {
+                Ok(Ok(count)) => counts.push(count),
+                Ok(Err(error)) => { if failure.is_none() { failure = Some(anyhow::Error::from(error)); } }
+                Err(_) => { if failure.is_none() { failure = Some(anyhow::anyhow!("original Trainer peer panicked")); } }
+            }
+        }
+        if let Some(error) = failure { return Err(error); }
+        counts.try_into().map_err(|_| anyhow::anyhow!("both actual Trainer peers joined"))
+    }
+}

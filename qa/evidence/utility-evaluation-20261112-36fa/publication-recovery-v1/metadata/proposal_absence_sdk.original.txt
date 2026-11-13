@@ -1,0 +1,79 @@
+{
+  "format": "hepta-shared-readback-peer-retrieval-observation-v1",
+  "scope": "Cloud read failure and first immutable Git retrievals; no candidate source review or native execution inferred.",
+  "cloud_observation": {
+    "kind": "transcribed_tool_exception_not_original_serialized_sdk",
+    "tool": "exec_command",
+    "requested_work": "Read-only fixed review-production-v1 local files",
+    "error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 45s\\\")\" }",
+    "environment_event": "unavailable"
+  },
+  "first_git_reads": [
+    {
+      "label": "manifest",
+      "original_sdk": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/git/blobs#get-a-blob",
+            "status": "404"
+          }
+        },
+        "isError": true
+      }
+    },
+    {
+      "label": "packet",
+      "original_sdk": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/git/blobs#get-a-blob",
+            "status": "404"
+          }
+        },
+        "isError": true
+      }
+    },
+    {
+      "label": "patch",
+      "original_sdk": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/git/blobs#get-a-blob",
+            "status": "404"
+          }
+        },
+        "isError": true
+      }
+    }
+  ],
+  "h_requests": 0,
+  "source_writes": 0,
+  "decision": "Await actual upload; continue only existing verified source review. Do not retry Cloud or H."
+}

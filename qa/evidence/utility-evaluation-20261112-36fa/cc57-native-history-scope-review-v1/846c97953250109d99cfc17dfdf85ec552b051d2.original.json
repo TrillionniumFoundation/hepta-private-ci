@@ -1,0 +1,26 @@
+{
+  "expected": {
+    "bytes": 1099,
+    "index_blob": "846c97953250109d99cfc17dfdf85ec552b051d2",
+    "index_mode": "100644",
+    "kind": "file",
+    "matches_index": true,
+    "path": "apps/hepta-control-ui/rust/robrix-ui/build.rs",
+    "permissions": 420,
+    "sha256": "cdc0bf6bdb2f3d3e3de7d42c0356d3a0c9bc9920f8bce34916366e943ff292f3",
+    "stable": true,
+    "working_blob": "846c97953250109d99cfc17dfdf85ec552b051d2"
+  },
+  "original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "fn main() {\n    println!(\"cargo:rerun-if-changed=build.rs\");\n    // Web and the embedded native host use their own verified packaging paths.\n    if std::env::var_os(\"CARGO_FEATURE_UI\").is_none()\n        || std::env::var_os(\"CARGO_FEATURE_NATIVE_HOST\").is_some()\n        || std::env::var_os(\"CARGO_FEATURE_NATIVE_PRESENTATION\").is_some()\n        || std::env::var(\"CARGO_CFG_TARGET_ARCH\").as_deref() == Ok(\"wasm32\")\n    {\n        return;\n    }\n    let root = std::path::PathBuf::from(std::env::var_os(\"CARGO_MANIFEST_DIR\").unwrap());\n    for (name, length) in [\n        (\"NotoSansSC-Regular.otf\", 8_331_336),\n        (\"NotoSansSC-Bold.otf\", 8_543_168),\n    ] {\n        let path = root.join(\"resources/fonts\").join(name);\n        println!(\"cargo:rerun-if-changed={}\", path.display());\n        assert_eq!(\n            std::fs::metadata(&path).map(|m| m.len()).ok(),\n            Some(length),\n            \"Rust desktop CJK resources are missing or invalid; use python3 tools/run-desktop.py (or npm run desktop), which verifies hashes and prepares an offline-reusable staged workspace\"\n        );\n    }\n}\n"
+    },
+    "isError": false
+  }
+}

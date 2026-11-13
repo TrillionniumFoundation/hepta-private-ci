@@ -1,0 +1,37 @@
+{
+  "format": "hepta-exact-request-reconciliation-intent-v1",
+  "created_at": "2026-11-13T02:52:02.465Z",
+  "original_exact_approval": "b83401f565882785233c2ac34f273ae3cfa0b0ac",
+  "new_root_authorization": "One bounded health_03 after new Cloud recovery event; if ready, reconcile the original exact request and key.",
+  "request": {
+    "git_blob": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+    "bytes": 109095,
+    "sha256": "7e8caf48364c4b58a737af0a1b888e97730e7b53d0c23bdb79dc786031e704a5",
+    "fields": [
+      "args",
+      "cwd",
+      "executable",
+      "host",
+      "idempotency_key",
+      "stdin",
+      "timeout_seconds"
+    ],
+    "idempotency_key": "hepta-utility-36fa-cc57-isolated-materialization-v1"
+  },
+  "health_observation_original": {
+    "bytes": 584,
+    "sha256": "a05f3179ba98865bab382be0fa83d2d71f25fef0b022eb22dcb5a25ab8a27931",
+    "git_blob": "7778f1c777f1f096f27232108a96b2b9a1bab6c0"
+  },
+  "health_received_at": "2026-11-13T02:51:25.577Z",
+  "request_ordinal": {
+    "initial_request": 1,
+    "exact_reconciliation": 1
+  },
+  "prior_state": {
+    "job_id": null,
+    "effects": "Unknown",
+    "initial_transport_error": "tunnel_client_not_seen / NOT_FOUND"
+  },
+  "rule": "Exact parsed original seven fields; no new key, changed input, rollback, or replacement source. This request reconciles the original durable job or original permitted invocation; actual reused/job state is not assumed."
+}

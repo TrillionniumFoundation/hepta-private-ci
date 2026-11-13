@@ -1,0 +1,83 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+index 3c66fbaf3ceb93b8fc8bde9a3aa4b0aea98f8a26..4db88aab962628b6c7414718f5e5c68f55e86b11 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+@@ -54,7 +54,7 @@
+         let original = owner
+             .original_evaluated_command_context()
+             .ok_or(Error::Binding("original evaluated Selector custody"))?;
+-        shared.require_original_context(original)
++        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(&shared, original)
+             .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+         let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(original)?;
+         live.require_original_evaluated_selection(original)
+@@ -107,8 +107,8 @@
+                         "original evaluated Selector command profile",
+                     ),
+                 )?;
+-                shared.require_original_context(context)?;
+-                let (trainer, evaluator) = shared.original_clients();
++                crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(shared, context)?;
++                let (trainer, evaluator) = crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared);
+                 let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {
+                     snapshot: &self.context.training,
+                     live: &self.live,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
+index 98198c3d2ba177ab554d3028ea1270fbe7713bb1..bb104facd29f0939e8b8a4f013cced395116a4bf 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
+@@ -67,7 +67,7 @@
+         let original = owner
+             .original_evaluated_command_selection()
+             .ok_or(Error::Binding("original evaluated Observer custody"))?;
+-        shared.require_original_context(original.original_context())
++        crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(&shared, original.original_context())
+             .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
+         let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(original)?;
+         live.require_original_evaluated_next_use(original)
+@@ -132,8 +132,8 @@
+                         "original evaluated Observer command profile",
+                     ),
+                 )?;
+-                shared.require_original_context(selection.original_context())?;
+-                let (trainer, evaluator) = shared.original_clients();
++                crate::OriginalCircuitPublishedEvidenceReadbackV1::require_original_context(shared, selection.original_context())?;
++                let (trainer, evaluator) = crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared);
+                 let source = OriginalCircuitEvaluatedNextUseRemoteSourcesV1 {
+                     snapshot: &self.context.selection,
+                     selection,
+diff --git a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+index d96f9c9b7767c071106370beb5dfc7ad8b4fba83..4f88e588c805271cf8954305bfe09fdfab777bf4 100644
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+@@ -230,7 +230,7 @@
+         match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
+             RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(original.trainer()),
+             _ => self.trainer.as_ref().or_else(|| {
+-                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().0)
++                self.shared_evaluated.as_ref().map(|shared| crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared).0)
+             }).ok_or(Error::Unavailable),
+         }
+     }
+@@ -241,7 +241,7 @@
+                 original.evaluator().ok_or(Error::Unavailable)
+             }
+             _ => self.evaluator.as_ref().or_else(|| {
+-                self.shared_evaluated.as_ref().map(|shared| shared.original_clients().1)
++                self.shared_evaluated.as_ref().map(|shared| crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared).1)
+             }).ok_or(Error::Unavailable),
+         }
+     }
+diff --git a/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs b/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs
+index 91dd820a4069b8faaab1274f5b3918b144e3b2e9..0d52084d728eee8a62bce68b99780c12624242d7 100644
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs
+@@ -111,7 +111,7 @@
+                         return Err(Error::Unavailable);
+                     }
+                 };
+-                let (trainer, evaluator) = match context.seal_original_readback_owners(original.0, original.1) {
++                let (trainer, evaluator) = match OriginalCircuitEvaluatedRetentionContextV1::seal_original_readback_owners(&context, original.0, original.1) {
+                     Ok(value) => value,
+                     Err(error) => {
+                         state.selection_reader = None;

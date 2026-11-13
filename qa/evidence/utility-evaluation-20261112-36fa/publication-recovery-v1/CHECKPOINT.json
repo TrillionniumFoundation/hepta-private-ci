@@ -1,0 +1,77 @@
+{
+  "format": "hepta-reconstructed-evidence-checkpoint-v1",
+  "frozen_at_utc": "2026-11-13T03:52:53.358275+00:00",
+  "evidence_parent": "07b7f3ea4daf31b1a466574dfdc8232ad1d88fb0",
+  "previous_leaf": "02f98a58fbed34eb796b38c75b048fac3d518b2f",
+  "published_previous_files": 3638,
+  "reconstructed_payload_files_before_checkpoint_metadata": 4363,
+  "source": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "ref_changed": false
+  },
+  "source_gates": {
+    "job": "1a1d23c92f3-2564-1cb4",
+    "status": "succeeded",
+    "closure_explicit_ok": 492,
+    "new_provider_included": false
+  },
+  "materialization": {
+    "job": "1a1d2d20686-392-36",
+    "status": "succeeded",
+    "complete_physical_files": 15188,
+    "placement": "3615ba45eff7e0d58895e3e33d12b66540fc043e",
+    "full_capture_entries": 54
+  },
+  "native": {
+    "job": "1a1d2e908ac-392-5a",
+    "status": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "behavioral_tests_started": false,
+    "behavioral_commands": 0,
+    "error": "ValueError: RUSTY_V8_ARCHIVE actual existing file required",
+    "source_comparison": "UnknownMissingBefore",
+    "placement": "b2f5cde318ed5e7db120d429f44d5cefafa16011",
+    "full_capture_entries": 47
+  },
+  "readonly_diagnostic": {
+    "job": "1a1d2f968fe-392-69",
+    "status": "succeeded",
+    "exit_code": 0,
+    "archive": "lstat ENOENT before and after",
+    "binding_bytes": 39884,
+    "binding_sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "writer_or_cause": "Unknown",
+    "placement": "20e5392b08b6bc4495b50c0c442949f8d15bb9a6",
+    "full_capture_entries": 8,
+    "repair_or_native_retry": false
+  },
+  "provider": {
+    "preparation_only": true,
+    "candidate_rust_paths_observed": 53,
+    "formatted": false,
+    "compiled": false,
+    "new_tests_executed": false,
+    "full_public_fresh_chain_complete": false,
+    "next_use_packet": "2b331b488fd789421f9731e3637d882bb57d7f0a",
+    "next_use_mount_packet": "468a449d78979c8c923009eb87140a2613ae0416",
+    "selector_local_packet": "90f0623289c99ecce60d68d9dad348d27e0bd7fa"
+  },
+  "recovery": {
+    "reason": "Transient functions store became unavailable after one immutable Git tree creation; local files and Git objects remained available.",
+    "original_3896_map": "3f3d938d3a69898411c37bba9664c085ed2ac5d5",
+    "initial_large_tree_create": "actual HTTP 422 request timed out/input too large; no SHA returned",
+    "unpublished_expected_4287_leaf": "f5f5ca67c0cf1bf26686bebd084cf58eaeb53170",
+    "expected_leaf_actual_probe": "404 at the time",
+    "one_actual_partial_tree": "53bbb8c9e94f117de2cae423948eef6acdf2f193",
+    "partial_files": 3717,
+    "commit_or_ref_moved_by_previous_attempt": false,
+    "exact_unpublished_4287_reconstruction_claimed": false,
+    "known_limit": "Some Root-local SDK serializations only held in transient state are not reconstructed. Full original H job captures referenced above remain present. No jobs repeated due to state loss."
+  },
+  "qualification": false,
+  "real_qualified_task_chains": 0,
+  "merge_deploy_activation_authorized": false,
+  "publication_scope": "Evidence leaf and its three ancestor entries only; source ref and source code are not promoted."
+}

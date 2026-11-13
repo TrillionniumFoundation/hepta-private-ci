@@ -1,0 +1,12 @@
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index 10205177c9e4274f58347f5a3719f2a34ed76519..e4875d82be8b8bd9401c770584c1cf286ccb5eef 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -881,6 +881,7 @@
+ pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;
++#[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitRetainedPublicationContextV1;

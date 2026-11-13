@@ -1,0 +1,37 @@
+[
+  {
+    "after": "    pub(crate) fn complete_from_original_trainer<'a>(\n        original_plan: ProviderPlanFixture,\n        provider: ProviderAt,\n        initial: &'a LearningIterationSnapshotV1,\n        training: LearningIterationSnapshotV1,\n        training_evidence: SignedLearningEvidenceV1,\n        scope: &'a FrozenLearningScopeV2,\n        generator: &'a TrustedLearningSignerV1,\n        evaluator: &'a TrustedLearningSignerV1,\n        verifier: LearningEvidenceVerifierV1,\n        retention_receipt_digests: Vec<Digest32>,\n        trainer: crate::LearningIterationEvidenceClientV1,\n    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {\n        Self::complete_with_trainer(\n            original_plan, provider, initial, training, training_evidence,\n            scope, generator, evaluator, verifier, retention_receipt_digests,\n            Some(Arc::new(trainer)),\n        )\n    }\n\n    /// Both B tasks keep the same original read-only client, not a new peer.\n    pub(crate) fn complete_from_shared_original_trainer<'a>(\n        original_plan: ProviderPlanFixture,\n        provider: ProviderAt,\n        initial: &'a LearningIterationSnapshotV1,\n        training: LearningIterationSnapshotV1,\n        training_evidence: SignedLearningEvidenceV1,\n        scope: &'a FrozenLearningScopeV2,\n        generator: &'a TrustedLearningSignerV1,\n        evaluator: &'a TrustedLearningSignerV1,\n        verifier: LearningEvidenceVerifierV1,\n        retention_receipt_digests: Vec<Digest32>,\n        trainer: Arc<crate::LearningIterationEvidenceClientV1>,\n    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {\n        Self::complete_with_trainer(\n            original_plan, provider, initial, training, training_evidence,\n            scope, generator, evaluator, verifier, retention_receipt_digests,\n            Some(trainer),\n        )\n    }\n\n",
+    "before": "    pub(crate) fn complete_from_original_trainer<'a>(\n        original_plan: ProviderPlanFixture,\n        provider: ProviderAt,\n        initial: &'a LearningIterationSnapshotV1,\n        training: LearningIterationSnapshotV1,\n        training_evidence: SignedLearningEvidenceV1,\n        scope: &'a FrozenLearningScopeV2,\n        generator: &'a TrustedLearningSignerV1,\n        evaluator: &'a TrustedLearningSignerV1,\n        verifier: LearningEvidenceVerifierV1,\n        retention_receipt_digests: Vec<Digest32>,\n        trainer: crate::LearningIterationEvidenceClientV1,\n    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {\n        Self::complete_with_trainer(\n            original_plan, provider, initial, training, training_evidence,\n            scope, generator, evaluator, verifier, retention_receipt_digests,\n            Some(trainer),\n        )\n    }\n\n",
+    "label": "add shared member entry; preserve by-value adapter"
+  },
+  {
+    "after": "original_trainer: Option<Arc<crate::LearningIterationEvidenceClientV1>>,",
+    "before": "original_trainer: Option<crate::LearningIterationEvidenceClientV1>,",
+    "label": "private member input Arc"
+  },
+  {
+    "after": "(Arc::new(trainer), Some(thread))",
+    "before": "(trainer, Some(thread))",
+    "label": "old synthetic peer still owns its one Arc"
+  },
+  {
+    "after": "            trainer,\n            cohort,",
+    "before": "            trainer: Arc::new(trainer),\n            cohort,",
+    "label": "move exact original Arc into existing production member"
+  },
+  {
+    "after": "        retention_trainer: LearningIterationEvidenceClientV1,\n    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {\n        self.complete_with_trainers(input, Arc::new(primary_trainer), Arc::new(retention_trainer))\n    }\n\n    /// Existing production PanelMemberOwners already takes Arc evidence-only\n    /// clients. Sequential B reads share one original channel and its limits.\n    pub(in super::super) fn complete_with_shared_original_trainer<'a>(\n        self,\n        input: &'a CompletedTrainingInputs<'a>,\n        trainer: Arc<LearningIterationEvidenceClientV1>,\n    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {\n        self.complete_with_trainers(input, Arc::clone(&trainer), trainer)\n    }\n\n    fn complete_with_trainers<'a>(\n        self,\n        input: &'a CompletedTrainingInputs<'a>,\n        primary_trainer: Arc<LearningIterationEvidenceClientV1>,\n        retention_trainer: Arc<LearningIterationEvidenceClientV1>,\n    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {\n        Box::pin(async move {",
+    "before": "        retention_trainer: LearningIterationEvidenceClientV1,\n    ) -> impl std::future::Future<Output = anyhow::Result<CompletedBPanel>> + 'a {\n        Box::pin(async move {",
+    "label": "one shared B entry with unchanged common completion body"
+  },
+  {
+    "after": "    trainer: Arc<LearningIterationEvidenceClientV1>,\n) -> anyhow::Result<PanelMemberFixture>",
+    "before": "    trainer: LearningIterationEvidenceClientV1,\n) -> anyhow::Result<PanelMemberFixture>",
+    "label": "complete_member receives the same Arc"
+  },
+  {
+    "after": "Box::pin(PanelMemberFixture::complete_from_shared_original_trainer(",
+    "before": "Box::pin(PanelMemberFixture::complete_from_original_trainer(",
+    "label": "call actual shared member entry"
+  }
+]

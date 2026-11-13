@@ -1,0 +1,380 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+index f28e4e5f7dfc7f3be082e46c5fe1e231030e43aa..b1179b7fda45ba5ac0340147e2e103dc795dc1a3 100644
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+@@ -685,5 +685,5 @@
+ #[path = "circuit_deep_training_readback_tests.rs"]
+ mod deep_readonly;
+ 
+-#[path = "circuit_resident_candidate_provider_material_support_tests.rs"]
++#[path = "circuit_resident_candidate_provider_support_tests.rs"]
+ mod resident_provider;
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..150d529814964c9121debe523a2202a1dd6439e7
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs
+@@ -0,0 +1,277 @@
++//! Preserve original Fresh custody while advancing actual Material -> T -> B.
++//! Every response is produced by the original owner. This local fixture uses
++//! existing same-process adapters, not public different-UID admission.
++use super::*;
++use super::original_material::{ProviderAdmission, UnstartedProvider};
++use super::super::evaluation_provider::fresh_training::{
++    CompletedBPanel, CompletedTrainingInputs, PreparedBPanel,
++};
++use anyhow::Context as _;
++use crate::OriginalCellEvaluationCommandClientV1 as EvaluationClient;
++use crate::OriginalCellEvaluationCommandConnectionV1 as EvaluationConnection;
++use crate::OriginalCellEvaluationCommandReceiptV1 as EvaluationReceipt;
++use crate::OriginalCellQ24CandidateMaterialV1 as Candidate;
++use crate::OriginalCellQ24CandidateReadbackClientV1 as CandidateClient;
++use crate::OriginalCellQ24DatasetCommandReadbackV1 as DatasetReadback;
++use crate::OriginalCellQ24MaterialCommandClientV1 as MaterialClient;
++use crate::OriginalCellQ24MaterialCommandReceiptV1 as DatasetReceipt;
++use crate::OriginalCellQ24MaterialEvidenceRoleV1 as Role;
++use crate::OriginalCellQ24TrainingCommandClientV1 as TrainingClient;
++use crate::OriginalCellQ24TrainingCommandConnectionV1 as TrainingConnection;
++use crate::OriginalCellQ24TrainingCommandReceiptV1 as TrainingReceipt;
++use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;
++use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
++
++type TrainerPeer = std::thread::JoinHandle<
++    Result<u64, crate::OriginalCellQ24TrainingBootstrapErrorV1>,
++>;
++type EvaluationPeer = std::thread::JoinHandle<anyhow::Result<u64>>;
++
++/// Initial typed connections are consumed once. The outer fixture must drop
++/// any Version/S/C clones before finish. No field can replace a failed owner.
++pub(super) struct FreshStages {
++    pub(super) original: Option<Box<UnstartedProvider>>,
++    prepared_b: Option<PreparedBPanel>,
++    pub(super) panel: Option<CompletedBPanel>,
++    experience: Option<MaterialClient>,
++    dataset: Option<MaterialClient>,
++    root_trainer_initial: Option<TrainingConnection>,
++    pub(super) root_trainer: Option<TrainingClient>,
++    pub(super) candidate_client: Option<CandidateClient>,
++    training_peers: Option<training_ports::OriginalTrainingPeers>,
++    pub(super) version_dataset: Option<DatasetReadback>,
++    pub(super) version_trainer: Option<TrainingConnection>,
++    pub(super) version_evaluator: Option<EvaluationConnection>,
++    pub(super) root_evaluator: Option<EvaluationClient>,
++    pub(super) dataset_receipt: Option<DatasetReceipt>,
++    pub(super) training: Option<TrainingReceipt>,
++    pub(super) candidate: Option<Candidate>,
++    pub(super) evaluation: Option<EvaluationReceipt>,
++    material_servers: Vec<material_ports::Peer>,
++    training_servers: Vec<TrainerPeer>,
++    evaluation_servers: Vec<EvaluationPeer>,
++}
++
++impl FreshStages {
++    pub(super) async fn new() -> anyhow::Result<Self> {
++        let admission = Box::pin(ProviderAdmission::new()).await?;
++        // Freeze B's original declaration before Material signs the operation.
++        let prepared_b = PreparedBPanel::new(admission.objective, admission.trust_time)?;
++        let profile = prepared_b.registration().evaluation_profile();
++        let original = Box::new(Box::pin(UnstartedProvider::new(admission, profile)).await?);
++        let mut result = Self {
++            original: Some(original), prepared_b: Some(prepared_b), panel: None,
++            experience: None, dataset: None, root_trainer_initial: None,
++            root_trainer: None, candidate_client: None, training_peers: None,
++            version_dataset: None, version_trainer: None, version_evaluator: None,
++            root_evaluator: None, dataset_receipt: None, training: None,
++            candidate: None, evaluation: None, material_servers: Vec::new(),
++            training_servers: Vec::new(), evaluation_servers: Vec::new(),
++        };
++        if let Err(error) = result.connect_originals() {
++            let cleanup = result.finish().await;
++            return Err(error.context(format!("original connection cleanup: {cleanup:?}")));
++        }
++        Ok(result)
++    }
++
++    pub(super) fn original(&self) -> anyhow::Result<&UnstartedProvider> {
++        self.original.as_deref().context("same unstarted original custody")
++    }
++
++    fn connect_originals(&mut self) -> anyhow::Result<()> {
++        let original = self.original()?;
++        anyhow::ensure!(original.material.initial.receipts.is_empty());
++        let host = Arc::clone(&original.material_owner);
++        let trainer = Arc::clone(&original.trainer);
++        let material = original.material.clone();
++        let (experience, peer) = material_ports::commands_for_original(
++            Arc::clone(&host), material.clone(), Role::Experience,
++        )?;
++        self.experience = Some(experience);
++        self.material_servers.push(peer);
++        let (dataset, peer) = material_ports::commands_for_original(
++            Arc::clone(&host), material.clone(), Role::Dataset,
++        )?;
++        self.dataset = Some(dataset);
++        self.material_servers.push(peer);
++        let (dataset, peer) = material_ports::commands_for_original(
++            host, material.clone(), Role::Dataset,
++        )?;
++        self.material_servers.push(peer);
++        self.version_dataset = Some(dataset.into_original_dataset_readback(&material)?);
++        let (root, peer) = training_ports::command(Arc::clone(&trainer), material.clone())?;
++        self.root_trainer_initial = Some(root);
++        self.training_servers.push(peer);
++        let (version, peer) = training_ports::command(Arc::clone(&trainer), material.clone())?;
++        self.version_trainer = Some(version);
++        self.training_servers.push(peer);
++        // Four actual T transports: root command, Candidate, one shared B
++        // evidence connection, and Version command (later shared by V/S/C).
++        // These are fixture transports, not a public semaphore assertion.
++        self.training_peers = Some(training_ports::OriginalTrainingPeers::new_shared(
++            trainer, material,
++        )?);
++        Ok(())
++    }
++
++    pub(super) async fn complete_training(&mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.training.is_none() && self.dataset_receipt.is_none(),
++                        "one Fresh original execution sequence");
++        let original = self.original()?;
++        anyhow::ensure!(std::fs::metadata(original.root.join("positive-native-training"))?.len() == 0);
++        anyhow::ensure!(std::fs::metadata(original.root.join("positive-training-receipt"))?.len() == 0);
++        let experience = self.experience.as_ref().context("original Experience client")?
++            .execute().await?;
++        anyhow::ensure!(experience.snapshot().receipts.len() == 1);
++        let dataset = self.dataset.as_ref().context("original Dataset client")?
++            .execute().await?;
++        anyhow::ensure!(dataset.snapshot().receipts.len() == 2);
++        anyhow::ensure!(dataset.snapshot().receipts[0] == *experience.receipt());
++        let client = self.root_trainer_initial.take().context("one original initial T")?
++            .bind_original_dataset(dataset.clone())?;
++        self.root_trainer = Some(client);
++        // Completion is the actual original Execute future's return. A Ready
++        // bootstrap observation alone never authorizes Candidate or B work.
++        let training = self.root_trainer.as_ref().context("bound original T")?
++            .execute_training(Arc::new(AtomicBool::new(false))).await?;
++        let baseline = Arc::clone(&self.original()?.baseline);
++        let candidate_initial = self.training_peers.as_mut()
++            .context("held original Candidate")?.take_candidate()?;
++        let candidate = candidate_initial.bind_original_candidate_material(
++            dataset.clone(), training.clone(), baseline,
++        )?;
++        self.candidate_client = Some(candidate);
++        let candidate = self.candidate_client.as_ref().context("original Candidate reader")?
++            .readback().await?;
++        anyhow::ensure!(candidate.receipt() == training.receipt());
++        anyhow::ensure!(candidate.attestation() == training.attestation());
++        anyhow::ensure!(candidate.authority() == AuthorityPosture::DENY_ALL);
++        anyhow::ensure!(candidate.bundle().digest()? != self.original()?.bundle.digest()?);
++        let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
++        coordinator.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?;
++        anyhow::ensure!(coordinator.snapshot().receipts.len() == 3);
++        anyhow::ensure!(coordinator.next_stage() == Some(LearningIterationStageV1::Evaluation));
++        self.dataset_receipt = Some(dataset);
++        self.training = Some(training);
++        self.candidate = Some(candidate);
++        Ok(())
++    }
++
++    pub(super) async fn complete_b_and_evaluation(&mut self) -> anyhow::Result<()> {
++        anyhow::ensure!(self.panel.is_none() && self.evaluation.is_none(),
++                        "one pre-registered independent mechanism B panel");
++        let dataset = self.dataset_receipt.as_ref().context("actual D before B")?.clone();
++        let training = self.training.as_ref().context("actual T before B")?.clone();
++        let trainer = self.training_peers.as_mut().context("held actual B readback")?
++            .take_shared_trainer()?.bind_original_training(dataset.clone(), training.clone())?;
++        let trainer = Arc::new(trainer);
++        let prepared = self.prepared_b.take().context("one original B declaration")?;
++        let original = self.original()?;
++        let input = CompletedTrainingInputs::from_original_completion(
++            &original.material, &dataset, &training,
++            self.candidate.as_ref().context("actual original Candidate")?,
++            original.baseline.as_ref(), &original.previous, &original.source_a,
++            &original.config_a, &original.credentials,
++        )?;
++        let panel = Box::pin(prepared.complete_with_shared_original_trainer(&input, trainer)).await?;
++        drop(input);
++        self.panel = Some(panel);
++        let host = self.panel.as_ref().context("actual B panel")?.host.as_ref()
++            .context("same original E host")?;
++        // This staged fixture constructs E only after actual B exists. It does
++        // not claim all ten cross-UID endpoints were delivered before T.
++        let (version, peer) = host.fixture_original_readback_connection()?;
++        self.version_evaluator = Some(version);
++        self.evaluation_servers.push(peer);
++        let (client, peer) = host.fixture_commands(false, None, "original")?;
++        self.root_evaluator = Some(client);
++        self.evaluation_servers.push(peer);
++        let evaluation = self.root_evaluator.as_ref().context("original E client")?
++            .execute_evaluation().await?;
++        anyhow::ensure!(evaluation.training_attestation() == training.attestation());
++        anyhow::ensure!(evaluation.snapshot().receipts.len() == 4);
++        anyhow::ensure!(matches!(
++            evaluation.receipt().observation,
++            LearningIterationObservationV1::Evaluation {
++                disposition: LearningEvaluationDispositionV1::NoUpdate, ..
++            }
++        ));
++        anyhow::ensure!(evaluation.snapshot().request.selected_bundle == self.original()?.bundle);
++        anyhow::ensure!(LearningIterationCoordinatorV1::from_snapshot(
++            evaluation.snapshot().clone(),
++        )?.next_stage() == Some(LearningIterationStageV1::Selection));
++        self.evaluation = Some(evaluation);
++        Ok(())
++    }
++
++    pub(super) fn original_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
++        let mut bytes = self.original()?.original_bytes()?;
++        if let Some(panel) = &self.panel {
++            bytes.extend(panel.original_files()?);
++            bytes.extend(panel.upstream_files()?);
++        }
++        Ok(bytes)
++    }
++
++    pub(super) fn close_evaluation_clients(&mut self) -> anyhow::Result<Vec<u64>> {
++        drop(self.root_evaluator.take());
++        drop(self.version_evaluator.take());
++        let mut counts = Vec::new();
++        let mut errors = Vec::new();
++        for peer in self.evaluation_servers.drain(..) {
++            match peer.join() {
++                Ok(Ok(count)) => counts.push(count),
++                Ok(Err(error)) => errors.push(error.to_string()),
++                Err(_) => errors.push("original E peer panicked".into()),
++            }
++        }
++        anyhow::ensure!(errors.is_empty(), "all original E peers joined: {errors:?}");
++        Ok(counts)
++    }
++
++    pub(super) async fn finish(mut self) -> anyhow::Result<()> {
++        let mut errors = Vec::new();
++        if let Err(error) = self.close_evaluation_clients() { errors.push(error.to_string()); }
++        if let Some(panel) = self.panel.take() {
++            if let Err(error) = panel.finish() { errors.push(error.to_string()); }
++        }
++        drop(self.candidate_client.take());
++        drop(self.root_trainer.take());
++        drop(self.root_trainer_initial.take());
++        drop(self.version_trainer.take());
++        drop(self.version_dataset.take());
++        drop(self.experience.take());
++        drop(self.dataset.take());
++        if let Some(peers) = self.training_peers.take() {
++            if let Err(error) = peers.finish_shared() { errors.push(error.to_string()); }
++        }
++        for peer in self.training_servers.drain(..) {
++            match peer.join() {
++                Ok(Ok(_)) => {}
++                Ok(Err(error)) => errors.push(error.to_string()),
++                Err(_) => errors.push("original T peer panicked".into()),
++            }
++        }
++        for peer in self.material_servers.drain(..) {
++            if let Err(error) = material_ports::finish(peer) { errors.push(error.to_string()); }
++        }
++        if let Some(original) = self.original.take() {
++            if let Err(error) = (*original).finish().await { errors.push(error.to_string()); }
++        }
++        anyhow::ensure!(errors.is_empty(), "all staged original owners joined: {errors:?}");
++        Ok(())
++    }
++}
++
++pub(super) async fn finish_case(
++    result: anyhow::Result<()>,
++    fixture: FreshStages,
++) -> anyhow::Result<()> {
++    let cleanup = fixture.finish().await;
++    match (result, cleanup) {
++        (Ok(()), Ok(())) => Ok(()),
++        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
++        (Err(error), Err(cleanup)) => Err(error.context(format!("original cleanup: {cleanup:#}"))),
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..a1f5cfd587e3472b2f9f4b2417dd6b151dd92d6e
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs
+@@ -0,0 +1,63 @@
++//! Staged Fresh mechanism: no completed Positive/Publication fixture is used.
++//! Original clocks, role credentials and independently fixed outcomes are test
++//! data, not a real external B measurement or a deployed Root qualification.
++use super::*;
++use super::stages::{FreshStages, finish_case};
++use anyhow::Context as _;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn fresh_original_training_produces_candidate_then_actual_ineligible_b() -> anyhow::Result<()> {
++    let mut fixture = Box::pin(FreshStages::new()).await?;
++    let result: anyhow::Result<()> = async {
++        Box::pin(fixture.complete_training()).await?;
++        let training = fixture.training.as_ref().context("actual Training")?.clone();
++        anyhow::ensure!(matches!(
++            fixture.root_trainer.as_ref().context("same T client")?
++                .execute_training(Arc::new(AtomicBool::new(false))).await,
++            Err(crate::OriginalCellQ24TrainingCommandErrorV1::ReadbackRequired)
++        ), "Fresh Execute cannot be restored");
++        anyhow::ensure!(fixture.root_trainer.as_ref().context("same T client")?
++            .readback().await? == training);
++        Box::pin(fixture.complete_b_and_evaluation()).await?;
++        let original = fixture.evaluation.as_ref().context("actual E")?.clone();
++        let before = fixture.original_bytes()?;
++        anyhow::ensure!(matches!(
++            fixture.root_evaluator.as_ref().context("same E client")?.execute_evaluation().await,
++            Err(crate::OriginalCellEvaluationCommandErrorV1::ReadbackRequired)
++        ), "completed E is not another Execute");
++        anyhow::ensure!(fixture.root_evaluator.as_ref().context("same E client")?.readback().await? == original);
++        anyhow::ensure!(fixture.original_bytes()? == before, "read-only repeats keep the complete originals");
++        Ok(())
++    }.await;
++    finish_case(result, fixture).await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn fresh_original_b_evaluation_recovery_reads_same_result_without_reexecution() -> anyhow::Result<()> {
++    let mut fixture = Box::pin(FreshStages::new()).await?;
++    let result: anyhow::Result<()> = async {
++        Box::pin(fixture.complete_training()).await?;
++        Box::pin(fixture.complete_b_and_evaluation()).await?;
++        let original = fixture.evaluation.as_ref().context("actual E")?.clone();
++        fixture.close_evaluation_clients()?;
++        let before = fixture.original_bytes()?;
++        fixture.panel.as_mut().context("same completed B panel")?.recover()?;
++        let host = fixture.panel.as_ref().context("same recovered E")?.host.as_ref()
++            .context("same actual E host")?;
++        let (client, peer) = host.fixture_commands(false, None, "original")?;
++        // This fresh-shaped caller cannot promote the recovered original host.
++        let read: anyhow::Result<()> = async {
++            anyhow::ensure!(matches!(client.execute_evaluation().await,
++                Err(crate::OriginalCellEvaluationCommandErrorV1::ReadbackRequired)));
++            anyhow::ensure!(client.readback().await? == original);
++            Ok(())
++        }.await;
++        drop(client);
++        let joined = peer.join().map_err(|_| anyhow::anyhow!("recovered E peer panicked"))?;
++        read?;
++        joined?;
++        anyhow::ensure!(fixture.original_bytes()? == before, "recovery uses the same completed original files");
++        Ok(())
++    }.await;
++    finish_case(result, fixture).await
++}
+diff --git a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..76bdebdd1c72bc7d0e504ce76affaccbd97203c3
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs
+@@ -0,0 +1,11 @@
++//! Fresh same-A owner composition, separate from completed PublicationFixture.
++//! These local mechanism ports execute the original owners. They are not public
++//! cross-UID admission or Root deployment evidence; those are separate tests.
++use super::*;
++
++#[path = "circuit_resident_candidate_provider_material_support_tests.rs"]
++mod original_material;
++#[path = "circuit_resident_candidate_provider_stage_support_tests.rs"]
++mod stages;
++#[path = "circuit_resident_candidate_provider_stage_tests.rs"]
++mod stage_tests;

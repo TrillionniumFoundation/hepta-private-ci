@@ -1,0 +1,21 @@
+{
+  "format": "hepta-host-health-observation-intent-v1",
+  "observation": "HOST_HEALTH_03",
+  "created_at": "2026-11-13T02:51:19.439Z",
+  "trigger": "New managed Cloud recovery event; explicit Root authorization for one bounded observation, not periodic polling.",
+  "tool": "h_host_health",
+  "args": {
+    "host": "desktop"
+  },
+  "existing_materialization_request": {
+    "git_blob": "163e69e0e1002f70dc6d8e71ff3354ff95607647",
+    "bytes": 109095,
+    "sha256": "7e8caf48364c4b58a737af0a1b888e97730e7b53d0c23bdb79dc786031e704a5",
+    "idempotency_key": "hepta-utility-36fa-cc57-isolated-materialization-v1",
+    "initial_start_requests": 1,
+    "exact_reconciliations_before_this_observation": 0,
+    "job_id": null,
+    "effects": "Unknown"
+  },
+  "rule": "If authenticated health is ready, reconcile only the unchanged exact original request/key; otherwise preserve the failure and stop. This health observation is not materialization or qualification."
+}

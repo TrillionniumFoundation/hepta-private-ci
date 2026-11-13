@@ -1,0 +1,266 @@
+{
+  "before": {
+    "bytes": 28133,
+    "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+    "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+  },
+  "candidate_after": {
+    "bytes": 29128,
+    "git_blob": "ad2b485237894af100ad6d90da12f162986d600a",
+    "sha256": "61cd48fdf9790e2657869382f3238ada444c3c665d77da8d92acc6bd80d3c045"
+  },
+  "candidate_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+    "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+    "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+    "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+    "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+    "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+    "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins"
+  ],
+  "excluded_child": {
+    "fqn": "authority_host_service::resident::authority::tests::provider_transport::process::resident_role_peer_process_child",
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+    "reason": "Only its original explicit Root parent starts this exact ignored child with its inherited descriptor; not an independent Root case.",
+    "source": {
+      "bytes": 9939,
+      "git_blob": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8",
+      "sha256": "37a779966a145fc135007bf654f5b5f4e7e78c5d52bd8441dfa96981433d66e7"
+    }
+  },
+  "format": "hepta-provider-root-parent-registration-proposal-v1",
+  "h_calls": 0,
+  "module_edges": [
+    {
+      "observed_module_link": "#[path = \"authority_host_learning_resident_root_tests.rs\"]\nmod tests;",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "source": {
+        "bytes": 9708,
+        "git_blob": "02759f257a58147e8416391d9c1062e93bbc112c",
+        "sha256": "5f8c7bd39912e2954fb5333279b9459ad3ff7c9f943818ab62e39aa270ee8445"
+      }
+    },
+    {
+      "observed_module_link": "#[path = \"authority_host_learning_resident_provider_transport_tests.rs\"]\nmod provider_transport;",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "source": {
+        "bytes": 15083,
+        "git_blob": "64d25ff8801f69b61de0a2433282786a82b3f15a",
+        "sha256": "a7c598c946a5a94b3202ffc279d4b5ed244c772ffb1289c7c8eb202ee20ece49"
+      }
+    },
+    {
+      "observed_module_link": "#[path = \"authority_host_learning_resident_provider_lifecycle_tests.rs\"]\nmod lifecycle;",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "source": {
+        "bytes": 10697,
+        "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235",
+        "sha256": "56ce9abd8a2003b9560985e992db52d705557711c8c37d950262a79ae583e0c7"
+      }
+    },
+    {
+      "observed_module_link": "#[path = \"authority_host_learning_resident_provider_process_tests.rs\"]\nmod process;",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "source": {
+        "bytes": 10697,
+        "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235",
+        "sha256": "56ce9abd8a2003b9560985e992db52d705557711c8c37d950262a79ae583e0c7"
+      }
+    }
+  ],
+  "native_driver": {
+    "changed": false,
+    "identity": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "original_root_test_seconds": 7200,
+    "original_run_ignored": "only",
+    "original_test_threads": 1,
+    "selection": "Original AST extraction of parents; exact equality of retained Root JUnit names."
+  },
+  "new_count": 39,
+  "new_parents": [
+    {
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "definition_line": 137,
+      "execution": "not_run",
+      "fqn": "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "scope": "Root transport admission or idle lifetime; no complete ten-owner NoUpdate assertion",
+      "source": {
+        "bytes": 10697,
+        "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235",
+        "sha256": "56ce9abd8a2003b9560985e992db52d705557711c8c37d950262a79ae583e0c7"
+      }
+    },
+    {
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "definition_line": 167,
+      "execution": "not_run",
+      "fqn": "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "scope": "Root transport admission or idle lifetime; no complete ten-owner NoUpdate assertion",
+      "source": {
+        "bytes": 10697,
+        "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235",
+        "sha256": "56ce9abd8a2003b9560985e992db52d705557711c8c37d950262a79ae583e0c7"
+      }
+    },
+    {
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "definition_line": 198,
+      "execution": "not_run",
+      "fqn": "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "scope": "Root transport admission or idle lifetime; no complete ten-owner NoUpdate assertion",
+      "source": {
+        "bytes": 10697,
+        "git_blob": "d8a5afa665a2ee0df622b1af0a64e6f00ddb5235",
+        "sha256": "56ce9abd8a2003b9560985e992db52d705557711c8c37d950262a79ae583e0c7"
+      }
+    },
+    {
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "definition_line": 69,
+      "execution": "not_run",
+      "fqn": "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "scope": "Root transport admission or idle lifetime; no complete ten-owner NoUpdate assertion",
+      "source": {
+        "bytes": 6112,
+        "git_blob": "1005fffcd1b2c335ed44b6e4ffdc39956262d114",
+        "sha256": "e45ebd779660e90c3bb0f7da99d16a5a3e17bd36a1b58831723a832d1b3d644a"
+      }
+    },
+    {
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "definition_line": 88,
+      "execution": "not_run",
+      "fqn": "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "scope": "Root transport admission or idle lifetime; no complete ten-owner NoUpdate assertion",
+      "source": {
+        "bytes": 6112,
+        "git_blob": "1005fffcd1b2c335ed44b6e4ffdc39956262d114",
+        "sha256": "e45ebd779660e90c3bb0f7da99d16a5a3e17bd36a1b58831723a832d1b3d644a"
+      }
+    },
+    {
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "definition_line": 107,
+      "execution": "not_run",
+      "fqn": "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "scope": "Root transport admission or idle lifetime; no complete ten-owner NoUpdate assertion",
+      "source": {
+        "bytes": 6112,
+        "git_blob": "1005fffcd1b2c335ed44b6e4ffdc39956262d114",
+        "sha256": "e45ebd779660e90c3bb0f7da99d16a5a3e17bd36a1b58831723a832d1b3d644a"
+      }
+    }
+  ],
+  "not_included": [
+    "still-floating Fresh T/B/Root provider integration",
+    "new production launcher",
+    "complete ten-owner NoUpdate claim"
+  ],
+  "old_count": 33,
+  "old_order_and_bytes_preserved": true,
+  "only_source_change_proposed": "Six append-only string entries in the existing workflow parents array.",
+  "original_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+    "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+    "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+    "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+    "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+    "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+    "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c"
+  ],
+  "real_utility_tasks": 0,
+  "source": {
+    "commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "status": "",
+    "tree": "b7b357c07b5539769a068c6b9b009629f5612d1e"
+  },
+  "status": "STATIC_HOLD_NO_SOURCE_WRITE_OR_EXECUTION",
+  "tests_run": 0,
+  "workflow_path": ".github/workflows/hepta-daemon-learning-native.yml"
+}
