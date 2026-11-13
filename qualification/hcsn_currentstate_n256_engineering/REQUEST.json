@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-n256-engineering-resource-request-v1",
+  "identity": "hcsn-n256-engineering-resource-static-20261113-c06d-001",
+  "base_commit": "ccb2514f34fc2501230b983c82e24041dea86c4f",
+  "inputs": {
+    "metadata": "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json",
+    "state": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json",
+    "phase": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json",
+    "npz_b64": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64",
+    "roster": "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001"
+  },
+  "allowed": [
+    "hash_bound_input_readback",
+    "static_spatial_operator_materialization",
+    "static_block_operator_topology",
+    "packet_lineage_and_dimension_match",
+    "resource_lower_bound_and_old_cap_comparison"
+  ],
+  "forbidden": [
+    "dynamic_state_propagation",
+    "matrix_exponential",
+    "numeric_oracle",
+    "fullstate_numeric_serializer",
+    "torch",
+    "backward",
+    "optimizer",
+    "training"
+  ],
+  "expected_negative": {
+    "n128_per_capsule_cap_bytes": 8388608,
+    "n128_cumulative_logical_packet_cap_bytes": 201326592,
+    "n256_largest_capsule_bytes": 27553312,
+    "n256_candidate_and_dense_oracle_bytes": 291600448,
+    "raw_size_caps_satisfied": false,
+    "status": "RED_RESOURCE_CAP_HOLD"
+  },
+  "historical_N256_export_present": false,
+  "new_export_only": true,
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}
