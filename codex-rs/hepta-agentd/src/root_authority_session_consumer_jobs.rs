@@ -361,3 +361,7 @@ impl OriginalConsumerJob {
         outcome
     }
 }
+
+#[cfg(test)]
+#[path = "root_authority_session_consumer_recording_tests.rs"]
+mod recording_tests;

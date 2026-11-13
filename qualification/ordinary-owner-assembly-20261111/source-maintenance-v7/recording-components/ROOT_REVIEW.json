@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "kind": "root_independent_review_of_recording_window_component_proposal",
+  "packet": "07f41a13a265c523f507e15d1efc528b3bb0db33",
+  "baseline": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "tree": "d83c3cfc71304aa9e6381045efc96446eaf1a32b",
+    "source_manifest": "378cde8a6caa50aebb8992128cd250e437844537",
+    "product_shared_packet": "6a316e96f1bae14ee565843e4ad838455fe77947",
+    "direct_futures_dependency_packet": "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+    "independent_review": "5b74b9398a820ed060b6ea879be068b3301e7468"
+  },
+  "status": "static_source_review_no_local_blocker_execution_pending",
+  "exact_replay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": {
+        "git_blob": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+        "bytes": 35493,
+        "sha256": "daa2138c015b1a43c903948593595b0bc5df67700c3b362d9097370ed383c6f9"
+      },
+      "post": {
+        "git_blob": "d0aff3097e3d548e7c1382b5694e35ce416e0c59",
+        "bytes": 35598,
+        "sha256": "ff636805c643e11dc981b5edbb34d72d6e5494c74491b626e342b91ec9e9650e"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": {
+        "git_blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+        "bytes": 13503,
+        "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+      },
+      "post": {
+        "git_blob": "471a2f261fba698b52bfa20cf1e282e28beb121a",
+        "bytes": 13599,
+        "sha256": "fb57c7c417b341090f1d47bf507f35a0b969fe32f87567b88497ccd065241db8"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": {
+        "git_blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+        "bytes": 12698,
+        "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+      },
+      "post": {
+        "git_blob": "af646ff44ca68d4caefbfd3a18693546267f3e6c",
+        "bytes": 12796,
+        "sha256": "e66424692133ce723b95eab60bfc5e5cada0abec57ee247a70fe81a998fbc29e"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "pre": {
+        "git_blob": "02158aa085672808553260586ea30042229aba92",
+        "bytes": 12267,
+        "sha256": "f32128f187d7a57cbf514559c5566c45162124b6d7d5d2bea36f221def2b7271"
+      },
+      "post": {
+        "git_blob": "8da46083a7230b62019922a5ba6ef4000f8337ee",
+        "bytes": 12263,
+        "sha256": "4096a1e380ccc1a0930fedd850c0046aa5fe8d4e247d37e468f7fe9dcfd883e5"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+      "pre": {
+        "git_blob": "dde16cb9b02d441891c14a92adf43e2779340219",
+        "bytes": 9529,
+        "sha256": "bcedc6574d2262f7d3b0f40c8b45cbd83ac4f1d1341e3f61918bf91bdfba833a"
+      },
+      "post": {
+        "git_blob": "c81181f88644df942875a708c9aec2f754c309f4",
+        "bytes": 9928,
+        "sha256": "fbd521460a529d13e793c8562c017e8602afd2c526b1c11307e86b3678effad0"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+      "pre": null,
+      "post": {
+        "git_blob": "1b41cd1166beef8605e6cdfc2ff13fa75cd8bdce",
+        "bytes": 4621,
+        "sha256": "7e2e2dd4531fa49588b5e31bbae07306bb0702d05db87953e9e97ccf5cfd203b"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+      "pre": null,
+      "post": {
+        "git_blob": "0ed52109d1bbfa942d88e74fa0e503bda639efe6",
+        "bytes": 3804,
+        "sha256": "28ff80fe6ac607a2d58fc252ec09510db83d0e46c0be2b4689786f003583a105"
+      },
+      "operations": 1,
+      "forward_reverse": true
+    }
+  ],
+  "actual_source_bindings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+      "actual_pre": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+      "actual_pre": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+      "actual_pre": "0b332b21c124905a3930785cdfc7e47563ac8085",
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+      "actual_pre": "02158aa085672808553260586ea30042229aba92",
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+      "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+      "actual_pre": "dde16cb9b02d441891c14a92adf43e2779340219",
+      "exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+      "ref": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "absent": true,
+      "raw_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+            "status": "404"
+          }
+        },
+        "isError": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+      "ref": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "absent": true,
+      "raw_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+            "status": "404"
+          }
+        },
+        "isError": true
+      }
+    }
+  ],
+  "preserved": {
+    "production_function_struct_drop_bodies": true,
+    "product_changes_only_three_private_cfg_test_module_declarations": true,
+    "existing_support_suffix_bytes": 9007,
+    "existing_support_suffix_sha256": "3549186a6d88a51e2d6d87525a90f8dc32052e5a8d527ceb20a51b2fdf355af3",
+    "existing_support_suffix_exact": true,
+    "existing_lifecycle_test_bodies_exact": true,
+    "original_root17_roster_unchanged": true,
+    "original_500ms_business_deadline_unchanged": true
+  },
+  "reasoning": [
+    "Both tests poll actual registered original-handle waiters before driving a clone of their same Shared to actual Ready; no state or counters are manually overwritten.",
+    "Each existing private recording mutex is then held only in a synchronous lexical block. Polling the already-started real waiters advances them past Shared Ready to their second mutex acquisition. Dropping one waiter removes its lock wait; two remaining waiters are driven after the guard drops.",
+    "The Consumer task actually holds a UnixStream endpoint and returns the Refused error. The test checks WouldBlock before release and EOF after actual join, preserves the original error, and checks that exact Arc registry bookkeeping increments joined once.",
+    "The Session test reuses the original phase_connection fixture. Actual Session Drop marks retirement through the existing final field, and the actual worker abort joins to Cancelled. Its same original stored observation must remain available to both continuing waiters and a subsequent cleanup call.",
+    "Moving the shared fixture to a private cfg(test) child of root_authority_session preserves its original 9007-byte body. Existing pub(super) items become accessible to that parent's test descendants; no production visibility changes or synthetic completion hooks are added.",
+    "Component synthetic proof and same-UID fixture remain explicitly scoped. These cases do not assert normal completion, independent business use, Root intent, or physical daemon/Root restart."
+  ],
+  "limits": {
+    "compiler": false,
+    "formatter": false,
+    "clippy": false,
+    "tests_run": 0,
+    "original_checker": false,
+    "all_original_qualification": false,
+    "extra_gates": false
+  },
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

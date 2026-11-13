@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "kind": "v10_launch_request_without_session_ack",
+  "classification": "EXECUTION_CHANNEL_UNAVAILABLE_NO_NATIVE_RESULT",
+  "candidate": {
+    "head": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "tree": "d83c3cfc71304aa9e6381045efc96446eaf1a32b",
+    "parent": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+    "manifest": "378cde8a6caa50aebb8992128cd250e437844537",
+    "files": 202,
+    "source_changes": 19,
+    "qualification_changes": 21,
+    "tree_proof": "48b535bde73fe7d7202a92c14c9ffd71dcb78ffd",
+    "branch": "codex/ordinary-owner-maintenance-v7-20261112-af52",
+    "pr_source_unchanged": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "staging_unchanged": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "maintenance_status": "not_run",
+    "business_counts": [
+      0,
+      0,
+      0
+    ]
+  },
+  "request": {
+    "script": {
+      "blob": "48eaf85b81dcabae3a8b7088b1c801ecbcb87b60",
+      "bytes": 18685,
+      "sha256": "d5e7536b25766c38638f3ce0a57996305a526d7e87bc8302db4809f87f74216a"
+    },
+    "config": {
+      "blob": "d80fca778ceaa5df576dddb372eed8257724034a",
+      "bytes": 1469,
+      "sha256": "8adef5acf1d2143677d9247374ac043c2f4ca7761c41a93843bfe3665f1118d3"
+    },
+    "request": {
+      "blob": "7d7c61dedd9af500b25b470435a83fe333dc50a4",
+      "bytes": 21729,
+      "sha256": "e41c2a82b12ff3b9ebc008dfe0c9ee156f2bc3950f18139db248e871b1398c97"
+    },
+    "binding": {
+      "blob": "51407b27855341aa2d6c4228367248d69c3f0269",
+      "bytes": 2806,
+      "sha256": "480dbb80c9da66907c0f254e53ddea903507ab3839ffc52049325544c5206a57"
+    }
+  },
+  "response": {
+    "blob": "c43b0f4240939af6f0d39a016edc87077794c607",
+    "bytes": 997,
+    "sha256": "821ddf8bd6d9cac3bf71e2294e841902b75536c85470a86232536920d2dd7ffa"
+  },
+  "idempotency_key": "af52-future-202-maintenance-v10",
+  "tool_result": {
+    "isError": true,
+    "error_code": "NOT_FOUND",
+    "service_code": "tunnel_client_not_seen",
+    "message": "Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected."
+  },
+  "session_ack_received": false,
+  "session_id": null,
+  "native_result_observed": false,
+  "maintenance_pass": false,
+  "qualification_pass": false,
+  "extra_gates_pass": false,
+  "environment_or_credentials_repaired": false,
+  "relaunch_with_new_key": false,
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "interpretation": "The start tool returned an execution-channel error. No session identity or native execution result was received. This is not a compiler result and supplies no test or business acceptance evidence."
+}

@@ -2,12 +2,23 @@
 //! These components use real pidfds, sockets, original FinalUse owners and
 //! blocked store calls. They grant no Root deployment or business qualification.
 
-use super::super::*;
+use super::*;
 use crate::root_authority_session::OriginalRootSessionCustodySlot;
+use crate::root_writer_proof::tests::fixture;
+use crate::root_writer_proof::tests::observation;
 use crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use codex_hepta_contracts::AuthorityFrontierStore;
+use codex_hepta_contracts::FinalUseFrontier;
+use codex_hepta_contracts::FinalUseIssuerTrustKey;
 use pretty_assertions::assert_eq;
+use std::error::Error;
 use std::fs::File;
+use std::io::Read;
+use std::io::Write;
+use std::os::fd::FromRawFd;
+use std::os::unix::fs::PermissionsExt;
+use std::sync::atomic::AtomicU64;
 use std::sync::mpsc;
 
 pub(super) struct PhaseConnection {

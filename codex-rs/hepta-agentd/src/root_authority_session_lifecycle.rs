@@ -400,3 +400,7 @@ impl super::AgentdRootAuthoritySession {
 fn join_error(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::GenerationFenced(format!("original Root Session task custody: {error}"))
 }
+
+#[cfg(test)]
+#[path = "root_authority_session_worker_recording_tests.rs"]
+mod recording_tests;

@@ -1,0 +1,466 @@
+{
+  "schema_version": 1,
+  "kind": "original-session-consumer-shared-ready-recording-cancellation-components",
+  "status": "frozen proposal; Git/static only; uninstalled and unexecuted",
+  "baseline": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "tree": "d83c3cfc71304aa9e6381045efc96446eaf1a32b",
+    "source_manifest": "378cde8a6caa50aebb8992128cd250e437844537",
+    "product_shared_packet": "6a316e96f1bae14ee565843e4ad838455fe77947",
+    "direct_futures_dependency_packet": "b447430ce8f5b8f0107bf7a299341df7d7dcedea",
+    "independent_review": "5b74b9398a820ed060b6ea879be068b3301e7468"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+      "post": "d0aff3097e3d548e7c1382b5694e35ce416e0c59",
+      "preimage": {
+        "git_blob": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+        "bytes": 35493,
+        "sha256": "daa2138c015b1a43c903948593595b0bc5df67700c3b362d9097370ed383c6f9"
+      },
+      "postimage": {
+        "git_blob": "d0aff3097e3d548e7c1382b5694e35ce416e0c59",
+        "bytes": 35598,
+        "sha256": "ff636805c643e11dc981b5edbb34d72d6e5494c74491b626e342b91ec9e9650e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+      "post": "471a2f261fba698b52bfa20cf1e282e28beb121a",
+      "preimage": {
+        "git_blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+        "bytes": 13503,
+        "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+      },
+      "postimage": {
+        "git_blob": "471a2f261fba698b52bfa20cf1e282e28beb121a",
+        "bytes": 13599,
+        "sha256": "fb57c7c417b341090f1d47bf507f35a0b969fe32f87567b88497ccd065241db8"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": "0b332b21c124905a3930785cdfc7e47563ac8085",
+      "post": "af646ff44ca68d4caefbfd3a18693546267f3e6c",
+      "preimage": {
+        "git_blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+        "bytes": 12698,
+        "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+      },
+      "postimage": {
+        "git_blob": "af646ff44ca68d4caefbfd3a18693546267f3e6c",
+        "bytes": 12796,
+        "sha256": "e66424692133ce723b95eab60bfc5e5cada0abec57ee247a70fe81a998fbc29e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "pre": "02158aa085672808553260586ea30042229aba92",
+      "post": "8da46083a7230b62019922a5ba6ef4000f8337ee",
+      "preimage": {
+        "git_blob": "02158aa085672808553260586ea30042229aba92",
+        "bytes": 12267,
+        "sha256": "f32128f187d7a57cbf514559c5566c45162124b6d7d5d2bea36f221def2b7271"
+      },
+      "postimage": {
+        "git_blob": "8da46083a7230b62019922a5ba6ef4000f8337ee",
+        "bytes": 12263,
+        "sha256": "4096a1e380ccc1a0930fedd850c0046aa5fe8d4e247d37e468f7fe9dcfd883e5"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+      "pre": "dde16cb9b02d441891c14a92adf43e2779340219",
+      "post": "c81181f88644df942875a708c9aec2f754c309f4",
+      "preimage": {
+        "git_blob": "dde16cb9b02d441891c14a92adf43e2779340219",
+        "bytes": 9529,
+        "sha256": "bcedc6574d2262f7d3b0f40c8b45cbd83ac4f1d1341e3f61918bf91bdfba833a"
+      },
+      "postimage": {
+        "git_blob": "c81181f88644df942875a708c9aec2f754c309f4",
+        "bytes": 9928,
+        "sha256": "fbd521460a529d13e793c8562c017e8602afd2c526b1c11307e86b3678effad0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+      "pre": null,
+      "post": "1b41cd1166beef8605e6cdfc2ff13fa75cd8bdce",
+      "preimage": null,
+      "postimage": {
+        "git_blob": "1b41cd1166beef8605e6cdfc2ff13fa75cd8bdce",
+        "bytes": 4621,
+        "sha256": "7e2e2dd4531fa49588b5e31bbae07306bb0702d05db87953e9e97ccf5cfd203b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+      "pre": null,
+      "post": "0ed52109d1bbfa942d88e74fa0e503bda639efe6",
+      "preimage": null,
+      "postimage": {
+        "git_blob": "0ed52109d1bbfa942d88e74fa0e503bda639efe6",
+        "bytes": 3804,
+        "sha256": "28ff80fe6ac607a2d58fc252ec09510db83d0e46c0be2b4689786f003583a105"
+      }
+    }
+  ],
+  "ops": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "old": "#[cfg(test)]\n#[path = \"root_authority_session_tests.rs\"]\npub(crate) mod tests;\n",
+      "new": "#[cfg(test)]\n#[path = \"root_authority_session_lifecycle_support_tests.rs\"]\nmod lifecycle_support_tests;\n\n#[cfg(test)]\n#[path = \"root_authority_session_tests.rs\"]\npub(crate) mod tests;\n",
+      "expected_occurrences": 1,
+      "reason": "recording-component-1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "old": "fn join_error(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(format!(\"original Root Session task custody: {error}\"))\n}\n",
+      "new": "fn join_error(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::GenerationFenced(format!(\"original Root Session task custody: {error}\"))\n}\n\n#[cfg(test)]\n#[path = \"root_authority_session_worker_recording_tests.rs\"]\nmod recording_tests;\n",
+      "expected_occurrences": 1,
+      "reason": "recording-component-2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "old": "        state.observed = Some(outcome);\n        outcome\n    }\n}\n",
+      "new": "        state.observed = Some(outcome);\n        outcome\n    }\n}\n\n#[cfg(test)]\n#[path = \"root_authority_session_consumer_recording_tests.rs\"]\nmod recording_tests;\n",
+      "expected_occurrences": 1,
+      "reason": "recording-component-3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "old": "#[path = \"root_authority_session_lifecycle_support_tests.rs\"]\nmod support;\n",
+      "new": "use crate::root_authority_session::lifecycle_support_tests as support;\n",
+      "expected_occurrences": 1,
+      "reason": "recording-component-4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+      "old": "use super::super::*;\nuse crate::root_authority_session::OriginalRootSessionCustodySlot;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse pretty_assertions::assert_eq;\nuse std::fs::File;\nuse std::sync::mpsc;\n",
+      "new": "use super::*;\nuse crate::root_authority_session::OriginalRootSessionCustodySlot;\nuse crate::root_writer_proof::tests::fixture;\nuse crate::root_writer_proof::tests::observation;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse codex_hepta_contracts::AuthorityFrontierStore;\nuse codex_hepta_contracts::FinalUseFrontier;\nuse codex_hepta_contracts::FinalUseIssuerTrustKey;\nuse pretty_assertions::assert_eq;\nuse std::error::Error;\nuse std::fs::File;\nuse std::io::Read;\nuse std::io::Write;\nuse std::os::fd::FromRawFd;\nuse std::os::unix::fs::PermissionsExt;\nuse std::sync::atomic::AtomicU64;\nuse std::sync::mpsc;\n",
+      "expected_occurrences": 1,
+      "reason": "recording-component-5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+      "kind": "create_new_file",
+      "old": null,
+      "new": "//! Component scope: real blocking handle, socket lifetime and original error.\n//! No business owner, receipt, Root intent or completion capability is created.\n\nuse super::*;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;\nuse pretty_assertions::assert_eq;\nuse std::future::Future;\nuse std::io::Read;\nuse std::os::unix::net::UnixStream;\nuse std::sync::mpsc;\nuse std::task::Context;\nuse std::task::Waker;\nuse std::time::Duration;\n\n#[tokio::test]\nasync fn ready_consumer_join_survives_cancelled_recording_waiter_and_counts_once() {\n    let gate = SameActorPhaseGate::from_original_deadline(\n        SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(10)).unwrap(),\n    )\n    .unwrap();\n    let jobs = OriginalConsumerJobs::new(&gate);\n    let (held, mut probe) = UnixStream::pair().unwrap();\n    probe.set_nonblocking(true).unwrap();\n    let (entered, started) = tokio::sync::oneshot::channel();\n    let (release, released) = mpsc::sync_channel(1);\n    let admission = jobs.reserve_original_consumer().unwrap();\n    let handle = tokio::task::spawn_blocking(move || {\n        let _held = held;\n        entered.send(()).unwrap();\n        released.recv_timeout(Duration::from_secs(5)).unwrap();\n        Err(AgentdRootAuthorityError::Refused)\n    });\n    let job = admission.retain_original_session_consumer_handle(handle);\n    tokio::time::timeout(Duration::from_secs(5), started)\n        .await\n        .unwrap()\n        .unwrap();\n    assert!(\n        matches!(probe.read(&mut [0]), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)\n    );\n    let actual_join = {\n        let state = job.state.lock().await;\n        assert_eq!(state.observed, None);\n        state.handle.as_ref().unwrap().clone()\n    };\n    let mut cancelled = Box::pin(jobs.receive_original_consumer(&job));\n    let mut first = Box::pin(jobs.receive_original_consumer(&job));\n    let mut second = Box::pin(jobs.receive_original_consumer(&job));\n    {\n        let mut context = Context::from_waker(Waker::noop());\n        assert!(cancelled.as_mut().poll(&mut context).is_pending());\n        assert!(first.as_mut().poll(&mut context).is_pending());\n        assert!(second.as_mut().poll(&mut context).is_pending());\n    }\n\n    release.send(()).unwrap();\n    let expected = Err(OriginalConsumerFailure::Owner(\n        AgentdRootAuthorityError::Refused,\n    ));\n    assert_eq!(\n        tokio::time::timeout(Duration::from_secs(5), actual_join)\n            .await\n            .unwrap(),\n        expected\n    );\n    assert_eq!(probe.read(&mut [0]).unwrap(), 0);\n    {\n        // These waiters already borrowed the real handle before it finished.\n        // Its Shared is now Ready; this lock pins their SECOND lock attempt.\n        let state = job.state.lock().await;\n        assert_eq!(state.observed, None);\n        assert_eq!(state.handle.as_ref().unwrap().peek(), Some(&expected));\n        let mut context = Context::from_waker(Waker::noop());\n        assert!(cancelled.as_mut().poll(&mut context).is_pending());\n        assert!(first.as_mut().poll(&mut context).is_pending());\n        assert!(second.as_mut().poll(&mut context).is_pending());\n        drop(cancelled);\n        assert_eq!(state.observed, None);\n        assert_eq!(state.handle.as_ref().unwrap().peek(), Some(&expected));\n        let registry = jobs.state.lock().unwrap();\n        assert_eq!((registry.registered, registry.joined), (1, 0));\n        assert_eq!(registry.retained.len(), 1);\n        assert!(Arc::ptr_eq(&registry.retained[0], &job));\n    }\n    // No lock is held across these awaits. Both record the same actual job;\n    // the registry must remove that Arc and increment joined exactly once.\n    let (first, second) = tokio::time::timeout(Duration::from_secs(5), async {\n        tokio::join!(first, second)\n    })\n    .await\n    .unwrap();\n    assert_eq!(first, Err(AgentdRootAuthorityError::Refused));\n    assert_eq!(second, Err(AgentdRootAuthorityError::Refused));\n    {\n        let state = job.state.lock().await;\n        assert!(state.handle.is_none());\n        assert_eq!(state.observed, Some(expected));\n    }\n    assert_eq!(\n        jobs.receive_original_consumer(&job).await,\n        Err(AgentdRootAuthorityError::Refused)\n    );\n    let summary = jobs.join_stopped_consumers().await.unwrap();\n    assert_eq!((summary.registered, summary.joined), (1, 1));\n    assert_eq!(\n        summary.first_observed_failure,\n        Some(OriginalConsumerFailure::Owner(\n            AgentdRootAuthorityError::Refused\n        ))\n    );\n    assert!(!summary.admission_poisoned);\n    assert!(jobs.state.lock().unwrap().retained.is_empty());\n}\n",
+      "expected_absent": true,
+      "reason": "recording-component-6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+      "kind": "create_new_file",
+      "old": null,
+      "new": "//! Same-UID/synthetic-proof component using the actual phase Session fixture.\n//! A real Session Drop and worker join are observed; no normal completion is made.\n\nuse super::*;\nuse crate::root_authority_session::lifecycle_support_tests::PhaseConnection;\nuse crate::root_authority_session::lifecycle_support_tests::join_peer;\nuse crate::root_authority_session::lifecycle_support_tests::phase_connection;\nuse pretty_assertions::assert_eq;\nuse std::future::Future;\nuse std::task::Context;\nuse std::task::Waker;\nuse std::time::Duration;\n\n#[tokio::test]\nasync fn ready_session_worker_join_survives_cancelled_recording_waiter() {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, .. } = phase_connection(&slot).await;\n    let session = session.unwrap();\n    session.require_original_phase_task_custody(&slot).unwrap();\n    let original = slot.state.lock().unwrap().original.as_ref().unwrap().clone();\n    let actual_join = {\n        let state = original.worker.lock().await;\n        assert_eq!(state.observed, None);\n        state.handle.as_ref().unwrap().clone()\n    };\n    assert!(!original.abort.is_finished());\n    // On this current-thread runtime no worker can finish its scheduled abort\n    // before the synchronous polls below borrow the same original Shared.\n    // The actual Session's last field, not this test, marks it retired.\n    drop(session);\n    assert!(original.session_retired.load(Ordering::Acquire));\n    let mut cancelled = Box::pin(slot.stop_and_join_retired_session_tasks());\n    let mut first = Box::pin(slot.stop_and_join_retired_session_tasks());\n    let mut second = Box::pin(slot.stop_and_join_retired_session_tasks());\n    {\n        let mut context = Context::from_waker(Waker::noop());\n        assert!(cancelled.as_mut().poll(&mut context).is_pending());\n        assert!(first.as_mut().poll(&mut context).is_pending());\n        assert!(second.as_mut().poll(&mut context).is_pending());\n    }\n\n    let expected = tokio::time::timeout(Duration::from_secs(5), actual_join)\n        .await\n        .unwrap();\n    assert_eq!(expected, OriginalRootWorkerTermination::Cancelled);\n    assert!(original.abort.is_finished());\n    {\n        // Shared is already Ready. All three original callers must now wait\n        // on this recording lock, with no worker handle removed from custody.\n        let state = original.worker.lock().await;\n        assert_eq!(state.observed, None);\n        assert_eq!(state.handle.as_ref().unwrap().peek(), Some(&expected));\n        let mut context = Context::from_waker(Waker::noop());\n        assert!(cancelled.as_mut().poll(&mut context).is_pending());\n        assert!(first.as_mut().poll(&mut context).is_pending());\n        assert!(second.as_mut().poll(&mut context).is_pending());\n        drop(cancelled);\n        assert_eq!(state.observed, None);\n        assert_eq!(state.handle.as_ref().unwrap().peek(), Some(&expected));\n    }\n    let (first, second) = tokio::time::timeout(Duration::from_secs(5), async {\n        tokio::join!(first, second)\n    })\n    .await\n    .unwrap();\n    let first = first.unwrap();\n    assert_eq!(second.unwrap(), first);\n    let OriginalRootSessionJoinObservation::Joined {\n        slot_poisoned,\n        worker,\n        consumers,\n        ..\n    } = first\n    else {\n        panic!(\"actual Session worker was not retained\");\n    };\n    assert!(!slot_poisoned);\n    assert_eq!(worker, expected);\n    assert_eq!(consumers.joined, consumers.registered);\n    {\n        let state = original.worker.lock().await;\n        assert!(state.handle.is_none());\n        assert_eq!(state.observed, Some(expected));\n    }\n    assert_eq!(\n        slot.stop_and_join_retired_session_tasks().await.unwrap(),\n        first\n    );\n    drop(original);\n    drop(slot);\n    join_peer(peer).await;\n}\n",
+      "expected_absent": true,
+      "reason": "recording-component-7"
+    }
+  ],
+  "exact_replay": {
+    "operations": 7,
+    "existing_paths": 5,
+    "new_paths": 2,
+    "replace_rule": "Each non-null old text and each reverse new text occurs exactly once in its declared whole source; apply only to the exact preimage and verify all postimage hashes.",
+    "create_rule": "A null preimage means the declared path must be absent; its entire new text is the postimage. Reverse requires that exact whole file before deleting this newly added path.",
+    "forward_reverse_verified": true,
+    "current_preimages_and_new_path_absence": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "actual": {
+          "git_blob": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+          "bytes": 35493,
+          "sha256": "daa2138c015b1a43c903948593595b0bc5df67700c3b362d9097370ed383c6f9"
+        },
+        "preimage_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "actual": {
+          "git_blob": "43fa3e2dadbbdde0fa4cb2979f9ed5f47df5bf44",
+          "bytes": 13503,
+          "sha256": "5777e95f9eb33401fca7a016adbcd60cdb3634f3134d6241c12d69016a14ae88"
+        },
+        "preimage_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "actual": {
+          "git_blob": "0b332b21c124905a3930785cdfc7e47563ac8085",
+          "bytes": 12698,
+          "sha256": "8dbdbd5f6faf55b16d4157e3a4773b5cec10d7af89c018d754763c851d1eee19"
+        },
+        "preimage_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "actual": {
+          "git_blob": "02158aa085672808553260586ea30042229aba92",
+          "bytes": 12267,
+          "sha256": "f32128f187d7a57cbf514559c5566c45162124b6d7d5d2bea36f221def2b7271"
+        },
+        "preimage_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "actual": {
+          "git_blob": "dde16cb9b02d441891c14a92adf43e2779340219",
+          "bytes": 9529,
+          "sha256": "bcedc6574d2262f7d3b0f40c8b45cbd83ac4f1d1341e3f61918bf91bdfba833a"
+        },
+        "preimage_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "absent": true,
+        "response": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+            "status": "404"
+          }
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+        "ref": "ac0037168295c898d8b2572d2274f4328dd08aef",
+        "absent": true,
+        "response": {
+          "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#get-repository-content\",\"status\":\"404\"}",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "message": "Not Found",
+            "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content",
+            "status": "404"
+          }
+        }
+      }
+    ],
+    "create_get_receipts": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "pin": {
+          "git_blob": "d0aff3097e3d548e7c1382b5694e35ce416e0c59",
+          "bytes": 35598,
+          "sha256": "ff636805c643e11dc981b5edbb34d72d6e5494c74491b626e342b91ec9e9650e"
+        },
+        "create_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "pin": {
+          "git_blob": "471a2f261fba698b52bfa20cf1e282e28beb121a",
+          "bytes": 13599,
+          "sha256": "fb57c7c417b341090f1d47bf507f35a0b969fe32f87567b88497ccd065241db8"
+        },
+        "create_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "pin": {
+          "git_blob": "af646ff44ca68d4caefbfd3a18693546267f3e6c",
+          "bytes": 12796,
+          "sha256": "e66424692133ce723b95eab60bfc5e5cada0abec57ee247a70fe81a998fbc29e"
+        },
+        "create_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+        "pin": {
+          "git_blob": "8da46083a7230b62019922a5ba6ef4000f8337ee",
+          "bytes": 12263,
+          "sha256": "4096a1e380ccc1a0930fedd850c0046aa5fe8d4e247d37e468f7fe9dcfd883e5"
+        },
+        "create_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "pin": {
+          "git_blob": "c81181f88644df942875a708c9aec2f754c309f4",
+          "bytes": 9928,
+          "sha256": "fbd521460a529d13e793c8562c017e8602afd2c526b1c11307e86b3678effad0"
+        },
+        "create_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+        "pin": {
+          "git_blob": "1b41cd1166beef8605e6cdfc2ff13fa75cd8bdce",
+          "bytes": 4621,
+          "sha256": "7e2e2dd4531fa49588b5e31bbae07306bb0702d05db87953e9e97ccf5cfd203b"
+        },
+        "create_get_exact": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+        "pin": {
+          "git_blob": "0ed52109d1bbfa942d88e74fa0e503bda639efe6",
+          "bytes": 3804,
+          "sha256": "28ff80fe6ac607a2d58fc252ec09510db83d0e46c0be2b4689786f003583a105"
+        },
+        "create_get_exact": true
+      }
+    ]
+  },
+  "scope": {
+    "production": "No Shared, handle, recorded-result, Drop, File, deadline, semaphore, counter, failure or ordinary-path function/struct body changes. Three product files only gain cfg(test) private module declarations.",
+    "test_fixture": "Existing phase fixture is included once in root_authority_session::lifecycle_support_tests. Its original 9,007-byte suffix starting at PhaseConnection is unchanged. Imports are made relative to the new parent; existing lifecycle tests privately alias the same support module. Existing five test bodies and downstream normal-pause tests remain byte-identical.",
+    "visibility": "The support module remains private and cfg(test). Existing pub(super) fixture items become visible within root_authority_session, solely for the existing and new descendants. No production field, method or module visibility is expanded.",
+    "why_two": "Session worker and Consumer job have independent Shared-ready-to-record-lock implementations. Session records the original worker outcome and preserves the final-retirement handle/observed predicates. Consumer additionally removes the exact Arc from its registry and increments joined only once. A test of one implementation does not cover the other's recording/counter path."
+  },
+  "static_preservation": {
+    "file_count": 7,
+    "op_count": 7,
+    "modified_product_bodies": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "only_cfg_test_module_declaration_change": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "only_cfg_test_module_declaration_change": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "only_cfg_test_module_declaration_change": true
+      }
+    ],
+    "fixture_bodies": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "identical": true,
+        "preserved_suffix_bytes": 9007
+      }
+    ],
+    "original_tests": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+        "preserved_suffix": true,
+        "test_count": 5
+      }
+    ],
+    "new_tests": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+        "count": 1,
+        "names": [
+          "ready_consumer_join_survives_cancelled_recording_waiter_and_counts_once"
+        ],
+        "no_clock_sleep": true,
+        "manual_state_assignment": false,
+        "long_lines": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+        "count": 1,
+        "names": [
+          "ready_session_worker_join_survives_cancelled_recording_waiter"
+        ],
+        "no_clock_sleep": true,
+        "manual_state_assignment": false,
+        "long_lines": []
+      }
+    ],
+    "module_edges": [
+      {
+        "parent": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "module": "lifecycle_support_tests",
+        "cfg": "test",
+        "child": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "visibility": "private module; existing pub(super) fixture items now accessible only within root_authority_session"
+      },
+      {
+        "parent": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "module": "recording_tests",
+        "cfg": "test",
+        "child": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+        "visibility": "private"
+      },
+      {
+        "parent": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "module": "recording_tests",
+        "cfg": "test",
+        "child": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+        "visibility": "private"
+      },
+      {
+        "parent": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+        "module": "support",
+        "kind": "private use alias",
+        "target": "crate::root_authority_session::lifecycle_support_tests",
+        "prior": "old path module nested under tests::lifecycle_custody"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+      "name": "ready_consumer_join_survives_cancelled_recording_waiter_and_counts_once",
+      "construction": "OriginalConsumerJobs actual reserve/retain path owns a real spawn_blocking JoinHandle. The task owns a real UnixStream endpoint, waits on a controlled channel, and returns the original Refused error.",
+      "cut": "Three actual receive_original_consumer futures are polled while the task is blocked. A clone of their same original Shared is awaited to Ready, and real FD EOF is checked. The private job recording lock is then held while all three callers are polled to Pending at their second lock attempt. One waiter is dropped in that state.",
+      "continuation": "The other two actual futures are awaited together after lock release. Both return the original Refused; the stored terminal remains that original result, the retained Arc is removed once, registered/joined stays 1/1, and repeated receipt cannot increment again.",
+      "no_synthetic_completion": "No manually constructed Shared/result cell, no manual observed or counter writes, no Completion/RootIntent/receipt fixture."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+      "name": "ready_session_worker_join_survives_cancelled_recording_waiter",
+      "construction": "Uses the existing same-UID/synthetic-proof phase_connection to create the real phase Session, external custody and worker. Actual Session Drop drives retirement and actual worker abort. No session_retired write is added by the test.",
+      "cut": "On the current-thread runtime, three real stop_and_join_retired_session_tasks futures are synchronously polled before the scheduled worker abort can complete. The same retained Shared is then awaited to its actual Cancelled result. The private worker record lock is held while all three callers reach their second lock and one waiter is dropped.",
+      "continuation": "The remaining actual callers complete together after lock release and return the same original observation. The registry changes only through product code to handle=None and observed=Some(actual Cancelled); repeated cleanup retains the same result. The actual fixture peer thread is joined.",
+      "no_synthetic_completion": "No fabricated custody, worker outcome, C/RootIntent token, business actor or physical Root-exit claim. This observes fault retirement only."
+    }
+  ],
+  "lock_and_wait_rules": [
+    "All manually held Tokio/std mutex guards are scoped in synchronous lexical blocks. There is no .await while a test holds a recording guard.",
+    "The delayed point is selected through existing private locks, not a production hook, sleep, hard real-time assertion or altered deadline.",
+    "The original Shared is awaited via a clone while each target waiter is not separately spawned; the target waiters cannot race past the record cut without an explicit test poll.",
+    "Five-second component wait bounds and the existing ten-second component phase fixture bound do not change any production timeout or Root17 threshold."
+  ],
+  "metadata_impact": {
+    "existing_boundary_definitions_and_callers_unchanged": true,
+    "existing_protected_function_struct_and_drop_spans_unchanged": true,
+    "related_protected_origins": [
+      "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:504",
+      "0f0cc13187dd3f9a09f78ef9ce33f52009c96678#protected_file:506"
+    ],
+    "inherited_product_guard_recollection": "Root/runtime continue the 6a316 semantic guard updates; this packet adds no product guard rewrite or new authority boundary.",
+    "test_inventory": "Add these two explicit cfg(test) files to source/test inventory. Existing seven-package qualification and 17 expected Root parents are unchanged.",
+    "callers_toml_modified": false,
+    "original_checker_modified": false
+  },
+  "validation": {
+    "pure_v8_static_only": true,
+    "git_create_get_exact": true,
+    "exact_forward_reverse": true,
+    "new_tests": 2,
+    "new_tests_run": 0,
+    "compiler_executed": false,
+    "formatter_executed": false,
+    "original_checker_executed": false,
+    "no_h": true,
+    "no_pty": true,
+    "no_native": true,
+    "no_ref_mutation": true,
+    "next_gate": "Must be included in a later actual maintenance and original qualification run. The parent reported no v10 session ACK/result at this packet's freeze; no result is inferred."
+  },
+  "acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "qualification_claim": false
+  }
+}

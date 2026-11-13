@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "kind": "strict_binding_design_for_additional_test_gates",
+  "status": "proposal_not_launchable_unbound_source",
+  "author": "hepta_audit",
+  "scope": "Additional targeted four-crate, complete four-crate and Core-triggered complete workspace gates. This is separate from the original seven-package / Root17 qualification; no original harness source or parameters are changed.",
+  "source_plan": "2184502d3759dd655840b987bb7c980863eadc89",
+  "original_harness": {
+    "blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 50167,
+    "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+    "mutation": false,
+    "execution_by_this_additional_runner": false
+  },
+  "operator_config": {
+    "blob": "d9866416acc15c77ee91033deae01d714b2d04ec",
+    "bytes": 3524,
+    "sha256": "b5897d001f17ad7226d3ff29812e94634c4cf8b81171d4869551782b48fbd1ef",
+    "reuse": "Only the exact existing operator paths/cache/toolchain environment. Root target/packages/parents, sudo, mount, chown and credential repair are excluded."
+  },
+  "supervisor_source": {
+    "blob": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+    "bytes": 18684,
+    "sha256": "51700c6c620252280a279526b53ff7e9a07b52ca2d6cdbab7ed9114ce64e89a3"
+  },
+  "commands": [
+    {
+      "id": "targeted-core",
+      "stage": "targeted",
+      "package": "codex-core",
+      "args": [
+        "-p",
+        "codex-core",
+        "--lib",
+        "-E",
+        "test(session::original_shutdown::tests::) | test(thread_manager::original_shutdown::tests::) | test(codex_delegate::tests::) | test(thread_manager::tests::shutdown_all_threads_bounded_submits_shutdown_to_every_thread) | test(thread_manager::tests::cancelled_unclaimed_new_startup_removes_runtime_and_materialized_store)"
+      ],
+      "required_families": [
+        "session::original_shutdown::tests::",
+        "thread_manager::original_shutdown::tests::",
+        "codex_delegate::tests::"
+      ],
+      "required_exact_tests": [
+        "thread_manager::tests::shutdown_all_threads_bounded_submits_shutdown_to_every_thread",
+        "thread_manager::tests::cancelled_unclaimed_new_startup_removes_runtime_and_materialized_store"
+      ],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-core",
+        "--lib",
+        "-E",
+        "test(session::original_shutdown::tests::) | test(thread_manager::original_shutdown::tests::) | test(codex_delegate::tests::) | test(thread_manager::tests::shutdown_all_threads_bounded_submits_shutdown_to_every_thread) | test(thread_manager::tests::cancelled_unclaimed_new_startup_removes_runtime_and_materialized_store)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "targeted-app-server",
+      "stage": "targeted",
+      "package": "codex-app-server",
+      "args": [
+        "-p",
+        "codex-app-server",
+        "--lib",
+        "-E",
+        "test(original_owned_shutdown::tests::) | test(request_serialization::tests::) | test(configured_mcp_runtime::tests::) | test(models_refresh_worker::tests::) | test(turn_cost_worker::tests::)"
+      ],
+      "required_families": [
+        "original_owned_shutdown::tests::",
+        "request_serialization::tests::",
+        "configured_mcp_runtime::tests::",
+        "models_refresh_worker::tests::",
+        "turn_cost_worker::tests::"
+      ],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-app-server",
+        "--lib",
+        "-E",
+        "test(original_owned_shutdown::tests::) | test(request_serialization::tests::) | test(configured_mcp_runtime::tests::) | test(models_refresh_worker::tests::) | test(turn_cost_worker::tests::)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "targeted-rmcp-client",
+      "stage": "targeted",
+      "package": "codex-rmcp-client",
+      "args": [
+        "-p",
+        "codex-rmcp-client",
+        "--lib",
+        "-E",
+        "test(stdio_server_launcher::owned_shutdown::tests::)"
+      ],
+      "required_families": [
+        "stdio_server_launcher::owned_shutdown::tests::"
+      ],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-rmcp-client",
+        "--lib",
+        "-E",
+        "test(stdio_server_launcher::owned_shutdown::tests::)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "targeted-mcp",
+      "stage": "targeted",
+      "package": "codex-mcp",
+      "args": [
+        "-p",
+        "codex-mcp",
+        "--lib",
+        "-E",
+        "test(connection_manager::tests::shutdown_) | test(connection_manager::tests::cancelling_startup_does_not_disable_a_ready_client) | test(runtime::tests::) | test(rmcp_client::tests::)"
+      ],
+      "required_families": [
+        "connection_manager::tests::shutdown_",
+        "runtime::tests::",
+        "rmcp_client::tests::"
+      ],
+      "required_exact_tests": [
+        "connection_manager::tests::cancelling_startup_does_not_disable_a_ready_client"
+      ],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-mcp",
+        "--lib",
+        "-E",
+        "test(connection_manager::tests::shutdown_) | test(connection_manager::tests::cancelling_startup_does_not_disable_a_ready_client) | test(runtime::tests::) | test(rmcp_client::tests::)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "full-codex-core",
+      "stage": "full-crate",
+      "package": "codex-core",
+      "args": [
+        "-p",
+        "codex-core"
+      ],
+      "required_families": [],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-core",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "full-codex-app-server",
+      "stage": "full-crate",
+      "package": "codex-app-server",
+      "args": [
+        "-p",
+        "codex-app-server"
+      ],
+      "required_families": [],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-app-server",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "full-codex-rmcp-client",
+      "stage": "full-crate",
+      "package": "codex-rmcp-client",
+      "args": [
+        "-p",
+        "codex-rmcp-client"
+      ],
+      "required_families": [],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-rmcp-client",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "full-codex-mcp",
+      "stage": "full-crate",
+      "package": "codex-mcp",
+      "args": [
+        "-p",
+        "codex-mcp"
+      ],
+      "required_families": [],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-mcp",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    },
+    {
+      "id": "full-workspace",
+      "stage": "full-workspace",
+      "package": null,
+      "args": [],
+      "required_families": [],
+      "required_exact_tests": [],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ]
+    }
+  ],
+  "order_and_failure": {
+    "order": [
+      "four targeted commands in listed order",
+      "four complete crate commands in listed order",
+      "one complete workspace command"
+    ],
+    "between_stages": "Advance to a broader stage only when every command in the preceding stage passed its actual execution, fresh JUnit collection, expected targeted-family coverage, and same clean source checks.",
+    "within_stage": "Run each command once; preserve each ordinary nonzero failure and collect its fresh report if completion is known. Other commands in the same stage may still run only with known completion, unchanged source and remaining fixed budget. Timeout, interruption, output instability, unknown completion or source/tool drift stops all further commands immediately.",
+    "retries": 0,
+    "no_retry_implementation": true,
+    "no_failed_suite_exemption": true,
+    "no_predecessor_pass_reuse": true,
+    "successful_gate_requires": "All nine command IDs actually executed once and passed; not-run, empty selection, missing/mismatched JUnit, build failure or unknown state makes the complete additional gate fail.",
+    "workspace": "Exact final command contains no package, filterset, --lib, --test, feature expansion or run-ignored override. It is independently required by the Core instruction and does not replace original seven/Root17."
+  },
+  "source_binding": {
+    "policy": "Root must patch a literal EXPECTED binding object in the runner and the config to the same exact final head/tree/manifest/count/fresh work identity. The runner must compare full config equality, exact permitted keys and embedded command table; a caller cannot substitute an arbitrary source or command via argv.",
+    "placeholders": "Any UNBOUND value or binding_state other than the frozen bound literal is rejected before mkdir, clone, Git read, process launch or source dispatch.",
+    "git": "After operator-only isolated clone/fetch/check-out, independently bind the raw commit object and its tree, require clean status, no skip/assume-unchanged/unmerged entries, verify full physical source snapshot plus every manifest path/blob, and verify pinned runner/tool/config/checker source bytes.",
+    "source_scope": "No source edits, formatter/fix, helper/checker mutation, Git add/commit/push, ref update or original qualification invocation.",
+    "references": "Read-only donor identity head/tree/status checked before and after; no mutation or cleanup in donor, no cache permission repairs and no destructive removal of unrelated work.",
+    "artifact_names": "Every one of the nine IDs has unique exclusive log, execution, JUnit, summary, count and binding files in the freshly owned records directory."
+  },
+  "budget": {
+    "single_absolute_end": "START=time.monotonic(); DEADLINE=START+27000 (or a smaller exact frozen value). Never reset or extend it.",
+    "evidence_reserve_seconds": 120,
+    "required_narrow_supervisor_delta": "For work, remaining(maximum) subtracts the fixed 120-second evidence reserve from the same DEADLINE. Final read-only evidence uses EVIDENCE_DEADLINE=DEADLINE, never time.monotonic()+120. No second overall budget is created.",
+    "command_budget": "Every dispatch is bounded by the remaining original absolute budget. Original nextest per-test slow-timeout/profile overrides remain untouched.",
+    "timeout": "Keep v5 kill-owned-created-PGID-before-leader-reap, Popen-unknown and BaseException fail-closed behavior. Any timeout is fatal/completion_unknown even if a direct leader is subsequently reaped; do not launch more tests or a JUnit collector after unknown completion.",
+    "limitation": "Owned-PGID cleanup does not claim the physical termination of unrelated or escaped sessions. A local gate record is not daemon/Root/business completion proof."
+  },
+  "supervision_and_records": {
+    "reuse": "Keep the exact reviewed v5 direct-command and bounded Git-read functions. Directly supervise just test; do not wrap it in the original hepta_ci_exec subprocess, which creates a separate process session and would change the outer supervisor's owned PGID.",
+    "log": "Direct combined stdout/stderr stays in each command's exclusive original raw log. Preserve actual command exit, elapsed time, started/finished aware timestamps, PGID/leader facts, timeout/unknown state and complete bytes/hash. Recheck retained original logs before final successful certification; changed/incomplete evidence refuses.",
+    "record_adapter": "Construct a clearly labeled additional-gate execution record from this supervisor's actual observations, using the fields required by the unchanged collector: schema_version=1, exact SOURCE_SHA/TESTED_SHA, lane source-head, fixed command, before/after equal clean commit/tree, actual exit, timeout/output-limit flags, started/finished, log bytes/hash and terminal count parser. Do not label it as output from the original hepta_ci_exec.",
+    "parser": {
+      "origin": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "name": "observed_test_counts",
+      "bytes": 1604,
+      "sha256": "93fc49efa13f2d83d70f8966722367a67ea0542505e9c54ecbd8fb6603f7d84b",
+      "reuse": "exact bytes; no substitution of compile output for test counts"
+    },
+    "junit_collector": {
+      "path": "scripts/hepta_ci_junit.py",
+      "blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "reuse": "Original file unchanged; invoke with actual new execution record and fresh report, after known process completion."
+    },
+    "fresh_junit": "Use the same exact local-profile native report path as 096b: SOURCE/codex-rs/target/nextest/local/junit.xml. Before every command, retain any prior report under that command's prior-junit-excluded name, verify report absent (including no dangling symlink), and do not fallback to another profile or old report. After known completion, bind its stable actual file identity/device/inode/mtime/ctime/size plus raw hash/bytes, copy exactly once, and use the original collector's execution interval/count checks.",
+    "report_failure": "Keep native and retained XML, raw stdout and execution records even when exit or test cases fail. Missing/empty/freshness/count mismatch refuses the suite. Nonzero collection and retained-failed status are real failures, never passed.",
+    "target_coverage": "Record full actual test names/statuses/counts from each fresh XML. Each targeted filter's required module family and exact source-derived test must be observed executing; broad compatibility matches cannot mask a missing newly owned family. Existing ignored/platform/environment skip behavior is unchanged and disclosed.",
+    "no_root_evidence": "No UID0 proof, Root-only fixture preparation, chmod/chown/mount/sudo, Root report transfer or Root business result is generated."
+  },
+  "prerequisites": {
+    "tools": {
+      "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "just_shell": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "run_nextest": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "nextest_config": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "toolchain": "917d2492264a35bc9c0feaef41878d8825870866",
+      "collector": "683626df091bdfe160a8965fdc92bf40f5783cf8"
+    },
+    "installed": "Use existing just/Python3/Cargo/cargo-nextest and Rust 1.96.0 through the exact d986 operator paths. Record actual executable hashes/versions before and after; do not install, update or repair.",
+    "target_cache": "Reuse only the d986 operator target, under Root's scheduling that no other maintenance/test command is concurrently writing that cache. No root_target access and no killing unrelated processes.",
+    "platform": "Linux is required for the new stdio real process/FD components; use actual /bin/sh, sleep and Unix sockets. Existing integration tests need loopback/mock servers and local subprocess support.",
+    "same_source_binary_dependencies": "The fixed plan identifies cross-package test helpers such as codex/exec-server/test_stdio_server/MCP2026 helpers, sandbox/execve wrappers, code-mode-host and hepta-joint-propose. The runner must not infer them from stale target contents or inject arbitrary inherited CARGO_BIN_EXE/NEXTEST_BIN_EXE paths. Root must bind current-source helper preparation/manifest evidence or permit only an explicit current-source existing helper recipe inside this same budget; missing dependencies remain an actual failed/incomplete gate, not skipped coverage.",
+    "ignored_and_features": "Keep local profile and original skip/ignored/default feature behavior. Only explicit --retries 0 overrides inherited retry=1. No --all-features, no run-ignored all, no source fixture mutation."
+  },
+  "pending_root_binding_only": [
+    "Final reviewed clean source head/tree and manifest path/blob/exact file count after all 202-plus changes and maintenance; no current source is claimed here.",
+    "Fresh bounded work_name/attempt and actual read-only donor head/tree/status with exact equality constants.",
+    "Final source tool pins must match the fixed helpers above or receive an explicit source change review.",
+    "Actual current-source required fixture binary manifests and any narrowly selected existing dependency-preparation recipe; no prebuilt artifact is accepted solely because it exists in the cache.",
+    "Exact script/config/request Git pins and peer review before the only launch, under Root's execution ownership."
+  ],
+  "implementation_size_policy": "A dedicated small runner composed from the listed exact supervisor helpers, the original source snapshot/count/collector logic, one fixed nine-command table and one operator-only test_suite adapter. No configurable generic command engine, arbitrary shell, general scheduler, retry layer, new process authority or environment repair.",
+  "execution": {
+    "proposal_only": true,
+    "h": 0,
+    "native": 0,
+    "cargo": 0,
+    "tests": 0,
+    "refs": 0
+  }
+}

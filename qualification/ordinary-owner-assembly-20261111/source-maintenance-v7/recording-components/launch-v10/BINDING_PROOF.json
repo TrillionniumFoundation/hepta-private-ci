@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "kind": "v10_exact_binding_of_unchanged_v5_maintenance_supervisor",
+  "template": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+  "template_sha256": "51700c6c620252280a279526b53ff7e9a07b52ca2d6cdbab7ed9114ce64e89a3",
+  "candidate": {
+    "head": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "tree": "d83c3cfc71304aa9e6381045efc96446eaf1a32b",
+    "parent": "c4c3bb3fde98bb300389ec99a12debf5622ba4d1",
+    "manifest": "378cde8a6caa50aebb8992128cd250e437844537",
+    "files": 202,
+    "source_changes": 19,
+    "qualification_changes": 21,
+    "tree_proof": "48b535bde73fe7d7202a92c14c9ffd71dcb78ffd",
+    "branch": "codex/ordinary-owner-maintenance-v7-20261112-af52",
+    "pr_source_unchanged": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "staging_unchanged": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "maintenance_status": "not_run",
+    "business_counts": [
+      0,
+      0,
+      0
+    ]
+  },
+  "operations": [
+    {
+      "old": "assert C[\"head\"]==\"7434600f61293543f11b3ccd2e2c7102e32b3f3c\"",
+      "new": "assert C[\"head\"]==\"ac0037168295c898d8b2572d2274f4328dd08aef\""
+    },
+    {
+      "old": "assert C[\"tree\"]==\"d0a887edbd797583b2ba3d08cd1bb66ea4ae324d\"",
+      "new": "assert C[\"tree\"]==\"d83c3cfc71304aa9e6381045efc96446eaf1a32b\""
+    },
+    {
+      "old": "assert C[\"source_manifest_blob\"]==\"b2227120620c86ce7634e97a7b11dd74ab313489\"",
+      "new": "assert C[\"source_manifest_blob\"]==\"378cde8a6caa50aebb8992128cd250e437844537\""
+    },
+    {
+      "old": "assert str(WORK)==\"/home/qq/af52-learning-local-decision-20261111/ordinary-future-197-maintenance-v7\"",
+      "new": "assert str(WORK)==\"/home/qq/af52-learning-local-decision-20261111/ordinary-future-202-maintenance-v10\""
+    },
+    {
+      "old": "len(original[\"files\"])==197",
+      "new": "len(original[\"files\"])==202"
+    }
+  ],
+  "unique_forward_reverse": true,
+  "config_pre": "3103956cf1432ac4e616fd3d1f05d90ec3d7bc94",
+  "config_changed_keys": [
+    "head",
+    "source_manifest_blob",
+    "tree",
+    "work_name"
+  ],
+  "pins": {
+    "script": {
+      "blob": "48eaf85b81dcabae3a8b7088b1c801ecbcb87b60",
+      "bytes": 18685,
+      "sha256": "d5e7536b25766c38638f3ce0a57996305a526d7e87bc8302db4809f87f74216a"
+    },
+    "config": {
+      "blob": "d80fca778ceaa5df576dddb372eed8257724034a",
+      "bytes": 1469,
+      "sha256": "8adef5acf1d2143677d9247374ac043c2f4ca7761c41a93843bfe3665f1118d3"
+    },
+    "request": {
+      "blob": "7d7c61dedd9af500b25b470435a83fe333dc50a4",
+      "bytes": 21729,
+      "sha256": "e41c2a82b12ff3b9ebc008dfe0c9ee156f2bc3950f18139db248e871b1398c97"
+    }
+  },
+  "original_qualification_harness_unchanged": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "status": "not_yet_launched",
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

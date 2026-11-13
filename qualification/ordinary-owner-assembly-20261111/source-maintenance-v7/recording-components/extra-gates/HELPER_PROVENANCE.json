@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "kind": "exact_helper_provenance_for_additional_gate_proposal",
+  "supervisor_helpers": [
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "supervisor_interrupt",
+      "bytes": 180,
+      "sha256": "55f5928074c324d502666c5e401dd8e4bba00a5e8f70cf0f8f4cab6dc0f3af1c",
+      "source": "def supervisor_interrupt(signum,frame):\n    R[\"external_interruption_signal\"]=signum\n    raise InterruptedError(\"source maintenance supervisor interrupted by signal \"+str(signum))\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "sha",
+      "bytes": 55,
+      "sha256": "a8b57be447894f6c5e977a8fd97eb55870b73b5e8e2202552ed7dda44471ae4b",
+      "source": "def sha(data): return hashlib.sha256(data).hexdigest()\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "blob",
+      "bytes": 93,
+      "sha256": "ae4039ffca0a93c079522b4a7d40246279edc18124c37b77fc3c6901edec5e17",
+      "source": "def blob(data): return hashlib.sha1(b\"blob \"+str(len(data)).encode()+b\"\\0\"+data).hexdigest()\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "read_bytes",
+      "bytes": 473,
+      "sha256": "699951df7034b667a3bb777c03dfca501a3ddbf98a02857bdd91c4a254b99a78",
+      "source": "def read_bytes(path):\n    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)\n    try:\n        a=os.fstat(fd)\n        assert stat.S_ISREG(a.st_mode),\"regular file required\"\n        with os.fdopen(fd,\"rb\",closefd=False) as f: data=f.read()\n        b=os.fstat(fd)\n        ident=lambda x:(x.st_dev,x.st_ino,x.st_mode,x.st_size,x.st_mtime_ns,x.st_ctime_ns)\n        assert ident(a)==ident(b) and len(data)==a.st_size,\"changed original file\"\n        return data\n    finally: os.close(fd)\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "save",
+      "bytes": 340,
+      "sha256": "202d5fe7679017e80bf89aa51e5898a0f29715ea982fc5971a4451cec0c7018f",
+      "source": "def save(name,value):\n    raw=(json.dumps(value,indent=2,sort_keys=True)+\"\\n\").encode()\n    tmp=RECORDS/(name+\".tmp\"); destination=RECORDS/name\n    with open(tmp,\"wb\") as f: f.write(raw);f.flush();os.fsync(f.fileno())\n    tmp.replace(destination)\n    return {\"path\":str(destination),\"bytes\":len(raw),\"sha256\":sha(raw),\"git_blob\":blob(raw)}\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "progress",
+      "bytes": 175,
+      "sha256": "017543d62427d52f561e64b0b1f2d62206bd60000cc461945aa93382eb8f6e5a",
+      "source": "def progress(stage):\n    R[\"stage\"]=stage;save(\"progress.json\",R)\n    print(json.dumps({\"stage\":stage,\"status\":R[\"status\"],\"records\":str(RECORDS)},sort_keys=True),flush=True)\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "kill_owned_group_before_reap",
+      "bytes": 372,
+      "sha256": "6f5b2446a9ee6897df79d9e5f67bd2c6794ec90cbf2f2561156b83a6e9e807a0",
+      "source": "def kill_owned_group_before_reap(p):\n    # The exact session/group was just created by us. Kill before reaping its leader.\n    # A timeout remains fatal and completion-unknown; this does not certify every descendant's exit.\n    try: os.killpg(p.pid,signal.SIGKILL)\n    except ProcessLookupError: pass\n    try: p.wait(timeout=10)\n    except subprocess.TimeoutExpired: pass\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "command",
+      "bytes": 2499,
+      "sha256": "f69248bccc311aa4be56a27ea1542e09405bb2137615b7697d114a525d1ca461",
+      "source": "def command(label,args,timeout,cwd=None,required=True):\n    if FINALIZING: raise RuntimeError(\"new work is forbidden during evidence cleanup\")\n    start=time.monotonic(); log=RECORDS/(label+\".log\")\n    progress(label);budget=remaining(timeout)\n    with open(log,\"xb\") as output:\n        try: p=subprocess.Popen(args,cwd=cwd or SOURCE,env=env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)\n        except BaseException as error:\n            R[\"completion_unknown\"]=True\n            R.setdefault(\"child_creation_unknown\",[]).append({\"label\":label,\"command\":args,\"error_type\":type(error).__name__,\"error\":str(error)})\n            save(\"progress.json\",R)\n            raise\n        timeout_hit=False\n        try: code=p.wait(timeout=budget)\n        except subprocess.TimeoutExpired:\n            timeout_hit=True;R[\"completion_unknown\"]=True\n            R.setdefault(\"timed_out_commands\",[]).append(label)\n            kill_owned_group_before_reap(p);code=p.returncode\n        except BaseException as error:\n            R[\"completion_unknown\"]=True\n            aborted={\"label\":label,\"command\":args,\"cwd\":str(cwd or SOURCE),\"log_path\":str(log),\"error_type\":type(error).__name__,\"error\":str(error),\"leader_returncode\":p.returncode}\n            if p.returncode is None:\n                kill_owned_group_before_reap(p)\n                aborted[\"owned_group_kill_requested_before_reap\"]=True\n            else:\n                aborted[\"group_cleanup_not_attempted_after_leader_reap\"]=True\n            R.setdefault(\"aborted_commands\",[]).append(aborted)\n            save(label+\".aborted.json\",aborted);save(\"progress.json\",R)\n            raise\n    step={\"label\":label,\"command\":args,\"cwd\":str(cwd or SOURCE),\"exit_code\":code,\"timed_out\":timeout_hit,\"elapsed_seconds\":time.monotonic()-start,\"log_path\":str(log),\"log_may_be_incomplete\":timeout_hit}\n    R[\"steps\"].append(step);save(label+\".execution.json\",step);save(\"progress.json\",R)\n    data=read_bytes(log)\n    step[\"log\"]={\"path\":str(log),\"bytes\":len(data),\"sha256\":sha(data),\"git_blob\":blob(data)}\n    save(label+\".execution.json\",step);save(\"progress.json\",R)\n    print(json.dumps({\"completed\":label,\"exit_code\":code,\"timed_out\":timeout_hit,\"log_bytes\":len(data)},sort_keys=True),flush=True)\n    if timeout_hit: raise TimeoutError(\"owned command timed out; no subsequent work/capture/publication may assume completion: \"+label)\n    if required and code!=0: raise RuntimeError(\"source maintenance command failed: \"+label)\n    return code,data\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "retain_git_read_failure",
+      "bytes": 1100,
+      "sha256": "99153c87acc6660aa04e6cfc3c7c39c8235ceb501f29ef3d5e776029eb6fd540",
+      "source": "def retain_git_read_failure(argv,directory,kind,output,error,returncode=None):\n    number=R.get(\"git_read_failure_counter\",0);R[\"git_read_failure_counter\"]=number+1\n    item={\"command\":argv,\"cwd\":str(directory),\"kind\":kind,\"returncode\":returncode,\"during_evidence_cleanup\":FINALIZING}\n    for stream_name,data in [(\"stdout\",output),(\"stderr\",error)]:\n        if data is None:\n            item[stream_name]={\"captured\":False,\"reason\":\"no bytes supplied by the original operation\"}\n            continue\n        if not isinstance(data,bytes):\n            item[stream_name]={\"captured\":False,\"reason\":\"unexpected non-byte operation result\",\"type\":type(data).__name__}\n            continue\n        path=RECORDS/(\"git-read-failure-%03d.%s.bin\"%(number,stream_name))\n        with open(path,\"xb\") as f: f.write(data);f.flush();os.fsync(f.fileno())\n        item[stream_name]={\"captured\":True,\"path\":str(path),\"bytes\":len(data),\"sha256\":sha(data),\"git_blob\":blob(data)}\n    pin=save(\"git-read-failure-%03d.json\"%number,item)\n    R.setdefault(\"git_read_failure_evidence\",[]).append(pin);save(\"progress.json\",R)\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "git_read",
+      "bytes": 2107,
+      "sha256": "c1edbbbb566594bb67ced0ed4ebe2ff26bdc5e7420bf8e5e52949bcf73a19c39",
+      "source": "def git_read(*args,cwd=None):\n    if FINALIZING:\n        budget=min(30,EVIDENCE_DEADLINE-time.monotonic())\n        if budget<=0: raise TimeoutError(\"separate evidence cleanup budget exhausted\")\n    else: budget=remaining(120)\n    argv=[\"git\",\"--no-optional-locks\",*args]\n    try: p=subprocess.Popen(argv,cwd=cwd or SOURCE,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)\n    except BaseException as error:\n        R[\"completion_unknown\"]=True\n        R.setdefault(\"child_creation_unknown\",[]).append({\"command\":argv,\"cwd\":str(cwd or SOURCE),\"error_type\":type(error).__name__,\"error\":str(error),\"during_evidence_cleanup\":FINALIZING})\n        save(\"progress.json\",R)\n        raise\n    try: output,error=p.communicate(timeout=budget)\n    except subprocess.TimeoutExpired as exc:\n        R[\"completion_unknown\"]=True\n        R.setdefault(\"timed_out_reads\",[]).append({\"command\":argv,\"cwd\":str(cwd or SOURCE),\"during_evidence_cleanup\":FINALIZING})\n        if p.returncode is None: kill_owned_group_before_reap(p)\n        else: R.setdefault(\"reaped_group_cleanup_unknown\",[]).append({\"command\":argv,\"pid\":p.pid})\n        if p.stdout is not None: p.stdout.close()\n        if p.stderr is not None: p.stderr.close()\n        retain_git_read_failure(argv,cwd or SOURCE,\"timeout\",exc.output,exc.stderr,p.returncode)\n        raise TimeoutError(\"bounded owned Git read timed out\") from exc\n    except BaseException as exc:\n        R[\"completion_unknown\"]=True\n        if p.returncode is None: kill_owned_group_before_reap(p)\n        else: R.setdefault(\"reaped_group_cleanup_unknown\",[]).append({\"command\":argv,\"pid\":p.pid})\n        if p.stdout is not None: p.stdout.close()\n        if p.stderr is not None: p.stderr.close()\n        retain_git_read_failure(argv,cwd or SOURCE,\"aborted\",getattr(exc,\"output\",None),getattr(exc,\"stderr\",None),p.returncode)\n        raise\n    if p.returncode!=0:\n        retain_git_read_failure(argv,cwd or SOURCE,\"nonzero-exit\",output,error,p.returncode)\n        raise subprocess.CalledProcessError(p.returncode,argv,output=output,stderr=error)\n    return output\n",
+      "policy": "reuse exact bytes"
+    },
+    {
+      "origin": "447e5720c40d069d549e32ab00e886f2ab0ffb0c",
+      "name": "identity",
+      "bytes": 244,
+      "sha256": "b1ac852cc604bf468bcf72bdb6a30cc7a80564500da2fbe686259d252496710c",
+      "source": "def identity(directory):\n    return {\"head\":git_read(\"rev-parse\",\"HEAD\",cwd=directory).decode().strip(),\"tree\":git_read(\"rev-parse\",\"HEAD^{tree}\",cwd=directory).decode().strip(),\"status\":git_read(\"status\",\"--porcelain\",cwd=directory).decode()}\n",
+      "policy": "reuse exact bytes"
+    }
+  ],
+  "original_test_suite": {
+    "origin": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 3562,
+    "sha256": "c306f2671c2b37376b81303d4ac01d7ce70acfeedb70a953c4d19e506cb91ef5",
+    "source": "def test_suite(name, arguments, root=False, root_env=None):\n    report = SOURCE / \"codex-rs/target/nextest/local/junit.xml\"\n    if report.exists():\n        report.rename(RECORDS / (name + \".prior-junit-excluded.xml\"))\n    if report.exists():\n        raise RuntimeError(\"old JUnit was not excluded\")\n    command = [\"just\", \"test\", \"--locked\", \"--offline\", *arguments,\n               \"--retries\", \"0\", \"--success-output\", \"final\", \"--failure-output\", \"final\"]\n    error = None\n    observed = None\n    try:\n        observed = recorded(name, command, timeout=7200, minimum=17 if root else 1,\n                            root=root, root_env=root_env, check=False)\n    except BaseException as exc:\n        error = exc\n    finally:\n        if root:\n            try:\n                if result.get(\"completion_unknown\"):\n                    raise RuntimeError(\"preserve live/unknown Root records without chown\")\n                restore_record_ownership(name + \"-record-ownership\")\n            except BaseException as exc:\n                result[\"errors\"].append(\"Root evidence ownership: \" + repr(exc))\n                if error is None:\n                    error = exc\n    if result.get(\"completion_unknown\"):\n        # Preserve the recorder and live report in place for reconciliation.\n        # Do not launch even the collector while the original may still write.\n        raise RuntimeError(\"unknown original completion; JUnit collection and follow-up stopped\")\n    collection = raw(name + \"-junit\", [\n        \"python3\", \"scripts/hepta_ci_junit.py\", \"--execution\",\n        str(RECORDS / (name + \".execution.json\")), \"--junit\", str(report),\n        \"--output\", str(RECORDS / (name + \".junit.xml\")),\n    ], SOURCE, timeout=120, check=False)\n    summary_path = RECORDS / (name + \".junit.summary.json\")\n    if summary_path.exists():\n        summary = json.loads(summary_path.read_text())\n        save(name + \".collection-binding.json\", {\n            \"summary\": file_digest(summary_path),\n            \"native_junit\": file_digest(report) if report.is_file() else None,\n            \"collector_command_exit\": collection[\"exit_code\"],\n        })\n    else:\n        summary = {}\n    if collection[\"exit_code\"] != 0 or summary.get(\"status\") != \"passed\":\n        result[\"errors\"].append(name + \" original JUnit collection failed\")\n    retained = RECORDS / (name + \".junit.xml\")\n    if retained.is_file():\n        parsed = ET.parse(retained).getroot()\n        cases = list(parsed.iter(\"testcase\"))\n        executed = [c for c in cases if c.find(\"skipped\") is None]\n        names = [c.attrib[\"name\"] for c in executed]\n        failed = sum(c.find(\"failure\") is not None for c in cases)\n        errors = sum(c.find(\"error\") is not None for c in cases)\n        counts = {\"total\": len(cases), \"executed\": len(executed),\n                  \"passed\": len(executed)-failed-errors, \"failed\": failed, \"errors\": errors,\n                  \"skipped\": len(cases)-len(executed)}\n        save(name + \".counts.json\", counts)\n        result[name + \"_counts\"] = counts\n        if root:\n            save(\"root-parent-coverage.json\", {\"expected\": PARENTS, \"observed\": names})\n            if sorted(names) != sorted(PARENTS) or len(names) != 17:\n                result[\"errors\"].append(\"Root executed roster differs from exact seventeen parents\")\n    else:\n        result[\"errors\"].append(name + \" lacks retained native JUnit\")\n    if observed is None or not observed[1]:\n        result[\"errors\"].append(name + \" original test execution failed\")\n    if error is not None:\n        raise error\n    clean()\n\n",
+    "adaptation": "Operator-only adapter still to be emitted and peer-reviewed. Remove only Root dispatch/ownership/roster branches; preserve fresh report and count binding. No claim that the adapter already equals this source."
+  },
+  "physical_source_snapshot": {
+    "origin": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "name": "snapshot",
+    "bytes": 2620,
+    "sha256": "5abf38bf27da1278ca1cda124acb3e3c2ff3fe35a25ae20f88bf1b71461d7313",
+    "source": "def snapshot(label):\n    observed = clean()\n    flags = git(\"ls-files\", \"-v\", \"-z\").split(b\"\\0\")\n    if any(value and not value.startswith(b\"H \") for value in flags):\n        raise RuntimeError(\"source has skip/assume-unchanged/unmerged index entries\")\n    if git(\"ls-files\", \"--others\", \"--exclude-standard\", \"-z\"):\n        raise RuntimeError(\"unexpected untracked source\")\n    rows = []\n    for entry in git(\"ls-tree\", \"-r\", \"-z\", \"HEAD\").split(b\"\\0\"):\n        if not entry:\n            continue\n        header, rawpath = entry.split(b\"\\t\", 1)\n        mode, kind, blob = header.decode().split(\" \")\n        path = SOURCE / os.fsdecode(rawpath)\n        if kind != \"blob\":\n            raise RuntimeError(\"unsupported source entry: \" + os.fsdecode(rawpath))\n        header_sha = hashlib.sha1()\n        sha = hashlib.sha256()\n        if mode == \"120000\":\n            if not path.is_symlink():\n                raise RuntimeError(\"tracked symlink changed type\")\n            data = os.fsencode(os.readlink(path))\n            header_sha.update(b\"blob \" + str(len(data)).encode() + b\"\\0\" + data)\n            sha.update(data)\n            size = len(data)\n        else:\n            metadata = path.lstat()\n            actual_mode = \"100755\" if metadata.st_mode & 0o111 else \"100644\"\n            if not stat.S_ISREG(metadata.st_mode) or actual_mode != mode:\n                raise RuntimeError(\"source file kind/mode differs: \" + str(path))\n            size = metadata.st_size\n            header_sha.update(b\"blob \" + str(size).encode() + b\"\\0\")\n            with path.open(\"rb\") as stream:\n                for block in iter(lambda: stream.read(1024 * 1024), b\"\"):\n                    header_sha.update(block)\n                    sha.update(block)\n            if path.stat().st_size != size:\n                raise RuntimeError(\"source size changed while hashing\")\n        if header_sha.hexdigest() != blob:\n            raise RuntimeError(\"physical source bytes differ from HEAD: \" + str(path))\n        rows.append({\"path\": os.fsdecode(rawpath), \"mode\": mode, \"bytes\": size,\n                     \"git_blob\": blob, \"sha256\": sha.hexdigest()})\n    encoded = json.dumps(rows, sort_keys=True, separators=(\",\", \":\")).encode()\n    archive = RECORDS / (label + \".inventory.json.gz\")\n    with archive.open(\"xb\") as stream:\n        with gzip.GzipFile(filename=\"\", mode=\"wb\", fileobj=stream, mtime=0) as output:\n            output.write(encoded)\n    summary = {**observed, \"files\": len(rows), \"inventory_sha256\": hashlib.sha256(encoded).hexdigest()}\n    save(label + \".json\", {**summary, \"inventory\": file_digest(archive)})\n    return summary\n\n",
+    "policy": "Reuse exact body with same read-only Git/file helpers; before and final physical source evidence."
+  },
+  "terminal_count_parser": {
+    "origin": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "bytes": 1604,
+    "sha256": "93fc49efa13f2d83d70f8966722367a67ea0542505e9c54ecbd8fb6603f7d84b",
+    "source": "def observed_test_counts(text: str) -> tuple[int, int]:\n    \"\"\"Parse terminal runner summaries, never compile messages or ignored tests.\n\n    Output is diagnostic evidence of the named command, not authentication of an\n    arbitrary command's claims. A nextest summary supersedes nested libtest text.\n    \"\"\"\n    text = re.sub(r\"\\x1b\\[[0-9;]*m\", \"\", text)\n    nextest = re.findall(r\"Summary[^\\n]*?\\d+ tests? run: ([^\\n]+)\", text)\n    if nextest:\n        summary = nextest[-1]\n        passed = re.search(r\"(\\d+) passed\", summary)\n        failed = sum(\n            int(value)\n            for value in re.findall(r\"(\\d+) (?:failed|timed out|leaked)\", summary)\n        )\n        return int(passed[1]) if passed else 0, failed\n    passed = failed = 0\n    for match in re.finditer(\n        r\"test result: (?:ok|FAILED)\\. (\\d+) passed; (\\d+) failed;\", text\n    ):\n        passed += int(match[1])\n        failed += int(match[2])\n    for match in re.finditer(\n        r\"Ran (\\d+) tests? in [^\\n]+\\n\\s*\\n?(OK|FAILED)(?: \\(([^\\n]*)\\))?(?:\\n|$)\", text\n    ):\n        total = int(match[1])\n        fields = dict(\n            (key.strip(), int(value))\n            for key, value in re.findall(r\"([a-z ]+)=(\\d+)\", match[3] or \"\")\n        )\n        failures = sum(\n            fields.get(key, 0) for key in (\"failures\", \"errors\", \"unexpected successes\")\n        )\n        failed += failures or (1 if match[2] == \"FAILED\" else 0)\n        excluded = failures + sum(\n            fields.get(key, 0) for key in (\"skipped\", \"expected failures\")\n        )\n        passed += max(0, total - excluded)\n    return passed, failed\n\n\n"
+  },
+  "necessary_budget_change": {
+    "original_remaining": "def remaining(maximum):\n    value=min(maximum,DEADLINE-time.monotonic())\n    if value<=0: raise TimeoutError(\"source maintenance overall budget exhausted\")\n    return value\n",
+    "reason": "Single total <=27000s including final read-only evidence; reserve 120s inside same deadline rather than starting another 120s after work."
+  }
+}

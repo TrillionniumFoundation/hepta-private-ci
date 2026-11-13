@@ -11,8 +11,7 @@ use std::fs::OpenOptions;
 use std::os::unix::fs::MetadataExt;
 use std::task::Poll;
 
-#[path = "root_authority_session_lifecycle_support_tests.rs"]
-mod support;
+use crate::root_authority_session::lifecycle_support_tests as support;
 use support::BlockedOutcome;
 use support::BlockingConsumer;
 use support::PhaseConnection;

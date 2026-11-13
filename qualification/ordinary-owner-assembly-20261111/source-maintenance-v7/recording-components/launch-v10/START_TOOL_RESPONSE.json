@@ -1,0 +1,27 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "McpServerError: Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected."
+    }
+  ],
+  "structuredContent": {
+    "error": "McpServerError: Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected.",
+    "error_code": "NOT_FOUND",
+    "error_data": {
+      "type": "http_error",
+      "code": 404,
+      "message": "Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected.",
+      "payload": {
+        "error": {
+          "message": "Tunnel-client has not been seen for 300 seconds. Ensure tunnel-client is running and connected.",
+          "type": "invalid_request_error",
+          "param": null,
+          "code": "tunnel_client_not_seen"
+        }
+      },
+      "url": "https://tunnel-service.gateway.unified-0.internal.api.openai.org/v1/mcp/tunnel_6aeeaa5f7b488191a6466ca467418530"
+    }
+  },
+  "isError": true
+}

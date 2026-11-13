@@ -915,5 +915,9 @@ async fn synchronize_consumers(
     Ok(())
 }
 #[cfg(test)]
+#[path = "root_authority_session_lifecycle_support_tests.rs"]
+mod lifecycle_support_tests;
+
+#[cfg(test)]
 #[path = "root_authority_session_tests.rs"]
 pub(crate) mod tests;
