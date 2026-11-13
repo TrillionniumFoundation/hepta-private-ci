@@ -3275,7 +3275,7 @@ required = ["struct PublishedTask", "original: Mutex<Box<dyn OriginalVersion>>",
 forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "pub original:", "pub publication:", "pub current:", "pub binding:", "unwrap_or", "permit_all"]
 required_order = [
   ["fn from_update<", "original.previous() != &previous.binding", "previous.manifest.digest()", "previous.receipt.checkpoint_after != previous.source.checkpoint_digest()", "old.scope.run_id == source.scope.run_id\n            || old.observation == source.observation", "Self::from_parts(\n            journal,\n            Publication::Update"],
-  ["fn require_current(&self) -> Result<(), AgentdError> {\n        self.0\n            .current\n            .check_current", "self.0.publication.target()", "self.0.original.lock().map_err(invalid)?.require_current()?", "self.0\n            .current\n            .check_current(self.0.publication.target())"],
+  ["fn require_current(&self) -> Result<(), AgentdError> {\n        if matches!(&self.0.publication, Publication::Initial(_))", ".require_original_task(self.0.publication.target(), false);", "self.0\n            .current\n            .check_current", "self.0.publication.target()", "self.0.original.lock().map_err(invalid)?.require_current()?", "self.0\n            .current\n            .check_current(self.0.publication.target())"],
   ["fn from_parts<", "journal.owner_binding() != Some(target)", "target.task_digest()\n                != circuit_feature_task_digest_v1(", "target.source_frontier() != source.source_frontier.into_array()", "manifest.profile != crate::CellQ24GenerationWorkerV1::PROFILE", "manifest.bundle_digest != definition.bundle_digest.into_array()", "current.check_current(target)", "original: Mutex::new(Box::new(journal))", "result.require_current()?"],
   ["fn open_cell<", "self.require_current()?", "!(3..=16).contains(&max_records)", "CellOwnerJournalV1::open_guarded(", "max_records,\n            target.clone(),\n            current", "self.require_current()?", "PublishedCircuitCellOwnerV1::new(journal, self.clone())"],
 ]
@@ -15914,7 +15914,7 @@ caller_markers = []
 path = "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs"
 required = []
 forbidden = []
-required_function_order = [{ function = "fn require_original_initial_run(", sequence = ["self.require_active()?", "!matches!(&self.0.publication, Publication::Initial(_))", "&self.source().scope.run_id != run_id", "return Err(invalid(", "self.require_active()"], top_level = ["self.require_active()?;", "if !matches!", "self.require_active()\n"] }]
+required_function_order = [{ function = "fn require_original_initial_run(", sequence = ["!matches!(&self.0.publication, Publication::Initial(_))", "&self.source().scope.run_id != run_id", "return Err(invalid(", "self.require_active()"], top_level = ["if !matches!", "self.require_active()\n"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_task_observation_control.rs"
@@ -16104,3 +16104,10 @@ path = "codex-rs/hepta-agentd/src/root_generation_initial_lane.rs"
 required = ["pub(super) fn run_original_blocking<R>(action: impl FnOnce() -> R) -> R"]
 forbidden = ["pub fn run_original_blocking", "pub(crate) fn run_original_blocking"]
 required_function_order = [{ function = "fn run_original_blocking<R>(", sequence = ["fn run_original_blocking<R>(action: impl FnOnce() -> R) -> R", "if tokio::runtime::Handle::try_current()", ".is_ok_and(|handle| handle.runtime_flavor() == tokio::runtime::RuntimeFlavor::MultiThread)", "tokio::task::block_in_place(action)", "} else {", "action()"], top_level = ["if tokio::runtime::Handle::try_current()"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+required = ["trait OriginalVersion: Send {", "impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W> {", "expected: &CellGenerationOwnerBindingV1,", "active: bool,"]
+forbidden = ["pub trait OriginalVersion", "pub(crate) trait OriginalVersion", "pub(super) trait OriginalVersion"]
+required_order = [["impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W> {", "fn require_original_task(", "&self,", "expected: &CellGenerationOwnerBindingV1,", "active: bool,", "let result = (|| {", "let observed = CellGenerationJournalV2::observe_generation(self).map_err(invalid)?;", "if self.owner_binding() != Some(expected)", "return Err(invalid(", "if observed.snapshot().revision != 0", "|| observed.pending_request_digest().is_some()", "|| observed.pending_output().is_some()", "|| !observed.snapshot().prefix.is_empty()", "|| observed.snapshot().stopped", "return Err(invalid(", "if active && CellGenerationJournalV2::is_drained(self).map_err(invalid)?", "return Err(invalid(", "Ok(())", "})();", "let post = CellGenerationJournalV2::require_current(self).map_err(invalid);", "post?;", "\n        result\n", "    }\n    fn is_drained("]]
+required_function_order = [{ function = "fn require_active(", sequence = ["if matches!(&self.0.publication, Publication::Initial(_))", "return self", ".original", ".lock()", ".map_err(invalid)?", ".require_original_task(self.0.publication.target(), true);", "self.require_current()?;", "is_drained()?", "return Err", "self.require_current()"], top_level = ["if matches!", "self.require_current()?;", "if self.0.original.lock()", "self.require_current()\n"] }]

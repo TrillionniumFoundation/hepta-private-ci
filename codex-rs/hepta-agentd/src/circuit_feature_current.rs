@@ -120,6 +120,11 @@ impl Publication {
 /// journal. No external implementation or replacement authority is accepted.
 trait OriginalVersion: Send {
     fn require_current(&self) -> Result<(), AgentdError>;
+    fn require_original_task(
+        &self,
+        expected: &CellGenerationOwnerBindingV1,
+        active: bool,
+    ) -> Result<(), AgentdError>;
     fn is_drained(&self) -> Result<bool, AgentdError>;
     fn drain(&mut self) -> Result<(), AgentdError>;
     fn selection(
@@ -142,6 +147,39 @@ impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W
             return Err(invalid("published task already contains GenerationV2 work"));
         }
         self.require_current().map_err(invalid)
+    }
+    fn require_original_task(
+        &self,
+        expected: &CellGenerationOwnerBindingV1,
+        active: bool,
+    ) -> Result<(), AgentdError> {
+        // The PublishedTask keeps this original journal's mutex for the whole
+        // read. Its actual current guard brackets the same immutable binding
+        // and task state; no returned observation supplies authority.
+        let result = (|| {
+            let observed = CellGenerationJournalV2::observe_generation(self).map_err(invalid)?;
+            if self.owner_binding() != Some(expected) {
+                return Err(invalid("ordinary published Feature task binding differs"));
+            }
+            if observed.snapshot().revision != 0
+                || observed.pending_request_digest().is_some()
+                || observed.pending_output().is_some()
+                || !observed.snapshot().prefix.is_empty()
+                || observed.snapshot().stopped
+            {
+                return Err(invalid("published task already contains GenerationV2 work"));
+            }
+            if active && CellGenerationJournalV2::is_drained(self).map_err(invalid)? {
+                return Err(invalid("ordinary published Feature task is drained"));
+            }
+            Ok(())
+        })();
+        // Even a failed local read must run the original live postcheck. The
+        // underlying guard retains its existing deadline, fence and physical
+        // CURRENT/Artifact/FinalUse checks.
+        let post = CellGenerationJournalV2::require_current(self).map_err(invalid);
+        post?;
+        result
     }
     fn is_drained(&self) -> Result<bool, AgentdError> {
         self.is_drained().map_err(invalid)
@@ -330,6 +368,14 @@ impl PublishedCircuitFeatureTaskV1 {
     }
 
     fn require_current(&self) -> Result<(), AgentdError> {
+        if matches!(&self.0.publication, Publication::Initial(_)) {
+            return self
+                .0
+                .original
+                .lock()
+                .map_err(invalid)?
+                .require_original_task(self.0.publication.target(), false);
+        }
         self.0
             .current
             .check_current(self.0.publication.target())
@@ -342,6 +388,14 @@ impl PublishedCircuitFeatureTaskV1 {
     }
 
     fn require_active(&self) -> Result<(), AgentdError> {
+        if matches!(&self.0.publication, Publication::Initial(_)) {
+            return self
+                .0
+                .original
+                .lock()
+                .map_err(invalid)?
+                .require_original_task(self.0.publication.target(), true);
+        }
         self.require_current()?;
         if self.0.original.lock().map_err(invalid)?.is_drained()? {
             return Err(invalid("ordinary published Feature task is drained"));
@@ -371,3 +425,7 @@ fn invalid(error: impl std::fmt::Display) -> AgentdError {
 #[cfg(target_os = "linux")]
 #[path = "circuit_feature_learning_trust.rs"]
 mod learning_trust;
+
+#[cfg(test)]
+#[path = "circuit_feature_current_scope_tests.rs"]
+mod current_scope_tests;

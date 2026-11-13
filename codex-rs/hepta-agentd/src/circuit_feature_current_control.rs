@@ -23,7 +23,9 @@ impl PublishedCircuitFeatureTaskV1 {
         &self,
         run_id: &StableId,
     ) -> Result<(), AgentdError> {
-        self.require_active()?;
+        // Publication kind and run are immutable fields of this original
+        // task. A successful match still requires the complete live journal
+        // scope, including its active-state check and original postcheck.
         if !matches!(&self.0.publication, Publication::Initial(_))
             || &self.source().scope.run_id != run_id
         {
